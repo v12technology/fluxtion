@@ -26,6 +26,7 @@ along with this program.  If not, see
     <modules>
         <module>poms</module>
         <module>api</module>
+        <module>builder</module>
     </modules>
     
     <properties>
