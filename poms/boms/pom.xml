@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2018 V12 Technology Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Server Side Public License, version 1,
+as published by MongoDB, Inc.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the Server Side Public License
+along with this program.  If not, see 
+<http://www.mongodb.com/licensing/server-side-public-license>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fluxtion</groupId>
+    <artifactId>fluxtion-bom</artifactId>
+    <version>1.5.0</version>
+    <packaging>pom</packaging>
+    <name>fluxtion :: poms :: bom</name>
+    <description>This meta-project is used to generate a bill-of-materials POM 
+        that contains the Fluxtion dependencyManagement section.
+    </description>
+    
+    
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement> 
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin> 
+        </plugins>
+    </build>
+    
+    
+    <dependencyManagement>
+        <dependencies>
+            <!--base fluxtion -->
+            <dependency>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>fluxtion-api</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            
+            <!--            
+            <dependency>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>fluxtion-builder</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+            declarative fluxtion 
+            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>fluxtion-declarative-api</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>fluxtion-declarative-builder</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+            declarative-extended fluxtion 
+            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>fluxtion-declarative-ext-api</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>fluxtion-declarative-ext-builder</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+             state machine 
+            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>fluxtion-statemachine-api</artifactId>
+                <version>0.1.37-SNAPSHOT</version>
+            </dependency>           
+            -->
+            <!-- utils -->
+            <!--            <dependency>
+                <groupId>com.fluxtion.extension</groupId>
+                <artifactId>runtime-plugins</artifactId>
+                <version>1.0.1-SNAPSHOT</version>
+            </dependency>            -->
+            <!-- runtime dependency -->
+            <dependency>
+                <groupId>it.unimi.dsi</groupId>
+                <artifactId>fastutil</artifactId>
+                <version>7.0.7</version>
+            </dependency>
+            <dependency>
+                <groupId>net.vidageek</groupId>
+                <artifactId>mirror</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+</project>
