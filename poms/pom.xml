@@ -31,7 +31,7 @@ along with this program.  If not, see
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.deploy.skip>false</maven.deploy.skip>
 <!--        <fluxtion.core.ver>0.1.37-SNAPSHOT</fluxtion.core.ver>
         <fluxtion.dec.ver>0.1.37-SNAPSHOT</fluxtion.dec.ver>
         <fluxtion.stateMachine.ver>0.1.34</fluxtion.stateMachine.ver>-->
