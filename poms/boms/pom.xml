@@ -28,7 +28,29 @@ along with this program.  If not, see
         that contains the Fluxtion dependencyManagement section.
     </description>
     
+    <url>https://github.com/v12technology/fluxtion</url>
     
+    <licenses>
+        <license>
+            <distribution>repo</distribution>
+            <name>Server Side Public License, version 1</name>
+            <url>http://www.mongodb.com/licensing/server-side-public-license</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Greg Higgins</name>
+            <email>greg.higgins@v12technology.com</email>
+            <organization>V12 Technology Limited</organization>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:https://github.com/v12technology/fluxtion.git</connection>
+        <developerConnection>scm:git:https://github.com/v12technology/fluxtion.git</developerConnection>
+        <url>https://github.com/v12technology/fluxtion</url>
+    </scm> 
     
     <distributionManagement>
         <snapshotRepository>
@@ -54,6 +76,73 @@ along with this program.  If not, see
     </build>
     
     
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin> 
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+<!--                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>external.atlassian.jgitflow</groupId>
+                        <artifactId>jgitflow-maven-plugin</artifactId>
+                        <version>1.0-m5.1</version>
+                        <configuration>
+                            <noDeploy>true</noDeploy>
+                            <username>${fluxtion.github.user}</username>
+                            <password>${fluxtion.github.password}</password>
+                        </configuration>
+                    </plugin>  -->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+   
     <dependencyManagement>
         <dependencies>
             <!--base fluxtion -->

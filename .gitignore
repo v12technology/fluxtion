@@ -1,3 +1,4 @@
 /api/target/
 /poms/parent-root/target/
 /poms/target
+/poms/boms/target/
