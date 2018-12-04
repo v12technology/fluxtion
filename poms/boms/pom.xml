@@ -106,38 +106,6 @@ along with this program.  If not, see
                             </execution>
                         </executions>
                     </plugin>
-<!--                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>external.atlassian.jgitflow</groupId>
-                        <artifactId>jgitflow-maven-plugin</artifactId>
-                        <version>1.0-m5.1</version>
-                        <configuration>
-                            <noDeploy>true</noDeploy>
-                            <username>${fluxtion.github.user}</username>
-                            <password>${fluxtion.github.password}</password>
-                        </configuration>
-                    </plugin>  -->
                 </plugins>
             </build>
         </profile>
