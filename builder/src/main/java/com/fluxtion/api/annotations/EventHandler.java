@@ -83,15 +83,6 @@ public @interface EventHandler {
      * Determines whether the SEP will invoke dependents as part of the event
      * call chain.
      *
-     * @deprecated due to typo, use propagate
-     * @return invoke dependents on update
-     */
-    boolean propogate() default true;
-
-    /**
-     * Determines whether the SEP will invoke dependents as part of the event
-     * call chain.
-     *
      * @return invoke dependents on update
      */
     boolean propagate() default true;
