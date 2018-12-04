@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
     
@@ -64,7 +64,7 @@ along with this program.  If not, see
                 <artifactId>jgitflow-maven-plugin</artifactId>
                 <version>1.0-m5.1</version>
                 <configuration>
-                    <noDeploy>true</noDeploy>
+                    <!--<noDeploy>true</noDeploy>-->
                     <username>${fluxtion.github.user}</username>
                     <password>${fluxtion.github.password}</password>
                     <useReleaseProfile>false</useReleaseProfile>
