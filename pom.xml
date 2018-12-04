@@ -69,7 +69,7 @@ along with this program.  If not, see
                     <password>${fluxtion.github.password}</password>
                     <useReleaseProfile>false</useReleaseProfile>
                     <!--<noTag>true</noTag>-->
-                    <!--<autoVersionSubmodules>true</autoVersionSubmodules>-->
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
                     <!--<allowSnapshots>true</allowSnapshots>-->
                     <!-- see goals wiki page for configuration options -->
                 </configuration>
