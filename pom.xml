@@ -25,6 +25,7 @@ along with this program.  If not, see
     
     <modules>
         <module>poms</module>
+        <module>api</module>
     </modules>
     
     <properties>
@@ -33,6 +34,36 @@ along with this program.  If not, see
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    
+    <licenses>
+        <license>
+            <distribution>repo</distribution>
+            <name>Server Side Public License, version 1</name>
+            <url>http://www.mongodb.com/licensing/server-side-public-license</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Greg Higgins</name>
+            <email>greg.higgins@v12technology.com</email>
+            <organization>V12 Technology Limited</organization>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:https://github.com/v12technology/fluxtion.git</connection>
+        <developerConnection>scm:git:https://github.com/v12technology/fluxtion.git</developerConnection>
+        <url>https://github.com/v12technology/fluxtion</url>
+    </scm>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement> 
+    
     
     <build>
         <plugins>

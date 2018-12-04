@@ -9,7 +9,7 @@ as published by MongoDB, Inc.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-Server Side Public License for more details.
+GNU General Public License for more details.
 
 You should have received a copy of the Server Side Public License
 along with this program.  If not, see 
@@ -34,15 +34,89 @@ along with this program.  If not, see
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>    
     
+    
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin> 
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>external.atlassian.jgitflow</groupId>
+                        <artifactId>jgitflow-maven-plugin</artifactId>
+                        <version>1.0-m5.1</version>
+                        <configuration>
+                            <!--<noDeploy>true</noDeploy>-->
+                            <username>${fluxtion.github.user}</username>
+                            <password>${fluxtion.github.password}</password>
+                        </configuration>
+                    </plugin>  
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>1.12</version>
+                        <executions>
+                            <execution>
+                                <id>download-license-description</id>
+                                <goals>
+                                    <goal>add-third-party</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin> 
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <configuration>
-                    <skipSource>true</skipSource>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
@@ -52,7 +126,19 @@ along with this program.  If not, see
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin> 
         </plugins>
+        
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -156,11 +242,11 @@ along with this program.  If not, see
                 <scope>import</scope>
             </dependency>  
             <!--dependencies-->
-            <dependency>
+            <!--            <dependency>
                 <groupId>net.openhft</groupId>
                 <artifactId>compiler</artifactId>
                 <version>2.2.2</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -210,12 +296,12 @@ along with this program.  If not, see
                 <artifactId>commons-math3</artifactId>
                 <version>3.3</version>
             </dependency>
-            <dependency>
+            <!--            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.5</version>
                 <scope>test</scope>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
