@@ -28,6 +28,8 @@ along with this program.  If not, see
         that contains the Fluxtion dependencyManagement section.
     </description>
     
+    <url>https://github.com/v12technology/fluxtion</url>
+    
     <licenses>
         <license>
             <distribution>repo</distribution>

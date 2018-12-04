@@ -33,7 +33,11 @@ along with this program.  If not, see
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>   
-     
+    
+    <description>Root build pom for use by non-pom projects</description>
+    
+    <url>https://github.com/v12technology/fluxtion</url>
+    
     <licenses>
         <license>
             <distribution>repo</distribution>
