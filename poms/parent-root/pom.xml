@@ -32,7 +32,29 @@ along with this program.  If not, see
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>    
+    </properties>   
+     
+    <licenses>
+        <license>
+            <distribution>repo</distribution>
+            <name>Server Side Public License, version 1</name>
+            <url>http://www.mongodb.com/licensing/server-side-public-license</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Greg Higgins</name>
+            <email>greg.higgins@v12technology.com</email>
+            <organization>V12 Technology Limited</organization>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:https://github.com/v12technology/fluxtion.git</connection>
+        <developerConnection>scm:git:https://github.com/v12technology/fluxtion.git</developerConnection>
+        <url>https://github.com/v12technology/fluxtion</url>
+    </scm>
     
     <distributionManagement>
         <snapshotRepository>
