@@ -79,10 +79,10 @@ public class SepCompiler {
      *
      * @see SepCompilerConfig#initFromSystemProperties() System properties
      * mapping.
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws Exception
+     * @throws ClassNotFoundException exception during compile
+     * @throws InstantiationException exception during compile
+     * @throws IllegalAccessException exception during compile
+     * @throws Exception exception during compile
      */
     public void compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
         compile(SepCompilerConfig.initFromSystemProperties());
@@ -91,11 +91,11 @@ public class SepCompiler {
     /**
      * Compile method using a provided SepCompilerConfig
      *
-     * @param compilerConfig
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws Exception
+     * @param compilerConfig the config to drive the SEP generation process
+     * @throws ClassNotFoundException exception during compile
+     * @throws InstantiationException exception during compile
+     * @throws IllegalAccessException exception during compile
+     * @throws Exception exception during compile
      */
     public void compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
 //        LOG.debug("starting SEP compiler");

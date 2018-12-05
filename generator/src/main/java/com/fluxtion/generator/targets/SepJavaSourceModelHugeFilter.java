@@ -1104,11 +1104,9 @@ public class SepJavaSourceModelHugeFilter {
      * <code> public void onEvent(com.fluxtion.api.event.Event event) </code>
      * <p>
      * <code>
-     * <pre>
      * public void handleEvent([specific event] event) {
      *      [eventHandlers]
      * }
-     * </pre>
      * </code>
      *
      * @return top level event dispatch string
@@ -1119,17 +1117,15 @@ public class SepJavaSourceModelHugeFilter {
 
     /**
      * String representation of java code handling subclass of
-     * {@link com.fluxtion.api.event.Event Event}, with support for specific
+     * {@link com.fluxtion.runtime.event.Event Event}, with support for specific
      * dispatch based upon
-     * {@linkplain  com.fluxtion.api.event.Event#filterId() filterID}. If
+     * {@linkplain  com.fluxtion.runtime.event.Event#filterId() filterID}. If
      * inlining is false the following output will be produced:
      * <p>
      * <code>
-     * <pre>
      * public void handleEvent([specific event] event) {
      *      [eventHandlers]
      * }
-     * </pre>
      * </code>
      *
      * @return type specific event dispatch code

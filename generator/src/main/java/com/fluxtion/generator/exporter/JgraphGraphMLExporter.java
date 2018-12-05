@@ -97,6 +97,8 @@ public class JgraphGraphMLExporter<V, E> {
      *
      * @param writer the writer to which the graph to be exported
      * @param g the graph to be exported
+     * @throws org.xml.sax.SAXException  exception during reading
+     * @throws javax.xml.transform.TransformerConfigurationException  exception during reading
      */
     public void export(Writer writer, Graph<V, E> g)
             throws SAXException, TransformerConfigurationException {

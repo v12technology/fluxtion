@@ -125,16 +125,17 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     /**
-     *
+     * Create a new TopologicallySortedDependecyGraph
+     * 
      * @param nodes The set of nodes that will be sorted as a list.
      * @param publicNodes Map of public available instances, the value is the
      * unique name of each instance. The names will override existing instances
      * in the nodes List or add the node to the set.
-     * @param declarativeNodeConiguration
-     * @param strat
-     * @param context
-     * @param auditorMap
-     * @param config
+     * @param declarativeNodeConiguration factory description
+     * @param strat NodeNameProducer strategy
+     * @param context Generation context for this cycle
+     * @param auditorMap Auditors to inject
+     * @param config Config for this generation cycle
      *
      */
     public TopologicallySortedDependecyGraph(List nodes, Map<Object, String> publicNodes,
@@ -235,7 +236,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
      * @param obj The root object to search from in the graph.
      *
      * @return a sorted dependents list with this object as a root.
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception when generating graph
      *
      */
     public List<Object> getSortedDependents(Object obj) throws Exception {
@@ -255,12 +256,6 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         return cbList;
     }
 
-    /**
-     *
-     * @param obj
-     * @return
-     * @throws Exception
-     */
     public List<Object> getEventSortedDependents(Object obj) throws Exception {
         generateDependencyTree();
         List<Integer> lst = new ArrayList<>();
@@ -279,10 +274,10 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     /**
-     * returns a list of the direct children of this object in the SEP.
+     * returns a list of the direct children of this object in the SEP.node in the SEP
      *
-     * @param node in the SEP
-     * @return
+     * @param parent node in the SEP
+     * @return list of direct children of this node
      */
     public List<?> getDirectChildren(Object parent) {
         ArrayList lst = new ArrayList();
@@ -309,8 +304,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     /**
      * returns a list of the direct parents of this object in the SEP.
      *
-     * @param node in the SEP
-     * @return
+     * @param child in the SEP
+     * @return direct parents of this node
      */
     public List<?> getDirectParents(Object child) {
         ArrayList lst = new ArrayList();
@@ -483,7 +478,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     /**
      * Generates the dependency tree for introspection.
      *
-     * @throws Exception
+     * @throws Exception when problem generating the dependency tree
      */
     public synchronized void generateDependencyTree() throws Exception {
         if (processed) {
@@ -774,8 +769,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
      *
      * @param writer target
      * @param addEvents flag to control inclusion of events as nodes
-     * @throws SAXException
-     * @throws TransformerConfigurationException
+     * @throws SAXException problem writing jpgraphMl
+     * @throws TransformerConfigurationException problem writing jpgraphMl
      */
     public void exportAsGraphMl(Writer writer, boolean addEvents) throws SAXException, TransformerConfigurationException {
         //graphml representation

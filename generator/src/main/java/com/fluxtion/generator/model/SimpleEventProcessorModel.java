@@ -210,43 +210,20 @@ public class SimpleEventProcessorModel {
      */
     private boolean supportDirtyFiltering;
 
-    /**
-     *
-     * @param dependencyGraph
-     * @throws Exception
-     */
+
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph) throws Exception {
         this(dependencyGraph, new HashMap());
     }
 
-    /**
-     *
-     * @param dependencyGraph
-     * @param filterMap
-     * @throws Exception
-     */
+
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
         this(dependencyGraph, filterMap, null, null);
     }
 
-    /**
-     *
-     * @param dependencyGraph
-     * @param flterProducer
-     * @throws Exception
-     */
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, FilterDescriptionProducer flterProducer) throws Exception {
         this(dependencyGraph, null, flterProducer, null);
     }
 
-    /**
-     *
-     * @param dependencyGraph
-     * @param filterMap
-     * @param flterProducer
-     * @param nodeClassMap
-     * @throws Exception
-     */
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph,
             Map<Object, Integer> filterMap,
             FilterDescriptionProducer flterProducer,
@@ -278,7 +255,7 @@ public class SimpleEventProcessorModel {
     /**
      * generates the SEP model.
      *
-     * @throws Exception
+     * @throws Exception exception during model generation
      */
     public void generateMetaModel() throws Exception {
         generateMetaModel(false);
@@ -923,12 +900,6 @@ public class SimpleEventProcessorModel {
         LOGGER.debug("filterList:" + filterDescriptionList);
     }
 
-    /**
-     * Used for testing only
-     *
-     * @param node
-     * @return
-     */
     public DirtyFlag getDirtyFlagForNode(Object node) {
         return dirtyFieldMap.get(getFieldForInstance(node));
     }
@@ -943,8 +914,8 @@ public class SimpleEventProcessorModel {
      * Parents can be traced all the way to the root for dirty support,
      * effectively inheriting dirty support down the call tree.
      *
-     * @param node
-     * @return
+     * @param node the node to introspect
+     * @return collection of dirty flags that guard the node
      */
     public Collection<DirtyFlag> getNodeGuardConditions(Object node) {
         final ArrayList<DirtyFlag> guards = new ArrayList<>(nodeGuardMap.get(node));
@@ -967,8 +938,8 @@ public class SimpleEventProcessorModel {
      * then the node updated method will always be called after a parent has
      * been notified of an event.
      *
-     * @param node
-     * @return
+     * @param node the node to introspect
+     * @return collection of dirty flags that guard the node
      */
     public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
         ArrayList<DirtyFlag> guards = new ArrayList<>();
