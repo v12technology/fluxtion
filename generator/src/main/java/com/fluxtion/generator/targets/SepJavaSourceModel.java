@@ -726,42 +726,10 @@ public class SepJavaSourceModel {
         return filterConstantDeclarations;
     }
 
-    /**
-     * String representation of top level event dispatch
-     *
-     * <code> public void onEvent(Event event) </code>
-     * <p>
-     * <code>
-     * <pre>
-     * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
-     * }
-     * </pre>
-     * </code>
-     *
-     * @return top level event dispatch string
-     */
     public String getEventDispatch() {
         return eventDispatch;
     }
 
-    /**
-     * String representation of java code handling subclass of
-     * {@link com.fluxtion.api.event.Event Event}, with support for specific
-     * dispatch based upon
-     * {@linkplain  com.fluxtion.api.event.Event#filterId() filterID}. If
-     * inlining is false the following output will be produced:
-     * <p>
-     * <code>
-     * <pre>
-     * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
-     * }
-     * </pre>
-     * </code>
-     *
-     * @return type specific event dispatch code
-     */
     public String getEventHandlers() {
         return eventHandlers;
     }

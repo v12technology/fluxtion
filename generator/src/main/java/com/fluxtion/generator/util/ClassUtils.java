@@ -48,9 +48,9 @@ public interface ClassUtils {
      *
      * If no match is found a null is returned.
      *
-     * @param parent
-     * @param cbs
-     * @return
+     * @param parent node to interrogate
+     * @param cbs collection of callbacks
+     * @return The best matched callback handle
      */
     public static CbMethodHandle findBestParentCB(Object parent, Collection<CbMethodHandle> cbs) {
         Set<Class<?>> classList = cbs.stream()

@@ -28,12 +28,6 @@ public class NodeFactoryLocator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeFactoryLocator.class);
 
-    /**
-     *
-     * @param rootPackage
-     * @return
-     * @throws Exception
-     */
     public static final Map<Class, CbMethodHandle> findCallbackByPackage(String rootPackage) throws Exception {
         Map<Class, CbMethodHandle> class2Factory = new HashMap<>();
         Reflections reflections = new Reflections(rootPackage);
@@ -52,12 +46,6 @@ public class NodeFactoryLocator {
         return class2Factory;
     }
 
-    /**
-     *
-     * @param rootPackage
-     * @return
-     * @throws Exception
-     */
     public static final Set<Class<? extends NodeFactory>> findFactoryByPackage(String rootPackage) throws Exception {
         Reflections reflections;
         if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
