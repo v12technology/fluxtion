@@ -1,0 +1,11 @@
+
+Lists of 9 third-party dependencies.
+     (Common Public License Version 1.0) System Rules (com.github.stefanbirkner:system-rules:1.16.0 - http://stefanbirkner.github.io/system-rules/)
+     (The Apache Software License, Version 2.0) IntelliJ IDEA Annotations (com.intellij:annotations:12.0 - http://www.jetbrains.org)
+     (The Apache Software License, Version 2.0) fastutil (it.unimi.dsi:fastutil:7.0.7 - http://fasutil.di.unimi.it/)
+     (Eclipse Public License - v 1.0) JUnit (junit:junit:4.12 - http://junit.org)
+     (GNU General Lesser Public License (LGPL) version 3.0) OpenHFT/Java-Runtime-Compiler (net.openhft:compiler:2.3.0 - http://chronicle.software/java-parent-pom/compiler)
+     (The Apache Software License, Version 2.0) Mirror (net.vidageek:mirror:1.6.1 - http://projetos.vidageek.net/mirror)
+     (New BSD License) Hamcrest All (org.hamcrest:hamcrest-all:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-all)
+     (New BSD License) Hamcrest Core (org.hamcrest:hamcrest-core:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-core)
+     (MIT License) SLF4J API Module (org.slf4j:slf4j-api:1.7.7 - http://www.slf4j.org)

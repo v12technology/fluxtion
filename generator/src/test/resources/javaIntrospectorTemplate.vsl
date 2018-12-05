@@ -1,0 +1,70 @@
+## Velocity Template.
+/* 
+ * Copyright (C) 2018 V12 Technology Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see 
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
+package ${package};
+
+import com.fluxtion.api.debug.SepDebugger;
+import com.fluxtion.api.debug.SepIntrospector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+public class ${className}Introspector implements SepIntrospector<${className}, ${debugClassName}> {
+
+    @Override
+    public Document graphMLDocument() {
+        Document document = null;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder parser = factory.newDocumentBuilder();
+            InputStream in = this.getClass().getResourceAsStream("${className}.graphml");
+            InputSource inputSource = new InputSource(in);
+            document = parser.parse(inputSource);
+        } catch (SAXException | IOException | ParserConfigurationException ex) {
+            Logger.getLogger(${className}Introspector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return document;
+    }
+
+    @Override
+    public Class<${className}> sepClass(){
+        return ${className}.class;
+    }
+
+    @Override
+    public Class<${debugClassName}> sepDebugClass(){
+        return ${debugClassName}.class;
+    }
+
+    @Override
+    public ${className} newSepInstance() {
+        return new ${className}();
+    }
+
+    @Override
+    public ${debugClassName} newDebugSepInstance(SepDebugger sepDebugger){
+        return new ${debugClassName}(sepDebugger);
+    }
+
+}

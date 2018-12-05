@@ -9,7 +9,7 @@ as published by MongoDB, Inc.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Server Side Public License for more details.
 
 You should have received a copy of the Server Side Public License
 along with this program.  If not, see 
@@ -21,7 +21,7 @@ along with this program.  If not, see
 
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion-bom</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: bom</name>
     <description>This meta-project is used to generate a bill-of-materials POM 
@@ -106,38 +106,6 @@ along with this program.  If not, see
                             </execution>
                         </executions>
                     </plugin>
-<!--                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>external.atlassian.jgitflow</groupId>
-                        <artifactId>jgitflow-maven-plugin</artifactId>
-                        <version>1.0-m5.1</version>
-                        <configuration>
-                            <noDeploy>true</noDeploy>
-                            <username>${fluxtion.github.user}</username>
-                            <password>${fluxtion.github.password}</password>
-                        </configuration>
-                    </plugin>  -->
                 </plugins>
             </build>
         </profile>
@@ -149,7 +117,7 @@ along with this program.  If not, see
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-api</artifactId>
-                <version>1.5.1</version>
+                <version>1.5.2</version>
             </dependency>
             
             <!--            
