@@ -178,7 +178,8 @@ public class Creator {
                 nodeBuilder.addMethod(handler);
 
                 TypeSpec nodeClass = nodeBuilder.build();
-                JavaFile javaFile = JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass)
+                JavaFile javaFile = addLicense(
+                        JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass))
                         .build();
                 javaFile.writeTo(GenerationContext.SINGLETON.getSourceRootDirectory());
             } catch (IOException ex) {
@@ -186,6 +187,25 @@ public class Creator {
             }
         });
         compileNodes();
+    }
+
+    private JavaFile.Builder addLicense(JavaFile.Builder builder) {
+        builder.
+                addFileComment("Copyright (C) 2018 V12 Technology Ltd.\n"
+                        + "\n"
+                        + "This program is free software: you can redistribute it and/or modify\n"
+                        + "it under the terms of the Server Side Public License, version 1,\n"
+                        + "as published by MongoDB, Inc.\n"
+                        + "\n"
+                        + "This program is distributed in the hope that it will be useful,\n"
+                        + "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                        + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+                        + "Server Side License for more details.\n"
+                        + "\n"
+                        + "You should have received a copy of the Server Side Public License\n"
+                        + "along with this program.  If not, see \n"
+                        + "<http://www.mongodb.com/licensing/server-side-public-license>.");
+        return builder;
     }
 
     private void compileNodes() {
@@ -213,7 +233,11 @@ public class Creator {
                         .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                         .superclass(ClassName.get(Event.class));
                 TypeSpec nodeClass = nodeBuilder.build();
-                JavaFile javaFile = JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass)
+//                JavaFile javaFile = 
+//                        JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass)
+//                        .build();
+                JavaFile javaFile = addLicense(
+                        JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass))
                         .build();
                 javaFile.writeTo(GenerationContext.SINGLETON.getSourceRootDirectory());
                 compile(fqn);
@@ -277,25 +301,25 @@ public class Creator {
         //add definitions
         graph.vertexSet().stream().forEach((node) -> {
             try {
-                if (node.isFactoryCreated()){
+                if (node.isFactoryCreated()) {
                     try {
                         SepConfigGenerator gen = (SepConfigGenerator) Class.forName(node.getFactoryType()).newInstance();
                         initHandler.addStatement("$1T $2L", node.getNodeClass(), node.getId());
                         String code = gen.sepConfigStatement(node.getConfigBean(), node.getId(), null);
                         initHandler.addCode(code);
-                        if(node.isPublicAccess()){
+                        if (node.isPublicAccess()) {
                             initHandler.addStatement("addPublicNode($1L, $1S)",
-                            node.getId());
-                        }else{
+                                    node.getId());
+                        } else {
                             initHandler.addStatement("addNode($1L)",
-                            node.getId());
+                                    node.getId());
                         }
                     } catch (InstantiationException | IllegalAccessException ex) {
                         throw new RuntimeException("problem generating SEP config", ex);
                     }
-                    
+
                     System.out.println("factory created");
-                }else if (node.isPublicAccess()) {
+                } else if (node.isPublicAccess()) {
                     initHandler.addStatement("$1T $2L = addPublicNode(new $1T(), $2S)",
                             node.getNodeClass(), node.getId());
 
@@ -325,8 +349,8 @@ public class Creator {
         nodeBuilder.addMethod(initHandler.build());
 
         TypeSpec nodeClass = nodeBuilder.build();
-        JavaFile javaFile = JavaFile.builder(packageName, nodeClass)
-//                .
+        JavaFile javaFile = addLicense(JavaFile.builder(packageName, nodeClass))
+                //                .
                 .build();
         javaFile.writeTo(GenerationContext.SINGLETON.getSourceRootDirectory());
         compile(config.getOutputSepConfigClass());
