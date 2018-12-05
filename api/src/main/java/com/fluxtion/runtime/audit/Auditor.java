@@ -40,9 +40,8 @@ import com.fluxtion.runtime.lifecycle.Lifecycle;
 public interface Auditor extends Lifecycle {
 
     /**
-     * Auditor receives this callback for each node registered in the SEP. This
-     * method will be invoked after init, but before any processing lifecyle
-     * methods are invoked.
+     * Callback for each node registered in the SEP. This method will be invoked
+     * after init, but before any event processing methods are invoked.
      *
      * @param node The node instance in the SEP
      * @param nodeName The unique name of the node in the SEP
@@ -84,12 +83,25 @@ public interface Auditor extends Lifecycle {
 
 //    default void nodeInvoked(Object node, String nodeName, String methodName, Event typedEvent) {
 //    }
+    /**
+     * Callback method received by the auditor due to processing an event. This
+     * method is invoked before the node in the execution path receives a
+     * notification.
+     *
+     * @param node The next node to process in the execution path
+     * @param nodeName The name of the node, this is the same name as the
+     * variable name of the node in the SEP
+     * @param methodName The method of the node that is next to be invoked in
+     * the execution path.
+     * @param event The event that is the root of the of this execution path.
+     */
     default void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
     }
 
     /**
      * Indicates whether an auditor is interested in receiving nodeInvoked
-     * callbacks.
+     * event callback. Some auditors are not interested in granular monitoring
+     * of the execution path and can opt out of node invocation callbacks.
      * <ul>
      * <li>true - auditor receives all lifecycle callbacks</li>
      * <li>false - auditor receives all lifecycle callbacks except:
