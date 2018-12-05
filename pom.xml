@@ -27,6 +27,7 @@ along with this program.  If not, see
         <module>poms</module>
         <module>api</module>
         <module>builder</module>
+        <module>generator</module>
     </modules>
     
     <properties>
