@@ -24,7 +24,7 @@ import com.fluxtion.api.annotations.EventHandler;
  */
 public class AnnotatedHandlerNoPropogate {
 
-    @EventHandler(propogate = false)
+    @EventHandler(propagate = false)
     public boolean onAllTimeEvents(TimeEvent e) {
         return true;
     }

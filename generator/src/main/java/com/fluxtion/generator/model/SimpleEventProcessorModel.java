@@ -941,7 +941,7 @@ public class SimpleEventProcessorModel {
      * after a parent has been notified of an event.
      *
      * Parents can be traced all the way to the root for dirty support,
-     * effectovely inheriting dirty support down the call tree.
+     * effectively inheriting dirty support down the call tree.
      *
      * @param node
      * @return
@@ -1259,7 +1259,7 @@ public class SimpleEventProcessorModel {
                 }
             }
 
-            if (annotation.propogate() && annotation.propagate()) {
+            if (annotation.propagate()) {
 //                sortedDependents = dependencyGraph.getSortedDependents(instance);
                 sortedDependents = dependencyGraph.getEventSortedDependents(instance);
             } else {

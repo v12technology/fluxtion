@@ -681,7 +681,7 @@ public class SepJavaSourceModelHugeFilter {
                     //do not generate the parent callback
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
                     final EventHandler handlerAnnotation = method.method.getAnnotation(EventHandler.class);
-                    if (handlerAnnotation != null && (!handlerAnnotation.propagate() || !handlerAnnotation.propogate())) {
+                    if (handlerAnnotation != null && (!handlerAnnotation.propagate() )) {
 //                        String format = String.format("should clear!!: event[%s] updateList[%s]\n",eventClass, updateListenerCbList);
 //                        ct.append("//" + format);
                     } else {
