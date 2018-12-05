@@ -1,0 +1,25 @@
+## Velocity Template.
+package ${package};
+
+import com.fluxtion.api.annotations.OnEvent;
+
+/**
+ * generated AveragingNode
+ * @author Greg Higgins
+ */
+public class ${className} {
+
+    public ${dataSourceClass} dataSource;
+    public int windowSize = ${windowSize};
+    public double average;
+
+    @OnEvent
+    public void onUpdate(){
+        average = average(dataSource.${dataSourceField});
+    }
+
+    private double average(double value){
+        return 0;
+    }
+
+}

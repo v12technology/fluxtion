@@ -1,0 +1,14 @@
+## Velocity Template.
+package ${package};
+
+import com.fluxtion.api.event.test.*;
+
+public class ${decoratorClassName} extends AbstractSepTestDecorator<${className}> {
+
+    public ${decoratorClassName}() {
+        super(new ${className}());
+    }
+
+    @Override
+${MODEL.testDispatch}
+}

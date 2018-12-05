@@ -1,0 +1,57 @@
+## Velocity Template.
+package ${package};
+
+import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+#if(${MODEL.imports})
+${MODEL.imports}
+#end
+
+public class ${className} implements EventHandler, BatchHandler, Lifecycle {
+
+//Node declarations
+${MODEL.nodeDeclarations}
+//Dirty flags
+${MODEL.dirtyFlagDeclarations}
+//Filter constants
+${MODEL.filterConstantDeclarations}
+
+    public ${className} () {
+${MODEL.nodeMemberAssignments}
+    }
+
+    @Override
+    public void onEvent(com.fluxtion.runtime.event.Event event) {
+${MODEL.eventDispatch}
+    }
+
+${MODEL.eventHandlers}
+
+    @Override
+    public void afterEvent() {
+${MODEL.eventEndMethods}
+${MODEL.resetDirtyFlags}
+    }
+
+    @Override
+    public void init() {
+${MODEL.initialiseMethods}
+    }
+
+    @Override
+    public void tearDown() {
+${MODEL.tearDownMethods}
+    }
+
+    @Override
+    public void batchPause() {
+${MODEL.batchPauseMethods}
+    }
+
+    @Override
+    public void batchEnd() {
+${MODEL.batchEndMethods}
+    }
+
+}
