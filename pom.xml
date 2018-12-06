@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
     
@@ -28,6 +28,7 @@ along with this program.  If not, see
         <module>api</module>
         <module>builder</module>
         <module>generator</module>
+        <module>maven-plugin</module>
     </modules>
     
     <properties>
