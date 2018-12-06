@@ -119,14 +119,14 @@ along with this program.  If not, see
                 <artifactId>fluxtion-api</artifactId>
                 <version>1.5.3-SNAPSHOT</version>
             </dependency>
-            
-            <!--            
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-builder</artifactId>
-                <version>0.1.37-SNAPSHOT</version>
+                <version>1.5.3-SNAPSHOT</version>
                 <scope>provided</scope>
             </dependency>
+            
+            <!--            
             declarative fluxtion 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
