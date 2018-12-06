@@ -13,8 +13,10 @@ for performance and low memory usage to reduce processing cost.
 
 We generate code and not byte code for three reasons: 
 * Most costs are in maintenance which is easier and faster if the code is accessible 
-* Support for multiple is built in, and these may only process source files
-* Fluxtion supports complex constructs, such as recursive compilation, that would be difficult and error prone in byte code
+* Multiple target languages are supported, not solely Java
+* Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone
+
+A maven plugin is provided that integrates Fluxtion generator into a standard developer build process.
 
 This README is a work in progress and will be updating regularly
 
