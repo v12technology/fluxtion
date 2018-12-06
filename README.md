@@ -9,22 +9,22 @@ is the main requirement.
 
 Uniquely among stream process applications Fluxtion interjects in the standard build 
 process and seamlessly adds a second compiler stage. The generated code is optimised
-for performance and low memory usage to reduce processing cost. 
+for performance and low memory usage. 
 
 If you need to process multiple event types, each with a unique execution path,
 producing multiple outputs, Fluxtion is for you. It will reduce your development
 time, ease your maintenance and cut your processing costs.
 
-A maven plugin is provided that integrates Fluxtion generator into a standard developer build process.
+A maven plugin is provided that integrates the Fluxtion generator into a standard developer build process.
 
 ## Philosophy
 We generate code and not byte code for several reasons: 
-* Most costs are in maintenance which is easier and faster if the code is accessible. 
-* There are no Fluxtion servers to deploy and. The generated code easily integrates into existing applications.
+* Most project costs are spent in maintenance which is easier and faster if the code is accessible. 
+* There are no Fluxtion servers to deploy, the generated code easily integrates into existing applications.
 * Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone.
 
 
-## Maintenance support 
+## Maintenance tools 
 As well as generating code code we also generate features that help supporting and
 fault find an application:
 *  graphml and png's to represent the graph. 
