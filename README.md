@@ -18,20 +18,21 @@ time, ease your maintenance and cut your processing costs.
 A maven plugin is provided that integrates Fluxtion generator into a standard developer build process.
 
 ## Philosophy
-We generate code and not byte code for three reasons: 
-* Most costs are in maintenance which is easier and faster if the code is accessible 
-* Multiple target languages are supported, not solely Java
-* Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone
+We generate code and not byte code for several reasons: 
+* Most costs are in maintenance which is easier and faster if the code is accessible. 
+* There are no Fluxtion servers to deploy and. The generated code easily integrates into existing applications.
+* Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone.
 
 
 ## Maintenance support 
-As well as generating code code we also generate features that aid in supporting the 
-application, these include:
+As well as generating code code we also generate features that help supporting and
+fault find an application:
 *  graphml and png's to represent the graph. 
 *  The graphml can be loaded into the visualiser for analysis.
 *  Auditors can record all event and node execution paths.
-*  Audit records are in a structured machine friendly form 
-*  Any property can de dynamically traced using reflection
+*  Audit records are in a structured machine friendly form. 
+*  Any property can de dynamically traced using reflection.
+*  Auditors can record performance for events and individual nodes. 
 
 ![Visualiser image](images/visualiser_1.png)
 
