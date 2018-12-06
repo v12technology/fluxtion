@@ -33,7 +33,7 @@ application, these include:
 *  Audit records are in a structured machine friendly form 
 *  Any property can de dynamically traced using reflection
 
-![Visualiser image](images/visualiser_credit.png)
+![Visualiser image](images/visualiser_1.png)
 
 This README is a work in progress and will be updating regularly
 
