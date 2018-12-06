@@ -28,6 +28,7 @@ along with this program.  If not, see
         <module>api</module>
         <module>builder</module>
         <module>generator</module>
+        <module>maven-plugin</module>
     </modules>
     
     <properties>
