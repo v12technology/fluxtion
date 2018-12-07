@@ -1,4 +1,6 @@
-# fluxtion
+<p align="center">
+  <img width="270" height="200" src="images/Fluxtion_logo.png">
+</p>
 
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
 
