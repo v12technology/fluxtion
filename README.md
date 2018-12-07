@@ -9,7 +9,7 @@ Fluxtion is a code generator that automates the production of event stream proce
 
 Low latency, easy maintenance, zero gc, complex graph processing, simplified development and the "wow you can do that!!" reaction are the principles that guide our project. 
 
-As a stretch goal we would like to be the [fastest single threaded java stream processor](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md) on the planet. 
+As a stretch goal we would like to be the [fastest single threaded java stream processor]https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md#run) on the planet. 
 
 ## What are we solving
 Fluxtion is a tool for generating high performance event stream processing applications. 
