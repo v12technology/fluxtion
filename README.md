@@ -15,7 +15,7 @@ If you need to process multiple event types, each with a unique execution path,
 producing multiple outputs, Fluxtion is for you. It will reduce your development
 time, ease your maintenance and cut your processing costs.
 
-A maven plugin is provided that integrates the Fluxtion generator into a standard developer build process.
+A maven plugin is provided that integrates the Fluxtion generator into a standard developer build process. [Quick start](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md) example fliuxtion java wc, faster than unix wc.
 
 ## Philosophy
 We generate code and not byte code for several reasons: 
