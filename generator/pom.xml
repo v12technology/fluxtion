@@ -5,7 +5,7 @@
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
         <version>1.5.4-SNAPSHOT</version>
-        <relativePath>../poms/parent-root/pom.xm</relativePath>
+        <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
     <artifactId>generator</artifactId>
