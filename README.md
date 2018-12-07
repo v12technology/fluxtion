@@ -2,6 +2,16 @@
 
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
 
+## Overview
+Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further. 
+
+Fluxtion is a code generator that automates the production of event stream processing logic. The generated code is self-contained and designed to sit within an application. The application delivers events to the Fluxtion generated Static Event Processor for stream processing.
+
+Low latency, easy maintenance, zero gc, complex graph processing, simplified development and the "wow you can do that!!" reaction are the principles that guide our project. 
+
+As a stretch goal we would like to be the [fastest single threaded java stream processor](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md) on the planet. 
+
+## What are we solving
 Fluxtion is a tool for generating high performance event stream processing applications. 
 The ideas behind Fluxtion have been used extensively in the low latency high 
 frequency trading space, where low response time for complex calculation graphs 
