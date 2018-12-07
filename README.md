@@ -14,15 +14,15 @@ Low latency, easy maintenance, zero gc, complex graph processing, simplified dev
 As a stretch goal we would like to be the [fastest single threaded java stream processor](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md#run) on the planet. 
 
 ## What are we solving
-Fluxtion is focused on optimising the implementation of stream processing logic. Other stream processors support marshalling, distributed processing, event ordering and a multitude of other feature. Fluxtion presumes there is an event queue it can drain, and concentrates solely on delivering correct and optimal execution of application logic. 
+Fluxtion is focused on optimising the implementation of stream processing logic. Other stream processors support marshalling, distributed processing, event ordering and a multitude of other features. Fluxtion presumes there is an event queue it can drain, and concentrates solely on delivering correct and optimal execution of application logic. 
 
 ### Graph processing primer
 
-In a stream processor events are received and processed with predictable results. A set of dependent behaviours can be modelled as a directed acyclic graph. Where the behaviours are nodes on the graph, in our case these behaviours are functions. For predictable processing to hold true we can say the following:
+In a stream processor events are received and processed with predictable results. A set of dependent behaviours can be modelled as a directed acyclic graph. Each behaviour is a node on the graph and in our case these behaviours are functions. For predictable processing to hold true we can say the following:
 
-*  An execution path is formed of nodes that have an event handler as a parent
-*  Functions are nodes on the execution path.
 *  The first node on an execution path is an event handler.
+*  An execution path is formed of nodes that have the first event handler as a parent.
+*  Functions are nodes on the execution path.
 *  An event handler is a node that accepts an incoming event for processing.
 *  Functions will always be invoked in execution path order.
 *  Execution path order is topologically sorted such that all parent nodes are invoked before child nodes.
