@@ -46,11 +46,11 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
    * Seamlessly integrate declarative and imperative processing in one processor.
    * Supports dependency injection.
 * Auditing
+   *  Auditors record event and node execution paths for post processing analysis.
    *  graphml and png are generated as well as code. 
    *  The graphml can be loaded into the visualiser for analysis.
-   *  Auditors can record all event and node execution paths.
    *  Audit records are in a structured machine friendly form. 
-   *  Any property can de dynamically traced using reflection.
+   *  Dynamic property tracing using reflection.
    *  Auditors can record performance for events and profile systems or individual nodes. 
 *  Plugins
    * Text processing
@@ -62,14 +62,14 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
 *  Deployment 
    * Designed to be embedded
    * Use within any java process from j2me to servers.
-*  Multiple input definition input support
+*  Multiple input definition
    * Imperative
    * Declarative
    * Dependency injection via annotation
-   * Data driven configuration via ymlm xml or spring xml
+   * Data driven configuration via yml, xml or spring.xml
    * Bespoke strategies
 *  Source code as an asset
-   * Variable naming strategy
+   * Variable naming strategy for human readable code
    * Audit friendly, prevents runtime dynamism.
    * Simplifies problem resolution, no hidden libraries.
    * Explicit generated code combats concryption – encryption by configuration.
