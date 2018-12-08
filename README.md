@@ -41,21 +41,17 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
    * Processing inference, no error prone separate graph description required.
    * Easy to use annotation based api for build-time.
    * Multi-language targets from one model, eg C++ processor from Java model.
-   * Configurable private member assignment via reflection.
-   * Configurable node scoping; public or private.
    * Seamlessly integrate declarative and imperative processing in one processor.
+   * Supports dependency injection.
 *  Plugins
    * Text processing
    * Csv processing
    * Complex event processing joins, group by, aggregates, windows
-   * Zero gc logger
    * Statistical functions
    * State machine
    * Functional support
-*  Serverless paradigm 
-   * Easy container integration
-   * Embedded friendly
-   * Micro-services friendly
+*  Deployment 
+   * Designed to be embedded
    * Use within any java process from j2me to servers.
 *  Multiple input definition input support
    * Imperative
@@ -65,12 +61,11 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
    * Bespoke strategies
 *  Source code as an asset
    * Variable naming strategy
-   * Audit friendly –conditions can be generated and values hard coded, preventing runtime dynamism.
+   * Audit friendly, prevents runtime dynamism.
    * Simplifies problem resolution, no hidden libraries.
    * Explicit generated code combats concryption – encryption by configuration.
 *  Dynamic programming
    * Generated parsers
-   * Matrix multiplication optimisation
    * Optimised functions generated conditioned upon variants.
 *  Generative programming
    * Function generation
@@ -79,11 +74,9 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
    * Core template customisation.
    * Zero gc logger statically generated.
 *  Tool support
-   * Maven
-   * Debug version
-   * Debugger gui
-   * Graph xml output
-   * Visualiser
+   * Maven plugin
+   * GraphML xml output
+   * Visualiser/analyser
 
 ## Graph processing primer
 
