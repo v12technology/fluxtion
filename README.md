@@ -43,6 +43,13 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
    * Multi-language targets from one model, eg C++ processor from Java model.
    * Seamlessly integrate declarative and imperative processing in one processor.
    * Supports dependency injection.
+* Auditing
+   *  graphml and png are generated as well as code. 
+   *  The graphml can be loaded into the visualiser for analysis.
+   *  Auditors can record all event and node execution paths.
+   *  Audit records are in a structured machine friendly form. 
+   *  Any property can de dynamically traced using reflection.
+   *  Auditors can record performance for events and profile systems or individual nodes. 
 *  Plugins
    * Text processing
    * Csv processing
@@ -56,8 +63,8 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
 *  Multiple input definition input support
    * Imperative
    * Declarative
-   * Configuration via yml
-   * Configuration via spring xml
+   * Dependency injection via annotation
+   * Data driven configuration via ymlm xml or spring xml
    * Bespoke strategies
 *  Source code as an asset
    * Variable naming strategy
@@ -124,14 +131,6 @@ We generate code and not byte code for several reasons:
 
 
 ## Maintenance tools 
-As well as generating code code we also generate features that help supporting and
-fault find an application:
-*  graphml and png's to represent the graph. 
-*  The graphml can be loaded into the visualiser for analysis.
-*  Auditors can record all event and node execution paths.
-*  Audit records are in a structured machine friendly form. 
-*  Any property can de dynamically traced using reflection.
-*  Auditors can record performance for events and individual nodes. 
 
 ![Visualiser image](images/visualiser_1.png)
 
