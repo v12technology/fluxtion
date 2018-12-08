@@ -16,7 +16,76 @@ As a stretch goal we would like to be the [fastest single threaded java stream p
 ## What are we solving
 Fluxtion is focused on optimising the implementation of stream processing logic. Other stream processors support marshalling, distributed processing, event ordering and a multitude of other features. Fluxtion presumes there is an event queue it can drain, and concentrates solely on delivering correct and optimal execution of application logic. 
 
-### Graph processing primer
+### Capabilities
+*  Event processing support
+   * Batching or Streaming
+   * Lifecycle – init, terminate, after event
+   * Push and pull model
+   * Configurable conditional branching
+   * Handles complex graphs of thousands of nodes.
+   * Event filtering
+     * Event type
+     * Event type and static annotation value
+     * Event type and instance variable value
+   * Parent change identification
+   * Simple Integration of user functions
+   * Stateful or stateless
+*  High performance 
+   * Process hundreds of millions of events per second per core
+   * Optimal pre-calculated execution path generation.
+   * Zero gc
+   * Cache optimised
+   * JIT friendly code
+   * Type inference, no auto-boxing primitive access.
+*  Developer Friendly
+   * Processing inference, no error prone separate graph description required.
+   * Easy to use annotation based api for build-time.
+   * Multi-language targets from one model, eg C++ processor from Java model.
+   * Configurable private member assignment via reflection.
+   * Configurable node scoping; public or private.
+   * Seamlessly integrate declarative and imperative processing in one processor.
+*  Plugins
+   * Text processing
+   * Csv processing
+   * Complex event processing joins, group by, aggregates, windows
+   * Zero gc logger
+   * Statistical functions
+   * State machine
+   * Functional support
+*  Serverless paradigm 
+   * Easy container integration
+   * Embedded friendly
+   * Micro-services friendly
+   * Use within any java process from j2me to servers.
+*  Multiple input definition input support
+   * Imperative
+   * Declarative
+   * Configuration via yml
+   * Configuration via spring xml
+   * Bespoke strategies
+*  Source code as an asset
+   * Variable naming strategy
+   * Audit friendly –conditions can be generated and values hard coded, preventing runtime dynamism.
+   * Simplifies problem resolution, no hidden libraries.
+   * Explicit generated code combats concryption – encryption by configuration.
+*  Dynamic programming
+   * Generated parsers
+   * Matrix multiplication optimisation
+   * Optimised functions generated conditioned upon variants.
+*  Generative programming
+   * Function generation
+   * Type inference, no autoboxing for primitives.
+   * Handler generation from processing inference.
+   * Core template customisation.
+   * Zero gc logger statically generated.
+*  Tool support
+   * Maven
+   * Debug version
+   * Debugger gui
+   * Graph xml output
+   * Visualiser
+
+## Graph processing primer
 
 In a stream processor events are received and processed with predictable results. A set of dependent behaviours can be modelled as a directed acyclic graph. Each behaviour is a node on the graph and in our case these behaviours are functions. For predictable processing to hold true we can say the following:
 
