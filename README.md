@@ -144,7 +144,7 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
 ## Example
 The steps to integrate fluxtion static event processor(SEP) into a system using an imperative form:
 
-![build process](images/FluxtionBuild.png)
+![build process](images/Fluxtion_build.png)
 
 ### Step 1 
 Create events and processing nodes in code. Use annotations to mark callback methods. These classes will be used by your application.
