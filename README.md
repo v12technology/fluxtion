@@ -206,6 +206,8 @@ For the example above:
    * Event A: Node 1, Node 2, Node 3 Node 4, Node 11
    * Event B: Node 10, Node 11
 
+## License
+Fluxtion is licensed under the [Server Side Public License](https://www.mongodb.com/licensing/server-side-public-license). This license is created by MongoDb, for further info see [FAQ](https://www.mongodb.com/licensing/server-side-public-license/faq) and comparison with [AGPL v3.0](https://www.mongodb.com/licensing/server-side-public-license/faq).
 
 ## Philosophy
 We generate code and not byte code for several reasons: 
@@ -216,9 +218,8 @@ We generate code and not byte code for several reasons:
 
 ## Maintenance tools 
 
+The visualiser tool can load any graphml file created by Fluxtion for inspection. 
 ![Visualiser image](images/visualiser_1.png)
-
-This README is a work in progress and will be updating regularly
 
 ## Contributing
 We welcome contributions to the project. Detailed information on our ways of working can be found here. In brief:
@@ -226,3 +227,6 @@ We welcome contributions to the project. Detailed information on our ways of wor
 * Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
 * Push your changes to a fork;
 * Submit a pull request.
+
+
+**This README is a work in progress and will be updating regularly**
