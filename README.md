@@ -18,9 +18,6 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
 
 Want to upgrade your application logic without rewriting your infrastructure? Fluxtion is the perfect solution for you.
 
-## Example
-Quick start example to go here
-
 ### Capabilities
 <details>
   <summary>Event processing support</summary>
@@ -69,10 +66,10 @@ Quick start example to go here
 * 
    *  Auditors record event and node execution paths for post processing analysis.
    *  graphml and png are generated as well as code. 
-   *  The graphml can be loaded into the visualiser for analysis.
    *  Audit records are in a structured machine friendly form. 
+   *  Graphml and audit records loaded into the visualiser for analysis.
    *  Dynamic property tracing using reflection.
-   *  Auditors can record performance for events and profile systems or individual nodes.
+   *  Auditors can record performance and profile systems or individual nodes.
   </details>
 
 <details>
@@ -144,6 +141,8 @@ Quick start example to go here
    * Visualiser/analyser
   </details>
 
+## Example
+Quick start example to go here
 
 ## Graph processing primer
 
