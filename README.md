@@ -23,8 +23,7 @@ Quick start example to go here
 
 ### Capabilities
 <details>
-  <summary>*  Event processing support</summary>
-  
+  <summary>Event processing support</summary>
 *  
    * Batching or Streaming
    * Lifecycle – init, terminate, after event
@@ -40,26 +39,40 @@ Quick start example to go here
    * Stateful or stateless
 </details>
 
-*  High performance 
+<details>
+  <summary>High performance</summary>
+*   
    * Process hundreds of millions of events per second per core
    * Optimal pre-calculated execution path generation.
    * Zero gc
    * Cache optimised
    * JIT friendly code
    * Type inference, no auto-boxing primitive access.
+</details>
+
+<details>
+  <summary>Developer Friendly</summary>
 *  Developer Friendly
    * Processing inference, no error prone separate graph description required.
    * Easy to use annotation based api for build-time.
    * Multi-language targets from one model, eg C++ processor from Java model.
    * Seamlessly integrate declarative and imperative processing in one processor.
    * Supports dependency injection.
+  </details>
+
+<details>
+  <summary>Auditing</summary>
 * Auditing
    *  Auditors record event and node execution paths for post processing analysis.
    *  graphml and png are generated as well as code. 
    *  The graphml can be loaded into the visualiser for analysis.
    *  Audit records are in a structured machine friendly form. 
    *  Dynamic property tracing using reflection.
-   *  Auditors can record performance for events and profile systems or individual nodes. 
+   *  Auditors can record performance for events and profile systems or individual nodes.
+  </details>
+
+<details>
+  <summary>Plugins</summary>
 *  Plugins
    * Text processing
    * Csv processing
@@ -67,33 +80,59 @@ Quick start example to go here
    * Statistical functions
    * State machine
    * Functional support
+  </details>
+
+<details>
+  <summary>Deployment</summary>
 *  Deployment 
    * Designed to be embedded
    * Use within any java process from j2me to servers.
+    </details>
+
+<details>
+  <summary>Multiple mddel definitions</summary>
 *  Multiple input definition
    * Imperative
    * Declarative
    * Dependency injection via annotation
    * Data driven configuration via yml, xml or spring.xml
    * Bespoke strategies
+  </details>
+
+<details>
+  <summary>Source code as an asset</summary>
 *  Source code as an asset
    * Variable naming strategy for human readable code
    * Audit friendly, prevents runtime dynamism.
    * Simplifies problem resolution, no hidden libraries.
    * Explicit generated code combats concryption – encryption by configuration.
+  </details>
+
+<details>
+  <summary>Dynamic programming</summary>
 *  Dynamic programming
    * Generated parsers
    * Optimised functions generated conditioned upon variants.
+  </details>
+
+<details>
+  <summary>Generative programming</summary>
 *  Generative programming
    * Function generation
    * Type inference, no autoboxing for primitives.
    * Handler generation from processing inference.
    * Core template customisation.
    * Zero gc logger statically generated.
+  </details>
+
+<details>
+  <summary>Tool support</summary>
 *  Tool support
    * Maven plugin
    * GraphML xml output
    * Visualiser/analyser
+  </details>
+
 
 ## Graph processing primer
 
