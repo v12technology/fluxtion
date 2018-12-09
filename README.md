@@ -235,4 +235,9 @@ We generate code and not byte code for several reasons:
 
 This README is a work in progress and will be updating regularly
 
+Contributing
+We welcome contributions to the project. Detailed information on our ways of working can be found here. In brief:
 
+* Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
+* Push your changes to a fork;
+* Submit a pull request.
