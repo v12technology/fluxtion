@@ -142,7 +142,44 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
   </details>
 
 ## Example
-Quick start example to go here
+The steps to integrate fluxtion static event processor(SEP) into a system using an imperative form:
+
+Create events and processing nodes in code. Use annotations to mark callback methods. These classes will be used by your application.
+<details>
+  <summary>Show me</summary>
+Todo
+  
+  
+</details>
+
+
+Write a SEPConfig that binds instances together into an object graph, this class will be used by Fluxtion generator.
+<details>
+  <summary>Show me</summary>
+Todo
+  
+  
+</details>
+
+
+In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. Inovkes the fluxtion generator to generate a SEP.
+<details>
+  <summary>Show me</summary>
+Todo
+  
+  
+</details>
+
+
+Use the generated SEP in your code/tests
+<details>
+  <summary>Show me</summary>
+Todo
+  
+  
+</details>
+
+
 
 ## Graph processing primer
 
