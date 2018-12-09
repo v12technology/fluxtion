@@ -142,7 +142,7 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
   </details>
 
 ## Example
-The steps to integrate fluxtion static event processor(SEP) into a system using an imperative form:
+The steps to integrate fluxtion static event processor(SEP) into a system using the imperative form:
 
 ![build process](images/Fluxtion_build.png)
 
