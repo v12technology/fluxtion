@@ -206,21 +206,6 @@ For the example above:
    * Event A: Node 1, Node 2, Node 3 Node 4, Node 11
    * Event B: Node 10, Node 11
 
-## Motivation
-Fluxtion is a tool for generating high performance event stream processing applications. 
-The ideas behind Fluxtion have been used extensively in the low latency high 
-frequency trading space, where low response time for complex calculation graphs 
-is the main requirement.
-
-Uniquely among stream process applications Fluxtion interjects in the standard build 
-process and seamlessly adds a second compiler stage. The generated code is optimised
-for performance and low memory usage. 
-
-If you need to process multiple event types, each with a unique execution path,
-producing multiple outputs, Fluxtion is for you. It will reduce your development
-time, ease your maintenance and cut your processing costs.
-
-A maven plugin is provided that integrates the Fluxtion generator into a standard developer build process. [Quick start](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md) example fliuxtion java wc, faster than unix wc.
 
 ## Philosophy
 We generate code and not byte code for several reasons: 
@@ -235,7 +220,7 @@ We generate code and not byte code for several reasons:
 
 This README is a work in progress and will be updating regularly
 
-Contributing
+## Contributing
 We welcome contributions to the project. Detailed information on our ways of working can be found here. In brief:
 
 * Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
