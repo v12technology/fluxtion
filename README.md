@@ -23,7 +23,7 @@ Quick start example to go here
 
 ### Capabilities
 <details>
-  <summary>*  Event processing support</summary>
+  <summary>Event processing support</summary>
   
 *  
    * Batching or Streaming
@@ -90,7 +90,7 @@ Quick start example to go here
 <details>
   <summary>Deployment</summary>
   
-*  Deployment 
+*   
    * Designed to be embedded
    * Use within any java process from j2me to servers.
     </details>
