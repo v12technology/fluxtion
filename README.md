@@ -22,7 +22,10 @@ Want to upgrade your application logic without rewriting your infrastructure? Fl
 Quick start example to go here
 
 ### Capabilities
-*  Event processing support
+<details>
+  <summary>*  Event processing support</summary>
+  
+*  
    * Batching or Streaming
    * Lifecycle – init, terminate, after event
    * Push and pull model
@@ -35,6 +38,8 @@ Quick start example to go here
    * Parent change identification
    * Simple Integration of user functions
    * Stateful or stateless
+</details>
+
 *  High performance 
    * Process hundreds of millions of events per second per core
    * Optimal pre-calculated execution path generation.
