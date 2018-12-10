@@ -155,7 +155,7 @@ User written events and processing nodes, annotations mark callback methods in n
 This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing, the application classes will be orchestrated by the generated SEP.
 
 
-**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. An event is the entry point to a processing cycle in the SEP.
+**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends [Event](api/src/main/java/com/fluxtion/runtime/event/Event.java), the content of the CharEvent is the char value. An event is the entry point to a processing cycle in the SEP.
 
 ```java
 public class CharEvent extends Event{
@@ -190,7 +190,7 @@ public class CharEvent extends Event{
 The optional filter value of the event is set to the value of the char. This is the event the application will create and feed into the generated SEP.
 
 
-**[WordCounter:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/WordCounter.java)** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. An instance of this class is created and referenced within the generated SEP, the SEP will handle all initialisation, lifecycle and event dispatch of contained nodes. 
+**[WordCounter:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/WordCounter.java)** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. An instance of this class is created and referenced within the generated SEP, the SEP will handle all initialisation, lifecycle and event dispatch for managed nodes. 
 
 ```java
 public class WordCounter {
@@ -242,12 +242,12 @@ Some of the methods are marked with a filter value ```@EventHandler(filterId = '
 </details>
 
 ### Step 2 
-Write a SEPConfig that binds instances together into an object graph, this class will be used by Fluxtion generator.
+Write a [SEPConfig](builder/src/main/java/com/fluxtion/api/node/SEPConfig.java) that binds instances of nodes together into an object graph, this class will be used by Fluxtion generator at compile time.
 
 <details>
   <summary>Show me</summary>
   
-The Builder class extends the base class SEPConfig to provide meta-data to the Fluxtion generator. 
+The Builder class extends the base class SEPConfig and provides meta-data to the Fluxtion generator. 
 
 ```java
 public static class Builder extends SEPConfig {
@@ -265,7 +265,7 @@ In this case we are adding a single node with public scoped variable "result" wi
 </details>
 
 ### Step 3 
-In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. Inovkes the fluxtion generator to generate a SEP.
+In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. Inovke the fluxtion generator to generate a SEP as part of the build lifecycle.
 <details>
   <summary>Show me</summary>
 
