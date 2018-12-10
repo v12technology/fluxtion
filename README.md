@@ -147,7 +147,7 @@ The steps to integrate fluxtion static event processor(SEP) into a system using 
 ![build process](images/Fluxtion_build.png)
 
 ### Step 1 
-User written events and processing nodes, annotations mark callback methods in nodes. These classes will be used by your end application.
+User writes classes for events and processing nodes, annotations mark callback methods in the nodes. These classes will be used by your end application.
 
 <details>
   <summary>Show me</summary>
@@ -392,11 +392,11 @@ public class WcProcessor implements EventHandler, BatchHandler, Lifecycle {
 </details>
 
 ### Step 4
-Use the generated SEP in your code/tests
+Use the generated SEP in your code/tests.
 <details>
   <summary>Show me</summary>
 
-The generated SEP implements the interface [EventHandler](https://github.com/v12technology/fluxtion/blob/master/api/src/main/java/com/fluxtion/runtime/lifecycle/EventHandler.java). The application instantiates the SEP (WcProcessor) and sends events for processing by invoking ```EventHandler.onEvent(Event e)``` with a new event.
+The SEP is the same as using any java source file in your, just code as normal. The generated SEP implements the interface [EventHandler](https://github.com/v12technology/fluxtion/blob/master/api/src/main/java/com/fluxtion/runtime/lifecycle/EventHandler.java). The application instantiates the SEP (WcProcessor) and sends events for processing by invoking ```EventHandler.onEvent(Event e)``` with a new event. 
 
 ```java
 public class Main {
@@ -467,8 +467,16 @@ Pulling results from the SEP. Pull functionality is available as we declared the
         ...
         System.out.println(processor.result.toString());
 ```
-</details>
+Execute the jar that holds the application classes, both user and Fluxtion generated.
+```bat
+c:\tmp\fluxtion-quickstart>java -jar dist\wc.jar dist\sample\norvig.txt
+ 48,698,162 chars
+  7,439,040 words
+  1,549,801 lines
 
+time: 0.098 sec
+```
+</details>
 
 
 ## Graph processing primer
@@ -493,8 +501,6 @@ For the example above:
    * Event A: Node 1, Node 2, Node 3 Node 4, Node 11
    * Event B: Node 10, Node 11
 
-## License
-Fluxtion is licensed under the [Server Side Public License](https://www.mongodb.com/licensing/server-side-public-license). This license is created by MongoDb, for further info see [FAQ](https://www.mongodb.com/licensing/server-side-public-license/faq) and comparison with [AGPL v3.0](https://www.mongodb.com/licensing/server-side-public-license/faq).
 
 ## Philosophy
 We generate code and not byte code for several reasons: 
@@ -508,12 +514,17 @@ We generate code and not byte code for several reasons:
 The visualiser tool can load any graphml file created by Fluxtion for inspection. 
 ![Visualiser image](images/visualiser_1.png)
 
+
 ## Contributing
 We welcome contributions to the project. Detailed information on our ways of working can be found here. In brief:
 
 * Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
 * Push your changes to a fork;
 * Submit a pull request.
+
+
+## License
+Fluxtion is licensed under the [Server Side Public License](https://www.mongodb.com/licensing/server-side-public-license). This license is created by MongoDb, for further info see [FAQ](https://www.mongodb.com/licensing/server-side-public-license/faq) and comparison with [AGPL v3.0](https://www.mongodb.com/licensing/server-side-public-license/faq).
 
 
 **This README is a work in progress and will be updating regularly**
