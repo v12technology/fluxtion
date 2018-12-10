@@ -151,13 +151,90 @@ Create events and processing nodes in code. Use annotations to mark callback met
 
 <details>
   <summary>Show me</summary>
-This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing:
-  
 
-**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. The optional filter value of the event is set to the value of the char. This is the event the application will create and feed into the generated SEP.
+This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing.
 
 
-**[WordCounter:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/WordCounter.java)** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. An instance of this class is contained woth the SEP. The SEP will handle all initialisation, lifecycle and ebet dispatch. 
+
+**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. 
+
+```java
+public class CharEvent extends Event{
+    
+    public static final int ID = 1;
+    
+    public CharEvent(char id) {
+        super(ID, id);
+        filterId = id;
+    }
+
+    public char getCharacter() {
+        return (char) filterId;
+    }
+
+    /**
+     * Setting the character will also make the filterId update as well
+     * @param character 
+     */
+    public void setCharacter(char character) {
+        filterId = character;
+    }
+
+    @Override
+    public String toString() {
+        return "CharEvent{" + getCharacter() + '}';
+    }
+           
+}
+```
+
+The optional filter value of the event is set to the value of the char. This is the event the application will create and feed into the generated SEP.
+
+
+**[WordCounter:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/WordCounter.java)** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. An instance of this class is created and referenced within the generated SEP, the SEP will handle all initialisation, lifecycle and event dispatch of contained nodes. 
+
+```java
+public class WordCounter {
+
+    public transient int wordCount;
+    public transient int charCount;
+    public transient int lineCount;
+    private int increment = 1;
+
+    @EventHandler
+    public void onAnyChar(CharEvent event) {
+        charCount++;
+    }
+
+    @EventHandler(filterId = '\t')
+    public void onTabDelimiter(CharEvent event) {
+        increment = 1;
+    }
+
+    @EventHandler(filterId = ' ')
+    public void onSpaceDelimiter(CharEvent event) {
+        increment = 1;
+    }
+
+    @EventHandler(filterId = '\n')
+    public void onEol(CharEvent event) {
+        lineCount++;
+        increment = 1;
+    }
+
+    @EventHandler(filterId = '\r')
+    public void onCarriageReturn(CharEvent event) {
+        //do nothing handle \r\n
+    }
+
+    @EventHandler(FilterType.unmatched)
+    public void onUnmatchedChar(CharEvent event) {
+        wordCount += increment;
+        increment = 0;
+    }
+    ....
+}
+```
 
 The ```@EventHandler``` annotation attached to a single argument method, marks the method as an entry point for processing. 
 
