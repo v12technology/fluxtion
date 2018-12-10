@@ -151,8 +151,12 @@ Create events and processing nodes in code. Use annotations to mark callback met
 
 <details>
   <summary>Show me</summary>
-Todo
-  
+This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing:
+
+*  **CharEvent:** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. The optional filter value of the event is set to the value of the char.
+*  **WordCounter:** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. The ```@EventHandler``` annotation attached to a single argument method, marks the method as an entry point for processing. 
+
+Some of the methods are marked with a filter value ```@EventHandler(filterId = '\t')``` signifying the  methods are only invoked when the Event and the filter value of the event match
   
 </details>
 
