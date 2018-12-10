@@ -516,7 +516,7 @@ The visualiser tool can load any graphml file created by Fluxtion for inspection
 
 
 ## Contributing
-We welcome contributions to the project. Detailed information on our ways of working can be found here. In brief:
+We welcome contributions to the project. Detailed information on our ways of working will be written in time. In brief our goals are:
 
 * Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
 * Push your changes to a fork;
