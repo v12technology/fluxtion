@@ -147,7 +147,7 @@ The steps to integrate fluxtion static event processor(SEP) into a system using 
 ![build process](images/Fluxtion_build.png)
 
 ### Step 1 
-User writes classes for events and processing nodes, annotations mark callback methods in the nodes. These classes will be used by your end application.
+User writes classes representing incoming events and processing node containing bujsiness logics, annotations mark callback methods in the nodes. These classes will be used by your end application.
 
 <details>
   <summary>Show me</summary>
@@ -503,11 +503,25 @@ For the example above:
 
 
 ## Philosophy
+Evry decision we make is driven by increasing efficiency, we want to reduce cost. Where we differ from other philosophies is what inputs make up our analysis, just reducing cpu cycles is not our end goal, we want to be broad in our ambition.
+
+Information technology only exists because it makes a process it is applied to cheaper. On a personal level the return may be a feeling of self satisifaction. The hundred's of billions of dollars of investment in IT are made because there is hard reduction in the bottom line, not because there is an aura of happiness around developers. We dont have the space for a full discussion here, but rather list some of the non-obvious sources of cost we see:
+
+### code generation
 We generate code and not byte code for several reasons: 
 * Most project costs are spent in maintenance which is easier and faster if the code is accessible. 
 * There are no Fluxtion servers to deploy, the generated code easily integrates into existing applications.
 * Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone.
 
+### Component re-use
+
+### If
+
+### Concryption
+
+### Fear of starting again
+
+### Staying small
 
 ## Maintenance tools 
 
