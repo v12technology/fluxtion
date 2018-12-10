@@ -152,11 +152,16 @@ Create events and processing nodes in code. Use annotations to mark callback met
 <details>
   <summary>Show me</summary>
 This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing:
+  
 
-*  **CharEvent:** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. The optional filter value of the event is set to the value of the char.
-*  **WordCounter:** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. The ```@EventHandler``` annotation attached to a single argument method, marks the method as an entry point for processing. 
+**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. The optional filter value of the event is set to the value of the char. This is the event the application will create and feed into the generated SEP.
 
-Some of the methods are marked with a filter value ```@EventHandler(filterId = '\t')``` signifying the  methods are only invoked when the Event and the filter value of the event match
+
+**[WordCounter:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/WordCounter.java)** receives CharEvents and maintains a set of stateful calculations for chars, words and lines. An instance of this class is contained woth the SEP. The SEP will handle all initialisation, lifecycle and ebet dispatch. 
+
+The ```@EventHandler``` annotation attached to a single argument method, marks the method as an entry point for processing. 
+
+Some of the methods are marked with a filter value ```@EventHandler(filterId = '\t')``` signifying the  methods are only invoked when the Event and the filter value of the event match.
   
 </details>
 
@@ -165,8 +170,21 @@ Write a SEPConfig that binds instances together into an object graph, this class
 
 <details>
   <summary>Show me</summary>
-Todo
   
+The Builder class extends the base class SEPConfig to provide meta-data to the Fluxtion generator. 
+
+```java
+public static class Builder extends SEPConfig {
+
+    @Override
+    public void buildConfig() {
+        addPublicNode(new WordCounter(), "result");
+        maxFiltersInline = 15;
+    }
+}
+```
+
+In this case we are adding a single node with public scoped variable "result" with ```addPublicNode(new WordCounter(), "result");```. This file is used by Fluxtion at build time to generate the SEP.
   
 </details>
 
@@ -174,8 +192,36 @@ Todo
 In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. Inovkes the fluxtion generator to generate a SEP.
 <details>
   <summary>Show me</summary>
-Todo
-  
+
+A maven plugin configuration in the pom.xml invokes Fluxtion compiler with the correct parameters in the configuration section to drive the Fluxtion compiler. 
+
+```
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-maven-plugin</artifactId>
+            <version>${fluxtion.maven-plugin.ver}</version>
+            <executions>
+                <execution>
+                    <id>wc-processor-gen</id>
+                    <goals>
+                        <goal>generate</goal>
+                    </goals>
+                    <configuration>
+                        <configClass>com.fluxtion.sample.wordcount.WordCounter$Builder</configClass>
+                        <packageName>com.fluxtion.sample.wordcount.generated</packageName>
+                        <className>WcProcessor</className>
+                        <supportDirtyFiltering>false</supportDirtyFiltering>
+                        <outputDirectory>src/main/java</outputDirectory>
+                        <generateDescription>false</generateDescription>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
   
 </details>
 
