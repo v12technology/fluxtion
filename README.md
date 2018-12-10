@@ -14,7 +14,7 @@ Low latency, easy maintenance, zero gc, complex graph processing, simplified dev
 As a stretch goal we would like to be the [fastest single threaded java stream processor](https://github.com/v12technology/fluxtion-quickstart/blob/master/README.md#run) on the planet. 
 
 ## What are we solving
-Fluxtion is focused on optimising the implementation of stream processing logic. Other stream processors support marshalling, distributed processing, event ordering and a multitude of other features. Fluxtion presumes there is an event queue it can drain, and concentrates solely on delivering correct and optimal execution of application logic. 
+Fluxtion is focused on optimising the implementation of stream processing logic. Other stream processors support marshalling, distributed processing, event distribution, gui's and a multitude of other features. Fluxtion presumes there is an event queue that will feed it, and concentrates solely on delivering correct and optimal execution of application logic. 
 
 Want to upgrade your application logic without rewriting your infrastructure? Fluxtion is the perfect solution for you.
 
@@ -147,16 +147,15 @@ The steps to integrate fluxtion static event processor(SEP) into a system using 
 ![build process](images/Fluxtion_build.png)
 
 ### Step 1 
-Create events and processing nodes in code. Use annotations to mark callback methods. These classes will be used by your application.
+User written events and processing nodes, annotations mark callback methods in nodes. These classes will be used by your end application.
 
 <details>
   <summary>Show me</summary>
 
-This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing.
+This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing, the application classes will be orchestrated by the generated SEP.
 
 
-
-**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. 
+**[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends com.fluxtion.runtime.event.Event, the content of the CharEvent is the char value. An event is the entry point to a processing cycle in the SEP.
 
 ```java
 public class CharEvent extends Event{
@@ -396,9 +395,78 @@ public class WcProcessor implements EventHandler, BatchHandler, Lifecycle {
 Use the generated SEP in your code/tests
 <details>
   <summary>Show me</summary>
-Todo
+
+The generated SEP implements the interface [EventHandler](https://github.com/v12technology/fluxtion/blob/master/api/src/main/java/com/fluxtion/runtime/lifecycle/EventHandler.java). The application instantiates the SEP (WcProcessor) and sends events for processing by invoking ```EventHandler.onEvent(Event e)``` with a new event.
+
+```java
+public class Main {
+
+    public static final int SIZE = 4 * 1024;
+
+    public static void main(String[] args) {
+        File f = new File(args[0]);
+        try {
+            streamFromFile(f);
+        } catch (IOException ex) {
+            System.out.println("error processing file:" + ex.getMessage());
+        }
+    }
+
+    public static WcProcessor streamFromFile(File file) throws FileNotFoundException, IOException {
+        long now = System.nanoTime();
+        WcProcessor processor = new WcProcessor();
+        processor.init();
+        if (file.exists() && file.isFile()) {
+            FileChannel fileChannel = new RandomAccessFile(file, "r").getChannel();
+            long size = file.length();
+            MappedByteBuffer buffer = fileChannel.map(
+                    FileChannel.MapMode.READ_ONLY, 0, size);
+            CharEvent charEvent = new CharEvent(' ');
+
+            final byte[] barray = new byte[SIZE];
+            int nGet;
+            while (buffer.hasRemaining()) {
+                nGet = Math.min(buffer.remaining(), SIZE);
+                buffer.get(barray, 0, nGet);
+                for (int i = 0; i < nGet; i++) {
+                    charEvent.setCharacter((char) barray[i]);
+                    processor.handleEvent(charEvent);
+                }
+            }
+            processor.tearDown();
+            double delta = ((int)(System.nanoTime() - now)/1_000_000)/1_000.0;
+            System.out.println(processor.result.toString());
+            System.out.printf("time: %.3f sec %n", delta);
+        } else {
+            System.out.println("cannot process file file:" + file.getAbsolutePath());
+        }
+        return processor;
+    }
+}
+```
   
+Most of the code handles streaming data from a file and wrapping each byte as a CharEvent. The key integration points between app and generated SEP are shown below. 
+
+
+The creation and intialisation of the SEP (WcProcessor)
+```java
+        WcProcessor processor = new WcProcessor();
+        processor.init();
+```        
   
+Pushing data to the SEP for each byte in the file
+
+```java
+        charEvent.setCharacter((char) barray[i]);
+        processor.handleEvent(charEvent);
+```
+
+Pulling results from the SEP. Pull functionality is available as we declared the WcProcessors as a public node in the builder.
+```java
+        processor.tearDown();
+        ...
+        System.out.println(processor.result.toString());
+```
 </details>
 
 
