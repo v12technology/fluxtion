@@ -4,7 +4,7 @@ We hope that in the longer term Fluxtion will help reduce some of the energy con
 
 Producing correct solutions is hard, producing correct, performant and highly efficient solutions requires years of experience in the team. We hope that by moving a lot of the heavy lifting to Fluxtion, teams can concentrate on correctness while Fluxtion keeps the energy use in check. Our hope is using Fluxtion is like adding several world class developers to your team.
 
-FLuxtion works deep in meta-space. In our declarative extensions mmodule we use recursive compilation where each stage of output is analysed for new meta information creating further constructs and possible new compilation stages. We think there maybe a requirement for a new class of developer who works in meta-space. Their meta work will be consumed by the general developer population via Fluxtion, software engineering re-use but not necessarily component re-use.
+Fluxtion works deep in meta-space. In our declarative extensions module we use recursive compilation where each stage of output is analysed for new meta information creating further constructs and possible new compilation stages. We think there maybe a requirement for a new class of developer who works in meta-space. Their meta work will be consumed by the general developer population via Fluxtion, software engineering re-use but not necessarily component re-use.
 
 ## Philosophy
 Every decision we make about Fluxtion is driven by increasing efficiency, we want to reduce cost. Where we differ from other philosophies is the inputs that make up our analysis. Just reducing cpu cycles is not our end goal, we want to be broad in our ambition.
