@@ -507,12 +507,6 @@ Every decision we make about Fluxtion is driven by increasing efficiency, we wan
 
 On a personal level solving a coding problem may bring a feeling of self satisifaction. But the hundreds of billions of dollars of investment in IT are made because they make a real reduction on the bottom line. Information technology is an efficiency play. We dont have the space for a full discussion here, but rather list some of the non-obvious sources of cost we would like to address:
 
-### code generation
-We generate code and not byte code for several reasons: 
-* Most project costs are spent in maintenance which is easier and faster if the code is accessible. 
-* There are no Fluxtion servers to deploy, the generated code easily integrates into existing applications.
-* Fluxtion supports complex constructs, such as recursive compilation, that would be difficult to develop in byte code alone.
-
 ### Component re-use
 Component re-use is proferred as a goal because it reduces the lines of custom code to write and therefore saves money. There are hidden costs in using someone else's framework; integration costs, learning costs, understanding unexpected behaviour and supporting someone else's product in your system. Generating code means more lines, but only some are manually typed. The generated solution can now fit our problem more exactly, is easier to understand, debug and support. 
 
