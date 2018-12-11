@@ -152,8 +152,22 @@ User writes classes representing incoming events and processing node containing 
 <details>
   <summary>Show me</summary>
 
-This example demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing, the application classes will be orchestrated by the generated SEP.
+This [quickstart example](https://github.com/v12technology/fluxtion-quickstart) demonstrates implementing a simple unix wc like utility with Fluxtion. The user creates a set of application classes that perform the actual processing, the application classes will be orchestrated by the generated SEP.
 
+Add maven dependencies to Fluxtion runtime api and compile time builder.
+
+```xml
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-api</artifactId>
+            <version>[CURRENT_VERSION]</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-builder</artifactId>
+            <version>[CURRENT_VERSION]</version>
+        </dependency>
+```
 
 **[CharEvent:](https://github.com/v12technology/fluxtion-quickstart/blob/master/src/main/java/com/fluxtion/sample/wordcount/CharEvent.java)** Extends [Event](api/src/main/java/com/fluxtion/runtime/event/Event.java), the content of the CharEvent is the char value. An event is the entry point to a processing cycle in the SEP.
 
@@ -271,7 +285,7 @@ In your pom use the fluxtion maven plugin, specifying SEPConfig class, output pa
 
 A maven plugin configuration in the [pom.xml](https://github.com/v12technology/fluxtion-quickstart/blob/master/pom.xml) invokes Fluxtion compiler with the correct parameters in the configuration section to drive the Fluxtion compiler. 
 
-```
+```xml
 <build>
     <plugins>
         <plugin>
@@ -392,11 +406,12 @@ public class WcProcessor implements EventHandler, BatchHandler, Lifecycle {
 </details>
 
 ### Step 4
-Use the generated SEP in your code/tests.
+Use the generated SEP in your code/tests, send Event's to the ```onEvent(Event e)``` interface method of the SEP.
 <details>
   <summary>Show me</summary>
 
 The SEP is the same as using any java source file in your, just code as normal. The generated SEP implements the interface [EventHandler](https://github.com/v12technology/fluxtion/blob/master/api/src/main/java/com/fluxtion/runtime/lifecycle/EventHandler.java). The application instantiates the SEP (WcProcessor) and sends events for processing by invoking ```EventHandler.onEvent(Event e)``` with a new event. 
+
 
 ```java
 public class Main {
@@ -444,7 +459,7 @@ public class Main {
     }
 }
 ```
-  
+
 Most of the code handles streaming data from a file and wrapping each byte as a CharEvent. The key integration points between app and generated SEP are shown below. 
 
 
@@ -502,25 +517,17 @@ For the example above:
    * Event B: Node 10, Node 11
 
 
-## Philosophy
-Every decision we make about Fluxtion is driven by increasing efficiency, we want to reduce cost. Where we differ from other philosophies is the inputs that make up our analysis. Just reducing cpu cycles is not our end goal, we want to be broad in our ambition.
+## Unique approach
+code generation
+zero cost abstraction
+No server
+Template-meta programming
 
-On a personal level solving a coding problem may bring a feeling of self satisifaction. But the hundreds of billions of dollars of investment in IT are made because they make a real reduction on the bottom line. Information technology is an efficiency play. We dont have the space for a full discussion here, but rather list some of the non-obvious sources of cost we would like to address:
+Fluxtion is unique among stream processors as there is no need for a Fluxtion server at runtime. Our code generated solutions remove the unnecessary cost, complication and inefficiencies required to integrate a streaming server into your application.
 
-### Component re-use
-Component re-use is proferred as a goal because it reduces the lines of custom code to write and therefore saves money. There are hidden costs in using someone else's framework; integration costs, learning costs, understanding unexpected behaviour and supporting someone else's product in your system. Generating code means more lines, but only some are manually typed. The generated solution can now fit our problem more exactly, is easier to understand, debug and support. 
+In general we try promote [zero cost abstractions](http://matthewfl.com/2114/programming/cost-of-abstractions) in Java, other langugages suchs as C++ and Rust this is a fundamental route to high performance, until now this has been missing in Java stream processing applications. 
 
-### If
-Reasoning about code that has multiple if statements is not only hard but it is also expensive to compute due to pipelining failures on the cpu. State-machine code is simple to understand and has minimal conditional branching, but is expensive to construct. Having a system that can cheaply produce statemachine-like transitions for application code would be beneficial. Minimising user written condtional branching, reduces bugs and saving computational resource.  
-
-### Concryption
-Some systems are completely assembled by configuration that can be spread over several documents. The configuration can become a language in itself, but with almost no type checking. Worse it may become both order and state dependent, evolving into a dialect that only one or two developers can support for your system. We call this effect concryption - encryption by configuration. Components are sometimes so decoupled we have no hope of understanding the linkages. This creates inertia in development slowing delivery, deployment and fault finding. Sometimes it would be just cheaper and easier to specify the component configuration in code.
-
-### Fear of starting again
-Once we build a set of complex of application logic we can become highly resistant to pulling it down and building it again. The construction cost may be high, logic may be spread over multiple components. We then start making compromised decisions that eventaully lead to fragile systems. We should be happy to destroy a solution and build it again if the assembly cost is cheap enough.
-
-### Staying small
-As developers we have a wonderful eye for detail, usually our unit tests are great. But when it comes to the large the complexity overwhelms us, integration tests are usually much less effective. When we create larger logical processing units they are less reliable. It would be better to leave the correct combination of smaller logical units to an automated process at the macro-level and allow developers to create the intricate logic at the micro-level.
+We believe generating code, png's, graphML and auditor injection points really reduce the most expensive element of any system, maintenance.
 
 ## Maintenance tools 
 
