@@ -147,7 +147,7 @@ The steps to integrate fluxtion static event processor(SEP) into a system using 
 ![build process](images/Fluxtion_build.png)
 
 ### Step 1 
-User writes classes representing incoming events and processing node containing bujsiness logics, annotations mark callback methods in the nodes. These classes will be used by your end application.
+User writes classes representing incoming events and nodes containing business logic, annotations mark callback methods in the nodes. These classes will be used in your final application.
 
 <details>
   <summary>Show me</summary>
@@ -279,7 +279,7 @@ In this case we are adding a single node with public scoped variable "result" wi
 </details>
 
 ### Step 3 
-In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. Inovke the fluxtion generator to generate a SEP as part of the build lifecycle.
+In your pom use the fluxtion maven plugin, specifying SEPConfig class, output package and class name. The plugin will invoke the fluxtion generator as part of the build, generating a SEP.
 <details>
   <summary>Show me</summary>
 
@@ -406,7 +406,7 @@ public class WcProcessor implements EventHandler, BatchHandler, Lifecycle {
 </details>
 
 ### Step 4
-Use the generated SEP in your code/tests, send Event's to the ```onEvent(Event e)``` interface method of the SEP.
+Use the generated SEP in your code/tests by sending Event's to the ```onEvent(Event e)``` interface method of the SEP.
 <details>
   <summary>Show me</summary>
 
