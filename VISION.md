@@ -1,10 +1,10 @@
 # Vision
 
-We hope that in the longer term Fluxtion will help reduce some of the energy consumed in software. Presently 10% of the world's energy is expended in IT greater than the whole airline transport industry. If we can help in some small way that would be a vicory for our project.
+We hope that in the longer term Fluxtion will help reduce some of the energy consumed in software. Presently 10% of the world's energy is expended in IT, greater than the whole airline transport industry. Some forecast that by 2040 all the world's energy will be consumed in IT. If we can help in some small way that would be a vicory for our project.
 
-Producing correct solutions is hard, producing correct, performant and highlg highly efficient solutions requires years of experience in the team. We hope that by moving a lot of the heavy lifting to Fluxtion, teams can concentrate on correctness while Fluxtion keeps the solution efficient. It is like adding several world class developers to your team.
+Producing correct solutions is hard, producing correct, performant and highly efficient solutions requires years of experience in the team. We hope that by moving a lot of the heavy lifting to Fluxtion, teams can concentrate on correctness while Fluxtion keeps the energy use in check. Our hope is using Fluxtion is like adding several world class developers to your team.
 
-FLuxtion works deep in meta-space. In our declarative extensions mmodule we use recursive compilation where each stage of output is analysed for new meta information creating further constructs and possible new compilation stages. We think there maybe a new class of developer who works in meta-space for consumption by the general population, software engineering re-use but not necessarily component re-use.
+FLuxtion works deep in meta-space. In our declarative extensions mmodule we use recursive compilation where each stage of output is analysed for new meta information creating further constructs and possible new compilation stages. We think there maybe a requirement for a new class of developer who works in meta-space. Their meta work will be consumed by the general developer population via Fluxtion, software engineering re-use but not necessarily component re-use.
 
 ## Philosophy
 Every decision we make about Fluxtion is driven by increasing efficiency, we want to reduce cost. Where we differ from other philosophies is the inputs that make up our analysis. Just reducing cpu cycles is not our end goal, we want to be broad in our ambition.
