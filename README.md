@@ -518,10 +518,6 @@ For the example above:
 
 
 ## Unique approach
-code generation
-zero cost abstraction
-No server
-Template-meta programming
 
 Fluxtion is unique among stream processors as there is no need for a Fluxtion server at runtime. Our code generated solutions remove the unnecessary cost, complication and inefficiencies required to integrate a streaming server into your application.
 
@@ -529,13 +525,17 @@ In general we try promote [zero cost abstractions](http://matthewfl.com/2114/pro
 
 We believe generating code, png's, graphML and auditor injection points really reduce the most expensive element of any system, maintenance.
 
+Please check out our [vision](VISION.md) for more discussion about where we see Fluxtion's place in the world.
+
 ## Maintenance tools 
 
 The visualiser tool can load any graphml file created by Fluxtion for inspection. 
+
 ![Visualiser image](images/visualiser_1.png)
 
 
 ## Contributing
+
 We welcome contributions to the project. Detailed information on our ways of working will be written in time. In brief our goals are:
 
 * Sign the [Fluxtion Contributor Licence Agreement](https://github.com/v12technology/fluxtion/blob/master/contributorLicenseAgreement);
@@ -544,6 +544,7 @@ We welcome contributions to the project. Detailed information on our ways of wor
 
 
 ## License
+
 Fluxtion is licensed under the [Server Side Public License](https://www.mongodb.com/licensing/server-side-public-license). This license is created by MongoDb, for further info see [FAQ](https://www.mongodb.com/licensing/server-side-public-license/faq) and comparison with [AGPL v3.0](https://www.mongodb.com/licensing/server-side-public-license/faq).
 
 
