@@ -3,6 +3,7 @@
 </p>
 
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
 
 ## Overview
 Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further. 
