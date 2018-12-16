@@ -21,7 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
+/**
+ * A finalisation method that is invoked by the SEP after all event processing.
+ * Allows an instance to clear state and release any resources safely.
+ * @author V12 Technology Ltd.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface TearDown {

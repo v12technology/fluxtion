@@ -20,14 +20,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
- * marks a method to be called a class when all of the parents that could be 
- * invoked from this event have processed the event.
+ * Marks a method to be called in a class when a parent node has processed an
+ * event. This gives more granular notification than OnEvent, by identifying
+ * which parents have updated. The marked method has a single argument, the type
+ * of the parent. Optionally a value can set which is the field name of the
+ * parent monitored. Multiple methods can be marked for each parent.
  * 
+ * Identifying which parent has changed can be useful in applications. The
+ * marked method(s) will be invoked before any OnEvent methods in this node.
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface OnParentUpdate {
+
     String value() default "";
 }

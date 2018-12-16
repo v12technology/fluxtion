@@ -21,9 +21,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
+/**
+ * An initialisation method that is invoked by the SEP before event processing.
+ * Allows an instance to set state before any events are processed.
+ *
+ * @author V12 Technology Ltd.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Initialise {
-    
+
 }
