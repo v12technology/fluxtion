@@ -210,11 +210,9 @@ public class SimpleEventProcessorModel {
      */
     private boolean supportDirtyFiltering;
 
-
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph) throws Exception {
         this(dependencyGraph, new HashMap());
     }
-
 
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
         this(dependencyGraph, filterMap, null, null);
@@ -926,7 +924,9 @@ public class SimpleEventProcessorModel {
     public Collection<DirtyFlag> getNodeGuardConditions(CbMethodHandle cb) {
         if (cb.isPostEventHandler && dependencyGraph.getDirectParents(cb.instance).isEmpty()) {
             final DirtyFlag dirtyFlagForNode = getDirtyFlagForNode(cb.instance);
-            return dirtyFlagForNode == null ? Collections.EMPTY_SET : Arrays.asList(dirtyFlagForNode);
+            List<DirtyFlag> flags = dirtyFlagForNode == null ? Collections.EMPTY_LIST : Arrays.asList(dirtyFlagForNode);
+            Collections.sort(flags, (DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
+            return flags;
         }
         return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
     }
