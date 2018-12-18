@@ -29,5 +29,10 @@ public class DirtyFlag {
         this.node = node;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "DirtyFlag{" + "node=" + node + ", name=" + name + '}';
+    }
     
 }
