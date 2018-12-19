@@ -19,7 +19,10 @@ Fluxtion is focused on optimising the implementation of stream processing logic.
 
 Want to upgrade your application logic without rewriting your infrastructure? Fluxtion is the perfect solution for you.
 
-### Capabilities
+## Documentation
+Check out detailed documentation at [gitbook](https://fluxtion.gitbook.io/docs/)
+
+## Capabilities
 <details>
   <summary>Event processing support</summary>
   
