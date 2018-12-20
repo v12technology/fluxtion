@@ -704,7 +704,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             }
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
-            if (injecting != null & refName == null) {
+            if (injecting != null & refName == null & field.get(object)==null) {
                 HashMap map = new HashMap();
                 HashMap overrideMap = new HashMap();
 
