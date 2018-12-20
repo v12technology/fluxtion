@@ -42,6 +42,13 @@ public class SEPConfig {
         }
         return (T) nodeList.get(nodeList.indexOf(node));
     }
+    
+    @SuppressWarnings("unchecked")
+    public <T> T addNode(T node, String name) {
+        addNode(node);
+        addPublicNode(node, name);
+        return (T) nodeList.get(nodeList.indexOf(node));
+    }
 
     public <T> T addPublicNode(T node, String name) {
         if (publicNodes == null) {
