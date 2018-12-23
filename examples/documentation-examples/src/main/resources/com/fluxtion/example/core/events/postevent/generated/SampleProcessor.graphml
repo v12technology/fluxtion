@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" xmlns:jGraph="http://www.jgraph.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<key id="vertex_label" for="node" attr.name="nodeData" attr.type="string"/>
+<key id="edge_label" for="edge" attr.name="edgeData" attr.type="string"/>
+<graph edgedefault="directed">
+<node id="resetDataEvent_3">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="resetDataEvent_3:&#10;ResetDataEvent"/>
+<jGraph:Style properties="NODE"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="dataEventHandler_1">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;dataEventHandler_1:&#10;DataEventHandler"/>
+<jGraph:Style properties="EVENTHANDLER"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="resetGlobal_5">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;resetGlobal_5:&#10;ResetGlobal"/>
+<jGraph:Style properties="EVENTHANDLER"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="resetAfterEvent_7">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="resetAfterEvent_7:&#10;ResetAfterEvent"/>
+<jGraph:Style properties="NODE"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="DataEvent">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;DataEvent"/>
+<jGraph:Style properties="EVENT"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="ConfigEvent">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;ConfigEvent"/>
+<jGraph:Style properties="EVENT"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<edge id="1" source="dataEventHandler_1" target="resetDataEvent_3">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+<edge id="2" source="resetDataEvent_3" target="resetGlobal_5">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+<edge id="3" source="resetGlobal_5" target="resetAfterEvent_7">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+<edge id="4" source="DataEvent" target="dataEventHandler_1">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+<edge id="5" source="ConfigEvent" target="resetGlobal_5">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+</graph>
+</graphml>
