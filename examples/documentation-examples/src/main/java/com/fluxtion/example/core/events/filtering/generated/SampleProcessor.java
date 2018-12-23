@@ -75,8 +75,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
         return;
     }
     //Default, no filter methods
-    myEventProcessor_1.unHandledConfig(typedEvent);
     myEventProcessor_1.handleConfigEvent(typedEvent);
+    myEventProcessor_1.unHandledConfig(typedEvent);
     //event stack unwind callbacks
     afterEvent();
   }
