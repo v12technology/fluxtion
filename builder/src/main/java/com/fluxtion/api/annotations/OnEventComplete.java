@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * This is the inverse of OnEvent behaviour. Any methods that are marked with
  * this interface will be called in the reverse class order the OnEvent methods
- * are invoked.
+ * are invoked. Only invoked if the node is on the execution path.
  * 
  * @author Greg Higgins
  */

@@ -20,14 +20,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
- * marks a method to be called a class when all of the parents that could be 
- * invoked from this event have processed the event.
- * 
+ * Marks a method to be called when all of its dependent nodes on the execution
+ * path have processed the event.
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface OnEvent {
-        boolean dirty() default true;
+
+    boolean dirty() default true;
 }

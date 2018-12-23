@@ -16,13 +16,12 @@
  */
 package com.fluxtion.generator.util;
 
-import com.google.common.collect.BiMap;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
 /**
- * 
+ *
  * @author Greg Higgins
  */
 public class NaturalOrderComparator implements Comparator {
@@ -37,9 +36,6 @@ public class NaturalOrderComparator implements Comparator {
         this(Collections.EMPTY_MAP);
     }
 
-    
-    
-    
     int compareRight(String a, String b) {
         int bias = 0;
         int ia = 0;
@@ -72,8 +68,8 @@ public class NaturalOrderComparator implements Comparator {
             }
         }
     }
-    
-    private String stringForObject(Object o1){
+
+    private String stringForObject(Object o1) {
         String ret = o1.getClass().getCanonicalName();
         try {
             if (inst2Name.containsKey(o1) && !inst2Name.get(o1).isEmpty()) {
@@ -82,7 +78,7 @@ public class NaturalOrderComparator implements Comparator {
         } catch (Exception e) {
             //log error
         }
-        return ret;
+        return inst2Name == Collections.EMPTY_MAP ? o1.toString() : ret;
     }
 
     @Override

@@ -704,7 +704,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             }
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
-            if (injecting != null & refName == null) {
+            if (injecting != null & refName == null & field.get(object)==null) {
                 HashMap map = new HashMap();
                 HashMap overrideMap = new HashMap();
 
@@ -802,8 +802,18 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     private String nameNode(Object node) {
+        return nameNode(node, null);
+    }
+
+    private String nameNode(Object node, Map<Object, String> publicNodes) {
         LOGGER.debug("nameMapping node[[{}], strategy[{}]", node, nameStrategy);
-        String mappedName = nameStrategy.mappedNodeName(node);
+        String mappedName = null;
+        if(publicNodes!=null && publicNodes.containsKey(node)){
+            mappedName = publicNodes.get(node);
+            publicNodes.remove(node);
+        }else{
+            mappedName = nameStrategy.mappedNodeName(node);
+        }
         if (mappedName == null) {
             mappedName = node.getClass().getSimpleName() + "_" + count++;
             mappedName = Character.toLowerCase(mappedName.charAt(0)) + (mappedName.length() > 1 ? mappedName.substring(1) : "");
