@@ -14,19 +14,19 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.core.events.filtering.generated;
+package com.fluxtion.example.core.events.multihandler.generated;
 
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.events.filtering.MyEventProcessor;
+import com.fluxtion.example.core.events.multihandler.MyEventProcessor;
 import com.fluxtion.example.shared.ConfigEvent;
 import com.fluxtion.example.shared.MyEvent;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations
-  private final MyEventProcessor myEventProcessor_1 = new MyEventProcessor("cfg.acl");
+  private final MyEventProcessor myEventProcessor_1 = new MyEventProcessor();
   //Dirty flags
 
   //Filter constants
@@ -52,30 +52,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   public void handleEvent(ConfigEvent typedEvent) {
-    switch (typedEvent.filterString()) {
-      case ("cfg.acl"):
-        myEventProcessor_1.handleMyVariableConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("java.util.Date"):
-        myEventProcessor_1.dateConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("maxConnection"):
-        myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("timeout"):
-        myEventProcessor_1.handleTimeoutConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-    }
     //Default, no filter methods
-    myEventProcessor_1.unHandledConfig(typedEvent);
     myEventProcessor_1.handleConfigEvent(typedEvent);
     //event stack unwind callbacks
     afterEvent();

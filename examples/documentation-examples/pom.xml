@@ -57,6 +57,30 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>single-handler</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.events.singlehandler.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.events.singlehandler.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>multi-handler</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.events.multihandler.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.events.multihandler.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>pipeline</id>
                                 <goals>
                                     <goal>generate</goal>
