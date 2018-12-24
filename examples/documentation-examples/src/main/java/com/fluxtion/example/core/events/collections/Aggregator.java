@@ -24,9 +24,8 @@ import java.util.List;
  * @author V12 Technology Ltd.
  */
 public class Aggregator {
-    
+
     private final Object[] handlers;
-//    private final ListObject
     private final List<ConfigHandler> cfgHandlers;
 
     public Aggregator(Object[] handlers, List<ConfigHandler> cfgHandlers) {
@@ -34,21 +33,14 @@ public class Aggregator {
         this.cfgHandlers = cfgHandlers;
     }
 
-    
     @OnParentUpdate("handlers")
-    public void parentUdated(Object parent){
-        
+    public void parentUdated(Object parent) {
+
     }
-    
+
     @OnParentUpdate
-    public void parentCfgUdated(ConfigHandler parent){
-        
+    public void parentCfgUdated(ConfigHandler parent) {
+
     }
-//
-//    public void setCfgHandlers(List<ConfigHandler> cfgHandlers) {
-//        this.cfgHandlers = cfgHandlers;
-//    }
-    
-    
-    
+
 }
