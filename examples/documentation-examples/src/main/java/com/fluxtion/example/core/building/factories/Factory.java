@@ -29,7 +29,6 @@ public class Factory extends SEPConfig implements NodeFactory<FactoryNode>  {
     
     @Override
     public FactoryNode createNode(Map config, NodeRegistry registry) {
-//        int limit = Integer.parseInt((String) config.get("limit"));
         int limit = (Integer) config.get("limit");
         String filter = (String) config.get("filter");
         FilteredDataHandler handler = new FilteredDataHandler(filter);
