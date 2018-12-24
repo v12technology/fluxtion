@@ -79,6 +79,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     aggregator_13.parentCfgUdated(configHandler_9);
     configHandler_11.cfgUpdate(typedEvent);
     aggregator_13.parentCfgUdated(configHandler_11);
+    aggregator_13.update();
     //event stack unwind callbacks
     afterEvent();
   }
@@ -87,6 +88,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     //Default, no filter methods
     dataEventHandler_5.handleEvent(typedEvent);
     aggregator_13.parentUdated(dataEventHandler_5);
+    aggregator_13.update();
     //event stack unwind callbacks
     afterEvent();
   }
@@ -97,6 +99,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     aggregator_13.parentUdated(myEventHandler_1);
     myEventHandler_3.handleEvent(typedEvent);
     aggregator_13.parentUdated(myEventHandler_3);
+    aggregator_13.update();
     //event stack unwind callbacks
     afterEvent();
   }

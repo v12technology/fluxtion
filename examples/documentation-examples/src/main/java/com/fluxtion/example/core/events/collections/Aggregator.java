@@ -16,6 +16,7 @@
  */
 package com.fluxtion.example.core.events.collections;
 
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import java.util.List;
 
@@ -41,6 +42,11 @@ public class Aggregator {
     @OnParentUpdate
     public void parentCfgUdated(ConfigHandler parent) {
 
+    }
+    
+    @OnEvent
+    public void update(){
+        
     }
 
 }

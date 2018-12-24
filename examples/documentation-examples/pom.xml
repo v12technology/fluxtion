@@ -44,7 +44,7 @@
                         <version>${project.version}</version>
                         <executions>
                             <execution>
-                                <id>building-fatcory</id>
+                                <id>collections</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
@@ -53,7 +53,6 @@
                                     <packageName>com.fluxtion.example.core.events.collections.generated</packageName>
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
-                                    <generateDescription>false</generateDescription>
                                 </configuration>
                             </execution>
                         </executions>
@@ -149,6 +148,18 @@
                                 <configuration>
                                     <configClass>com.fluxtion.example.core.events.parent.Builder</configClass>
                                     <packageName>com.fluxtion.example.core.events.parent.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>collections</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.events.collections.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.events.collections.generated</packageName>
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
                                 </configuration>
@@ -259,19 +270,6 @@
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
                                     <yamlFactoryConfig>src/main/resources/cfg/factorytest.yml</yamlFactoryConfig>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>building-fatcory</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.collections.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.collections.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <generateDescription>false</generateDescription>
                                 </configuration>
                             </execution>
                             <execution>

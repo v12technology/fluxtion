@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author V12 Technology Ltd.
  */
-public class Builder extends SEPConfig{
+public class Builder extends SEPConfig {
 
     @Override
     public void buildConfig() {
@@ -39,5 +39,5 @@ public class Builder extends SEPConfig{
         List<ConfigHandler> cfgHandlers = Arrays.asList(cfg1, cfg2);
         Aggregator agg = addNode(new Aggregator(new Object[]{handler1, handler2, handler3, cfg0}, cfgHandlers));
     }
-    
+
 }
