@@ -213,6 +213,18 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>build-factory</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <packageName>com.fluxtion.example.core.building.factories.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                    <yamlFactoryConfig>src/main/resources/cfg/factorytest.yml</yamlFactoryConfig>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>build-injection</id>
                                 <goals>
                                     <goal>generate</goal>
@@ -225,7 +237,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build-auditor</id>
+                                <id>auditor</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
@@ -237,7 +249,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build-naming-strategies</id>
+                                <id>naming-strategies</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
@@ -251,7 +263,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>build-mappeddispatch</id>
+                                <id>mappeddispatch</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
