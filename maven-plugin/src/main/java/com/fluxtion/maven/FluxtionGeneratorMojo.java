@@ -169,7 +169,7 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
      * The fully qualified name of SEPConfig class that fluxtion will use to
      * build the static event processor
      */
-    @Parameter(property = "configClass")
+    @Parameter(property = "configClass", defaultValue = "com.fluxtion.api.node.SEPConfig")
     private String configClass;
 
     /**
