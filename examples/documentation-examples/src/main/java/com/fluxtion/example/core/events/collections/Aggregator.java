@@ -27,11 +27,13 @@ public class Aggregator {
     
     private final Object[] handlers;
 //    private final ListObject
-    private List<ConfigHandler> cfgHandlers;
+    private final List<ConfigHandler> cfgHandlers;
 
-    public Aggregator(Object[] handlers) {
+    public Aggregator(Object[] handlers, List<ConfigHandler> cfgHandlers) {
         this.handlers = handlers;
+        this.cfgHandlers = cfgHandlers;
     }
+
     
     @OnParentUpdate("handlers")
     public void parentUdated(Object parent){
@@ -42,10 +44,10 @@ public class Aggregator {
     public void parentCfgUdated(ConfigHandler parent){
         
     }
-
-    public void setCfgHandlers(List<ConfigHandler> cfgHandlers) {
-        this.cfgHandlers = cfgHandlers;
-    }
+//
+//    public void setCfgHandlers(List<ConfigHandler> cfgHandlers) {
+//        this.cfgHandlers = cfgHandlers;
+//    }
     
     
     

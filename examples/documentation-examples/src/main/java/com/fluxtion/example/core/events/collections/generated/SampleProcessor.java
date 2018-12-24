@@ -19,6 +19,7 @@ package com.fluxtion.example.core.events.collections.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import java.util.Arrays;
 import com.fluxtion.example.core.events.collections.ConfigHandler;
 import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEventHandler;
@@ -38,7 +39,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final MyEventHandler myEventHandler_3 = new MyEventHandler();
   private final Aggregator aggregator_13 =
       new Aggregator(
-          new Object[] {myEventHandler_1, myEventHandler_3, dataEventHandler_5, configHandler_7});
+          new Object[] {myEventHandler_1, myEventHandler_3, dataEventHandler_5, configHandler_7},
+          Arrays.asList(configHandler_9, configHandler_11));
   //Dirty flags
 
   //Filter constants

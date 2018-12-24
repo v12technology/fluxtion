@@ -20,6 +20,7 @@ import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEventHandler;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -35,8 +36,8 @@ public class Builder extends SEPConfig{
         ConfigHandler cfg0 = addNode(new ConfigHandler());
         ConfigHandler cfg1 = addNode(new ConfigHandler());
         ConfigHandler cfg2 = addNode(new ConfigHandler());
-        Aggregator agg = addNode(new Aggregator(new Object[]{handler1, handler2, handler3, cfg0}));
-        agg.setCfgHandlers(Arrays.asList(cfg1, cfg2));
+        List<ConfigHandler> cfgHandlers = Arrays.asList(cfg1, cfg2);
+        Aggregator agg = addNode(new Aggregator(new Object[]{handler1, handler2, handler3, cfg0}, cfgHandlers));
     }
     
 }
