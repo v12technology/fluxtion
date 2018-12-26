@@ -43,6 +43,11 @@ public class ConstructorTest extends BaseSepTest {
         //TODO - actually add some asserts!!
     }
 
+    @Test
+    public void testPrimitiveCollection() {
+        buildAndInitSep(PrimitiveCollectionsBuilder.class);
+    }
+
     public static final class ConfigEvent extends Event {
     }
 
@@ -56,15 +61,34 @@ public class ConstructorTest extends BaseSepTest {
         public ConfigHandler(String name) {
             this.name = name;
         }
-        
+
         @EventHandler
         public void configEvent(ConfigEvent configEvent) {
 
         }
     }
-    
-    public static final class NameHolder{
-        public enum NAMES{
+
+    public static class PrimitiveCollections {
+
+        private final boolean[] booleanFinalProp;
+        private final List<Integer> intFinalProp;
+        private final String[] stringFinalProp;
+
+        public PrimitiveCollections(boolean[] booleanFinalProp, List<Integer> intFinalProp, String[] stringFinalProp) {
+            this.booleanFinalProp = booleanFinalProp;
+            this.intFinalProp = intFinalProp;
+            this.stringFinalProp = stringFinalProp;
+        }
+
+        @EventHandler
+        public void configEvent(ConfigEvent configEvent) {
+
+        }
+    }
+
+    public static final class NameHolder {
+
+        public enum NAMES {
             TEST, WAY;
         }
         public final String name;
@@ -82,7 +106,7 @@ public class ConstructorTest extends BaseSepTest {
         public void setHandlerList(List<OrderHandler> handlerList) {
             this.handlerList = handlerList;
         }
-        
+
         public NameHolder(String name, ConfigPublisher publisher) {
             this.name = name;
             this.publisher = publisher;
@@ -103,10 +127,10 @@ public class ConstructorTest extends BaseSepTest {
         public void setId(NAMES id) {
             this.id = id;
         }
-        
+
         @OnEvent
-        public void processEvent(){
-            
+        public void processEvent() {
+
         }
 
         public String[] getMatchingRegex() {
@@ -124,7 +148,7 @@ public class ConstructorTest extends BaseSepTest {
         public void setMatchingRegex2(String[] matchingRegex2) {
             this.matchingRegex2 = matchingRegex2;
         }
-        
+
     }
 
     public static final class OrderHandler {
@@ -210,7 +234,7 @@ public class ConstructorTest extends BaseSepTest {
         public void setMyDouble(double myDouble) {
             this.myDouble = myDouble;
         }
-        
+
     }
 
     public static final class ConfigPublisher {
@@ -230,26 +254,26 @@ public class ConstructorTest extends BaseSepTest {
         public ConfigPublisher(int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
             this(null, totalOrders, null, orderHandler, configHandler, configHandler_2);
         }
-        
+
         public ConfigPublisher(String name, int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
             this(name, totalOrders, null, orderHandler, configHandler, configHandler_2);
         }
-        
+
         public ConfigPublisher(List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
             this(null, 0, handlers, orderHandler, configHandler, configHandler_2);
         }
-        
-        public ConfigPublisher(int totalOrders){
+
+        public ConfigPublisher(int totalOrders) {
             this(null, totalOrders, null, null, null, null);
         }
-        
+
         public ConfigPublisher(String name, int totalOrders, List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
             this.handlers = handlers;
             this.orderHandler = orderHandler;
             this.configHandler = configHandler;
             this.configHandler_2 = configHandler_2;
             this.totalOrders = totalOrders;
-            this.name = name==null?"no name":name;
+            this.name = name == null ? "no name" : name;
         }
 
         @OnEvent
@@ -263,10 +287,23 @@ public class ConstructorTest extends BaseSepTest {
         public String getName() {
             return name;
         }
-        
-        public OrderHandler getHandlerByName(String name){
+
+        public OrderHandler getHandlerByName(String name) {
             return handlers.stream().filter(o -> o.name.equals(name)).findAny().get();
         }
+    }
+
+    public static final class PrimitiveCollectionsBuilder extends SEPConfig {
+
+        @Override
+        public void buildConfig() {
+            addNode(new PrimitiveCollections(
+                    new boolean[]{true, true, false},
+                    Arrays.asList(1, 2, 3, 4, 5),
+                    new String[]{"one", "two"}
+            ));
+        }
+
     }
 
     public static final class ConstructorBuilder extends SEPConfig {
@@ -291,8 +328,7 @@ public class ConstructorTest extends BaseSepTest {
                     addNode(new OrderHandler("orderHandler_2", 400_000_000, 1.4f)),
                     addNode(new OrderHandler("orderHandler_3", 600_000_000, 1.6f))
             );
-            
-            
+
             ConfigPublisher publisher = addPublicNode(new ConfigPublisher(
                     "MyOrderManager",
                     55,
@@ -301,11 +337,11 @@ public class ConstructorTest extends BaseSepTest {
                     addNode(new ConfigHandler("config_1")),
                     addNode(new ConfigHandler("config_2"))), "publisher");
             final NameHolder nameHolder = addNode(new NameHolder("nameHolder", publisher));
-            
+
             nameHolder.setOrderHandler(orderhandlerList.get(1));
             nameHolder.setId(NameHolder.NAMES.WAY);
             nameHolder.setHandlerList(Arrays.asList(orderhandlerList.get(1), orderhandlerList.get(2)));
-            nameHolder.setMatchingRegex("reerer","lkdjf", "ldkljflkj");
+            nameHolder.setMatchingRegex("reerer", "lkdjf", "ldkljflkj");
         }
 
     }

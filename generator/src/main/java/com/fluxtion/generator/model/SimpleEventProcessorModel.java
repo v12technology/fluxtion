@@ -363,8 +363,9 @@ public class SimpleEventProcessorModel {
                             collectionField.addField(getFieldForInstance(element));
                         }
                         collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
-                        if (!collectionField.isEmpty()) {
+                        if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
                             privateFields.add(collectionField);
+                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));                        
                         }
                     } else if (MappedField.typeSupported(input)) {
                         LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
