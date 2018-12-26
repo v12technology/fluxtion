@@ -44,15 +44,16 @@
                         <version>${project.version}</version>
                         <executions>
                             <execution>
-                                <id>build-factory</id>
+                                <id>filtering</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <packageName>com.fluxtion.example.core.building.factories.generated</packageName>
+                                    <configClass>com.fluxtion.example.core.events.filtering.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.events.filtering.generated</packageName>
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
-                                    <yamlFactoryConfig>src/main/resources/cfg/factorytest.yml</yamlFactoryConfig>
+                                    <generateDescription>false</generateDescription>
                                 </configuration>
                             </execution>
                         </executions>
@@ -62,6 +63,9 @@
         </profile>
         <profile>
             <id>build-examples</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
