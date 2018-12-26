@@ -45,7 +45,7 @@ public class PropertyHandler {
     public double doublePublicProp;
     public long longPublicProp;
     public String stringPublicProp;
-    //public properties
+    //bean properties
     private boolean booleanBeanProp;
     private byte byteBeanProp;
     private char charBeanProp;
@@ -56,15 +56,15 @@ public class PropertyHandler {
     private long longBeanProp;
     private String stringBeanProp;
     //transient properties - ignored
-    public boolean booleanTransientProp;
-    public byte byteTransientProp;
-    public char charTransientProp;
-    public short shortTransientProp;
-    public float floatTransientProp;
-    public int intTransientProp;
-    public double doubleTransientProp;
-    public long longTransientProp;
-    public String stringTransientProp;
+    public transient boolean booleanTransientProp;
+    public transient byte byteTransientProp;
+    public transient char charTransientProp;
+    public transient short shortTransientProp;
+    public transient float floatTransientProp;
+    public transient int intTransientProp;
+    public transient double doubleTransientProp;
+    public transient long longTransientProp;
+    public transient String stringTransientProp;
 
     public PropertyHandler(boolean booleanFinalProp, byte byteFinalProp, char charFinalProp, short shortFinalProp, float floatFinalProp, int intFinalProp, double doubleFinalProp, long longFinalProp, String stringFinalProp) {
         this.booleanFinalProp = booleanFinalProp;
