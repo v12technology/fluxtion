@@ -14,10 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.example.core.events.lifecycle;
+package com.fluxtion.example.core.dependencyinjection.lifecycle;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.example.core.events.clean.*;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 
@@ -25,30 +23,21 @@ import com.fluxtion.api.annotations.TearDown;
  *
  * @author V12 Technology Ltd.
  */
-public class DirtyCleanCombiner {
-       
-    private final Object parent1;
-    private final Object parent2;
+public class DirtyListener {
 
-    public DirtyCleanCombiner(Object parent1, Object parent2) {
-        this.parent1 = parent1;
-        this.parent2 = parent2;
+    private final Object parent;
+
+    public DirtyListener(Object parent) {
+        this.parent = parent;
     }
-
-
 
     @OnEvent
     public void changeUpdate() {
 
-    } 
-        
-    @Initialise
-    public void init(){
-        
     }
-    
+
     @TearDown
-    public void tearDown(){
-        
-    }    
+    public void tearDown() {
+
+    }
 }

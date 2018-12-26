@@ -57,11 +57,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     if (!isDirty_conditioningHandler_1) {
       cleanListener_3.noChangeUpdate();
     }
-    if (!isDirty_conditioningHandler_1) {
-      dirtyCleanListener_7.noChangeUpdate();
-    }
     if (isDirty_conditioningHandler_1) {
       dirtyCleanListener_7.changeUpdate();
+    }
+    if (!isDirty_conditioningHandler_1) {
+      dirtyCleanListener_7.noChangeUpdate();
     }
     if (isDirty_conditioningHandler_1) {
       dirtyListener_5.changeUpdate();

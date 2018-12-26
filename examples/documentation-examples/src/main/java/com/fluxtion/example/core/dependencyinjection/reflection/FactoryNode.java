@@ -14,32 +14,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.example.core.events.lifecycle;
+package com.fluxtion.example.core.dependencyinjection.reflection;
 
-import com.fluxtion.example.core.events.clean.*;
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.example.shared.MyEvent;
+import com.fluxtion.api.annotations.OnEvent;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class ConditioningHandler {
+public class FactoryNode {
     
-    @EventHandler
-    public boolean onEvent(MyEvent event){
-        return true;
+    
+    private final Object parent;
+    private int limit;
+    private transient double transientValue;
+
+    public FactoryNode(Object parent) {
+        this.parent = parent;
     }
     
-    @Initialise
-    public void init(){
+    public static final FactoryNode build(Object parent, int limit){
+        FactoryNode node = new FactoryNode(parent);
+        node.limit = limit;
+        node.transientValue = limit * 100;
+        return node;
+    }
+
+    public Object getParent() {
+        return parent;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+    
+    @OnEvent
+    public void onEvent(){
         
     }
     
-    @TearDown
-    public void tearDown(){
-        
-    }
 }

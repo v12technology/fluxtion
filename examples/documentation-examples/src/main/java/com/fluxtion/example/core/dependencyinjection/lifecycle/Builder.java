@@ -14,31 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.example.core.events.lifecycle;
+package com.fluxtion.example.core.dependencyinjection.lifecycle;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.node.SEPConfig;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class CleanListener {
+public class Builder extends SEPConfig {
 
-    private final Object parent;
-
-    public CleanListener(Object parent) {
-        this.parent = parent;
-    }
-
-    @OnEvent(dirty = false)
-    public void noChangeUpdate() {
-
-    }
-
-    @Initialise
-    public void init() {
-
+    @Override
+    public void buildConfig() {
+        ConditioningHandler myEventHandler = addNode(new ConditioningHandler());
+        CleanListener cleanNode = addNode(new CleanListener(myEventHandler));
+        DirtyListener dirtyNode = addNode(new DirtyListener(myEventHandler));
+        addNode(new DirtyCleanCombiner(cleanNode, cleanNode));
     }
 
 }

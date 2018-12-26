@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.example.core.events.lifecycle;
+package com.fluxtion.example.core.dependencyinjection.propertyvector;
 
 import com.fluxtion.api.node.SEPConfig;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -26,10 +28,21 @@ public class Builder extends SEPConfig {
 
     @Override
     public void buildConfig() {
-        ConditioningHandler myEventHandler = addNode(new ConditioningHandler());
-        CleanListener cleanNode = addNode(new CleanListener(myEventHandler));
-        DirtyListener dirtyNode = addNode(new DirtyListener(myEventHandler));
-        addNode(new DirtyCleanCombiner(cleanNode, cleanNode));
+        PropertyHandler handler = addNode(new PropertyHandler(
+                new boolean[]{true, true, false},
+                Arrays.asList(1, 2, 3, 4, 5),
+                new String[]{"one", "two"}
+        ));
+
+        List<Integer> ints = Arrays.asList(1, 2, 3, 4, 5);
+        handler.setIntBeanProp(ints);
+        handler.setBooleanBeanProp(new boolean[]{false, false, false, false});
+        handler.setStringBeanProp(Arrays.asList("AA", "BB", "CC"));
+
+        handler.booleanPublicProp = Arrays.asList(true, true);
+        handler.intPublicProp = new int[]{100, 200, 300, 400};
+        handler.stringPublicProp = Arrays.asList("1", "2", "3", "4");
+
     }
 
 }

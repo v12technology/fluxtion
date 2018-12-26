@@ -14,34 +14,35 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.core.events.filtering.generated;
+package com.fluxtion.example.core.dependencyinjection.reflection.generated;
 
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.events.filtering.MyEventProcessor;
-import com.fluxtion.example.shared.ConfigEvent;
+import com.fluxtion.example.shared.MyEventHandler;
+import com.fluxtion.example.core.dependencyinjection.reflection.FactoryNode;
 import com.fluxtion.example.shared.MyEvent;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations
-  private final MyEventProcessor myEventProcessor_1 = new MyEventProcessor("cfg.acl");
+  final net.vidageek.mirror.dsl.Mirror constructor = new net.vidageek.mirror.dsl.Mirror();
+  private final MyEventHandler myEventHandler_1 = new MyEventHandler();
+  private final FactoryNode factoryNode_3 =
+      constructor.on(FactoryNode.class).invoke().constructor().bypasser();
   //Dirty flags
 
   //Filter constants
 
-  public SampleProcessor() {}
+  public SampleProcessor() {
+    final net.vidageek.mirror.dsl.Mirror assigner = new net.vidageek.mirror.dsl.Mirror();
+    assigner.on(factoryNode_3).set().field("parent").withValue(myEventHandler_1);
+    assigner.on(factoryNode_3).set().field("limit").withValue((int) 10000);
+  }
 
   @Override
   public void onEvent(com.fluxtion.runtime.event.Event event) {
     switch (event.getClass().getName()) {
-      case ("com.fluxtion.example.shared.ConfigEvent"):
-        {
-          ConfigEvent typedEvent = (ConfigEvent) event;
-          handleEvent(typedEvent);
-          break;
-        }
       case ("com.fluxtion.example.shared.MyEvent"):
         {
           MyEvent typedEvent = (MyEvent) event;
@@ -51,39 +52,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     }
   }
 
-  public void handleEvent(ConfigEvent typedEvent) {
-    switch (typedEvent.filterString()) {
-      case ("cfg.acl"):
-        myEventProcessor_1.handleMyVariableConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("java.util.Date"):
-        myEventProcessor_1.dateConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("maxConnection"):
-        myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-      case ("timeout"):
-        myEventProcessor_1.handleTimeoutConfig(typedEvent);
-        myEventProcessor_1.handleConfigEvent(typedEvent);
-        afterEvent();
-        return;
-    }
-    //Default, no filter methods
-    myEventProcessor_1.handleConfigEvent(typedEvent);
-    myEventProcessor_1.unHandledConfig(typedEvent);
-    //event stack unwind callbacks
-    afterEvent();
-  }
-
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
-    myEventProcessor_1.handleEvent(typedEvent);
+    myEventHandler_1.handleEvent(typedEvent);
+    factoryNode_3.onEvent();
     //event stack unwind callbacks
     afterEvent();
   }

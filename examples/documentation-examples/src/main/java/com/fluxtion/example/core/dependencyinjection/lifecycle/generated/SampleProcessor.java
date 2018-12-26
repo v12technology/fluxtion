@@ -14,15 +14,15 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.core.events.lifecycle.generated;
+package com.fluxtion.example.core.dependencyinjection.lifecycle.generated;
 
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.events.lifecycle.ConditioningHandler;
-import com.fluxtion.example.core.events.lifecycle.CleanListener;
-import com.fluxtion.example.core.events.lifecycle.DirtyCleanCombiner;
-import com.fluxtion.example.core.events.lifecycle.DirtyListener;
+import com.fluxtion.example.core.dependencyinjection.lifecycle.ConditioningHandler;
+import com.fluxtion.example.core.dependencyinjection.lifecycle.CleanListener;
+import com.fluxtion.example.core.dependencyinjection.lifecycle.DirtyCleanCombiner;
+import com.fluxtion.example.core.dependencyinjection.lifecycle.DirtyListener;
 import com.fluxtion.example.shared.MyEvent;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {

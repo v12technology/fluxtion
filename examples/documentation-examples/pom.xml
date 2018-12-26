@@ -44,15 +44,15 @@
                         <version>${project.version}</version>
                         <executions>
                             <execution>
-                                <id>collections</id>
+                                <id>build-factory</id>
                                 <goals>
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <configClass>com.fluxtion.example.core.events.collections.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.collections.generated</packageName>
+                                    <packageName>com.fluxtion.example.core.building.factories.generated</packageName>
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
+                                    <yamlFactoryConfig>src/main/resources/cfg/factorytest.yml</yamlFactoryConfig>
                                 </configuration>
                             </execution>
                         </executions>
@@ -194,8 +194,8 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <configClass>com.fluxtion.example.core.events.lifecycle.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.lifecycle.generated</packageName>
+                                    <configClass>com.fluxtion.example.core.dependencyinjection.lifecycle.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.dependencyinjection.lifecycle.generated</packageName>
                                     <className>SampleProcessor</className>
                                     <outputDirectory>src/main/java</outputDirectory>
                                 </configuration>
@@ -322,6 +322,43 @@
                                     <outputDirectory>src/main/java</outputDirectory>
                                     <nodeNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</nodeNamingClass>
                                     <filterNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</filterNamingClass>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>property-scalar</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.dependencyinjection.propertyscalar.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.dependencyinjection.propertyscalar.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>property-vector</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.dependencyinjection.propertyvector.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.dependencyinjection.propertyvector.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>property-refelection</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.example.core.dependencyinjection.reflection.Builder</configClass>
+                                    <packageName>com.fluxtion.example.core.dependencyinjection.reflection.generated</packageName>
+                                    <className>SampleProcessor</className>
+                                    <outputDirectory>src/main/java</outputDirectory>
+                                    <assignNonPublicMembers>true</assignNonPublicMembers>
                                 </configuration>
                             </execution>
                         </executions>
