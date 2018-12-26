@@ -17,6 +17,7 @@
 package com.fluxtion.example.core.dependencyinjection.propertyscalar;
 
 import com.fluxtion.api.node.SEPConfig;
+import static com.fluxtion.example.shared.SampleEnum.*;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Builder extends SEPConfig{
 
     @Override
     public void buildConfig() {
-        PropertyHandler handler = addNode(new PropertyHandler(true, (byte)0,'a',(short)0,0.0f,0,0.0d,0L,"0"));
+        PropertyHandler handler = addNode(new PropertyHandler(true, (byte)0,'a',(short)0,0.0f,0,0.0d,0L,"0", MONDAY));
         //boolean
         handler.booleanPublicProp = true;
         handler.booleanTransientProp = true;
@@ -59,6 +60,10 @@ public class Builder extends SEPConfig{
         handler.longPublicProp = (long)1l;
         handler.longTransientProp = (long)2l;
         handler.setLongBeanProp((long)3l);
+        //enum
+        handler.enumPublicProp = TUESDAY;
+        handler.enumTransientProp = WEDNESDAY;
+        handler.setEnumBeanProp(THURSDAY);
 
     }
     

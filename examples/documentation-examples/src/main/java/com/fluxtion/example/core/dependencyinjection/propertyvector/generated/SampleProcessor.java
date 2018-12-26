@@ -20,6 +20,7 @@ import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import java.util.Arrays;
+import com.fluxtion.example.shared.SampleEnum;
 import com.fluxtion.example.core.dependencyinjection.propertyvector.PropertyHandler;
 import com.fluxtion.example.shared.MyEvent;
 
@@ -37,6 +38,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public SampleProcessor() {
     propertyHandler_1.setBooleanBeanProp(new boolean[] {false, false, false, false});
+    propertyHandler_1.setEnumBeanProp(
+        new SampleEnum[] {SampleEnum.TUESDAY, SampleEnum.THURSDAY, SampleEnum.SATURDAY});
     propertyHandler_1.setIntBeanProp(Arrays.asList(1, 2, 3, 4, 5));
     propertyHandler_1.setStringBeanProp(Arrays.asList("AA", "BB", "CC"));
     propertyHandler_1.intPublicProp = new int[4];
@@ -48,6 +51,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     propertyHandler_1.stringPublicProp.add("2");
     propertyHandler_1.stringPublicProp.add("3");
     propertyHandler_1.stringPublicProp.add("4");
+    propertyHandler_1.enumPublioProp.add(SampleEnum.SUNDAY);
+    propertyHandler_1.enumPublioProp.add(SampleEnum.MONDAY);
   }
 
   @Override

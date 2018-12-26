@@ -17,6 +17,8 @@
 package com.fluxtion.example.core.dependencyinjection.propertyvector;
 
 import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.example.shared.SampleEnum;
+import static com.fluxtion.example.shared.SampleEnum.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,11 +40,12 @@ public class Builder extends SEPConfig {
         handler.setIntBeanProp(ints);
         handler.setBooleanBeanProp(new boolean[]{false, false, false, false});
         handler.setStringBeanProp(Arrays.asList("AA", "BB", "CC"));
+        handler.setEnumBeanProp(new SampleEnum[]{TUESDAY, THURSDAY, SATURDAY});
 
         handler.booleanPublicProp = Arrays.asList(true, true);
         handler.intPublicProp = new int[]{100, 200, 300, 400};
         handler.stringPublicProp = Arrays.asList("1", "2", "3", "4");
-
+        handler.enumPublioProp = Arrays.asList(SUNDAY, MONDAY);
     }
 
 }

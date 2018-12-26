@@ -19,6 +19,7 @@ package com.fluxtion.example.core.dependencyinjection.propertyscalar;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.example.shared.MyEvent;
+import com.fluxtion.example.shared.SampleEnum;
 
 /**
  *
@@ -35,6 +36,7 @@ public class PropertyHandler {
     private final double doubleFinalProp;
     private final long longFinalProp;
     private final String stringFinalProp;
+    private final SampleEnum enumFinalProp;
     //public properties
     public boolean booleanPublicProp;
     public byte bytePublicProp;
@@ -45,6 +47,7 @@ public class PropertyHandler {
     public double doublePublicProp;
     public long longPublicProp;
     public String stringPublicProp;
+    public SampleEnum enumPublicProp;
     //bean properties
     private boolean booleanBeanProp;
     private byte byteBeanProp;
@@ -55,6 +58,7 @@ public class PropertyHandler {
     private double doubleBeanProp;
     private long longBeanProp;
     private String stringBeanProp;
+    private SampleEnum enumBeanProp;
     //transient properties - ignored
     public transient boolean booleanTransientProp;
     public transient byte byteTransientProp;
@@ -65,8 +69,9 @@ public class PropertyHandler {
     public transient double doubleTransientProp;
     public transient long longTransientProp;
     public transient String stringTransientProp;
+    public transient SampleEnum enumTransientProp;
 
-    public PropertyHandler(boolean booleanFinalProp, byte byteFinalProp, char charFinalProp, short shortFinalProp, float floatFinalProp, int intFinalProp, double doubleFinalProp, long longFinalProp, String stringFinalProp) {
+    public PropertyHandler(boolean booleanFinalProp, byte byteFinalProp, char charFinalProp, short shortFinalProp, float floatFinalProp, int intFinalProp, double doubleFinalProp, long longFinalProp, String stringFinalProp, SampleEnum enumFinalProp) {
         this.booleanFinalProp = booleanFinalProp;
         this.byteFinalProp = byteFinalProp;
         this.charFinalProp = charFinalProp;
@@ -76,6 +81,7 @@ public class PropertyHandler {
         this.doubleFinalProp = doubleFinalProp;
         this.longFinalProp = longFinalProp;
         this.stringFinalProp = stringFinalProp;
+        this.enumFinalProp = enumFinalProp;
     }
 
     public boolean isBooleanBeanProp() {
@@ -148,6 +154,14 @@ public class PropertyHandler {
 
     public void setStringBeanProp(String stringBeanProp) {
         this.stringBeanProp = stringBeanProp;
+    }
+
+    public SampleEnum getEnumBeanProp() {
+        return enumBeanProp;
+    }
+
+    public void setEnumBeanProp(SampleEnum enumBeanProp) {
+        this.enumBeanProp = enumBeanProp;
     }
     
     @EventHandler

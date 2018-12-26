@@ -19,6 +19,7 @@ package com.fluxtion.example.core.dependencyinjection.propertyvector;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.example.shared.MyEvent;
+import com.fluxtion.example.shared.SampleEnum;
 import java.util.List;
 
 /**
@@ -35,22 +36,13 @@ public class PropertyHandler {
     public List<Boolean> booleanPublicProp;
     public int[] intPublicProp;
     public List<String> stringPublicProp;
+    public List<SampleEnum> enumPublioProp;
     
     //bean properties
     private boolean[] booleanBeanProp;
     private List<Integer> intBeanProp;
     private List<String> stringBeanProp;
-
-//    public PropertyHandler(boolean[] booleanFinalProp) {
-//        this.booleanFinalProp = booleanFinalProp;
-//    }
-
-//    public PropertyHandler(boolean[] booleanFinalProp, String[] stringFinalProp) {
-//        this.booleanFinalProp = booleanFinalProp;
-//        this.stringFinalProp = stringFinalProp;
-//    }
-
-    
+    private SampleEnum[] enumBeanProp;
     
     public PropertyHandler(boolean[] booleanFinalProp, List<Integer> intFinalProp, String[] stringFinalProp) {
         this.booleanFinalProp = booleanFinalProp;
@@ -81,9 +73,15 @@ public class PropertyHandler {
     public void setStringBeanProp(List<String> stringBeanProp) {
         this.stringBeanProp = stringBeanProp;
     }
-    
 
-    
+    public SampleEnum[] getEnumBeanProp() {
+        return enumBeanProp;
+    }
+
+    public void setEnumBeanProp(SampleEnum[] enumBeanProp) {
+        this.enumBeanProp = enumBeanProp;
+    }
+
     @EventHandler
     public void myEvent(MyEvent event){
         

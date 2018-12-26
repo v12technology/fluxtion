@@ -19,6 +19,7 @@ package com.fluxtion.example.core.dependencyinjection.propertyscalar.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.example.shared.SampleEnum;
 import com.fluxtion.example.core.dependencyinjection.propertyscalar.PropertyHandler;
 import com.fluxtion.example.shared.MyEvent;
 
@@ -26,7 +27,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations
   private final PropertyHandler propertyHandler_1 =
-      new PropertyHandler(true, (byte) 0, 'a', (short) 0, 0.0f, 0, 0.0, 0L, "0");
+      new PropertyHandler(true, (byte) 0, 'a', (short) 0, 0.0f, 0, 0.0, 0L, "0", SampleEnum.MONDAY);
   //Dirty flags
 
   //Filter constants
@@ -36,6 +37,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     propertyHandler_1.setByteBeanProp((byte) 3);
     propertyHandler_1.setCharBeanProp('d');
     propertyHandler_1.setDoubleBeanProp(3.3);
+    propertyHandler_1.setEnumBeanProp(SampleEnum.THURSDAY);
     propertyHandler_1.setFloatBeanProp(3.3f);
     propertyHandler_1.setIntBeanProp(3);
     propertyHandler_1.setLongBeanProp(3L);
@@ -48,6 +50,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     propertyHandler_1.intPublicProp = (int) 1;
     propertyHandler_1.doublePublicProp = (double) 1.1;
     propertyHandler_1.longPublicProp = (long) 1;
+    propertyHandler_1.enumPublicProp = com.fluxtion.example.shared.SampleEnum.TUESDAY;
   }
 
   @Override
