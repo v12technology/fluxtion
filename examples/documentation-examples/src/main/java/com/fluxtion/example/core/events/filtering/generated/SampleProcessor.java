@@ -54,8 +54,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public void handleEvent(ConfigEvent typedEvent) {
     switch (typedEvent.filterString()) {
       case ("cfg.acl"):
-        myEventProcessor_1.handleMyVariableConfig(typedEvent);
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        myEventProcessor_1.handleMyVariableConfig(typedEvent);
         afterEvent();
         return;
       case ("java.util.Date"):
@@ -64,13 +64,13 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
         afterEvent();
         return;
       case ("maxConnection"):
-        myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
         afterEvent();
         return;
       case ("timeout"):
-        myEventProcessor_1.handleTimeoutConfig(typedEvent);
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        myEventProcessor_1.handleTimeoutConfig(typedEvent);
         afterEvent();
         return;
     }
