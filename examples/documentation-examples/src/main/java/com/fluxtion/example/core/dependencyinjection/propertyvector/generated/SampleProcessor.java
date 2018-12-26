@@ -19,8 +19,8 @@ package com.fluxtion.example.core.dependencyinjection.propertyvector.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import java.util.Arrays;
 import com.fluxtion.example.shared.SampleEnum;
+import java.util.Arrays;
 import com.fluxtion.example.core.dependencyinjection.propertyvector.PropertyHandler;
 import com.fluxtion.example.shared.MyEvent;
 
