@@ -19,8 +19,8 @@ package com.fluxtion.example.core.events.clean.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.events.clean.ConditioningHandler;
 import com.fluxtion.example.core.events.clean.CleanListener;
+import com.fluxtion.example.core.events.clean.ConditioningHandler;
 import com.fluxtion.example.core.events.clean.DirtyCleanListener;
 import com.fluxtion.example.core.events.clean.DirtyListener;
 import com.fluxtion.example.shared.MyEvent;
@@ -57,11 +57,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     if (!isDirty_conditioningHandler_1) {
       cleanListener_3.noChangeUpdate();
     }
-    if (!isDirty_conditioningHandler_1) {
-      dirtyCleanListener_7.noChangeUpdate();
-    }
     if (isDirty_conditioningHandler_1) {
       dirtyCleanListener_7.changeUpdate();
+    }
+    if (!isDirty_conditioningHandler_1) {
+      dirtyCleanListener_7.noChangeUpdate();
     }
     if (isDirty_conditioningHandler_1) {
       dirtyListener_5.changeUpdate();

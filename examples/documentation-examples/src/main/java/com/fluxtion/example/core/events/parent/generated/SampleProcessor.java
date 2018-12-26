@@ -19,11 +19,11 @@ package com.fluxtion.example.core.events.parent.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.shared.DataEventHandler;
-import com.fluxtion.example.shared.MyEventHandler;
 import com.fluxtion.example.core.events.parent.ParentIdentifier;
 import com.fluxtion.example.shared.DataEvent;
+import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEvent;
+import com.fluxtion.example.shared.MyEventHandler;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 

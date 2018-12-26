@@ -19,14 +19,14 @@ package com.fluxtion.example.core.events.collections.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import java.util.Arrays;
-import com.fluxtion.example.core.events.collections.ConfigHandler;
-import com.fluxtion.example.shared.DataEventHandler;
-import com.fluxtion.example.shared.MyEventHandler;
 import com.fluxtion.example.core.events.collections.Aggregator;
+import com.fluxtion.example.core.events.collections.ConfigHandler;
 import com.fluxtion.example.shared.ConfigEvent;
 import com.fluxtion.example.shared.DataEvent;
+import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEvent;
+import com.fluxtion.example.shared.MyEventHandler;
+import java.util.Arrays;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 

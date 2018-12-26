@@ -19,8 +19,8 @@ package com.fluxtion.example.core.building.factories.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.building.factories.FilteredDataHandler;
 import com.fluxtion.example.core.building.factories.FactoryNode;
+import com.fluxtion.example.core.building.factories.FilteredDataHandler;
 import com.fluxtion.example.shared.DataEvent;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {

@@ -19,9 +19,9 @@ package com.fluxtion.example.core.events.pipeline.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.example.shared.DataEvent;
 import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.PipelineNode;
-import com.fluxtion.example.shared.DataEvent;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 

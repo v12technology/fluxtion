@@ -21,8 +21,8 @@ import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
 import com.fluxtion.example.shared.DataEvent;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.HashMap;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
