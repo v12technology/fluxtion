@@ -24,7 +24,6 @@ import com.fluxtion.api.annotations.OnEvent;
  */
 public class FactoryNode {
     
-    
     private final Object parent;
     private int limit;
     private transient double transientValue;

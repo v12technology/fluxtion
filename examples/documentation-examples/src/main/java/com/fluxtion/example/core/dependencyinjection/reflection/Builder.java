@@ -30,5 +30,4 @@ public class Builder extends SEPConfig{
         addNode(FactoryNode.build(addNode(new MyEventHandler()), 10000));
     }
     
-    
 }
