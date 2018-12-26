@@ -1171,12 +1171,13 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     public String getImports() {
+        Collections.sort(importList);
         StringBuilder sb = new StringBuilder(2048);
-        for (String importToAdd : importList) {
+        importList.stream().forEach(s ->{
             sb.append("import ")
-                    .append(importToAdd)
+                    .append(s)
                     .append(";\n");
-        }
+        });
         return sb.toString();
     }
 
@@ -1246,7 +1247,7 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     private void addDefacultImports() {
-        model.getImportClasses().stream().map(Class::getCanonicalName).forEach(this::getClassName);
+        model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
     }
 
 }
