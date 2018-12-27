@@ -187,8 +187,8 @@ public final class TestBuilder<T extends Test, F> {
      *
      * @param <S> The source instance of the argument
      * @param <V> Access method in the source
-     * @param source
-     * @param accessor
+     * @param source source
+     * @param accessor accessor method
      * @return Updated TestBuilder
      * @deprecated to be replace with {@linkplain  #arg(com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier) arg(SerializableSupplier&lt;S, V>
      * accessor)}

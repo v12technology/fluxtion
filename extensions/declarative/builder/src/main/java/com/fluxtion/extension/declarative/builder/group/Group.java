@@ -43,7 +43,7 @@ public class Group <K, T> {
      * 
      * @param <K> The data node Type from which a grouping key will be extracted at runtime.
      * @param k The actual data node the key will be extracted from.
-     * @param f A function used to extract the key value from <K> used to group source data by.
+     * @param f A function used to extract the key value from K used to group source data by.
      * 
      * @return The actual grouping function.
      */
@@ -57,9 +57,9 @@ public class Group <K, T> {
      * @param <T> Target type that is the holder of aggregate function results.
      * 
      * @param k The actual data node the key will be extracted from.
-     * @param f A function used to extract the key value from <K> used to group source data by.
+     * @param f A function used to extract the key value from K used to group source data by.
      * @param target target of any aggregate function created with this grouping
-     * @return
+     * @return A builder
      */
     public static <K, T> GroupByBuilder<K, T> groupBy(K k, Function<K, ?> f, Class<T> target){
         final Group group = new Group(k, f, target);

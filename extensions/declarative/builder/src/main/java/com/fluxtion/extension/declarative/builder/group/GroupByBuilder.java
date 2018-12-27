@@ -39,23 +39,17 @@ import static com.fluxtion.extension.declarative.builder.factory.FunctionGenerat
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;
 
 /**
- * The main instance a user interacts with while building a group by function. A
- * GroupByBuilder is constructed from
+ * The main instance a user interacts with while building a group by function. 
  *
  * @author Greg Higgins
- * @param <K>
- * @param <T>
+ * @param <K> Source type
+ * @param <T> Target type
  */
 public class GroupByBuilder<K, T> {
 
     private final GroupByContext<K, T> groupBy;
     private final GroupByContext<K, T>.SourceContext<K, T> sourceContext;
 
-    /**
-     *
-     * @param context
-     * @param sourceContext
-     */
     public GroupByBuilder(GroupByContext<K, T> context, SourceContext sourceContext) {
         this.groupBy = context;
         this.sourceContext = sourceContext;
