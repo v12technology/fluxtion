@@ -1,0 +1,137 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
+import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+#foreach($sourceInfo in $sourceMappingList)
+import ${sourceInfo.typeFqn};
+#end
+import ${targetClassFqn};
+
+/**
+ * generated NumericFunction wrapper.
+ * Wraps a numeric function for invocation.
+ * source class  : ${sourceInfo.type}
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements NumericValue{
+
+    //source operand inputs
+#foreach($sourceInfo in $sourceMappingList)
+    public ${sourceInfo.type}[] ${sourceInfo.id} = new ${sourceInfo.type}[${sourceInfo.count}];
+#end
+    private final ${targetClass} f = new ${targetClass}();
+    private ${outputClass} result;
+#if(${stateful})
+    private ${outputClass} newValue;
+    private boolean updated;
+#if(${resetNotifier})
+    public Object resetNotifier;
+#end
+
+#foreach($sourceInfo in $sourceMappingList)
+    @OnParentUpdate("${sourceInfo.id}")
+    public void ${sourceInfo.id}(${sourceInfo.type} updated){
+#if( ${sourceInfo.cast} )
+        newValue = (${outputClass}) updated.${sourceInfo.getter}();
+#else
+        newValue = updated.${sourceInfo.getter}();
+#end
+        calculate();
+    }
+
+#end
+    public void calculate(){
+        ${outputClass} oldValue = result;
+        result = f.${targetMethod}(result, newValue);
+        updated = oldValue != result;
+    }
+    
+    @OnEvent
+    public boolean onEvent(){
+        return updated;
+    }
+
+ #if(${resetNotifier})
+    @OnParentUpdate("resetNotifier")
+    public void reset(Object resetNotifier){
+        //${outputClass} oldValue = result;
+        init();
+        updated = false;
+        //updated = oldValue != result;
+    }
+   
+#end
+    @OnEventComplete
+    public void afterCalculate(){
+        updated = false;
+    }
+
+    @Initialise
+    public void init(){
+        //f.reset();
+        updated = false;
+        result = f.reset();
+    }
+#else
+    @OnEvent
+    public boolean onEvent(){
+        ${outputClass} oldValue = result;
+        result = 0;
+#foreach($sourceInfo in $sourceMappingList)
+        for(int i=0; i<${sourceInfo.count}; i++){
+#if( ${sourceInfo.cast} )
+            result = f.${targetMethod}(result, (${outputClass}) ${sourceInfo.id}[i].${sourceInfo.getter}());
+#else
+            result = f.${targetMethod}(result, ${sourceInfo.id}[i].${sourceInfo.getter}());
+#end
+        }
+#end
+        return oldValue != result;
+    }
+
+    @Initialise
+    public void init(){
+        result = 0;
+    }
+#end
+
+    @Override
+    public short shortValue() {
+        return (short)result;
+    }
+
+    @Override
+    public byte byteValue() {
+        return (byte)result;
+    }
+
+    @Override
+    public float floatValue() {
+        return (float)result;
+    }
+
+    @Override
+    public int intValue() {
+        return (int)result;
+    }
+
+    @Override
+    public long longValue() {
+        return (long)result;
+    }
+
+    @Override
+    public double doubleValue() {
+        return (double)result;
+    }
+    
+}
+

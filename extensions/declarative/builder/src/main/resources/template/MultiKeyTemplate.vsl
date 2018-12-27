@@ -1,0 +1,80 @@
+## Velocity Template.
+package ${functionPackage};
+
+#foreach( $import in $imports)
+import $import;
+#end
+#set( $source = "source")
+#set( $copy = "copy")
+
+/**
+ * generated multi key class for use with GroupBy functionality
+ *
+ * source class  : ${sourceClass}
+ * 
+ * @author Greg Higgins
+ */
+public final class ${functionClass} implements MultiKey<${functionClass}> {
+
+#foreach( $keyInfo in $targetMappingList)
+    private $keyInfo.initMethod($source);
+#end
+
+#foreach( $srcInfo in $sourceMappingList.entrySet() )
+    public void setKey(${srcInfo.key} $source){
+#foreach( $keyInfo in $srcInfo.value)
+        $keyInfo.updateKeyMethod($source);
+#end
+    }
+#end
+
+    @Override
+    public void reset(){
+#foreach( $keyInfo in $targetMappingList)
+        $keyInfo.resetMethod();
+#end
+    }
+
+    @Override
+    public ${functionClass} copyInto(${functionClass} $copy){
+#foreach( $keyInfo in $targetMappingList)
+        $keyInfo.copyMethod($copy);
+#end
+        return $copy;
+    }
+
+    @Override
+    public ${functionClass} copyKey(){
+        return copyInto(new ${functionClass}());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 1;
+#foreach( $keyInfo in $targetMappingList)
+        result = 31 * result + ($keyInfo.id == null ? 0 : ${keyInfo.id}.hashCode());
+#end
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ${functionClass} other = (${functionClass}) obj;
+#foreach( $keyInfo in $targetMappingList)
+        if(!((this.${keyInfo.id} == other.${keyInfo.id}) 
+            || (this.${keyInfo.id} != null && this.${keyInfo.id}.equals(other.${keyInfo.id})))){
+            return false;
+        }
+#end
+        return true;
+    }
+}

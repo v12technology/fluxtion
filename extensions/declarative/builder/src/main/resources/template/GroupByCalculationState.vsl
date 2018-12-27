@@ -1,0 +1,76 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.extension.declarative.api.group.GroupByTargetMap;
+import com.fluxtion.extension.declarative.api.group.GroupByIniitialiser;
+import java.util.Map;
+import java.util.BitSet;
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * generated group by calculation state holder. This class holds the state of
+ * a group by calculation.
+ *
+ * target class  : ${targetClass}
+ * 
+ * @author Greg Higgins
+ */
+public final class ${functionClass} implements Wrapper<${targetClass}>{
+
+    private static final int SOURCE_COUNT = ${sourceCount};
+    private final BitSet updateMap = new BitSet(SOURCE_COUNT);
+
+    public ${targetClass} ${targetInstanceId};
+#foreach( $source in $sourceMappingList)
+#if (${source.stateful})
+    public ${source.functionClassName} ${source.functionInstanceId}Function = new ${source.functionClassName}();
+#end
+    public ${source.functionCalcArgType} ${source.functionInstanceId};
+#end
+
+    public ${functionClass}(){
+        ${targetInstanceId} = new ${targetClass}();
+#foreach( $optional in $optionals)
+        updateMap.set($optional);
+#end
+    }
+
+    public boolean allMatched(){
+        return SOURCE_COUNT == updateMap.cardinality();
+    }
+
+    public boolean processSource(int index, GroupByIniitialiser initialiser, Object source) {
+        if (!updateMap.get(index)) {
+            initialiser.apply(source, target);
+        }
+        updateMap.set(index);
+        return allMatched();
+    }
+
+    public boolean processSource(int index, Object source) {
+        updateMap.set(index);
+        return allMatched();
+    }
+
+    @Override
+    public ${targetClass} event() {
+        return ${targetInstanceId};
+    }
+
+    @Override
+    public Class<${targetClass}> eventClass() {
+        return ${targetClass}.class;
+    }
+
+    @Override
+    public String toString() {
+        return event().toString();
+    }
+
+}
