@@ -1,0 +1,24 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
+import ${targetClassFqn};
+
+/**
+ * generated NumericValuePush
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * @author Greg Higgins
+ */
+public final class ${functionClass}  extends NumericValuePush<${targetClass}>{
+
+    @Override
+    @OnEvent
+    public void pushNumericValue(){
+        if(pushUpdate){
+            target.${targetMethod}((${parameterClass})source.${sourceMethod}());
+        }
+    }
+
+}

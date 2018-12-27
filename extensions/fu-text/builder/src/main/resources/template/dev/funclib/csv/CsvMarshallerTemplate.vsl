@@ -1,0 +1,364 @@
+## Velocity Template.
+package ${functionPackage};
+
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * generated CSV marshaller wrapper.
+ *
+ * target class  : ${targetClass}
+ * 
+ * @author Greg Higgins
+ */
+
+public class ${functionClass} implements RowProcessor<${targetClass}> {
+
+    //buffer management
+    private final char[] chars = new char[4096];
+#if(!${fixedLen})
+    private final int[] delimIndex = new int[1024];
+#end
+    private int fieldIndex = 0;
+    private int writeIndex = 0;
+    //target
+    private ${targetClass} target;
+#foreach($sourceInfo in $sourceMappingList)
+    //source field index: ${sourceInfo.fieldIndex}
+    private final StringBuilder ${sourceInfo.targetCalcMethodName} = new StringBuilder();
+#* *##if((${sourceInfo.indexField} || ${fixedLen}) && !${sourceInfo.duplicateField})
+    private final int ${sourceInfo.fieldIdentifier} = ${sourceInfo.fieldIndex};
+#*     *##if(${fixedLen})
+    private final int ${sourceInfo.fieldLenIdentifier} = ${sourceInfo.fieldLength};
+#*     *##end
+#* *##elseif(!${sourceInfo.duplicateField})
+    private int ${sourceInfo.fieldIdentifier} = ${sourceInfo.fieldIndex};
+#* *##end
+#end
+    //processing state and meta-data
+#foreach($converter in ${convereters.entrySet()})
+    public ${converter.value} ${converter.key};
+#end
+    private int rowNumber;
+    private final HashMap fieldMap = new HashMap<>();
+#if($headerPresent)
+    private static final int HEADER_ROWS = $headerLines;
+#end
+#if($mappingRowPresent)
+    private static final int MAPPING_ROW = $mappingRow;
+#end
+#if($processEscapeSequences)
+    private boolean escaping = false;
+    boolean prevIsQuote = false;
+#end
+    private boolean passedValidation;
+
+    @EventHandler
+    public boolean charEvent(CharEvent event) {
+        final char character = event.getCharacter();
+        passedValidation = true;
+#if($ignore)
+        if(character == '${ignore}'){
+            return false;
+        }
+#end
+#if($processEscapeSequences)
+        if(!processChar(character)){
+            return false;
+        }
+        if (escaping) {
+            chars[writeIndex++] = character;
+            return false;
+        }
+#end
+        if (character == '${eol}') {
+            return processRow();
+        }
+#if(!${fixedLen})
+        if (character == '${delimiter}') {
+            updateFieldIndex();
+        }
+#end
+        chars[writeIndex++] = character;
+        return false;
+    }
+
+    @EventHandler
+    public boolean eof(EofEvent eof){
+        return writeIndex==0?false:processRow();
+    }
+
+#if($processEscapeSequences)
+    private boolean processChar(char character){
+        boolean isQuote = character == '"';
+        if (!escaping & isQuote) {//first quote
+            prevIsQuote = false;
+            escaping = true;
+            return false;
+        } else if (escaping & !prevIsQuote & isQuote) {//possible termination
+            prevIsQuote = true;
+            return false;
+        } else if (escaping & prevIsQuote & !isQuote) {//actual termination
+            prevIsQuote = false;
+            escaping = false;
+        } else if (escaping & prevIsQuote & isQuote) {//an escaped quote
+            prevIsQuote = false;
+        } 
+        return true;
+    }
+
+#end
+    private boolean processRow() {
+        boolean targetChanged = false;
+        rowNumber++;
+#if($skipCommentLines)
+        if(chars[0]!='#'){
+#end
+#if($headerPresent)
+#* *##if($skipEmptyLines)
+        if (HEADER_ROWS < rowNumber & writeIndex > 0) {
+#* *##else
+        if (HEADER_ROWS < rowNumber) {
+#* *##end
+            //updateTarget();
+            targetChanged = updateTarget();
+        } #if($mappingRowPresent)else if(rowNumber==MAPPING_ROW){
+            mapHeader();
+        } #end
+
+#* *##if(!$skipCommentLines)
+        writeIndex = 0;
+        fieldIndex = 0;
+        return targetChanged;
+#* *##end
+#else
+#* *##if($skipEmptyLines)
+        if(writeIndex > 0){
+            //updateTarget();
+            targetChanged = updateTarget();
+        }
+#* *##else
+            //updateTarget();
+            targetChanged = updateTarget();
+#* *##end
+#* *##if(!$skipCommentLines)
+        writeIndex = 0;
+        fieldIndex = 0;
+        return targetChanged;
+#* *##end
+#end
+#if($skipCommentLines)
+        }
+        writeIndex = 0;
+        fieldIndex = 0;
+        return targetChanged;
+#end
+    }
+#if($mappingRowPresent)
+
+    private void mapHeader(){
+        String header = new String(chars).trim();
+        header = header.replace("\"", "");
+        List<String> headers = new ArrayList();
+        for (String colName : header.split(",")) {
+            char c[] = colName.trim().replace(" ", "").toCharArray();
+            c[0] = Character.toLowerCase(c[0]);
+            headers.add(new String(c));
+        }
+#foreach($sourceInfo in $sourceMappingList)
+#* *##if(${sourceInfo.namedField})
+        ${sourceInfo.fieldIdentifier} = headers.indexOf("${sourceInfo.fieldName}");
+        fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
+        if (${sourceInfo.fieldIdentifier} < 0) {
+            throw new RuntimeException("problem mapping field:'${sourceInfo.fieldName}' index row:" + rowNumber);
+        }
+#* *##end
+#end
+    }
+#end
+
+    private boolean updateTarget() {
+        updateFieldIndex();
+#foreach($sourceInfo in $sourceMappingList)
+#* *##if($acceptPartials)
+        if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
+#* *##end
+#* *##if($sourceInfo.trim)
+#*     *##if(${fixedLen})
+        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+#*     *##else
+        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+#*     *##end
+#* *##else
+#*     *##if(${fixedLen})
+        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+#*     *##else
+        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+#*     *##end
+#* *##end
+#* *##if($acceptPartials)
+        }
+#* *##end
+#end
+        //target
+        return pushData();
+    }
+
+    private void updateFieldIndex() {
+#if(${fixedLen})
+        //Do nothing fixed len
+#else
+        fieldIndex++;
+        delimIndex[fieldIndex] = writeIndex + 1;
+#end
+    }
+
+    private boolean pushData(){
+#if($acceptPartials)
+        final int fieldIndexMax = fieldIndex;
+#end
+#if($newTarget)
+        target = new ${targetClass}();
+#end
+        try{
+#foreach($sourceInfo in $sourceMappingList)
+#* *##if($acceptPartials)
+        if (fieldIndexMax > ${sourceInfo.fieldIdentifier}){
+#* *##end
+            fieldIndex = ${sourceInfo.fieldIdentifier};
+            ${sourceInfo.updateTarget2}
+#* *##if($acceptPartials)
+        }
+#* *##end
+#end
+#if(${eventMethod})
+#* *##if($eventMethodValidates)
+            passedValidation = target.${eventMethod}();
+            return passedValidation;
+#* *##else
+            target.${eventMethod}();
+            return true;
+#* *##end
+#else
+            return true;
+#end
+        } catch (Exception e) {
+            throw new RuntimeException("problem pushing data from row:" + rowNumber 
+                                        + " fieldIndex:" + fieldIndex 
+                                        + " targetMethod:" + fieldMap.get(fieldIndex), e);
+        } finally {
+            fieldIndex = 0;
+        }
+    }
+#if(${eventCompleteMethod})
+
+    @OnEventComplete
+    public void postProcess(){
+        target.${eventCompleteMethod}();
+    }
+#end
+
+#if(${fixedLen})
+    private final void extractCharSequence(StringBuilder source, int fieldStart, int fieldLen){
+        try {
+            source.setLength(0);
+            source.append(chars, fieldStart, fieldLen);
+        } catch (Exception e) {
+            throw new RuntimeException("problem extracting value from row:" + rowNumber
+                    + " fieldStart:" + fieldStart
+                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+        }
+    }
+    
+    private final void extractTrimmedCharSequence(StringBuilder source, int fieldStart, int fieldLen){
+        int fieldEnd = fieldStart + fieldLen;
+        try {
+            source.setLength(0);
+            char[] val = chars;
+            while ((fieldStart < fieldEnd) && (val[fieldStart] <= ' ')) {
+                fieldStart++;
+            }
+            while ((fieldStart < fieldEnd) && (val[fieldEnd - 1] <= ' ')) {
+                fieldEnd--;
+            }
+            fieldLen = fieldEnd - fieldStart;
+            source.append(chars, fieldStart, fieldLen);
+        } catch (Exception e) {
+            throw new RuntimeException("problem extracting value from row:" + rowNumber
+                    + " fieldStart:" + fieldStart
+                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+        }
+    }
+
+#else
+    private final void extractCharSequence(StringBuilder source, int fieldIndex){
+        try {
+            source.setLength(0);
+            source.append(chars, delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1);
+        } catch (Exception e) {
+            throw new RuntimeException("problem extracting value from row:" + rowNumber
+                    + " fieldIndex:" + fieldIndex
+                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+        }
+    }
+
+    private final void extractTrimmedCharSequence(StringBuilder source, int fieldIndex) {
+        try {
+            source.setLength(0);
+            int len = delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1;
+            int st = delimIndex[fieldIndex];
+            char[] val = chars;
+            while ((st < len) && (val[st] <= ' ')) {
+                st++;
+            }
+            while ((st < len) && (val[len - 1] <= ' ')) {
+                len--;
+            }
+            if (st != delimIndex[fieldIndex]) {
+                len -= st;
+            }
+            source.append(chars, st, len);
+        } catch (Exception e) {
+            throw new RuntimeException("problem extracting value from row:" + rowNumber
+                    + " fieldIndex:" + fieldIndex
+                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+        }
+    }
+
+#end
+    @Override
+    public ${targetClass} event() {
+        return target;
+    }
+
+    @Override
+    public Class<${targetClass}> eventClass() {
+        return ${targetClass}.class;
+    }
+
+    @Initialise
+    public void init(){
+        target = new ${targetClass}();
+#foreach($sourceInfo in $sourceMappingList)
+        fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
+#end
+    }
+
+    @Override
+    public int rowCount() {
+        return rowNumber;
+    }
+
+    @Override
+    public boolean passedValidation() {
+        return passedValidation;
+    }
+
+    @Override
+    public char eolChar() {
+        return '${eol}';
+    }
+}
+
+

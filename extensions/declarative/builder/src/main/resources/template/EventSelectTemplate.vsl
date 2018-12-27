@@ -1,0 +1,40 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.EventHandler;
+#if( ${filter} )
+import com.fluxtion.api.annotations.FilterId;
+#end
+import com.fluxtion.extension.declarative.api.EventWrapper;
+import ${eventClassFqn};
+
+/**
+ * Generated EventHandler for ${eventClass}
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements EventWrapper<${eventClass}>{
+
+    private ${eventClass} event;
+
+#if( ${filter} )
+    @FilterId
+    public ${filterType} filter;
+
+#end    
+    @EventHandler
+    public boolean handle${eventClass}(${eventClass} event){
+        this.event = event;
+        return true;
+    }
+
+    @Override
+    public ${eventClass} event() {
+        return event;
+    }
+
+    @Override
+    public Class<${eventClass}> eventClass() {
+        return ${eventClass}.class;
+    }
+
+}

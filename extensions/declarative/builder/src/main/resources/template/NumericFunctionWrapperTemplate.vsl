@@ -1,0 +1,144 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
+import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+#foreach( $import in $imports)
+import $import;
+#end
+/**
+ * generated NumericFunction wrapper.
+ * Wraps a numeric function for invocation.
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} extends Number implements NumericValue{
+
+    //source operand inputs
+#foreach($sourceInfo in $sourceMappingList)
+    public ${sourceInfo.type} ${sourceInfo.id};
+#end
+    private ${targetClass} f = new  ${targetClass}();
+    private ${outputClass} result;
+    private boolean updated;
+#if(${resetNotifier}
+)    public Object resetNotifier;
+#end
+
+#if( !${slidingCountWindow} )
+
+#if(${tumbleCountWindow})
+    public Object tumbleWinNotifier;
+    private ${outputClass} batchedResult;
+
+    @OnParentUpdate("tumbleWinNotifier")
+    public void onTumbleWinFull(Object tumbleWinNotifier){
+        updated = true;
+        batchedResult = result;
+        result = 0;
+    }
+#end
+
+#foreach($sourceInfo in $sourceMappingList)
+    @OnParentUpdate("${sourceInfo.id}")
+    public void sourceChange_${sourceInfo.id}(${sourceInfo.type} updated){
+        calculate();
+    }
+#end
+
+    public void calculate(){
+#if(${tumbleCountWindow})
+        result = f.${targetMethod}(${input});
+#else
+        ${outputClass} oldValue = result;
+        result = f.${targetMethod}(${input});
+        updated = oldValue != result;
+#end
+    }
+
+    @OnEvent
+    public boolean onEvent(){
+        return updated;
+    }
+
+    @OnEventComplete
+    public void afterCalculate(){
+        updated = false;
+    }
+#end
+
+#if( ${slidingCountWindow} )
+    public ${sourceClass} tumbleWinNotifier;
+
+    @OnEvent
+    public boolean onEvent(){
+        ${windowedDataClass}[] buffer = tumbleWinNotifier.buffer;
+        init();
+        int len = tumbleWinNotifier.buffer.length;
+        for (int i = 0; i < len; i++) {
+            ${windowedDataClass} value = buffer[i];
+            result = f.${targetMethod}(${input});
+        }
+        return true;
+    }
+#end
+    
+#if(${resetNotifier})
+    @OnParentUpdate("resetNotifier")
+    public void reset(Object resetNotifier){
+        //${outputClass} oldValue = result;
+        init();
+        updated = false;
+        //updated = oldValue != result;
+    }
+#end
+
+
+    @Initialise
+    public void init(){
+#if(${stateful})
+        result = f.reset();
+#else
+        result = 0;
+#end
+        updated = false;
+    }
+
+    @Override
+    public short shortValue() {
+        return (short)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+
+    @Override
+    public byte byteValue() {
+        return (byte)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+
+    @Override
+    public float floatValue() {
+        return (float)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+
+    @Override
+    public int intValue() {
+        return (int)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+
+    @Override
+    public long longValue() {
+        return (long)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+
+    @Override
+    public double doubleValue() {
+        return (double)#if(${tumbleCountWindow})batchedResult#else result#end;
+    }
+    
+}
+

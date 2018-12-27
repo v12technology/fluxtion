@@ -1,0 +1,43 @@
+## Velocity Template.
+package ${functionPackage};
+
+import com.fluxtion.api.annotations.OnEvent;
+import ccom.fluxtion.extension.declarative.api.log.MsgBuilder;
+#if(${updateNotifier})
+import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnParentUpdate;
+#end
+/**
+ * Generated notificationToLogger. 
+ *
+ * @author Greg Higgins
+ */
+public class ${functionClass} extends MsgBuilder{
+
+    //source operand inputs
+#foreach($sourceInfo in $sourceMappingList)
+#if(${updateNotifier})  
+    @NoEventReference
+#end
+    public ${sourceInfo.type} ${sourceInfo.id};
+#end    
+#if(${updateNotifier})
+    public Object logNotifier;
+#end
+
+    @OnEvent
+    public boolean buildMessage() {
+        if(isGoodToLog()){
+#foreach($valueAccessor in $valueAccessorList)
+            msgSink.append("${valueAccessor.message}");
+            msgSink.append(${valueAccessor.value});
+#end
+            msgSink.append("${lastMessage}");
+            msgSink.append('\n');
+            return true;
+        }
+        return false;
+    }
+
+}
+

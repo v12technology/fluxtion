@@ -19,12 +19,12 @@ package com.fluxtion.example.core.events.postevent.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.shared.DataEventHandler;
+import com.fluxtion.example.core.events.postevent.ResetAfterEvent;
 import com.fluxtion.example.core.events.postevent.ResetDataEvent;
 import com.fluxtion.example.core.events.postevent.ResetGlobal;
-import com.fluxtion.example.core.events.postevent.ResetAfterEvent;
 import com.fluxtion.example.shared.ConfigEvent;
 import com.fluxtion.example.shared.DataEvent;
+import com.fluxtion.example.shared.DataEventHandler;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 

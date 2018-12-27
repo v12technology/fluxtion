@@ -757,6 +757,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                     return -1;
                 } else if (!handle0.isEventHandler && handle1.isEventHandler) {
                     return +1;
+                } else{
+                    return handle0.method.getName().compareTo(handle1.method.getName());
                 }
             }
             return (topologicalHandlers.indexOf(handle0.instance) - topologicalHandlers.indexOf(handle1.instance));

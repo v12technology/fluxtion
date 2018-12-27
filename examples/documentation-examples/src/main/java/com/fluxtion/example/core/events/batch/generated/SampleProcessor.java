@@ -19,8 +19,8 @@ package com.fluxtion.example.core.events.batch.generated;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.example.core.events.batch.DataHandler;
 import com.fluxtion.example.core.events.batch.BatchNode;
+import com.fluxtion.example.core.events.batch.DataHandler;
 import com.fluxtion.example.shared.ChildNode;
 import com.fluxtion.example.shared.DataEvent;
 
