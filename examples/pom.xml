@@ -21,7 +21,7 @@ along with this program.  If not, see
     <artifactId>core.master</artifactId>
     <version>1.5.7-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>fluxtion :: examples master</name>
+    <name>fluxtion :: examples</name>
     
     <modules>
         <module>documentation-examples</module>
