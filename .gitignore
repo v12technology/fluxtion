@@ -9,3 +9,5 @@
 /examples/documentation-examples/target/
 /extensions/declarative/api/target/
 /extensions/declarative/builder/target/
+/extensions/fu-text/api/target/
+/extensions/fu-text/builder/target/

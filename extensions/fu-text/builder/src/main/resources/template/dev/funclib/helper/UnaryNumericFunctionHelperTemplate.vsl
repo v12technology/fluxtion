@@ -1,0 +1,286 @@
+## Velocity Template.
+package ${package};
+
+import ${functionClassFqn};
+import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.extension.declarative.funclib.api.function.NumericFunctionBuilder;
+#if(${isArrayFunction})
+import com.fluxtion.extension.declarative.funclib.api.function.NumericArrayFunctionBuilder;
+#end
+import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.runtime.event.Event;
+import java.util.function.Function;
+
+/**
+ *
+ * @author greg higgins
+ */
+public interface ${className} {
+
+    /**
+     * 
+     * @param numeric
+     * @return
+     */
+    public static NumericValue ${functionName}(NumericValue numeric) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(numeric);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#if(${isStatefulFunction})
+
+    public static NumericValue ${functionName}(
+        NumericValue numeric, 
+        Object resetNotifier
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(numeric);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#end
+    
+    /**
+     * 
+     * @param <T>
+     * @param eventClass
+     * @param getter
+     * @return
+     */
+    public static <T extends Event>NumericValue ${functionName}(
+        Class<T> eventClass, 
+        Function<T, ? super Number> getter
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventClass, getter, true);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#if(${isStatefulFunction})
+
+    public static <T extends Event>NumericValue ${functionName}(
+        Class<T> eventClass, 
+        Function<T, ? super Number> getter,
+        Object resetNotifier
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventClass, getter, true);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#end
+    
+    /**
+     * 
+     * @param <T>
+     * @param eventHandler
+     * @param getter
+     * @return
+     */
+    public static <T extends Event>NumericValue ${functionName}(
+        EventWrapper<T> eventHandler, 
+        Function<T, ? super Number> getter
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventHandler, getter, true);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#if(${isStatefulFunction})
+
+    public static <T extends Event>NumericValue ${functionName}(
+        EventWrapper<T> eventHandler, 
+        Function<T, ? super Number> getter,
+        Object resetNotifier
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventHandler, getter, true);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#end   
+
+    public static <T>NumericValue ${functionName}(
+        Wrapper<T> functionWrapper, 
+        Function<T, ? super Number> getter
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(functionWrapper, getter, true);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+ #if(${isStatefulFunction})
+
+    public static <T>NumericValue ${functionName}(
+        Wrapper<T> functionWrapper, 
+        Function<T, ? super Number> getter,
+        Object resetNotifier
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(functionWrapper, getter, true);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#end   
+
+    /**
+     * 
+     * @param <T>
+     * @param eventHandler
+     * @param getter
+     * @return
+     */
+    public static <T>NumericValue ${functionName}(
+        T eventHandler, 
+        Function<T, ? super Number> getter
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventHandler, getter, true);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+#if(${isStatefulFunction})
+
+    public static <T>NumericValue ${functionName}(T eventHandler, 
+       Function<T, ? super Number> getter,
+       Object resetNotifier
+    ) {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(eventHandler, getter, true);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+ #end
+ 
+#if(${isArrayFunction})
+//ARRAY SUPPORT
+    public static NumericValue ${functionName}(NumericValue... numeric) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(numeric);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static NumericValue ${functionName}(
+            Object resetNotifier, 
+            NumericValue... numeric
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(numeric);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    /**
+     * 
+     * @param <T>
+     * @param eventHandler
+     * @param getter
+     * @return
+     */
+    public static <T extends Event>NumericValue ${functionName}(
+        Function<T, ? super Number> getter,
+        EventWrapper<T>... eventHandler 
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input( getter, eventHandler);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static <T extends Event>NumericValue ${functionName}(
+        Object resetNotifier,
+        Function<T, ? super Number> getter,
+        EventWrapper<T>... eventHandler 
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input( getter, eventHandler);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+
+    public static <T>NumericValue ${functionName}(
+        Function<T, ? super Number> getter,
+        Wrapper<T>... functionWrapper 
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input( getter, functionWrapper);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static <T>NumericValue ${functionName}(
+        Object resetNotifier,
+        Function<T, ? super Number> getter,
+        Wrapper<T>... functionWrapper 
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input( getter, functionWrapper);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+
+    /**
+     * 
+     * @param <T>
+     * @param eventHandler
+     * @param getter
+     * @return
+     */
+    public static <T>NumericValue ${functionName}(
+        Function<T, ? super Number> getter,
+        T... eventHandler 
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(getter, eventHandler);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+    
+    public static <T>NumericValue ${functionName}(
+            Function<T, ? super Number> getter,
+            Object resetNotifier,
+            T... eventHandler
+    ) {
+        NumericArrayFunctionBuilder functionBuilder = NumericArrayFunctionBuilder.function(${functionClass}.class);
+        functionBuilder.input(getter, eventHandler);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static <T extends Event>NumericValue ${functionName}(
+            Class<T> eventClass,
+            Function<T, ? super Number> sourceFunction,
+            String... filterString
+    ) {
+        return NumericArrayFunctionBuilder.buildFunction(${functionClass}.class, 
+                eventClass, 
+                sourceFunction, 
+                filterString);
+    }
+    
+    public static <T extends Event>NumericValue ${functionName}(
+            Class<T> eventClass,
+            Function<T, ? super Number> sourceFunction,
+            int... filterString
+    ) {
+        return NumericArrayFunctionBuilder.buildFunction(${functionClass}.class, 
+                eventClass, 
+                sourceFunction, 
+                filterString);
+    }
+#end    
+}

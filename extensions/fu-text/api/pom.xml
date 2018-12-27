@@ -15,24 +15,34 @@ You should have received a copy of the Server Side Public License
 along with this program.  If not, see 
 <http://www.mongodb.com/licensing/server-side-public-license>.
 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.fluxtion</groupId>
+        <artifactId>root-parent-pom</artifactId>
+        <version>1.5.7-SNAPSHOT</version>
+        <relativePath>../../../poms/parent-root/pom.xml</relativePath>
+    </parent>
+
     <groupId>com.fluxtion.extension</groupId>
-    <artifactId>master-pom</artifactId>
-    <version>1.5.7-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>fluxtion :: extension</name>
+    <artifactId>fluxtion-fu-text-api</artifactId>
+    <name>fluxtion :: ext :: fu-text-api</name>
+    <packaging>jar</packaging>
     
-    <modules>
-        <module>declarative</module>
-        <module>fu-text</module>
-    </modules>
-    
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-builder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-declarative-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.deploy.skip>true</maven.deploy.skip>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <netbeans.hint.license>fluxtion</netbeans.hint.license>
     </properties>
-    
 </project>
