@@ -25,10 +25,7 @@ import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.ev
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filterType;
 import com.fluxtion.runtime.event.Event;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -67,10 +64,7 @@ public interface EventSelect {
         return build(eventClazz, "" + filterId, "int");
     }
 
-    //todo store as class in the map amnd then send an instance out 
     static <T extends Event> EventWrapper<T> build(Class<T> eventClazz, String filterId, String filteringType) {
-        //            String genClassName = getIdentifier(eventClazz.getSimpleName() + "Handler" + (filterId == null ? "" : "_" + filterId));
-
         String classKey = eventClazz.getSimpleName() + filteringType;
         String instanceKey = classKey + filterId;
 
