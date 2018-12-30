@@ -102,7 +102,6 @@ public interface EventSelect {
                     eventHandlerTmp.getClass().getField("filter").set(eventHandlerTmp, Integer.valueOf(filterId));
                 }
                 GenerationContext.SINGLETON.getNodeList().add(eventHandlerTmp);
-                //set properties
                 return eventHandlerTmp;
             } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException ex) {
                 throw new RuntimeException("Cannot generate event handler instance", ex);
