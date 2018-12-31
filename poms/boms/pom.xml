@@ -126,31 +126,32 @@ along with this program.  If not, see
                 <scope>provided</scope>
             </dependency>
             
-            <!--            
-            declarative fluxtion 
+            <!--declarative fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-declarative-api</artifactId>
-                <version>0.1.37-SNAPSHOT</version>
+                <version>1.5.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-declarative-builder</artifactId>
-                <version>0.1.37-SNAPSHOT</version>
+                <version>1.5.8-SNAPSHOT</version>
                 <scope>provided</scope>
             </dependency>
-            declarative-extended fluxtion 
+            <!--declarative-extended fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-declarative-ext-api</artifactId>
-                <version>0.1.37-SNAPSHOT</version>
+                <artifactId>fluxtion-fu-text-api</artifactId>
+                <version>1.5.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-declarative-ext-builder</artifactId>
-                <version>0.1.37-SNAPSHOT</version>
+                <artifactId>fluxtion-fu-text-builder</artifactId>
+                <version>1.5.8-SNAPSHOT</version>
                 <scope>provided</scope>
             </dependency>
+            
+            <!--            
              state machine 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
