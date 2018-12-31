@@ -16,12 +16,10 @@
  */
 package fluxtion.extension.functional.test.helpers;
 
-import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.ConfigVariable;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.funclib.builder.ascii.AsciiMatchFilterFactory;
-import com.fluxtion.extension.declarative.funclib.api.filter.AsciiMatchFilter;
+import com.fluxtion.ext.futext.api.filter.AsciiMatchFilter;
 
 /**
  * Test class that prints to standard out when matched text occurs, and sets 
