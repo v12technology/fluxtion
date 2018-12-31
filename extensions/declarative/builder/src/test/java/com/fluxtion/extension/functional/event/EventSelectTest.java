@@ -12,7 +12,7 @@
 package com.fluxtion.extension.functional.event;
 
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.extension.functional.helpers.DataEvent;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.generator.util.BaseSepTest;
