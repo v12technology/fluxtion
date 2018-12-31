@@ -20,10 +20,6 @@ import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
 import com.fluxtion.extension.declarative.api.EventWrapper;
 import com.fluxtion.extension.declarative.api.numeric.NumericValue;
-import com.fluxtion.generator.compiler.SepCompilerConfig;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import org.junit.Test;
 import static com.fluxtion.extension.declarative.builder.log.LogBuilder.Log;
@@ -34,22 +30,17 @@ import static com.fluxtion.ext.futext.builder.math.SubtractFunctions.subtract;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanOnce;
 import static com.fluxtion.ext.futext.builder.test.LessThanHelper.lessThanOnce;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.generator.util.BaseSepTest;
 
 /**
  *
  * @author Greg Higgins
  */
-public class FilterTest {
+public class FilterTest extends BaseSepTest{
 
     @Test
     public void simpleFilterHelperTest() throws Exception {
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.functional.filter.simpleFilterHelperTest",
-                "GreaterThan1");
-        compileCfg.setConfigClass(CompoundBuilder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        ((Lifecycle) sep).init();
+        buildAndInitSep(CompoundBuilder.class);
         //fire some events for FX - ignored any non-Euro trades 
         DataEvent de1 = new DataEvent();
         de1.setFilterString("EU");
