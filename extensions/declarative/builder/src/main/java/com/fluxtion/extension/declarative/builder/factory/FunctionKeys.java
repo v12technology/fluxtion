@@ -53,6 +53,7 @@ public enum FunctionKeys {
     outputClass,
     parameterClass,
     pushToTarget,
+    newFunction,
     numericValueAccessor,
     resetNotifier,
     sourceClass,
