@@ -47,31 +47,32 @@ public class CsvMultiTypeMarshaller {
     private Map<String, HandlerWrapperPair> type2Wrapper;
     private HandlerWrapperPair pair;
     public com.fluxtion.runtime.lifecycle.EventHandler sink;
-
-    @EventHandler(filterId = '\n')
-    public boolean onEolChar(CharEvent charEVent) {
-        if(sink!=null & pair !=null && pair.wrapper.event() instanceof Event){
-            sink.onEvent((Event) pair.wrapper.event());
-        }
-        pair = null;
-        return false;
-    }
+    private char eolChar = '\n';
+    private int fieldNumber;
 
     @OnParentUpdate("type")
     public boolean onTypeUpdated(BufferValue type) {
         pair = type2Wrapper.get(type.asString());
+        fieldNumber = 0;
         return false;
     }
 
     @EventHandler
     public void pushCharToMarshaller(CharEvent charEvent) {
-        if (pair != null) {
+        if (pair != null & fieldNumber>0) {
             pair.handler.onEvent(charEvent);
+            if (charEvent.getCharacter() == eolChar) {
+                if (sink != null & pair != null && pair.wrapper.event() instanceof Event) {
+                    sink.onEvent((Event) pair.wrapper.event());
+                }
+                pair = null;
+            }
         }
+        fieldNumber++;
     }
 
     public void addMarshaller(Wrapper wrapper, com.fluxtion.runtime.lifecycle.EventHandler handler) {
-        if (handler!=null && handler instanceof Lifecycle) {
+        if (handler != null && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
         type2Wrapper.put(wrapper.eventClass().getSimpleName(), new HandlerWrapperPair(handler, wrapper));
@@ -81,6 +82,14 @@ public class CsvMultiTypeMarshaller {
     public void init() {
         type2Wrapper = new HashMap<>();
         pair = null;
+    }
+
+    public char getEolChar() {
+        return eolChar;
+    }
+
+    public void setEolChar(char eolChar) {
+        this.eolChar = eolChar;
     }
 
     private static class HandlerWrapperPair {
