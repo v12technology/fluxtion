@@ -20,10 +20,14 @@
 package ${functionPackage};
 
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
-import com.fluxtion.extension.declarative.funclib.api.filter.AsciiMatchFilter;
+//import com.fluxtion.api.annotations.EventHandler;
+//import com.fluxtion.api.annotations.OnEvent;
+//import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
+//import com.fluxtion.extension.declarative.funclib.api.filter.AsciiMatchFilter;
+
+#foreach( $import in $imports)
+import $import;
+#end
 
 /**
  * AsciiFilter pattern match = '${filter}'
