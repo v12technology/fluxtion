@@ -16,14 +16,18 @@
  */
 package com.fluxtion.extension.declarative.builder.event;
 
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.extension.declarative.builder.Templates;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.eventClass;
-import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.eventClassFqn;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filterType;
+import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
+import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import com.fluxtion.runtime.event.Event;
 import java.util.Map;
 import org.apache.velocity.VelocityContext;
@@ -34,7 +38,7 @@ import org.apache.velocity.VelocityContext;
  */
 public interface EventSelect {
 
-    static final String TEMPLATE = "template/EventSelectTemplate.vsl";
+    static final String TEMPLATE = Templates.PACKAGE + "/EventSelectTemplate.vsl";
 
     public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz) {
         return build(eventClazz, null, null);
@@ -78,16 +82,20 @@ public interface EventSelect {
                     try {
                         VelocityContext ctx = new VelocityContext();
                         String genClassName = eventClazz.getSimpleName() + "Handler";
+                        ImportMap importMap = ImportMap.newMap(EventHandler.class, EventWrapper.class, eventClazz);
                         if (isStringFilter) {
                             genClassName += "StringFilter";
+                            importMap.addImport(FilterId.class);
                         } else if (filteringType != null) {
                             genClassName += "IntFilter";
+                            importMap.addImport(FilterId.class);
                         }
                         ctx.put(functionClass.name(), genClassName);
                         ctx.put(eventClass.name(), eventClazz.getSimpleName());
-                        ctx.put(eventClassFqn.name(), eventClazz.getCanonicalName());
+//                        ctx.put(eventClassFqn.name(), eventClazz.getCanonicalName());
                         ctx.put(filter.name(), (isStringFilter ? "\"" + filterId + "\"" : filterId));
                         ctx.put(filterType.name(), filteringType);
+                        ctx.put(imports.name(), importMap.asString());
                         Class<EventWrapper<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
                         return aggClass;
                     } catch (Exception ex) {
