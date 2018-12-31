@@ -28,7 +28,7 @@ import javax.lang.model.type.TypeKind;
  * @author Greg Higgins
  */
 public class FunctionInfo {
-    
+
     public String paramString;
     public String returnType;
     public Class returnTypeClass;
@@ -38,8 +38,13 @@ public class FunctionInfo {
     private final Method functionMethod;
     private String sep;
     private int count;
+    private ImportMap importMap;
 
     public FunctionInfo(Method method) {
+        this(method, null);
+    }
+
+    public FunctionInfo(Method method, ImportMap importMap) {
         functionMethod = method;
         calculateMethod = method.getName();
         calculateClass = method.getDeclaringClass().getCanonicalName();
@@ -48,6 +53,7 @@ public class FunctionInfo {
         returnType = method.getReturnType().getName();
         paramString = "";
         sep = "";
+        this.importMap = importMap;
     }
 
     public String paramTypeByIndex(int index) {
@@ -102,6 +108,9 @@ public class FunctionInfo {
 
     public <S extends Event> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, EventWrapper<S> handler, boolean isCast) {
         String eventClass = handler.eventClass().getCanonicalName();
+        if (importMap != null) {
+            eventClass = importMap.addImport(handler.eventClass());
+        }
         paramString += sep + cast(isCast) + "((" + eventClass + ")" + sourceInfo.id + ".event())." + sourceMethod.getName() + "()";
         sep = ", ";
         count++;
@@ -109,6 +118,9 @@ public class FunctionInfo {
 
     public <S> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, Wrapper<S> handler, boolean isCast) {
         String eventClass = handler.eventClass().getCanonicalName();
+        if (importMap != null) {
+            eventClass = importMap.addImport(handler.eventClass());
+        }
         paramString += sep + cast(isCast) + "((" + eventClass + ")" + sourceInfo.id + ".event())." + sourceMethod.getName() + "()";
         sep = ", ";
         count++;
@@ -129,5 +141,5 @@ public class FunctionInfo {
         sep = ", ";
         count++;
     }
-    
+
 }
