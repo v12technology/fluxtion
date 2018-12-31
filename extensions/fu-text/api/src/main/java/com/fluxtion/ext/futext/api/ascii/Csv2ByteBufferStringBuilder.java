@@ -173,15 +173,6 @@ public class Csv2ByteBufferStringBuilder implements BufferValue {
     }
 
     public String cacheString() {
-//        cachedString = stringCache.get(duplicateBuffer);
-//        if (cachedString == null) {
-//            byte[] copyArray = Arrays.copyOf(array, duplicateBuffer.limit());
-//            ByteBuffer wrappingBuffer = ByteBuffer.wrap(copyArray);
-//            //wrappingBuffer.clear();
-//            cachedString = new String(copyArray);
-//            stringCache.put(wrappingBuffer, cachedString);
-//        }
-//        return cachedString;
         if (cachedString == null) {
             cachedString = sb.toString();
         }
