@@ -18,10 +18,8 @@ package com.fluxtion.ext.futext.builder.push;
 
 import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.ext.futext.builder.ascii.AsciiValuePushHelper;
-import com.fluxtion.generator.compiler.SepCompilerConfig;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
-import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,23 +28,14 @@ import org.junit.Test;
  *
  * @author greg
  */
-public class ArtificalPushTest {
+public class ArtificalPushTest extends BaseSepTest {
 
     @Test
     public void generateProcessor() throws Exception {
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.functional.push.generated",
-                "SalesLogProcessor");
-        compileCfg.setConfigClass(Builder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-
-
-        EventHandler newInstance = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        SaleItem saleItem = (SaleItem) newInstance.getClass().getField("saleItem").get(newInstance);
-
-        StringDriver.streamChars("quantity:250 nothing x", newInstance, true);
+        buildAndInitSep(Builder.class);
+        StringDriver.streamChars("quantity:250 nothing x", sep, true);
+        SaleItem saleItem = getField("saleItem");
         Assert.assertThat(saleItem.getQuantity(), is(250));
-
     }
 
     public static class Builder extends SEPConfig {
@@ -57,6 +46,5 @@ public class ArtificalPushTest {
         }
 
     }
-
 
 }
