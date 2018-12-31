@@ -29,10 +29,10 @@ import org.junit.Test;
 import static com.fluxtion.extension.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.extension.declarative.builder.log.LogBuilder.LogOnNotify;
 import static com.fluxtion.extension.declarative.builder.log.LogBuilder.buildLog;
-import static com.fluxtion.extension.declarative.funclib.builder.math.CumSumFunctions.cumSum;
-import static com.fluxtion.extension.declarative.funclib.builder.math.SubtractFunctions.subtract;
-import static com.fluxtion.extension.declarative.funclib.builder.test.GreaterThanHelper.greaterThanOnce;
-import static com.fluxtion.extension.declarative.funclib.builder.test.LessThanHelper.lessThanOnce;
+import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
+import static com.fluxtion.ext.futext.builder.math.SubtractFunctions.subtract;
+import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanOnce;
+import static com.fluxtion.ext.futext.builder.test.LessThanHelper.lessThanOnce;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
 
 /**

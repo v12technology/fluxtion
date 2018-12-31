@@ -17,9 +17,9 @@
 package com.fluxtion.extension.functional.profile;
 
 //import com.fluxtion.extension.fucntional.test.aggregated.generated.test3.MatchResultCsvProcessor;
-import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
-import com.fluxtion.extension.declarative.funclib.builder.util.StringDriver;
-import com.fluxtion.extension.declarative.funclib.builder.util.StringDriver;
+import com.fluxtion.ext.futext.api.event.CharEvent;
+import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 
 /**

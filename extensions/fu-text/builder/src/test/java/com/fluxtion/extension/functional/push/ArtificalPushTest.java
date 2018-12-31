@@ -17,11 +17,11 @@
 package com.fluxtion.extension.functional.push;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.funclib.builder.ascii.AsciiValuePushHelper;
+import com.fluxtion.ext.futext.builder.ascii.AsciiValuePushHelper;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.extension.declarative.funclib.builder.util.StringDriver;
+import com.fluxtion.ext.futext.builder.util.StringDriver;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;

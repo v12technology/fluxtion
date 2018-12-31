@@ -17,8 +17,8 @@
 package com.fluxtion.extension.functional.ascii;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
-import com.fluxtion.extension.declarative.funclib.api.filter.AnyCharMatchFilter;
+import com.fluxtion.ext.futext.api.event.CharEvent;
+import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
 
 /**
  * Char notifiers match on a configured single char

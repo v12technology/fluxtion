@@ -20,16 +20,14 @@ package com.fluxtion.extension.functional.csv;
  *
  * @author gregp
  */
-public class WorldCity {
+public class WorldCityBeanPrimitive {
     private CharSequence country;//col 0
     private CharSequence City;//col 1
     private CharSequence AccentCity;//col 2
     private CharSequence Region;//col 3
-    private int Population;//col 4
-    private double longitude;//col 5
-    private CharSequence longitudeCharSequence;//col 5
+    private CharSequence Population;//col 4
+    private CharSequence longitude;//col 5
     private double latitude;//col 6
-    private CharSequence latitudeCharSequence;//col 6
 
     public CharSequence getCountry() {
         return country;
@@ -63,19 +61,19 @@ public class WorldCity {
         this.Region = Region;
     }
 
-    public int getPopulation() {
+    public CharSequence getPopulation() {
         return Population;
     }
 
-    public void setPopulation(int Population) {
+    public void setPopulation(CharSequence Population) {
         this.Population = Population;
     }
 
-    public double getLongitude() {
+    public CharSequence getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(CharSequence longitude) {
         this.longitude = longitude;
     }
 
@@ -87,29 +85,11 @@ public class WorldCity {
         this.latitude = latitude;
     }
 
-    public CharSequence getLongitudeCharSequence() {
-        return longitudeCharSequence;
-    }
-
-    public void setLongitudeCharSequence(CharSequence longitudeCharSequence) {
-        this.longitudeCharSequence = longitudeCharSequence;
-    }
-
-    public CharSequence getLatitudeCharSequence() {
-        return latitudeCharSequence;
-    }
-
-    public void setLatitudeCharSequence(CharSequence latitudeCharSequence) {
-        this.latitudeCharSequence = latitudeCharSequence;
-    }
-    
-    public int getInt(){
-        return 0;
-    }
-
     @Override
     public String toString() {
-        return "WorldCity{" + "country=" + country + ", City=" + City + ", AccentCity=" + AccentCity + ", Region=" + Region + ", Population=" + Population + ", longitude=" + longitude + ", longitudeCharSequence=" + longitudeCharSequence + ", latitude=" + latitude + ", latitudeCharSequence=" + latitudeCharSequence + '}';
+        return "WorldCityBean{" + "country=" + country + ", City=" + City + ", AccentCity=" + AccentCity + ", Region=" + Region + ", Population=" + Population + ", longitude=" + longitude + ", latitude=" + latitude + '}';
     }
+
+
     
 }

@@ -17,9 +17,9 @@
 package com.fluxtion.extension.functional.util.marsahller;
 
 import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
-import com.fluxtion.extension.declarative.funclib.api.util.marshaller.DispatchingCsvMarshaller;
-import com.fluxtion.extension.declarative.funclib.builder.util.StringDriver;
+import com.fluxtion.ext.futext.api.event.CharEvent;
+import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
+import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import java.util.concurrent.atomic.LongAdder;
@@ -54,19 +54,27 @@ public class CsvDispathTest {
                 input.append(((CharEvent)e).getCharacter());
             }
         });
+        //
+        StringDriver.streamChars("String,123\n", dispatcher, false);
+        assertThat(input.toString(), is("123\n"));
+        assertThat(stringCount.intValue(), is(4));
+        assertThat(intCount.intValue(), is(0));
+        input.setLength(0);
+        intCount.reset();
+        stringCount.reset();
         //tests
         StringDriver.streamChars("Date,11-23-2012\n", dispatcher, false);
         assertThat(stringCount.intValue(), is(0));
         assertThat(intCount.intValue(), is(0));
-        StringDriver.streamChars("String,123\n", dispatcher, false);
-        assertThat(stringCount.intValue(), is(5));
-        assertThat(intCount.intValue(), is(0));
-        assertThat(input.toString(), is(",123\n"));
-        input.setLength(0);
+        intCount.reset();
+        stringCount.reset();
+        //
         StringDriver.streamChars("Integer,40\n", dispatcher, false);
-        assertThat(stringCount.intValue(), is(5));
-        assertThat(intCount.intValue(), is(4));
-        assertThat(input.toString(), is(",40\n"));
+        assertThat(stringCount.intValue(), is(0));
+        assertThat(intCount.intValue(), is(3));
+        assertThat(input.toString(), is("40\n"));
+        intCount.reset();
+        stringCount.reset();
     }
 
     public static class StringWrapper implements Wrapper<String> {
