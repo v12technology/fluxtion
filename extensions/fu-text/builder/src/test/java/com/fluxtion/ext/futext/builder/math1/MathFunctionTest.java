@@ -25,12 +25,9 @@ import static com.fluxtion.ext.futext.builder.math.MultiplyFunctions.multiply;
 import static com.fluxtion.ext.futext.builder.math.AddFunctions.add;
 import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
 import com.fluxtion.extension.declarative.api.numeric.NumericValue;
-import com.fluxtion.generator.compiler.SepCompilerConfig;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent_2;
+import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -39,40 +36,22 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class MathFunctionTest {
+public class MathFunctionTest extends BaseSepTest{
 
     @Test
     public void generateProcessor() throws Exception {
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.functional.math1.generated_1",
-                "SalesLogProcessor");
-        compileCfg.setConfigClass(Builder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        EventHandler newInstance = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
+        buildAndInitSep(Builder.class);
 
     }
 
     @Test
     public void generateArrayProcessor() throws Exception {
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.functional.math1.generated_2",
-                "TempProcessor");
-        compileCfg.setConfigClass(BuilderArray.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        EventHandler newInstance = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-
+        buildAndInitSep(BuilderArray.class);
     }
 
     @Test
     public void testIncSumArray() throws Exception {
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.functional.math1.generated_3",
-                "IncSumArrayProcessor");
-        compileCfg.setConfigClass(BuilderSumIncArray.class.getName());
-//        compileCfg.setConfigClass(BuilderArray.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        ((Lifecycle) sep).init();
+        buildAndInitSep(BuilderSumIncArray.class);
         //add results listeners
         NumericResultTarget targetColours = new NumericResultTarget("red,green");
         NumericResultTarget targetNumbers = new NumericResultTarget("1,2,3");
