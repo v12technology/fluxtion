@@ -36,6 +36,41 @@ along with this program.  If not, see
     <name>fluxtion :: ext :: fu-text-builder</name>
     <packaging>jar</packaging>
     
+    
+    <profiles>     
+        <profile>
+            <id>build-marshallers</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fluxtion</groupId>
+                        <artifactId>fluxtion-maven-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>dispatch-marshaller</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.ext.futext.builder.util.MarshallerSepConfig</configClass>
+                                    <className>DispatchingCsvMarshaller</className>
+                                    <packageName> com.fluxtion.ext.futext.api.util.marshaller</packageName>
+                                    <supportDirtyFiltering>true</supportDirtyFiltering>
+                                    <templateSep>template/dev/funclib/csv/CsvMultiDispatchTemplate.vsl</templateSep>
+                                    <logDebug>true</logDebug>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles> 
+    
     <dependencies>
         <!--fluxtion-->
         <dependency>
