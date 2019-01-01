@@ -17,8 +17,8 @@
 package com.fluxtion.extension.declarative.builder.util;
 
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 

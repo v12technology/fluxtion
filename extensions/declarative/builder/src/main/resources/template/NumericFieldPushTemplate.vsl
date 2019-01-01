@@ -1,9 +1,8 @@
 ## Velocity Template.
 package ${functionPackage};
-
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
-import ${targetClassFqn};
+#foreach( $import in $imports)
+import $import;
+#end
 
 /**
  * generated NumericValuePush

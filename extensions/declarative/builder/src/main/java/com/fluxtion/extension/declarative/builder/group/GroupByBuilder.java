@@ -16,18 +16,18 @@
  */
 package com.fluxtion.extension.declarative.builder.group;
 
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Avg;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Count;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Max;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Min;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Set;
-import static com.fluxtion.extension.declarative.api.group.AggregateFunctions.Sum;
-import com.fluxtion.extension.declarative.api.numeric.NumericConstant;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateless;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Avg;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Count;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Max;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Min;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Set;
+import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Sum;
+import com.fluxtion.ext.declarative.api.numeric.NumericConstant;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 import com.fluxtion.extension.declarative.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;

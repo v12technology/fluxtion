@@ -24,7 +24,7 @@ import com.fluxtion.ext.futext.api.ascii.Csv2ByteBuffer;
 import com.fluxtion.ext.futext.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntTerminator;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.numeric.BufferValue;
+import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.futext.api.ascii.Csv2ByteBufferStringBuilder;
 

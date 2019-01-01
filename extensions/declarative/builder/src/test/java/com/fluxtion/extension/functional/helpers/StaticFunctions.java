@@ -21,6 +21,10 @@ public class StaticFunctions {
         
     }
     
+    public void setint(int i){
+        
+    }
+    
     public static String add(String a){
         return a;
     }
@@ -31,6 +35,10 @@ public class StaticFunctions {
     
     public void instanceMethod(String s){
         
+    }
+    
+    public int getInt(){
+        return 1;
     }
 
     @Override

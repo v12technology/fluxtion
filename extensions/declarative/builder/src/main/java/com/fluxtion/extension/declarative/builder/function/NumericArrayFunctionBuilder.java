@@ -16,11 +16,15 @@
  */
 package com.fluxtion.extension.declarative.builder.function;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericArrayFunctionStateless;
-import com.fluxtion.extension.declarative.api.numeric.NumericArrayFunctionStateful;
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.numeric.NumericArrayFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericArrayFunctionStateful;
 import com.fluxtion.extension.declarative.builder.util.ArraySourceInfo;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.outputClass;
@@ -28,10 +32,11 @@ import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.so
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetMethod;
 import com.fluxtion.extension.declarative.builder.factory.NumericValuePushFactory;
-import com.fluxtion.extension.declarative.api.numeric.MutableNumericValue;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
 import com.fluxtion.runtime.event.Event;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,6 +52,8 @@ import java.util.Map;
 import java.util.Set;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericGetMethod;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;
+import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
+import com.fluxtion.extension.declarative.builder.util.ImportMap;
 
 /**
  *
@@ -61,6 +68,8 @@ public class NumericArrayFunctionBuilder {
     private FunctionInfo functionInfo;
     private boolean statefulFunction = false;
     private Object resetNotifier;
+    private final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
+            OnEventComplete.class, OnParentUpdate.class, NumericValuePush.class,NumericValue.class );
 
     private NumericArrayFunctionBuilder(Class<? extends NumericArrayFunctionStateless> function) {
         this.resultTargets = new ArrayList<>();
@@ -204,13 +213,16 @@ public class NumericArrayFunctionBuilder {
             ctx.put(functionClass.name(), genClassName);
             ctx.put(outputClass.name(), functionInfo.returnType);
             ctx.put(targetClass.name(), functionInfo.calculateClass);
-            ctx.put(targetClassFqn.name(), functionInfo.calculateClassFqn);
+//            ctx.put(targetClassFqn.name(), functionInfo.calculateClassFqn);
+            importMap.addImport(functionInfo.functionMethod.getDeclaringClass());
             ctx.put(targetMethod.name(), functionInfo.calculateMethod);
             ctx.put(stateful.name(), statefulFunction);
             if (resetNotifier != null) {
                 ctx.put(FunctionKeys.resetNotifier.name(), resetNotifier);
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
+            ctx.put(imports.name(), importMap.asString());
+            
             Class<NumericValue> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
             NumericValue result = aggClass.newInstance();
             //set sources via reflection

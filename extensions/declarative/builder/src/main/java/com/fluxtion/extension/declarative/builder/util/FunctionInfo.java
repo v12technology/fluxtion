@@ -16,9 +16,9 @@
  */
 package com.fluxtion.extension.declarative.builder.util;
 
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.EventWrapper;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.runtime.event.Event;
 import java.lang.reflect.Method;
 import javax.lang.model.type.TypeKind;

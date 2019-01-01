@@ -1,11 +1,8 @@
 ## Velocity Template.
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.api.log.MsgBuilder;
-#if(${updateNotifier})
-import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnParentUpdate;
+#foreach( $import in $imports)
+import $import;
 #end
 /**
  * Generated notificationToLogger. 

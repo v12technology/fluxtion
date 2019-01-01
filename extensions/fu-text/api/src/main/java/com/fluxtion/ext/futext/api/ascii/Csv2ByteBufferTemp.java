@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterType;
 import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.extension.declarative.api.numeric.BufferValue;
+import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import java.nio.ByteBuffer;
 

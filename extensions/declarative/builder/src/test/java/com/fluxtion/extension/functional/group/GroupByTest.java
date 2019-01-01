@@ -12,17 +12,17 @@
 package com.fluxtion.extension.functional.group;
 
 import com.fluxtion.extension.declarative.builder.group.GroupByBuilder;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.extension.functional.helpers.TradeEvent;
 import com.fluxtion.extension.functional.helpers.DealEvent;
 import com.fluxtion.extension.functional.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.extension.functional.helpers.Tests.Negative;
 import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 import java.util.function.Function;
 import static com.fluxtion.extension.functional.group.AggregateFunctions.Avg;
 import static com.fluxtion.extension.functional.group.AggregateFunctions.Count;
@@ -41,7 +41,7 @@ import org.junit.Ignore;
  * @author Greg Higgins
  */
 public class GroupByTest extends BaseSepTest {
-
+ 
     /**
      * Test an enriched data node
      */

@@ -31,6 +31,10 @@ public class DataEvent extends Event{
         return value;
     }
     
+    public double getDoubleVal(){
+        return 0;
+    }
+    
     public void setDataKey(String key){
         this.filterString = key;
     }

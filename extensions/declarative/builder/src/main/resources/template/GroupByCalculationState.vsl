@@ -1,14 +1,6 @@
 ## Velocity Template.
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.group.GroupByTargetMap;
-import com.fluxtion.extension.declarative.api.group.GroupByIniitialiser;
-import java.util.Map;
-import java.util.BitSet;
 #foreach( $import in $imports)
 import $import;
 #end

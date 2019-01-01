@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.api.csv;
 
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 
 /**
  * Interface implemented by nodes processing delimited or fixed length records

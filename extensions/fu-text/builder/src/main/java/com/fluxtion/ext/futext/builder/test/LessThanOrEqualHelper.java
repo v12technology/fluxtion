@@ -16,13 +16,13 @@
  */
 package com.fluxtion.ext.futext.builder.test;
 
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.futext.api.filter.BinaryPredicates.LessThanOrEqual;
 import com.fluxtion.runtime.event.Event;
 import java.util.function.Function;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.test.TestBuilder;
 
 /**

@@ -12,11 +12,11 @@
 package com.fluxtion.extension.functional.test;
 
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.extension.functional.helpers.FilterResultListener;
 import com.fluxtion.extension.functional.helpers.MyData;
 import com.fluxtion.extension.functional.helpers.MyDataChildNode;
@@ -31,7 +31,6 @@ import static com.fluxtion.extension.functional.helpers.MyData.MyDataEvent;
 import static com.fluxtion.extension.declarative.builder.test.FilterHelper.filterOnce;
 import static com.fluxtion.extension.declarative.builder.test.FilterHelper.filter;
 import static com.fluxtion.extension.declarative.builder.test.TestBuilder.buildTest;
-import com.fluxtion.extension.declarative.builder.test.TestHelper;
 import com.fluxtion.extension.functional.helpers.DataHolder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -46,17 +45,6 @@ import static org.junit.Assert.assertTrue;
  * @author Greg Higgins
  */
 public class ConditionalTestTest extends BaseSepTest {
-
-    ///WORK IN PROGRESS
-    @org.junit.Test
-    public void lambdaTestBuilder(){
-         MyData data = new MyData(1, 1, "EURUSD");
-         TestHelper.testFunction((t, u) -> {
-             return null; //To change body of generated lambdas, choose Tools | Templates.
-         });
-        Test testFunction = TestHelper.testFunction(this::zero);
-//         TestHelper.testSupplier(data::getStringVal);
-    }
     
     public int zero(CharSequence f){
         return 0;

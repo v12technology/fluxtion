@@ -19,29 +19,28 @@ package com.fluxtion.extension.declarative.builder.test;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import com.fluxtion.extension.declarative.builder.factory.FunctionKeys;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.arraySize;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filterSubjectClass;
-import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.filterSubjectClassFqn;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.input;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.outputClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceClass;
-import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceClassFqn;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetMethod;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.wrappedSubject;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
-import com.fluxtion.extension.declarative.api.util.StringWrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.util.StringWrapper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.newFunction;
 import com.fluxtion.extension.declarative.builder.util.ArraySourceInfo;
@@ -110,6 +109,9 @@ public final class TestBuilder<T, F> {
         importMap.addImport(Wrapper.class);
         importMap.addImport(Initialise.class);
         importMap.addImport(NoEventReference.class);
+        importMap.addImport(OnParentUpdate.class);
+        importMap.addImport(Wrapper.class);
+        importMap.addImport(Test.class);
     }
 
     //number scalar
@@ -504,14 +506,12 @@ public final class TestBuilder<T, F> {
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
                 ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
-                ctx.put(filterSubjectClassFqn.name(), filterSubjectWrapper.eventClass().getCanonicalName());
+                importMap.addImport(filterSubjectWrapper.eventClass());
                 ctx.put(sourceClass.name(), filterSubjectWrapper.getClass().getSimpleName());
-                ctx.put(sourceClassFqn.name(), filterSubjectWrapper.getClass().getCanonicalName());
             } else {
                 ctx.put(filterSubjectClass.name(), filterSubject.getClass().getSimpleName());
                 ctx.put(sourceClass.name(), filterSubject.getClass().getSimpleName());
-                ctx.put(filterSubjectClassFqn.name(), filterSubject.getClass().getCanonicalName());
-                ctx.put(sourceClassFqn.name(), filterSubject.getClass().getCanonicalName());
+                importMap.addImport(filterSubject.getClass());
             }
             if (notifyOnChange) {
                 ctx.put(FunctionKeys.changetNotifier.name(), notifyOnChange);
@@ -558,23 +558,18 @@ public final class TestBuilder<T, F> {
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(filter.name(), true);
             ctx.put(FunctionKeys.arrayElement.name(), INPUT_ARRAY_ELEMENT);
-//            ctx.put(filterSubjectClassFqn.name(), filterSubjectWrapperArray[0].eventClass().getName());
             ctx.put(arraySize.name(), arraySourceInfo.count);
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
                 ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
-                ctx.put(filterSubjectClassFqn.name(), filterSubjectWrapper.eventClass().getCanonicalName());
+                importMap.addImport(filterSubjectWrapper.eventClass());
+                importMap.addImport(filterSubjectWrapper.getClass());
                 ctx.put(sourceClass.name(), filterSubjectWrapper.getClass().getSimpleName());
-                ctx.put(sourceClassFqn.name(), filterSubjectWrapper.getClass().getCanonicalName());
             } else {
-//                String simpleName = filterSubject.getClass().getSimpleName();
-//                String fqnName = filterSubject.getClass().getCanonicalName();
                 String simpleName = filterSubjectArray.getClass().getComponentType().getSimpleName();
-                String fqnName = filterSubjectArray.getClass().getComponentType().getCanonicalName();
+                importMap.addImport(filterSubjectArray.getClass().getComponentType());
                 ctx.put(filterSubjectClass.name(), simpleName);
                 ctx.put(sourceClass.name(), simpleName);
-                ctx.put(filterSubjectClassFqn.name(), fqnName);
-                ctx.put(sourceClassFqn.name(), fqnName);
             }
             if (notifyOnChange) {
                 ctx.put(FunctionKeys.changetNotifier.name(), notifyOnChange);
@@ -674,8 +669,7 @@ public final class TestBuilder<T, F> {
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(FunctionKeys.arrayElement.name(), INPUT_ARRAY_ELEMENT);
             ctx.put(sourceClass.name(), filterSubjectArray.getClass().getComponentType().getSimpleName());
-            ctx.put(sourceClassFqn.name(), filterSubjectArray.getClass().getComponentType().getCanonicalName());
-            ctx.put(filterSubjectClassFqn.name(), filterSubjectArray.getClass().getComponentType().getCanonicalName());
+            importMap.addImport(filterSubjectArray.getClass().getComponentType());
             ctx.put(arraySize.name(), arraySourceInfo.count);
             if (notifyOnChange) {
                 ctx.put(FunctionKeys.changetNotifier.name(), notifyOnChange);

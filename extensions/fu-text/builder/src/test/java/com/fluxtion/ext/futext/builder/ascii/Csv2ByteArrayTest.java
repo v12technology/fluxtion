@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.ext.futext.builder.ascii.AsciiHelper;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.numeric.BufferValue;
+import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.builder.ascii.AnyCharMatchFilterFactory;
 import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;
 import com.fluxtion.ext.futext.builder.util.StringDriver;

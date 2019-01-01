@@ -12,15 +12,15 @@
 package com.fluxtion.extension.functional.log;
 
 import com.fluxtion.extension.declarative.builder.log.LogBuilder;
-import com.fluxtion.extension.declarative.api.log.MsgBuilder;
+import com.fluxtion.ext.declarative.api.log.MsgBuilder;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.extension.functional.helpers.DataEvent;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import org.junit.Test;
-import static com.fluxtion.extension.declarative.api.log.LogControlEvent.enableIdFiltering;
-import static com.fluxtion.extension.declarative.api.log.LogControlEvent.enableLevelFiltering;
-import static com.fluxtion.extension.declarative.api.log.LogControlEvent.recordMsgBuilderId;
+import static com.fluxtion.ext.declarative.api.log.LogControlEvent.enableIdFiltering;
+import static com.fluxtion.ext.declarative.api.log.LogControlEvent.enableLevelFiltering;
+import static com.fluxtion.ext.declarative.api.log.LogControlEvent.recordMsgBuilderId;
 import static com.fluxtion.extension.declarative.builder.event.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepTest;
 

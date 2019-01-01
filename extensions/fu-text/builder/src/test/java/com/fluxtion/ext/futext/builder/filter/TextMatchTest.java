@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.filter;
 import com.fluxtion.api.node.DeclarativeNodeConiguration;
 import com.fluxtion.api.node.NodeFactory;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;
 import com.fluxtion.ext.futext.builder.math.AddFunctions;
 import com.fluxtion.ext.futext.builder.math.MultiplyFunctions;

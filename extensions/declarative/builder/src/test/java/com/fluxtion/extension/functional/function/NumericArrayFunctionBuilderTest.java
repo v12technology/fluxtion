@@ -12,20 +12,20 @@
 package com.fluxtion.extension.functional.function;
 
 import com.fluxtion.extension.declarative.builder.function.NumericArrayFunctionBuilder;
-import com.fluxtion.extension.declarative.api.numeric.NumericArrayFunctionStateless;
-import com.fluxtion.extension.declarative.api.numeric.NumericArrayFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericArrayFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericArrayFunctionStateful;
 import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import static com.fluxtion.extension.declarative.builder.function.NumericArrayFunctionBuilder.buildFunction;
 import com.fluxtion.extension.functional.helpers.DataEvent;
 import com.fluxtion.extension.functional.helpers.UpdatedDataEvent;
-import com.fluxtion.extension.declarative.api.numeric.MutableNumericValue;
-import com.fluxtion.extension.declarative.api.numeric.NumericResultRelay;
-import com.fluxtion.extension.declarative.api.numeric.NumericResultTarget;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericResultRelay;
+import com.fluxtion.ext.declarative.api.numeric.NumericResultTarget;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
+import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.runtime.lifecycle.EventHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +36,7 @@ import org.junit.Test;
  *
  * @author greg
  */
-public class NumericArrayFunctionBuilderTest {
+public class NumericArrayFunctionBuilderTest extends BaseSepTest {
 
     public static class SumIncArray implements NumericArrayFunctionStateful {
 
@@ -64,9 +64,6 @@ public class NumericArrayFunctionBuilderTest {
      */
     @Test
     public void testSimpleStatefulArray() throws Exception {
-        System.out.println("testSimpleStatefulArray");
-        JavaTestGeneratorHelper.setupDefaultTestContext(
-                "com.fluxtion.extension.fucntional.test.generated.numericArrayStateful1", "ArrayCalc_1");
         EventWrapper<DataEvent>[] dataHandler = EventSelect.select(DataEvent.class, "FORWARD", "FX");
         EventWrapper<UpdatedDataEvent>[] updateHandler = EventSelect.select(UpdatedDataEvent.class, "OPTION", "EQ", "FX");
 
@@ -93,10 +90,7 @@ public class NumericArrayFunctionBuilderTest {
      */
     @Test
     public void testSimpleStatelessArray() throws Exception {
-        System.out.println("testSimpleStatelessArray");
-        JavaTestGeneratorHelper.setupDefaultTestContext(
-                "com.fluxtion.extension.fucntional.test.generated.numericArrayStateleful2", "ArrayCalc_1");
-
+//        System.out.println("testSimpleStatelessArray");
         EventWrapper<DataEvent>[] dataHandler = EventSelect.select(DataEvent.class, "FORWARD", "FX");
         EventWrapper<UpdatedDataEvent>[] updateHandler = EventSelect.select(UpdatedDataEvent.class, "OPTION", "EQ", "FX");
 
@@ -108,13 +102,7 @@ public class NumericArrayFunctionBuilderTest {
 
     @Test
     public void generateArraySepProcessor() throws Exception {
-        //build and init the SEP
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.extension.fucntional.test.generated.numericArrayStateleful3", "ArrayCalc_1");
-        compileCfg.setConfigClass(Builder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        ((Lifecycle) sep).init();
+        buildAndInitSep(Builder.class);
         //add results listeners
         NumericResultTarget targetFX = new NumericResultTarget( "result FX+Options");
         NumericResultTarget targetEq = new NumericResultTarget( "result EQ");

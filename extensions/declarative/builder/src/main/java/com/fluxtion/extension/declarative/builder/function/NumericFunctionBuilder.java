@@ -16,12 +16,16 @@
  */
 package com.fluxtion.extension.declarative.builder.function;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateless;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import com.fluxtion.extension.declarative.builder.util.FunctionInfo;
 import com.fluxtion.extension.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.input;
@@ -30,10 +34,10 @@ import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.so
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetMethod;
 import com.fluxtion.extension.declarative.builder.factory.NumericValuePushFactory;
-import com.fluxtion.extension.declarative.api.numeric.MutableNumericValue;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.runtime.event.Event;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -48,11 +52,13 @@ import static com.fluxtion.extension.declarative.builder.factory.FunctionGenerat
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.stateful;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
-import com.fluxtion.extension.declarative.api.window.CountSlidingBuffer;
+import com.fluxtion.ext.declarative.api.window.CountSlidingBuffer;
 import com.fluxtion.extension.declarative.builder.window.CountSlidingBufferFactory;
-import com.fluxtion.extension.declarative.api.window.UpdateCountTest;
+import com.fluxtion.ext.declarative.api.window.UpdateCountTest;
+import com.fluxtion.extension.declarative.builder.Templates;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import java.util.Objects;
@@ -66,7 +72,8 @@ import java.util.function.BiConsumer;
 public class NumericFunctionBuilder {
 
     private final Class<? extends NumericFunctionStateless> wrappedfunctionClass;
-    private static final String TEMPLATE = "template/NumericFunctionWrapperTemplate.vsl";
+    private static final String TEMPLATE = Templates.PACKAGE + "/NumericFunctionWrapperTemplate.vsl";
+
     private final HashMap<Object, SourceInfo> inst2SourceInfo = new HashMap<>();
     private final ArrayList<ResultTarget> resultTargets;
     FunctionInfo functionInfo;
@@ -75,7 +82,9 @@ public class NumericFunctionBuilder {
     private WindowType windowType;
     private Object windowedInput;
     private Method windowedMethod;
-    private final ImportMap importMap = ImportMap.newMap();
+    private final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
+            OnEventComplete.class, OnParentUpdate.class,
+            NumericValuePush.class, NumericValue.class);
     //class cache
     private FunctionClassCacheKey key;
     private static HashMap<FunctionClassCacheKey, Class> classCache = new HashMap<>();
@@ -118,7 +127,7 @@ public class NumericFunctionBuilder {
     public NumericFunctionBuilder input(NumericValue input) {
         SourceInfo sourceInfo = addSource(input);
         functionInfo.appendParamNumeric(input, sourceInfo);
-        Method m = FunctionGeneratorHelper.methodFromLambda(NumericValue.class, (Function<NumericValue, ?>)NumericValue::byteValue);
+        Method m = FunctionGeneratorHelper.methodFromLambda(NumericValue.class, (Function<NumericValue, ?>) NumericValue::byteValue);
         key.addSourceMethod(m);
         return this;
     }
@@ -245,11 +254,11 @@ public class NumericFunctionBuilder {
     }
 
     public NumericValue build() {
-        
+
         try {
             Class<NumericValue> aggClass = classCache.get(key);
-            
-            if(aggClass == null){
+
+            if (aggClass == null) {
                 VelocityContext ctx = new VelocityContext();
                 String genClassName = wrappedfunctionClass.getSimpleName() + "Invoker_" + GenerationContext.nextId();
                 ctx.put(functionClass.name(), genClassName);
@@ -432,8 +441,8 @@ public class NumericFunctionBuilder {
         public FunctionClassCacheKey(Class<? extends NumericFunctionStateless> wrappedfunctionClass) {
             this.wrappedfunctionClass = wrappedfunctionClass;
         }
-        
-        public void addSourceMethod(Method m){
+
+        public void addSourceMethod(Method m) {
             sourceMethods.add(m);
         }
 
@@ -465,7 +474,6 @@ public class NumericFunctionBuilder {
             }
             return false;
         }
-        
-        
+
     }
 }

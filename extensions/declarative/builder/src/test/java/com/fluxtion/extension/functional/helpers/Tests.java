@@ -11,7 +11,7 @@
  */
 package com.fluxtion.extension.functional.helpers;
 
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 
 /**
  *

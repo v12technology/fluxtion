@@ -13,17 +13,17 @@ package com.fluxtion.extension.functional.helpers;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 
 /**
  *
  * @author Greg Higgins
  */
 public class TestResultListener {
-    public Test testResult;
+    public Object testResult;
     public boolean receivedNotification;
 
-    public TestResultListener(Test testResult) {
+    public TestResultListener(Object testResult) {
         this.testResult = testResult;
     }
 

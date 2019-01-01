@@ -12,7 +12,7 @@
 package com.fluxtion.extension.functional.group;
 
 import com.fluxtion.extension.declarative.builder.group.GroupByBuilder;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.api.node.SEPConfig;
 import org.junit.Test;
 import static org.junit.Assert.*;

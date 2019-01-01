@@ -38,7 +38,12 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
     //processing state and meta-data
 #foreach($converter in ${convereters.entrySet()})
+    @NoEventReference
     public ${converter.value} ${converter.key};
+#end
+#foreach($validator in ${validators.entrySet()})
+    @NoEventReference
+    public ${validator.value} ${validator.key};
 #end
     private int rowNumber;
     private final HashMap fieldMap = new HashMap<>();
@@ -53,6 +58,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     boolean prevIsQuote = false;
 #end
     private boolean passedValidation;
+    private StringBuilder validationBuffer = new StringBuilder(256);
 
     @EventHandler
     public boolean charEvent(CharEvent event) {
@@ -234,14 +240,14 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 #if(${eventMethod})
 #* *##if($eventMethodValidates)
-            passedValidation = target.${eventMethod}();
+            passedValidation = target.${eventMethod}() & validateColumns();
             return passedValidation;
 #* *##else
             target.${eventMethod}();
-            return true;
+            return validateColumns();
 #* *##end
 #else
-            return true;
+            return validateColumns();
 #end
         } catch (Exception e) {
             throw new RuntimeException("problem pushing data from row:" + rowNumber 
@@ -251,6 +257,23 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             fieldIndex = 0;
         }
     }
+
+    private boolean validateColumns(){
+        boolean validated = true;
+        validationBuffer.setLength(0);
+#foreach($sourceInfo in $sourceMappingList)
+#* *##if(${sourceInfo.validated})
+        if(${sourceInfo.validate}){
+            validated = false;
+            validationBuffer.append(" row:").append(rowNumber);
+            validationBuffer.append(" col:").append(${sourceInfo.fieldIdentifier})
+            .append(" ");
+        }
+#* *##end
+#end
+        return validated;
+    }
+
 #if(${eventCompleteMethod})
 
     @OnEventComplete

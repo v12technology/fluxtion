@@ -17,9 +17,9 @@
 package com.fluxtion.ext.futext.builder.test.helpers;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.extension.declarative.api.numeric.BufferValue;
+import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 
 /**
  *

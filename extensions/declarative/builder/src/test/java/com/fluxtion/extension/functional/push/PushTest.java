@@ -12,8 +12,8 @@
 package com.fluxtion.extension.functional.push;
 
 import com.fluxtion.extension.declarative.builder.factory.NumericValuePushFactory;
-import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
+import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,23 +22,20 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class PushTest {
+public class PushTest extends BaseSepTest {
 
     @Test
     public void pushTest_1() throws Exception {
-        JavaTestGeneratorHelper.setupDefaultTestContext(
-                "com.fluxtion.extension.fucntional.test.generated.push", "Push_1");
         DealHandler constant_5 = new DealHandler(5);
         SaleItem item = new SaleItem();
         NumericValuePush<SaleItem> pusher = NumericValuePushFactory.setNumeric(constant_5, item, SaleItem::setQuantity);
-        
+
         Assert.assertThat(item.getQuantity(), is(0));
         pusher.pushNumericValue();
         Assert.assertThat(item.getQuantity(), is(0));
         pusher.onNumericUpdated(constant_5);
         pusher.pushNumericValue();
         Assert.assertThat(item.getQuantity(), is(5));
-                
-        
+
     }
 }

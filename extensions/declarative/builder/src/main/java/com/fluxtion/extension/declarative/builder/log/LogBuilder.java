@@ -16,10 +16,14 @@
  */
 package com.fluxtion.extension.declarative.builder.log;
 
-import com.fluxtion.extension.declarative.api.log.MsgBuilder;
-import com.fluxtion.extension.declarative.api.log.AsciiConsoleLogger;
+import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.log.MsgBuilder;
+import com.fluxtion.ext.declarative.api.log.AsciiConsoleLogger;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.extension.declarative.builder.Templates;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import java.lang.reflect.Method;
@@ -35,6 +39,8 @@ import java.util.Set;
 import org.apache.velocity.VelocityContext;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.updateNotifier;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
+import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
+import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
 
 /**
@@ -47,11 +53,13 @@ public class LogBuilder {
 
     private final HashMap<Object, SourceInfo> inst2SourceInfo = new HashMap<>();
     private ArrayList<ValueAccessor> valuesList = new ArrayList();
-    private static final String TEMPLATE = "template/ConsoleLoggerTemplate.vsl";
+    private static final String TEMPLATE = Templates.PACKAGE + "/ConsoleLoggerTemplate.vsl";
     private String message;
     private String[] messageParts;
     private int count = 0;
     private Object logNotifier;
+    private final ImportMap importMap = ImportMap.newMap(MsgBuilder.class, OnEvent.class,
+            NoEventReference.class, OnParentUpdate.class);
     private static final AsciiConsoleLogger MAIN_LOGGER = new AsciiConsoleLogger();
 
     private LogBuilder(String message, Object notifier) {
@@ -188,6 +196,7 @@ public class LogBuilder {
                 ctx.put("lastMessage", messageParts[messageParts.length - 1]);
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
+            ctx.put(imports.name(), importMap.asString());
             Class<MsgBuilder> msBuilderClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
             MsgBuilder msgBuilder = msBuilderClass.newInstance();
             //set sources via reflection
@@ -201,12 +210,7 @@ public class LogBuilder {
                 msBuilderClass.getField("logNotifier").set(msgBuilder, logNotifier);
                 ctx.put("logOnNotify", true);
             }
-//            msBuilderClass.getField("logger").set(publishMessage, MAIN_LOGGER);
             MAIN_LOGGER.addMsgBuilder(msgBuilder);
-            //below is if SEP contorls msgSink, lets delegate to the msgBuilder
-//            MsgSink logMsgSink = new MsgSink();
-//            msgBuilder.setMsgSink(logMsgSink);
-//            GenerationContext.SINGLETON.getNodeList().add(logMsgSink);
             GenerationContext.SINGLETON.getNodeList().add(msgBuilder);
             GenerationContext.SINGLETON.getNodeList().add(MAIN_LOGGER);
             return msgBuilder;

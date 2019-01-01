@@ -4,15 +4,6 @@ package ${functionPackage};
 import $import;
 #end
 
-
-
-#if(${filter})
-import ${filterSubjectClassFqn};
-#if(${wrappedSubject})import ${sourceClassFqn};#end
-#else
-import com.fluxtion.extension.declarative.api.Test;
-#end
-
 /**
  * generated Test wrapper.
  *

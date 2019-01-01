@@ -12,15 +12,12 @@
 package com.fluxtion.extension.functional.factory;
 
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.numeric.MutableNumericValue;
-import com.fluxtion.extension.declarative.api.numeric.NumericConstant;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericConstant;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-import net.vidageek.mirror.dsl.Mirror;
-import org.apache.velocity.context.Context;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;

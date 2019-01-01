@@ -18,9 +18,9 @@ package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.ext.futext.api.math.BinaryFunctions.Modulo;
 import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.extension.declarative.builder.function.NumericFunctionBuilder;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.runtime.event.Event;
 import java.util.function.Function;
 

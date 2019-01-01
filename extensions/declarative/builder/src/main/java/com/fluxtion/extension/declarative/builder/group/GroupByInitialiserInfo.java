@@ -16,7 +16,7 @@
  */
 package com.fluxtion.extension.declarative.builder.group;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

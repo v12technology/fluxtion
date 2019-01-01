@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.api.csv;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 
 /**

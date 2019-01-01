@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.util.marsahller;
 
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.futext.builder.util.StringDriver;

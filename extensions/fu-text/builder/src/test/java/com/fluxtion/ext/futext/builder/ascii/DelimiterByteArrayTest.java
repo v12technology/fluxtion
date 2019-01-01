@@ -17,10 +17,10 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
-import com.fluxtion.extension.declarative.api.numeric.MutableInt;
+import com.fluxtion.ext.declarative.api.numeric.MutableInt;
 import com.fluxtion.ext.futext.builder.ascii.AnyCharMatchFilterFactory;
 import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.wordSplitter;
 import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;

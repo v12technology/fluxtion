@@ -43,6 +43,14 @@ public class ImportMap {
         return new ImportMap();
     }
 
+    public static ImportMap newMap(Class... clazzes) {
+        final ImportMap importMap = new ImportMap();
+        for (Class clazz : clazzes) {
+            importMap.addImport(clazz);
+        }
+        return importMap;
+    }
+
     public String addImport(Class clazz) {
         String className = clazz.getCanonicalName();
         String simpleName = clazz.getSimpleName();

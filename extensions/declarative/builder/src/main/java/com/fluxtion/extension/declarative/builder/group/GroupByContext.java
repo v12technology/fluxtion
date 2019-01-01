@@ -16,11 +16,17 @@
  */
 package com.fluxtion.extension.declarative.builder.group;
 
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.group.GroupByIniitialiser;
+import com.fluxtion.ext.declarative.api.group.GroupByTargetMap;
+import com.fluxtion.extension.declarative.builder.Templates;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceMappingList;
@@ -39,6 +45,8 @@ import com.fluxtion.runtime.event.Event;
 import java.util.HashSet;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -57,10 +65,14 @@ public class GroupByContext<K, T> {
     private final Group<?, T> primaryGroup;
     private boolean initialiserRequired = false;
     private int count;
-    private static final String TEMPLATE = "template/GroupByTemplate.vsl";
-    private static final String TEMPLATE_CALC_STATE = "template/GroupByCalculationState.vsl";
+    private static final String TEMPLATE =  Templates.PACKAGE + "/GroupByTemplate.vsl";
+    private static final String TEMPLATE_CALC_STATE =  Templates.PACKAGE + "/GroupByCalculationState.vsl";
     private final SourceContext<K, T> primaryContext;
-    final ImportMap importMap = ImportMap.newMap();
+    final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
+            Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
+            Map.class, BitSet.class,  GroupBy.class, EventHandler.class,
+            GroupByIniitialiser.class, GroupByTargetMap.class
+    );
     private String genClassName;
     private String calcStateClass;
     private String eventCompleteMethod;

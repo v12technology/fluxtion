@@ -17,8 +17,8 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.extension.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;

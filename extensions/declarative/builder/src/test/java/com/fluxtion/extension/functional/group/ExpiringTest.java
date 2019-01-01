@@ -1,7 +1,7 @@
 package com.fluxtion.extension.functional.group;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import static com.fluxtion.extension.declarative.builder.group.Group.groupBy;
 import com.fluxtion.extension.declarative.builder.group.GroupByBuilder;
 import static com.fluxtion.extension.declarative.builder.log.LogBuilder.Log;
@@ -22,10 +22,10 @@ import org.junit.experimental.categories.Category;
  */
 public class ExpiringTest extends BaseSepTest {
 
-    @Override
-    protected String testPackageID() {
-        return "";
-    }
+//    @Override
+//    protected String testPackageID() {
+//        return "";
+//    }
 
     @Test
     @Category(Categories.FilterTest.class)

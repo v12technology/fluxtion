@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.filter;
 import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import static com.fluxtion.extension.declarative.builder.event.EventSelect.select;
-import com.fluxtion.extension.declarative.api.window.UpdateCountTest;
+import com.fluxtion.ext.declarative.api.window.UpdateCountTest;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.UpdateCount;
 import org.junit.Test;

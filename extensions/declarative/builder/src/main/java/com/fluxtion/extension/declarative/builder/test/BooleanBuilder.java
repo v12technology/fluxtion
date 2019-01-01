@@ -17,11 +17,11 @@
 package com.fluxtion.extension.declarative.builder.test;
 
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Test;
-import com.fluxtion.extension.declarative.api.test.AndOperator;
-import com.fluxtion.extension.declarative.api.test.NotOperator;
-import com.fluxtion.extension.declarative.api.test.OrOperator;
-import com.fluxtion.extension.declarative.api.test.XorOperator;
+import com.fluxtion.ext.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.test.AndOperator;
+import com.fluxtion.ext.declarative.api.test.NotOperator;
+import com.fluxtion.ext.declarative.api.test.OrOperator;
+import com.fluxtion.ext.declarative.api.test.XorOperator;
 
 /**
  * 

@@ -12,13 +12,13 @@
 package com.fluxtion.extension.functional.group;
 
 import com.fluxtion.extension.functional.helpers.TradeEvent;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Date;
 import com.fluxtion.extension.declarative.builder.function.NumericFunctionBuilder;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;

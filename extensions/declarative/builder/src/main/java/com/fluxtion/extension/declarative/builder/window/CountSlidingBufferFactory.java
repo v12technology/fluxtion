@@ -16,18 +16,25 @@
  */
 package com.fluxtion.extension.declarative.builder.window;
 
-import com.fluxtion.extension.declarative.api.window.CountSlidingBuffer;
+import com.fluxtion.api.annotations.AfterEvent;
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.declarative.api.window.CountSlidingBuffer;
 import com.fluxtion.api.generation.GenerationContext;
 import com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
+import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.input;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.outputClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceClassFqn;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceMethod;
-import com.fluxtion.extension.declarative.builder.util.FunctionInfo;
+import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import com.fluxtion.extension.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -37,12 +44,17 @@ import org.apache.velocity.VelocityContext;
 public class CountSlidingBufferFactory {
 
     private static final String TEMPLATE = "template/SlidingCountTemplate.vsl";
-    
-    
+
     public static CountSlidingBuffer build(Object source, Method getter, int windowSize, int publishFrequency, String dataAccessCall, SourceInfo slidingSrcInfo) {
+        ImportMap importMap = ImportMap.newMap(
+                Initialise.class, OnEvent.class,
+                OnEventComplete.class, OnParentUpdate.class, 
+                CountSlidingBuffer.class, AfterEvent.class,
+                source.getClass(), Objects.class);
+
         try {
             VelocityContext ctx = new VelocityContext();
-            
+
             String oldId = slidingSrcInfo.id;
             dataAccessCall = dataAccessCall.replaceAll(oldId, "input");
             slidingSrcInfo = new SourceInfo(slidingSrcInfo.type, "input");
@@ -53,6 +65,7 @@ public class CountSlidingBufferFactory {
             ctx.put(input.name(), slidingSrcInfo.id);
             ctx.put(sourceClassFqn.name(), source.getClass().getCanonicalName());
             ctx.put(sourceMethod.name(), dataAccessCall);
+            ctx.put(imports.name(), importMap.asString());
 
             Class<CountSlidingBuffer> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
             CountSlidingBuffer result = aggClass.newInstance();

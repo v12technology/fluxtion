@@ -16,8 +16,8 @@
  */
 package com.fluxtion.extension.declarative.builder.group;
 
-import com.fluxtion.extension.declarative.api.group.MultiKey;
-import com.fluxtion.extension.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.group.MultiKey;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
 import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import java.lang.reflect.Method;
 

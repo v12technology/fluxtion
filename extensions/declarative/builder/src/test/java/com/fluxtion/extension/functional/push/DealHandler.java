@@ -13,7 +13,7 @@ package com.fluxtion.extension.functional.push;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.extension.functional.helpers.DealEvent;
-import com.fluxtion.extension.declarative.api.numeric.NumericConstant;
+import com.fluxtion.ext.declarative.api.numeric.NumericConstant;
 
 /**
  *

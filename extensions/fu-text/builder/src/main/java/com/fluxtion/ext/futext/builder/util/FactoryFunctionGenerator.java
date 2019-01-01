@@ -16,8 +16,8 @@
  */
 package com.fluxtion.ext.futext.builder.util;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericArrayFunctionStateless;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericArrayFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import com.fluxtion.ext.futext.api.filter.BinaryPredicates;
 import com.fluxtion.ext.futext.api.math.BinaryFunctions;
 import com.fluxtion.ext.futext.api.math.UnaryFunctions;

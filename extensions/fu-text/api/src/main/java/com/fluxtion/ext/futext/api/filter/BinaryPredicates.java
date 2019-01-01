@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.api.filter;
 
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Test;
 
 
 /**

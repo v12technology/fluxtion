@@ -12,9 +12,9 @@
 package com.fluxtion.extension.functional.group;
 
 import com.fluxtion.extension.declarative.builder.group.GroupByBuilder;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.extension.declarative.builder.group.Group.groupBy;
 import com.fluxtion.generator.util.BaseSepTest;
 import static com.fluxtion.extension.declarative.builder.test.FilterHelper.filter;
@@ -98,7 +98,7 @@ public class FilteredGroupByTest extends BaseSepTest {
     }
     
     
-    public static class GreaterThan implements com.fluxtion.extension.declarative.api.Test {
+    public static class GreaterThan implements com.fluxtion.ext.declarative.api.Test {
 
         public boolean greaterThan(double op1, double op2) {
             return op1 > op2;

@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntFixedLength;
 import com.fluxtion.ext.futext.api.ascii.EolNotifier;

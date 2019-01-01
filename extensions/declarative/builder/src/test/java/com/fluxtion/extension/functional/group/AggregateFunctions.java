@@ -11,8 +11,8 @@
  */
 package com.fluxtion.extension.functional.group;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateful;
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 
 /**
  *

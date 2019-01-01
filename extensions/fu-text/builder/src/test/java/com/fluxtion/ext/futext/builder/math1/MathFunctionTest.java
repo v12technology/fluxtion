@@ -18,13 +18,13 @@ package com.fluxtion.ext.futext.builder.math1;
 
 import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
-import com.fluxtion.extension.declarative.api.EventWrapper;
-import com.fluxtion.extension.declarative.api.numeric.NumericResultRelay;
-import com.fluxtion.extension.declarative.api.numeric.NumericResultTarget;
+import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericResultRelay;
+import com.fluxtion.ext.declarative.api.numeric.NumericResultTarget;
 import static com.fluxtion.ext.futext.builder.math.MultiplyFunctions.multiply;
 import static com.fluxtion.ext.futext.builder.math.AddFunctions.add;
 import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent_2;
 import com.fluxtion.generator.util.BaseSepTest;

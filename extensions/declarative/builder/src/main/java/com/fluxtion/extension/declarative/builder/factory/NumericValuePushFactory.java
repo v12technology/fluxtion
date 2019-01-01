@@ -16,21 +16,27 @@
  */
 package com.fluxtion.extension.declarative.builder.factory;
 
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetMethod;
-import com.fluxtion.extension.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import org.apache.velocity.VelocityContext;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.sourceMethod;
-import com.fluxtion.extension.declarative.api.numeric.NumericValuePush;
+import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
+import com.fluxtion.extension.declarative.builder.Templates;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.setCharMethod;
+import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.imports;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.parameterClass;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionKeys.targetClassFqn;
+import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import java.util.function.BiConsumer;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -44,6 +50,9 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  */
 public class NumericValuePushFactory {
 
+    
+    private static final String TEMPLATE = Templates.PACKAGE + "/NumericFieldPushTemplate.vsl";
+    
     public static <T> NumericValuePush<T> setChar(NumericValue sourceValue, 
             T targetInstance, 
             BiConsumer<T, ? super Character> targetFunction) throws Exception {
@@ -69,15 +78,16 @@ public class NumericValuePushFactory {
             Method targetSetMethod) throws MethodInvocationException, ClassNotFoundException, IOException, InstantiationException, ParseErrorException, ResourceNotFoundException, IllegalAccessException {
         //build aggregate target instance
         VelocityContext ctx = new VelocityContext();
+        ImportMap importMap = ImportMap.newMap(OnEvent.class, NumericValuePush.class, targetInstance.getClass());
+        ctx.put(imports.name(), importMap.asString());
         String genClassName = "Push_" + targetInstance.getClass().getSimpleName() + "_" + targetSetMethod.getName() + "_" + GenerationContext.nextId();
         ctx.put(functionClass.name(), genClassName);
         ctx.put(targetMethod.name(), targetSetMethod.getName());
         ctx.put(targetClass.name(), targetInstance.getClass().getSimpleName());
-        ctx.put(targetClassFqn.name(), targetInstance.getClass().getCanonicalName());
         ctx.put(parameterClass.name(), targetSetMethod.getParameterTypes()[0].getName());
         ctx.put(sourceMethod.name(), sourceGetMethod.getName());
         //        
-        Class<NumericValuePush> pushClass = FunctionGeneratorHelper.generateAndCompile(null, "template/NumericFieldPushTemplate.vsl", GenerationContext.SINGLETON, ctx);
+        Class<NumericValuePush> pushClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
         NumericValuePush pusher = pushClass.newInstance();
         pusher.source = sourceValue;
         pusher.target = targetInstance;

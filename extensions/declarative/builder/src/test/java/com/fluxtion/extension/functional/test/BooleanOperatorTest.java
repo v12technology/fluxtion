@@ -1,8 +1,8 @@
 package com.fluxtion.extension.functional.test;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.api.EventWrapper;
-import com.fluxtion.extension.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.extension.declarative.builder.event.EventSelect;
 import static com.fluxtion.extension.declarative.builder.test.BooleanBuilder.not;
 import static com.fluxtion.extension.declarative.builder.test.BooleanBuilder.and;
@@ -25,7 +25,7 @@ import static com.fluxtion.extension.declarative.builder.test.BooleanBuilder.nor
  * @author gregp
  */
 public class BooleanOperatorTest extends BaseSepTest {
-
+ 
     @org.junit.Test
     public void testNot() throws Exception {
         EventHandler sep = buildAndInitSep(Builder.class);

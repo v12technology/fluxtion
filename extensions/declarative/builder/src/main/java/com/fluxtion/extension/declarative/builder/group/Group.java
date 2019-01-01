@@ -16,9 +16,9 @@
  */
 package com.fluxtion.extension.declarative.builder.group;
 
-import com.fluxtion.extension.declarative.api.group.MultiKey;
+import com.fluxtion.ext.declarative.api.group.MultiKey;
 import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.extension.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.extension.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import com.fluxtion.extension.declarative.builder.util.ImportMap;
 import com.fluxtion.runtime.event.Event;

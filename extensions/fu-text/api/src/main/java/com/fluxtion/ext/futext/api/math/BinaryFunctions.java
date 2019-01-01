@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.api.math;
 
-import com.fluxtion.extension.declarative.api.numeric.NumericFunctionStateless;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 
 
 /**
