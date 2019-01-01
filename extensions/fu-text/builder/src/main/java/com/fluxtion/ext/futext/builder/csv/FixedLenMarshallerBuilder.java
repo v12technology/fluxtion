@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
 import java.lang.reflect.Method;
 
 /**

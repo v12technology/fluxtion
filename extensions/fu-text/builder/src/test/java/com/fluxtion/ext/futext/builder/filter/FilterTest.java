@@ -17,19 +17,19 @@
 package com.fluxtion.ext.futext.builder.filter;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.builder.event.EventSelect;
+import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import org.junit.Test;
-import static com.fluxtion.extension.declarative.builder.log.LogBuilder.Log;
-import static com.fluxtion.extension.declarative.builder.log.LogBuilder.LogOnNotify;
-import static com.fluxtion.extension.declarative.builder.log.LogBuilder.buildLog;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.LogOnNotify;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.buildLog;
 import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
 import static com.fluxtion.ext.futext.builder.math.SubtractFunctions.subtract;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanOnce;
 import static com.fluxtion.ext.futext.builder.test.LessThanHelper.lessThanOnce;
-import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.generator.util.BaseSepTest;
 
 /**

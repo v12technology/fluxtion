@@ -17,8 +17,8 @@
 package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.extension.declarative.builder.group.Group;
-import com.fluxtion.extension.declarative.builder.group.GroupByBuilder;
+import com.fluxtion.ext.declarative.builder.group.Group;
+import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.declarative.api.numeric.MutableInt;
 import java.util.function.Function;

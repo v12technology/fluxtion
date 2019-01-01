@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.math1;
 
 import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.extension.declarative.builder.event.EventSelect;
+import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericResultRelay;
 import com.fluxtion.ext.declarative.api.numeric.NumericResultTarget;

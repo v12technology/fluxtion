@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.ascii;
 import com.fluxtion.ext.futext.api.ascii.Ascii2DoubleTerminator;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntTerminator;
 import java.util.function.BiConsumer;
-import com.fluxtion.extension.declarative.builder.factory.NumericValuePushFactory;
+import com.fluxtion.ext.declarative.builder.factory.NumericValuePushFactory;
 
 /**
  *

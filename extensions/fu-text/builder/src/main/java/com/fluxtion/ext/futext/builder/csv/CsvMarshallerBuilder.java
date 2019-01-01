@@ -17,8 +17,8 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
-import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

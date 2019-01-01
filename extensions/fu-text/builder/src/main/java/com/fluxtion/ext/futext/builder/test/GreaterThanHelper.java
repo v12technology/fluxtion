@@ -21,9 +21,9 @@ import com.fluxtion.ext.futext.api.filter.BinaryPredicates.GreaterThan;
 import com.fluxtion.runtime.event.Event;
 import java.util.function.Function;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.builder.test.TestBuilder;
+import com.fluxtion.ext.declarative.builder.test.TestBuilder;
 
 /**
 * @author Greg Higgins
