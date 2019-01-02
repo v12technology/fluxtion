@@ -33,10 +33,6 @@ along with this program.  If not, see
     
     <dependencies>
         <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>fluxtion-builder</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-api</artifactId>
             <version>${project.version}</version>

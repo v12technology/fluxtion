@@ -18,7 +18,9 @@ package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.api.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Test;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.test.AndOperator;
+import com.fluxtion.ext.declarative.api.test.BooleanFilter;
 import com.fluxtion.ext.declarative.api.test.NotOperator;
 import com.fluxtion.ext.declarative.api.test.OrOperator;
 import com.fluxtion.ext.declarative.api.test.XorOperator;
@@ -55,5 +57,17 @@ public class BooleanBuilder {
 
     public static Test nand(Object... tracked) {
         return not(and(tracked));
+    }
+    
+    public static <T> BooleanFilter<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
+        BooleanFilter<T> filter = new BooleanFilter<>( trackedWrapped, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
+    }
+    
+    public static <T> BooleanFilter<T> filter(T tracked, Object notifier) {
+        BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
     }
 }

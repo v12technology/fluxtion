@@ -18,7 +18,6 @@ package com.fluxtion.ext.declarative.api.window;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.generation.GenerationContext;
 import java.util.Objects;
 
 /**
@@ -33,14 +32,7 @@ public class CountNotifier {
     public int notifyLimit;
     private int _notifyLimit;
 
-    public static  CountNotifier countNotifier(int count, Object trackedInstance) {
-        CountNotifier notifier = new CountNotifier(count, trackedInstance);
-        GenerationContext.SINGLETON.getNodeList().add(notifier);
-        //add to list
-        return notifier;
-    }
-
-    private CountNotifier(int count, Object trackedInstance) {
+    public CountNotifier(int count, Object trackedInstance) {
         this.count = count;
         this.trackedInstance = trackedInstance;
     }

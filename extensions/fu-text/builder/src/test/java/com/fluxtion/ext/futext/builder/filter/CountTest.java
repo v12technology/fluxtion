@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.filter;
 import com.fluxtion.api.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import com.fluxtion.ext.declarative.api.window.UpdateCountTest;
+import com.fluxtion.ext.declarative.builder.window.CountNotifierBuilder;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.UpdateCount;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class CountTest extends BaseSepTest {
 
     public static class Builder1 extends SEPConfig {
         {
-            addPublicNode(new UpdateCount(UpdateCountTest.updateCount(select(DataEvent.class), 3)), "counter");
+            addPublicNode(new UpdateCount(CountNotifierBuilder.updateCount(select(DataEvent.class), 3)), "counter");
         }
     }
 }

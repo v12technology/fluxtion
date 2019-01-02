@@ -61,6 +61,7 @@ import com.fluxtion.ext.declarative.api.window.UpdateCountTest;
 import com.fluxtion.ext.declarative.builder.Templates;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
+import com.fluxtion.ext.declarative.builder.window.CountNotifierBuilder;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -310,7 +311,7 @@ public class NumericFunctionBuilder {
         switch (windowType) {
             case countTumble:
                 ctx.put("tumbleCountWindow", true);
-                windowCache = UpdateCountTest.updateCount(windowedInput, windowSize);
+                windowCache = CountNotifierBuilder.updateCount(windowedInput, windowSize);
                 ctx.put(sourceClass.name(), windowCache.getClass().getCanonicalName());
                 break;
             case countSliding:
@@ -329,13 +330,13 @@ public class NumericFunctionBuilder {
                 break;
             case timeTumble:
                 ctx.put("tumbleTimeWindow", true);
-                windowCache = UpdateCountTest.updateCount(windowedInput, windowSize);
+                windowCache = CountNotifierBuilder.updateCount(windowedInput, windowSize);
                 ctx.put(sourceClass.name(), windowCache.getClass().getCanonicalName());
                 break;
             case timeSliding:
                 ctx.put("slidingTimeWindow", true);
                 //add the time counter
-                UpdateCountTest.updateCount(windowedInput, windowSize);
+                CountNotifierBuilder.updateCount(windowedInput, windowSize);
 //                break;
             case none:
             default:

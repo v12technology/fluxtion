@@ -19,7 +19,6 @@ package com.fluxtion.ext.declarative.api.window;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Test;
 import java.util.Objects;
 
@@ -42,21 +41,13 @@ public class UpdateCountTest implements Test {
     public UpdateCountTest() {
     }
 
-    private UpdateCountTest(Object observed, int limit, Object resetNotifier) {
+    public UpdateCountTest(Object observed, int limit, Object resetNotifier) {
         this.observed = observed;
         this.notifiyLimit = limit;
         this.resetNotifier = resetNotifier;
     }
 
-    public static Test updateCount(Object observed, int limit) {
-        return updateCount(observed, limit, null);
-    }
 
-    public static Test updateCount(Object observed, int limit, Object resetNotifier) {
-        Test test = new UpdateCountTest(observed, limit, resetNotifier);
-        GenerationContext.SINGLETON.getNodeList().add(test);
-        return test;
-    }
 
     @OnParentUpdate("resetNotifier")
     public void reset(Object resetNotifier) {

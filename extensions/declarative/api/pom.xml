@@ -36,10 +36,6 @@ along with this program.  If not, see
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>fluxtion-builder</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>fluxtion</netbeans.hint.license>

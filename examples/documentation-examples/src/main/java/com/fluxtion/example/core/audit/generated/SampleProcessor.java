@@ -40,7 +40,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final Combiner combiner_9 = new Combiner(childNode_3, pipelineNode_7);
   public final NodeAuditor nodeAuditor = new NodeAuditor();
   //Dirty flags
-  private boolean isDirty_combiner_9 = false;
+
   //Filter constants
 
   public SampleProcessor() {
@@ -76,7 +76,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(combiner_9, "combiner_9", "processConfig", typedEvent);
-    isDirty_combiner_9 = combiner_9.processConfig(typedEvent);
+    combiner_9.processConfig(typedEvent);
     auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
     combiner_9.onEvent();
     //event stack unwind callbacks
@@ -129,7 +129,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
     nodeAuditor.processingComplete();
-    isDirty_combiner_9 = false;
   }
 
   @Override
