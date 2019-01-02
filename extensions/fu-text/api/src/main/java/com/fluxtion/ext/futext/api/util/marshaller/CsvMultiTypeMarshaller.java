@@ -22,8 +22,8 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class CsvMultiTypeMarshaller {
 
     private Map<String, HandlerWrapperPair> type2Wrapper;
     private HandlerWrapperPair pair;
-    public com.fluxtion.runtime.lifecycle.EventHandler sink;
+    public com.fluxtion.api.lifecycle.EventHandler sink;
     private char eolChar = '\n';
     private int fieldNumber;
 
@@ -71,7 +71,7 @@ public class CsvMultiTypeMarshaller {
         fieldNumber++;
     }
 
-    public void addMarshaller(Wrapper wrapper, com.fluxtion.runtime.lifecycle.EventHandler handler) {
+    public void addMarshaller(Wrapper wrapper, com.fluxtion.api.lifecycle.EventHandler handler) {
         if (handler != null && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
@@ -94,11 +94,11 @@ public class CsvMultiTypeMarshaller {
 
     private static class HandlerWrapperPair {
 
-        public HandlerWrapperPair(com.fluxtion.runtime.lifecycle.EventHandler handler, Wrapper wrapper) {
+        public HandlerWrapperPair(com.fluxtion.api.lifecycle.EventHandler handler, Wrapper wrapper) {
             this.handler = handler;
             this.wrapper = wrapper;
         }
-        com.fluxtion.runtime.lifecycle.EventHandler handler;
+        com.fluxtion.api.lifecycle.EventHandler handler;
         Wrapper wrapper;
     }
 }

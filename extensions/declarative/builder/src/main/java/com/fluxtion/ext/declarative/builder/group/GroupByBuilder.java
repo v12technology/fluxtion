@@ -17,7 +17,7 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Avg;
 import static com.fluxtion.ext.declarative.api.group.AggregateFunctions.Count;
@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.numericGetMethod;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;

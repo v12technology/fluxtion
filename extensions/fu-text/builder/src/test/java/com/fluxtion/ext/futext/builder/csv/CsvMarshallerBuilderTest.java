@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
@@ -30,7 +30,7 @@ import static com.fluxtion.ext.futext.builder.csv.RecordParserBuilder.failedVali
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;

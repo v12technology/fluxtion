@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * Wraps an underlying event node in a SEP

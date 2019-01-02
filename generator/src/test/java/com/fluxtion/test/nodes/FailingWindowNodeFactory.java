@@ -16,8 +16,8 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
 import java.util.Map;
 
 /**

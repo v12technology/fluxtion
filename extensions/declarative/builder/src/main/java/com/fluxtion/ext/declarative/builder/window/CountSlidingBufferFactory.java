@@ -22,7 +22,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.declarative.api.window.CountSlidingBuffer;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;

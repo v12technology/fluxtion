@@ -23,11 +23,11 @@ import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.Map;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
@@ -41,7 +41,7 @@ public class InjectionTest extends BaseSepTest {
 
     @Test
     public void testInjectionTree() {
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSep.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSep.class);
         WordProcessor processor = getField("wordProcessor");
         sep.onEvent(new CharEvent('c'));
         assertTrue(processor.testAndClear(0, 'c'));
@@ -57,7 +57,7 @@ public class InjectionTest extends BaseSepTest {
 
     @Test
     public void testInjectionNoFactoryTree() {
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactory.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactory.class);
         WordProcessorNoFactory processor = getField("wordProcessor");
         Assert.assertEquals(34, processor.handler.intVal);
         Assert.assertEquals("someName", processor.handler.stringVal);
@@ -65,7 +65,7 @@ public class InjectionTest extends BaseSepTest {
 
     @Test
     public void testInjectionNoFactoryVariablConfigTree() {
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactoryConfigVariable.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactoryConfigVariable.class);
         WordProcessorNoFactoryVariableConfig processor = getField("wordProcessor");
         Assert.assertEquals(10, processor.handler.intVal);
         Assert.assertEquals("variable val", processor.handler.stringVal);

@@ -13,13 +13,13 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.generator.util.BaseSepTest;
 import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
 import com.fluxtion.junit.Categories;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;

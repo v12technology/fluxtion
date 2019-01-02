@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
 import com.fluxtion.test.event.TestEvent;
 import org.junit.Test;

@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounter;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounterGeneric;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounterGenericArrays;

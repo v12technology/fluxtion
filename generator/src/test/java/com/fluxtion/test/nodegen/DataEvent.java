@@ -16,7 +16,7 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

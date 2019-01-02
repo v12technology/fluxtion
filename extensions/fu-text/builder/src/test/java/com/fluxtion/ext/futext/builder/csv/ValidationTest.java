@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.csv;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
@@ -33,7 +33,7 @@ import com.fluxtion.ext.futext.builder.util.StringDriver;
 import static com.fluxtion.ext.futext.builder.csv.ValidationTest.NumberCompareValidators.gt;
 import static com.fluxtion.ext.futext.builder.csv.ValidationTest.NumberCompareValidators.lt;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.api.EventWrapper;

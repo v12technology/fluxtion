@@ -20,7 +20,7 @@ package com.fluxtion.generator.targets;
 
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.nodes.KeyTracker;
 import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;

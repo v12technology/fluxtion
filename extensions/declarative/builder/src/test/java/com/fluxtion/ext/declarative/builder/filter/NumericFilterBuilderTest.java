@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.filter;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder.function;
 import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilderTest;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;

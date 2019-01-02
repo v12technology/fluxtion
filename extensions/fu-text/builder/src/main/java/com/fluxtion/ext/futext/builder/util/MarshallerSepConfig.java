@@ -16,8 +16,8 @@
  */
 package com.fluxtion.ext.futext.builder.util;
 
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.futext.api.ascii.Csv2ByteBuffer;
 import com.fluxtion.ext.futext.api.ascii.Csv2ByteBufferTemp;
 import com.fluxtion.ext.futext.api.util.marshaller.CsvMultiTypeMarshaller;

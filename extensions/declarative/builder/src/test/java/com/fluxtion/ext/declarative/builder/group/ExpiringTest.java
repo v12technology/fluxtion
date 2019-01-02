@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
@@ -9,7 +9,7 @@ import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.junit.Categories;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

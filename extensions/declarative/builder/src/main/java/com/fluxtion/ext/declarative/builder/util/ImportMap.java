@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

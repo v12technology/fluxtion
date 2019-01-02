@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;

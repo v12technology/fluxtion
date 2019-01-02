@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.filter;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.window.CountNotifierBuilder;

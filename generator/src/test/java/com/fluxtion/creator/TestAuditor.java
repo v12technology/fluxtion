@@ -16,7 +16,7 @@
  */
 package com.fluxtion.creator;
 
-import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.api.audit.Auditor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

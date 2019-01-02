@@ -6,7 +6,7 @@
 package com.fluxtion.generator.targets;
 
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.enums.DayOfWeek;
 import com.fluxtion.test.enums.DayProcessor;
 import org.junit.Assert;

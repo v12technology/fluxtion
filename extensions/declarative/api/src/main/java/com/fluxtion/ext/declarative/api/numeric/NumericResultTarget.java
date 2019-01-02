@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api.numeric;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * Will hold a MutableNumeric value

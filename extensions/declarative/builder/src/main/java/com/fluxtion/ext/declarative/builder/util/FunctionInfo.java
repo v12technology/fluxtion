@@ -19,7 +19,7 @@ package com.fluxtion.ext.declarative.builder.util;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.lang.reflect.Method;
 import javax.lang.model.type.TypeKind;
 

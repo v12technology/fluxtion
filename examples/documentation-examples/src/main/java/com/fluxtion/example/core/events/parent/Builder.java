@@ -17,7 +17,7 @@
 package com.fluxtion.example.core.events.parent;
 
 import com.fluxtion.example.shared.DataEventHandler;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.shared.MyEventHandler;
 
 /**

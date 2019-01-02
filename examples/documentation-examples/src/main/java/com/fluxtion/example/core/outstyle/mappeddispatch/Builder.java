@@ -17,7 +17,7 @@
 package com.fluxtion.example.core.outstyle.mappeddispatch;
 
 import com.fluxtion.example.core.outstyle.naming.*;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

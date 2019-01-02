@@ -16,7 +16,7 @@
  */
 package com.fluxtion.generator.model.parentlistener.wc;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * 

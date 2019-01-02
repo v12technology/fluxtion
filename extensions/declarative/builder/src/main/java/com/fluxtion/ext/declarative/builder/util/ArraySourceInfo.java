@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import java.lang.reflect.Method;

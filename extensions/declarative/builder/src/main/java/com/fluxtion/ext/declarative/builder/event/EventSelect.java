@@ -18,7 +18,7 @@ package com.fluxtion.ext.declarative.builder.event;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterId;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.Templates;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
@@ -28,7 +28,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.filterType;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.Map;
 import org.apache.velocity.VelocityContext;
 

@@ -18,8 +18,8 @@ package com.fluxtion.ext.futext.builder.util;
 
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.event.EofEvent;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.factory;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

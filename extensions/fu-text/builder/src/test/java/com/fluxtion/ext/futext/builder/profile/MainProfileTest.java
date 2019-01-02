@@ -20,7 +20,7 @@ package com.fluxtion.ext.futext.builder.profile;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 
 /**
  *

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.api.event;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import static com.fluxtion.ext.futext.api.event.EventId.*;
 
 /**

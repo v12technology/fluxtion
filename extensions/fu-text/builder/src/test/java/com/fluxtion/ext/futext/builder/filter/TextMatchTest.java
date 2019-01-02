@@ -16,17 +16,17 @@
  */
 package com.fluxtion.ext.futext.builder.filter;
 
-import com.fluxtion.api.node.DeclarativeNodeConiguration;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;
 import com.fluxtion.ext.futext.builder.math.AddFunctions;
 import com.fluxtion.ext.futext.builder.math.MultiplyFunctions;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.TextMatchPrinter;
 import java.util.HashSet;

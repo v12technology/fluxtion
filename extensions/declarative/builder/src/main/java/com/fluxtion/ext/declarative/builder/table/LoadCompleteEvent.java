@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.table;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.shared;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * Simple Event that holds data item of type T.

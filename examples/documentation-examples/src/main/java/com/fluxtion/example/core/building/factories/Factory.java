@@ -16,9 +16,9 @@
  */
 package com.fluxtion.example.core.building.factories;
 
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
+import com.fluxtion.builder.node.SEPConfig;
 import java.util.Map;
 
 /**

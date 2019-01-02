@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 
 

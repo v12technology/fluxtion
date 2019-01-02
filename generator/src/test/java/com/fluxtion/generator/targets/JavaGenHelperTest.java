@@ -6,9 +6,9 @@
 package com.fluxtion.generator.targets;
 
 import com.fluxtion.generator.targets.JavaGenHelper;
-import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.api.generation.FilterDescription;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.builder.generation.FilterDescription;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.model.InvokerFilterTarget;
 import com.fluxtion.test.event.AnnotatedTestEventHandler;

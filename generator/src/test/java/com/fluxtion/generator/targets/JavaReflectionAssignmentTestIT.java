@@ -7,7 +7,7 @@ package com.fluxtion.generator.targets;
 
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateAssignment;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateDispatch;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.nodes.privatemembers.TimeRecorder;
 import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers;

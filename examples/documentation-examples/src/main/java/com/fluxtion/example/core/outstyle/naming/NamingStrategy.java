@@ -16,11 +16,11 @@
  */
 package com.fluxtion.example.core.outstyle.naming;
 
-import com.fluxtion.api.generation.FilterDescription;
-import com.fluxtion.api.generation.FilterDescriptionProducer;
-import com.fluxtion.api.generation.NodeNameProducer;
+import com.fluxtion.builder.generation.FilterDescription;
+import com.fluxtion.builder.generation.FilterDescriptionProducer;
+import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.example.shared.DataEvent;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

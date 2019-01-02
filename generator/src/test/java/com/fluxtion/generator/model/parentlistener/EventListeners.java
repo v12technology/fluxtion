@@ -18,7 +18,7 @@ package com.fluxtion.generator.model.parentlistener;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

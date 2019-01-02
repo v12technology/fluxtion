@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.events.clean;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

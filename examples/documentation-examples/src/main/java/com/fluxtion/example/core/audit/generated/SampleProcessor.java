@@ -16,9 +16,10 @@
  */
 package com.fluxtion.example.core.audit.generated;
 
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.example.core.audit.Combiner;
 import com.fluxtion.example.core.audit.NodeAuditor;
 import com.fluxtion.example.shared.ChildNode;
@@ -28,7 +29,6 @@ import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEvent;
 import com.fluxtion.example.shared.MyEventHandler;
 import com.fluxtion.example.shared.PipelineNode;
-import com.fluxtion.runtime.audit.Auditor;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
@@ -40,7 +40,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final Combiner combiner_9 = new Combiner(childNode_3, pipelineNode_7);
   public final NodeAuditor nodeAuditor = new NodeAuditor();
   //Dirty flags
-
+  private boolean isDirty_combiner_9 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -49,7 +49,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   @Override
-  public void onEvent(com.fluxtion.runtime.event.Event event) {
+  public void onEvent(com.fluxtion.api.event.Event event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.ConfigEvent"):
         {
@@ -76,7 +76,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(combiner_9, "combiner_9", "processConfig", typedEvent);
-    combiner_9.processConfig(typedEvent);
+    isDirty_combiner_9 = combiner_9.processConfig(typedEvent);
     auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
     combiner_9.onEvent();
     //event stack unwind callbacks
@@ -129,6 +129,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
     nodeAuditor.processingComplete();
+    isDirty_combiner_9 = false;
   }
 
   @Override

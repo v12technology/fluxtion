@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * Represents a simple FX order

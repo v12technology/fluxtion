@@ -13,10 +13,10 @@ package com.fluxtion.ext.declarative.builder.log;
 
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.declarative.api.log.MsgBuilder;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import org.junit.Test;
 import static com.fluxtion.ext.declarative.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.declarative.api.log.LogControlEvent.enableLevelFiltering;

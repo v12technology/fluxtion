@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
@@ -14,7 +14,7 @@ import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.ext.declarative.builder.helpers.Tests;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import net.vidageek.mirror.dsl.Mirror;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

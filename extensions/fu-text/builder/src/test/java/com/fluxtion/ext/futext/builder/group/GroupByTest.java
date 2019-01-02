@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.group;
 
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
@@ -30,7 +30,7 @@ import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.readIntCsv;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import com.fluxtion.ext.futext.builder.test.helpers.LeaguePosition;
 import com.fluxtion.ext.futext.builder.test.helpers.MatchResult;

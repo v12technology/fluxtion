@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.window.CountNotifier;
 import com.fluxtion.ext.declarative.api.window.UpdateCountTest;

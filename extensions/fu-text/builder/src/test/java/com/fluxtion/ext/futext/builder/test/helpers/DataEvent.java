@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.test.helpers;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

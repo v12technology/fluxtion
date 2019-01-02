@@ -17,11 +17,11 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.api.group.MultiKey;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;

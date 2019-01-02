@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.ascii;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntFixedLength;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -18,8 +18,8 @@ package com.fluxtion.ext.futext.builder.util;
 
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.event.EofEvent;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 
 /**
  * Utility to publish a String as a set of CharEvent's into a SEP.

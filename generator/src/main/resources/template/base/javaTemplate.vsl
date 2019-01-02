@@ -17,9 +17,9 @@
  */
 package ${package};
 
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end
@@ -38,7 +38,7 @@ ${MODEL.nodeMemberAssignments}
     }
 
     @Override
-    public void onEvent(com.fluxtion.runtime.event.Event event) {
+    public void onEvent(com.fluxtion.api.event.Event event) {
 ${MODEL.eventDispatch}
     }
 

@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.test;
 
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.futext.api.filter.BinaryPredicates.NotEqualTo;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.function.Function;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;

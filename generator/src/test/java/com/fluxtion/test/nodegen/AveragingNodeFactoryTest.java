@@ -16,10 +16,10 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.api.node.DeclarativeNodeConiguration;
-import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.HashSet;

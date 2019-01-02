@@ -17,7 +17,7 @@
 package com.fluxtion.test.event;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

@@ -18,7 +18,7 @@ package com.fluxtion.generator.model.parentlistener.wc;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterType;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

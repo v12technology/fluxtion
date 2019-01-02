@@ -3,8 +3,8 @@ package com.fluxtion.generator.targets;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.google.common.base.Predicates;
-import com.fluxtion.api.generation.FilterDescription;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.FilterDescription;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.DirtyFlag;
 import com.fluxtion.generator.model.Field;
@@ -12,7 +12,7 @@ import com.fluxtion.generator.model.InvokerFilterTarget;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.api.audit.Auditor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -1117,7 +1117,7 @@ public class SepJavaSourceModelHugeFilter {
 
     /**
      * String representation of java code handling subclass of
-     * {@link com.fluxtion.runtime.event.Event Event}, with support for specific
+     * {@link com.fluxtion.api.event.Event Event}, with support for specific
      * dispatch based upon
      * {@linkplain  com.fluxtion.runtime.event.Event#filterId() filterID}. If
      * inlining is false the following output will be produced:

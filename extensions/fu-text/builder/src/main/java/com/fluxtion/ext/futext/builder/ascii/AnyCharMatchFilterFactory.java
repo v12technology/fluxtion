@@ -17,9 +17,9 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.*;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.*;

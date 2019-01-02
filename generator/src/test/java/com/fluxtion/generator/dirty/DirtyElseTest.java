@@ -18,10 +18,10 @@ package com.fluxtion.generator.dirty;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.audit.RegistrationListenerTest;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.test.event.TestEvent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,7 +35,7 @@ public class DirtyElseTest extends BaseSepTest {
 
     @Test
     public void testAudit() {
-        com.fluxtion.runtime.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
+        com.fluxtion.api.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
         PassTest pass = getField("passCount");
         FailsTest fail = getField("failCount");
         handler.onEvent(new NumberEvent(12));

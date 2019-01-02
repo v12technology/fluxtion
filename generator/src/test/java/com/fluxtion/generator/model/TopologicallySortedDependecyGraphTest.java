@@ -16,8 +16,8 @@
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.test.event.AnnotatedTimeHandler;
 import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
 import com.fluxtion.test.event.DependencyChild;

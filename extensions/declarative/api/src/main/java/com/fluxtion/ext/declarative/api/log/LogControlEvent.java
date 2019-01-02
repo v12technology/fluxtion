@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api.log;
 
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  * Control message for simple logger.

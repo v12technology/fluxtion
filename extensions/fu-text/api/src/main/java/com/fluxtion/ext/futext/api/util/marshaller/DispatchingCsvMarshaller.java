@@ -1,9 +1,9 @@
 package com.fluxtion.ext.futext.api.util.marshaller;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.futext.api.ascii.Csv2ByteBufferTemp;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 
@@ -32,7 +32,7 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
   }
 
   @Override
-  public void onEvent(com.fluxtion.runtime.event.Event event) {
+  public void onEvent(com.fluxtion.api.event.Event event) {
     switch (event.eventId()) {
       case (CharEvent.ID):
         {

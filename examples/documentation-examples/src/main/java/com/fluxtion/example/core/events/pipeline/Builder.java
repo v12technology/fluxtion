@@ -18,7 +18,7 @@ package com.fluxtion.example.core.events.pipeline;
 
 import com.fluxtion.example.shared.PipelineNode;
 import com.fluxtion.example.shared.DataEventHandler;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

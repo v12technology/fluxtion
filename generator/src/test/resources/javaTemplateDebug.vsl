@@ -19,10 +19,10 @@ package ${package};
 
 import java.util.HashMap;
 
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 #if(${MODEL.imports})
 ${MODEL.imports}
@@ -45,7 +45,7 @@ ${MODEL.filterConstantDeclarations}
 ${MODEL.nodeMemberAssignments}
     }
     @Override
-    public void onEvent(com.fluxtion.runtime.event.Event event) {
+    public void onEvent(com.fluxtion.api.event.Event event) {
 ${MODEL.debugEventDispatch}
     }
 

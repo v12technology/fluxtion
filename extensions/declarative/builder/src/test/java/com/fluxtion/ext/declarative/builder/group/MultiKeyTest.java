@@ -13,11 +13,11 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;

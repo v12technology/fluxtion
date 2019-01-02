@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;

@@ -5,10 +5,10 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.api.generation.FilterDescription;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.model.InvokerFilterTarget;
-import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

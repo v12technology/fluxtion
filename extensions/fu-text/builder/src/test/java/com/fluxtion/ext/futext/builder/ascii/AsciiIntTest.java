@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.ascii;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntFixedLength;
@@ -34,7 +34,7 @@ import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
 import com.fluxtion.ext.futext.builder.math.MultiplyFunctions;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.futext.builder.test.helpers.SoldAggregator;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

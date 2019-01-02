@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.test.AndOperator;

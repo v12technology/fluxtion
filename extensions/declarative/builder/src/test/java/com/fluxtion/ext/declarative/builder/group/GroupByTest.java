@@ -13,7 +13,7 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
@@ -21,7 +21,7 @@ import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.ext.declarative.builder.helpers.Tests.Negative;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.declarative.api.Test;
 import java.util.function.Function;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;

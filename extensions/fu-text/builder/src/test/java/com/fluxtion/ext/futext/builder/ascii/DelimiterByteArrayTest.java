@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.ascii;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
@@ -27,7 +27,7 @@ import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;
 import static com.fluxtion.ext.futext.builder.math.Frequency.frequency;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

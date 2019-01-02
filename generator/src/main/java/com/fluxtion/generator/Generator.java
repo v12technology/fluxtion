@@ -16,8 +16,8 @@
  */
 package com.fluxtion.generator;
 
-import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_INTROSPECTOR_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;

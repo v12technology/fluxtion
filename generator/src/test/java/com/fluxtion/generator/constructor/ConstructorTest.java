@@ -18,9 +18,9 @@ package com.fluxtion.generator.constructor;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;

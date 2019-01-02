@@ -21,7 +21,7 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.function.Function;
 
 /**

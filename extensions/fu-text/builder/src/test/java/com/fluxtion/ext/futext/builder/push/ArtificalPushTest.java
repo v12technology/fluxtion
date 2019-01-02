@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.push;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.futext.builder.ascii.AsciiValuePushHelper;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;

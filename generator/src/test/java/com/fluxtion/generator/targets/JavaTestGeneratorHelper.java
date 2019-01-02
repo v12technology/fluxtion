@@ -7,13 +7,13 @@ package com.fluxtion.generator.targets;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.fluxtion.api.node.SEPConfig;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.compiler.SepCompiler;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;

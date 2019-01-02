@@ -23,7 +23,7 @@ import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.google.common.base.Predicates;
 import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.generation.FilterDescription;
+import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.targets.SepJavaSourceModel;
 import com.fluxtion.test.event.AnnotatedEventHandlerWithOverrideFilter;
 import com.fluxtion.test.event.AnnotatedHandlerNoFilter;

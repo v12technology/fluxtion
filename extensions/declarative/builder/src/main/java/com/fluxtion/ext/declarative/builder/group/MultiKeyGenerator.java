@@ -17,7 +17,7 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.api.group.MultiKey;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
@@ -27,7 +27,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMa
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetMappingList;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.generation.NodeNameProducer;
+import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.test.event.DirtyNotifierNode;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
