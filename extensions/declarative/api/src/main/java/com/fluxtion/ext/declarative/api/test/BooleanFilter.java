@@ -16,30 +16,28 @@
  */
 package com.fluxtion.ext.declarative.api.test;
 
-import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.declarative.api.Wrapper;
 
 /**
- * A filtering wrapper that propagates the event wave when the tracked object
- * and a notifier object both indicate a positive change.
- * 
- * Can be useful to combine a validation with a tracked object for broadcasting
- * to dependent nodes.
- * 
+ * A filtering wrapper that propagates the event wave when a notifier object
+ * both indicate a positive change.
+ *
+ * Can be useful to combine a failed validation with a tracked object for broadcasting
+ * to dependent nodes. The tracked object ma
+ *
  * @author V12 Technology Ltd.
  * @param <T> The filtered type
  */
 public class BooleanFilter<T> implements Wrapper<T> {
 
     private final Object notifier;
+    @NoEventReference
     private final T tracked;
     private final Wrapper<T> trackedWrapper;
-    private boolean notifierUpdate;
-    private boolean trackedUpdate;
 
-    public BooleanFilter(Wrapper<T>  trackedWrapper, Object notifier) {
+    public BooleanFilter(Wrapper<T> trackedWrapper, Object notifier) {
         this.notifier = notifier;
         this.tracked = null;
         this.trackedWrapper = trackedWrapper;
@@ -50,45 +48,24 @@ public class BooleanFilter<T> implements Wrapper<T> {
         this.tracked = tracked;
         this.trackedWrapper = null;
     }
-
-    @OnParentUpdate("notifier")
-    public void notifier(Object notifier){
-        notifierUpdate = true;
-    }
-
-    @OnParentUpdate("tracked")
-    public void trackedUpdated(T tracked){
-        trackedUpdate = true;
-    }
-    
-
-    @OnParentUpdate("trackedWrapper")
-    public void trackedWrapperUpdated(Wrapper<T> tracked){
-        trackedUpdate = true;
-    }
     
     @OnEvent
-    public boolean filteredUpdate(){
-        boolean sendUpdate = notifierUpdate & trackedUpdate;
-        notifierUpdate = false;
-        trackedUpdate = false;
-        return sendUpdate;
+    public boolean updated(){
+        return true;
     }
-    
-    @Initialise
-    public void init(){
-        notifierUpdate = false;
-        trackedUpdate = false;
+
+    public boolean filteredUpdate() {
+        return true;
     }
-    
+
     @Override
     public T event() {
-        return tracked==null?trackedWrapper.event(): tracked;
+        return tracked == null ? trackedWrapper.event() : tracked;
     }
 
     @Override
     public Class<T> eventClass() {
-        return (Class<T>) (tracked==null?trackedWrapper.eventClass():tracked.getClass());
+        return (Class<T>) (tracked == null ? trackedWrapper.eventClass() : tracked.getClass());
     }
 
 }
