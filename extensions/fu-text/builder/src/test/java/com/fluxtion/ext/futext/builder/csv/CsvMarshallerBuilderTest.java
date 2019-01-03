@@ -239,7 +239,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithHeaderAndRowCB() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB.class);
+        buildAndInitSep(WorldCitiesCsv_Header_OnEventCB.class);
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
