@@ -23,18 +23,18 @@ import com.fluxtion.ext.declarative.api.util.Named;
  *
  * @author V12 Technology Ltd.
  */
-public class ValidationLogger extends Named{
-    
+public class ValidationLogger extends Named {
+
     private final String id;
     private StringBuilder sb;
-    
+
     public ValidationLogger(String id) {
         super(id);
         this.id = id;
         sb = new StringBuilder();
     }
-    
-    public ValidationLogger logError(CharSequence error){
+
+    public ValidationLogger logError(CharSequence error) {
         sb.append(error);
         return this;
     }
@@ -42,9 +42,12 @@ public class ValidationLogger extends Named{
     public StringBuilder getSb() {
         return sb;
     }
-    
+
     @AfterEvent
-    public void cleanBuffer(){
+    public void cleanBuffer() {
+//        if (sb.length() > 0) {
+//            System.out.println("validation problem:" + sb.toString());
+//        }
         sb.setLength(0);
     }
 
