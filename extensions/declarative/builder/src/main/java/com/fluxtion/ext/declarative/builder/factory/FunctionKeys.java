@@ -39,6 +39,7 @@ public enum FunctionKeys {
     functionClassFqn,
     functionPackage,
     functionName,
+    id,
     imports,
     input,
     input1,
