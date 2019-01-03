@@ -24,6 +24,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
+import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
@@ -75,6 +76,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected boolean eventMethodValidates;
     protected boolean reuseTarget;
     protected final boolean fixedLen;
+    private String id;
 
     protected RecordParserBuilder(Class<T> target, int headerLines, boolean fixedLen) {
         importMap = ImportMap.newMap();
@@ -94,6 +96,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         this.eventMethodValidates = false;
         this.reuseTarget = true;
         this.fixedLen = fixedLen;
+        this.id = "validationLog";
         //
         targetClazz = target;
         targetId = "target";
@@ -191,7 +194,15 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         this.reuseTarget = reuseTarget;
         return (P) this;
     }
+    
+    public void setId(String id){
+        this.id = id;
+    }
 
+    public String getId() {
+        return id;
+    }
+    
     public RowProcessor<T> build() {
         try {
             VelocityContext ctx = new VelocityContext();
@@ -220,6 +231,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             ctx.put("newTarget", !reuseTarget);
             ctx.put("convereters", convereters);
             ctx.put("validators", validators);
+            ctx.put(FunctionKeys.id.name(), id);
             ctx.put("delimiter", StringEscapeUtils.escapeJava("" + tokenCfg.getFieldSeparator()));
             ctx.put("eol", StringEscapeUtils.escapeJava("" + tokenCfg.getLineEnding()));
             if (tokenCfg.getIgnoredChars() != Character.MIN_VALUE) {
