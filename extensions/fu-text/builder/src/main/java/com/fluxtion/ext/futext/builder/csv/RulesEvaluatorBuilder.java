@@ -16,14 +16,18 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
+import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filter;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filterMatch;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nand;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.not;
+import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.or;
 import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.futext.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import java.util.ArrayList;
@@ -39,26 +43,24 @@ import javafx.util.Pair;
  */
 public class RulesEvaluatorBuilder<T> {
 
-    public static <T> BuilderWrapper<T> validate(Wrapper<T> bean) {
+    public static <T> BuilderWrapper<T> validator(Wrapper<T> bean) {
         return new BuilderWrapper<T>(bean);
     }
 
-    public static <T> Builder<T> validate(T bean) {
+    public static <T> Builder<T> validator(T bean) {
         return new Builder<T>(bean);
     }
 
-    public static <T> BuilderRowProcessor<T> validate(RowProcessor<T> bean) {
+    public static <T> BuilderRowProcessor<T> validator(RowProcessor<T> bean) {
         return new BuilderRowProcessor<T>(bean);
     }
-    
-    
 
     public static class BuilderRowProcessor<T> {
 
-        private Wrapper<T> monitoredWrapped;
+        private RowProcessor<T> monitoredWrapped;
         private List<Pair<SerializableConsumer, Function<T, ?>>> ruleList;
 
-        public BuilderRowProcessor(Wrapper<T> monitored) {
+        public BuilderRowProcessor(RowProcessor<T> monitored) {
             this.monitoredWrapped = monitored;
             ruleList = new ArrayList<>();
         }
@@ -70,16 +72,29 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> RulesEvaluator<T> build() {
             //and all rules and pass through boolean filter
-            List testList = new ArrayList();
-            for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
-                SerializableConsumer<? extends R> rule = pair.getKey();
-                Function<T, R> supplier = (Function<T, R>) pair.getValue();
-                testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+            RowExceptionNotifier notifier = SINGLETON.addOrUseExistingNode(
+                    new RowExceptionNotifier(monitoredWrapped));
+            RulesEvaluator<T> evaluator = null;
+            if (ruleList.isEmpty()) {
+                evaluator = new RulesEvaluator<>(
+                        monitoredWrapped,
+                        filter(monitoredWrapped, notifier)
+                );
+            } else {
+                List testList = new ArrayList();
+                for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
+                    SerializableConsumer<? extends R> rule = pair.getKey();
+                    Function<T, R> supplier = (Function<T, R>) pair.getValue();
+                    testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+                }
+
+                evaluator = new RulesEvaluator<>(
+                        filterMatch(monitoredWrapped, and(testList.toArray())),
+                        filter(monitoredWrapped, or(notifier,
+                                and(monitoredWrapped, nand(testList.toArray())))
+                        )
+                );
             }
-            RulesEvaluator<T> evaluator = new RulesEvaluator<>(
-                    filterMatch(monitoredWrapped, and(testList.toArray())),
-                    filterMatch(monitoredWrapped, nand(testList.toArray()))
-            );
             return evaluator;
         }
     }
@@ -100,6 +115,7 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> RulesEvaluator<T> build() {
+            //TODO add logic for node validators
             //and all rules and pass through boolean filter
             List testList = new ArrayList();
             for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
@@ -131,6 +147,7 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> RulesEvaluator<T> build() {
+            //TODO add logic for node validators
             List testList = new ArrayList();
             for (Pair<SerializableConsumer, SerializableSupplier<T, ?>> pair : ruleList) {
                 SerializableConsumer<? extends R> rule = pair.getKey();
