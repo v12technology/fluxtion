@@ -35,6 +35,7 @@ public class BooleanFilter<T> implements Wrapper<T> {
     private final Object notifier;
     @NoEventReference
     private final T tracked;
+    @NoEventReference
     private final Wrapper<T> trackedWrapper;
 
     public BooleanFilter(Wrapper<T> trackedWrapper, Object notifier) {
