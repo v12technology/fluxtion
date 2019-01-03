@@ -16,7 +16,7 @@ import $import;
 public class ${functionClass} implements RowProcessor<${targetClass}> {
 
     @Inject
-    @Config(key = "id", value = "myLogger")
+    @Config(key = "id", value = "${id}")
     public ValidationLogger errorLog;
     //buffer management
     private final char[] chars = new char[4096];
@@ -248,14 +248,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             return true;
 #end
         } catch (Exception e) {
-            errorLog.getSb().append("problem pushing data from row:")
-                    .append(rowNumber).append(" fieldIndex:")
-                    .append(fieldIndex).append(" targetMethod:")
-                    .append(fieldMap.get(fieldIndex));
-            throw new RuntimeException("problem pushing data from row:" + rowNumber 
-                                        + " fieldIndex:" + fieldIndex 
-                                        + " targetMethod:" + fieldMap.get(fieldIndex), e);
-
+            logException("problem pushing data from row:", false, e);
+            passedValidation = false;
+            return false;
         } finally {
             fieldIndex = 0;
         }
@@ -274,9 +269,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             source.setLength(0);
             source.append(chars, fieldStart, fieldLen);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldStart:" + fieldStart
-                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
     
@@ -294,9 +287,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             fieldLen = fieldEnd - fieldStart;
             source.append(chars, fieldStart, fieldLen);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldStart:" + fieldStart
-                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
@@ -306,9 +297,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             source.setLength(0);
             source.append(chars, delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldIndex:" + fieldIndex
-                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
@@ -329,13 +318,21 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             }
             source.append(chars, st, len);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldIndex:" + fieldIndex
-                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
 #end
+    private void logException(String prefix, boolean fatal, Exception e) {
+        errorLog.getSb().append(prefix)
+                .append(rowNumber).append(" fieldIndex:")
+                .append(fieldIndex).append(" targetMethod:")
+                .append(fieldMap.get(fieldIndex));
+        if(fatal){
+            throw new RuntimeException(errorLog.getSb().toString(), e);
+        }
+    }
+
     @Override
     public ${targetClass} event() {
         return target;
