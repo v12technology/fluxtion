@@ -40,7 +40,9 @@ public interface RowProcessor<T> extends Wrapper<T> {
      * <pre>@OnEvent</pre> a boolean return type indicates whether this is a
      * validating method.
      *
-     * @return validation was successful, true indicates success.
+     * @return validation was successful, true indicates success. This value is
+     * transient only returns true for the event cycle that a successful
+     * validation has occurred.
      */
     boolean passedValidation();
 

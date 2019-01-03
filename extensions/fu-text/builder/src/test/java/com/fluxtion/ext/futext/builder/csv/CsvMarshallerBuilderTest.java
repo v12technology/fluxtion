@@ -41,6 +41,11 @@ import org.junit.Test;
  */
 public class CsvMarshallerBuilderTest extends BaseSepTest {
 
+    @Override
+    protected String testPackageID() {
+        return "";
+    }
+
     @Test
     public void testCsvNoHeader() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsvCfg.class);

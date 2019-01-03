@@ -16,7 +16,9 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
@@ -27,20 +29,17 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMa
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.futext.api.csv.ColumnValidator;
 import com.fluxtion.ext.futext.api.csv.FailedValidationListener;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
+import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.event.EofEvent;
 import static com.fluxtion.ext.futext.builder.Templates.CSV_MARSHALLER;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.VelocityContext;
 
@@ -72,7 +71,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected final ArrayList<CsvPushFunctionInfo> srcMappingList;
     protected int converterCount;
     protected Map<Object, String> converterMap;
-    protected Map<ColumnValidator, String> validatorMap;
     protected CharTokenConfig tokenCfg;
     protected boolean eventMethodValidates;
     protected boolean reuseTarget;
@@ -86,10 +84,12 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(HashMap.class);
         importMap.addImport(RowProcessor.class);
         importMap.addImport(EofEvent.class);
+        importMap.addImport(Config.class);
+        importMap.addImport(ValidationLogger.class);
+        importMap.addImport(Inject.class);
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
-        this.validatorMap = new HashMap<>();
         this.tokenCfg = CharTokenConfig.UNIX;
         this.eventMethodValidates = false;
         this.reuseTarget = true;
@@ -110,45 +110,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
                 eventCompleteMethod = method.getName();
             }
         }
-    }
-
-    public <R, S, U extends Boolean> P validate(LambdaReflection.SerializableFunction<T, S> sourceFunction, ColumnValidator validator) {
-
-        try {
-            importMap.addImport(NoEventReference.class);
-            String writeMethodName = sourceFunction.method().getName().replaceFirst("get", "set");
-            Method writeMethod = Arrays.asList(sourceFunction.getContainingClass().getMethods())
-                    .stream()
-                    .filter(p -> p.getName().equals(writeMethodName))
-                    .findFirst().get();
-            importMap.addImport(validator.getClass());
-
-            String localName = validatorMap.computeIfAbsent(validator, (t) -> {
-                String name = validator.getClass().getSimpleName();
-                name = name.toLowerCase().charAt(0) + name.substring(1) + "_" + converterCount++;
-                GenerationContext.SINGLETON.getNodeList().add(validator);
-                return name;
-            });
-
-            colInfo(writeMethod).setValidator(localName, sourceFunction.method());
-
-        } catch (Exception ex) {
-            Logger.getLogger(RecordParserBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return (P) this;
-    }
-
-    public <S, U extends Boolean> P validator(String colName, LambdaReflection.SerializableFunction<S, U> validatorFunction) {
-//        Method method = validatorFunction.method();
-//        Class<?> declaringClass = method.getDeclaringClass();
-//        System.out.println(method);
-//        if (Modifier.isStatic(method.getModifiers())) {
-//            importMap.addStaticImport(declaringClass);
-//            colInfo(colName).setValidator(method);
-//        }
-//        return (P) this;
-        throw new UnsupportedOperationException("validation at field level not implemented");
     }
 
     public <S extends CharSequence, U> P converter(int colIndex, LambdaReflection.SerializableFunction<S, U> converterFunction) {
@@ -239,9 +200,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             converterMap.entrySet().stream().forEach((e) -> {
                 convereters.put(e.getValue(), importMap.addImport(e.getKey().getClass()));
             });
-            validatorMap.entrySet().stream().forEach((e) -> {
-                validators.put(e.getValue(), importMap.addImport(e.getKey().getClass()));
-            });
             if (mappingRow > 0) {
                 importMap.addImport(ArrayList.class);
             }
@@ -278,15 +236,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             final RowProcessor result = aggClass.newInstance();
 
             converterMap.entrySet().stream().forEach((e) -> {
-                try {
-                    Object source = e.getKey();
-                    String fieldName = e.getValue();
-                    aggClass.getField(fieldName).set(result, source);
-                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                    throw new RuntimeException("could not build function " + ex.getMessage(), ex);
-                }
-            });
-            validatorMap.entrySet().stream().forEach((e) -> {
                 try {
                     Object source = e.getKey();
                     String fieldName = e.getValue();

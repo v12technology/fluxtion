@@ -16,22 +16,12 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.api.annotations.Config;
-import com.fluxtion.api.annotations.Inject;
-import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nand;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import static com.fluxtion.ext.futext.builder.csv.ValidationTest.NumberCompareValidators.gt;
-import static com.fluxtion.ext.futext.builder.csv.ValidationTest.NumberCompareValidators.lt;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import org.junit.Assert;
@@ -39,130 +29,30 @@ import org.junit.Test;
 
 public class ValidationTest extends BaseSepTest {
 
-//    protected String testPackageID() {
-//        return "";
-//    }
-
+    protected String testPackageID() {
+        return "";
+    }
+    
     @Test
     public void testCsvWithHeaderAndRowCBFailedValidation() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
         NumericValue count = getField("count");
-        ValidationEvaluator validator = getField("validationEvaluator");
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "mexico,aixirivali,Aixirivali,06,,1.2,1.5\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,330,1.5";
-        WorldCityBeanPrimitive city = ((Wrapper<WorldCityBeanPrimitive>) getField("city")).event();
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(4, count.intValue());
-        Assert.assertEquals(2, validator.failureCount);
     }
 
-    public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {
+    public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {{
 
-        {
-            RowProcessor<WorldCityBeanPrimitive> city = csvMarshaller(WorldCityBeanPrimitive.class)
-                    .build();
-            addPublicNode(city, "city");
+            RowProcessor<WorldCityBeanPrimitive> city = addPublicNode(csvMarshaller(WorldCityBeanPrimitive.class).build(), "city");
             addPublicNode(count(city), "count");
             maxFiltersInline = 25;
 
-            addNode(new ValidationEvaluator(
-                    and(
-                            city,
-                            nand(
-                                    //buildTest(eq(20), city, WorldCityBeanPrimitive::getLatitude).build(),
-                                    buildTest(lt(200), city, WorldCityBeanPrimitive::getLatitude).build(),
-                                    buildTest(gt(2), city, WorldCityBeanPrimitive::getLatitude).build()
-                            )
-                    )
-            ), "validationEvaluator");
         }
-
-    }
-
-    public static class Logger extends Named {
-
-        private StringBuilder sb;
-
-        public Logger(String name) {
-            super(name);
-        }
-        
-        public void log(String log){
-            System.out.println("log:" + log);
-        }
-    }
-
-    public static class ValidationEvaluator {
-
-        private final Object failureNotifier;
-        public int failureCount;
-
-        public ValidationEvaluator(Object failureNotifier) {
-            this.failureNotifier = failureNotifier;
-        }
-
-        @OnEvent
-        public void failed() {
-            failureCount++;
-        }
-
-    }
-
-    public static class NumberCompareValidators {
-
-        public final double limit;
-
-        @Inject
-        @Config(key = "name", value = "validationLog")
-        public Logger logger;
-
-        public static NumberCompareValidators limit(double limit) {
-            return new NumberCompareValidators(limit);
-        }
-
-        public static LambdaReflection.SerializableConsumer<Double> gt(double limit) {
-            return limit(limit)::greaterThan;
-        }
-
-        public static LambdaReflection.SerializableConsumer<Double> lt(double limit) {
-            return limit(limit)::lessThan;
-        }
-
-        public static LambdaReflection.SerializableConsumer<Integer> eq(int limit) {
-            return limit(limit)::equal;
-        }
-
-        public NumberCompareValidators(double limit) {
-            this.limit = limit;
-        }
-
-        public boolean greaterThan(double x) {
-            final boolean test = x > limit;
-            if(!test){
-                logger.log("failed " + x + ">" + limit);
-            }
-            return test;
-        }
-
-        public boolean lessThan(double x) {
-            final boolean test = x < limit;
-            if(!test){
-                logger.log("failed " + x + "<" + limit);
-            }
-            return test;
-        }
-
-        public boolean equal(double x) {
-            final boolean test = x == limit;
-            if(!test){
-                logger.log("failed " + x + "==" + limit);
-            }
-            return test;
-        }
-
     }
 
 }

@@ -16,35 +16,25 @@
  */
 package com.fluxtion.ext.declarative.api.util;
 
-import com.fluxtion.ext.declarative.api.Wrapper;
 import java.util.Objects;
 
-/**
- * A wrapper for a CharSequence.
- *
- * @author gregp
- */
-public class StringWrapper implements Wrapper<String> {
+public class Named {
 
-    private final String stringVal;
+    protected final String name;
 
-    public StringWrapper(String sequence) {
-        this.stringVal = sequence;
+    public Named(String name) {
+        this.name = name;
     }
 
-    @Override
-    public String event() {
-        return stringVal;
+    public String getName() {
+        return name;
     }
-
-    @Override
-    public Class<String> eventClass() {
-        return String.class;
-    }
-
+    
     @Override
     public int hashCode() {
-        return stringVal.hashCode();
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.name);
+        return hash;
     }
 
     @Override
@@ -58,11 +48,10 @@ public class StringWrapper implements Wrapper<String> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final StringWrapper other = (StringWrapper) obj;
-        if (!Objects.equals(this.stringVal, other.stringVal)) {
+        final Named other = (Named) obj;
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         return true;
     }
-    
-}
+} 

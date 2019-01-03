@@ -15,6 +15,9 @@ import $import;
 
 public class ${functionClass} implements RowProcessor<${targetClass}> {
 
+    @Inject
+    @Config(key = "id", value = "myLogger")
+    public ValidationLogger errorLog;
     //buffer management
     private final char[] chars = new char[4096];
 #if(!${fixedLen})
@@ -41,10 +44,6 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     @NoEventReference
     public ${converter.value} ${converter.key};
 #end
-#foreach($validator in ${validators.entrySet()})
-    @NoEventReference
-    public ${validator.value} ${validator.key};
-#end
     private int rowNumber;
     private final HashMap fieldMap = new HashMap<>();
 #if($headerPresent)
@@ -58,7 +57,6 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     boolean prevIsQuote = false;
 #end
     private boolean passedValidation;
-    private StringBuilder validationBuffer = new StringBuilder(256);
 
     @EventHandler
     public boolean charEvent(CharEvent event) {
@@ -240,40 +238,28 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 #if(${eventMethod})
 #* *##if($eventMethodValidates)
-            passedValidation = target.${eventMethod}() & validateColumns();
+            passedValidation = target.${eventMethod}();
             return passedValidation;
 #* *##else
             target.${eventMethod}();
-            return validateColumns();
+            return true;
 #* *##end
 #else
-            return validateColumns();
+            return true;
 #end
         } catch (Exception e) {
+            errorLog.getSb().append("problem pushing data from row:")
+                    .append(rowNumber).append(" fieldIndex:")
+                    .append(fieldIndex).append(" targetMethod:")
+                    .append(fieldMap.get(fieldIndex));
             throw new RuntimeException("problem pushing data from row:" + rowNumber 
                                         + " fieldIndex:" + fieldIndex 
                                         + " targetMethod:" + fieldMap.get(fieldIndex), e);
+
         } finally {
             fieldIndex = 0;
         }
     }
-
-    private boolean validateColumns(){
-        boolean validated = true;
-        validationBuffer.setLength(0);
-#foreach($sourceInfo in $sourceMappingList)
-#* *##if(${sourceInfo.validated})
-        if(${sourceInfo.validate}){
-            validated = false;
-            validationBuffer.append(" row:").append(rowNumber);
-            validationBuffer.append(" col:").append(${sourceInfo.fieldIdentifier})
-            .append(" ");
-        }
-#* *##end
-#end
-        return validated;
-    }
-
 #if(${eventCompleteMethod})
 
     @OnEventComplete

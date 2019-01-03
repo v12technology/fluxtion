@@ -21,6 +21,7 @@ import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.test.AndOperator;
 import com.fluxtion.ext.declarative.api.test.BooleanFilter;
+import com.fluxtion.ext.declarative.api.test.BooleanMatchFilter;
 import com.fluxtion.ext.declarative.api.test.NotOperator;
 import com.fluxtion.ext.declarative.api.test.OrOperator;
 import com.fluxtion.ext.declarative.api.test.XorOperator;
@@ -67,6 +68,18 @@ public class BooleanBuilder {
     
     public static <T> BooleanFilter<T> filter(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
+    }
+    
+    public static <T> BooleanMatchFilter<T> filterMatch(Wrapper<T> trackedWrapped, Object notifier) {
+        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>( trackedWrapped, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
+    }
+    
+    public static <T> BooleanMatchFilter<T> filterMatch(T tracked, Object notifier) {
+        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
