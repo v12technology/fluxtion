@@ -27,6 +27,7 @@ import com.fluxtion.ext.declarative.api.test.OrOperator;
 import com.fluxtion.ext.declarative.api.test.XorOperator;
 
 /**
+ * Factory class for building boolean logical operations for nodes and events.
  * 
  * @author gregp
  */
@@ -60,25 +61,25 @@ public class BooleanBuilder {
         return not(and(tracked));
     }
     
-    public static <T> BooleanFilter<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> Wrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>( trackedWrapped, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
     
-    public static <T> BooleanFilter<T> filter(T tracked, Object notifier) {
+    public static <T> Wrapper<T> filter(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
     
-    public static <T> BooleanMatchFilter<T> filterMatch(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> Wrapper<T> filterMatch(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanMatchFilter<T> filter = new BooleanMatchFilter<>( trackedWrapped, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
     
-    public static <T> BooleanMatchFilter<T> filterMatch(T tracked, Object notifier) {
+    public static <T> Wrapper<T> filterMatch(T tracked, Object notifier) {
         BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
