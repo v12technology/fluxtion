@@ -22,10 +22,8 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 
 /**
  * A filtering wrapper that propagates the event wave when a notifier object
- * both indicate a positive change.
+ * indicates a positive change.
  *
- * Can be useful to combine a failed validation with a tracked object for broadcasting
- * to dependent nodes. The tracked object ma
  *
  * @author V12 Technology Ltd.
  * @param <T> The filtered type
