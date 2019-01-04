@@ -28,13 +28,6 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 public interface RowProcessor<T> extends Wrapper<T> {
 
     /**
-     * The numbers of rows processed, 1 indexed.
-     *
-     * @return number of rows processed
-     */
-    int rowCount();
-
-    /**
      * Indicates whether the row passed the validator attached to the target
      * type. A target type can annotate a method
      * <pre>@OnEvent</pre> a boolean return type indicates whether this is a
@@ -46,10 +39,4 @@ public interface RowProcessor<T> extends Wrapper<T> {
      */
     boolean passedValidation();
 
-    /**
-     * The end of record character the processor uses.
-     *
-     * @return the eol character for a record
-     */
-    char eolChar();
 }
