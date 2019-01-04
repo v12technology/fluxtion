@@ -17,6 +17,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 
     @Inject
     @Config(key = "id", value = "${id}")
+    @PushReference
     public ValidationLogger errorLog;
     //buffer management
     private final char[] chars = new char[4096];
@@ -237,16 +238,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #* *##end
 #end
 #if(${eventMethod})
-#* *##if($eventMethodValidates)
-            passedValidation = target.${eventMethod}();
-            return passedValidation;
-#* *##else
             target.${eventMethod}();
-            return true;
-#* *##end
-#else
-            return true;
 #end
+            return true;
         } catch (Exception e) {
             logException("problem pushing data from row:", false, e);
             passedValidation = false;

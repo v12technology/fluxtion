@@ -20,17 +20,15 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
-import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
-import com.fluxtion.ext.futext.api.csv.FailedValidationListener;
 import static com.fluxtion.ext.futext.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
-import com.fluxtion.ext.futext.builder.csv.RecordParserBuilder;
-import static com.fluxtion.ext.futext.builder.csv.RecordParserBuilder.failedValidationListener;
-import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
+import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
+import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,11 +38,11 @@ import org.junit.Test;
  * @author gregp
  */
 public class CsvMarshallerBuilderTest extends BaseSepTest {
-
-    @Override
-    protected String testPackageID() {
-        return "";
-    }
+//
+//    @Override
+//    protected String testPackageID() {
+//        return "";
+//    }
 
     @Test
     public void testCsvNoHeader() {
@@ -228,7 +226,9 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         Assert.assertThat("1.5", is(city.getLatitudeCharSequence().toString()));
     }
 
-    @Test(expected = RuntimeException.class)
+
+    //errors ar eno longer thrown on row level problems - caught and sent to the 
+    //logger and marked as failed validation
     public void testCsvWithHeaderAndError() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -250,6 +250,9 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     }
 
     @Test
+//    @Ignore
+    //To be replaced with external validator test. Validation has moved from
+    //the OnEvent callback method
     public void testCsvWithHeaderAndRowCBFailedValidation() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
         NumericValue count = getField("count");
@@ -262,12 +265,14 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         WorldCityOnEvent city = ((Wrapper<WorldCityOnEvent>) getField("city")).event();
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(3, city.parse);
-        Assert.assertEquals(2, city.postProcess);
-        Assert.assertEquals(2, count.intValue());
-        Assert.assertEquals(1, failedValidationcount.intValue());
+        Assert.assertEquals(3, city.postProcess);
+        Assert.assertEquals(3, count.intValue());
+        Assert.assertEquals(0, failedValidationcount.intValue());
     }
 
     @Test
+    //To be replaced with external validator test. Validation has moved from
+    //the OnEvent callback method
 //    @Ignore
     public void testFixedLen() {
         final EventHandler sep = buildAndInitSep(WorldCityFixedLen.class);
@@ -283,9 +288,9 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         NumericValue failedValidationcount = getField("failedValidationCount");
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(3, city.parse);
-        Assert.assertEquals(2, city.postProcess);
-        Assert.assertEquals(2, count.intValue());
-        Assert.assertEquals(1, failedValidationcount.intValue());
+        Assert.assertEquals(3, city.postProcess);
+        Assert.assertEquals(3, count.intValue());
+        Assert.assertEquals(0, failedValidationcount.intValue());
     }
 
     @Test
@@ -594,9 +599,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     }
 
     public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {
-
         {
-
             RowProcessor<WorldCityOnEvent> city = csvMarshaller(WorldCityOnEvent.class, 0)
                     .map(0, WorldCity::setCountry)
                     .map(1, WorldCity::setCity)
@@ -609,14 +612,13 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            FailedValidationListener<WorldCityOnEvent> failureListener = RecordParserBuilder.failedValidationListener(city);
-            addPublicNode(count(failureListener), "failedValidationCount");
-            LogBuilder.Log("failed validation row:{} data:{}", failureListener,
-                    failureListener::rowCount, failureListener::event
-            );
+            
+            //validator count
+            RulesEvaluator<WorldCityOnEvent> validator = validator(city).build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "failedValidationCount");
             maxFiltersInline = 25;
         }
-
     }
 
     public static class CarAd_Header extends SEPConfig {
@@ -713,7 +715,11 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
             addPublicNode(city, "city");
             LogBuilder.Log(city);
             addPublicNode(count(city), "count");
-            addPublicNode(count(failedValidationListener(city)), "failedValidationCount");
+            //validator count
+            RulesEvaluator<WorldCityOnEvent> validator = validator(city).build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "failedValidationCount");
+//            addPublicNode(count(failedValidationListener(city)), "failedValidationCount");
         }
     }
 

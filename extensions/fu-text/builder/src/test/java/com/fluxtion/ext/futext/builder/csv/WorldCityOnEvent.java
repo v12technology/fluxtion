@@ -29,7 +29,7 @@ public class WorldCityOnEvent extends WorldCity {
     public int postProcess;
 
     @OnEvent
-    public boolean validate() {
+    public boolean prePublish() {
         parse++;
         return getLatitude()>0 && getLongitude()>0;
     }

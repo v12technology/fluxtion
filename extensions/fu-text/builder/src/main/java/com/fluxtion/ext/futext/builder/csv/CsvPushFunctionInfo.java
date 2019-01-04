@@ -18,7 +18,6 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.ext.futext.api.ascii.Conversion;
-import com.fluxtion.ext.futext.api.csv.ColumnValidator;
 import java.lang.reflect.Method;
 
 /**

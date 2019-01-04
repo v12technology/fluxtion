@@ -22,6 +22,7 @@ import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
@@ -30,7 +31,6 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMa
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.futext.api.csv.FailedValidationListener;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;
@@ -52,12 +52,6 @@ import org.apache.velocity.VelocityContext;
  */
 public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
-    public static <T> FailedValidationListener<T> failedValidationListener(RowProcessor<T> rowProcessor) {
-        FailedValidationListener<T> failureListener = new FailedValidationListener<>(rowProcessor);
-        GenerationContext.SINGLETON.getNodeList().add(failureListener);
-        return failureListener;
-    }
-
     protected Class<T> targetClazz;
     protected String targetId;
     protected final ImportMap importMap;
@@ -73,7 +67,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected int converterCount;
     protected Map<Object, String> converterMap;
     protected CharTokenConfig tokenCfg;
-    protected boolean eventMethodValidates;
     protected boolean reuseTarget;
     protected final boolean fixedLen;
     private String id;
@@ -89,11 +82,11 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(Config.class);
         importMap.addImport(ValidationLogger.class);
         importMap.addImport(Inject.class);
+        importMap.addImport(PushReference.class);
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
         this.tokenCfg = CharTokenConfig.UNIX;
-        this.eventMethodValidates = false;
         this.reuseTarget = true;
         this.fixedLen = fixedLen;
         this.id = "validationLog";
@@ -104,9 +97,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         for (Method method : methods) {
             if (method.getAnnotation(OnEvent.class) != null) {
                 eventMethod = method.getName();
-                if (method.getReturnType() == boolean.class) {
-                    eventMethodValidates = true;
-                }
             }
             if (method.getAnnotation(OnEventComplete.class) != null) {
                 importMap.addImport(OnEventComplete.class);
@@ -239,7 +229,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             }
             if (eventMethod != null) {
                 ctx.put("eventMethod", eventMethod);
-                ctx.put("eventMethodValidates", eventMethodValidates);
             }
             if (eventCompleteMethod != null) {
                 ctx.put("eventCompleteMethod", eventCompleteMethod);

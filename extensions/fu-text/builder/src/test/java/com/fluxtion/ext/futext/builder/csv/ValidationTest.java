@@ -18,25 +18,51 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.ext.declarative.builder.log.LogBuilder;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
+import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
+import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ValidationTest extends BaseSepTest {
 
-    protected String testPackageID() {
-        return "";
-    }
-
+//    protected String testPackageID() {
+//        return "";
+//    }
+    
     @Test
-    public void testCsvWithHeaderAndRowCBFailedValidation() {
+//    @Ignore
+    public void testCsvWithHeaderAndRowCB() {
+        compileCfg.setGenerateDescription(true);
+        buildAndInitSep(CsvMarshallerBuilderTest.WorldCitiesCsv_Header_OnEventCB.class);
+        String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
+                + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
+                + "brazil,santiago,Aixirivall,06,,130,1.5\n";
+        WorldCityOnEvent city = ((Wrapper<WorldCityOnEvent>) getField("city")).event();
+        StringDriver.streamChars(dataCsh, sep, false);
+        Assert.assertEquals(2, city.parse);
+        Assert.assertEquals(2, city.postProcess);
+    }
+    
+    @Test
+//    @Ignore
+    public void testCsvWithHeaderAndError() {
+        final EventHandler sep = buildAndInitSep(CsvMarshallerBuilderTest.WorldCitiesCsv_Header_1_Cfg.class);
+        String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
+                + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
+                + "brazil,santiago,Aixirivall,06,,16*90,1.5\n";
+        StringDriver.streamChars(dataCsh, sep, false);
+    }   
+    
+    @Test
+//    @Ignore
+    public void testCsvWithHeaderAndRowFailedValidation() {
         compileCfg.setGenerateDescription(true);
 //        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
@@ -56,12 +82,9 @@ public class ValidationTest extends BaseSepTest {
     public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {
 
         {
-
-//            RowProcessor<WorldCityBeanPrimitive> city = addPublicNode(csvMarshaller(WorldCityBeanPrimitive.class).build(), "city");
             RulesEvaluator<WorldCityBeanPrimitive> validator = validator(
                     csvMarshaller(WorldCityBeanPrimitive.class).build()
             ).build();
-
             addPublicNode(count(validator.passedNotifier()), "countPassed");
             addPublicNode(count(validator.failedNotifier()), "countFailed");
             maxFiltersInline = 25;
