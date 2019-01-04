@@ -176,7 +176,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         ${sourceInfo.fieldIdentifier} = headers.indexOf("${sourceInfo.fieldName}");
         fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
         if (${sourceInfo.fieldIdentifier} < 0) {
-            throw new RuntimeException("problem mapping field:'${sourceInfo.fieldName}' index row:" + rowNumber);
+            logException("problem mapping field:'${sourceInfo.fieldName}' index row:" + rowNumber, true, null);
         }
 #* *##end
 #end
@@ -184,30 +184,37 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 
     private boolean updateTarget() {
-        updateFieldIndex();
+        try{
+            updateFieldIndex();
 #foreach($sourceInfo in $sourceMappingList)
 #* *##if($acceptPartials)
-        if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
+            if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
 #* *##end
 #* *##if($sourceInfo.trim)
 #*     *##if(${fixedLen})
-        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
-        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
-        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
-        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
 #*     *##end
 #* *##end
 #* *##if($acceptPartials)
         }
 #* *##end
 #end
-        //target
-        return pushData();
+            //target
+            return pushData();
+        } catch (Exception e) {
+            passedValidation = false;
+            return false;
+        } finally {
+            fieldIndex = 0;
+        }
     }
 
     private void updateFieldIndex() {
