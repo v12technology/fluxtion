@@ -36,9 +36,9 @@ import org.junit.Test;
 
 public class ValidationTest extends BaseSepTest {
 
-    protected String testPackageID() {
-        return "";
-    }
+//    protected String testPackageID() {
+//        return "";
+//    }
 
     @Test
 //    @Ignore
@@ -88,7 +88,7 @@ public class ValidationTest extends BaseSepTest {
     @Test
     public void testValueValidation() {
 //        compileCfg.setGenerateDescription(true);
-//        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
+//        compileCfg.setFormatSource(true);
         final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
