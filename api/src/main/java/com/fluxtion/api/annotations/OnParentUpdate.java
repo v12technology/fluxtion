@@ -38,4 +38,10 @@ import java.lang.annotation.Target;
 public @interface OnParentUpdate {
 
     String value() default "";
+    /**
+     * determines whether guards are present on the marked method. Setting
+     * the value to false will ensure the callback is always called regardless
+     * of the dirty state of the parent node. 
+     */
+    boolean guarded() default true;
 }
