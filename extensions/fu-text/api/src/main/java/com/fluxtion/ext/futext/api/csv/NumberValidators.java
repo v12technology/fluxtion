@@ -27,12 +27,11 @@ import com.fluxtion.api.annotations.Inject;
 public class NumberValidators {
 
     public final double limit;
+    public String id = "";
 
     @Inject
     @Config(key = "name", value = "validationLog")
     public ValidationLogger logger;
-
-
 
     public NumberValidators(double limit) {
         this.limit = limit;
@@ -41,7 +40,7 @@ public class NumberValidators {
     public boolean greaterThan(double x) {
         final boolean test = x > limit;
         if (!test) {
-            logger.logError("failed value is less than limit value:" + x + " min value:" + limit);
+            logger.logError(" [" + id + "failed too small, value:" + x + " min allowed:" + limit + "] ");
         }
         return test;
     }
@@ -49,7 +48,7 @@ public class NumberValidators {
     public boolean lessThan(double x) {
         final boolean test = x < limit;
         if (!test) {
-            logger.logError("failed value greater than limit " + x + "<" + limit);
+            logger.logError(" [" + id + "failed too great, value:" + x + " max allowed:" + limit+ "] ");
         }
         return test;
     }
@@ -57,7 +56,7 @@ public class NumberValidators {
     public boolean equal(double x) {
         final boolean test = x == limit;
         if (!test) {
-            logger.logError("failed values NOT equal " + x + "!=" + limit);
+            logger.logError(" [" + id + "failed values NOT equal, value:" + x + " required:" + limit+ "] ");
         }
         return test;
     }

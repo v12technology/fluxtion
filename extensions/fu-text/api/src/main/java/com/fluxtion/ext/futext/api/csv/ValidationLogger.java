@@ -45,9 +45,9 @@ public class ValidationLogger extends Named {
 
     @AfterEvent
     public void cleanBuffer() {
-//        if (sb.length() > 0) {
-//            System.out.println("validation problem:" + sb.toString());
-//        }
+        if (sb.length() > 0) {
+            System.out.println("validation problem:" + sb.toString());
+        }
         sb.setLength(0);
     }
 

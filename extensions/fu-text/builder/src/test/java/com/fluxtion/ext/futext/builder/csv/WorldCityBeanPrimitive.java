@@ -25,8 +25,8 @@ public class WorldCityBeanPrimitive {
     private CharSequence City;//col 1
     private CharSequence AccentCity;//col 2
     private CharSequence Region;//col 3
-    private CharSequence Population;//col 4
-    private CharSequence longitude;//col 5
+    private int Population;//col 4
+    private double longitude;//col 5
     private double latitude;//col 6
 
     public CharSequence getCountry() {
@@ -61,19 +61,19 @@ public class WorldCityBeanPrimitive {
         this.Region = Region;
     }
 
-    public CharSequence getPopulation() {
+    public int getPopulation() {
         return Population;
     }
 
-    public void setPopulation(CharSequence Population) {
+    public void setPopulation(int Population) {
         this.Population = Population;
     }
 
-    public CharSequence getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(CharSequence longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

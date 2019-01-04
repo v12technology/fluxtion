@@ -22,8 +22,12 @@ import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.gt;
+import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.lt;
+import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.positive;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import org.junit.Assert;
@@ -32,10 +36,10 @@ import org.junit.Test;
 
 public class ValidationTest extends BaseSepTest {
 
-//    protected String testPackageID() {
-//        return "";
-//    }
-    
+    protected String testPackageID() {
+        return "";
+    }
+
     @Test
 //    @Ignore
     public void testCsvWithHeaderAndRowCB() {
@@ -49,7 +53,7 @@ public class ValidationTest extends BaseSepTest {
         Assert.assertEquals(2, city.parse);
         Assert.assertEquals(2, city.postProcess);
     }
-    
+
     @Test
 //    @Ignore
     public void testCsvWithHeaderAndError() {
@@ -58,28 +62,51 @@ public class ValidationTest extends BaseSepTest {
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,16*90,1.5\n";
         StringDriver.streamChars(dataCsh, sep, false);
-    }   
-    
+    }
+
     @Test
 //    @Ignore
+    //A RulesEvaluator is attached to the RowProcessor. Any read exceptions
+    //are caught and the failed notifer path executed for the Evaluator
     public void testCsvWithHeaderAndRowFailedValidation() {
-        compileCfg.setGenerateDescription(true);
+//        compileCfg.setGenerateDescription(false);
 //        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
+        final EventHandler sep = buildAndInitSep(WorldCitiesCsvWithFailNotifier.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
-                + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
-                + "mexico,aixirivali,Aixirivali,06,,1.2,1.5\n"
-                + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
-                + "mexico,aixirivali,Aixirivali,XXX06,,25ifg19,1.5\n"
-                + "brazil,santiago,Aixirivall,06,,330,1.5";
+                + "mexico,aixirivali,Aixirivali,06,12,25.19,1.5\n"
+                + "mexico,aixirivali,Aixirivali,06,500,1.2,1.5\n"
+                + "mexico,aixirivali,Aixirivali,06,200,25.19,1.5\n"
+                + "mexico,aixirivali,Aixirivali,XXX06,656,25ifg19,1.5\n"
+                + "brazil,santiago,Aixirivall,06,655,330,1.5";
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(4, countPassed.intValue());
         Assert.assertEquals(1, countFailed.intValue());
     }
 
-    public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {
+    @Test
+    public void testValueValidation() {
+//        compileCfg.setGenerateDescription(true);
+//        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
+        final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
+        NumericValue countPassed = getField("countPassed");
+        NumericValue countFailed = getField("countFailed");
+        String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
+                + "mexico,aixirivali,Aixirivali,06,12,25.19,1.5\n"//pass
+                + "mexico,aixirivali,Aixirivali,06,500,1.2,181\n"//fail
+                + "mexico,aixirivali,Aixirivali,06,200,25.19,1.5\n"//pass
+                + "mexico,aixirivali,Aixirivali,06,65600,23,1.5\n"//fail
+                + "mexico,aixirivali,Aixirivali,06,500,-25,1.5\n"//pass
+                + "mexico,aixirivali,Aixirivali,06,500,-250,1.5\n"//fail
+                + "mexico,aixirivali,Aixirivali,06,-500,-250,2500\n"//fail
+                + "brazil,santiago,Aixirivall,06,655,330,1.5";//fail
+        StringDriver.streamChars(dataCsh, sep, false);
+        Assert.assertEquals(3, countPassed.intValue());
+        Assert.assertEquals(5, countFailed.intValue());
+    }
+
+    public static class WorldCitiesCsvWithFailNotifier extends SEPConfig {
 
         {
             RulesEvaluator<WorldCityBeanPrimitive> validator = validator(
@@ -90,6 +117,26 @@ public class ValidationTest extends BaseSepTest {
             maxFiltersInline = 25;
 
         }
+    }
+
+    public static class WorldCityBeanValidating extends SEPConfig {
+
+        {
+
+            RulesEvaluator<WorldCityBeanPrimitive> validator = validator(
+                    csvMarshaller(WorldCityBeanPrimitive.class).build()
+            ).addRule(positive(),      WorldCityBeanPrimitive::getPopulation)
+                    .addRule(lt(2500), WorldCityBeanPrimitive::getPopulation)
+                    .addRule(gt(-90),  WorldCityBeanPrimitive::getLatitude)
+                    .addRule(lt(90),   WorldCityBeanPrimitive::getLatitude)
+                    .addRule(gt(-180), WorldCityBeanPrimitive::getLongitude)
+                    .addRule(lt(180),  WorldCityBeanPrimitive::getLongitude)
+                    .build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "countFailed");
+
+        }
+
     }
 
 }
