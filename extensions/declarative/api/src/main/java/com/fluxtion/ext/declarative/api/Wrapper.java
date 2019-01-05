@@ -17,7 +17,7 @@
 package com.fluxtion.ext.declarative.api;
 
 /**
- * A wrapper for an wrapped node in the SEP.
+ * A wrapper for a wrapped node in the SEP.
  * 
  * @author Greg Higgins
  */
