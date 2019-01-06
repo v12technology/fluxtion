@@ -113,7 +113,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testWrappedNoValidators() {
-        compileCfg.setGenerateDescription(true);
+//        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseWrapperNoValidationRules.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
@@ -126,7 +126,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testWrappedFailedValidators() {
-        compileCfg.setGenerateDescription(true);
+//        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseWrapperMinPriceValidationRules.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
@@ -139,7 +139,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testNodeNoValidators() {
-        compileCfg.setGenerateDescription(true);
+//        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseNodeNoValidationRules.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
@@ -152,7 +152,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testNodeFailedValidators() {
-        compileCfg.setGenerateDescription(true);
+//        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseNodeMinPriceValidationRules.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
