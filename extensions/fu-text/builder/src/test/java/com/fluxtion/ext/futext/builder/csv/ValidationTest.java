@@ -24,6 +24,7 @@ import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.log.LogControlEvent;
 import com.fluxtion.ext.declarative.api.log.LogService;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;
@@ -89,11 +90,10 @@ public class ValidationTest extends BaseSepTest {
         final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
-        
+
         CountingLogProvider logCount = new CountingLogProvider();
         sep.onEvent(LogControlEvent.setLogService(logCount));
-        
-        
+
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,12,25.19,1.5\n"//pass
                 + "mexico,aixirivali,Aixirivali,06,500,1.2,181\n"//fail
@@ -108,7 +108,59 @@ public class ValidationTest extends BaseSepTest {
         Assert.assertEquals(5, countFailed.intValue());
         //only log failures
         Assert.assertEquals(5, logCount.infoCount);
-        
+
+    }
+
+    @Test
+    public void testWrappedNoValidators() {
+        compileCfg.setGenerateDescription(true);
+        buildAndInitSep(PurchaseWrapperNoValidationRules.class);
+        NumericValue countPassed = getField("countPassed");
+        NumericValue countFailed = getField("countFailed");
+        sep.onEvent(new PurchaseBean());
+        sep.onEvent(new PurchaseBean());
+        sep.onEvent(new PurchaseBean());
+        Assert.assertEquals(3, countPassed.intValue());
+        Assert.assertEquals(0, countFailed.intValue());
+    }
+
+    @Test
+    public void testWrappedFailedValidators() {
+        compileCfg.setGenerateDescription(true);
+        buildAndInitSep(PurchaseWrapperMinPriceValidationRules.class);
+        NumericValue countPassed = getField("countPassed");
+        NumericValue countFailed = getField("countFailed");
+        sep.onEvent(new PurchaseBean(10, "good price"));
+        sep.onEvent(new PurchaseBean(30000, "too expensive"));
+        sep.onEvent(new PurchaseBean(-90, "oh no negative!!"));
+        Assert.assertEquals(1, countPassed.intValue());
+        Assert.assertEquals(2, countFailed.intValue());
+    }
+
+    @Test
+    public void testNodeNoValidators() {
+        compileCfg.setGenerateDescription(true);
+        buildAndInitSep(PurchaseNodeNoValidationRules.class);
+        NumericValue countPassed = getField("countPassed");
+        NumericValue countFailed = getField("countFailed");
+        sep.onEvent(new PurchaseBean());
+        sep.onEvent(new PurchaseBean());
+        sep.onEvent(new PurchaseBean());
+        Assert.assertEquals(3, countPassed.intValue());
+        Assert.assertEquals(0, countFailed.intValue());
+    }
+
+    @Test
+    public void testNodeFailedValidators() {
+        compileCfg.setGenerateDescription(true);
+        buildAndInitSep(PurchaseNodeMinPriceValidationRules.class);
+        NumericValue countPassed = getField("countPassed");
+        NumericValue countFailed = getField("countFailed");
+        sep.onEvent(new PurchaseBean(10, "good price"));
+        sep.onEvent(new PurchaseBean(30000, "too expensive"));
+        sep.onEvent(new PurchaseBean(-90, "oh no negative!!"));
+        Assert.assertEquals(1, countPassed.intValue());
+        Assert.assertEquals(2, countFailed.intValue());
     }
 
     public static class WorldCitiesCsvWithFailNotifier extends SEPConfig {
@@ -133,6 +185,52 @@ public class ValidationTest extends BaseSepTest {
                     .addRule(withinRange(0, 2500), WorldCityBeanPrimitive::getPopulation)
                     .addRule(withinRange(-90, 90), WorldCityBeanPrimitive::getLatitude)
                     .addRule(withinRange(-180, 180), WorldCityBeanPrimitive::getLongitude)
+                    .build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "countFailed");
+        }
+    }
+
+    public static class PurchaseWrapperNoValidationRules extends SEPConfig {
+
+        {
+            RulesEvaluator<PurchaseBean> validator = validator(
+                    select(PurchaseBean.class)).build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "countFailed");
+        }
+    }
+
+    public static class PurchaseWrapperMinPriceValidationRules extends SEPConfig {
+
+        {
+            RulesEvaluator<PurchaseBean> validator = validator(
+                    select(PurchaseBean.class))
+                    .addRule(withinRange(0, 2500), PurchaseBean::getPrice)
+                    .build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "countFailed");
+        }
+    }
+
+    public static class PurchaseNodeNoValidationRules extends SEPConfig {
+
+        {
+            RulesEvaluator<CurrentPrice> validator = validator(addNode(new CurrentPrice())
+            ).build();
+            addPublicNode(count(validator.passedNotifier()), "countPassed");
+            addPublicNode(count(validator.failedNotifier()), "countFailed");
+        }
+    }
+
+    public static class PurchaseNodeMinPriceValidationRules extends SEPConfig {
+
+        {
+            CurrentPrice cp = addNode(new CurrentPrice());
+            RulesEvaluator<CurrentPrice> validator = validator(
+                    cp)
+//                    .addRule(withinRange(0, 2500), CurrentPrice::getPrice)
+                    .addRule(withinRange(0, 2500), cp::getPrice)
                     .build();
             addPublicNode(count(validator.passedNotifier()), "countPassed");
             addPublicNode(count(validator.failedNotifier()), "countFailed");

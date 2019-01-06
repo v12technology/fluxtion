@@ -71,7 +71,7 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> BuilderRowProcessor<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
             Object test = rule.captured()[0];
-            if(test instanceof ColumnName){
+            if (test instanceof ColumnName) {
                 Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
                 ((ColumnName) test).setName(accessorMethod.getName() + " ");
             }
@@ -108,7 +108,7 @@ public class RulesEvaluatorBuilder<T> {
             return evaluator;
         }
     }
-    
+
     public static class BuilderWrapper<T> {
 
         private Wrapper<T> monitoredWrapped;
@@ -121,7 +121,7 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> BuilderWrapper<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
             Object test = rule.captured()[0];
-            if(test instanceof ColumnName){
+            if (test instanceof ColumnName) {
                 Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
                 ((ColumnName) test).setName(accessorMethod.getName() + " ");
             }
@@ -132,16 +132,24 @@ public class RulesEvaluatorBuilder<T> {
         public <R> RulesEvaluator<T> build() {
             //TODO add logic for node validators
             //and all rules and pass through boolean filter
-            List testList = new ArrayList();
-            for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
-                SerializableConsumer<? extends R> rule = pair.getKey();
-                Function<T, R> supplier = (Function<T, R>) pair.getValue();
-                testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+            RulesEvaluator<T> evaluator = null;
+            if (ruleList.isEmpty()) {
+                evaluator = new RulesEvaluator<>(
+                        monitoredWrapped,
+                        filter(monitoredWrapped, not(monitoredWrapped))
+                );
+            } else {
+                List testList = new ArrayList();
+                for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
+                    SerializableConsumer<? extends R> rule = pair.getKey();
+                    Function<T, R> supplier = (Function<T, R>) pair.getValue();
+                    testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+                }
+                evaluator = new RulesEvaluator<>(
+                        filterMatch(monitoredWrapped, and(testList.toArray())),
+                        filterMatch(monitoredWrapped, nand(testList.toArray()))
+                );
             }
-            RulesEvaluator<T> evaluator = new RulesEvaluator<>(
-                    filterMatch(monitoredWrapped, and(testList.toArray())),
-                    filterMatch(monitoredWrapped, nand(testList.toArray()))
-            );
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
@@ -159,7 +167,7 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> Builder<T> addRule(SerializableConsumer<? extends R> rule, SerializableSupplier<T, R> supplier) {
             Object test = rule.captured()[0];
-            if(test instanceof ColumnName){
+            if (test instanceof ColumnName) {
                 ((ColumnName) test).setName(supplier.method().getName() + " ");
             }
             ruleList.add(new Pair(rule, supplier));
@@ -168,16 +176,24 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> RulesEvaluator<T> build() {
             //TODO add logic for node validators
-            List testList = new ArrayList();
-            for (Pair<SerializableConsumer, SerializableSupplier<T, ?>> pair : ruleList) {
-                SerializableConsumer<? extends R> rule = pair.getKey();
-                SerializableSupplier<T, R> supplier = (SerializableSupplier<T, R>) pair.getValue();
-                testList.add(not(buildTest(rule, supplier).build()));
+            RulesEvaluator<T> evaluator = null;
+            if (ruleList.isEmpty()) {
+                evaluator = new RulesEvaluator<>(
+                        filter(monitored, monitored),
+                        filter(monitored, not(monitored))
+                );
+            } else {
+                List testList = new ArrayList();
+                for (Pair<SerializableConsumer, SerializableSupplier<T, ?>> pair : ruleList) {
+                    SerializableConsumer<? extends R> rule = pair.getKey();
+                    SerializableSupplier<T, R> supplier = (SerializableSupplier<T, R>) pair.getValue();
+                    testList.add(buildTest(rule, supplier).build());
+                }
+                evaluator = new RulesEvaluator<>(
+                        filterMatch(monitored, and(testList.toArray())),
+                        filterMatch(monitored, nand(testList.toArray()))
+                );
             }
-            RulesEvaluator<T> evaluator = new RulesEvaluator<>(
-                    filterMatch(monitored, and(testList.toArray())),
-                    filterMatch(monitored, nand(testList.toArray()))
-            );
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
