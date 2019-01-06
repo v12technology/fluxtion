@@ -137,6 +137,25 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         Assert.assertEquals("1.5", city.getLongitude().toString());
         Assert.assertThat("130", is(city.getLatitude().toString()));
     }
+
+    @Test(expected = RuntimeException.class)
+    public void testCsvWithAutoBeanMappingBadHeader() {
+        final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
+        String dataCsh = "Country,City,Latitude,Longitude\n"
+                + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
+                + "brazil,santiago,Aixirivall,06,,130,1.5\n";
+        StringDriver.streamChars(dataCsh, sep, false);
+    }
+    
+    @Test
+    public void testCsvWithAutoBeanMappingTransientHeader() {
+        final EventHandler sep = buildAndInitSep(WorldCityBeanTransient_Header.class);
+        String dataCsh = "Country,City,population\n"
+                + "mexico,aixirivali,5000\n"
+                + "brazil,santiago,20000\n";
+        StringDriver.streamChars(dataCsh, sep, false);
+    }
+
     @Test
     public void testCsvWithAutoBeanMapping_UseEof() {
         final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
@@ -225,7 +244,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         Assert.assertEquals(0.0, city.getLatitude(), 0.1);
         Assert.assertThat("1.5", is(city.getLatitudeCharSequence().toString()));
     }
-
 
     //errors ar eno longer thrown on row level problems - caught and sent to the 
     //logger and marked as failed validation
@@ -599,6 +617,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     }
 
     public static class WorldCitiesCsv_Header_OnEventCB_Validator extends SEPConfig {
+
         {
             RowProcessor<WorldCityOnEvent> city = csvMarshaller(WorldCityOnEvent.class, 0)
                     .map(0, WorldCity::setCountry)
@@ -612,7 +631,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            
+
             //validator count
             RulesEvaluator<WorldCityOnEvent> validator = validator(city).build();
             addPublicNode(count(validator.passedNotifier()), "countPassed");
@@ -682,6 +701,16 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
             addPublicNode(city, "city");
             LogBuilder.Log(city);
             addPublicNode(count(city), "count");
+        }
+
+    }
+
+    public static class WorldCityBeanTransient_Header extends SEPConfig {
+
+        //3 non-transient properties
+        //Country,City,Population
+        {
+            csvMarshaller(WorldCityBeanTransient.class).build();
         }
 
     }

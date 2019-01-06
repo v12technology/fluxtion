@@ -176,7 +176,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         ${sourceInfo.fieldIdentifier} = headers.indexOf("${sourceInfo.fieldName}");
         fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
         if (${sourceInfo.fieldIdentifier} < 0) {
-            logException("problem mapping field:'${sourceInfo.fieldName}' index row:" + rowNumber, true, null);
+            logHeaderProblem("problem mapping field:'${sourceInfo.fieldName}' missing column header, index row:", true, null);
         }
 #* *##end
 #end
@@ -330,10 +330,20 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
                 .append(fieldIndex).append(" targetMethod:")
                 .append(fieldMap.get(fieldIndex));
         if(fatal){
-            errorLog.logFatal(prefix);
+            errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
         }
         errorLog.logError(prefix);
+    }
+
+
+    private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
+        errorLog.getSb().append(prefix).append(rowNumber);
+        if(fatal){
+            errorLog.logFatal("");
+            throw new RuntimeException(errorLog.getSb().toString(), e);
+        }
+        errorLog.logError("");
     }
 
     @Override

@@ -17,13 +17,14 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -148,11 +149,15 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         try {
             for (PropertyDescriptor md : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
                 if (md.getWriteMethod() != null) {
-                    mapNamedFieldToMethod(md.getWriteMethod(), md.getName());
+                    Field field = clazz.getDeclaredField(md.getName());
+                    field.setAccessible(true);
+                    if (!Modifier.isTransient(field.getModifiers())) {
+                        mapNamedFieldToMethod(md.getWriteMethod(), md.getName());
+                    }
                 }
             }
-        } catch (IntrospectionException ex) {
-            throw new RuntimeException("could not map java bean to csv header", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("could not map java bean to csv header " + ex.getMessage(), ex);
         }
         return this;
     }

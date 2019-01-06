@@ -22,10 +22,10 @@ package com.fluxtion.ext.futext.builder.csv;
  */
 public class WorldCity {
     private CharSequence country;//col 0
-    private CharSequence City;//col 1
-    private CharSequence AccentCity;//col 2
-    private CharSequence Region;//col 3
-    private int Population;//col 4
+    private CharSequence city;//col 1
+    private CharSequence accentCity;//col 2
+    private CharSequence region;//col 3
+    private int population;//col 4
     private double longitude;//col 5
     private CharSequence longitudeCharSequence;//col 5
     private double latitude;//col 6
@@ -40,35 +40,35 @@ public class WorldCity {
     }
 
     public CharSequence getCity() {
-        return City;
+        return city;
     }
 
-    public void setCity(CharSequence City) {
-        this.City = City;
+    public void setCity(CharSequence city) {
+        this.city = city;
     }
 
     public CharSequence getAccentCity() {
-        return AccentCity;
+        return accentCity;
     }
 
-    public void setAccentCity(CharSequence AccentCity) {
-        this.AccentCity = AccentCity;
+    public void setAccentCity(CharSequence accentCity) {
+        this.accentCity = accentCity;
     }
 
     public CharSequence getRegion() {
-        return Region;
+        return region;
     }
 
-    public void setRegion(CharSequence Region) {
-        this.Region = Region;
+    public void setRegion(CharSequence region) {
+        this.region = region;
     }
 
     public int getPopulation() {
-        return Population;
+        return population;
     }
 
-    public void setPopulation(int Population) {
-        this.Population = Population;
+    public void setPopulation(int population) {
+        this.population = population;
     }
 
     public double getLongitude() {
@@ -109,7 +109,7 @@ public class WorldCity {
 
     @Override
     public String toString() {
-        return "WorldCity{" + "country=" + country + ", City=" + City + ", AccentCity=" + AccentCity + ", Region=" + Region + ", Population=" + Population + ", longitude=" + longitude + ", longitudeCharSequence=" + longitudeCharSequence + ", latitude=" + latitude + ", latitudeCharSequence=" + latitudeCharSequence + '}';
+        return "WorldCity{" + "country=" + country + ", city=" + city + ", AccentCity=" + accentCity + ", region=" + region + ", population=" + population + ", longitude=" + longitude + ", longitudeCharSequence=" + longitudeCharSequence + ", latitude=" + latitude + ", latitudeCharSequence=" + latitudeCharSequence + '}';
     }
     
 }
