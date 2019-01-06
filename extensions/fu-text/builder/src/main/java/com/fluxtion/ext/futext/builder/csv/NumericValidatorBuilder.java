@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.futext.api.csv.NumberValidators;
+import com.fluxtion.ext.futext.api.csv.NumberValidator;
 
 /**
  *
@@ -27,8 +27,12 @@ import com.fluxtion.ext.futext.api.csv.NumberValidators;
 
 public class NumericValidatorBuilder {
 
-    public static NumberValidators limit(double limit) {
-        return new NumberValidators(limit);
+    public static NumberValidator limit(double limit) {
+        return new NumberValidator(limit);
+    }
+    
+    public static NumberValidator range(double limit1, double limit2) {
+        return new NumberValidator(limit1, limit2);
     }
 
     public static LambdaReflection.SerializableConsumer<Double> gt(double limit) {
@@ -53,5 +57,25 @@ public class NumericValidatorBuilder {
     
     public static LambdaReflection.SerializableConsumer<Integer> negative() {
         return limit(0)::lessThan;
+    }
+    
+    public static LambdaReflection.SerializableConsumer<Integer> NaN() {
+        return limit(0)::isNan;
+    }
+    
+    public static LambdaReflection.SerializableConsumer<Integer> finite() {
+        return limit(0)::isFinite;
+    }
+    
+    public static LambdaReflection.SerializableConsumer<Integer> infinte() {
+        return limit(0)::isInfinite;
+    }
+    
+    public static LambdaReflection.SerializableConsumer<Integer> withinRange(double lowerBound, double upperBound) {
+        return range(lowerBound, upperBound)::withinRange;
+    }
+    
+    public static LambdaReflection.SerializableConsumer<Integer> outsideRange(double lowerBound, double upperBound) {
+        return range(lowerBound, upperBound)::outsideRange;
     }
 }

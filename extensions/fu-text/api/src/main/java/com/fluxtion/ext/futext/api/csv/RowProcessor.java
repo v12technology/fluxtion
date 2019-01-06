@@ -38,5 +38,10 @@ public interface RowProcessor<T> extends Wrapper<T> {
      * validation has occurred.
      */
     boolean passedValidation();
+    
+    
+    default int getRowNumber() {
+        return -1;
+    }
 
 }

@@ -18,6 +18,7 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filter;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filterMatch;
@@ -27,9 +28,13 @@ import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.or;
 import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.futext.api.csv.ColumnName;
+import com.fluxtion.ext.futext.api.csv.NumberValidator;
 import com.fluxtion.ext.futext.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
+import com.fluxtion.ext.futext.api.csv.ValidationLogSink.LogNotifier;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -66,6 +71,11 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> BuilderRowProcessor<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
+            Object test = rule.captured()[0];
+            if(test instanceof ColumnName){
+                Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
+                ((ColumnName) test).setName(accessorMethod.getName() + " ");
+            }
             ruleList.add(new Pair(rule, supplier));
             return this;
         }
@@ -95,10 +105,11 @@ public class RulesEvaluatorBuilder<T> {
                         )
                 );
             }
+            SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier(), monitoredWrapped));
             return evaluator;
         }
     }
-
+    
     public static class BuilderWrapper<T> {
 
         private Wrapper<T> monitoredWrapped;
@@ -127,6 +138,7 @@ public class RulesEvaluatorBuilder<T> {
                     filterMatch(monitoredWrapped, and(testList.toArray())),
                     filterMatch(monitoredWrapped, nand(testList.toArray()))
             );
+            SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
     }
@@ -158,6 +170,7 @@ public class RulesEvaluatorBuilder<T> {
                     filterMatch(monitored, and(testList.toArray())),
                     filterMatch(monitored, nand(testList.toArray()))
             );
+            SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
     }

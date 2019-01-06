@@ -330,8 +330,10 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
                 .append(fieldIndex).append(" targetMethod:")
                 .append(fieldMap.get(fieldIndex));
         if(fatal){
+            errorLog.logFatal(prefix);
             throw new RuntimeException(errorLog.getSb().toString(), e);
         }
+        errorLog.logError(prefix);
     }
 
     @Override
@@ -355,6 +357,11 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     @Override
     public boolean passedValidation() {
         return passedValidation;
+    }
+
+    @Override
+    public int getRowNumber() {
+        return rowNumber;
     }
 
 }

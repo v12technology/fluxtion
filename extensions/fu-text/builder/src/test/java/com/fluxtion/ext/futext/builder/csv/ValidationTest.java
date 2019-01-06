@@ -22,16 +22,12 @@ import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.gt;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.lt;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.positive;
+import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ValidationTest extends BaseSepTest {
@@ -39,7 +35,6 @@ public class ValidationTest extends BaseSepTest {
 //    protected String testPackageID() {
 //        return "";
 //    }
-
     @Test
 //    @Ignore
     public void testCsvWithHeaderAndRowCB() {
@@ -68,7 +63,7 @@ public class ValidationTest extends BaseSepTest {
 //    @Ignore
     //A RulesEvaluator is attached to the RowProcessor. Any read exceptions
     //are caught and the failed notifer path executed for the Evaluator
-    public void testCsvWithHeaderAndRowFailedValidation() {
+    public void testCsvWithHeaderAndRowFailedRead() {
 //        compileCfg.setGenerateDescription(false);
 //        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
         final EventHandler sep = buildAndInitSep(WorldCitiesCsvWithFailNotifier.class);
@@ -122,21 +117,16 @@ public class ValidationTest extends BaseSepTest {
     public static class WorldCityBeanValidating extends SEPConfig {
 
         {
-
             RulesEvaluator<WorldCityBeanPrimitive> validator = validator(
                     csvMarshaller(WorldCityBeanPrimitive.class).build()
-            ).addRule(positive(),      WorldCityBeanPrimitive::getPopulation)
-                    .addRule(lt(2500), WorldCityBeanPrimitive::getPopulation)
-                    .addRule(gt(-90),  WorldCityBeanPrimitive::getLatitude)
-                    .addRule(lt(90),   WorldCityBeanPrimitive::getLatitude)
-                    .addRule(gt(-180), WorldCityBeanPrimitive::getLongitude)
-                    .addRule(lt(180),  WorldCityBeanPrimitive::getLongitude)
+            )
+                    .addRule(withinRange(0, 2500), WorldCityBeanPrimitive::getPopulation)
+                    .addRule(withinRange(-90, 90), WorldCityBeanPrimitive::getLatitude)
+                    .addRule(withinRange(-180, 180), WorldCityBeanPrimitive::getLongitude)
                     .build();
             addPublicNode(count(validator.passedNotifier()), "countPassed");
             addPublicNode(count(validator.failedNotifier()), "countFailed");
-
         }
-
     }
 
 }
