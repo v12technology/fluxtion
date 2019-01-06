@@ -16,14 +16,21 @@
  */
 package com.fluxtion.ext.futext.api.csv;
 
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.ext.declarative.api.log.LogControlEvent;
+import com.fluxtion.ext.declarative.api.log.LogService;
+import com.fluxtion.ext.declarative.api.log.ConsoleLogProvider;
 import com.fluxtion.ext.declarative.api.util.Named;
 
 /**
- * A sink for validation logs, publishing to the configured end point.
+ * A sink for validation logs, publishing to the configured end point.</p>
+ *
+ * The LogProvider can be controlled by sending a log control {@link LogControlEvent#setLogService(LogService)
+ * } event to the SEP managing the validation.
  *
  * @author V12 Technology Ltd.
  */
@@ -31,6 +38,7 @@ public class ValidationLogSink extends Named {
 
     private StringBuilder appendLog;
     private StringBuilder prependLog;
+    private LogService logService;
 
     public ValidationLogSink() {
         super("validationLogSink");
@@ -48,19 +56,23 @@ public class ValidationLogSink extends Named {
         prependLog.append(log);
     }
 
+    @EventHandler(filterString = LogControlEvent.PROVIDER)
+    public void controlLogProvider(LogControlEvent control) {
+        logService = control.getLogService();
+    }
+
     /**
      * Immediately publishes to the log end point
      *
      * @param log
      */
     public void errorLog(ValidationLogger log) {
-        System.out.println(log.getSb());
+        logService.error(log.getSb());
     }
 
 //    @OnEvent
     public void publishLog() {
-        System.out.print(prependLog);
-        System.out.println(appendLog);
+        logService.info(prependLog.append(appendLog));
         prependLog.setLength(0);
         appendLog.setLength(0);
     }
@@ -69,6 +81,7 @@ public class ValidationLogSink extends Named {
     public void init() {
         appendLog = new StringBuilder(512);
         prependLog = new StringBuilder(512);
+        logService = new ConsoleLogProvider();
     }
 
     public static class LogNotifier {

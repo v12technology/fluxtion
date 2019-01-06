@@ -26,6 +26,7 @@ import com.fluxtion.api.event.Event;
 public final class LogControlEvent extends Event {
     
     public static final String FILTER = "CHANGE_FILTER";
+    public static final String PROVIDER = "CHANGE_LOG_PROVIDER";
     public static final String LEVEL = "CHANGE_LEVEL";
     public static final String LOG_TIME = "RECORD_TIME";
     public static final String LOG_NAME = "RECORD_NAME";
@@ -44,6 +45,7 @@ public final class LogControlEvent extends Event {
     private boolean enabled;
     private int level;
     private String[] filter;
+    private LogService logService;
     
     public static LogControlEvent recordMsgBuilderId(boolean enabled){
         LogControlEvent logControlEvent = new LogControlEvent(LOG_NAME); 
@@ -88,6 +90,12 @@ public final class LogControlEvent extends Event {
         logControlEvent.level = level;
         return logControlEvent;
     }
+    
+    public static LogControlEvent setLogService(LogService service){
+        LogControlEvent logControlEvent = new LogControlEvent(PROVIDER); 
+        logControlEvent.logService = service;
+        return logControlEvent;
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -100,6 +108,9 @@ public final class LogControlEvent extends Event {
     public String[] getFilter() {
         return filter;
     }
-    
+
+    public LogService getLogService() {
+        return logService;
+    }
     
 }

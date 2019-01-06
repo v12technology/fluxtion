@@ -86,14 +86,13 @@ import java.util.List;
  *
  * <ul>
  * <li>OnEvent annotated method is invoked after the parse, before any child
- * dependencie have access to the target instance. This method doubles as a
- * validation method, returning true indicates a valid record and false a
- * validation failure.
+ * dependencies have access to the target instance. Calculation for derived
+ * values in the target bean can be placed in this method.
  * <li>OnEventComplete annotated is invoked after an event processing cycle has
- * run, and all child dependencies have completed their processing. As target
- * instances are re-used this method can be used to clear an instance. Clearing
- * state is useful if partial records are acceptable inputs removing information
- * from the previous record parse cycle.
+ * run, and all child dependencies have completed their processing. Target
+ * instances are re-used between event cycles, this method can be used to clear
+ * any state from an instance. Clearing state is useful if derived values are
+ * calculated in the OnEvent method
  * </ul>
  *
  *

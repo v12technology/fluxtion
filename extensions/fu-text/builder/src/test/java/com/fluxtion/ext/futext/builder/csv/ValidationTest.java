@@ -22,6 +22,8 @@ import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.log.LogControlEvent;
+import com.fluxtion.ext.declarative.api.log.LogService;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;
@@ -87,6 +89,11 @@ public class ValidationTest extends BaseSepTest {
         final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");
+        
+        CountingLogProvider logCount = new CountingLogProvider();
+        sep.onEvent(LogControlEvent.setLogService(logCount));
+        
+        
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,12,25.19,1.5\n"//pass
                 + "mexico,aixirivali,Aixirivali,06,500,1.2,181\n"//fail
@@ -99,6 +106,9 @@ public class ValidationTest extends BaseSepTest {
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(3, countPassed.intValue());
         Assert.assertEquals(5, countFailed.intValue());
+        //only log failures
+        Assert.assertEquals(5, logCount.infoCount);
+        
     }
 
     public static class WorldCitiesCsvWithFailNotifier extends SEPConfig {
@@ -127,6 +137,56 @@ public class ValidationTest extends BaseSepTest {
             addPublicNode(count(validator.passedNotifier()), "countPassed");
             addPublicNode(count(validator.failedNotifier()), "countFailed");
         }
+    }
+
+    public static class CountingLogProvider implements LogService {
+
+        public int traceCount;
+        public int debugCount;
+        public int infoCount;
+        public int warnCount;
+        public int errorCount;
+        public int fatalCount;
+
+        @Override
+        public void trace(CharSequence msg) {
+            traceCount++;
+        }
+
+        @Override
+        public void debug(CharSequence msg) {
+            debugCount++;
+        }
+
+        @Override
+        public void info(CharSequence msg) {
+            infoCount++;
+        }
+
+        @Override
+        public void warn(CharSequence msg) {
+            warnCount++;
+        }
+
+        @Override
+        public void error(CharSequence msg) {
+            errorCount++;
+        }
+
+        @Override
+        public void fatal(CharSequence msg) {
+            fatalCount++;
+        }
+
+        public void resetCounts() {
+            traceCount = 0;
+            debugCount = 0;
+            infoCount = 0;
+            warnCount = 0;
+            errorCount = 0;
+            fatalCount = 0;
+        }
+
     }
 
 }
