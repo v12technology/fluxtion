@@ -80,7 +80,7 @@ public class NumberValidator implements ColumnName{
     public boolean lessThan(double x) {
         final boolean test = x < limit1;
         if (!test) {
-            logger.logError(" [" + name + "failed too great, value:" + x + " max allowed:" + limit1+ "] ");
+            logger.logError(" [" + name + "failed too large, value:" + x + " max allowed:" + limit1+ "] ");
         }
         return test;
     }

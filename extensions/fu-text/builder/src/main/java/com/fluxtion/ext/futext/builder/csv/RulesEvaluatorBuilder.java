@@ -29,7 +29,6 @@ import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.futext.api.csv.ColumnName;
-import com.fluxtion.ext.futext.api.csv.NumberValidator;
 import com.fluxtion.ext.futext.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
@@ -121,6 +120,11 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> BuilderWrapper<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
+            Object test = rule.captured()[0];
+            if(test instanceof ColumnName){
+                Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
+                ((ColumnName) test).setName(accessorMethod.getName() + " ");
+            }
             ruleList.add(new Pair(rule, supplier));
             return this;
         }
@@ -154,6 +158,10 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> Builder<T> addRule(SerializableConsumer<? extends R> rule, SerializableSupplier<T, R> supplier) {
+            Object test = rule.captured()[0];
+            if(test instanceof ColumnName){
+                ((ColumnName) test).setName(supplier.method().getName() + " ");
+            }
             ruleList.add(new Pair(rule, supplier));
             return this;
         }
