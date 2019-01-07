@@ -52,7 +52,8 @@ public class CsvMultiTypeMarshaller {
 
     @OnParentUpdate("type")
     public boolean onTypeUpdated(BufferValue type) {
-        pair = type2Wrapper.get(type.asString());
+        String key = type.asString();
+        pair = type2Wrapper.get(key);
         fieldNumber = 0;
         return false;
     }
@@ -100,5 +101,12 @@ public class CsvMultiTypeMarshaller {
         }
         com.fluxtion.api.lifecycle.EventHandler handler;
         Wrapper wrapper;
+
+        @Override
+        public String toString() {
+            return "HandlerWrapperPair{" + "handler=" + handler + ", wrapper=" + wrapper + '}';
+        }
+        
     }
+    
 }
