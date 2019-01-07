@@ -85,7 +85,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testValueValidation() {
-//        compileCfg.setGenerateDescription(true);
+        compileCfg.setGenerateDescription(true);
 //        compileCfg.setFormatSource(true);
         final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
         NumericValue countPassed = getField("countPassed");
@@ -152,7 +152,7 @@ public class ValidationTest extends BaseSepTest {
 
     @Test
     public void testNodeFailedValidators() {
-//        compileCfg.setGenerateDescription(true);
+        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseNodeMinPriceValidationRules.class);
         NumericValue countPassed = getField("countPassed");
         NumericValue countFailed = getField("countFailed");

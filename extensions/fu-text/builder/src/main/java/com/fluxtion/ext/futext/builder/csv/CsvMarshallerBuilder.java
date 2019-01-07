@@ -16,10 +16,12 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
+import com.fluxtion.ext.futext.api.util.EventPublsher;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -167,7 +169,11 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         if (mapBean) {
 //            map(targetClazz);
         }
-        return super.build();
+        final RowProcessor<T> rowProcessor = super.build();
+        EventPublsher publisher = new EventPublsher();
+        GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+        publisher.addEventSource(rowProcessor);
+        return rowProcessor;
     }
 
     public CsvMarshallerBuilder<T> mappingRow(int lines) {

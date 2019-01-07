@@ -16,6 +16,8 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
@@ -33,6 +35,7 @@ import com.fluxtion.ext.futext.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import com.fluxtion.ext.futext.api.csv.ValidationLogSink.LogNotifier;
+import com.fluxtion.ext.futext.api.util.EventPublsher;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +107,12 @@ public class RulesEvaluatorBuilder<T> {
                         )
                 );
             }
+
+            EventPublsher publisher = new EventPublsher();
+            publisher.addEventSource(monitoredWrapped);
+            publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+            publisher.addValidatedSource(evaluator.passedNotifier());
+
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier(), monitoredWrapped));
             return evaluator;
         }
@@ -150,6 +159,12 @@ public class RulesEvaluatorBuilder<T> {
                         filterMatch(monitoredWrapped, nand(testList.toArray()))
                 );
             }
+
+            EventPublsher publisher = new EventPublsher();
+            publisher.addEventSource(monitoredWrapped);
+            publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+            publisher.addValidatedSource(evaluator.passedNotifier());
+
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
@@ -194,6 +209,15 @@ public class RulesEvaluatorBuilder<T> {
                         filterMatch(monitored, nand(testList.toArray()))
                 );
             }
+
+            if (monitored instanceof Event) {
+                Event e = (Event) monitored;
+                EventPublsher publisher = new EventPublsher();
+                publisher.addEventSource(e);
+                publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+                publisher.addValidatedSource(evaluator.passedNotifier());
+            }
+
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }
