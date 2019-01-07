@@ -183,6 +183,16 @@ public final class TestBuilder<T, F> {
         return testBuilder;
     }
 
+    //TODO build test for instance and function
+//    public static <T, R> TestBuilder buildTest(SerializableConsumer<? extends R> rule, T instance, Function<T, R> supplier) {
+//        Object handler = rule.captured()[0];
+//        GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+//        TestBuilder<T, ?> testBuilder = new TestBuilder(handler);
+//        testBuilder.functionInfo = new FunctionInfo(rule.method(), testBuilder.importMap);
+//        testBuilder.arg(instance, supplier);
+//        return testBuilder;
+//    }
+
     public static <S, V, T extends Test> TestBuilder<T, S> buildTest(
             Class<T> testClass, S supplier, SerializableSupplier<S, V> accessor) {
         TestBuilder<T, S> testBuilder = new TestBuilder(testClass);
