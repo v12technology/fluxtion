@@ -16,7 +16,7 @@
  */
 package com.fluxtion.generator.util;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

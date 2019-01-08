@@ -16,9 +16,9 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
+import com.fluxtion.builder.generation.GenerationContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

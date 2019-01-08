@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.generator.model.parentlistener.wc.StringDriver;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounter;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounterGeneric;

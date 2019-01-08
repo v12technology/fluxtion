@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.audit;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.shared.ChildNode;
 import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEventHandler;

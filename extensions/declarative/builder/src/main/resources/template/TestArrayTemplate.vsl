@@ -1,18 +1,13 @@
 ## Velocity Template.
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import ${filterSubjectClassFqn};
-#if(${filter})
-#if(${wrappedSubject})import ${sourceClassFqn};#end
-#else
-import com.fluxtion.extension.declarative.api.Test;
+
+#foreach( $import in $imports)
+import $import;
 #end
+
 /**
- * generated Test wrapper.
+ * generated Test array wrapper.
  *
  * target class  : ${targetClass}
  * target method : ${targetMethod}

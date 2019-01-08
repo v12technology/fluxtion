@@ -17,7 +17,7 @@
  */
 package ${package};
 
-import com.fluxtion.api.event.test.*;
+import com.fluxtion.bjuilder.event.test.*;
 
 public class ${decoratorClassName} extends AbstractSepTestDecorator<${className}> {
 

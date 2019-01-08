@@ -16,15 +16,15 @@
  */
 package com.fluxtion.generator.util;
 
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.api.node.DeclarativeNodeConiguration;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;

@@ -16,9 +16,9 @@
  */
 package com.fluxtion.example.core.events.dirty.generated;
 
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.events.dirty.DirtyAggregator;
 import com.fluxtion.example.core.events.dirty.DirtyNode;
 import com.fluxtion.example.shared.DataEvent;
@@ -45,7 +45,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public SampleProcessor() {}
 
   @Override
-  public void onEvent(com.fluxtion.runtime.event.Event event) {
+  public void onEvent(com.fluxtion.api.event.Event event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.DataEvent"):
         {

@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.OnBatchEnd;
 import com.fluxtion.api.annotations.OnBatchPause;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 
 /**
  *

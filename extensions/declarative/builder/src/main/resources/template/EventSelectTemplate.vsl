@@ -1,12 +1,10 @@
 ## Velocity Template.
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.EventHandler;
-#if( ${filter} )
-import com.fluxtion.api.annotations.FilterId;
+#foreach( $import in $imports)
+import $import;
 #end
-import com.fluxtion.extension.declarative.api.EventWrapper;
-import ${eventClassFqn};
+
 
 /**
  * Generated EventHandler for ${eventClass}

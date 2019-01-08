@@ -2,9 +2,10 @@ package com.fluxtion.generator.targets;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.google.common.base.Predicates;
-import com.fluxtion.api.generation.FilterDescription;
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.FilterDescription;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.DirtyFlag;
 import com.fluxtion.generator.model.Field;
@@ -12,7 +13,7 @@ import com.fluxtion.generator.model.InvokerFilterTarget;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.api.audit.Auditor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -690,13 +691,23 @@ public class SepJavaSourceModelHugeFilter {
                             ct.append(s20 + "if(").append(parentFlag.name).append(") {\n");
                         }
                         //child callbacks
+                        boolean unguarded = false;
+                        StringBuilder sbUnguarded = new StringBuilder();
                         for (CbMethodHandle cbMethod : updateListenerCbList) {
                             //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
-                            ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                            if(!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()){
+                                unguarded = true;
+                                sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                            }else{
+                                ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                            }
                         }
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20s}\n", "", parentFlag.name);
                             ct.append(s20).append("}\n");
+                            if(unguarded){
+                                ct.append(sbUnguarded);
+                            }
                         }
                         //close guards clause
                         if (nodeGuardConditions.size() > 0) {
@@ -742,7 +753,7 @@ public class SepJavaSourceModelHugeFilter {
                         //callTree += String.format("%24s%s%s.%s(typedEvent);%n", "", "", method.variableName, method.method.getName());
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
-                    //close guards clause
+                    //close guarded clause
                     if (nodeGuardConditions.size() > 0) {
                         //callTree += String.format("%16s}\n", "");
                         ct.append(s16 + "}\n");
@@ -1117,7 +1128,7 @@ public class SepJavaSourceModelHugeFilter {
 
     /**
      * String representation of java code handling subclass of
-     * {@link com.fluxtion.runtime.event.Event Event}, with support for specific
+     * {@link com.fluxtion.api.event.Event Event}, with support for specific
      * dispatch based upon
      * {@linkplain  com.fluxtion.runtime.event.Event#filterId() filterID}. If
      * inlining is false the following output will be produced:

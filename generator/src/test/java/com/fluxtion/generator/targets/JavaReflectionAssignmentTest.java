@@ -6,7 +6,7 @@
 package com.fluxtion.generator.targets;
 
 import com.thoughtworks.qdox.model.JavaClass;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateAssignment;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateDispatch;
 import static com.fluxtion.generator.targets.JavaTestGeneratorHelper.generateClass;

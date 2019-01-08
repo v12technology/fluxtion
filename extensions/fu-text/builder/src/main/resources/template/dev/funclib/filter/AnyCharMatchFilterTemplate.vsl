@@ -19,9 +19,13 @@
  */
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
-import com.fluxtion.extension.declarative.funclib.api.filter.AnyCharMatchFilter;
+//import com.fluxtion.api.annotations.EventHandler;
+//import com.fluxtion.extension.declarative.funclib.api.event.CharEvent;
+//import com.fluxtion.extension.declarative.funclib.api.filter.AnyCharMatchFilter;
+
+#foreach( $import in $imports)
+import $import;
+#end
 
 /**
  * Char notifiers match = '${filter}'

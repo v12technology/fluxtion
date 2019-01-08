@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.audit;
 
-import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.api.audit.Auditor;
 
 /**
  *

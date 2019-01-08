@@ -16,11 +16,11 @@
  */
 package com.fluxtion.creator;
 
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.creator.MathFactory.FunctionCfg;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;

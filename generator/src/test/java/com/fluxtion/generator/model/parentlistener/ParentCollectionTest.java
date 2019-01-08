@@ -16,7 +16,7 @@
  */
 package com.fluxtion.generator.model.parentlistener;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
@@ -33,7 +33,7 @@ public class ParentCollectionTest extends BaseSepTest {
 
     @Test
     public void testParentList() {
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(ParentListProcessorSep.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(ParentListProcessorSep.class);
         NodeWithParentList root = getField("root");
         assertEquals(3, root.parents.size());
         sep.onEvent(new TestEvent());
@@ -46,7 +46,7 @@ public class ParentCollectionTest extends BaseSepTest {
 
     @Test
     public void testParentListNoTYpe() {
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(ParentListNoTypeProcessorSep.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(ParentListNoTypeProcessorSep.class);
         NodeWithParentList root = getField("root");
         assertEquals(3, root.parentsNoType.size());
         sep.onEvent(new TestEvent());
@@ -62,7 +62,7 @@ public class ParentCollectionTest extends BaseSepTest {
         //System.out.println("testPrivateListParents");
 //        com.fluxtion.generator.model.parentlistener.ParentCollectionTest1497363516748.TestProcessor processor = new com.fluxtion.generator.model.parentlistener.ParentCollectionTest1497363516748.TestProcessor();
         compileCfg.setAssignNonPublicMembers(true);
-        com.fluxtion.runtime.lifecycle.EventHandler sep = buildAndInitSep(ParentPrivateListProcessorSep.class);
+        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(ParentPrivateListProcessorSep.class);
         NodeWithPrivateParentList root = getField("root");
         assertEquals(3, root.getParents().size());
         assertEquals(1, root.intList.size());

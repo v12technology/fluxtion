@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
 import com.fluxtion.test.enums.DayProcessor;
 import org.junit.Test;

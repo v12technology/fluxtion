@@ -1,14 +1,7 @@
 ## Velocity Template.
 package ${functionPackage};
-
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.extension.declarative.api.Wrapper;
-#if(${filter})
-import ${filterSubjectClassFqn};
-#if(${wrappedSubject})import ${sourceClassFqn};#end
-#else
-import com.fluxtion.extension.declarative.api.Test;
+#foreach( $import in $imports)
+import $import;
 #end
 
 /**
@@ -32,13 +25,16 @@ public class ${functionClass} implements Test{
 #foreach($sourceInfo in $sourceMappingList)
     public ${sourceInfo.type} ${sourceInfo.id};
 #end
-    private ${targetClass} f;
+    @NoEventReference
+    public ${targetClass} f;
 #if(${changetNotifier})
     private boolean result;
 
     @Initialise
     public void init(){
+#if(${newFunction})
         f = new  ${targetClass}();
+#end
         result = false;
     }
 
@@ -54,7 +50,9 @@ public class ${functionClass} implements Test{
 
     @Initialise
     public void init(){
+#if(${newFunction})
         f = new  ${targetClass}();
+#end
     }
 
     @OnEvent

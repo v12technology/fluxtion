@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.building.imperative;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.shared.MyEventHandler;
 
 /**

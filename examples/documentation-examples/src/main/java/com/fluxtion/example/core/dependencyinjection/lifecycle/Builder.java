@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.dependencyinjection.lifecycle;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

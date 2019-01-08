@@ -1,9 +1,9 @@
 package com.fluxtion.generator.graphbuilder;
 
-import com.fluxtion.api.generation.GenerationContext;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.googlecode.gentyref.GenericTypeReflector;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.NodeRegistry;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.generator.model.CbMethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

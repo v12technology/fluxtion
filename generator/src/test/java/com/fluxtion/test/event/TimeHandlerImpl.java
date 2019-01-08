@@ -16,7 +16,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import java.io.Serializable;
 
 /**

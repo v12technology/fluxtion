@@ -19,9 +19,9 @@ package com.fluxtion.generator.parent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import java.util.ArrayList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -83,6 +83,18 @@ public class ParentUpdateListenerTest extends BaseSepTest {
     @Test
     public void dirtyFiltering() {
         buildAndInitSep(PriceBuilder.class);
+        TickCounter tickCounter = getField("tickCounter");
+        PricerFormer priceFormer = getField("priceFormer");
+        assertThat(tickCounter.eventCount, is(0));
+        assertThat(tickCounter.parentCount, is(0));
+        assertThat(priceFormer.eventCount, is(0));
+        assertThat(priceFormer.parentCount, is(0));
+        onEvent(new MarketTickEvent());
+        onEvent(new MarketTickEvent());
+        assertThat(tickCounter.eventCount, is(0));
+        assertThat(tickCounter.parentCount, is(2));
+        assertThat(priceFormer.eventCount, is(0));
+        assertThat(priceFormer.parentCount, is(0));
 
     }
 
@@ -274,9 +286,11 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         public void buildConfig() {
             MarketHandler tickHandler = addPublicNode(new MarketHandler(), "marketHandler");
             PricerFormer pricerFormer = addPublicNode(new PricerFormer(), "priceFormer");
+            TickCounter tickCounter = addPublicNode(new TickCounter(), "tickCounter");
             ThrottledPublisher throttledPublisher = addPublicNode(new ThrottledPublisher(), "throttledPublisher");
             PositionCalculator positionCalc = addPublicNode(new PositionCalculator(), "positionCalc");
-            pricerFormer.marketHanlder = tickHandler;
+            pricerFormer.marketHandler = tickHandler;
+            tickCounter.marketHandler = tickHandler;
             throttledPublisher.pricerFormer = pricerFormer;
             throttledPublisher.positionCalc = positionCalc;
         }
@@ -294,21 +308,42 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         @EventHandler
         public boolean newTick(MarketTickEvent tick) {
             eventCount++;
-            return true;
+            return false;
         }
     }
 
     public static class PricerFormer {
 
-        public MarketHandler marketHanlder;
+        public MarketHandler marketHandler;
         int eventCount;
+        int parentCount;
         
+        @OnParentUpdate
+        public void tickUpdated( MarketHandler marketHandler){
+            parentCount++;
+        }
         
         @OnEvent
         public void formPrice() {
             eventCount++;
         }
 
+    }
+    
+    public static class TickCounter{
+        public MarketHandler marketHandler;
+        int eventCount;
+        int parentCount;
+        
+        @OnParentUpdate(guarded = false)
+        public void tickUpdated( MarketHandler marketHandler){
+            parentCount++;
+        }
+        
+        @OnEvent
+        public void formPrice() {
+            eventCount++;
+        }
     }
     
     public static class PositionCalculator{

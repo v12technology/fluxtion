@@ -46,7 +46,7 @@ import net.openhft.compiler.CachedCompiler;
  */
 public class SepCompilerConfig {
     
-    private static final String CONFIGCLASSDEFAULT = com.fluxtion.api.node.SEPConfig.class.getCanonicalName();
+    private static final String CONFIGCLASSDEFAULT = com.fluxtion.builder.node.SEPConfig.class.getCanonicalName();
     
     /**
      * SepConfig class, to instantiate and use to generate the SEP, if config

@@ -16,8 +16,9 @@
  */
 package com.fluxtion.runtime.partition;
 
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.partition.Partitioner;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.LongAdder;

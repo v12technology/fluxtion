@@ -17,8 +17,8 @@
  */
 package ${package};
 
-import com.fluxtion.api.debug.SepDebugger;
-import com.fluxtion.api.debug.SepIntrospector;
+import com.fluxtion.builder.debug.SepDebugger;
+import com.fluxtion.builder.debug.SepIntrospector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;

@@ -5,10 +5,10 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.test.event.TestEventNoId;
 import com.fluxtion.test.event.TestEventNoIdHandler;
 import com.fluxtion.test.tracking.Extends_Handler_TraceEvent_InFilter_0;

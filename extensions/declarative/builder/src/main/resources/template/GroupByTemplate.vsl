@@ -1,16 +1,6 @@
 ## Velocity Template.
 package ${functionPackage};
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.extension.declarative.api.group.GroupBy;
-import com.fluxtion.extension.declarative.api.group.GroupByIniitialiser;
-import com.fluxtion.extension.declarative.api.group.GroupByTargetMap;
-import java.util.Map;
 #foreach( $import in $imports)
 import $import;
 #end

@@ -17,7 +17,7 @@
 package com.fluxtion.test.enums;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 
 /**
  *

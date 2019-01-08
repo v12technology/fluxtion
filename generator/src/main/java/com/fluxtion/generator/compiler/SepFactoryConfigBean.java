@@ -16,9 +16,9 @@
  */
 package com.fluxtion.generator.compiler;
 
-import com.fluxtion.api.generation.GenerationContext;
-import com.fluxtion.api.node.DeclarativeNodeConiguration;
-import com.fluxtion.api.node.NodeFactory;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

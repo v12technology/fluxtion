@@ -16,7 +16,7 @@
  */
 package com.fluxtion.test.introspector;
 
-import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import java.util.HashMap;
 
 /**

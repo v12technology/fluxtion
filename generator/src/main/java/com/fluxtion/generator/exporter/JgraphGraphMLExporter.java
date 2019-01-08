@@ -16,7 +16,7 @@
  */
 package com.fluxtion.generator.exporter;
 
-import com.fluxtion.runtime.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import java.io.PrintWriter;
 import java.io.Writer;
 import javax.xml.transform.OutputKeys;

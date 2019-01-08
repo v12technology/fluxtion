@@ -18,7 +18,7 @@ package com.fluxtion.generator.model;
 
 import com.google.common.base.Predicates;
 import com.googlecode.gentyref.GenericTypeReflector;
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.event.TimeHandlerExtends;

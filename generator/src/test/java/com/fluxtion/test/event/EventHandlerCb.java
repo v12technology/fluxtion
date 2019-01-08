@@ -18,7 +18,7 @@ package com.fluxtion.test.event;
 
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.runtime.lifecycle.AbstractFilteredEventHandler;
+import com.fluxtion.api.lifecycle.AbstractFilteredEventHandler;
 
 /**
  *

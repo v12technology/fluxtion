@@ -18,7 +18,7 @@ package com.fluxtion.generator.dirty;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;

@@ -5,7 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.runtime.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.tracking.TraceEvent;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
 import org.junit.Test;

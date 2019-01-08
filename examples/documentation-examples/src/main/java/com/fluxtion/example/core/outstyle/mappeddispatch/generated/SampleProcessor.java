@@ -16,12 +16,12 @@
  */
 package com.fluxtion.example.core.outstyle.mappeddispatch.generated;
 
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
 import com.fluxtion.example.shared.DataEvent;
-import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.HashMap;
 
@@ -38,7 +38,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public SampleProcessor() {}
 
   @Override
-  public void onEvent(com.fluxtion.runtime.event.Event event) {
+  public void onEvent(com.fluxtion.api.event.Event event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.DataEvent"):
         {

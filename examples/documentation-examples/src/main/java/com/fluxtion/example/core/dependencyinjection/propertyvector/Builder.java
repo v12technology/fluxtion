@@ -16,7 +16,7 @@
  */
 package com.fluxtion.example.core.dependencyinjection.propertyvector;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.shared.SampleEnum;
 import static com.fluxtion.example.shared.SampleEnum.*;
 import java.util.Arrays;

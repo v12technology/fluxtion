@@ -16,9 +16,9 @@
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.api.generation.FilterDescription;
-import com.fluxtion.api.generation.FilterDescriptionProducer;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.generation.FilterDescription;
+import com.fluxtion.builder.generation.FilterDescriptionProducer;
 
 /**
  *

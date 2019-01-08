@@ -18,9 +18,9 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.node.DeclarativeNodeConiguration;
-import com.fluxtion.api.node.NodeFactory;
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
 import com.fluxtion.test.nodes.KeyProcessorFactory;

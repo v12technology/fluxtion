@@ -18,7 +18,7 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.runtime.lifecycle.AbstractFilteredEventHandler;
+import com.fluxtion.api.lifecycle.AbstractFilteredEventHandler;
 import com.fluxtion.test.event.CharEvent;
 
 /**

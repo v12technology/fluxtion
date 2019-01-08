@@ -16,7 +16,7 @@
  */
 package com.fluxtion.generator.model.parentlistener;
 
-import com.fluxtion.api.node.SEPConfig;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;

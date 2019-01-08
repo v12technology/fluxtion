@@ -6,7 +6,7 @@ import $import;
 #end
 
 /**
- * generated CSV marshaller wrapper.
+ * Fluxtion generated CSV marshaller wrapper.
  *
  * target class  : ${targetClass}
  * 
@@ -15,6 +15,10 @@ import $import;
 
 public class ${functionClass} implements RowProcessor<${targetClass}> {
 
+    @Inject
+    @Config(key = "id", value = "${id}")
+    @PushReference
+    public ValidationLogger errorLog;
     //buffer management
     private final char[] chars = new char[4096];
 #if(!${fixedLen})
@@ -38,6 +42,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
     //processing state and meta-data
 #foreach($converter in ${convereters.entrySet()})
+    @NoEventReference
     public ${converter.value} ${converter.key};
 #end
     private int rowNumber;
@@ -171,7 +176,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         ${sourceInfo.fieldIdentifier} = headers.indexOf("${sourceInfo.fieldName}");
         fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
         if (${sourceInfo.fieldIdentifier} < 0) {
-            throw new RuntimeException("problem mapping field:'${sourceInfo.fieldName}' index row:" + rowNumber);
+            logHeaderProblem("problem mapping field:'${sourceInfo.fieldName}' missing column header, index row:", true, null);
         }
 #* *##end
 #end
@@ -179,30 +184,37 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 
     private boolean updateTarget() {
-        updateFieldIndex();
+        try{
+            updateFieldIndex();
 #foreach($sourceInfo in $sourceMappingList)
 #* *##if($acceptPartials)
-        if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
+            if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
 #* *##end
 #* *##if($sourceInfo.trim)
 #*     *##if(${fixedLen})
-        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
-        extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
-        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
-        extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
 #*     *##end
 #* *##end
 #* *##if($acceptPartials)
         }
 #* *##end
 #end
-        //target
-        return pushData();
+            //target
+            return pushData();
+        } catch (Exception e) {
+            passedValidation = false;
+            return false;
+        } finally {
+            fieldIndex = 0;
+        }
     }
 
     private void updateFieldIndex() {
@@ -233,20 +245,13 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #* *##end
 #end
 #if(${eventMethod})
-#* *##if($eventMethodValidates)
-            passedValidation = target.${eventMethod}();
-            return passedValidation;
-#* *##else
             target.${eventMethod}();
-            return true;
-#* *##end
-#else
-            return true;
 #end
+            return true;
         } catch (Exception e) {
-            throw new RuntimeException("problem pushing data from row:" + rowNumber 
-                                        + " fieldIndex:" + fieldIndex 
-                                        + " targetMethod:" + fieldMap.get(fieldIndex), e);
+            logException("problem pushing data from row:", false, e);
+            passedValidation = false;
+            return false;
         } finally {
             fieldIndex = 0;
         }
@@ -265,9 +270,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             source.setLength(0);
             source.append(chars, fieldStart, fieldLen);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldStart:" + fieldStart
-                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
     
@@ -285,9 +288,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             fieldLen = fieldEnd - fieldStart;
             source.append(chars, fieldStart, fieldLen);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldStart:" + fieldStart
-                    + " targetMethod:" + fieldMap.get(fieldStart), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
@@ -297,9 +298,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             source.setLength(0);
             source.append(chars, delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldIndex:" + fieldIndex
-                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
@@ -320,13 +319,33 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             }
             source.append(chars, st, len);
         } catch (Exception e) {
-            throw new RuntimeException("problem extracting value from row:" + rowNumber
-                    + " fieldIndex:" + fieldIndex
-                    + " targetMethod:" + fieldMap.get(fieldIndex), e);
+            logException("problem extracting value from row:", true, e);
         }
     }
 
 #end
+    private void logException(String prefix, boolean fatal, Exception e) {
+        errorLog.getSb().append(prefix)
+                .append(rowNumber).append(" fieldIndex:")
+                .append(fieldIndex).append(" targetMethod:")
+                .append(fieldMap.get(fieldIndex));
+        if(fatal){
+            errorLog.logFatal("");
+            throw new RuntimeException(errorLog.getSb().toString(), e);
+        }
+        errorLog.logError(prefix);
+    }
+
+
+    private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
+        errorLog.getSb().append(prefix).append(rowNumber);
+        if(fatal){
+            errorLog.logFatal("");
+            throw new RuntimeException(errorLog.getSb().toString(), e);
+        }
+        errorLog.logError("");
+    }
+
     @Override
     public ${targetClass} event() {
         return target;
@@ -346,19 +365,15 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 
     @Override
-    public int rowCount() {
-        return rowNumber;
-    }
-
-    @Override
     public boolean passedValidation() {
         return passedValidation;
     }
 
     @Override
-    public char eolChar() {
-        return '${eol}';
+    public int getRowNumber() {
+        return rowNumber;
     }
+
 }
 
 
