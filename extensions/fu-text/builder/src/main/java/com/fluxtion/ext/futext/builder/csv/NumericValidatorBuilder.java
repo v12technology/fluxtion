@@ -43,39 +43,39 @@ public class NumericValidatorBuilder {
         return limit(limit)::lessThan;
     }
 
-    public static LambdaReflection.SerializableConsumer<Integer> eq(int limit) {
+    public static LambdaReflection.SerializableConsumer<Double> eq(int limit) {
         return limit(limit)::equal;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> zero() {
+    public static LambdaReflection.SerializableConsumer<Double> zero() {
         return limit(0)::equal;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> positive() {
+    public static LambdaReflection.SerializableConsumer<Double> positive() {
         return limit(0)::greaterThan;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> negative() {
+    public static LambdaReflection.SerializableConsumer<Double> negative() {
         return limit(0)::lessThan;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> NaN() {
+    public static LambdaReflection.SerializableConsumer<Double> NaN() {
         return limit(0)::isNan;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> finite() {
+    public static LambdaReflection.SerializableConsumer<Double> finite() {
         return limit(0)::isFinite;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> infinte() {
+    public static LambdaReflection.SerializableConsumer<Double> infinte() {
         return limit(0)::isInfinite;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> withinRange(double lowerBound, double upperBound) {
+    public static LambdaReflection.SerializableConsumer<Double> withinRange(double lowerBound, double upperBound) {
         return range(lowerBound, upperBound)::withinRange;
     }
     
-    public static LambdaReflection.SerializableConsumer<Integer> outsideRange(double lowerBound, double upperBound) {
+    public static LambdaReflection.SerializableConsumer<Double> outsideRange(double lowerBound, double upperBound) {
         return range(lowerBound, upperBound)::outsideRange;
     }
 }

@@ -24,6 +24,7 @@ import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,69 +45,51 @@ public class CsvMultiTypeMarshaller {
 
     public BufferValue type;
 
-    private Map<String, HandlerWrapperPair> type2Wrapper;
-    private HandlerWrapperPair pair;
+    private Map<String, com.fluxtion.api.lifecycle.EventHandler> type2Marshaller;
+    private com.fluxtion.api.lifecycle.EventHandler marshaller;
     public com.fluxtion.api.lifecycle.EventHandler sink;
-    private char eolChar = '\n';
     private int fieldNumber;
 
     @OnParentUpdate("type")
     public boolean onTypeUpdated(BufferValue type) {
         String key = type.asString();
-        pair = type2Wrapper.get(key);
+        marshaller = type2Marshaller.get(key);
         fieldNumber = 0;
         return false;
     }
 
     @EventHandler
     public void pushCharToMarshaller(CharEvent charEvent) {
-        if (pair != null & fieldNumber>0) {
-            pair.handler.onEvent(charEvent);
-            if (charEvent.getCharacter() == eolChar) {
-                if (sink != null & pair != null && pair.wrapper.event() instanceof Event) {
-                    sink.onEvent((Event) pair.wrapper.event());
-                }
-                pair = null;
-            }
+        if (marshaller != null & fieldNumber > 0) {
+            marshaller.onEvent(charEvent);
         }
-        fieldNumber++;
+        if (charEvent.getCharacter() == '\n') {
+            marshaller = null;
+            fieldNumber = 0;
+        } else {
+            fieldNumber++;
+        }
     }
 
-    public void addMarshaller(Wrapper wrapper, com.fluxtion.api.lifecycle.EventHandler handler) {
+    public void setSink(com.fluxtion.api.lifecycle.EventHandler sink) {
+        this.sink = sink;
+        type2Marshaller.values().forEach(h -> h.onEvent(new RegisterEventHandler(sink)));
+    }
+
+    public void addMarshaller(Class wrapper, com.fluxtion.api.lifecycle.EventHandler handler) {
         if (handler != null && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
-        type2Wrapper.put(wrapper.eventClass().getSimpleName(), new HandlerWrapperPair(handler, wrapper));
+        type2Marshaller.put(wrapper.getSimpleName(), handler);
+        if (sink != null) {
+            handler.onEvent(new RegisterEventHandler(sink));
+        }
     }
 
     @Initialise
     public void init() {
-        type2Wrapper = new HashMap<>();
-        pair = null;
+        type2Marshaller = new HashMap<>();
+        marshaller = null;
     }
 
-    public char getEolChar() {
-        return eolChar;
-    }
-
-    public void setEolChar(char eolChar) {
-        this.eolChar = eolChar;
-    }
-
-    private static class HandlerWrapperPair {
-
-        public HandlerWrapperPair(com.fluxtion.api.lifecycle.EventHandler handler, Wrapper wrapper) {
-            this.handler = handler;
-            this.wrapper = wrapper;
-        }
-        com.fluxtion.api.lifecycle.EventHandler handler;
-        Wrapper wrapper;
-
-        @Override
-        public String toString() {
-            return "HandlerWrapperPair{" + "handler=" + handler + ", wrapper=" + wrapper + '}';
-        }
-        
-    }
-    
 }

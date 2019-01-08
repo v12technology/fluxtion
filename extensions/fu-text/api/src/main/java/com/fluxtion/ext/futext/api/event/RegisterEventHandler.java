@@ -20,7 +20,8 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 
 /**
- * An event containing an {@link EventHandler} for registering in another SEP.
+ * An event that registers an {@link EventHandler} as a sink in another SEP.
+ * The receiving SEP must listen for 
  * Can be useful if a SEP wants to forward events it produces to another SEP,
  * this event can be used to register the target SEP.
  *
@@ -32,7 +33,7 @@ public class RegisterEventHandler extends Event {
     private boolean register;
 
     public RegisterEventHandler(EventHandler handler) {
-        this.handler = handler;
+        this(handler, true);
     }
 
     /**

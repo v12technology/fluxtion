@@ -35,6 +35,7 @@ import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.event.EofEvent;
+import com.fluxtion.ext.futext.api.util.EventPublsher;
 import static com.fluxtion.ext.futext.builder.Templates.CSV_MARSHALLER;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -184,15 +185,15 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         this.reuseTarget = reuseTarget;
         return (P) this;
     }
-    
-    public void setId(String id){
+
+    public void setId(String id) {
         this.id = id;
     }
 
     public String getId() {
         return id;
     }
-    
+
     public RowProcessor<T> build() {
         try {
             VelocityContext ctx = new VelocityContext();
@@ -246,6 +247,10 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
                 }
             });
             GenerationContext.SINGLETON.getNodeList().add(result);
+            
+            EventPublsher publisher = new EventPublsher();
+            GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+            publisher.addEventSource(result);
             return result;
         } catch (Exception e) {
             throw new RuntimeException("could not build function " + e.getMessage(), e);

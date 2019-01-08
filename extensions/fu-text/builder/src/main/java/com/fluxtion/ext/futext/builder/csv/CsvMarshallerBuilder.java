@@ -170,9 +170,6 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
 //            map(targetClazz);
         }
         final RowProcessor<T> rowProcessor = super.build();
-        EventPublsher publisher = new EventPublsher();
-        GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
-        publisher.addEventSource(rowProcessor);
         return rowProcessor;
     }
 

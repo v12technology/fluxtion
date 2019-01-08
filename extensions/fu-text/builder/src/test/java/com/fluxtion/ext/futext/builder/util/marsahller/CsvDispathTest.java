@@ -42,13 +42,13 @@ public class CsvDispathTest {
         //set up idispatch
         DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
         dispatcher.init();
-        dispatcher.addMarshaller(new StringWrapper(), (EventHandler) (Event e) -> {
+        dispatcher.addMarshaller(String.class, (EventHandler) (Event e) -> {
             stringCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());
             }
         });
-        dispatcher.addMarshaller(new IntegerWrapper(), (EventHandler) (Event e) -> {
+        dispatcher.addMarshaller(Integer.class, (EventHandler) (Event e) -> {
             intCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());
@@ -77,31 +77,5 @@ public class CsvDispathTest {
         stringCount.reset();
     }
 
-    public static class StringWrapper implements Wrapper<String> {
 
-        @Override
-        public String event() {
-            return "null";
-        }
-
-        @Override
-        public Class<String> eventClass() {
-            return String.class;
-        }
-
-    }
-    
-    public static class IntegerWrapper implements Wrapper<Integer> {
-
-        @Override
-        public Integer event() {
-            return 0;
-        }
-
-        @Override
-        public Class<Integer> eventClass() {
-            return Integer.class;
-        }
-
-    }
 }
