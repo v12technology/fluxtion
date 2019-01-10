@@ -18,6 +18,7 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
+import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
 import org.junit.Test;
 
 /**
@@ -27,12 +28,14 @@ import org.junit.Test;
 public class InprocessSepCompilerTest {
     
     @Test
-    public void inProcessTestSimple(){
-        InprocessSepCompiler.buildSep(this::buildSepSingle);
+    public void inProcessTestSimple() throws InstantiationException, IllegalAccessException, Exception{
+        InprocessSepCompiler.buildSep(this::buildSepSingle, "com.gh.test", "GenNode_1");
     }
     
     
     public void buildSepSingle(SEPConfig cfg){
-        System.out.println("updating cfg:" + cfg);
+        cfg.addNode(new AnnotatedHandlerNoFilter());
     }
+    
+
 }
