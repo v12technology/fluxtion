@@ -48,7 +48,7 @@ public class InprocessSepCompiler {
     
     public static Class<EventHandler> buildSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName,  String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
-        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR);
+        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
         compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
         return (Class<EventHandler>) Class.forName(compilerCfg.getFqn());
     }
