@@ -26,11 +26,9 @@ public class AnnotatedHandlerNoFilter {
 
     @EventHandler
     public void onAllTimeEvents(TimeEvent e){
-        
     }
     
     @EventHandler
     public void onAllTestEvents(TestEvent e){
-        
     }
 }

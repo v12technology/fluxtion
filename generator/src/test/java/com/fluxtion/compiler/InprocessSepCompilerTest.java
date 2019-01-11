@@ -16,26 +16,42 @@
  */
 package com.fluxtion.compiler;
 
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
 import org.junit.Test;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import static com.fluxtion.generator.util.ClassUtils.getField;
+import com.fluxtion.test.event.TimeEvent;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
 public class InprocessSepCompilerTest {
-    
+
     @Test
-    public void inProcessTestSimple() throws InstantiationException, IllegalAccessException, Exception{
-        InprocessSepCompiler.buildSep(this::buildSepSingle, "com.gh.test", "GenNode_1");
+    public void inProcessTestSimple() throws InstantiationException, IllegalAccessException, Exception {
+        EventHandler sep = sepTestInstance(this::buildSepSingle, "com.gh.test", "GenNode_1");
+        MyHandler handler = getField("handler", sep);
+        assertThat(handler.count, is(0));
+        sep.onEvent(new TimeEvent());
+        assertThat(handler.count, is(1));
     }
-    
-    
-    public void buildSepSingle(SEPConfig cfg){
-        cfg.addNode(new AnnotatedHandlerNoFilter());
+
+    public void buildSepSingle(SEPConfig cfg) {
+        cfg.addNode(new MyHandler(), "handler");
     }
-    
+
+    public static class MyHandler {
+
+        int count;
+
+        @com.fluxtion.api.annotations.EventHandler
+        public void onAllTimeEvents(TimeEvent e) {
+            count++;
+        }
+    }
 
 }
