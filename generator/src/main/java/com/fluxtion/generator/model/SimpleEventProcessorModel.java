@@ -604,7 +604,7 @@ public class SimpleEventProcessorModel {
                             }
 
                         } else {
-                            LOGGER.warn("Cannot create OnParentUpdate callback" + cbMethodHandle
+                            LOGGER.debug("Cannot create OnParentUpdate callback" + cbMethodHandle
                                     + " no parent field matches:'" + val + "'");
                         }
                     } else {

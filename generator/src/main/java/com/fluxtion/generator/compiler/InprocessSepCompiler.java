@@ -36,8 +36,8 @@ import java.util.function.Consumer;
  */
 public class InprocessSepCompiler {
 
-    public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/java/";
-    public static final String JAVA_GEN_DIR = "target/generated-sources/java/";
+    public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/fluxtion/";
+    public static final String JAVA_GEN_DIR = "target/generated-sources/fluxtion/";
     public static final String JAVA_SRC_DIR = "src/main/java/";
 
     public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
@@ -106,7 +106,7 @@ public class InprocessSepCompiler {
         GenerationContext.setupStaticContext(packageName, className, outputDir, resourcesDir);
         SepCompilerConfig cfg = new SepCompilerConfig();
         cfg.setOutputDirectory(SINGLETON.getSourceRootDirectory().getCanonicalPath());
-        cfg.setResourcesOutputDirectory(SINGLETON.getResourcesOutputDirectory().getCanonicalPath());
+        cfg.setResourcesOutputDirectory(SINGLETON.getResourcesRootDirectory().getCanonicalPath());
         cfg.setPackageName(packageName);
         cfg.setClassName(className);
         cfg.setCachedCompiler(SINGLETON.getJavaCompiler());
