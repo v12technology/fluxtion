@@ -25,7 +25,11 @@ import java.util.Map;
 import com.fluxtion.api.audit.Auditor;
 
 /**
- *
+ * Configuration used by Fluxtion event stream compiler at generation time to 
+ * control the output of the generated static event processor. The properties 
+ * control the logical configuration of the compilation and not the physical
+ * location of input/output resources.
+ * 
  * @author Greg Higgins
  */
 public class SEPConfig {
