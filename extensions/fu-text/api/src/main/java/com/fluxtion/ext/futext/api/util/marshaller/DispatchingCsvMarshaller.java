@@ -20,6 +20,7 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
         csv2ByteBufferTemp_1.fieldNumber = (int) 0;
         csv2ByteBufferTemp_1.headerLines = (int) 0;
         dispatcher.type = csv2ByteBufferTemp_1;
+        init();
     }
 
     public void addMarshaller(Class wrapper, EventHandler handler) {
