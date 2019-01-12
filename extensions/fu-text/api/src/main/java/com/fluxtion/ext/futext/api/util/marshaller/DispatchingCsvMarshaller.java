@@ -23,12 +23,19 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
         init();
     }
 
-    public void addMarshaller(Class wrapper, EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, EventHandler handler) {
         dispatcher.addMarshaller(wrapper, handler);
+        return this;
     }
 
-    public void addSink(EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, String handlerClass) throws Exception {
+        dispatcher.addMarshaller(wrapper, (EventHandler) Class.forName(handlerClass).newInstance());
+        return this;
+    }
+
+    public DispatchingCsvMarshaller addSink(EventHandler handler) {
         dispatcher.setSink(handler);
+        return this;
     }
 
     @Override

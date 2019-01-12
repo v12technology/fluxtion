@@ -73,7 +73,9 @@ public class CsvMultiTypeMarshaller {
 
     public void setSink(com.fluxtion.api.lifecycle.EventHandler sink) {
         this.sink = sink;
-        type2Marshaller.values().forEach(h -> h.onEvent(new RegisterEventHandler(sink)));
+        if (sink != null) {
+            type2Marshaller.values().forEach(h -> h.onEvent(new RegisterEventHandler(sink)));
+        }
     }
 
     public void addMarshaller(Class wrapper, com.fluxtion.api.lifecycle.EventHandler handler) {
