@@ -16,11 +16,13 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.api.event.Event;
+
 /**
  *
  * @author gregp
  */
-public class WorldCity {
+public class WorldCity extends Event{
     private CharSequence country;//col 0
     private CharSequence city;//col 1
     private CharSequence accentCity;//col 2
