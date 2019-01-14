@@ -26,18 +26,26 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
- * Generates and compiles a SEP for use by a caller in the same process as the
- * caller. The compilation is invoked with one of the static compileSep methods.
- * An instance of {@link SEPConfig} is passed to the consumer to control the
- * graph construction. Optionally creates an instance of the compiled
- * EventHandler with or without calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
+ * Generates and compiles a SEP for use by a caller in the same process. The
+ * compilation is invoked programmatically removing the need to execute the
+ * Fluxtion event stream compiler as an external process.<br><br>
+ *
+ * To generate a SEP the caller invokes one of the static compileSep methods. An
+ * instance of {@link SEPConfig} is passed to the consumer to control the graph
+ * construction, such as adding nodes and defining scopes or identifiers. Simple
+ * example adding a single node:<br><br>
+ *
+ * {@code  sepTestInstance((c) -> c.addNode(new MyHandler(), "handler"), "com.fluxtion.examples.inprocess", "GenNode_1");}
+ * <br><br>
+ *
+ * Optionally creates an instance of the compiled EventHandler with or without
+ * calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
  * }.<br><br>
  *
- *
- * <stong>This is an experimental feature that needs to tested
- * carefully.</stong>
+ * <h2>>This is an experimental feature that needs to tested
+ * carefully.
  * The class loading for SEP generation was originally designed to be out of
- * process so there may be issues
+ * process so there may be issues.</h2>
  *
  * @author V12 Technology Ltd.
  */
@@ -49,14 +57,14 @@ public class InprocessSepCompiler {
 
     public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
     public static final String RESOURCE_DIR = "src/main/resources/";
-    
-    public enum DirOptions{
-        TEST_DIR_OUTPUT, 
+
+    public enum DirOptions {
+        TEST_DIR_OUTPUT,
         JAVA_GENDIR_OUTPUT,
         JAVA_SRCDIR_OUTPUT
     }
-    
-    public enum InitOptions{
+
+    public enum InitOptions {
         INIT,
         NO_INIT
     }
@@ -114,8 +122,8 @@ public class InprocessSepCompiler {
 
     /**
      * Compiles a SEP in the current process of the caller. The provided
-     * {@link SEPConfig}
-     * is used by the Fluxtion event stream compiler to build the SEP.
+     * {@link SEPConfig} is used by the Fluxtion event stream compiler to build
+     * the SEP.
      *
      * @param cfgBuilder - A client consumer to buld sep using the provided
      * @param pckg - output package of the generated class
@@ -128,7 +136,7 @@ public class InprocessSepCompiler {
      * @throws IllegalAccessException
      * @throws Exception
      */
-    public static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    private static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
         final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
         compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
