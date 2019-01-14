@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.csv;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import java.util.concurrent.atomic.LongAccumulator;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ public class CsvToBeanBuilderTest {
         //build
         MyFunctions functions = new MyFunctions();
         DispatchingCsvMarshaller dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest")
-                .testOutpur(true)
+                .dirOption(TEST_DIR_OUTPUT)
                 .mapCustomBean("WorldCity", WorldCity.class, (c) -> {
                     c.map(0, WorldCity::setCountry)
                             .map(1, WorldCity::setCity)
