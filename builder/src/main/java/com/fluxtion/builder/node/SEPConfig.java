@@ -25,7 +25,11 @@ import java.util.Map;
 import com.fluxtion.api.audit.Auditor;
 
 /**
- *
+ * Configuration used by Fluxtion event stream compiler at generation time to 
+ * control the output of the generated static event processor. The properties 
+ * control the logical configuration of the compilation and not the physical
+ * location of input/output resources.
+ * 
  * @author Greg Higgins
  */
 public class SEPConfig {
@@ -177,4 +181,11 @@ public class SEPConfig {
      * and replaced with user classes.
      */
     public final Map<String, String> class2replace = new HashMap<>();
+
+    @Override
+    public String toString() {
+        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", nodeNameStrategy=" + nodeNameStrategy + ", filterMap=" + filterMap + ", filterDescriptionProducer=" + filterDescriptionProducer + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
+    }
+    
+    
 }

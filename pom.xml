@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
     
@@ -35,6 +35,7 @@ along with this program.  If not, see
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

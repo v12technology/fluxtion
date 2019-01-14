@@ -1,6 +1,5 @@
 package com.fluxtion.ext.futext.api.util.marshaller;
 
-import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
@@ -20,14 +19,22 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
         csv2ByteBufferTemp_1.fieldNumber = (int) 0;
         csv2ByteBufferTemp_1.headerLines = (int) 0;
         dispatcher.type = csv2ByteBufferTemp_1;
+        init();
     }
 
-    public void addMarshaller(Class wrapper, EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, EventHandler handler) {
         dispatcher.addMarshaller(wrapper, handler);
+        return this;
     }
 
-    public void addSink(EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, String handlerClass) throws Exception {
+        dispatcher.addMarshaller(wrapper, (EventHandler) Class.forName(handlerClass).newInstance());
+        return this;
+    }
+
+    public DispatchingCsvMarshaller addSink(EventHandler handler) {
         dispatcher.setSink(handler);
+        return this;
     }
 
     @Override

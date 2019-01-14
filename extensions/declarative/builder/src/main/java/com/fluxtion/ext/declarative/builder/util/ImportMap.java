@@ -78,6 +78,7 @@ public class ImportMap {
     public List<String> asString() {
         final List<String> list = importedClassSet.stream().map(c -> c.getCanonicalName()).collect(Collectors.toList());
         list.addAll(staticImportedClassSet.stream().map(c -> "static " + c.getCanonicalName() + ".*").collect(Collectors.toList()));
+        Collections.sort(list);
         return list;
     }
 

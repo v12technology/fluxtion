@@ -392,7 +392,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 try {
                     newNode = clazz.newInstance();
                 } catch (IllegalAccessException | InstantiationException e) {
-                    LOGGER.info("missing default construtor - attempting construction bypass");
+                    LOGGER.debug("missing default construtor - attempting construction bypass");
                     final net.vidageek.mirror.dsl.Mirror constructor = new Mirror();
                     newNode = constructor.on(clazz).invoke().constructor().bypasser();
                 }
