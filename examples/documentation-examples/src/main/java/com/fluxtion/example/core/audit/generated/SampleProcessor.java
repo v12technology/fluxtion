@@ -37,7 +37,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final MyEventHandler myEventHandler_1 = new MyEventHandler();
   private final ChildNode childNode_3 = new ChildNode(myEventHandler_1);
   private final PipelineNode pipelineNode_7 = new PipelineNode(dataEventHandler_5);
-  private final Combiner combiner_9 = new Combiner(pipelineNode_7, childNode_3);
+  private final Combiner combiner_9 = new Combiner(childNode_3, pipelineNode_7);
   public final NodeAuditor nodeAuditor = new NodeAuditor();
   //Dirty flags
   private boolean isDirty_combiner_9 = false;
