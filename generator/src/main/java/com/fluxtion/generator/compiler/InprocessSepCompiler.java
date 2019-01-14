@@ -26,11 +26,18 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
- * Generates and compiles a SEP for use by a caller in the same process.
- * Optionally creates an instance of the compiled EventHandler with or without
- * calling the init method.
- * 
- * This is an experimental feature that needs to tested carefully.
+ * Generates and compiles a SEP for use by a caller in the same process as the
+ * caller. The compilation is invoked with one of the static compileSep methods.
+ * An instance of {@link SEPConfig} is passed to the consumer to control the
+ * graph construction. Optionally creates an instance of the compiled
+ * EventHandler with or without calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
+ * }.<br><br>
+ *
+ *
+ * <stong>This is an experimental feature that needs to tested
+ * carefully.</stong>
+ * The class loading for SEP generation was originally designed to be out of
+ * process so there may be issues
  *
  * @author V12 Technology Ltd.
  */
@@ -59,6 +66,22 @@ public class InprocessSepCompiler {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
     }
 
+    /**
+     * Compiles and instantiates a SEP described with the provided
+     * {@link SEPConfig}, optionally initialising the SEP instance. See {@link #compileSep(Consumer, String, String, String, String)
+     * } for a description of compilation.
+     *
+     * @param cfgBuilder - A client consumer to buld sep using the provided
+     * @param pckg - output package of the generated class
+     * @param sepName - output class name of the generated SEP
+     * @param srcGenDir - output directory for generated SEP source files
+     * @param resGenDir - output directory for generated resources
+     * @param initialise - if true call init method on SEP instance
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws Exception
+     */
     public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
         Class<EventHandler> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
         EventHandler sep = sepClass.newInstance();
@@ -78,6 +101,22 @@ public class InprocessSepCompiler {
         return compileSep(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR);
     }
 
+    /**
+     * Compiles a SEP in the current process of the caller. The provided
+     * {@link SEPConfig}
+     * is used by the Fluxtion event stream compiler to build the SEP.
+     *
+     * @param cfgBuilder - A client consumer to buld sep using the provided
+     * @param pckg - output package of the generated class
+     * @param sepName - output class name of the generated SEP
+     * @param srcGenDir - output directory for generated SEP source files
+     * @param resGenDir - output directory for generated resources
+     * @return
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws Exception
+     */
     public static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
         final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
