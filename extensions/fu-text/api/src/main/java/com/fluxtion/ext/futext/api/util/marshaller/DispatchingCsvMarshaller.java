@@ -1,6 +1,5 @@
 package com.fluxtion.ext.futext.api.util.marshaller;
 
-import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
