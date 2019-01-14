@@ -16,11 +16,14 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.event.Event;
+
 /**
  *
  * @author gregp
  */
-public class WorldCityBeanTransient {
+public class WorldCityBeanTransient extends Event{
     private CharSequence country;
     private CharSequence city;
     private transient CharSequence accentCity;//derived - not in csv
@@ -83,6 +86,13 @@ public class WorldCityBeanTransient {
 
     public void setLatitude(CharSequence latitude) {
         this.latitude = latitude;
+    }
+    
+    @OnEvent
+    public void deriveValues(){
+        if(accentCity==null){
+            accentCity = "none provided";
+        }
     }
 
     @Override
