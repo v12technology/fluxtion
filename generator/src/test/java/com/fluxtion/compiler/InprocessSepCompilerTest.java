@@ -33,7 +33,7 @@ public class InprocessSepCompilerTest {
 
     @Test
     public void inProcessTestSimple() throws InstantiationException, IllegalAccessException, Exception {
-        EventHandler sep = sepTestInstance(this::buildSepSingle, "com.gh.test", "GenNode_1");
+        EventHandler sep = sepTestInstance(this::buildSepSingle, "com.gh.test", "GenNode_" + System.currentTimeMillis());
         MyHandler handler = getField("handler", sep);
         assertThat(handler.count, is(0));
         sep.onEvent(new TimeEvent());
