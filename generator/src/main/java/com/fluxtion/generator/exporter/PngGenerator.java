@@ -142,7 +142,7 @@ public class PngGenerator {
         } else {
             try {
                 ImageIO.write(image, "PNG", pngFile);
-                LOG.info( "png image generated:{}", pngFile.getCanonicalPath());
+                LOG.debug( "png image generated:{}", pngFile.getCanonicalPath());
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
@@ -203,5 +204,9 @@ public interface ClassUtils {
             isTransient = Modifier.isTransient(fieldOfProperty.getModifiers());
         }
         return isTransient;
+    }
+
+    public static <T> T getField(String name, Object instance) {
+        return (T) new Mirror().on(instance).get().field(name);
     }
 }

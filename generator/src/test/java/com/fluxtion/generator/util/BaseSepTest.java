@@ -51,15 +51,17 @@ public class BaseSepTest {
     protected EventHandler sep;
     @Rule
     public TestName testName = new TestName();
+    protected String pckg;
+    protected String className;
 
     @Before
     public void beforeTest() {
-        String pckg = this.getClass().getCanonicalName() + "_" + testName.getMethodName() + "_" + testPackageID();
+        pckg = this.getClass().getCanonicalName() + "_" + testName.getMethodName() + "_" + testPackageID();
         pckg = pckg.toLowerCase();
-        final String name = sepClassName();
+        className = sepClassName();
         JavaTestGeneratorHelper.setupDefaultTestContext(
-                pckg, name);
-        compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(pckg, name);
+                pckg, className);
+        compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(pckg, className);
         cleanOuputDirectory(compileCfg);
         compileCfg.setSupportDirtyFiltering(true);
         compileCfg.setGenerateDescription(false);

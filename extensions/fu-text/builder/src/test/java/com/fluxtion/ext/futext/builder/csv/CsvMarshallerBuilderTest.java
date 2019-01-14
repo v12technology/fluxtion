@@ -26,11 +26,15 @@ import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
+import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
@@ -146,7 +150,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
         StringDriver.streamChars(dataCsh, sep, false);
     }
-    
+
     @Test
     public void testCsvWithAutoBeanMappingTransientHeader() {
         final EventHandler sep = buildAndInitSep(WorldCityBeanTransient_Header.class);
@@ -154,6 +158,25 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                 + "mexico,aixirivali,5000\n"
                 + "brazil,santiago,20000\n";
         StringDriver.streamChars(dataCsh, sep, false);
+    }
+
+    @Test
+    public void testCsvWithAutoBeanMappingTransientHeaderInline() throws Exception {
+        EventHandler sep  = sepTestInstance((c) -> csvMarshaller(WorldCityBeanTransient.class).build()
+                , pckg, className);
+        WorldCityBeanTransient[] city = new WorldCityBeanTransient[1];
+        LongAdder count = new LongAdder();
+        sep.onEvent(new RegisterEventHandler((e) ->{
+            city[0] = (WorldCityBeanTransient) e;
+            count.increment();
+        }));
+        String dataCsh = "Country,City,population\n"
+                + "mexico,aixirivali,5000\n"
+                + "brazil,santiago,20000\n";
+        StringDriver.streamChars(dataCsh, sep, false);
+        assertThat(count.intValue(), is(2));
+        assertThat(city[0].getCountry(), is("brazil"));
+        assertThat(city[0].getAccentCity(), is("none provided"));
     }
 
     @Test

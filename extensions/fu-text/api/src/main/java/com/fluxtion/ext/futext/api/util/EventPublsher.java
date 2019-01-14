@@ -45,7 +45,7 @@ public class EventPublsher<T extends Event> {
 
     @OnParentUpdate("validatedSource")
     public void validatedUpdate(Wrapper<T> source) {
-        if (!publishOnValidate) {
+        if (publishOnValidate) {
             for (int i = 0; i < handlers.length; i++) {
                 handlers[i].onEvent(source.event());
             }

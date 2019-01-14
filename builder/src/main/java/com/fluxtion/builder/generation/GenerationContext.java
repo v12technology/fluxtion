@@ -42,75 +42,77 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GenerationContext {
 
-    
     public static GenerationContext SINGLETON;
     private static final AtomicInteger COUNT = new AtomicInteger();
     private final Map<? super Object, Map> cacheMap;
-    
+
     /**
      * A global counter, can be used for generating unique class names.
+     *
      * @return next id.
      */
-    public static int nextId(){
+    public static int nextId() {
         return COUNT.getAndIncrement();
     }
-    
+
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
         setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);
     }
-    
+
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory, boolean createResourceDirectory) {
         SINGLETON = new GenerationContext(packageName, className, outputDirectory, resourcesRootDirectory);
         SINGLETON.createDirectories();
-        if(createResourceDirectory)
+        if (createResourceDirectory) {
             SINGLETON.createResourceDirectory();
+        }
     }
-    
+
     public static void setupStaticContext(ClassLoader classLoader, String packageName, String className, File outputDirectory, File resourcesRootDirectory, boolean createResourceDirectory, File buildOutputDirectory, boolean createBuildOutputDirectory) {
         SINGLETON = new GenerationContext(
                 classLoader,
-                packageName, 
-                className, 
-                outputDirectory, 
+                packageName,
+                className,
+                outputDirectory,
                 resourcesRootDirectory,
                 buildOutputDirectory,
                 null
         );
         SINGLETON.createDirectories();
-        if(createResourceDirectory)
+        if (createResourceDirectory) {
             SINGLETON.createResourceDirectory();
-        if(createBuildOutputDirectory && buildOutputDirectory!=null){
+        }
+        if (createBuildOutputDirectory && buildOutputDirectory != null) {
             buildOutputDirectory.mkdirs();
         }
     }
-    
-    public static void setupStaticContext(ClassLoader classLoader, 
-            String packageName, 
-            String className, 
-            File outputDirectory, 
-            File resourcesRootDirectory, 
-            boolean createResourceDirectory, 
-            File buildOutputDirectory, 
+
+    public static void setupStaticContext(ClassLoader classLoader,
+            String packageName,
+            String className,
+            File outputDirectory,
+            File resourcesRootDirectory,
+            boolean createResourceDirectory,
+            File buildOutputDirectory,
             boolean createBuildOutputDirectory,
             CachedCompiler cachedCompiler) {
         SINGLETON = new GenerationContext(
                 classLoader,
-                packageName, 
-                className, 
-                outputDirectory, 
+                packageName,
+                className,
+                outputDirectory,
                 resourcesRootDirectory,
                 buildOutputDirectory,
                 cachedCompiler
         );
         SINGLETON.createDirectories();
-        if(createResourceDirectory)
+        if (createResourceDirectory) {
             SINGLETON.createResourceDirectory();
-        if(createBuildOutputDirectory && buildOutputDirectory!=null){
+        }
+        if (createBuildOutputDirectory && buildOutputDirectory != null) {
             buildOutputDirectory.mkdirs();
         }
     }
-    
-    
+
     /**
      * Map representing the name of the actual node class generated at SEP
      * processing stage. Allowing a generic proxy class to be used in the SEP
@@ -120,11 +122,11 @@ public class GenerationContext {
      *
      */
     private final Map<Object, String> proxyClassMap = new HashMap<>();
-    
+
     private final List<?> nodeList = new ArrayList<>();
 
     private final ClassLoader classLoader;
-    
+
     /**
      * Output package for the generated file, used where relevant
      */
@@ -139,13 +141,13 @@ public class GenerationContext {
      * the root output directory for the code generation
      */
     private final File srcRootDirectory;
-    
+
     /**
      * The package directory = outputDirectory + packageName
      */
     private File srcPackageDirectory;
-    
-     /**
+
+    /**
      * the output directory for the code generation
      */
     public File resourcesRootDirectory;
@@ -172,20 +174,21 @@ public class GenerationContext {
         this.srcRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = classLoasder;
-        if(cachedCompiler == null){
+        if (cachedCompiler == null) {
             javaCompiler = new CachedCompiler(null, buildOutputDirectory);
-        }else{
+        } else {
             javaCompiler = cachedCompiler;
         }
         cacheMap = new HashMap<>();
     }
-    
+
     private void createDirectories() {
         srcPackageDirectory = new File(GenerationContext.SINGLETON.srcRootDirectory, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
+        resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
     }
-    
-    public void createResourceDirectory(){
+
+    public void createResourceDirectory() {
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
         resourcesOutputDirectory.mkdirs();
     }
@@ -224,9 +227,9 @@ public class GenerationContext {
     public List getNodeList() {
         return nodeList;
     }
-    
-    public <T> T addOrUseExistingNode(T node){
-        if(getNodeList().contains(node)){
+
+    public <T> T addOrUseExistingNode(T node) {
+        if (getNodeList().contains(node)) {
             return (T) getNodeList().get(getNodeList().indexOf(node));
         }
         getNodeList().add(node);
@@ -240,31 +243,32 @@ public class GenerationContext {
     public ClassLoader getClassLoader() {
         return classLoader;
     }
-    
+
     /**
-     * a cache that is tied to this generation context instance. A new Map
-     * will be created for each unique cache key.
-     * 
+     * a cache that is tied to this generation context instance. A new Map will
+     * be created for each unique cache key.
+     *
      * @param <K> The key type of the cache map
      * @param <V> The value type of the cache map
      * @param key the cache key
      * @return the newly created map
      */
-    public  <K, V> Map<K, V> getCache(Object key){
-        return cacheMap.computeIfAbsent(key, (k) ->  new HashMap());
+    public <K, V> Map<K, V> getCache(Object key) {
+        return cacheMap.computeIfAbsent(key, (k) -> new HashMap());
     }
-    
+
     /**
      * removes a cache map from this instance by key.
+     *
      * @param <K> The key type of the cache map
      * @param <V> The value type of the cache map
      * @param key the cache key
      * @return The mapping of the map removed or null if no mapping
      */
-    public <K, V> Map<K, V> removeCache(Object key){
+    public <K, V> Map<K, V> removeCache(Object key) {
         return cacheMap.remove(key);
     }
-    
+
     public static String readText(@NotNull String resourceName) throws IOException {
         StringWriter sw = new StringWriter();
         Reader isr = new InputStreamReader(getInputStream(resourceName), UTF_8);
@@ -285,7 +289,7 @@ public class GenerationContext {
             try {
                 closeable.close();
             } catch (IOException e) {
-                System.err.println("Failed to close " +  closeable +  e.getMessage());
+                System.err.println("Failed to close " + closeable + e.getMessage());
             }
         }
     }
@@ -302,5 +306,5 @@ public class GenerationContext {
         }
         return new FileInputStream(filename);
     }
-    
+
 }
