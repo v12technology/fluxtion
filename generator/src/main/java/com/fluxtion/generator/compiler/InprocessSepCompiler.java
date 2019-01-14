@@ -49,6 +49,17 @@ public class InprocessSepCompiler {
 
     public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
     public static final String RESOURCE_DIR = "src/main/resources/";
+    
+    public enum DirOptions{
+        TEST_DIR_OUTPUT, 
+        JAVA_GENDIR_OUTPUT,
+        JAVA_SRCDIR_OUTPUT
+    }
+    
+    public enum InitOptions{
+        INIT,
+        NO_INIT
+    }
 
     public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, true);
@@ -62,7 +73,7 @@ public class InprocessSepCompiler {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, false);
     }
 
-    public static EventHandler sepTestInstanceNoINit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static EventHandler sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
     }
 
