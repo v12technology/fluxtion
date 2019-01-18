@@ -93,12 +93,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
-            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
