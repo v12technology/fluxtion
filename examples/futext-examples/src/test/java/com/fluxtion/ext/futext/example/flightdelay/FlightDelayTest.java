@@ -18,7 +18,6 @@ package com.fluxtion.ext.futext.example.flightdelay;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterType;
-import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
@@ -29,13 +28,10 @@ import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanFilter;
-import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.JAVA_GENDIR_OUTPUT;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.JAVA_SRCDIR_OUTPUT;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.InitOptions.INIT;
 import com.fluxtion.generator.util.ClassUtils;
-import com.gh.removeNa.RemoveNaSep;
-import com.sun.swing.internal.plaf.metal.resources.metal;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,40 +73,38 @@ public class FlightDelayTest {
             c.addPublicNode(count(flightDetails), "totalFlights");
             c.maxFiltersInline = 25;
         },
-                "com.fluxtion.ext.futext.example.flightdelay.generated", "FlightDelayAnalyser", JAVA_GENDIR_OUTPUT, INIT);
+                "com.fluxtion.ext.futext.example.flightdelay.generated", "FlightDelayAnalyser", JAVA_SRCDIR_OUTPUT, INIT);
     }
 
     @Test
     @Ignore
     public void runTest() throws IOException, FileNotFoundException, InterruptedException {
-        CharEventStreamer streamer = new CharEventStreamer();
-        String dataPathString = "2008_clean.csv";
-//        String dataPathString = "C:\\Users\\gregp\\development\\projects\\fluxtion\\open-source\\fluxtion-examples\\case-studies\\flight-delay\\dist\\data\\2008.csv";
-        File dataFile = Paths.get(dataPathString).toFile();
-        FlightDelayAnalyser processor = new FlightDelayAnalyser();
-        long delta = System.nanoTime();
-        streamer.streamFromFile(dataFile, processor);
-        delta = System.nanoTime() - delta;
-        double duration = (delta / 1_000_000) / 1000.0;
-        System.out.println("processed file:" + dataFile.getAbsolutePath());
-        processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
-
-        System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
+//        CharEventStreamer streamer = new CharEventStreamer();
+//        String dataPathString = "2008_clean.csv";
+////        String dataPathString = "C:\\Users\\gregp\\development\\projects\\fluxtion\\open-source\\fluxtion-examples\\case-studies\\flight-delay\\dist\\data\\2008.csv";
+//        File dataFile = Paths.get(dataPathString).toFile();
+//        FlightDelayAnalyser processor = new FlightDelayAnalyser();
+//        long delta = System.nanoTime();
+//        streamer.streamFromFile(dataFile, processor);
+//        delta = System.nanoTime() - delta;
+//        double duration = (delta / 1_000_000) / 1000.0;
+//        System.out.println("processed file:" + dataFile.getAbsolutePath());
+//        processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
+//
+//        System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
     }
 
     @Test
     @Ignore
     public void removeNA() throws IllegalAccessException, Exception {
-//        com.fluxtion.api.lifecycle.EventHandler sep = InprocessSepCompiler.sepTestInstance((c) -> {
-//            RemoveNA na = c.addNode(new RemoveNA(), "remover");
-//            c.maxFiltersInline = 15;
-//        }, "com.gh.removeNa", "RemoveNaSep");
-        RemoveNaSep sep = new RemoveNaSep();
+        com.fluxtion.api.lifecycle.EventHandler sep = InprocessSepCompiler.sepTestInstance((c) -> {
+            RemoveNA na = c.addNode(new RemoveNA(), "remover");
+            c.maxFiltersInline = 15;
+        }, "com.gh.removeNa", "RemoveNaSep");
+//        RemoveNaSep sep = new RemoveNaSep();
 
         RemoveNA remover = ClassUtils.getField("remover", sep);
-//        RemoveNA remover = ClassUtils.getField("remover", sep);
         remover.out = new BufferedOutputStream(new FileOutputStream("2008_clean.csv"));
-
         CharEventStreamer streamer = new CharEventStreamer();
         String dataPathString = "C:\\Users\\gregp\\development\\projects\\fluxtion\\open-source\\fluxtion-examples\\case-studies\\flight-delay\\dist\\data\\2008.csv";
         streamer.streamFromFile(Paths.get(dataPathString).toFile(), sep);
