@@ -59,14 +59,16 @@
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-fu-text-api</artifactId>
         </dependency>
-        <!--        <dependency>
+        <!--        
+        -->
+        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-builder</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-fu-text-builder</artifactId>
