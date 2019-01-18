@@ -132,6 +132,14 @@ along with this program.  If not, see
                 <version>1.6.2-SNAPSHOT</version>
                 <scope>provided</scope>
             </dependency>
+            <!--generator test -->
+            <dependency>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>generator</artifactId>
+                <version>1.6.2-SNAPSHOT</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
             <!--declarative fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
