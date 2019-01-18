@@ -25,6 +25,7 @@ along with this program.  If not, see
     
     <modules>
         <module>documentation-examples</module>
+        <module>futext-examples</module>
     </modules>
     
     <properties>
