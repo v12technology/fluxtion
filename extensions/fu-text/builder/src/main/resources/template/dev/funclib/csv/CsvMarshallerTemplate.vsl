@@ -333,7 +333,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
         }
-        errorLog.logError(prefix);
+        errorLog.logError("");
     }
 
 
