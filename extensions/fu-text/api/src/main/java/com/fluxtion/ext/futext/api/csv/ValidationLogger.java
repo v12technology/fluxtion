@@ -16,9 +16,7 @@
  */
 package com.fluxtion.ext.futext.api.csv;
 
-import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.Inject;
-import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.ext.declarative.api.util.Named;
 
@@ -41,9 +39,10 @@ public class ValidationLogger extends Named {
     }
 
     /**
-     * pushes the log sink to publish the log buffer immediately. 
+     * pushes the log sink to publish the log buffer immediately.
+     *
      * @param error
-     * @return 
+     * @return
      */
     public ValidationLogger logFatal(CharSequence error) {
         sb.append(error);
@@ -54,8 +53,9 @@ public class ValidationLogger extends Named {
 
     /**
      * records the message for logging at the end of an event cycle
+     *
      * @param error
-     * @return 
+     * @return
      */
     public ValidationLogger logError(CharSequence error) {
         sb.append(error);
@@ -67,6 +67,5 @@ public class ValidationLogger extends Named {
     public StringBuilder getSb() {
         return sb;
     }
-
 
 }

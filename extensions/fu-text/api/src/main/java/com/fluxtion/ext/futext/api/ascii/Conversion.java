@@ -17,21 +17,25 @@
 package com.fluxtion.ext.futext.api.ascii;
 
 /**
- * Standard conversion functions from CharSequence to primitive types. 
+ * Standard conversion functions from CharSequence to primitive types.
+ *
  * @author gregp
  */
 public interface Conversion {
 
     public static double atod(StringBuilder sb) {
-        return Double.parseDouble(sb.toString());
+        return sb.length() == 0 ? 0 : Double.parseDouble(sb.toString());
     }
 
     public static long atol(StringBuilder sb) {
-        return Long.parseLong(sb.toString());
+        return sb.length() == 0 ? 0 : Long.parseLong(sb.toString());
     }
 
     public static int atoi(CharSequence s)
             throws NumberFormatException {
+        if (s.length() == 0) {
+            return 0;
+        }
         int radix = 10;
         /*
          * WARNING: This method may be invoked early during VM initialization
