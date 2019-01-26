@@ -24,7 +24,8 @@ import com.fluxtion.api.event.Event;
  * @author Greg Higgins
  */
 public final class LogControlEvent extends Event {
-    
+    public static final int LOG_CONTROL_ID = 3;
+    public static final int ID = LOG_CONTROL_ID;
     public static final String FILTER = "CHANGE_FILTER";
     public static final String PROVIDER = "CHANGE_LOG_PROVIDER";
     public static final String LEVEL = "CHANGE_LEVEL";
@@ -33,12 +34,12 @@ public final class LogControlEvent extends Event {
     public static final String LOG_LEVEL = "RECORD_LEVEL";
     
     private LogControlEvent(String controlType){
-        super();
+        super(ID);
         filterString = controlType;
     }
     
     private LogControlEvent(int controlType){
-        super();
+        super(ID);
         filterId = controlType;
     }
     
