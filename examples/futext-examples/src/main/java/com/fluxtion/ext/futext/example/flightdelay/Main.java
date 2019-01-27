@@ -17,34 +17,32 @@
 package com.fluxtion.ext.futext.example.flightdelay;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.futext.api.util.AsciiCharEventFileStreamer;
-import com.fluxtion.ext.futext.api.util.CharEventStreamer;
+import com.fluxtion.ext.futext.api.util.CharStreamer;
 import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 /**
  *
  * @author gregp
  */
 public class Main {
-    
+
     public static void main(String[] args) throws IOException, FileNotFoundException, InterruptedException {
         File dataFile = new File(args[0]);
-        CharEventStreamer streamer = new CharEventStreamer();
-        AsciiCharEventFileStreamer syncStreamer = new AsciiCharEventFileStreamer();
         FlightDelayAnalyser processor = new FlightDelayAnalyser();
+        //start timing
         long delta = System.nanoTime();
-        streamer.streamFromFile(dataFile, processor);
-//        syncStreamer.streamFromFile(dataFile, processor, true);
+        CharStreamer.stream(new BufferedReader(new FileReader(dataFile)), processor).async().stream();
         delta = System.nanoTime() - delta;
+        //end timing
         double duration = (delta / 1_000_000) / 1000.0;
         System.out.println("processed file:" + dataFile.getAbsolutePath());
         processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
-
         System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
     }
-    
+
 }

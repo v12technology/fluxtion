@@ -5,6 +5,8 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence;
+import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence.CharSequenceView;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;
@@ -19,11 +21,10 @@ import static com.fluxtion.ext.futext.api.ascii.Conversion.*;
 /**
  * Fluxtion generated CSV marshaller wrapper.
  *
- * target class  : FlightDetails
- * 
+ * target class : FlightDetails
+ *
  * @author Greg Higgins
  */
-
 public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> {
 
     @Inject
@@ -33,15 +34,16 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     //buffer management
     private final char[] chars = new char[4096];
     private final int[] delimIndex = new int[1024];
+    private final CharArrayCharSequence seq = new CharArrayCharSequence(chars);
     private int fieldIndex = 0;
     private int writeIndex = 0;
     //target
     private FlightDetails target;
     //source field index: 14
-    private final StringBuilder setDelay = new StringBuilder();
+    private final CharSequenceView setDelay = seq.view();
     private final int fieldIndex_14 = 14;
     //source field index: 8
-    private final StringBuilder setCarrier = new StringBuilder();
+    private final CharSequenceView setCarrier = seq.view();
     private final int fieldIndex_8 = 8;
     //processing state and meta-data
     private int rowNumber;
@@ -54,7 +56,7 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     public boolean charEvent(CharEvent event) {
         final char character = event.getCharacter();
         passedValidation = true;
-        if(character == '\r'){
+        if (character == '\r') {
             return false;
         }
         if (character == '\n') {
@@ -68,25 +70,24 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     }
 
     @EventHandler
-    public boolean eof(EofEvent eof){
-        return writeIndex==0?false:processRow();
+    public boolean eof(EofEvent eof) {
+        return writeIndex == 0 ? false : processRow();
     }
 
     private boolean processRow() {
         boolean targetChanged = false;
         rowNumber++;
         if (HEADER_ROWS < rowNumber) {
-            //updateTarget();
             targetChanged = updateTarget();
-        } else if(rowNumber==MAPPING_ROW){
+        } else if (rowNumber == MAPPING_ROW) {
             mapHeader();
-        } 
+        }
         writeIndex = 0;
         fieldIndex = 0;
         return targetChanged;
     }
 
-    private void mapHeader(){
+    private void mapHeader() {
         String header = new String(chars).trim();
         header = header.replace("\"", "");
         List<String> headers = new ArrayList();
@@ -98,32 +99,16 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     }
 
     private boolean updateTarget() {
-        try{
+        try {
             updateFieldIndex();
-            extractCharSequence(setDelay, fieldIndex_14);
-            extractCharSequence(setCarrier, fieldIndex_8);
-            //target
-            return pushData();
-        } catch (Exception e) {
-            passedValidation = false;
-            return false;
-        } finally {
-            fieldIndex = 0;
-        }
-    }
-
-    private void updateFieldIndex() {
-        fieldIndex++;
-        delimIndex[fieldIndex] = writeIndex + 1;
-    }
-
-    private boolean pushData(){
-        try{
             fieldIndex = fieldIndex_14;
+            setDelay.subSequence(delimIndex[fieldIndex_14], delimIndex[fieldIndex_14 + 1] - 1);
             target.setDelay(atoi(setDelay));
+
             fieldIndex = fieldIndex_8;
+            setCarrier.subSequence(delimIndex[fieldIndex_8], delimIndex[fieldIndex_8 + 1] - 1);
             target.setCarrier(setCarrier);
-            return true;
+
         } catch (Exception e) {
             logException("problem pushing data from row:", false, e);
             passedValidation = false;
@@ -131,36 +116,12 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
         } finally {
             fieldIndex = 0;
         }
+        return true;
     }
 
-    private final void extractCharSequence(StringBuilder source, int fieldIndex){
-        try {
-            source.setLength(0);
-            source.append(chars, delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
-    }
-
-    private final void extractTrimmedCharSequence(StringBuilder source, int fieldIndex) {
-        try {
-            source.setLength(0);
-            int len = delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1;
-            int st = delimIndex[fieldIndex];
-            char[] val = chars;
-            while ((st < len) && (val[st] <= ' ')) {
-                st++;
-            }
-            while ((st < len) && (val[len - 1] <= ' ')) {
-                len--;
-            }
-            if (st != delimIndex[fieldIndex]) {
-                len -= st;
-            }
-            source.append(chars, st, len);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
+    private void updateFieldIndex() {
+        fieldIndex++;
+        delimIndex[fieldIndex] = writeIndex + 1;
     }
 
     private void logException(String prefix, boolean fatal, Exception e) {
@@ -168,17 +129,16 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
                 .append(rowNumber).append(" fieldIndex:")
                 .append(fieldIndex).append(" targetMethod:")
                 .append(fieldMap.get(fieldIndex));
-        if(fatal){
+        if (fatal) {
             errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
         }
-        errorLog.logError(prefix);
+        errorLog.logError("");
     }
-
 
     private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
         errorLog.getSb().append(prefix).append(rowNumber);
-        if(fatal){
+        if (fatal) {
             errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
         }
@@ -196,7 +156,7 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     }
 
     @Initialise
-    public void init(){
+    public void init() {
         target = new FlightDetails();
         fieldMap.put(fieldIndex_14, "setDelay");
         fieldMap.put(fieldIndex_8, "setCarrier");
@@ -213,5 +173,3 @@ public class FlightDetailsCsvMarshaller0 implements RowProcessor<FlightDetails> 
     }
 
 }
-
-

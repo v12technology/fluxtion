@@ -45,6 +45,7 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   //Filter constants
 
   public FlightDelayAnalyser() {
+    validationLogSink_6.setPublishLogImmediately(true);
     validationLogger_5.logSink = validationLogSink_6;
     eventPublsher_1.publishOnValidate = (boolean) false;
     totalFlights.tracked = flightDetailsCsvMarshaller0_0;
@@ -57,6 +58,12 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   @Override
   public void onEvent(com.fluxtion.api.event.Event event) {
     switch (event.eventId()) {
+      case (LogControlEvent.ID):
+        {
+          LogControlEvent typedEvent = (LogControlEvent) event;
+          handleEvent(typedEvent);
+          break;
+        }
       case (CharEvent.ID):
         {
           CharEvent typedEvent = (CharEvent) event;
@@ -69,15 +76,7 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
           handleEvent(typedEvent);
           break;
         }
-    }
-    switch (event.getClass().getName()) {
-      case ("com.fluxtion.ext.declarative.api.log.LogControlEvent"):
-        {
-          LogControlEvent typedEvent = (LogControlEvent) event;
-          handleEvent(typedEvent);
-          break;
-        }
-      case ("com.fluxtion.ext.futext.api.event.RegisterEventHandler"):
+      case (RegisterEventHandler.ID):
         {
           RegisterEventHandler typedEvent = (RegisterEventHandler) event;
           handleEvent(typedEvent);

@@ -42,6 +42,36 @@
   <dependencies>
     <dependency>
       <groupId>com.fluxtion</groupId>
+      <artifactId>fluxtion-builder</artifactId>
+      <version>1.6.2-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fluxtion.extension</groupId>
+      <artifactId>fluxtion-declarative-builder</artifactId>
+      <version>1.6.2-SNAPSHOT</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>cglib</artifactId>
+          <groupId>cglib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>asm</artifactId>
+          <groupId>org.ow2.asm</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-io</artifactId>
+          <groupId>commons-io</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>velocity</artifactId>
+          <groupId>org.apache.velocity</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fluxtion</groupId>
       <artifactId>generator</artifactId>
       <version>1.6.2-SNAPSHOT</version>
       <scope>provided</scope>
@@ -49,10 +79,6 @@
         <exclusion>
           <artifactId>jgraphx</artifactId>
           <groupId>com.github.monkeysintown</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>fluxtion-builder</artifactId>
-          <groupId>com.fluxtion</groupId>
         </exclusion>
         <exclusion>
           <artifactId>slf4j-api</artifactId>
@@ -69,10 +95,6 @@
         <exclusion>
           <artifactId>reflections</artifactId>
           <groupId>org.reflections</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>velocity</artifactId>
-          <groupId>org.apache.velocity</groupId>
         </exclusion>
         <exclusion>
           <artifactId>snakeyaml</artifactId>
@@ -107,12 +129,16 @@
           <groupId>com.google.guava</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-io</artifactId>
-          <groupId>commons-io</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>javapoet</artifactId>
           <groupId>com.squareup</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>velocity</artifactId>
+          <groupId>org.apache.velocity</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-io</artifactId>
+          <groupId>commons-io</groupId>
         </exclusion>
       </exclusions>
     </dependency>

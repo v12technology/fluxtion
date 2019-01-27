@@ -31,10 +31,10 @@ public final class CalculationStateGroupBy_7 implements Wrapper<CarrierDelay>{
     private final BitSet updateMap = new BitSet(SOURCE_COUNT);
 
     public CarrierDelay target;
-    public int aggregateCount5;
     public double aggregateSum6;
     public AggregateAverage aggregateAverage4Function = new AggregateAverage();
     public double aggregateAverage4;
+    public int aggregateCount5;
 
     public CalculationStateGroupBy_7(){
         target = new CarrierDelay();
