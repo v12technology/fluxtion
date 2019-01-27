@@ -23,11 +23,11 @@ package com.fluxtion.ext.futext.api.ascii;
  */
 public interface Conversion {
 
-    public static double atod(StringBuilder sb) {
+    public static double atod(CharSequence sb) {
         return sb.length() == 0 ? 0 : Double.parseDouble(sb.toString());
     }
 
-    public static long atol(StringBuilder sb) {
+    public static long atol(CharSequence sb) {
         return sb.length() == 0 ? 0 : Long.parseLong(sb.toString());
     }
 
