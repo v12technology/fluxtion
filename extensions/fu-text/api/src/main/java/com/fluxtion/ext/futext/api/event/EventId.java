@@ -24,5 +24,7 @@ public interface EventId {
 
     public static final int CHAR_EVENT_ID = 1;
     public static final int EOF_EVENT_ID = 2;
+    public static final int LOG_CONTROL_ID = 3;
+    public static final int REGISTER_EVENTHANDLER_ID = 4;
     
 }

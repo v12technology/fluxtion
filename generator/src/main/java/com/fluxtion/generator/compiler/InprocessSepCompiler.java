@@ -42,10 +42,9 @@ import java.util.function.Consumer;
  * calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
  * }.<br><br>
  *
- * <h2>>This is an experimental feature that needs to tested
- * carefully.
- * The class loading for SEP generation was originally designed to be out of
- * process so there may be issues.</h2>
+ * <h2>>This is an experimental feature that needs to tested carefully. The
+ * class loading for SEP generation was originally designed to be out of process
+ * so there may be issues.</h2>
  *
  * @author V12 Technology Ltd.
  */
@@ -67,6 +66,22 @@ public class InprocessSepCompiler {
     public enum InitOptions {
         INIT,
         NO_INIT
+    }
+
+    public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, DirOptions dirOptions, InitOptions initOptions) throws InstantiationException, IllegalAccessException, Exception {
+        String genDir = JAVA_GEN_DIR;
+        String resDir = RESOURCE_DIR;
+        switch (dirOptions) {
+            case JAVA_SRCDIR_OUTPUT:
+                genDir = JAVA_SRC_DIR;
+                resDir = RESOURCE_DIR;
+                break;
+            case TEST_DIR_OUTPUT:
+                genDir = JAVA_TESTGEN_DIR;
+                resDir = RESOURCE_TEST_DIR;
+        }
+        boolean init = initOptions==InitOptions.INIT;
+        return sepInstance(cfgBuilder, pckg, sepName, genDir, resDir, init);
     }
 
     public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {

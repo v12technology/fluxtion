@@ -39,6 +39,7 @@ public class ValidationLogSink extends Named {
     private StringBuilder appendLog;
     private StringBuilder prependLog;
     private LogService logService;
+    private boolean publishLogImmediately = true;
 
     public ValidationLogSink() {
         super("validationLogSink");
@@ -50,6 +51,9 @@ public class ValidationLogSink extends Named {
 
     public void addpendLog(ValidationLogger log) {
         appendLog.append(log.getSb());
+        if (publishLogImmediately) {
+            publishLog();
+        }
     }
 
     public void prependLog(CharSequence log) {
@@ -84,6 +88,14 @@ public class ValidationLogSink extends Named {
         logService = new ConsoleLogProvider();
     }
 
+    public boolean isPublishLogImmediately() {
+        return publishLogImmediately;
+    }
+
+    public void setPublishLogImmediately(boolean publishLogImmediately) {
+        this.publishLogImmediately = publishLogImmediately;
+    }
+
     public static class LogNotifier {
 
         @Inject
@@ -108,6 +120,11 @@ public class ValidationLogSink extends Named {
                 sink.prependLog("row:" + rowProcessor.getRowNumber());
             }
             sink.publishLog();
+        }
+        
+        @Initialise
+        public void init(){
+            sink.setPublishLogImmediately(false);
         }
 
     }

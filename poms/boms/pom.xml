@@ -21,7 +21,7 @@ along with this program.  If not, see
 
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion-bom</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: bom</name>
     <description>This meta-project is used to generate a bill-of-materials POM 
@@ -117,37 +117,51 @@ along with this program.  If not, see
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-api</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-builder</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
                 <scope>provided</scope>
             </dependency>
-            
+            <!--generator-->
+            <dependency>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>generator</artifactId>
+                <version>1.6.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <!--generator test -->
+            <dependency>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>generator</artifactId>
+                <version>1.6.2</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
             <!--declarative fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-declarative-api</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-declarative-builder</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
                 <scope>provided</scope>
             </dependency>
             <!--declarative-extended fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-fu-text-api</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-fu-text-builder</artifactId>
-                <version>1.6.1</version>
+                <version>1.6.2</version>
                 <scope>provided</scope>
             </dependency>
             

@@ -24,6 +24,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
@@ -84,6 +85,8 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(ValidationLogger.class);
         importMap.addImport(Inject.class);
         importMap.addImport(PushReference.class);
+        importMap.addImport(CharArrayCharSequence.class);
+        importMap.addImport(CharArrayCharSequence.CharSequenceView.class);
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();

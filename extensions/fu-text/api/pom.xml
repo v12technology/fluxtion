@@ -22,7 +22,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
         <relativePath>../../../poms/parent-root/pom.xml</relativePath>
     </parent>
 
@@ -35,7 +35,12 @@ along with this program.  If not, see
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-api</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <properties>
