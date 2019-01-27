@@ -24,17 +24,18 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #if(!${fixedLen})
     private final int[] delimIndex = new int[1024];
 #end
+    private final CharArrayCharSequence seq = new CharArrayCharSequence(chars);
     private int fieldIndex = 0;
     private int writeIndex = 0;
     //target
     private ${targetClass} target;
 #foreach($sourceInfo in $sourceMappingList)
     //source field index: ${sourceInfo.fieldIndex}
-    private final StringBuilder ${sourceInfo.targetCalcMethodName} = new StringBuilder();
+    private final CharSequenceView ${sourceInfo.targetCalcMethodName} = seq.view();
 #* *##if((${sourceInfo.indexField} || ${fixedLen}) && !${sourceInfo.duplicateField})
     private final int ${sourceInfo.fieldIdentifier} = ${sourceInfo.fieldIndex};
 #*     *##if(${fixedLen})
-    private final int ${sourceInfo.fieldLenIdentifier} = ${sourceInfo.fieldLength};
+    private final int ${sourceInfo.fieldLenIdentifier} = ${sourceInfo.fieldIdentifier} + ${sourceInfo.fieldLength} - 1;
 #*     *##end
 #* *##elseif(!${sourceInfo.duplicateField})
     private int ${sourceInfo.fieldIdentifier} = ${sourceInfo.fieldIndex};
@@ -126,7 +127,6 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #* *##else
         if (HEADER_ROWS < rowNumber) {
 #* *##end
-            //updateTarget();
             targetChanged = updateTarget();
         } #if($mappingRowPresent)else if(rowNumber==MAPPING_ROW){
             mapHeader();
@@ -184,37 +184,49 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 
     private boolean updateTarget() {
+#if($newTarget)
+        target = new ${targetClass}();
+#end
         try{
             updateFieldIndex();
+#if($acceptPartials)
+        int maxFieldIndex = fieldIndex;
+#end
 #foreach($sourceInfo in $sourceMappingList)
 #* *##if($acceptPartials)
-            if (fieldIndex > ${sourceInfo.fieldIdentifier}) {
+            if (maxFieldIndex > ${sourceInfo.fieldIdentifier}) {
 #* *##end
+            fieldIndex = ${sourceInfo.fieldIdentifier};
 #* *##if($sourceInfo.trim)
 #*     *##if(${fixedLen})
-            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
 #*     *##else
-            extractTrimmedCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1).trim();
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
-            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
-            extractCharSequence(${sourceInfo.targetCalcMethodName}, ${sourceInfo.fieldIdentifier});
+            ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1);
 #*     *##end
 #* *##end
+            ${sourceInfo.updateTarget2}
 #* *##if($acceptPartials)
         }
 #* *##end
+
 #end
-            //target
-            return pushData();
+#if(${eventMethod})
+            target.${eventMethod}();
+#end
         } catch (Exception e) {
+            logException("problem pushing data from row:", false, e);
             passedValidation = false;
             return false;
         } finally {
             fieldIndex = 0;
         }
+        return true;
     }
 
     private void updateFieldIndex() {
@@ -226,36 +238,6 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
     }
 
-    private boolean pushData(){
-#if($acceptPartials)
-        final int fieldIndexMax = fieldIndex;
-#end
-#if($newTarget)
-        target = new ${targetClass}();
-#end
-        try{
-#foreach($sourceInfo in $sourceMappingList)
-#* *##if($acceptPartials)
-        if (fieldIndexMax > ${sourceInfo.fieldIdentifier}){
-#* *##end
-            fieldIndex = ${sourceInfo.fieldIdentifier};
-            ${sourceInfo.updateTarget2}
-#* *##if($acceptPartials)
-        }
-#* *##end
-#end
-#if(${eventMethod})
-            target.${eventMethod}();
-#end
-            return true;
-        } catch (Exception e) {
-            logException("problem pushing data from row:", false, e);
-            passedValidation = false;
-            return false;
-        } finally {
-            fieldIndex = 0;
-        }
-    }
 #if(${eventCompleteMethod})
 
     @OnEventComplete
@@ -264,66 +246,6 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 #end
 
-#if(${fixedLen})
-    private final void extractCharSequence(StringBuilder source, int fieldStart, int fieldLen){
-        try {
-            source.setLength(0);
-            source.append(chars, fieldStart, fieldLen);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
-    }
-    
-    private final void extractTrimmedCharSequence(StringBuilder source, int fieldStart, int fieldLen){
-        int fieldEnd = fieldStart + fieldLen;
-        try {
-            source.setLength(0);
-            char[] val = chars;
-            while ((fieldStart < fieldEnd) && (val[fieldStart] <= ' ')) {
-                fieldStart++;
-            }
-            while ((fieldStart < fieldEnd) && (val[fieldEnd - 1] <= ' ')) {
-                fieldEnd--;
-            }
-            fieldLen = fieldEnd - fieldStart;
-            source.append(chars, fieldStart, fieldLen);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
-    }
-
-#else
-    private final void extractCharSequence(StringBuilder source, int fieldIndex){
-        try {
-            source.setLength(0);
-            source.append(chars, delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
-    }
-
-    private final void extractTrimmedCharSequence(StringBuilder source, int fieldIndex) {
-        try {
-            source.setLength(0);
-            int len = delimIndex[fieldIndex + 1] - delimIndex[fieldIndex] - 1;
-            int st = delimIndex[fieldIndex];
-            char[] val = chars;
-            while ((st < len) && (val[st] <= ' ')) {
-                st++;
-            }
-            while ((st < len) && (val[len - 1] <= ' ')) {
-                len--;
-            }
-            if (st != delimIndex[fieldIndex]) {
-                len -= st;
-            }
-            source.append(chars, st, len);
-        } catch (Exception e) {
-            logException("problem extracting value from row:", true, e);
-        }
-    }
-
-#end
     private void logException(String prefix, boolean fatal, Exception e) {
         errorLog.getSb().append(prefix)
                 .append(rowNumber).append(" fieldIndex:")
@@ -336,7 +258,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         errorLog.logError("");
     }
 
-
+#if(!${fixedLen})
     private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
         errorLog.getSb().append(prefix).append(rowNumber);
         if(fatal){
@@ -345,6 +267,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         }
         errorLog.logError("");
     }
+#end
 
     @Override
     public ${targetClass} event() {

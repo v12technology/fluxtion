@@ -240,14 +240,15 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                 + "\n"
                 + "#dfff,rgrtrt,rtr,tr,tr,tr,tr,tr,t,rt,rt,r,tr,tr,t\n"
                 + "brazil,santiago#,Aixirivall,06,,130,1.5\n"
-                + "#mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
+                ;
+//                + "#mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
         StringDriver.streamChars(dataCsh, sep, false);
 
         Assert.assertEquals(2, count.intValue());
-        Assert.assertThat("brazil", is(city.getCountry()));
-        Assert.assertThat("santiago#", is(city.getCity().toString()));
+        Assert.assertThat(city.getCountry(), is("brazil"));
+        Assert.assertThat(city.getCity().toString(), is("santiago#"));
         Assert.assertEquals(130, city.getLongitude(), 0.1);
-        Assert.assertThat("1.5", is(city.getLatitudeCharSequence().toString()));
+        Assert.assertThat(city.getLatitudeCharSequence().toString(), is("1.5"));
     }
 
     @Test
