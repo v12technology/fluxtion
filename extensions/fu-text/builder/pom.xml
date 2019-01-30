@@ -103,13 +103,6 @@ along with this program.  If not, see
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>1.0-rc4</version>
-            <scope>compile</scope>
-<!--            <scope>provided</scope>-->
-        </dependency> 
     </dependencies>
                 
 </project>
