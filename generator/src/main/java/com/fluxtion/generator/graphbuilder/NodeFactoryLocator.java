@@ -9,17 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Constructs a graph of nodes from a root node, using a set of factories to
- * construct dependencies.
+ * Loads a set of NodeFactory using the {@link ServiceLoader} support provided
+ * by Java platform. New factories can be added to Fluxtion using the extension
+ * mechanism described in {@link ServiceLoader} documentation.
  *
  * @author greg
  */
 public class NodeFactoryLocator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeFactoryLocator.class);
-    
+
     public static final Set<Class<? extends NodeFactory>> nodeFactorySet() throws Exception {
-        LOGGER.debug("new NodeFactory locator - ignoring package");
+        LOGGER.debug("NodeFactory locator");
         ServiceLoader<NodeFactory> loadServices;
         Set<Class<? extends NodeFactory>> subTypes = new HashSet<>();
         if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
