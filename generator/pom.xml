@@ -179,5 +179,9 @@
             <artifactId>javapoet</artifactId>
             <version>1.11.0</version>
         </dependency>
+            <dependency>
+              <groupId>com.google.auto.service</groupId>
+              <artifactId>auto-service</artifactId>
+            </dependency>
     </dependencies>
 </project>

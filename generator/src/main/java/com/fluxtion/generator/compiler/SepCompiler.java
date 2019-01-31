@@ -180,7 +180,7 @@ public class SepCompiler {
             LOG.debug("DeclarativeNodeConiguration load");
             DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
             LOG.debug("searching for NodeFactory's");
-            Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+            Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.declarativeConfig = cfgActual;
             LOG.debug("completed :: processYamlConfig ");
@@ -199,7 +199,7 @@ public class SepCompiler {
                 loadedConfig.setRootNodeMappings(rootNodeMappings);
                 loadedConfig.setConfig(new HashMap());
                 DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
-                Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+                Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
                 builderConfig.declarativeConfig = cfgActual;
             } else {
@@ -211,7 +211,7 @@ public class SepCompiler {
     private void locateFactories() throws Exception {
         LOG.debug("locateFactories");
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         loadedConfig.setConfig(new HashMap());
         DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
         if (builderConfig == null || builderConfig.declarativeConfig==null) {

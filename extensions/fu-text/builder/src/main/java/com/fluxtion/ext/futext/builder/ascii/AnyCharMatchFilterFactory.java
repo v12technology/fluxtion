@@ -27,6 +27,7 @@ import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
 import com.fluxtion.ext.futext.api.filter.SingleCharMatcher;
 import static com.fluxtion.ext.futext.builder.Templates.ANYCHAR_MATCH_FILTER;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
+import com.google.auto.service.AutoService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  *
  * @author Greg Higgins
  */
+@AutoService(NodeFactory.class)
 public class AnyCharMatchFilterFactory implements NodeFactory<AnyCharMatchFilter> {
 
 //    public static final String KEY_FILTER_ARRAY = "AnyCharMatchFilterFactory.KEY_FILTER_ARRAY";

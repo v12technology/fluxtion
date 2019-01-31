@@ -19,12 +19,14 @@ package com.fluxtion.example.core.building.factories;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.builder.node.SEPConfig;
+import com.google.auto.service.AutoService;
 import java.util.Map;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
+@AutoService(NodeFactory.class)
 public class Factory extends SEPConfig implements NodeFactory<FactoryNode>  {
     
     @Override
