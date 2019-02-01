@@ -98,6 +98,10 @@ along with this program.  If not, see
             <artifactId>generator</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
             <type>test-jar</type>
