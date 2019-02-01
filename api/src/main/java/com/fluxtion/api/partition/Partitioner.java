@@ -103,7 +103,7 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
     }
 
     private E initialise() {
-        System.out.println("initialising");
+//        System.out.println("initialising");
         E newHandler = factory.get();
         handlerArray = Arrays.copyOf(handlerArray, handlerArray.length + 1);
         handlerArray[handlerArray.length - 1] = newHandler;

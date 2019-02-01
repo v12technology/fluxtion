@@ -56,7 +56,7 @@ public class PartitionerTest {
         partitioner.onEvent(new DummyEvent());
         assertThat(MyHandler.instanceCount, is(2));
         assertThat(MyHandler.invokeCount, is(6));
-        System.out.println(MyHandler.dayMonthCounts);
+//        System.out.println(MyHandler.dayMonthCounts);
 
     }
 
@@ -77,7 +77,7 @@ public class PartitionerTest {
         partitioner.onEvent(monday_march);
         partitioner.onEvent(monday_march);
         //
-        System.out.println(MyHandler.dayMonthCounts);
+//        System.out.println(MyHandler.dayMonthCounts);
         assertThat(MyHandler.dayMonthCounts.get(monday.toString()), is(1));
         assertThat(MyHandler.dayMonthCounts.get(tuesday.toString()), is(2));
         assertThat(MyHandler.dayMonthCounts.get(monday_march.toString()), is(2));
@@ -102,8 +102,8 @@ public class PartitionerTest {
         partitioner.onEvent(monday_march);
         partitioner.onEvent(monday_march);
         //
-        System.out.println(MyHandler.dayMonthCounts);
-        System.out.println(MyHandler.dayCounts);
+//        System.out.println(MyHandler.dayMonthCounts);
+//        System.out.println(MyHandler.dayCounts);
         assertThat(MyHandler.dayMonthCounts.get(monday.toString()), is(2));
         assertThat(MyHandler.dayMonthCounts.get(tuesday.toString()), is(4));
         assertThat(MyHandler.dayMonthCounts.get(monday_march.toString()), is(4));
@@ -162,7 +162,7 @@ public class PartitionerTest {
         public void onEvent(Event e) {
             dayMonthCounts.compute(e.toString(), (t, u) -> u == null ? 1 : u + 1);
             if (e instanceof MyEvent) {
-                System.out.println("processing :" + e);
+//                System.out.println("processing :" + e);
                 dayCounts.compute(((MyEvent) e).day, (t, u) -> u == null ? 1 : u + 1);
             }
             invokeCount++;
