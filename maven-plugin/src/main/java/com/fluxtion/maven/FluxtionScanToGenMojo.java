@@ -16,16 +16,13 @@
  */
 package com.fluxtion.maven;
 
-import com.fluxtion.generator.Main;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 import net.openhft.compiler.CompilerUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -66,10 +63,10 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
             } else if (!buildDirectory.startsWith("/")) {
                 buildDirectory = project.getBasedir().getCanonicalPath() + "/" + buildDirectory;
             }
-            buuldFluxtionClassLoader();
-
-            //load all classes and create class loader that is generator and app path
-            //using that class loader 
+            buildFluxtionClassLoader();
+            //generate static context
+            Class<Consumer<URL>> apClazz =  (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.AnnotationCompiler");
+            apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL());
         } catch (Exception exception) {
             getLog().error(exception);
             throw new MojoExecutionException("problem setting building fluxtion class loader", exception);
@@ -79,7 +76,7 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
-    private URLClassLoader buuldFluxtionClassLoader() throws MojoExecutionException, MalformedURLException, DependencyResolutionRequiredException {
+    private URLClassLoader buildFluxtionClassLoader() throws MojoExecutionException, MalformedURLException, DependencyResolutionRequiredException {
         List<String> elements = project.getCompileClasspathElements();
 
         URL[] urls = new URL[elements.size()];
@@ -91,19 +88,9 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
             } else {
                 urls[i] = new URL("jar:" + cpFile.toURI().toURL() + "!/");
             }
+            CompilerUtils.addClassPath(cpFile.getPath());
         }
-
-//        for (int i = 0; i < cpArray.length; i++) {
-//            try {
-//                File file = new File(cpArray[i]);
-//            } catch (MalformedURLException ex) {
-//                LOG.debug("error building classpath", ex);
-//                result.left = false;
-//                result.right = "could not load jar file:" + cpArray[i] + " error masg:" + ex.getMessage();
-//                return result;
-//            }
-//        }
-        getLog().debug("user classpath URL list:" + Arrays.toString(urls));
+        getLog().info("user classpath URL list:" + Arrays.toString(urls));
         classLoader = URLClassLoader.newInstance(urls);
         return classLoader;
     }
