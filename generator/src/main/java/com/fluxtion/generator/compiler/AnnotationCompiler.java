@@ -58,6 +58,10 @@ public class AnnotationCompiler implements Consumer<URL> {
             @Override
             public void accept(ClassProcessor t) {
                 try {
+                    if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getSourceRootDirectory() != null
+                            && GenerationContext.SINGLETON.getResourcesOutputDirectory() != null) {
+                        t.outputDirectories(GenerationContext.SINGLETON.getSourceRootDirectory(), GenerationContext.SINGLETON.getResourcesOutputDirectory());
+                    }
                     t.process(url);
                 } catch (Exception e) {
                     LOGGER.warn("problem executing processor : '" + t + "'", e);
