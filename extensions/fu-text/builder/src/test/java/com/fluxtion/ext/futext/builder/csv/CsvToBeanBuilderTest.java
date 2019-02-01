@@ -46,7 +46,8 @@ public class CsvToBeanBuilderTest {
             dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest")
                     .dirOption(TEST_DIR_OUTPUT)
                     .mapCustomBean("WorldCity", WorldCity.class, (c) -> {
-                        c.map(0, WorldCity::setCountry)
+                        c
+                                .map(0, WorldCity::setCountry)
                                 .map(1, WorldCity::setCity)
                                 .map(5, WorldCity::setLongitude)
                                 .converter(5, CsvMarshallerBuilderTest::always_1)
