@@ -17,11 +17,25 @@
 package com.fluxtion.builder.annotation;
 
 import java.net.URL;
+import java.util.ServiceLoader;
 
 /**
- * A service that processes the user classpath of the 
+ * A service that processes application classes. The classes on the supplied
+ * {@link URL} are generated from the application source files after
+ * compilation. No libraries from Fluxtion or other sources are on this path.
+ * This gives the opportunity for {@link AnnotationProcessor}'s to scan the path
+ * and generate Fluxtion artifacts without risk of duplication. For example a
+ * service may scan for a specific annotation and generate a tailored solution
+ * based on the meta-data discovered during scanning.
+ *
+ * Fluxtion loads services using the java platform provided
+ * {@link ServiceLoader} specification. Please read the {@link ServiceLoader}
+ * documentation describing service registration using META-INF/services in the
+ * service implementation's jar file.
+ *
  * @author V12 Technology Ltd.
  */
 public interface AnnotationProcessor {
-    void process(URL[] classPath);
+
+    void process(URL classPath);
 }
