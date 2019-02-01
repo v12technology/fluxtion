@@ -180,7 +180,10 @@ public interface FunctionGeneratorHelper {
     }
 
     public static String writeSourceFile(Object node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
         initVelocity();
+        Thread.currentThread().setContextClassLoader(originalClassLoader);
 //generates the actual class
         ctx.put(FunctionKeys.functionPackage.name(), generationConfig.getPackageName());
         String generatedClassName = (String) ctx.get(FunctionKeys.functionClass.name());
@@ -190,7 +193,6 @@ public interface FunctionGeneratorHelper {
             template = Velocity.getTemplate(templateFile);
         } catch (Exception e) {
             System.out.println("failed to load template, setting threadcontext class loader");
-            ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
                 template = Velocity.getTemplate(templateFile);
