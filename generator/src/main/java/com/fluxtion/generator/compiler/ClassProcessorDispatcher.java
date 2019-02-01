@@ -34,9 +34,9 @@ import com.fluxtion.builder.annotation.ClassProcessor;
  *
  * @author V12 Technology Ltd.
  */
-public class AnnotationCompiler implements Consumer<URL> {
+public class ClassProcessorDispatcher implements Consumer<URL> {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(AnnotationCompiler.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(ClassProcessorDispatcher.class);
 
     @Override
     public void accept(URL url) {

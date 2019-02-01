@@ -65,7 +65,7 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
             }
             buildFluxtionClassLoader();
             //generate static context
-            Class<Consumer<URL>> apClazz =  (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.AnnotationCompiler");
+            Class<Consumer<URL>> apClazz =  (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.ClassProcessorDispatcher");
             apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL());
         } catch (Exception exception) {
             getLog().error(exception);
