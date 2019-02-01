@@ -375,9 +375,9 @@ along with this program.  If not, see
                 <version>23.5-jre</version>
             </dependency>
             <dependency>
-              <groupId>com.google.auto.service</groupId>
-              <artifactId>auto-service</artifactId>
-              <version>1.0-rc4</version>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service</artifactId>
+                <version>1.0-rc4</version>
             </dependency>
             <dependency>
                 <groupId>com.google.googlejavaformat</groupId>
@@ -394,10 +394,16 @@ along with this program.  If not, see
                 <artifactId>snakeyaml</artifactId>
                 <version>1.14</version>
             </dependency>
+            <!--Replace reflections with classgraph-->
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>0.9.9</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>4.6.27</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jgrapht</groupId>
