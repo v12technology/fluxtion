@@ -17,11 +17,13 @@
 package com.fluxtion.ext.declarative.builder.factory;
 
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.generator.Generator;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -175,6 +177,9 @@ public interface FunctionGeneratorHelper {
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
+        Executors.newCachedThreadPool().submit(() ->{
+            Generator.formatSource(file);
+        });
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         return newClass;
     }

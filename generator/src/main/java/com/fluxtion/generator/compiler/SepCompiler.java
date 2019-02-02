@@ -41,6 +41,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -229,14 +230,19 @@ public class SepCompiler {
         Generator generator = new Generator();
         builderConfig.formatSource = compilerConfig.isFormatSource();
         generator.templateSep(builderConfig);
+        GenerationContext generationConfig = GenerationContext.SINGLETON;
+        String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
+        File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-            GenerationContext generationConfig = GenerationContext.SINGLETON;
-            String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
-            File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
             javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
-            LOG.debug("finished compiling source");
+            LOG.debug("completed compiling source");
+        }
+        if(compilerConfig.isFormatSource()){
+            LOG.debug("start formatting source");
+            Executors.newCachedThreadPool().submit(() -> Generator.formatSource(file));
+            LOG.debug("completed formatting source");
         }
 //        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());
     }

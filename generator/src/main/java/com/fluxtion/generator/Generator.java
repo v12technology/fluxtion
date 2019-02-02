@@ -30,11 +30,17 @@ import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
+import net.openhft.compiler.CachedCompiler;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -56,6 +62,8 @@ public class Generator {
     private SimpleEventProcessorModel sep;
 
     public void templateSep(SEPConfig config) throws Exception {
+        ExecutorService execSvc = Executors.newCachedThreadPool();
+        execSvc.submit(Generator::warmupCompiler);
         config.buildConfig();
         this.config = config;
         LOG.debug("init velocity");
@@ -78,12 +86,38 @@ public class Generator {
         sep.generateMetaModel(config.supportDirtyFiltering);
         //TODO add conditionality for different target languages
         //buildJava output
+        execSvc.submit(() -> {
+            LOG.debug("start exporting graphML/images");
+            exportGraphMl(graph);
+            LOG.debug("completed exporting graphML/images");
+            LOG.debug("finished generating SEP");
+        });
         LOG.debug("start template output");
-        templateJavaOutput();
+        final File outFile = templateJavaOutput();
+        LOG.debug("completed template output");
+    }
 
-        LOG.debug("export graphML");
-        exportGraphMl(graph);
-        LOG.debug("finished generating SEP");
+    public static void warmupCompiler() {
+        LOG.debug("running compiler warmup");
+        try {
+            CachedCompiler c = new CachedCompiler(null, null);
+            c.loadFromJava("com.fluxtion.compiler.WarmupSample",
+                    "package com.fluxtion.compiler;\n"
+                    + "\n"
+                    + "public class WarmupSample {\n"
+                    + "\n"
+                    + "    public String test;\n"
+                    + "\n"
+                    + "    public String getTest() {\n"
+                    + "        return test;\n"
+                    + "    }\n"
+                    + "    \n"
+                    + "}");
+        } catch (Exception ex) {
+            LOG.error("problem running warmup compile", ex);
+        }finally{
+            LOG.debug("completed compiler warmup");
+        }
     }
 
     private static void initVelocity() throws Exception {
@@ -92,7 +126,7 @@ public class Generator {
         Velocity.init();
     }
 
-    private void templateJavaOutput() throws Exception {
+    private File templateJavaOutput() throws Exception {
         SepJavaSourceModelHugeFilter srcModelHuge = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
         SepJavaSourceModelHugeFilter srcModel = srcModelHuge;
 //        SepJavaSourceModel srcModelOriginal = new SepJavaSourceModel(sep, config.inlineEventHandling);
@@ -185,13 +219,20 @@ public class Generator {
         }
         //add some formatting
         templateWriter.close();
-        if (config.formatSource) {
-            LOG.debug("Reading source");
+        return outFile;
+    }
+
+    public static void formatSource(File outFile) {
+
+        try {
+            LOG.debug("Reading source:'{}'", outFile.getCanonicalPath());
             CharSource source = Files.asCharSource(outFile, Charset.defaultCharset());
             CharSink output = Files.asCharSink(outFile, Charset.defaultCharset());
             LOG.debug("formatting source - start");
             new Formatter().formatSource(source, output);
             LOG.debug("formatting source - finish");
+        } catch (FormatterException | IOException ex) {
+            LOG.error("problem formatting source file", ex);
         }
     }
 
@@ -208,7 +249,7 @@ public class Generator {
                 graph.exportAsGraphMl(graphMlWriter, true);
                 PngGenerator.generatePNG(graphMl, pngFile);
             } catch (IOException | TransformerConfigurationException | SAXException iOException) {
-                System.out.println("error writing png and graphml:" + iOException.getMessage());
+                LOG.error("error writing png and graphml:", iOException);
             }
         }
     }

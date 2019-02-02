@@ -14,6 +14,9 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.builder.annotation.ClassProcessor;
+import com.fluxtion.generator.Generator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -25,6 +28,7 @@ public class CsvAnnotationBeanBuilder implements ClassProcessor {
     private Logger LOGGER = LoggerFactory.getLogger(CsvAnnotationBeanBuilder.class.getName());
     private File generatedDir;
     private File resourceDir;
+    private boolean warmup = true;
 
     @Override
     public void outputDirectories(File output, File resourceDir) {
@@ -34,6 +38,11 @@ public class CsvAnnotationBeanBuilder implements ClassProcessor {
 
     @Override
     public void process(URL classPath) {
+        if (warmup) {
+            ExecutorService execSvc = Executors.newCachedThreadPool();
+            execSvc.submit(Generator::warmupCompiler);
+            warmup = false;
+        }
         try {
             File fin = new File(classPath.toURI());
             LOGGER.info("CsvAnnotationBeanBuilder scanning url:'{}' for CSVMarshaller annotations", fin);

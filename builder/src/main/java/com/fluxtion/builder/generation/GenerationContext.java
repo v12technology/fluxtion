@@ -181,7 +181,7 @@ public class GenerationContext {
         }
         cacheMap = new HashMap<>();
     }
-
+     
     private void createDirectories() {
         srcPackageDirectory = new File(GenerationContext.SINGLETON.srcRootDirectory, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
