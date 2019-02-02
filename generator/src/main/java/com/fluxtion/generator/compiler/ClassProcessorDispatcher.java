@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.builder.annotation.ClassProcessor;
+import java.io.File;
 
 /**
  * A utility function that dispatches a {@link URL} for {@link ClassProcessor}
@@ -59,8 +60,10 @@ public class ClassProcessorDispatcher implements Consumer<URL> {
             public void accept(ClassProcessor t) {
                 try {
                     if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getSourceRootDirectory() != null
-                            && GenerationContext.SINGLETON.getResourcesOutputDirectory() != null) {
-                        t.outputDirectories(GenerationContext.SINGLETON.getSourceRootDirectory(), GenerationContext.SINGLETON.getResourcesOutputDirectory());
+                            && GenerationContext.SINGLETON.getResourcesRootDirectory() != null) {
+                        t.outputDirectories(GenerationContext.SINGLETON.getSourceRootDirectory(), GenerationContext.SINGLETON.getResourcesRootDirectory());
+                    }else{
+                        t.outputDirectories(new File("target/generated-sources/fluxtion"), new File("src/main/resources"));
                     }
                     t.process(url);
                 } catch (Exception e) {
