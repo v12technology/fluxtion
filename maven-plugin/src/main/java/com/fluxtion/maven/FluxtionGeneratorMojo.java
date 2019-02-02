@@ -47,6 +47,10 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+        if (System.getProperty("skipFluxtion") != null) {
+            getLog().info("Fluxtion generation skipped.");
+            return;
+        }
         try {
             updateClasspath();
             try {
@@ -129,7 +133,7 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
                 cmdList.add(classPath);
                 getLog().info("java -jar fluxtion.jar " + cmdList.stream().collect(Collectors.joining(" ")));
                 com.fluxtion.generator.Main.main(cmdList.toArray(new String[0]));
-            } catch (IOException  e) {
+            } catch (IOException e) {
                 getLog().error("error while invoking Fluxtion generator", e);
                 throw new RuntimeException(e);
             }
@@ -340,7 +344,7 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
     @Parameter(property = "ignoreErrors", defaultValue = "false")
     public boolean ignoreErrors;
 
-    private void updateClasspath() throws MojoExecutionException, MalformedURLException, DependencyResolutionRequiredException {      
+    private void updateClasspath() throws MojoExecutionException, MalformedURLException, DependencyResolutionRequiredException {
         StringBuilder sb = new StringBuilder();
         List<String> elements = project.getCompileClasspathElements();
         for (String element : elements) {

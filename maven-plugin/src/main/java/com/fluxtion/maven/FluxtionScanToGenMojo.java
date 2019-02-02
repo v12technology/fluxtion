@@ -57,20 +57,24 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            if (buildDirectory == null) {
-                buildDirectory = project.getBasedir().getCanonicalPath() + "/target/classes";
-            } else if (!buildDirectory.startsWith("/")) {
-                buildDirectory = project.getBasedir().getCanonicalPath() + "/" + buildDirectory;
+        if (System.getProperty("skipFluxtion") != null) {
+            getLog().info("Fluxtion generation skipped.");
+        } else {
+            try {
+                if (buildDirectory == null) {
+                    buildDirectory = project.getBasedir().getCanonicalPath() + "/target/classes";
+                } else if (!buildDirectory.startsWith("/")) {
+                    buildDirectory = project.getBasedir().getCanonicalPath() + "/" + buildDirectory;
+                }
+                buildFluxtionClassLoader();
+                //generate static context
+                Class<Consumer<URL>> apClazz = (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.ClassProcessorDispatcher");
+                apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL());
+            } catch (Exception exception) {
+                getLog().error(exception);
+                throw new MojoExecutionException("problem setting building fluxtion class loader", exception);
             }
-            buildFluxtionClassLoader();
-            //generate static context
-            Class<Consumer<URL>> apClazz =  (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.ClassProcessorDispatcher");
-            apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL());
-        } catch (Exception exception) {
-            getLog().error(exception);
-            throw new MojoExecutionException("problem setting building fluxtion class loader", exception);
-        } 
+        }
     }
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
