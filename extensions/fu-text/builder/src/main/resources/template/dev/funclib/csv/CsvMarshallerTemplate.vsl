@@ -6,7 +6,7 @@ import $import;
 #end
 
 /**
- * Fluxtion generated CSV marshaller wrapper.
+ * Fluxtion generated CSV decoder.
  *
  * target class  : ${targetClass}
  * 
