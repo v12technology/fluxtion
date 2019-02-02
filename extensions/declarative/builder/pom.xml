@@ -35,19 +35,16 @@ along with this program.  If not, see
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
-            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>

@@ -123,14 +123,12 @@ along with this program.  If not, see
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-builder</artifactId>
                 <version>1.6.3-SNAPSHOT</version>
-                <scope>provided</scope>
             </dependency>
             <!--generator-->
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>generator</artifactId>
                 <version>1.6.3-SNAPSHOT</version>
-                <scope>provided</scope>
             </dependency>
             <!--generator test -->
             <dependency>
@@ -150,7 +148,6 @@ along with this program.  If not, see
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-declarative-builder</artifactId>
                 <version>1.6.3-SNAPSHOT</version>
-                <scope>provided</scope>
             </dependency>
             <!--declarative-extended fluxtion--> 
             <dependency>
@@ -162,7 +159,6 @@ along with this program.  If not, see
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-fu-text-builder</artifactId>
                 <version>1.6.3-SNAPSHOT</version>
-                <scope>provided</scope>
             </dependency>
             
             <!--            

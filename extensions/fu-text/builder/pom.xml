@@ -80,18 +80,14 @@ along with this program.  If not, see
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
-            <!--<scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-builder</artifactId>
-            <!--<scope>compile</scope>-->
-            <!--<version>${project.version}</version>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-fu-text-api</artifactId>
-            <!--<version>${project.version}</version>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>

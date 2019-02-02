@@ -380,6 +380,7 @@
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -26,7 +26,7 @@ import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.util.CharEventStreamer;
 import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
+import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanFilter;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.JAVA_SRCDIR_OUTPUT;
@@ -48,50 +48,6 @@ import org.junit.Test;
  * @author gregp
  */
 public class FlightDelayTest {
-
-    @Test
-    @Ignore
-    public void buildFlightAnalyser() throws IllegalAccessException, Exception {
-        InprocessSepCompiler.sepInstance((c) -> {
-            Wrapper<FlightDetails> flightDetails = csvMarshaller(FlightDetails.class, 1)
-                    .map(14, FlightDetails::setDelay)
-                    .map(8, FlightDetails::setCarrier).tokenConfig(CharTokenConfig.WINDOWS).build();
-            //filter for positive delays
-            Wrapper<FlightDetails> delayedFlight = greaterThanFilter(flightDetails, FlightDetails::getDelay, 0);
-            //group by carrier name
-            GroupByBuilder<FlightDetails, CarrierDelay> carrierDelay = groupBy(delayedFlight, FlightDetails::getCarrier, CarrierDelay.class);
-            //init each group record with human readable name
-            carrierDelay.init(FlightDetails::getCarrier, CarrierDelay::setCarrierId);
-            //aggregate calculations
-            carrierDelay.avg(FlightDetails::getDelay, CarrierDelay::setAvgDelay);
-            carrierDelay.count(CarrierDelay::setTotalFlights);
-            carrierDelay.sum(FlightDetails::getDelay, CarrierDelay::setTotalDelayMins);
-            //add public node for debug
-            c.addPublicNode(carrierDelay.build(), "carrierDelayMap");
-            //total records processed counts FlightDetails events from csvMarshaller
-            c.addPublicNode(count(flightDetails), "totalFlights");
-            c.maxFiltersInline = 25;
-        },
-                "com.fluxtion.ext.futext.example.flightdelay.generated", "FlightDelayAnalyser", JAVA_SRCDIR_OUTPUT, INIT);
-    }
-
-    @Test
-    @Ignore
-    public void runTest() throws IOException, FileNotFoundException, InterruptedException {
-//        CharEventStreamer streamer = new CharEventStreamer();
-//        String dataPathString = "2008_clean.csv";
-////        String dataPathString = "C:\\Users\\gregp\\development\\projects\\fluxtion\\open-source\\fluxtion-examples\\case-studies\\flight-delay\\dist\\data\\2008.csv";
-//        File dataFile = Paths.get(dataPathString).toFile();
-//        FlightDelayAnalyser processor = new FlightDelayAnalyser();
-//        long delta = System.nanoTime();
-//        streamer.streamFromFile(dataFile, processor);
-//        delta = System.nanoTime() - delta;
-//        double duration = (delta / 1_000_000) / 1000.0;
-//        System.out.println("processed file:" + dataFile.getAbsolutePath());
-//        processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
-//
-//        System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
-    }
 
     @Test
     @Ignore
@@ -125,7 +81,7 @@ public class FlightDelayTest {
             try {
                 if (previousN) {
                     out.write('0');
-                }else{
+                } else {
                     out.write('A');
                 }
             } catch (IOException ex) {
@@ -137,7 +93,7 @@ public class FlightDelayTest {
         @EventHandler(FilterType.unmatched)
         public void charOther(CharEvent event) {
             try {
-                if(previousN){
+                if (previousN) {
                     out.write('N');
                 }
                 out.write((byte) event.getCharacter());
