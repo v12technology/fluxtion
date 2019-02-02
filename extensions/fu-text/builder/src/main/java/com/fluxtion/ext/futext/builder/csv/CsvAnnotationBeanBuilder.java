@@ -63,7 +63,7 @@ public class CsvAnnotationBeanBuilder implements ClassProcessor {
         } catch (URISyntaxException ex) {
             LOGGER.error("problem generating csv marshallers", ex);
         }
-
+        LOGGER.info("CsvAnnotationBeanBuilder completed");
     }
 
 }
