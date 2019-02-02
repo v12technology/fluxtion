@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.futext.api.annotation.CsvMarshaller;
-import com.fluxtion.generator.compiler.AnnotationCompiler;
+import com.fluxtion.generator.compiler.ClassProcessorDispatcher;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class CsvAnnotationBeanBuilderTest extends BaseSepTest{
     
     @Test
     public void testCsvAnnotation() throws MalformedURLException, IOException{
-        AnnotationCompiler acp = new AnnotationCompiler();
+        ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
         File f = new File("./target/test-classes");
         System.out.println(f.getCanonicalPath());
         acp.accept(f.toURI().toURL());
