@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 /**
  * Used in conjunction with generation annotations to allow the developer to
  * conditionally enable/disable processing of the annotation in context.
+ * 
  * @author V12 Technology Ltd. 
  */
 @Target(value = {TYPE, METHOD})
