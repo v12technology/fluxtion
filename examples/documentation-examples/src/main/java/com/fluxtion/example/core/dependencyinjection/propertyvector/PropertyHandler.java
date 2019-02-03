@@ -20,6 +20,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.example.shared.MyEvent;
 import com.fluxtion.example.shared.SampleEnum;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,10 +34,10 @@ public class PropertyHandler {
     private final String[] stringFinalProp;
     
     //public properties
-    public List<Boolean> booleanPublicProp;
+    public List<Boolean> booleanPublicProp =new ArrayList<>();
     public int[] intPublicProp;
-    public List<String> stringPublicProp;
-    public List<SampleEnum> enumPublioProp;
+    public List<String> stringPublicProp = new ArrayList<>();
+    public List<SampleEnum> enumPublioProp = new ArrayList<>();
     
     //bean properties
     private boolean[] booleanBeanProp;
