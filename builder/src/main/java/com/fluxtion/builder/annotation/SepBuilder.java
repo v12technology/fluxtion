@@ -58,7 +58,7 @@ public @interface SepBuilder {
      * <ul>
      * <li>target/generated-sources/fluxtion
      * <li>target/generated-test-sources/fluxtion
-     * <li>main/java
+     * <li>src/main/java
      * </ul>
      *
      * @return overridden output directory
@@ -71,8 +71,8 @@ public @interface SepBuilder {
      * process, setting this value overrides the default. Using maven typical
      * values are:
      * <ul>
-     * <li>main/resources
-     * <li>test/resources
+     * <li>src/main/resources
+     * <li>src/test/resources
      * </ul>
      *
      * @return overridden resource directory
