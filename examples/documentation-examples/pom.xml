@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     
-    <parent>
-        <groupId>com.fluxtion</groupId>
-        <artifactId>root-parent-pom</artifactId>
-        <version>1.6.2</version>
-        <relativePath>../../poms/parent-root/pom.xml</relativePath>
-    </parent>  
-    
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
+    <version>1.6.3</version>
     <artifactId>documentation_core_examples</artifactId>
     <packaging>jar</packaging>
     <name>fluxtion :: examples :: docs.core</name>
@@ -23,246 +17,24 @@
     
     <description>Examples to accompany gitbook reference documentation</description>
 
+
     <profiles>
         <profile>
-            <id>build-one-example</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.0</version>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>-parameters</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.fluxtion</groupId>
-                        <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>${project.version}</version>
-                        <executions>
-                            <execution>
-                                <id>filtering</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.filtering.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.filtering.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <generateDescription>false</generateDescription>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>build-examples</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <id>fluxtion-build</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.0</version>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>-parameters</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-                    <plugin>
                         <groupId>com.fluxtion</groupId>
                         <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>${project.version}</version>
+                        <version>1.6.3</version>
                         <executions>
                             <execution>
-                                <id>filtering</id>
                                 <goals>
-                                    <goal>generate</goal>
+                                    <goal>scan</goal>
                                 </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.filtering.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.filtering.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <generateDescription>false</generateDescription>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>single-handler</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.singlehandler.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.singlehandler.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>multi-handler</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.multihandler.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.multihandler.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>pipeline</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.pipeline.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.pipeline.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>graph</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.graph.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.graph.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>parent</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.parent.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.parent.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>collections</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.collections.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.collections.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>dirty</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.dirty.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.dirty.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>clean</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.clean.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.clean.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>lifecycle</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.dependencyinjection.lifecycle.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.dependencyinjection.lifecycle.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>push</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.push.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.push.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>propagation</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.propagation.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.propagation.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>postevent</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.postevent.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.postevent.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>batch</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.events.batch.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.events.batch.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>build-imperative</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.building.imperative.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.building.imperative.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>build-factory</id>
@@ -276,96 +48,17 @@
                                     <yamlFactoryConfig>src/main/resources/cfg/factorytest.yml</yamlFactoryConfig>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>build-injection</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.building.injection.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.building.injection.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>auditor</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.audit.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.audit.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>naming-strategies</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.outstyle.naming.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.outstyle.naming.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <nodeNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</nodeNamingClass>
-                                    <filterNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</filterNamingClass>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>mappeddispatch</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.outstyle.mappeddispatch.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.outstyle.mappeddispatch.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <nodeNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</nodeNamingClass>
-                                    <filterNamingClass>com.fluxtion.example.core.outstyle.naming.NamingStrategy</filterNamingClass>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>property-scalar</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.dependencyinjection.propertyscalar.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.dependencyinjection.propertyscalar.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>property-vector</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.dependencyinjection.propertyvector.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.dependencyinjection.propertyvector.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>property-refelection</id>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <configClass>com.fluxtion.example.core.dependencyinjection.reflection.Builder</configClass>
-                                    <packageName>com.fluxtion.example.core.dependencyinjection.reflection.generated</packageName>
-                                    <className>SampleProcessor</className>
-                                    <outputDirectory>src/main/java</outputDirectory>
-                                    <assignNonPublicMembers>true</assignNonPublicMembers>
-                                </configuration>
-                            </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -376,10 +69,13 @@
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
+            <version>1.6.3</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
-            <artifactId>fluxtion-builder</artifactId>
+            <artifactId>generator</artifactId>
+            <version>1.6.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -392,6 +88,11 @@
             <artifactId>hamcrest-core</artifactId>
             <version>1.3</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>1.0-rc4</version>
         </dependency>
     </dependencies>
         

@@ -22,7 +22,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.3</version>
         <relativePath>../../../poms/parent-root/pom.xml</relativePath>
     </parent>
 
@@ -80,22 +80,22 @@ along with this program.  If not, see
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
-            <!--<scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-declarative-builder</artifactId>
-            <!--<scope>compile</scope>-->
-            <!--<version>${project.version}</version>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-fu-text-api</artifactId>
-            <!--<version>${project.version}</version>-->
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>

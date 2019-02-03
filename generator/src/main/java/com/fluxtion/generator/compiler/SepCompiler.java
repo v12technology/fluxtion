@@ -41,6 +41,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -169,7 +170,7 @@ public class SepCompiler {
     }
 
     private void processYamlConfig() throws IOException, ClassNotFoundException, Exception {
-        LOG.debug("staring :: processYamlConfig");
+        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
             File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
             LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());
@@ -180,7 +181,7 @@ public class SepCompiler {
             LOG.debug("DeclarativeNodeConiguration load");
             DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
             LOG.debug("searching for NodeFactory's");
-            Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+            Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.declarativeConfig = cfgActual;
             LOG.debug("completed :: processYamlConfig ");
@@ -199,7 +200,7 @@ public class SepCompiler {
                 loadedConfig.setRootNodeMappings(rootNodeMappings);
                 loadedConfig.setConfig(new HashMap());
                 DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
-                Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+                Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
                 builderConfig.declarativeConfig = cfgActual;
             } else {
@@ -211,7 +212,7 @@ public class SepCompiler {
     private void locateFactories() throws Exception {
         LOG.debug("locateFactories");
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         loadedConfig.setConfig(new HashMap());
         DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
         if (builderConfig == null || builderConfig.declarativeConfig==null) {
@@ -229,14 +230,19 @@ public class SepCompiler {
         Generator generator = new Generator();
         builderConfig.formatSource = compilerConfig.isFormatSource();
         generator.templateSep(builderConfig);
+        GenerationContext generationConfig = GenerationContext.SINGLETON;
+        String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
+        File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-            GenerationContext generationConfig = GenerationContext.SINGLETON;
-            String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
-            File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
             javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
-            LOG.debug("finished compiling source");
+            LOG.debug("completed compiling source");
+        }
+        if(compilerConfig.isFormatSource()){
+            LOG.debug("start formatting source");
+            Executors.newCachedThreadPool().submit(() -> Generator.formatSource(file));
+            LOG.debug("completed formatting source");
         }
 //        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());
     }

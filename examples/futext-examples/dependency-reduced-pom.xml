@@ -3,7 +3,7 @@
   <parent>
     <artifactId>root-parent-pom</artifactId>
     <groupId>com.fluxtion</groupId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.3-SNAPSHOT</version>
     <relativePath>../../poms/parent-root/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -11,6 +11,22 @@
   <artifactId>documentation_futext_examples</artifactId>
   <name>fluxtion :: examples :: futtext</name>
   <description>Examples to accompany gitbook reference documentation for futext extenstion</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.fluxtion</groupId>
+        <artifactId>fluxtion-maven-plugin</artifactId>
+        <version>1.6.3-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>scan</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <profiles>
     <profile>
       <id>fatjar-build</id>
@@ -41,104 +57,26 @@
   </profiles>
   <dependencies>
     <dependency>
-      <groupId>com.fluxtion</groupId>
-      <artifactId>fluxtion-builder</artifactId>
-      <version>1.6.2-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.fluxtion.extension</groupId>
-      <artifactId>fluxtion-declarative-builder</artifactId>
-      <version>1.6.2-SNAPSHOT</version>
+      <artifactId>fluxtion-fu-text-builder</artifactId>
+      <version>1.6.3-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <artifactId>cglib</artifactId>
-          <groupId>cglib</groupId>
+          <artifactId>fluxtion-builder</artifactId>
+          <groupId>com.fluxtion</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>asm</artifactId>
-          <groupId>org.ow2.asm</groupId>
+          <artifactId>fluxtion-declarative-builder</artifactId>
+          <groupId>com.fluxtion.extension</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-io</artifactId>
-          <groupId>commons-io</groupId>
+          <artifactId>generator</artifactId>
+          <groupId>com.fluxtion</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>velocity</artifactId>
-          <groupId>org.apache.velocity</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.fluxtion</groupId>
-      <artifactId>generator</artifactId>
-      <version>1.6.2-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jgraphx</artifactId>
-          <groupId>com.github.monkeysintown</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-api</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>logback-classic</artifactId>
-          <groupId>ch.qos.logback</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jgrapht</artifactId>
-          <groupId>net.sf.jgrapht</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>reflections</artifactId>
-          <groupId>org.reflections</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gentyref</artifactId>
-          <groupId>com.googlecode.gentyref</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>typetools</artifactId>
-          <groupId>net.jodah</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-lang3</artifactId>
-          <groupId>org.apache.commons</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>compiler</artifactId>
-          <groupId>net.openhft</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>google-java-format</artifactId>
-          <groupId>com.google.googlejavaformat</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-cli</artifactId>
-          <groupId>commons-cli</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>javapoet</artifactId>
-          <groupId>com.squareup</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>velocity</artifactId>
-          <groupId>org.apache.velocity</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-io</artifactId>
-          <groupId>commons-io</groupId>
+          <artifactId>classgraph</artifactId>
+          <groupId>io.github.classgraph</groupId>
         </exclusion>
       </exclusions>
     </dependency>

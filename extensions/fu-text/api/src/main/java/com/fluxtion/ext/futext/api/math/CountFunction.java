@@ -14,11 +14,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.futext.builder.math;
+package com.fluxtion.ext.futext.api.math;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 
 
@@ -29,14 +28,7 @@ import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 public class CountFunction implements NumericValue{
     public Object tracked;
     private int count;
-    
-    public static NumericValue count(Object tracked){
-        CountFunction count = new CountFunction();
-        count.tracked = tracked;
-        GenerationContext.SINGLETON.getNodeList().add(count);
-        return count;
-    }
-    
+
     @OnEvent 
     public void increment(){
         count++;

@@ -17,6 +17,7 @@
 package com.fluxtion.ext.futext.example.flightdelay;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.util.CharStreamer;
 import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
 import java.io.BufferedReader;
@@ -26,6 +27,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
+ * Streams a file as a set of {@link CharEvent} into the Fluxtion generated
+ * {@link FlightDelayAnalyser} using the char stream utility {@link CharStreamer}. When the end of file is reached the summary is printed
+ * to console. For the definition of the calculation {@link AnalysisBuilder}
  *
  * @author gregp
  */

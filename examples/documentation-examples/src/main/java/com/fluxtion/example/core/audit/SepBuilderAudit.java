@@ -14,22 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.example.core.events.batch;
+package com.fluxtion.example.core.audit;
 
+import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.shared.ChildNode;
+import com.fluxtion.example.shared.DataEventHandler;
+import com.fluxtion.example.shared.MyEventHandler;
+import com.fluxtion.example.shared.PipelineNode;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class Builder extends SEPConfig {
+public class SepBuilderAudit {
 
-    @Override
-    public void buildConfig() {
-        DataHandler handler = addNode(new DataHandler());
-        BatchNode node = addNode(new BatchNode(handler));
-        addNode(new ChildNode(node));
+    @SepBuilder(name = "SampleProcessor", packageName = "com.fluxtion.example.core.audit.generated",
+            outputDir = "src/main/java"
+    )
+    public void buildInjected(SEPConfig cfg) {
+        cfg.addNode(new Combiner(
+                cfg.addNode(new ChildNode(cfg.addNode(new MyEventHandler()))),
+                cfg.addNode(new PipelineNode(cfg.addNode(new DataEventHandler())))
+        ));
+
+        cfg.addAuditor(new NodeAuditor(), "nodeAuditor");
     }
-    
 }

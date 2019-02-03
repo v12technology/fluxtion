@@ -18,7 +18,7 @@ package com.fluxtion.builder.node;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import java.util.Map;
-import java.util.Set;
+import java.util.ServiceLoader;
 
 /**
  * A factory for creating instances. The SEP will call this method to create
@@ -32,6 +32,10 @@ import java.util.Set;
  * hashcode and equals so interchangeable node instances will return true when
  * equality is tested. The framework will only use one of the instances and
  * ignore the subsequently created instances.
+ * 
+ * Fluxtion employs the {@link ServiceLoader} pattern to register NodeFactories.
+ * Please read the java documentation describing the meta-data a factory implementor
+ * must provide to register a factory using the {@link ServiceLoader} pattern.
  *
  * @author Greg Higgins
  * @param <T>

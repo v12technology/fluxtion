@@ -29,7 +29,7 @@ import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
-import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
+import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;

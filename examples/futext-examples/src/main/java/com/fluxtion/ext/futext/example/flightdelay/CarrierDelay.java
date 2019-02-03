@@ -17,11 +17,12 @@
 package com.fluxtion.ext.futext.example.flightdelay;
 
 /**
+ * Bean to hold the data for a grouping record in the flight analysis pipeline.
  *
  * @author greg
  */
 public class CarrierDelay {
-    
+
     private String carrierId;
     private int avgDelay;
     private int totalFlights;
@@ -63,5 +64,5 @@ public class CarrierDelay {
     public String toString() {
         return "CarrierDelay{" + "carrierId=" + carrierId + ", avgDelay=" + avgDelay + ", totalFlights=" + totalFlights + ", totalDelayMins=" + totalDelayMins + '}';
     }
-    
+
 }

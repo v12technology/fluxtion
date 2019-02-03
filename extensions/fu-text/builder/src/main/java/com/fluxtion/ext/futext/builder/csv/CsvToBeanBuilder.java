@@ -109,8 +109,8 @@ public class CsvToBeanBuilder {
      */
     public CsvToBeanBuilder mapBean(String marshallerId, Class clazz) {
         try {
-            String cap = marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "CsvBean";
-            EventHandler sep = sepInstance((cfg) -> csvMarshaller(clazz).build(), pckg + "." + marshallerId, cap, generatedDir, resorcesDir, true);
+            String cap = "Csv2" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1);
+            EventHandler sep = sepInstance((cfg) -> csvMarshaller(clazz).build(), pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
             clazz2Handler.put(clazz, sep);
             return this;
         } catch (Exception ex) {
@@ -130,7 +130,7 @@ public class CsvToBeanBuilder {
      */
     public <T> CsvToBeanBuilder mapBean(String marshallerId, Class<T> clazz, Consumer<RulesEvaluatorBuilder.BuilderRowProcessor<T>> ruleGenerator) {
         try {
-            String cap = marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "CsvBean";
+            String cap = "FluxCsv" +marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
             EventHandler sep = sepInstance(new Consumer<SEPConfig>() {
                 @Override
                 public void accept(SEPConfig cfg) {
@@ -138,7 +138,7 @@ public class CsvToBeanBuilder {
                     ruleGenerator.accept(validator1);
                     validator1.build();
                 }
-            }, pckg + "." + marshallerId, cap, generatedDir, resorcesDir, true);
+            }, pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
             clazz2Handler.put(clazz, sep);
             return this;
         } catch (Exception ex) {
@@ -148,7 +148,7 @@ public class CsvToBeanBuilder {
 
     public <T> CsvToBeanBuilder mapCustomBean(String marshallerId, Class<T> clazz, Consumer<CsvMarshallerBuilder<T>> ruleGenerator) {
         try {
-            String cap = marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "CsvBean";
+            String cap = "FluxCsv" +marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
             EventHandler sep = sepInstance(new Consumer<SEPConfig>() {
                 @Override
                 public void accept(SEPConfig cfg) {
@@ -156,7 +156,7 @@ public class CsvToBeanBuilder {
                     ruleGenerator.accept(builder);
                     builder.build();
                 }
-            }, pckg + "." + marshallerId, cap, generatedDir, resorcesDir, true);
+            }, pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
             clazz2Handler.put(clazz, sep);
             return this;
         } catch (Exception ex) {

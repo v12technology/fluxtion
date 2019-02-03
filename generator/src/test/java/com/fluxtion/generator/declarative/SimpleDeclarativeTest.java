@@ -66,7 +66,7 @@ public class SimpleDeclarativeTest {
     @Test
     @Ignore
     public void testSimpleBuild() throws Exception {
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
 
@@ -78,7 +78,7 @@ public class SimpleDeclarativeTest {
 
     @Test
     public void testGeneration() throws Exception {
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.findFactoryByPackage("com");
+        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         Map<Class, String> rootNodeMappings = new HashMap<>();
 //        rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
         rootNodeMappings.put(Calculator.class, "calculator");

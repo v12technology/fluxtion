@@ -29,7 +29,7 @@ import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
-import static com.fluxtion.ext.futext.builder.math.CountFunction.count;
+import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
 import org.junit.Assert;
 import org.junit.Test;
 

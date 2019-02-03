@@ -22,12 +22,12 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
 import com.fluxtion.ext.futext.api.filter.AsciiMatchFilter;
 import static com.fluxtion.ext.futext.builder.Templates.CHAR_MATCH_FILTER;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.*;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.*;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
+import com.google.auto.service.AutoService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +43,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  *
  * @author Greg Higgins
  */
+@AutoService(NodeFactory.class)
 public class AsciiMatchFilterFactory implements NodeFactory<AsciiMatchFilter> {
 
 //    public static final String KEY_FILTER_STRING = "AsciiMatchFilterFactory.KEY_FILTER_STRING";

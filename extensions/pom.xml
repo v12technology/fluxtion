@@ -19,9 +19,9 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>master-pom</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.3</version>
     <packaging>pom</packaging>
-    <name>fluxtion :: extension</name>
+    <name>fluxtion :: ext</name>
     
     <modules>
         <module>declarative</module>

@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.example.flightdelay;
 import com.fluxtion.ext.declarative.api.util.StringCache;
 
 /**
- *
+ * A bean representing the flight details for a single arrival.
  * @author gregp
  */
 public class FlightDetails {

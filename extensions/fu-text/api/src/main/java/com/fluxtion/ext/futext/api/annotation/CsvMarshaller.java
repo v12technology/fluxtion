@@ -8,29 +8,26 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side License for more details.
+ * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.generator.it;
+package com.fluxtion.ext.futext.api.annotation;
 
-import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
- * @author Greg Higgins
+ * @author gregp
  */
-public class NodeFactoryExampleTestIT {
 
-    private final Logger LOG = LoggerFactory.getLogger(NodeFactoryExampleTestIT.class);
-
-    @Test
-    public void testJavaGeneration() throws Exception {
-        LOG.info("registered factories:{}", NodeFactoryLocator.findCallbackByPackage("com"));
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface CsvMarshaller {
+    
 }

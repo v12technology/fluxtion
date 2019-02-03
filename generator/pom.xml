@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.3</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
@@ -130,6 +130,10 @@
             <artifactId>reflections</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
         </dependency>
@@ -179,5 +183,9 @@
             <artifactId>javapoet</artifactId>
             <version>1.11.0</version>
         </dependency>
+            <dependency>
+              <groupId>com.google.auto.service</groupId>
+              <artifactId>auto-service</artifactId>
+            </dependency>
     </dependencies>
 </project>
