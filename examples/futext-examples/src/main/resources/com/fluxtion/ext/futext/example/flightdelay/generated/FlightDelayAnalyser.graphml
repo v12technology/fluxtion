@@ -11,11 +11,11 @@
 </jGraph:ShapeNode>
 </data>
 </node>
-<node id="flightDetailsCsvMarshaller0_0">
+<node id="flightDetailsCsvDecoder0_0">
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;flightDetailsCsvMarshaller0_0:&#10;FlightDetailsCsvMarshaller0"/>
+<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;flightDetailsCsvDecoder0_0:&#10;FlightDetailsCsvDecoder0"/>
 <jGraph:Style properties="EVENTHANDLER"/>
 </jGraph:ShapeNode>
 </data>
@@ -101,12 +101,12 @@
 </jGraph:ShapeNode>
 </data>
 </node>
-<edge id="1" source="flightDetailsCsvMarshaller0_0" target="eventPublsher_1">
+<edge id="1" source="flightDetailsCsvDecoder0_0" target="eventPublsher_1">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="2" source="flightDetailsCsvMarshaller0_0" target="greaterThanDecorator_2_2">
+<edge id="2" source="flightDetailsCsvDecoder0_0" target="greaterThanDecorator_2_2">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
@@ -116,12 +116,12 @@
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="4" source="flightDetailsCsvMarshaller0_0" target="totalFlights">
+<edge id="4" source="flightDetailsCsvDecoder0_0" target="totalFlights">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="5" source="flightDetailsCsvMarshaller0_0" target="validationLogger_5">
+<edge id="5" source="flightDetailsCsvDecoder0_0" target="validationLogger_5">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
@@ -136,12 +136,12 @@
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="8" source="EofEvent" target="flightDetailsCsvMarshaller0_0">
+<edge id="8" source="EofEvent" target="flightDetailsCsvDecoder0_0">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="9" source="CharEvent" target="flightDetailsCsvMarshaller0_0">
+<edge id="9" source="CharEvent" target="flightDetailsCsvDecoder0_0">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>

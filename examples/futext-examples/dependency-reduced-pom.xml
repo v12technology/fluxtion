@@ -63,6 +63,10 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <artifactId>fluxtion-builder</artifactId>
+          <groupId>com.fluxtion</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>fluxtion-declarative-builder</artifactId>
           <groupId>com.fluxtion.extension</groupId>
         </exclusion>

@@ -16,17 +16,9 @@
  */
 package com.fluxtion.ext.futext.example.flightdelay;
 
-import com.fluxtion.builder.annotation.Disabled;
-import com.fluxtion.builder.annotation.SepBuilder;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
+import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.util.CharStreamer;
-import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
-import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanFilter;
 import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +27,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
+ * Streams a file as a set of {@link CharEvent} into the Fluxtion generated
+ * {@link FlightDelayAnalyser} using the char stream utility {@link CharStreamer}. When the end of file is reached the summary is printed
+ * to console. For the definition of the calculation {@link AnalysisBuilder}
  *
  * @author gregp
  */
@@ -52,29 +47,6 @@ public class Main {
         System.out.println("processed file:" + dataFile.getAbsolutePath());
         processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
         System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
-    }
-
-    @SepBuilder(name = "FlightDelayAnalyser", packageName = "com.fluxtion.ext.futext.example.flightdelay.generated")
-    @Disabled
-    public void buildFlightProcessor(SEPConfig cfg) {
-        Wrapper<FlightDetails> flightDetails = csvMarshaller(FlightDetails.class, 1)
-                .map(14, FlightDetails::setDelay)
-                .map(8, FlightDetails::setCarrier).tokenConfig(CharTokenConfig.WINDOWS).build();
-        //filter for positive delays
-        Wrapper<FlightDetails> delayedFlight = greaterThanFilter(flightDetails, FlightDetails::getDelay, 0);
-        //group by carrier name
-        GroupByBuilder<FlightDetails, CarrierDelay> carrierDelay = groupBy(delayedFlight, FlightDetails::getCarrier, CarrierDelay.class);
-        //init each group record with human readable name
-        carrierDelay.init(FlightDetails::getCarrier, CarrierDelay::setCarrierId);
-        //aggregate calculations
-        carrierDelay.avg(FlightDetails::getDelay, CarrierDelay::setAvgDelay);
-        carrierDelay.count(CarrierDelay::setTotalFlights);
-        carrierDelay.sum(FlightDetails::getDelay, CarrierDelay::setTotalDelayMins);
-        //add public node for debug
-        cfg.addPublicNode(carrierDelay.build(), "carrierDelayMap");
-        //total records processed counts FlightDetails events from csvMarshaller
-        cfg.addPublicNode(count(flightDetails), "totalFlights");
-        cfg.maxFiltersInline = 25;
     }
 
 }
