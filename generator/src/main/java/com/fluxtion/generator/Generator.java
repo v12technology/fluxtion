@@ -115,7 +115,7 @@ public class Generator {
                     + "}");
         } catch (Exception ex) {
             LOG.error("problem running warmup compile", ex);
-        }finally{
+        } finally {
             LOG.debug("completed compiler warmup");
         }
     }
@@ -123,7 +123,10 @@ public class Generator {
     private static void initVelocity() throws Exception {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(GenerationContext.SINGLETON.getClassLoader());
         Velocity.init();
+        Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
 
     private File templateJavaOutput() throws Exception {

@@ -170,7 +170,7 @@ public class SepCompiler {
     }
 
     private void processYamlConfig() throws IOException, ClassNotFoundException, Exception {
-        LOG.debug("staring :: processYamlConfig");
+        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
             File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
             LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());

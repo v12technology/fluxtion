@@ -44,7 +44,7 @@ public class AnnotationCompiler implements ClassProcessor {
 
     @Override
     public void process(URL classPath) {
-        if(classPath == null ){
+        if (classPath == null) {
             LOGGER.warn("scan classpath is null, exiting AnnotationCompiler");
             return;
         }
@@ -57,12 +57,12 @@ public class AnnotationCompiler implements ClassProcessor {
                     .scan()) {
                 ClassInfoList csvList = scanResult
                         .getClassesWithMethodAnnotation(SepBuilder.class.getCanonicalName())
-                        .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()))
-                        .exclude(scanResult.getClassesWithMethodAnnotation(Disabled.class.getCanonicalName()));
+                        .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()));
                 for (ClassInfo csvClassInfo : csvList) {
 
                     csvClassInfo.getMethodInfo().filter((methodInfo) -> {
-                        return methodInfo.hasAnnotation(SepBuilder.class.getCanonicalName());
+                        return methodInfo.hasAnnotation(SepBuilder.class.getCanonicalName())
+                                && !methodInfo.hasAnnotation(Disabled.class.getCanonicalName());
                     }).forEach((method) -> {
                         try {
                             LOGGER.info("sep builder method:" + method);
@@ -81,10 +81,10 @@ public class AnnotationCompiler implements ClassProcessor {
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();
                             String outDir = generatedDir.getCanonicalPath();
                             String resDir = resourceDir.getCanonicalPath();
-                            if( params.get("outputDir")!=null){
+                            if (params.get("outputDir") != null) {
                                 outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
                             }
-                            if( params.get("resourceDir")!=null){
+                            if (params.get("resourceDir") != null) {
                                 outDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
                             }
                             InprocessSepCompiler.sepInstance(consumer, params.get("packageName").toString(), params.get("name").toString(), outDir, resDir, false);
