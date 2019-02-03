@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.4</version>
+        <version>1.6.5-SNAPSHOT</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
