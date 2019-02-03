@@ -33,9 +33,11 @@ public class AnnotationCompiler implements ClassProcessor {
     private Logger LOGGER = LoggerFactory.getLogger(AnnotationCompiler.class.getName());
     private File generatedDir;
     private File resourceDir;
+    private File rootDir;
 
     @Override
-    public void outputDirectories(File output, File resourceDir) {
+    public void outputDirectories(File rootDir, File output, File resourceDir) {
+        this.rootDir = rootDir;
         this.generatedDir = output;
         this.resourceDir = resourceDir;
     }
@@ -77,8 +79,14 @@ public class AnnotationCompiler implements ClassProcessor {
                                 }
                             };
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();
-                            String outDir = params.get("outputDir")==null?generatedDir.getCanonicalPath():params.get("outputDir").toString();
-                            String resDir = params.get("resourceDir")==null?resourceDir.getCanonicalPath():params.get("resourceDir").toString();
+                            String outDir = generatedDir.getCanonicalPath();
+                            String resDir = resourceDir.getCanonicalPath();
+                            if( params.get("outputDir")!=null){
+                                outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
+                            }
+                            if( params.get("resourceDir")!=null){
+                                outDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
+                            }
                             InprocessSepCompiler.sepInstance(consumer, params.get("packageName").toString(), params.get("name").toString(), outDir, resDir, false);
                         } catch (Exception ex) {
                             LOGGER.error("problem creating class containing SepConfig builder method, should have default constructor", ex);

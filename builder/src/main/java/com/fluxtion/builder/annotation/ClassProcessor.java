@@ -38,7 +38,13 @@ import java.util.ServiceLoader;
  */
 public interface ClassProcessor {
     
-    default void outputDirectories(File output, File resourceDir){
+    /**
+     * Directories for the current generation context
+     * @param rootDir - root directory of the project
+     * @param output - directory for generated source outputs
+     * @param resourceDir - directory for generated resource outputs
+     */
+    default void outputDirectories(File rootDir, File output, File resourceDir){
         
     }
 

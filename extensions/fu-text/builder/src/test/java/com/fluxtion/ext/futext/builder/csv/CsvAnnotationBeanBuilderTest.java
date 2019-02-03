@@ -35,7 +35,7 @@ public class CsvAnnotationBeanBuilderTest extends BaseSepTest{
         ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
         File f = new File("./target/test-classes");
         System.out.println(f.getCanonicalPath());
-        acp.accept(f.toURI().toURL());
+        acp.accept(f.toURI().toURL(), null);
     }
     
     

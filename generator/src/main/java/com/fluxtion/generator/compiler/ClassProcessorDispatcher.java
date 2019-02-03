@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.builder.annotation.ClassProcessor;
 import java.io.File;
+import java.util.function.BiConsumer;
 
 /**
  * A utility function that dispatches a {@link URL} for {@link ClassProcessor}
@@ -35,12 +36,12 @@ import java.io.File;
  *
  * @author V12 Technology Ltd.
  */
-public class ClassProcessorDispatcher implements Consumer<URL> {
+public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ClassProcessorDispatcher.class);
 
     @Override
-    public void accept(URL url) {
+    public void accept(URL url, File baseDir) {
         LOGGER.debug("AnnotationProcessor locator");
         ServiceLoader<ClassProcessor> loadServices;
         Set<Class<? extends ClassProcessor>> subTypes = new HashSet<>();
@@ -55,16 +56,23 @@ public class ClassProcessorDispatcher implements Consumer<URL> {
             subTypes.add(t.getClass());
         });
         LOGGER.info("loaded AnnotationProcessors: {}", subTypes);
+        final File outDir;
+        final File resDir;
+        if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getSourceRootDirectory() != null) {
+            outDir = GenerationContext.SINGLETON.getSourceRootDirectory();
+        } else {
+            outDir = new File(baseDir, "target/generated-sources/fluxtion");
+        }
+        if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getResourcesRootDirectory() != null) {
+            resDir = GenerationContext.SINGLETON.getResourcesRootDirectory();
+        } else {
+            resDir = new File(baseDir, "src/main/resources");
+        }
         loadServices.forEach(new Consumer<ClassProcessor>() {
             @Override
             public void accept(ClassProcessor t) {
                 try {
-                    if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getSourceRootDirectory() != null
-                            && GenerationContext.SINGLETON.getResourcesRootDirectory() != null) {
-                        t.outputDirectories(GenerationContext.SINGLETON.getSourceRootDirectory(), GenerationContext.SINGLETON.getResourcesRootDirectory());
-                    }else{
-                        t.outputDirectories(new File("target/generated-sources/fluxtion"), new File("src/main/resources"));
-                    }
+                    t.outputDirectories(baseDir, outDir, resDir);
                     t.process(url);
                 } catch (Exception e) {
                     LOGGER.warn("problem executing processor : '" + t + "'", e);

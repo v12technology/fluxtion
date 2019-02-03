@@ -29,7 +29,7 @@ public class AnnotationCompilerTest {
     public void testAnnotationLoading() {
         ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
         MyClassProcessor.invokeCount = 0;
-        acp.accept(null);
+        acp.accept(null, null);
         Assert.assertThat(MyClassProcessor.invokeCount, is(1));
     }
 
@@ -37,7 +37,7 @@ public class AnnotationCompilerTest {
     public void testSepBuilderLoading() throws MalformedURLException, ClassNotFoundException {
         JavaTestGeneratorHelper.setupDefaultTestContext("com.fluxtion.compiler.gen", "");
         ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
-        acp.accept(new File("target/test-classes").toURI().toURL());
+        acp.accept(new File("target/test-classes").toURI().toURL(), new File("."));
         Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.TestEH_1"));
     }
 

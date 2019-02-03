@@ -22,7 +22,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import net.openhft.compiler.CompilerUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -68,8 +68,8 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
                 }
                 buildFluxtionClassLoader();
                 //generate static context
-                Class<Consumer<URL>> apClazz = (Class<Consumer<URL>>) classLoader.loadClass("com.fluxtion.generator.compiler.ClassProcessorDispatcher");
-                apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL());
+                Class<BiConsumer<URL, File>> apClazz = (Class<BiConsumer<URL, File>>) classLoader.loadClass("com.fluxtion.generator.compiler.ClassProcessorDispatcher");
+                apClazz.newInstance().accept(new File(buildDirectory).toURI().toURL(),  project.getBasedir());
             } catch (Exception exception) {
                 getLog().error(exception);
                 throw new MojoExecutionException("problem setting building fluxtion class loader", exception);

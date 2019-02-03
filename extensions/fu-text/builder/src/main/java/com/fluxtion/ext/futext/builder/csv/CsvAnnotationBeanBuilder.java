@@ -25,17 +25,19 @@ import java.util.concurrent.Executors;
 @AutoService(ClassProcessor.class)
 public class CsvAnnotationBeanBuilder implements ClassProcessor {
 
-    private Logger LOGGER = LoggerFactory.getLogger(CsvAnnotationBeanBuilder.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(CsvAnnotationBeanBuilder.class.getName());
     private File generatedDir;
     private File resourceDir;
+    private File rootDir;
     private boolean warmup = true;
 
     @Override
-    public void outputDirectories(File output, File resourceDir) {
+    public void outputDirectories(File rootDir, File output, File resourceDir) {
+        this.rootDir = rootDir;
         this.generatedDir = output;
         this.resourceDir = resourceDir;
     }
-
+    
     @Override
     public void process(URL classPath) {
         if (warmup) {
