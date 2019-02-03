@@ -16,18 +16,30 @@
  */
 package com.fluxtion.builder.generation;
 
+import java.util.ServiceLoader;
+
 /**
- * Allowing users to extend the generation of the SEP with customisable variable
- * names for nodes.
- * 
- * Users implement this interface and register with the SEP generator before
- * generation time. 
- * 
- * A default naming strategy will be used if the registered NodeNameProducer 
+ * Implementing this interface allow users to extend the generation of the SEP
+ * with customisable variable names for nodes.
+ *
+ * Users implement this interface and register using the {@link ServiceLoader}
+ * pattern provided in the core Java platform.
+ *
+ * A default naming strategy will be used if the registered NodeNameProducer
  * returns null.
- * 
- * @author Greg Higgins 
+ *
+ * @author Greg Higgins
  */
-public interface NodeNameProducer {
+public interface NodeNameProducer extends Comparable<NodeNameProducer> {
+
     String mappedNodeName(Object nodeToMap);
+
+    default int priority() {
+        return 1000;
+    }
+
+    @Override
+    default public int compareTo(NodeNameProducer other) {
+        return other.priority() - this.priority();
+    }
 }

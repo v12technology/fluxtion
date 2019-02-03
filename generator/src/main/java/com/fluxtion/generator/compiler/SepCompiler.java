@@ -156,15 +156,8 @@ public class SepCompiler {
 
     private void initialiseNamingStrategy() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         LOG.debug("initialiseNamingStrategy");
-        if (compilerConfig.getNodeNamingClass() != null && !compilerConfig.getNodeNamingClass().isEmpty()) {
-
-            Class nodeNamingClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getNodeNamingClass());
-//            Class nodeNamingClazz = Class.forName(compilerConfig.getNodeNamingClass());
-            builderConfig.nodeNameStrategy = (NodeNameProducer) nodeNamingClazz.newInstance();
-        }
         if (compilerConfig.getFilterNamingClass() != null && !compilerConfig.getFilterNamingClass().isEmpty()) {
             Class nodeNamingClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getFilterNamingClass());
-//            Class nodeNamingClazz = Class.forName(compilerConfig.getFilterNamingClass());
             builderConfig.filterDescriptionProducer = (FilterDescriptionProducer) nodeNamingClazz.newInstance();
         }
     }

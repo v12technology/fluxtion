@@ -35,7 +35,6 @@ public class SepBuilderOutstyle {
         cfg.addNode(new DataHandler("FX"));
         cfg.addNode(new DataHandler("EQUITIES"));
         cfg.addNode(new DataHandler("BONDS"));
-        cfg.nodeNameStrategy = new NamingStrategy();
         cfg.filterDescriptionProducer = new NamingStrategy();
         //force mapped dispatch
         cfg.maxFiltersInline = 1;
@@ -48,7 +47,6 @@ public class SepBuilderOutstyle {
         cfg.addNode(new DataHandler("FX"));
         cfg.addNode(new DataHandler("EQUITIES"));
         cfg.addNode(new DataHandler("BONDS"));
-        cfg.nodeNameStrategy = new NamingStrategy();
         cfg.filterDescriptionProducer = new NamingStrategy();
         //prevent mapped dispatch
         cfg.maxFiltersInline = 4;

@@ -52,7 +52,6 @@ public class GenerationOrderTest extends BaseSepTest {
             Node a2 = addNode(new Node(root, "A2"));
             Node y1 = addNode(new Node(root, "Y"));
             Node a1 = addNode(new Node(root, "A1"));
-            nodeNameStrategy = new NodeNamer();
         }
 
     }

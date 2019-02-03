@@ -75,7 +75,6 @@ public class Generator {
                 config.nodeList,
                 config.publicNodes,
                 config.declarativeConfig,
-                config.nodeNameStrategy,
                 context,
                 config.auditorMap,
                 config

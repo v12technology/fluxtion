@@ -99,26 +99,25 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     public TopologicallySortedDependecyGraph(List nodes) {
-        this(nodes, null, null, null, null, null, null);
+        this(nodes, null, null, null, null, null);
     }
 
     public TopologicallySortedDependecyGraph(Map<Object, String> publicNodes) {
-        this(null, publicNodes, null, null, null, null, null);
+        this(null, publicNodes, null, null, null, null);
     }
 
     public TopologicallySortedDependecyGraph(DeclarativeNodeConiguration declarativeNodeConiguration) {
-        this(null, null, declarativeNodeConiguration, null, null, null, null);
+        this(null, null, declarativeNodeConiguration, null, null, null);
     }
 
     public TopologicallySortedDependecyGraph(List nodes, Map<Object, String> publicNodes) {
-        this(nodes, publicNodes, null, null, null, null, null);
+        this(nodes, publicNodes, null, null, null, null);
     }
 
     public TopologicallySortedDependecyGraph(SEPConfig config) {
         this(config.nodeList,
                 config.publicNodes,
                 config.declarativeConfig,
-                config.nodeNameStrategy,
                 GenerationContext.SINGLETON,
                 config.auditorMap,
                 config);
@@ -140,15 +139,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
      */
     public TopologicallySortedDependecyGraph(List nodes, Map<Object, String> publicNodes,
             DeclarativeNodeConiguration declarativeNodeConiguration,
-            NodeNameProducer strat, GenerationContext context, Map<String, Auditor> auditorMap, SEPConfig config) {
-        LOGGER.debug("provided strategy[{}], current[{}}", strat, this.nameStrategy);
-        if (strat == null) {
-            strat = (Object nodeToMap) -> null;
-        }
-
+            GenerationContext context, Map<String, Auditor> auditorMap, SEPConfig config) {
         this.config = config;
-        this.nameStrategy = strat;
-        LOGGER.debug("provided strategy[{}], current[{}}", strat, this.nameStrategy);
+        this.nameStrategy = new NamingStrategy();
         this.inst2Name = HashBiMap.create();
         this.inst2NameTemp = HashBiMap.create();
         this.class2FactoryMethod = new HashMap<>();
@@ -804,25 +797,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     private String nameNode(Object node) {
-        return nameNode(node, null);
-    }
-
-    private String nameNode(Object node, Map<Object, String> publicNodes) {
-        LOGGER.debug("nameMapping node[[{}], strategy[{}]", node, nameStrategy);
-        String mappedName = null;
-        if(publicNodes!=null && publicNodes.containsKey(node)){
-            mappedName = publicNodes.get(node);
-            publicNodes.remove(node);
-        }else{
-            mappedName = nameStrategy.mappedNodeName(node);
-        }
-        if (mappedName == null) {
-            mappedName = node.getClass().getSimpleName() + "_" + count++;
-            mappedName = Character.toLowerCase(mappedName.charAt(0)) + (mappedName.length() > 1 ? mappedName.substring(1) : "");
-            //not sure this is required - the public nodes will ooverride, jut sneed t check a clash against inst2Name map
-        }
-        //use bimap to check there arent multiple values
-        return mappedName;
+        return nameStrategy.mappedNodeName(node);
     }
 
 }
