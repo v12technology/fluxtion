@@ -151,20 +151,6 @@ public class SepCompilerConfig {
      * not required, default = false.
      */
     private boolean assignNonPublicMembers;
-    /**
-     * Name of class used to provide node names in the generated SEP. If null a 
-     * default strategy will be used.
-     * 
-     * not required.
-     */
-    private String nodeNamingClass;
-    /**
-     * Name of class used to provide filters names in the generated SEP. If null
-     * a default strategy will be used.
-     * 
-     * not required.
-     */
-    private String filterNamingClass;
 
     private ClassLoader classLoader;
     
@@ -202,8 +188,6 @@ public class SepCompilerConfig {
      * fluxtion.generateDebugPrep
      * fluxtion.generateTestDecorator
      * fluxtion.assignNonPublicMembers
-     * fluxtion.nodeNamingClass
-     * fluxtion.filterNamingClass 
      * </pre>
      *        
      * @return SepCompilerConfig configured by system properties
@@ -224,8 +208,6 @@ public class SepCompilerConfig {
         config.generateDescription = Boolean.getBoolean("fluxtion.generateDescription");
         config.generateTestDecorator = Boolean.getBoolean("fluxtion.generateTestDecorator");
         config.assignNonPublicMembers = Boolean.getBoolean("fluxtion.assignNonPublicMembers");
-        config.nodeNamingClass = System.getProperty("fluxtion.nodeNamingClass");
-        config.filterNamingClass = System.getProperty("fluxtion.filterNamingClass");
         config.buildOutputdirectory = System.getProperty("fluxtion.build.outputdirectory", "");
         config.buildOutputdirectory = config.buildOutputdirectory.isEmpty()?null:config.buildOutputdirectory;
         return config;
@@ -299,14 +281,6 @@ public class SepCompilerConfig {
         return formatSource;
     }
 
-    public String getNodeNamingClass() {
-        return nodeNamingClass;
-    }
-
-    public String getFilterNamingClass() {
-        return filterNamingClass;
-    }
-    
     public String getFqn(){
         return getPackageName() + "." + getClassName();
     }
@@ -371,14 +345,6 @@ public class SepCompilerConfig {
         this.assignNonPublicMembers = assignNonPublicMembers;
     }
 
-    public void setNodeNamingClass(String nodeNamingClass) {
-        this.nodeNamingClass = nodeNamingClass;
-    }
-
-    public void setFilterNamingClass(String filterNamingClass) {
-        this.filterNamingClass = filterNamingClass;
-    }
-
     public void setCompileSource(boolean compileSource) {
         this.compileSource = compileSource;
     }
@@ -407,8 +373,6 @@ public class SepCompilerConfig {
                 + ", generateDescription=" + generateDescription 
                 + ", generateTestDecorator=" + generateTestDecorator 
                 + ", assignNonPublicMembers=" + assignNonPublicMembers 
-                + ", nodeNamingClass=" + nodeNamingClass 
-                + ", filterNamingClass=" + filterNamingClass 
                 + '}';
     }
 

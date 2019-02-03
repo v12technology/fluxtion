@@ -87,14 +87,14 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
                 cmdList.add("-assignPrivate");
                 cmdList.add(Boolean.toString(assignNonPublicMembers));
                 //optionals
-                if (nodeNamingClass != null) {
-                    cmdList.add("-nodeNamingClass");
-                    cmdList.add(nodeNamingClass);
-                }
-                if (filterNamingClass != null) {
-                    cmdList.add("-filterNamingClass");
-                    cmdList.add(filterNamingClass);
-                }
+//                if (nodeNamingClass != null) {
+//                    cmdList.add("-nodeNamingClass");
+//                    cmdList.add(nodeNamingClass);
+//                }
+//                if (filterNamingClass != null) {
+//                    cmdList.add("-filterNamingClass");
+//                    cmdList.add(filterNamingClass);
+//                }
                 if (rootFactoryClass != null) {
                     cmdList.add("-rootFactoryClass");
                     cmdList.add(rootFactoryClass);
@@ -175,21 +175,6 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
      */
     @Parameter(property = "configClass", defaultValue = "com.fluxtion.builder.node.SEPConfig")
     private String configClass;
-
-    /**
-     * Fully qualified name of NodeNameProducer implementation class , that
-     * provides strategy to name nodes in generated static event processor.
-     */
-    @Parameter(property = "nodeNamingClass")
-    private String nodeNamingClass;
-
-    /**
-     * Fully qualified name of FilterDescriptionProducer implementation class,
-     * hat provides strategy to name filters in generated static event
-     * processor.
-     */
-    @Parameter(property = "filterNamingClass")
-    private String filterNamingClass;
 
     /**
      * The output package of the generated static event processor.

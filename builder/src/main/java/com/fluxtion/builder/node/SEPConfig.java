@@ -114,18 +114,12 @@ public class SEPConfig {
      * Node Factory configuration
      */
     public DeclarativeNodeConiguration declarativeConfig;
-    /**
-     * pluggable strategy to customise names of nodes
-     */
-    public NodeNameProducer nodeNameStrategy;
 
     //MAPPING
     /**
      * overrides the filter integer id's for a set of instances
      */
     public Map<Object, Integer> filterMap;
-
-    public FilterDescriptionProducer filterDescriptionProducer;
 
     /**
      * An extension point to the generator context. This instance will be
@@ -173,7 +167,7 @@ public class SEPConfig {
      * alternate map-dispatch strategy is employed.
      * 
      */
-    public int maxFiltersInline = 2;
+    public int maxFiltersInline = 4;
 
     /**
      * Map an original fully qualified class name into a new value. Can be useful
@@ -184,7 +178,7 @@ public class SEPConfig {
 
     @Override
     public String toString() {
-        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", nodeNameStrategy=" + nodeNameStrategy + ", filterMap=" + filterMap + ", filterDescriptionProducer=" + filterDescriptionProducer + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
+        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", filterMap=" + filterMap + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
     }
     
     

@@ -115,9 +115,6 @@ public class SepCompiler {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
-        if (configOverride == null) {
-            initialiseNamingStrategy();
-        }
         locateFactories();
         processYamlConfig();
         processRootFactoryConfig();
@@ -152,21 +149,6 @@ public class SepCompiler {
         builderConfig.generateDescription = compilerConfig.isGenerateDescription();
         builderConfig.generateTestDecorator = compilerConfig.isGenerateTestDecorator();
         builderConfig.assignPrivateMembers = compilerConfig.isAssignNonPublicMembers();
-    }
-
-    private void initialiseNamingStrategy() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        LOG.debug("initialiseNamingStrategy");
-        if (compilerConfig.getNodeNamingClass() != null && !compilerConfig.getNodeNamingClass().isEmpty()) {
-
-            Class nodeNamingClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getNodeNamingClass());
-//            Class nodeNamingClazz = Class.forName(compilerConfig.getNodeNamingClass());
-            builderConfig.nodeNameStrategy = (NodeNameProducer) nodeNamingClazz.newInstance();
-        }
-        if (compilerConfig.getFilterNamingClass() != null && !compilerConfig.getFilterNamingClass().isEmpty()) {
-            Class nodeNamingClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getFilterNamingClass());
-//            Class nodeNamingClazz = Class.forName(compilerConfig.getFilterNamingClass());
-            builderConfig.filterDescriptionProducer = (FilterDescriptionProducer) nodeNamingClazz.newInstance();
-        }
     }
 
     private void processYamlConfig() throws IOException, ClassNotFoundException, Exception {

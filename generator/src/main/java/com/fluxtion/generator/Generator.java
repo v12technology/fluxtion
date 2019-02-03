@@ -75,14 +75,13 @@ public class Generator {
                 config.nodeList,
                 config.publicNodes,
                 config.declarativeConfig,
-                config.nodeNameStrategy,
                 context,
                 config.auditorMap,
                 config
         );
 //        graph.registrationListenerMap = config.auditorMap;
         LOG.debug("start model gen");
-        sep = new SimpleEventProcessorModel(graph, config.filterMap, config.filterDescriptionProducer, context.getProxyClassMap());
+        sep = new SimpleEventProcessorModel(graph, config.filterMap, context.getProxyClassMap());
         sep.generateMetaModel(config.supportDirtyFiltering);
         //TODO add conditionality for different target languages
         //buildJava output

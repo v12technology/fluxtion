@@ -53,21 +53,25 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(ConfigEvent typedEvent) {
     switch (typedEvent.filterString()) {
+        //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[cfg.acl]
       case ("cfg.acl"):
         myEventProcessor_1.handleConfigEvent(typedEvent);
         myEventProcessor_1.handleMyVariableConfig(typedEvent);
         afterEvent();
         return;
+        //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[java.util.Date]
       case ("java.util.Date"):
         myEventProcessor_1.dateConfig(typedEvent);
         myEventProcessor_1.handleConfigEvent(typedEvent);
         afterEvent();
         return;
+        //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[maxConnection]
       case ("maxConnection"):
         myEventProcessor_1.handleConfigEvent(typedEvent);
         myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
         afterEvent();
         return;
+        //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[timeout]
       case ("timeout"):
         myEventProcessor_1.handleConfigEvent(typedEvent);
         myEventProcessor_1.handleTimeoutConfig(typedEvent);
