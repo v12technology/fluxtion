@@ -53,6 +53,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(DataEvent typedEvent) {
     switch (typedEvent.filterString()) {
+        //filtering for myfilter_string
       case ("myfilter_string"):
         filteredDataHandler_2.dataEvent(typedEvent);
         afterEvent();

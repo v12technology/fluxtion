@@ -215,21 +215,16 @@ public class SimpleEventProcessorModel {
     }
 
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
-        this(dependencyGraph, filterMap, null, null);
-    }
-
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, FilterDescriptionProducer flterProducer) throws Exception {
-        this(dependencyGraph, null, flterProducer, null);
+        this(dependencyGraph, filterMap, null);
     }
 
     public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph,
             Map<Object, Integer> filterMap,
-            FilterDescriptionProducer flterProducer,
             Map<Object, String> nodeClassMap) throws Exception {
         this.dependencyGraph = dependencyGraph;
         this.dependencyGraph.generateDependencyTree();
         this.filterMap = filterMap == null ? new HashMap<>() : filterMap;
-        this.flterProducer = flterProducer == null ? new DefaultFilterDescriptionProducer() : flterProducer;
+        this.flterProducer = new DefaultFilterDescriptionProducer();
         this.nodeClassMap = nodeClassMap == null ? Collections.EMPTY_MAP : nodeClassMap;
         constructorArgdMap = new HashMap<>();
         beanPropertyMap = new HashMap<>();

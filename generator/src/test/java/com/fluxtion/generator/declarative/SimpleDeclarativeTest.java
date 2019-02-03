@@ -159,7 +159,7 @@ public class SimpleDeclarativeTest {
         Map classMap = new HashMap();
         classMap.put(x, "MyMadeUpClass");
 
-        SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, null, classMap);
+        SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, classMap);
         model.generateMetaModel();
 
         Field mappedField = model.getFieldForInstance(x);
@@ -199,7 +199,7 @@ public class SimpleDeclarativeTest {
 
         classMap.put(x, DynamicallyGeneratedWindowNode.class.getCanonicalName());
         //build model
-        SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, null, classMap);
+        SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, classMap);
         model.generateMetaModel();
         //setup files, packages and class name for generated java
         String outputPackage = "com.fluxtion.test.derived.java";

@@ -27,7 +27,7 @@ import com.google.auto.service.AutoService;
  *
  * @author V12 Technology Ltd.
  */
-@AutoService(NodeNameProducer.class)
+@AutoService({NodeNameProducer.class, FilterDescriptionProducer.class})
 public class NamingStrategy implements NodeNameProducer, FilterDescriptionProducer{
 
     @Override

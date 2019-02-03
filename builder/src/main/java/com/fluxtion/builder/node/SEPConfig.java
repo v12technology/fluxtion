@@ -121,8 +121,6 @@ public class SEPConfig {
      */
     public Map<Object, Integer> filterMap;
 
-    public FilterDescriptionProducer filterDescriptionProducer;
-
     /**
      * An extension point to the generator context. This instance will be
      * available in the templating context under the key MODEL_EXTENSION
@@ -169,7 +167,7 @@ public class SEPConfig {
      * alternate map-dispatch strategy is employed.
      * 
      */
-    public int maxFiltersInline = 2;
+    public int maxFiltersInline = 4;
 
     /**
      * Map an original fully qualified class name into a new value. Can be useful
@@ -180,7 +178,7 @@ public class SEPConfig {
 
     @Override
     public String toString() {
-        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", filterMap=" + filterMap + ", filterDescriptionProducer=" + filterDescriptionProducer + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
+        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", filterMap=" + filterMap + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
     }
     
     

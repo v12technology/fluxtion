@@ -50,6 +50,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(DataEvent typedEvent) {
     switch (typedEvent.filterString()) {
+        //filtering for myTestFilter
       case ("myTestFilter"):
         handler.dataEvent(typedEvent);
         factoryBuilt.update();

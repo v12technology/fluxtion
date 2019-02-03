@@ -86,8 +86,6 @@ public class Main {
             options.addOption(Option.builder("cc").longOpt("configClass").hasArg().desc("The SEPConfig class fluxtion will use to construct the SEP.").argName("class name").required(false).build());
             options.addOption(Option.builder("st").longOpt("sepTemplate").hasArg().desc("Override the template file fluxtion will use to generate the SEP.").argName("velocity file").required(false).build());
             options.addOption(Option.builder("dt").longOpt("sepDebugTemplate").hasArg().desc("Override the debug template file fluxtion will use to generate the debug SEP.").argName("velocity file").required(false).build());
-            options.addOption(Option.builder("nc").longOpt("nodeNamingClass").hasArg().desc("Override default naming strategy for variable names in generated SEP.").argName("class name").required(false).build());
-            options.addOption(Option.builder("fc").longOpt("filterNamingClass").hasArg().desc("Override default naming strategy for native filters names in generated SEP.").argName("class name").required(false).build());
             //specific of generation formatting
             options.addOption(Option.builder("df").longOpt("supportDirtyFiltering").hasArg().desc("If set at least one parent must return true from an event handling method for an event to propogate to dependent nodes.").required(false).build());
             options.addOption(Option.builder("pa").longOpt("assignPrivate").hasArg().desc("If set generated SEP will attempt to use reflection style assignment for private non-transient members").required(false).build());
@@ -172,9 +170,6 @@ public class Main {
         config.setClassLoader(loader);
         config.setClassName(val("oc", "SepProcessor"));
         config.setConfigClass(val("cc", config.getConfigClass()));
-        //not configured
-        config.setFilterNamingClass(val("fc", null));
-        //not configured
 //        config.setGenerateDebugPrep(bool("gd", config.isGenerateDebugPrep()));
         //TODO separate sep diagram and debugger generation - by default always generate images
 //        config.setGenerateDebugPrep(true);
@@ -184,7 +179,6 @@ public class Main {
         config.setGenerateTestDecorator(bool("gt", config.isGenerateTestDecorator()));
         config.setCompileSource(bool("bc", config.isCompileSource()));
         config.setFormatSource(bool("fs", config.isFormatSource()));
-        config.setNodeNamingClass(val("nc", null));
         config.setOutputDirectory(val("od", "output/source"));
         config.setPackageName(val("op", "sep.generated"));
         config.setResourcesOutputDirectory(val("or", "output/resources"));
