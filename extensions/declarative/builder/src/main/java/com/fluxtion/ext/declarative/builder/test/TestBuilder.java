@@ -50,7 +50,9 @@ import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableCo
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,6 +114,21 @@ public final class TestBuilder<T, F> {
         importMap.addImport(OnParentUpdate.class);
         importMap.addImport(Wrapper.class);
         importMap.addImport(Test.class);
+    }
+    
+    
+    public static <T, B extends Boolean> TestBuilder<T, B> buildTestNew(SerializableFunction filter){
+        TestBuilder builder = null;
+        Method method = filter.method();
+        if (Modifier.isStatic(method.getModifiers())) {
+            System.out.print("static filter -> ");
+            builder = new TestBuilder(filter.getContainingClass());
+        } else {
+            System.out.print("instance filter -> ");
+            TestBuilder.buildTestNew( filter);
+            builder = new TestBuilder(filter.captured()[0]);
+        }
+        return builder;
     }
 
     //number scalar
