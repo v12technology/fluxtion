@@ -81,6 +81,9 @@ public interface LambdaReflection {
 
     public interface SerializableSupplier<s, t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
+    
+    public interface SerializableSupplierNew<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
+    }
 
     public interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
     }
