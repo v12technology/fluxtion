@@ -97,7 +97,7 @@ public final class TestBuilder<T, F> {
         this.testFunctionClass = testFunctionClass;
         notifyOnChange = false;
         isArray = false;
-//        checkFunction();
+        checkFunction();
         standardImports();
     }
 
@@ -136,13 +136,26 @@ public final class TestBuilder<T, F> {
     }
     
 
-    public static <T, R extends Boolean> TestBuilder<T, ?> buildTestNew(SerializableFunction<T, R> filter, SerializableSupplierNew<?> supplier) {
+    public static <T, R extends Boolean, S> TestBuilder<T, ?> buildTestNew(SerializableFunction<T, R> filter, 
+            S source, Method accessorMethod,
+            boolean cast) {
         Object handler = filter.captured()[0];
         GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         TestBuilder testBuilder = new TestBuilder(handler);
         testBuilder.functionInfo = new FunctionInfo(filter.method(), testBuilder.importMap);
         testBuilder.filterSubject =  handler;
-        testBuilder.argNew(supplier);
+        SourceInfo sourceInfo = testBuilder.addSource(source);
+        testBuilder.functionInfo.appendParamSource(accessorMethod, sourceInfo, cast);
+        return testBuilder;
+    }
+
+    public static <T, R extends Boolean> TestBuilder<T, ?> buildTestNew(SerializableFunction<T, R> filter, SerializableSupplierNew<?> supplier, boolean cast) {
+        Object handler = filter.captured()[0];
+        GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+        TestBuilder testBuilder = new TestBuilder(handler);
+        testBuilder.functionInfo = new FunctionInfo(filter.method(), testBuilder.importMap);
+        testBuilder.filterSubject =  handler;
+        testBuilder.argNew(supplier, cast);
         return testBuilder;
     }
     
@@ -525,11 +538,11 @@ public final class TestBuilder<T, F> {
         return this;
     }
 
-    public <S, V> TestBuilder<T, F> argNew(SerializableSupplierNew<S> accessor) {
+    public <S, V> TestBuilder<T, F> argNew(SerializableSupplierNew<S> accessor, boolean cast) {
         S source = (S) accessor.captured()[0];
         Method accessorMethod = accessor.method();
         SourceInfo sourceInfo = addSource(source);
-        functionInfo.appendParamSource(accessorMethod, sourceInfo, false);
+        functionInfo.appendParamSource(accessorMethod, sourceInfo, cast);
 //        functionInfo.appendParamSource(accessorMethod, sourceInfo, true);
         return this;
     }
@@ -754,11 +767,11 @@ public final class TestBuilder<T, F> {
     private void checkFunction() {
         Method[] methods = testFunctionClass.getDeclaredMethods();
         //Arrays.stream(methods).filter((m) -> m.getModifiers() & Modifiers)
-        if (methods.length != 1) {
-            throw new RuntimeException("Cannot generate numeric function from "
-                    + "supplied function class must have only 1 public "
-                    + "method.");
-        }
+//        if (methods.length != 1) {
+//            throw new RuntimeException("Cannot generate numeric function from "
+//                    + "supplied function class must have only 1 public "
+//                    + "method.");
+//        }
         functionInfo = new FunctionInfo(methods[0], importMap);
     }
 
