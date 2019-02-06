@@ -336,7 +336,7 @@ public class SepJavaSourceModelHugeFilter {
             String fqnName = clazzName;
             ret = simpleName;
             if(fqnName.startsWith("java.lang") 
-                    || fqnName.startsWith(GenerationContext.SINGLETON.getPackageName())){
+                    || GenerationContext.SINGLETON.getPackageName().startsWith(fqnName)){
                 //ignore java.lang
             }else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(fqnName)) {
