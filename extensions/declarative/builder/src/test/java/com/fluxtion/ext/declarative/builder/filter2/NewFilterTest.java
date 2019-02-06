@@ -16,16 +16,6 @@ import java.lang.reflect.Method;
  */
 public class NewFilterTest implements NodeNameProducer {
 
-    
-    @Test
-    public void pkg(){
-        
-        System.out.println("className:" + NumericValidator.class.getCanonicalName());
-        System.out.println("packageName:" + NumericValidator.class.getPackage().getName());
-        System.out.println("EnclosingClass:" + NumericValidator.class.getEnclosingClass());
-        
-    }
-    
     @Test
     public void testInstanceFilter() throws IllegalAccessException, Exception {
         InprocessSepCompiler.sepTestInstance((t) -> {
