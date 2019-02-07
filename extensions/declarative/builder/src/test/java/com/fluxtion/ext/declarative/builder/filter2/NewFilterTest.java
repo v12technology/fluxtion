@@ -23,7 +23,8 @@ public class NewFilterTest implements NodeNameProducer {
             try {
                 MyDataHandler dh1 = t.addNode(new MyDataHandler("dh1"));
                 Method method = MyDataHandler.class.getDeclaredMethod("getIntVal");
-//                filter(positive(), dh1::getIntVal).build();
+                filter(positive(), dh1::getIntVal).build();
+                filter(NumericValidator::validateDataHandler, dh1).build();
 //                filter(gt(200.87), dh1, method).build();
 //                filter(gt(86.788), dh1::getIntVal).build();
 //                filter(gt(34), dh1::getDoubleVal).build();
@@ -74,6 +75,10 @@ public class NewFilterTest implements NodeNameProducer {
 
         public NumericValidator(int limit) {
             this.limit = limit;
+        }
+        
+        public static boolean validateDataHandler(MyDataHandler dh){
+            return true;
         }
 
         public static boolean positiveInt(int d) {

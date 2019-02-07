@@ -28,6 +28,7 @@ import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFu
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplierNew;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,16 +39,14 @@ import org.apache.velocity.VelocityContext;
  *
  * @author V12 Technology Ltd.
  * @param <T> The test function applied to the filter subject
- * @param <F> The filter subject t be filtered
+ * @param <F> The filter subject to be filtered
  */
 public class FilterBuilder<T, F> {
-    
-    
+
     private static final String TEMPLATE = "template/TestTemplate.vsl";
     private static final String TEMPLATE_ARRAY = "template/TestArrayTemplate.vsl";
     private static final String INPUT_ARRAY_ELEMENT = "filterElementToTest";
     private static final String INPUT_ARRAY = "filterArray";
-
 
     private final HashMap<Object, SourceInfo> inst2SourceInfo = new HashMap<>();
     private FunctionInfo functionInfo;
@@ -83,28 +82,62 @@ public class FilterBuilder<T, F> {
         standardImports();
     }
 
+    public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source, Method accessor, boolean cast) {
+        FilterBuilder filterBuilder = new FilterBuilder(filterMethod.getDeclaringClass());
+        filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
+        filterBuilder.filterSubject = source;
+        SourceInfo sourceInfo = filterBuilder.addSource(source);
+        if (accessor == null) {
+            filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+        } else {
+            filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+        }
+        return filterBuilder;
+    }
+
     public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         FilterBuilder filterBuilder = new FilterBuilder(filter);
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
-        filterBuilder.filterSubject =  filter;
+        filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+        if (accessor == null) {
+            filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+        } else {
+            filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+        }
         return filterBuilder;
     }
-    
+
     public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor) {
         return filter(filter, filterMethod, source, accessor, true);
     }
-    
+
+    public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source) {
+        return filter(filter, filterMethod, source, null, true);
+    }
+
     public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source, Method accessor) {
+        if (Modifier.isStatic(filter.method().getModifiers())) {
+            return filter(filter.method(), source, accessor, true);
+        }
         return filter(filter.captured()[0], filter.method(), source, accessor);
     }
 
+    public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source) {
+        if (Modifier.isStatic(filter.method().getModifiers())) {
+            return filter(filter.method(), source, null, true);
+        }
+        return filter(filter.captured()[0], filter.method(), source, null);
+    }
+
     public static <T, R extends Boolean> FilterBuilder filter(SerializableFunction<T, R> filter, SerializableSupplierNew<T> supplier) {
+        if (Modifier.isStatic(filter.method().getModifiers())) {
+            return filter(filter.method(), supplier.captured()[0], supplier.method(), true);
+        }
         return filter(filter.captured()[0], filter.method(), supplier.captured()[0], supplier.method());
     }
-    
+
     public Wrapper<F> build() {
         if (isArray) {
 //            return buildFilterArray();
@@ -160,15 +193,13 @@ public class FilterBuilder<T, F> {
         } catch (Exception e) {
             throw new RuntimeException("could not buuld function " + toString(), e);
         }
-    }  
-    
-    
-    
+    }
+
     public FilterBuilder<T, F> notifyOnChange(boolean notifyOnChange) {
         this.notifyOnChange = notifyOnChange;
         return this;
-    }  
-    
+    }
+
     private final void standardImports() {
         importMap.addImport(OnEvent.class);
         importMap.addImport(Wrapper.class);
@@ -185,5 +216,5 @@ public class FilterBuilder<T, F> {
                 importMap.addImport(input.getClass()),
                 "source_" + input.getClass().getSimpleName() + "_" + GenerationContext.nextId()));
 
-    } 
+    }
 }
