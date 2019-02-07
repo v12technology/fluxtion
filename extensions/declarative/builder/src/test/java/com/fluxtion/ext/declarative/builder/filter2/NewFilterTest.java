@@ -1,6 +1,8 @@
 package com.fluxtion.ext.declarative.builder.filter2;
 
+import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.generation.NodeNameProducer;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import java.util.logging.Level;
@@ -76,8 +78,8 @@ public class NewFilterTest implements NodeNameProducer {
         public NumericValidator(int limit) {
             this.limit = limit;
         }
-        
-        public static boolean validateDataHandler(MyDataHandler dh){
+
+        public static boolean validateDataHandler(MyDataHandler dh) {
             return true;
         }
 

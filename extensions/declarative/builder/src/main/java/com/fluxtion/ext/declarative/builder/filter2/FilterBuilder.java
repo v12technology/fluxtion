@@ -1,5 +1,6 @@
 package com.fluxtion.ext.declarative.builder.filter2;
 
+import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
@@ -36,6 +37,74 @@ import java.util.Set;
 import org.apache.velocity.VelocityContext;
 
 /**
+ * Applies filtering logic to a node in the execution graph. The filter
+ * invokes a predicate that tests a node for a valid match. The outcome of the
+ * match has the following effect:
+ * <ul>
+ * <li>Successful match allows the event wave to continue.
+ * <li>Failed match the event wave stops at the node under test.
+ * </ul>
+ *
+ * <p>
+ * Filtering has the following charactersitics:
+ * <ul>
+ * <li>Filter functions are either instance or static methods.
+ * <li>An instance filter is a node in the SEP and can receive inputs from any
+ * other nodes.
+ * <li>An instance filter is stateful, the same filter instance will be used
+ * across multiple event processing cycles.
+ * <li>An instance filter can attach to any SEP lifecyle method such as
+ * {@link AfterEvent}
+ * <li>A filter inspection target can be a method reference or a
+ * node in the exeution graph.
+ * <li>A ,target method reference can return either a primitive or reference
+ * types.
+ * <li>Fluxtion will cast all supplied values to the receiving type.
+ * <li><b>Lmabdas cannot be used as filter predicates</b> use method references.
+ * </ul>
+ *
+ * Below is an example creating a filter on a primitive double property. The
+ * filter
+ * is accets an int parmter all casts are managed
+ * <p>
+ * <pre><code>
+ * {@code @SepBuilder(name = "FilterTest", packageName = "com.fluxtion.testfilter")}
+ *   public void buildFilter(SEPConfig cfg) {
+ *       MyDataHandler dh1 = cfg.addNode(new MyDataHandler("dh1"));
+ *       filter(lt(34), dh1::getDoubleVal).build();
+ *       filter(positive(), dh1::getIntVal).build();
+ *   }
+ * ...
+ *     public class NumericValidator {
+ *
+ *     //method reference wraps instance test
+ *       public static SerializableFunction lt(int test) {
+ *          return (SerializableFunction<Integer, Boolean>) new NumericValidator(test)::lessThan;
+ *      }
+ *     //method reference wraps static test
+ *       public static SerializableFunction positive() {
+ *           return (SerializableFunction<Integer, Boolean>) NumericValidator::positiveInt;
+ *       }
+ *       public int limit;
+ *
+ *       public NumericValidator(int limit) {
+ *           this.limit = limit;
+ *       }
+ *
+ *       public static boolean positiveInt(int d) {
+ *           return d > 0;
+ *       }
+ *
+ *       public boolean greaterThan(int d) {
+ *           return d > limit;
+ *       }
+ *
+ *       public boolean lessThan(int d) {
+ *           return d < limit;
+ *       }
+ *   }
+ * </code></pre>
+ *
  *
  * @author V12 Technology Ltd.
  * @param <T> The test function applied to the filter subject
