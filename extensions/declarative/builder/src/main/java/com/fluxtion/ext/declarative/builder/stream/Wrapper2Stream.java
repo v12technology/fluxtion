@@ -7,24 +7,24 @@ import java.util.function.Function;
  * A wrapper that can provide stream like 
  * @author V12 Technology Ltd.
  */
-public class Stream<T> implements Wrapper<T>{
+public class Wrapper2Stream<T> implements Wrapper<T>{
 
     private final T underlying;
 
-    public Stream(T underlying) {
+    public Wrapper2Stream(T underlying) {
         this.underlying = underlying;
     }
 
-    public Stream(Wrapper<T> underlying) {
+    public Wrapper2Stream(Wrapper<T> underlying) {
         this.underlying = underlying.event();
     }
     
-    public static <S> Stream<S> stream(S in){
-        return new Stream<S>(in);
+    public static <S> Wrapper2Stream<S> stream(S in){
+        return new Wrapper2Stream<S>(in);
     }
     
-    public <S> Stream<T> filter(Function<T, S> supplier, Function<T, S> filter){
-        return new Stream(underlying);
+    public <S> Wrapper2Stream<T> filter(Function<T, S> supplier, Function<T, S> filter){
+        return new Wrapper2Stream(underlying);
     }
     
     @Override
@@ -37,6 +37,6 @@ public class Stream<T> implements Wrapper<T>{
         return (Class<T>) underlying.getClass();
     }
    
-//    public static Stream(T t)
+//    public static Wrapper2Stream(T t)
     
 }

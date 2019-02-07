@@ -151,6 +151,18 @@ public class FilterBuilder<T, F> {
         standardImports();
     }
 
+    /**
+     * static filter generation method
+     * @param <T>
+     * @param <R>
+     * @param <S>
+     * @param <F>
+     * @param filterMethod
+     * @param source
+     * @param accessor
+     * @param cast
+     * @return 
+     */
     public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder = new FilterBuilder(filterMethod.getDeclaringClass());
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
@@ -164,6 +176,19 @@ public class FilterBuilder<T, F> {
         return filterBuilder;
     }
 
+    /**
+     * instance filter generation method
+     * @param <T>
+     * @param <R>
+     * @param <S>
+     * @param <F>
+     * @param filter
+     * @param filterMethod
+     * @param source
+     * @param accessor
+     * @param cast
+     * @return 
+     */
     public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         FilterBuilder filterBuilder = new FilterBuilder(filter);

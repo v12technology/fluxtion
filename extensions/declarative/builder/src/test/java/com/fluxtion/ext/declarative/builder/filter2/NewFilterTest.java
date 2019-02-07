@@ -1,16 +1,18 @@
 package com.fluxtion.ext.declarative.builder.filter2;
 
-import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.SEPConfig;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static com.fluxtion.ext.declarative.builder.filter2.FilterBuilder.filter;
+import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 /**
  *
@@ -18,6 +20,15 @@ import java.lang.reflect.Method;
  */
 public class NewFilterTest implements NodeNameProducer {
 
+    
+    @Test
+    public void testWrapperFilter() throws IllegalAccessException, Exception{
+//        InprocessSepCompiler.sepTestInstance((SEPConfig t) -> {
+//            select(DataEvent.class)
+//                    .filter(positive(), DataEvent::getValue);
+//        }, "com.fluxtion.ext.declarative.builder.filter_wrapper", "WrapperFilter");        
+    }
+    
     @Test
     public void testInstanceFilter() throws IllegalAccessException, Exception {
         InprocessSepCompiler.sepTestInstance((t) -> {
@@ -27,7 +38,7 @@ public class NewFilterTest implements NodeNameProducer {
                 Method method = MyDataHandler.class.getDeclaredMethod("getIntVal");
                 filter(positive(), dh1::getIntVal).build();
                 filter(NumericValidator::validateDataHandler, dh1).build();
-//                filter(gt(200.87), dh1, method).build();
+                filter(gt(200.87), dh1, method).build();
 //                filter(gt(86.788), dh1::getIntVal).build();
 //                filter(gt(34), dh1::getDoubleVal).build();
                 filter(lt(34), dh1::getDoubleVal).build();
@@ -53,7 +64,12 @@ public class NewFilterTest implements NodeNameProducer {
     @Override
     public String mappedNodeName(Object nodeToMap) {
         if (nodeToMap instanceof NumericValidator) {
-            return "numericFilter_" + System.currentTimeMillis();
+            NumericValidator val = (NumericValidator)nodeToMap;
+            String suffix = "" + val.limit;
+            if(val.doubleLimit!=0){
+                suffix = "" + val.doubleLimit;
+            }
+            return "numberTest_" + suffix.replace(".", "_");
         }
         return null;
     }
@@ -98,6 +114,37 @@ public class NewFilterTest implements NodeNameProducer {
         public boolean lessThan(int d) {
             return d < limit;
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 73 * hash + this.limit;
+            hash = 73 * hash + (int) (Double.doubleToLongBits(this.doubleLimit) ^ (Double.doubleToLongBits(this.doubleLimit) >>> 32));
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final NumericValidator other = (NumericValidator) obj;
+            if (this.limit != other.limit) {
+                return false;
+            }
+            if (Double.doubleToLongBits(this.doubleLimit) != Double.doubleToLongBits(other.doubleLimit)) {
+                return false;
+            }
+            return true;
+        }
+        
+        
     }
 
 }
