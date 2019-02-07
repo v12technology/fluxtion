@@ -52,8 +52,8 @@ public class NewFilterTest implements NodeNameProducer {
 
     @Override
     public String mappedNodeName(Object nodeToMap) {
-        if (nodeToMap instanceof NewFilterTest) {
-            return "filterNumeric_" + System.currentTimeMillis();
+        if (nodeToMap instanceof NumericValidator) {
+            return "numericFilter_" + System.currentTimeMillis();
         }
         return null;
     }
