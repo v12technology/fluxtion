@@ -16,7 +16,8 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import java.lang.reflect.Method;
 
 /**
@@ -40,7 +41,7 @@ public class FixedLenMarshallerBuilder<T> extends RecordParserBuilder<FixedLenMa
     }
 
     public <U> FixedLenMarshallerBuilder<T> mapFixed(int colStart, int length, SerializableBiConsumer<T, U> targetFunction) {
-        Method targetMethod = targetFunction.method();
+        Method targetMethod = targetFunction.method(SINGLETON.getClassLoader());
         CsvPushFunctionInfo info = new CsvPushFunctionInfo(importMap);
         info.setTarget(targetClazz, targetMethod, targetId);
         info.setSourceFixedField(colStart, length);

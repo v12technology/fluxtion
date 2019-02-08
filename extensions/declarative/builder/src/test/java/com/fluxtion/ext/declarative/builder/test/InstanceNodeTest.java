@@ -2,12 +2,13 @@ package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import static com.fluxtion.ext.declarative.builder.test.InstanceNodeTest.NumberCompareValidators.gt;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;

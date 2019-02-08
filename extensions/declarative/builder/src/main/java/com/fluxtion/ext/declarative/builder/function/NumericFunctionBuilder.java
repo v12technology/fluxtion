@@ -39,6 +39,7 @@ import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.api.event.Event;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,10 +55,9 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceCl
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.window.CountSlidingBuffer;
 import com.fluxtion.ext.declarative.builder.window.CountSlidingBufferFactory;
-import com.fluxtion.ext.declarative.api.window.UpdateCountTest;
 import com.fluxtion.ext.declarative.builder.Templates;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
@@ -148,13 +148,13 @@ public class NumericFunctionBuilder {
     }
 
     public <T, V extends Number> NumericFunctionBuilder input(T input,
-            SerializableSupplier<T, V> sourceFunction) {
+            SerializableSupplier< V> sourceFunction) {
         return input(input, sourceFunction, false);
     }
 
     public <T, V extends Number> NumericFunctionBuilder input(T input,
-            SerializableSupplier<T, V> sourceFunction, boolean cast) {
-        Method sourceMethod = sourceFunction.method();
+            SerializableSupplier<V> sourceFunction, boolean cast) {
+        Method sourceMethod = sourceFunction.method(SINGLETON.getClassLoader());
         SourceInfo sourceInfo = addSource(input);
         functionInfo.appendParamSource(sourceMethod, sourceInfo, cast);
         key.addSourceMethod(sourceMethod);

@@ -19,7 +19,7 @@ package com.fluxtion.ext.declarative.builder.test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.Test;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.event.Event;
 import java.util.Arrays;
 import java.util.function.Function;
@@ -95,14 +95,14 @@ public class FilterHelper {
 
     //T with numeric args
     public static <S, V, T extends Test> Wrapper<S> filter(
-            S supplier, LambdaReflection.SerializableSupplier<S, V> accessor, Class<T> testClass, double... args) {
+            S supplier, LambdaReflection.SerializableSupplier<V> accessor, Class<T> testClass, double... args) {
         TestBuilder<T, S> testBuilder = TestBuilder.buildTest(testClass, supplier, accessor);
         Arrays.stream(args).forEach(i -> testBuilder.arg(i));
         return testBuilder.buildFilter();
     }
 
     public static <S, V, T extends Test> Wrapper<S> filterOnce(
-            S supplier, LambdaReflection.SerializableSupplier<S, V> accessor, Class<T> testClass, double... args) {
+            S supplier, LambdaReflection.SerializableSupplier<V> accessor, Class<T> testClass, double... args) {
         TestBuilder<T, S> testBuilder = TestBuilder.buildTest(testClass, supplier, accessor);
         Arrays.stream(args).forEach(i -> testBuilder.arg(i));
         testBuilder.notifyOnChange(true);

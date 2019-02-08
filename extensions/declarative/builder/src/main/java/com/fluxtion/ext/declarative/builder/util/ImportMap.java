@@ -52,10 +52,11 @@ public class ImportMap {
     }
 
     public String addImport(Class clazz) {
-        String className = clazz.getCanonicalName();
+        String className = clazz.getEnclosingClass()==null?
+                clazz.getCanonicalName():clazz.getEnclosingClass().getCanonicalName();
         String simpleName = clazz.getSimpleName();
         if(clazz.isPrimitive() || className.startsWith("java.lang") 
-                || className.startsWith(GenerationContext.SINGLETON.getPackageName())){
+                || GenerationContext.SINGLETON.getPackageName().startsWith(className)){
             return simpleName;
         }
         if (importedClassSet.contains(clazz)) {

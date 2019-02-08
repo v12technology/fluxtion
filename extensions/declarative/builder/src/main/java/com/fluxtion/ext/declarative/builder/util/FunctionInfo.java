@@ -47,7 +47,9 @@ public class FunctionInfo {
     public FunctionInfo(Method method, ImportMap importMap) {
         functionMethod = method;
         calculateMethod = method.getName();
-        calculateClass = method.getDeclaringClass().getCanonicalName();
+        calculateClass = importMap == null
+                ? method.getDeclaringClass().getCanonicalName()
+                : importMap.addImport(method.getDeclaringClass());
         calculateClazz = method.getDeclaringClass();
         returnTypeClass = method.getReturnType();
         returnType = method.getReturnType().getName();
@@ -57,7 +59,10 @@ public class FunctionInfo {
     }
 
     public String paramTypeByIndex(int index) {
-        return functionMethod.getParameterTypes()[index].getName();
+        if (importMap == null) {
+            return functionMethod.getParameterTypes()[index].getName();
+        }
+        return importMap.addImport(functionMethod.getParameterTypes()[index]);//.getName();
     }
 
     public String cast(boolean cast) {
@@ -96,6 +101,16 @@ public class FunctionInfo {
 
     public void appendParamLocal(String id, boolean isCast) {
         paramString += sep + cast(isCast) + id;
+        sep = ", ";
+        count++;
+    }
+
+    public <S> void appendParamLocal(String id, Wrapper<S> handler, boolean isCast) {
+        String eventClass = handler.eventClass().getCanonicalName();
+        if (importMap != null) {
+            eventClass = importMap.addImport(handler.eventClass());
+        }
+        paramString += sep + cast(isCast) + "((" + eventClass + ")" + id + ".event())";
         sep = ", ";
         count++;
     }
