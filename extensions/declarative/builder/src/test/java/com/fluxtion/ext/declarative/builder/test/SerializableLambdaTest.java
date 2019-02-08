@@ -1,5 +1,6 @@
 package com.fluxtion.ext.declarative.builder.test;
 
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
@@ -54,7 +55,7 @@ public class SerializableLambdaTest extends BaseSepTest {
     }
 
 
-    public <S, C> void buildTest_v2(SerializableSupplier<S, C> supplier, SerializableConsumer<C> rule) {
+    public <C> void buildTest_v2(SerializableSupplier<C> supplier, SerializableConsumer<C> rule) {
 
     }
 
@@ -97,7 +98,7 @@ public class SerializableLambdaTest extends BaseSepTest {
     }
 
     public static <T> LambdaReflection.SerializableConsumer<T> ref(LambdaReflection.SerializableConsumer<T> r, Object instance) {
-        if (!Modifier.isStatic(r.method().getModifiers())) {
+        if (!Modifier.isStatic(r.method(SINGLETON.getClassLoader()).getModifiers())) {
             assertEquals(instance, r.captured()[0]);
         } else {
             assertEquals(0, r.captured().length);
@@ -105,8 +106,8 @@ public class SerializableLambdaTest extends BaseSepTest {
         return r;
     }
 
-    public static <T, S> void supplier(LambdaReflection.SerializableSupplier<T, S> supplier, T instance) {
-        if (!Modifier.isStatic(supplier.method().getModifiers())) {
+    public static <T> void supplier(LambdaReflection.SerializableSupplier<T> supplier, T instance) {
+        if (!Modifier.isStatic(supplier.method(SINGLETON.getClassLoader()).getModifiers())) {
             assertEquals(instance, supplier.captured()[0]);
         } else {
             assertEquals(0, supplier.captured().length);

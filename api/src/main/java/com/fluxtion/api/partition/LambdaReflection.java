@@ -45,7 +45,16 @@ public interface LambdaReflection {
                 throw new RuntimeException(e);
             }
         }
-
+        
+        default Class getContainingClass(ClassLoader loader) {
+            try {
+                String className = serialized().getImplClass().replaceAll("/", ".");
+                return Class.forName(className, true,  loader);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
         default Class getContainingClass() {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
@@ -63,7 +72,17 @@ public interface LambdaReflection {
             }
             return args;
         }
-
+        
+        default Method method(ClassLoader loader) {
+            SerializedLambda lambda = serialized();
+            Class containingClass = getContainingClass(loader);
+            return asList(containingClass.getDeclaredMethods())
+                    .stream()
+                    .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
+                    .findFirst()
+                    .orElseThrow(UnableToGuessMethodException::new);
+        }
+        
         default Method method() {
             SerializedLambda lambda = serialized();
             Class containingClass = getContainingClass();

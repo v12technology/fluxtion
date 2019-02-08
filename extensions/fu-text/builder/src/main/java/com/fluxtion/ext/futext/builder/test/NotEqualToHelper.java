@@ -134,26 +134,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test notEqualTo(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test notEqualTo(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test notEqualToOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test notEqualToOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -264,26 +264,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test notEqualTo(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test notEqualTo(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test notEqualToOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test notEqualToOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> notEqualToFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, Number> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -394,26 +394,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test notEqualTo(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test notEqualTo(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test notEqualToOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test notEqualToOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -524,26 +524,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test notEqualTo(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test notEqualTo(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test notEqualToOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test notEqualToOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> notEqualToFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -654,26 +654,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -784,26 +784,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -914,26 +914,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualTo(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test notEqualToOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> notEqualToFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1044,26 +1044,26 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test notEqualTo(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test notEqualTo(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test notEqualToOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test notEqualToOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> notEqualToFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> notEqualToFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> notEqualToFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> notEqualToFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1174,156 +1174,156 @@ public interface NotEqualToHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test notEqualTo(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test notEqualTo(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test notEqualToOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test notEqualToOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> notEqualToFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> notEqualToFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> notEqualToFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> notEqualToFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Test notEqualTo(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test notEqualTo(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Test notEqualToOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test notEqualToOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Test notEqualTo(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test notEqualTo(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Test notEqualToOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test notEqualToOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Test notEqualTo(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test notEqualTo(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Test notEqualToOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test notEqualToOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Test notEqualTo(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test notEqualTo(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Test notEqualToOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test notEqualToOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Test notEqualTo(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test notEqualTo(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Test notEqualToOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test notEqualToOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> notEqualToFilter(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> notEqualToFilterOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<NotEqualTo, S> testToBuild = TestBuilder.buildTest(NotEqualTo.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);

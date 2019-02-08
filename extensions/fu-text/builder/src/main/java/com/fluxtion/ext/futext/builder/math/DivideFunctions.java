@@ -98,7 +98,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends Number, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier<T, V> accessor2) throws Exception {
+    public static  < S extends Number, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(op1);
         functionBuilder.input(supplier2, accessor2);
@@ -106,7 +106,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends Number, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier<T, V> accessor2, Object resetNotifier) throws Exception {
+    public static  < S extends Number, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(op1);
         functionBuilder.input(supplier2, accessor2);
@@ -183,7 +183,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends NumericValue, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier<T, V> accessor2) throws Exception {
+    public static  < S extends NumericValue, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(op1);
         functionBuilder.input(supplier2, accessor2);
@@ -191,7 +191,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends NumericValue, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier<T, V> accessor2, Object resetNotifier) throws Exception {
+    public static  < S extends NumericValue, T, V extends Number> NumericValue divide(S op1, T supplier2, SerializableSupplier accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(op1);
         functionBuilder.input(supplier2, accessor2);
@@ -268,7 +268,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends Event, T, V extends Number> NumericValue divide(Class<S> eventClass1, Function<S, Number> accessor1, T supplier2, SerializableSupplier<T, V> accessor2) throws Exception {
+    public static  < S extends Event, T, V extends Number> NumericValue divide(Class<S> eventClass1, Function<S, Number> accessor1, T supplier2, SerializableSupplier accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(eventClass1, accessor1);
         functionBuilder.input(supplier2, accessor2);
@@ -276,7 +276,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S extends Event, T, V extends Number> NumericValue divide(Class<S> eventClass1, Function<S, Number> accessor1, T supplier2, SerializableSupplier<T, V> accessor2, Object resetNotifier) throws Exception {
+    public static  < S extends Event, T, V extends Number> NumericValue divide(Class<S> eventClass1, Function<S, Number> accessor1, T supplier2, SerializableSupplier accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(eventClass1, accessor1);
         functionBuilder.input(supplier2, accessor2);
@@ -353,7 +353,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, T, V extends Number> NumericValue divide(Wrapper<S> handler1, Function<S, Number> accessor1, T supplier2, SerializableSupplier<T, V> accessor2) throws Exception {
+    public static  < S, T, V extends Number> NumericValue divide(Wrapper<S> handler1, Function<S, Number> accessor1, T supplier2, SerializableSupplier accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(handler1, accessor1);
         functionBuilder.input(supplier2, accessor2);
@@ -361,7 +361,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, T, V extends Number> NumericValue divide(Wrapper<S> handler1, Function<S, Number> accessor1, T supplier2, SerializableSupplier<T, V> accessor2, Object resetNotifier) throws Exception {
+    public static  < S, T, V extends Number> NumericValue divide(Wrapper<S> handler1, Function<S, Number> accessor1, T supplier2, SerializableSupplier accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(handler1, accessor1);
         functionBuilder.input(supplier2, accessor2);
@@ -370,7 +370,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T extends Number> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T op2) throws Exception {
+    public static  < S, U extends Number, T extends Number> NumericValue divide(S supplier1, SerializableSupplier accessor1, T op2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(op2);
@@ -378,24 +378,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T extends Number> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T op2, Object resetNotifier) throws Exception {
-        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
-        functionBuilder.input(supplier1, accessor1);
-        functionBuilder.input(op2);
-        functionBuilder.resetNotifier(resetNotifier);
-        NumericValue function = functionBuilder.build();
-        return function;
-    }
-
-    public static  < S, U extends Number, T extends NumericValue> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T op2) throws Exception {
-        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
-        functionBuilder.input(supplier1, accessor1);
-        functionBuilder.input(op2);
-        NumericValue function = functionBuilder.build();
-        return function;
-    }
-
-    public static  < S, U extends Number, T extends NumericValue> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T op2, Object resetNotifier) throws Exception {
+    public static  < S, U extends Number, T extends Number> NumericValue divide(S supplier1, SerializableSupplier accessor1, T op2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(op2);
@@ -404,7 +387,24 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T extends Event> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, Number> accessor2) throws Exception {
+    public static  < S, U extends Number, T extends NumericValue> NumericValue divide(S supplier1, SerializableSupplier accessor1, T op2) throws Exception {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
+        functionBuilder.input(supplier1, accessor1);
+        functionBuilder.input(op2);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static  < S, U extends Number, T extends NumericValue> NumericValue divide(S supplier1, SerializableSupplier accessor1, T op2, Object resetNotifier) throws Exception {
+        NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
+        functionBuilder.input(supplier1, accessor1);
+        functionBuilder.input(op2);
+        functionBuilder.resetNotifier(resetNotifier);
+        NumericValue function = functionBuilder.build();
+        return function;
+    }
+
+    public static  < S, U extends Number, T extends Event> NumericValue divide(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, Number> accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(eventClass2, accessor2);
@@ -412,7 +412,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T extends Event> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, Number> accessor2, Object resetNotifier) throws Exception {
+    public static  < S, U extends Number, T extends Event> NumericValue divide(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, Number> accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(eventClass2, accessor2);
@@ -421,7 +421,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, Number> accessor2) throws Exception {
+    public static  < S, U extends Number, T> NumericValue divide(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, Number> accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(handler2, accessor2);
@@ -429,7 +429,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, Number> accessor2, Object resetNotifier) throws Exception {
+    public static  < S, U extends Number, T> NumericValue divide(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, Number> accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(handler2, accessor2);
@@ -438,7 +438,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T, V extends Number> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2) throws Exception {
+    public static  < S, U extends Number, T, V extends Number> NumericValue divide(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(supplier2, accessor2);
@@ -446,7 +446,7 @@ public interface DivideFunctions {
         return function;
     }
 
-    public static  < S, U extends Number, T, V extends Number> NumericValue divide(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2, Object resetNotifier) throws Exception {
+    public static  < S, U extends Number, T, V extends Number> NumericValue divide(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2, Object resetNotifier) throws Exception {
         NumericFunctionBuilder functionBuilder = NumericFunctionBuilder.function(Divide.class);
         functionBuilder.input(supplier1, accessor1);
         functionBuilder.input(supplier2, accessor2);

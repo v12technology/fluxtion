@@ -34,6 +34,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.function
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.event.Event;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import java.util.Map;
 import java.util.Set;
 import org.apache.velocity.VelocityContext;
@@ -81,23 +82,23 @@ public class LogBuilder {
     }
 
     @SafeVarargs
-    public static <N, S, V> MsgBuilder LogOnNotify(String message, N notifier, S source, SerializableSupplier<V, S>... data) {
+    public static <N, S, V> MsgBuilder LogOnNotify(String message, N notifier, S source, SerializableSupplier<V>... data) {
         LogBuilder logger = new LogBuilder(message, notifier);
         logger.input(source, data);
         return logger.build();
     }
 
     @SafeVarargs
-    public static <S, V> MsgBuilder Log(String message, S source, SerializableSupplier<V, S>... data) {
+    public static <S, V> MsgBuilder Log(String message, S source, SerializableSupplier<V>... data) {
         LogBuilder logger = new LogBuilder(message, null);
         logger.input(source, data);
         return logger.build();
     }
 
-    public <S, V> LogBuilder input(S source, SerializableSupplier<V, S>... data) {
+    public <S, V> LogBuilder input(S source, SerializableSupplier<V>... data) {
         SourceInfo sourceInfo = addSource(source);
-        for (SerializableSupplier<V, S> function : data) {
-            Method getMethod = function.method();
+        for (SerializableSupplier<V> function : data) {
+            Method getMethod = function.method(SINGLETON.getClassLoader());
             valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, getMethod));
             count++;
         }

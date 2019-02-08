@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
-import com.fluxtion.builder.generation.GenerationContext;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
@@ -29,7 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- *
+ * REFACTORING THIS CLASS!!!
  * @author Greg Higgins
  */
 public interface LambdaReflection {
@@ -47,10 +46,10 @@ public interface LambdaReflection {
             }
         }
 
-        default Class getContainingClass() {
+        default Class getContainingClass(ClassLoader loader) {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
-                return Class.forName(className, true, GenerationContext.SINGLETON.getClassLoader() );
+                return Class.forName(className, true,  loader);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -65,9 +64,9 @@ public interface LambdaReflection {
             return args;
         }
 
-        default Method method() {
+        default Method method(ClassLoader loader) {
             SerializedLambda lambda = serialized();
-            Class containingClass = getContainingClass();
+            Class containingClass = getContainingClass(loader);
             return asList(containingClass.getDeclaredMethods())
                     .stream()
                     .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
@@ -79,12 +78,9 @@ public interface LambdaReflection {
         }
     }
 
-    public interface SerializableSupplier<s, t> extends Supplier<t>, Serializable, MethodReferenceReflection {
+    public interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
     
-    public interface SerializableSupplierNew<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
-    }
-
     public interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
     }
 

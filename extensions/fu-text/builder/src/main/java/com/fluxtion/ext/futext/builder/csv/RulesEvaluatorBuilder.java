@@ -173,17 +173,17 @@ public class RulesEvaluatorBuilder<T> {
     public static class Builder<T> {
 
         private final T monitored;
-        private List<Pair<SerializableConsumer, SerializableSupplier<T, ?>>> ruleList;
+        private List<Pair<SerializableConsumer, SerializableSupplier<?>>> ruleList;
 
         public Builder(T monitored) {
             this.monitored = monitored;
             ruleList = new ArrayList<>();
         }
 
-        public <R> Builder<T> addRule(SerializableConsumer<? extends R> rule, SerializableSupplier<T, R> supplier) {
+        public <R> Builder<T> addRule(SerializableConsumer<? extends R> rule, SerializableSupplier< R> supplier) {
             Object test = rule.captured()[0];
             if (test instanceof ColumnName) {
-                ((ColumnName) test).setName(supplier.method().getName() + " ");
+                ((ColumnName) test).setName(supplier.method(SINGLETON.getClassLoader()).getName() + " ");
             }
             ruleList.add(new Pair(rule, supplier));
             return this;
@@ -199,9 +199,9 @@ public class RulesEvaluatorBuilder<T> {
                 );
             } else {
                 List testList = new ArrayList();
-                for (Pair<SerializableConsumer, SerializableSupplier<T, ?>> pair : ruleList) {
+                for (Pair<SerializableConsumer, SerializableSupplier< ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
-                    SerializableSupplier<T, R> supplier = (SerializableSupplier<T, R>) pair.getValue();
+                    SerializableSupplier< R> supplier = (SerializableSupplier< R>) pair.getValue();
                     testList.add(buildTest(rule, supplier).build());
                 }
                 evaluator = new RulesEvaluator<>(

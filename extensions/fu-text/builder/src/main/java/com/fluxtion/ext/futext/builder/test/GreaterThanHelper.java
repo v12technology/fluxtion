@@ -134,26 +134,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test greaterThan(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test greaterThan(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test greaterThanOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test greaterThanOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -264,26 +264,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test greaterThan(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test greaterThan(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test greaterThanOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test greaterThanOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> greaterThanFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, Number> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -394,26 +394,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test greaterThan(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test greaterThan(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test greaterThanOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test greaterThanOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -524,26 +524,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test greaterThan(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test greaterThan(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test greaterThanOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test greaterThanOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> greaterThanFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -654,26 +654,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -784,26 +784,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -914,26 +914,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThan(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test greaterThanOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> greaterThanFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1044,26 +1044,26 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test greaterThan(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test greaterThan(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test greaterThanOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test greaterThanOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> greaterThanFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> greaterThanFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> greaterThanFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> greaterThanFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1174,156 +1174,156 @@ public interface GreaterThanHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test greaterThan(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test greaterThan(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test greaterThanOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test greaterThanOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> greaterThanFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> greaterThanFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> greaterThanFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> greaterThanFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Test greaterThan(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test greaterThan(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Test greaterThanOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test greaterThanOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Test greaterThan(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test greaterThan(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Test greaterThanOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test greaterThanOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Test greaterThan(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test greaterThan(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Test greaterThanOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test greaterThanOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Test greaterThan(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test greaterThan(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Test greaterThanOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test greaterThanOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Test greaterThan(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test greaterThan(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Test greaterThanOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test greaterThanOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> greaterThanFilter(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> greaterThanFilterOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<GreaterThan, S> testToBuild = TestBuilder.buildTest(GreaterThan.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);

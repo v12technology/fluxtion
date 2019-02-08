@@ -6,6 +6,7 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.builder.generation.GenerationContext;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
@@ -26,7 +27,7 @@ import com.fluxtion.ext.declarative.builder.util.ArraySourceInfo;
 import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplierNew;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -236,24 +237,24 @@ public class FilterBuilder<T, F> {
     }
 
     public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source, Method accessor) {
-        if (Modifier.isStatic(filter.method().getModifiers())) {
-            return filter(filter.method(), source, accessor, true);
+        if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
+            return filter(filter.method(SINGLETON.getClassLoader()), source, accessor, true);
         }
-        return filter(filter.captured()[0], filter.method(), source, accessor);
+        return filter(filter.captured()[0], filter.method(SINGLETON.getClassLoader()), source, accessor);
     }
 
     public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source) {
-        if (Modifier.isStatic(filter.method().getModifiers())) {
-            return filter(filter.method(), source, null, true);
+        if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
+            return filter(filter.method(SINGLETON.getClassLoader()), source, null, true);
         }
-        return filter(filter.captured()[0], filter.method(), source, null);
+        return filter(filter.captured()[0], filter.method(SINGLETON.getClassLoader()), source, null);
     }
 
-    public static <T, R extends Boolean> FilterBuilder filter(SerializableFunction<T, R> filter, SerializableSupplierNew<T> supplier) {
-        if (Modifier.isStatic(filter.method().getModifiers())) {
-            return filter(filter.method(), supplier.captured()[0], supplier.method(), true);
+    public static <T, R extends Boolean> FilterBuilder filter(SerializableFunction<T, R> filter, SerializableSupplier<T> supplier) {
+        if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
+            return filter(filter.method(SINGLETON.getClassLoader()), supplier.captured()[0], supplier.method(SINGLETON.getClassLoader()), true);
         }
-        return filter(filter.captured()[0], filter.method(), supplier.captured()[0], supplier.method());
+        return filter(filter.captured()[0], filter.method(SINGLETON.getClassLoader()), supplier.captured()[0], supplier.method(SINGLETON.getClassLoader()));
     }
 
     public Wrapper<F> build() {

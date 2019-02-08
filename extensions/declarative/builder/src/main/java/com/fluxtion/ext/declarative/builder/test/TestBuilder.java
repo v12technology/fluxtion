@@ -50,8 +50,9 @@ import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableCo
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.event.Event;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplierNew;
+import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -121,10 +122,10 @@ public final class TestBuilder<T, F> {
 
     public static <T, B extends Boolean> TestBuilder buildTestNew(SerializableFunction<T, B> filter) {
         TestBuilder builder = null;
-        Method method = filter.method();
+        Method method = filter.method(SINGLETON.getClassLoader());
         if (Modifier.isStatic(method.getModifiers())) {
             System.out.print("static filter -> ");
-            builder = new TestBuilder(filter.getContainingClass());
+            builder = new TestBuilder(filter.getContainingClass(SINGLETON.getClassLoader()));
 
         } else {
             System.out.print("instance filter -> ");
@@ -142,18 +143,18 @@ public final class TestBuilder<T, F> {
         Object handler = filter.captured()[0];
         GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         TestBuilder testBuilder = new TestBuilder(handler);
-        testBuilder.functionInfo = new FunctionInfo(filter.method(), testBuilder.importMap);
+        testBuilder.functionInfo = new FunctionInfo(filter.method(SINGLETON.getClassLoader()), testBuilder.importMap);
         testBuilder.filterSubject =  handler;
         SourceInfo sourceInfo = testBuilder.addSource(source);
         testBuilder.functionInfo.appendParamSource(accessorMethod, sourceInfo, cast);
         return testBuilder;
     }
 
-    public static <T, R extends Boolean> TestBuilder<T, ?> buildTestNew(SerializableFunction<T, R> filter, SerializableSupplierNew<?> supplier, boolean cast) {
+    public static <T, R extends Boolean> TestBuilder<T, ?> buildTestNew(SerializableFunction<T, R> filter, SerializableSupplier<?> supplier, boolean cast) {
         Object handler = filter.captured()[0];
         GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         TestBuilder testBuilder = new TestBuilder(handler);
-        testBuilder.functionInfo = new FunctionInfo(filter.method(), testBuilder.importMap);
+        testBuilder.functionInfo = new FunctionInfo(filter.method(SINGLETON.getClassLoader()), testBuilder.importMap);
         testBuilder.filterSubject =  handler;
         testBuilder.argNew(supplier, cast);
         return testBuilder;
@@ -222,7 +223,7 @@ public final class TestBuilder<T, F> {
         Object handler = rule.captured()[0];
         GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         TestBuilder<T, ?> testBuilder = new TestBuilder(handler);
-        testBuilder.functionInfo = new FunctionInfo(rule.method(), testBuilder.importMap);
+        testBuilder.functionInfo = new FunctionInfo(rule.method(SINGLETON.getClassLoader()), testBuilder.importMap);
         testBuilder.arg(instance, supplier);
         return testBuilder;
     }
@@ -237,18 +238,18 @@ public final class TestBuilder<T, F> {
 //        return testBuilder;
 //    }
     public static <S, V, T extends Test> TestBuilder<T, S> buildTest(
-            Class<T> testClass, S supplier, SerializableSupplier<S, V> accessor) {
+            Class<T> testClass, S supplier, SerializableSupplier<V> accessor) {
         TestBuilder<T, S> testBuilder = new TestBuilder(testClass);
         testBuilder.filterSubject = supplier;
         testBuilder.arg(accessor);
         return testBuilder;
     }
 
-    public static <T, R> TestBuilder buildTest(SerializableConsumer<? extends R> rule, SerializableSupplier<T, R> supplier) {
+    public static <T, R> TestBuilder buildTest(SerializableConsumer<? extends R> rule, SerializableSupplier<R> supplier) {
         Object handler = rule.captured()[0];
         GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         TestBuilder<T, ?> testBuilder = new TestBuilder(handler);
-        testBuilder.functionInfo = new FunctionInfo(rule.method(), testBuilder.importMap);
+        testBuilder.functionInfo = new FunctionInfo(rule.method(SINGLETON.getClassLoader()), testBuilder.importMap);
         testBuilder.arg(supplier);
         return testBuilder;
     }
@@ -378,8 +379,8 @@ public final class TestBuilder<T, F> {
      * @deprecated to be replace with {@linkplain  #arg(com.fluxtion.extension.declarative.builder.util.LambdaReflection.SerializableSupplier) arg(SerializableSupplier&lt;S, V>
      * accessor)}
      */
-    public <S, V> TestBuilder<T, F> arg(S source, SerializableSupplier<S, V> accessor) {
-        Method accessorMethod = accessor.method();
+    public <S> TestBuilder<T, F> arg(S source, SerializableSupplier<S> accessor) {
+        Method accessorMethod = accessor.method(SINGLETON.getClassLoader());
         SourceInfo sourceInfo = addSource(source);
         functionInfo.appendParamSource(accessorMethod, sourceInfo, true);
         return this;
@@ -529,18 +530,18 @@ public final class TestBuilder<T, F> {
      * @param accessor
      * @return
      */
-    public <S, V> TestBuilder<T, F> arg(SerializableSupplier<S, V> accessor) {
+    public <S> TestBuilder<T, F> arg(SerializableSupplier<S> accessor) {
         S source = (S) accessor.captured()[0];
-        Method accessorMethod = accessor.method();
+        Method accessorMethod = accessor.method(SINGLETON.getClassLoader());
         SourceInfo sourceInfo = addSource(source);
         functionInfo.appendParamSource(accessorMethod, sourceInfo, false);
 //        functionInfo.appendParamSource(accessorMethod, sourceInfo, true);
         return this;
     }
 
-    public <S, V> TestBuilder<T, F> argNew(SerializableSupplierNew<S> accessor, boolean cast) {
+    public <S, V> TestBuilder<T, F> argNew(SerializableSupplier<S> accessor, boolean cast) {
         S source = (S) accessor.captured()[0];
-        Method accessorMethod = accessor.method();
+        Method accessorMethod = accessor.method(SINGLETON.getClassLoader());
         SourceInfo sourceInfo = addSource(source);
         functionInfo.appendParamSource(accessorMethod, sourceInfo, cast);
 //        functionInfo.appendParamSource(accessorMethod, sourceInfo, true);
