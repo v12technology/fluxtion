@@ -21,7 +21,7 @@ import com.fluxtion.ext.futext.api.filter.BinaryPredicates.LessThan;
 import com.fluxtion.api.event.Event;
 import java.util.function.Function;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.test.TestBuilder;
 

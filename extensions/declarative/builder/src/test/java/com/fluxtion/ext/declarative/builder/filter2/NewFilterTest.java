@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import org.junit.Test;
 import static com.fluxtion.ext.declarative.builder.filter2.FilterBuilder.filter;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
 
 /**

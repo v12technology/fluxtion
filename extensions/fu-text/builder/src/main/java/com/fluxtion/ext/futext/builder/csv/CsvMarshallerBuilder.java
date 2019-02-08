@@ -18,8 +18,8 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;

@@ -55,7 +55,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceCl
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.numeric.NumericValuePush;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.window.CountSlidingBuffer;
 import com.fluxtion.ext.declarative.builder.window.CountSlidingBufferFactory;
 import com.fluxtion.ext.declarative.builder.Templates;

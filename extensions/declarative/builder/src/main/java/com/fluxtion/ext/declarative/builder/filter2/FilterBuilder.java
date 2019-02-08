@@ -26,8 +26,8 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.wrappedS
 import com.fluxtion.ext.declarative.builder.util.ArraySourceInfo;
 import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

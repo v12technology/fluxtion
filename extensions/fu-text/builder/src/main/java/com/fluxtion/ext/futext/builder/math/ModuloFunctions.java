@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.ext.futext.api.math.BinaryFunctions.Modulo;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;

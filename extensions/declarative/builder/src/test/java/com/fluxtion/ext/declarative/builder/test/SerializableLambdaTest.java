@@ -2,9 +2,9 @@ package com.fluxtion.ext.declarative.builder.test;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.helpers.StaticFunctions;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.lang.reflect.Modifier;

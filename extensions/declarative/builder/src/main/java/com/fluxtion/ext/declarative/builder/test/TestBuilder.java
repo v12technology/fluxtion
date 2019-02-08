@@ -46,13 +46,13 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.newFunct
 import com.fluxtion.ext.declarative.builder.util.ArraySourceInfo;
 import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableConsumer;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.event.Event;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;

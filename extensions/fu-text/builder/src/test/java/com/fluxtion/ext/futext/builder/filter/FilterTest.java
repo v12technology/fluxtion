@@ -29,7 +29,7 @@ import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
 import static com.fluxtion.ext.futext.builder.math.SubtractFunctions.subtract;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanOnce;
 import static com.fluxtion.ext.futext.builder.test.LessThanHelper.lessThanOnce;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.generator.util.BaseSepTest;
 
 /**

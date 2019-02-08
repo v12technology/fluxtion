@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.futext.api.csv.NumberValidator;
 
 /**

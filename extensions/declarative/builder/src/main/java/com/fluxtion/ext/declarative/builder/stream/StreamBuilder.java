@@ -17,7 +17,7 @@ public class StreamBuilder implements StreamOperator{
 
     @Override
     public <S, T> Wrapper<T> filter(LambdaReflection.SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
-        System.out.println("cool this is working");
+//        System.out.println("cool this is working");
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
         if(Modifier.isStatic(filterMethod.getModifiers())){
@@ -31,7 +31,7 @@ public class StreamBuilder implements StreamOperator{
 
     @Override
     public <T> Wrapper<T> filter(LambdaReflection.SerializableFunction<T, Boolean> filter, Wrapper<T> source, boolean cast) {
-        System.out.println("cool this is working");
+//        System.out.println("cool this is working");
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
         if(Modifier.isStatic(filterMethod.getModifiers())){

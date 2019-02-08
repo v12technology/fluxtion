@@ -32,7 +32,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.function
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;

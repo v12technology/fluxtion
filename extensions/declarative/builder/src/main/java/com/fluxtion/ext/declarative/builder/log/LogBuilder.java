@@ -42,7 +42,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.updateNo
 import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 
 /**
  * Builder for a simple console logger. Static helper methods create a LogBuilder
