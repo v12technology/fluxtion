@@ -37,9 +37,9 @@ import java.util.Set;
 import org.apache.velocity.VelocityContext;
 
 /**
- * Applies filtering logic to a node in the execution graph. The filter
- * invokes a predicate that tests a node for a valid match. The outcome of the
- * match has the following effect:
+ * Applies filtering logic to a node in the execution graph. The filter invokes
+ * a predicate that tests a node for a valid match. The outcome of the match has
+ * the following effect:
  * <ul>
  * <li>Successful match allows the event wave to continue.
  * <li>Failed match the event wave stops at the node under test.
@@ -55,8 +55,8 @@ import org.apache.velocity.VelocityContext;
  * across multiple event processing cycles.
  * <li>An instance filter can attach to any SEP lifecyle method such as
  * {@link AfterEvent}
- * <li>A filter inspection target can be a method reference or a
- * node in the exeution graph.
+ * <li>A filter inspection target can be a method reference or a node in the
+ * exeution graph.
  * <li>A ,target method reference can return either a primitive or reference
  * types.
  * <li>Fluxtion will cast all supplied values to the receiving type.
@@ -153,6 +153,7 @@ public class FilterBuilder<T, F> {
 
     /**
      * static filter generation method
+     *
      * @param <T>
      * @param <R>
      * @param <S>
@@ -161,23 +162,33 @@ public class FilterBuilder<T, F> {
      * @param source
      * @param accessor
      * @param cast
-     * @return 
+     * @return
      */
     public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder = new FilterBuilder(filterMethod.getDeclaringClass());
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        if (accessor == null) {
-            filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+        if (source instanceof Wrapper) {
+            filterBuilder.filterSubjectWrapper = (Wrapper) source;
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamLocal("filterSubject", (Wrapper) source, cast);
+            } else {
+                filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, (Wrapper) source, cast);
+            }
         } else {
-            filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+            } else {
+                filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+            }
         }
         return filterBuilder;
     }
 
     /**
      * instance filter generation method
+     *
      * @param <T>
      * @param <R>
      * @param <S>
@@ -187,7 +198,7 @@ public class FilterBuilder<T, F> {
      * @param source
      * @param accessor
      * @param cast
-     * @return 
+     * @return
      */
     public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
@@ -195,10 +206,19 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        if (accessor == null) {
-            filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+        if (source instanceof Wrapper) {
+            filterBuilder.filterSubjectWrapper = (Wrapper) source;
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamLocal("filterSubject", (Wrapper) source, cast);
+            } else {
+                filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, (Wrapper) source, cast);
+            }
         } else {
-            filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamLocal("filterSubject", cast);
+            } else {
+                filterBuilder.functionInfo.appendParamSource(accessor, sourceInfo, cast);
+            }
         }
         return filterBuilder;
     }
@@ -209,6 +229,10 @@ public class FilterBuilder<T, F> {
 
     public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source) {
         return filter(filter, filterMethod, source, null, true);
+    }
+
+    public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source) {
+        return filter(filterMethod, source, null, true);
     }
 
     public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source, Method accessor) {

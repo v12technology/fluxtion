@@ -2,6 +2,7 @@ package com.fluxtion.ext.declarative.builder.filter2;
 
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
@@ -12,7 +13,6 @@ import static com.fluxtion.ext.declarative.builder.filter2.FilterBuilder.filter;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
 /**
  *
@@ -20,15 +20,25 @@ import java.util.function.Consumer;
  */
 public class NewFilterTest implements NodeNameProducer {
 
-    
     @Test
-    public void testWrapperFilter() throws IllegalAccessException, Exception{
-//        InprocessSepCompiler.sepTestInstance((SEPConfig t) -> {
-//            select(DataEvent.class)
-//                    .filter(positive(), DataEvent::getValue);
-//        }, "com.fluxtion.ext.declarative.builder.filter_wrapper", "WrapperFilter");        
+    public void testWrapperFilter() throws IllegalAccessException, Exception {
+        InprocessSepCompiler.sepTestInstance((SEPConfig t) -> {
+            Wrapper<DataEvent> f = select(DataEvent.class)
+                    .filter(gt2(22), DataEvent::getDoubleVal)
+                    .filter(gt2(220), DataEvent::getValue);
+            //tee 1
+            f.filter(Validator::validate)
+                    .filter(gt2(4334), DataEvent::getValue)
+                    .filter(gt2(343434), DataEvent::getDoubleVal);
+            //tee 2
+            f.filter(Validator::validate);
+            //tee 3
+            f.filter(Validator::validate)
+                    .filter(gt2(4334), DataEvent::getValue)
+                    .filter(gt2(343434), DataEvent::getDoubleVal);
+        }, "com.fluxtion.ext.declarative.builder.filter_wrapper", "WrapperFilter");
     }
-    
+
     @Test
     public void testInstanceFilter() throws IllegalAccessException, Exception {
         InprocessSepCompiler.sepTestInstance((t) -> {
@@ -36,8 +46,8 @@ public class NewFilterTest implements NodeNameProducer {
             try {
                 MyDataHandler dh1 = t.addNode(new MyDataHandler("dh1"));
                 Method method = MyDataHandler.class.getDeclaredMethod("getIntVal");
-                filter(positive(), dh1::getIntVal).build();
-                filter(NumericValidator::validateDataHandler, dh1).build();
+//                filter(positive(), dh1::getIntVal).build();
+                filter(Validator::validateDataHandler, dh1).build();
                 filter(gt(200.87), dh1, method).build();
 //                filter(gt(86.788), dh1::getIntVal).build();
 //                filter(gt(34), dh1::getDoubleVal).build();
@@ -50,23 +60,27 @@ public class NewFilterTest implements NodeNameProducer {
     }
 
     public static SerializableFunction gt(double test) {
-        return (SerializableFunction<Double, Boolean>) new NumericValidator(test)::greaterThan;
+        return (SerializableFunction<Double, Boolean>) new Validator(test)::greaterThan;
+    }
+
+    public static com.fluxtion.api.partition.LambdaReflection.SerializableFunction gt2(double test) {
+        return (com.fluxtion.api.partition.LambdaReflection.SerializableFunction<Double, Boolean>) new Validator(test)::greaterThan;
     }
 
     public static SerializableFunction lt(int test) {
-        return (SerializableFunction<Integer, Boolean>) new NumericValidator(test)::lessThan;
+        return (SerializableFunction<Integer, Boolean>) new Validator(test)::lessThan;
     }
 
-    public static SerializableFunction positive() {
-        return (SerializableFunction<Integer, Boolean>) NumericValidator::positiveInt;
+    public static com.fluxtion.api.partition.LambdaReflection.SerializableFunction positive() {
+        return (com.fluxtion.api.partition.LambdaReflection.SerializableFunction<Integer, Boolean>) Validator::positiveInt;
     }
 
     @Override
     public String mappedNodeName(Object nodeToMap) {
-        if (nodeToMap instanceof NumericValidator) {
-            NumericValidator val = (NumericValidator)nodeToMap;
+        if (nodeToMap instanceof Validator) {
+            Validator val = (Validator) nodeToMap;
             String suffix = "" + val.limit;
-            if(val.doubleLimit!=0){
+            if (val.doubleLimit != 0) {
                 suffix = "" + val.doubleLimit;
             }
             return "numberTest_" + suffix.replace(".", "_");
@@ -79,20 +93,24 @@ public class NewFilterTest implements NodeNameProducer {
         return 500;
     }
 
-    public static class NumericValidator {
+    public static class Validator {
 
         public int limit;
         public double doubleLimit;
 
-        public NumericValidator() {
+        public Validator() {
         }
 
-        public NumericValidator(double doubleLimit) {
+        public Validator(double doubleLimit) {
             this.doubleLimit = doubleLimit;
         }
 
-        public NumericValidator(int limit) {
+        public Validator(int limit) {
             this.limit = limit;
+        }
+
+        public static boolean validate(DataEvent dh) {
+            return true;
         }
 
         public static boolean validateDataHandler(MyDataHandler dh) {
@@ -134,7 +152,7 @@ public class NewFilterTest implements NodeNameProducer {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final NumericValidator other = (NumericValidator) obj;
+            final Validator other = (Validator) obj;
             if (this.limit != other.limit) {
                 return false;
             }
@@ -143,8 +161,7 @@ public class NewFilterTest implements NodeNameProducer {
             }
             return true;
         }
-        
-        
+
     }
 
 }
