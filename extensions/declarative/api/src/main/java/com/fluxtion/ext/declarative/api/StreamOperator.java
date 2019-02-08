@@ -27,8 +27,12 @@ import java.util.ServiceLoader;
  */
 public interface StreamOperator {
 
-    default <T> Wrapper<T> filter(LambdaReflection.SerializableFunction<T, Boolean> filter,
+    default <S, T> Wrapper<T> filter(LambdaReflection.SerializableFunction<S, Boolean> filter,
             Wrapper<T> source, Method accessor, boolean cast) {
+        return source;
+    }
+    default <T> Wrapper<T> filter(LambdaReflection.SerializableFunction<T, Boolean> filter,
+             Wrapper<T> source, boolean cast) {
         return source;
     }
 

@@ -17,37 +17,44 @@
 package com.fluxtion.ext.declarative.api;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import java.util.ArrayList;
 
 /**
- * A wrapper for a wrapped node in the SEP.
- * 
+ * A wrapper class that holds a reference to a node in the SEP.
+ *
  * @author Greg Higgins
+ * @param <T>
  */
 public interface Wrapper<T> {
 
     /**
-     *  The wrapped node
-     * @return  the wrapped node
+     * The wrapped node
+     *
+     * @return the wrapped node
      */
     T event();
 
     /**
      * The type of the wrapped node
+     *
      * @return wrapped node class
      */
     Class<T> eventClass();
-    
+
     /**
-     * 
+     *
+     * @param <S>
      * @param <R>
      * @param filter
      * @param supplier
-     * @return 
+     * @return
      */
-    default <R> Wrapper<T>  filter(SerializableFunction<T, Boolean> filter, SerializableFunction<T, R> supplier){
-        return StreamOperator.service().filter(filter, this, supplier.method(), true);
+    default Wrapper<T> filter(SerializableFunction<T, Boolean> filter) {
+        return (Wrapper<T>) StreamOperator.service().filter(filter, this, true);
     }
-    
+
+    default <S> Wrapper<T> filter(SerializableFunction filter, SerializableFunction<T, S> supplier) {
+        return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
+    }
 
 }
