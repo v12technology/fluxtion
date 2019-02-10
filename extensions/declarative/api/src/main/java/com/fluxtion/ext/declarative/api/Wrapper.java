@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api;
 
+import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
