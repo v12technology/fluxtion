@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.declarative.builder.stream;
+package com.fluxtion.ext.declarative.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
