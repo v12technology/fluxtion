@@ -62,7 +62,7 @@ public class ConditionalTestTest extends BaseSepTest {
     
     @org.junit.Test
     public void testStringsEqual() throws Exception {
-        EventHandler sep = buildAndInitSep(StringEqualsBuilder.class);
+        buildAndInitSep(StringEqualsBuilder.class);
         TestResultListener results_1 = getField("results_1");
         TestResultListener results_2 = getField("results_2");
         FilterResultListener<MyData> filter_1 = getField("filter_1");
@@ -104,7 +104,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testSelectAndAlwaysNotify() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder.class);
+        buildAndInitSep(Builder.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -122,7 +122,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testSelectAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder2.class);
+        buildAndInitSep(Builder2.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -139,7 +139,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testNodeAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder3.class);
+        buildAndInitSep(Builder3.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -302,7 +302,7 @@ public class ConditionalTestTest extends BaseSepTest {
     @org.junit.Test
 //    @Ignore
     public void testNumberArrayNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderArray4.class);
+        buildAndInitSep(BuilderArray4.class);
         FilterResultListener<MyDataChildNode> results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -333,7 +333,7 @@ public class ConditionalTestTest extends BaseSepTest {
     @org.junit.Test
 //    @Ignore
     public void testNumberArrayNotifyOnceFilterHelper() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderArray5.class);
+        buildAndInitSep(BuilderArray5.class);
         FilterResultListener<MyData> results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
