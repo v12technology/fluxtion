@@ -982,8 +982,9 @@ public class SepJavaSourceModelHugeFilter {
                         } else {
                             nodeMemberAssignmentList.add(String.format("%4s%s.%s = '%s';", "", varName, instanceField.getName(), value));
                         }
-                    } else if (instanceField.getType().isPrimitive()) {
+                    } else if (instanceField.getType().isPrimitive() ) {
                         String value = instanceField.get(object).toString();
+                        value = value.equalsIgnoreCase("NaN")?"Double.NaN":value;
                         value = "(" + instanceField.getType().toString() + ")" + value;
                         if (useRefelction) {
                             nodeMemberAssignmentList.add(String.format("%4sassigner.on(%s).set().field(\"%s\").withValue(%s);", "", varName, instanceField.getName(), value));
