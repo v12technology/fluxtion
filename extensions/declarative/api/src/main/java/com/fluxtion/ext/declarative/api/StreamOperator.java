@@ -41,12 +41,12 @@ public interface StreamOperator {
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
         return null;
     }
-    
-    default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast){
+
+    default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
         return null;
     }
-    
-    default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source){
+
+    default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source) {
         return source;
     }
 
@@ -57,6 +57,23 @@ public interface StreamOperator {
         } else {
             return new StreamOperator() {
             };
+        }
+    }
+
+    public static <I> void standardOut(I out) {
+        System.out.println(out);
+    }
+
+    public static class PrefixToConsole {
+
+        private final String prefix;
+
+        public PrefixToConsole(String prefix) {
+            this.prefix = prefix + " ";
+        }
+
+        public <I> void standardOut(I out) {
+            System.out.println(prefix + out);
         }
     }
 }
