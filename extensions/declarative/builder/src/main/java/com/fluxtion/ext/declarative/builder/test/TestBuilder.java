@@ -442,7 +442,7 @@ public final class TestBuilder<T, F> {
         boolean isWrapped
                 = null != ClassUtils.wrapperToPrimitive(input.getClass());
         if (input.getClass().isPrimitive() || isWrapped) {
-            functionInfo.appendParamLocal(input.toString(), true);
+            functionInfo.appendParamValue(input.toString(), true);
         } else {
             //TODO add the source as this is not a primitive source
             SourceInfo sourceInfo = addSource(input);

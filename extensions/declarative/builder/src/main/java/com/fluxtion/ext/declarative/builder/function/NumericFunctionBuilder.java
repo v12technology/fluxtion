@@ -163,7 +163,7 @@ public class NumericFunctionBuilder {
 
     public NumericFunctionBuilder input(Number number) {
         windowType = WindowType.none;
-        functionInfo.appendParamLocal(number.toString(), true);
+        functionInfo.appendParamValue(number.toString(), true);
         return this;
     }
 

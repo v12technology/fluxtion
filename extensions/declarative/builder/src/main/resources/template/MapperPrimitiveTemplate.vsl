@@ -1,0 +1,57 @@
+## Velocity Template.
+package ${functionPackage};
+#foreach( $import in $imports)
+import $import;
+#end
+
+
+/**
+ * generated mapper function wrapper for a numeric primitive.
+ *
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements Wrapper<Number>{
+
+    public ${sourceClass} filterSubject;
+#if(!${newFunction})
+    @NoEventReference
+    public ${targetClass} f;
+#end
+    private ${outputClass} result;
+    private MutableNumber value;
+    private MutableNumber oldValue;
+
+    @Initialise
+    public void init(){
+        result = 0;
+        value = new MutableNumber();
+        oldValue = new MutableNumber();
+    }
+
+    @OnEvent
+    public boolean onEvent(){
+        oldValue.set(result);
+#if(${newFunction})
+        result = ${targetClass}.${targetMethod}(${input});
+#else
+        result = f.${targetMethod}(${input});
+#end
+        value.set(result);
+        return (!oldValue.equals(value));
+    }
+
+    @Override
+    public Number event() {
+        return value;
+    }
+
+    @Override
+    public Class<Number> eventClass() {
+        return Number.class;
+    }
+
+}
+

@@ -1,0 +1,52 @@
+## Velocity Template.
+package ${functionPackage};
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * generated mapper function wrapper for a reference type.
+ *
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements Wrapper<${outputClass}>{
+
+    public ${sourceClass} filterSubject;
+#if(!${newFunction})
+    @NoEventReference
+    public ${targetClass} f;
+#end
+    private ${outputClass} result;
+
+    @Initialise
+    public void init(){
+        result = null;
+    }
+
+    @OnEvent
+    public boolean onEvent(){
+        ${outputClass} oldValue = result;
+#if(${newFunction})
+        result = ${targetClass}.${targetMethod}(${input});
+#else
+        result = f.${targetMethod}(${input});
+#end
+
+        return  (oldValue != result);
+    }
+
+    @Override
+    public ${outputClass} event() {
+        return result;
+    }
+
+    @Override
+    public Class<${outputClass}> eventClass() {
+        return ${outputClass}.class;
+    }
+
+}
+
