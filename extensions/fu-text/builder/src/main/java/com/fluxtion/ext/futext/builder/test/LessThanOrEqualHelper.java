@@ -21,7 +21,7 @@ import com.fluxtion.ext.futext.api.filter.BinaryPredicates.LessThanOrEqual;
 import com.fluxtion.api.event.Event;
 import java.util.function.Function;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.test.TestBuilder;
 
@@ -134,26 +134,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test lessThanOrEqual(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test lessThanOrEqual(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test lessThanOrEqualOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test lessThanOrEqualOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -264,26 +264,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Test lessThanOrEqual(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test lessThanOrEqual(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Test lessThanOrEqualOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Test lessThanOrEqualOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Number, T, V> Wrapper<Number> lessThanOrEqualFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, Number> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -394,26 +394,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test lessThanOrEqual(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test lessThanOrEqual(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test lessThanOrEqualOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test lessThanOrEqualOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilter(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilter(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -524,26 +524,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Test lessThanOrEqual(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test lessThanOrEqual(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Test lessThanOrEqualOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Test lessThanOrEqualOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilter(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilter(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S[] op1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends NumericValue, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S[] op1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  op1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -654,26 +654,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -784,26 +784,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, String[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -914,26 +914,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqual(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Test lessThanOrEqualOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilter(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S extends Event, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Class<S> eventClass1, Function<S, ?> accessor1, int[] filters, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  eventClass1, accessor1, filters);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1044,26 +1044,26 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test lessThanOrEqual(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test lessThanOrEqual(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test lessThanOrEqualOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test lessThanOrEqualOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> lessThanOrEqualFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> lessThanOrEqualFilter(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Wrapper<S> handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
@@ -1174,156 +1174,156 @@ public interface LessThanOrEqualHelper {
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Test lessThanOrEqual(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test lessThanOrEqual(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Test lessThanOrEqualOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Test lessThanOrEqualOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, T, V> Wrapper<S> lessThanOrEqualFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> lessThanOrEqualFilter(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, T, V> Wrapper<S> lessThanOrEqualFilterOnce(Wrapper<S>[] handler1, Function<S, ?> accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  handler1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Test lessThanOrEqual(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test lessThanOrEqual(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Number> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends Number> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Test lessThanOrEqual(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test lessThanOrEqual(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends NumericValue> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T op2){
+    public static < S, U, T extends NumericValue> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier accessor1, T op2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(op2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Test lessThanOrEqual(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test lessThanOrEqual(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T extends Event> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
+    public static < S, U, T extends Event> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier accessor1, Class<T> eventClass2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(eventClass2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Test lessThanOrEqual(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test lessThanOrEqual(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
+    public static < S, U, T> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier accessor1, Wrapper<T> handler2, Function<T, ?> accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(handler2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Test lessThanOrEqual(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test lessThanOrEqual(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Test lessThanOrEqualOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);
         return testToBuild.build();
     }
 
-    public static < S, U, T, V> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> lessThanOrEqualFilter(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         return testToBuild.buildFilter();
     }
 
-    public static < S, U, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier<S, U> accessor1, T supplier2, SerializableSupplier<T, V> accessor2){
+    public static < S, U, T, V> Wrapper<S> lessThanOrEqualFilterOnce(S supplier1, SerializableSupplier accessor1, T supplier2, SerializableSupplier accessor2){
         TestBuilder<LessThanOrEqual, S> testToBuild = TestBuilder.buildTest(LessThanOrEqual.class,  supplier1, accessor1);
         testToBuild.arg(supplier2, accessor2);
         testToBuild.notifyOnChange(true);

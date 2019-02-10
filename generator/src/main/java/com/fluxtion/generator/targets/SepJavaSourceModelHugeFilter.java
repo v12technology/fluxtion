@@ -334,9 +334,10 @@ public class SepJavaSourceModelHugeFilter {
         if (split.length > 1) {
             String simpleName = split[split.length - 1];
             String fqnName = clazzName;
+            String pkgName = fqnName.replace("." + simpleName, "");
             ret = simpleName;
             if(fqnName.startsWith("java.lang") 
-                    || fqnName.startsWith(GenerationContext.SINGLETON.getPackageName())){
+                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)){
                 //ignore java.lang
             }else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(fqnName)) {
@@ -982,8 +983,9 @@ public class SepJavaSourceModelHugeFilter {
                         } else {
                             nodeMemberAssignmentList.add(String.format("%4s%s.%s = '%s';", "", varName, instanceField.getName(), value));
                         }
-                    } else if (instanceField.getType().isPrimitive()) {
+                    } else if (instanceField.getType().isPrimitive() ) {
                         String value = instanceField.get(object).toString();
+                        value = value.equalsIgnoreCase("NaN")?"Double.NaN":value;
                         value = "(" + instanceField.getType().toString() + ")" + value;
                         if (useRefelction) {
                             nodeMemberAssignmentList.add(String.format("%4sassigner.on(%s).set().field(\"%s\").withValue(%s);", "", varName, instanceField.getName(), value));

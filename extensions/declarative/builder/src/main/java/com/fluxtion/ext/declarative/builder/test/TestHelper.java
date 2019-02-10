@@ -19,7 +19,7 @@ package com.fluxtion.ext.declarative.builder.test;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.event.Event;
 import java.lang.reflect.Method;
 import java.util.Arrays;

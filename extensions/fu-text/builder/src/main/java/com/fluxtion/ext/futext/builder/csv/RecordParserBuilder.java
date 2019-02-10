@@ -24,6 +24,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.builder.generation.GenerationContext;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
@@ -31,7 +32,7 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.function
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import com.fluxtion.ext.futext.api.csv.ValidationLogger;
 import com.fluxtion.ext.futext.api.event.CharEvent;
@@ -111,7 +112,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     public <S extends CharSequence, U> P converter(int colIndex, LambdaReflection.SerializableFunction<S, U> converterFunction) {
         importMap.addImport(NoEventReference.class);
-        Method method = converterFunction.method();
+        Method method = converterFunction.method(SINGLETON.getClassLoader());
         Class<?> declaringClass = method.getDeclaringClass();
         if (Modifier.isStatic(method.getModifiers())) {
             importMap.addStaticImport(declaringClass);
@@ -131,7 +132,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     public <S extends CharSequence, U> P converter(String colName, LambdaReflection.SerializableFunction<S, U> converterFunction) {
         importMap.addImport(NoEventReference.class);
-        Method method = converterFunction.method();
+        Method method = converterFunction.method(SINGLETON.getClassLoader());
         Class<?> declaringClass = method.getDeclaringClass();
         if (Modifier.isStatic(method.getModifiers())) {
             importMap.addStaticImport(declaringClass);

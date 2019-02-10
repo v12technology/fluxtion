@@ -16,12 +16,11 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.builder.generation.GenerationContext;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.util.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
-import com.fluxtion.ext.futext.api.util.EventPublsher;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -127,7 +126,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         if (mapBean) {
             srcMappingList.clear();
         }
-        Method targetMethod = targetFunction.method();
+        Method targetMethod = targetFunction.method(SINGLETON.getClassLoader());
         CsvPushFunctionInfo info = new CsvPushFunctionInfo(importMap);
         info.setTarget(targetClazz, targetMethod, targetId);
         info.setDuplicateField(srcMappingList.stream().anyMatch(s -> s.getFieldIndex() == colIndex));
@@ -141,7 +140,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         if (mapBean) {
             srcMappingList.clear();
         }
-        Method targetMethod = targetFunction.method();
+        Method targetMethod = targetFunction.method(SINGLETON.getClassLoader());
         mapNamedFieldToMethod(targetMethod, colName);
         mapBean = false;
         return this;
