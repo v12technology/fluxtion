@@ -16,33 +16,64 @@
  */
 package com.fluxtion.ext.declarative.api;
 
-import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
 
 /**
- * An interface that defines stream operations that that can operate on a node.
+ * An interface defining stream operations on a node in a SEP graph.
  *
  * @author V12 Technology Ltd.
  */
 public interface StreamOperator {
 
-    default <S, T> Wrapper<T> filter(LambdaReflection.SerializableFunction<S, Boolean> filter,
+    default <S, T> Wrapper<T> filter(SerializableFunction<S, Boolean> filter,
             Wrapper<T> source, Method accessor, boolean cast) {
         return source;
     }
-    default <T> Wrapper<T> filter(LambdaReflection.SerializableFunction<T, Boolean> filter,
-             Wrapper<T> source, boolean cast) {
+
+    default <T> Wrapper<T> filter(SerializableFunction<T, Boolean> filter,
+            Wrapper<T> source, boolean cast) {
+        return source;
+    }
+
+    default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
+        return null;
+    }
+
+    default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
+        return null;
+    }
+
+    default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source) {
         return source;
     }
 
     public static StreamOperator service() {
-        //possibly need to use this classloader
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
         if (load.iterator().hasNext()) {
             return load.iterator().next();
         } else {
-            return new StreamOperator() {};
+            return new StreamOperator() {
+            };
+        }
+    }
+
+    public static <I> void standardOut(I out) {
+        System.out.println(out);
+    }
+
+    public static class PrefixToConsole {
+
+        private final String prefix;
+
+        public PrefixToConsole(String prefix) {
+            this.prefix = prefix + " ";
+        }
+
+        public <I> void standardOut(I out) {
+            System.out.println(prefix + out);
         }
     }
 }

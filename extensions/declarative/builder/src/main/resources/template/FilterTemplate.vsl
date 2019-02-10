@@ -1,0 +1,73 @@
+## Velocity Template.
+package ${functionPackage};
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * generated filter function wrapper.
+ *
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
+
+    //source operand inputs
+    public ${sourceClass} filterSubject;
+#foreach($sourceInfo in $sourceMappingList)
+    public ${sourceInfo.type} ${sourceInfo.id};
+#end
+#if(!${newFunction})
+    @NoEventReference
+    public ${targetClass} f;
+#end
+#if(${changetNotifier})
+    private boolean result;
+
+    @Initialise
+    public void init(){
+        result = false;
+    }
+
+    @OnEvent
+    public boolean onEvent(){
+        boolean oldValue = result;
+#if(${newFunction})
+        result = ${targetClass}.${targetMethod}(${input});
+#else
+        result = f.${targetMethod}(${input});
+#end
+        //updated = (oldValue != result) & result;
+        return (!oldValue) & result;
+    }
+
+#else
+
+    @OnEvent
+    public boolean onEvent(){
+#if(${newFunction})
+        return ${targetClass}.${targetMethod}(${input});
+#else
+        return f.${targetMethod}(${input});
+#end
+    }
+
+#end
+    @Override
+    public ${filterSubjectClass} event() {
+#if(${wrappedSubject})
+        return filterSubject.event();
+#else
+        return filterSubject;
+#end
+    }
+
+    @Override
+    public Class<${filterSubjectClass}> eventClass() {
+        return ${filterSubjectClass}.class;
+    }
+
+}
+

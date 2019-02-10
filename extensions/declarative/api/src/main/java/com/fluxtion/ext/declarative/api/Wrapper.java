@@ -16,11 +16,13 @@
  */
 package com.fluxtion.ext.declarative.api;
 
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import java.util.ArrayList;
 
 /**
- * A wrapper class that holds a reference to a node in the SEP.
+ * A wrapper class that holds a reference to a node in the SEP. Any node in SEP
+ * can be a source of a stream of values.<p>
+ * Stream operations are provided to filter and map the underlying wrapped type.
  *
  * @author Greg Higgins
  * @param <T>
@@ -41,20 +43,29 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
-    /**
-     *
-     * @param <S>
-     * @param <R>
-     * @param filter
-     * @param supplier
-     * @return
-     */
     default Wrapper<T> filter(SerializableFunction<T, Boolean> filter) {
         return (Wrapper<T>) StreamOperator.service().filter(filter, this, true);
     }
 
-    default <S> Wrapper<T> filter(SerializableFunction filter, SerializableFunction<T, S> supplier) {
+    default <S> Wrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
         return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
+    }
+
+    default <R> Wrapper<R> map(SerializableFunction<T, R> mapper) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
+    }
+
+    default <R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, S> supplier) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
+    }
+
+    default  Wrapper<T> forEach(SerializableConsumer<T> consumer) {
+        return (Wrapper<T>) StreamOperator.service().forEach(consumer, this);
+    }
+
+    default Wrapper<T> console(String prefix) {
+        StreamOperator.PrefixToConsole console = new StreamOperator.PrefixToConsole(prefix);
+        return StreamOperator.service().forEach(console::standardOut, this);
     }
 
 }
