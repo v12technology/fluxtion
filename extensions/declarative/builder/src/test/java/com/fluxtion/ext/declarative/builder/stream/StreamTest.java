@@ -6,16 +6,17 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.builder.stream.NumericPredicates.lt;
-import static com.fluxtion.ext.declarative.builder.stream.NumericPredicates.negative;
-import static com.fluxtion.ext.declarative.builder.stream.NumericPredicates.positive;
-import static com.fluxtion.ext.declarative.builder.stream.StringPredicates.is;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.lt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.negative;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
+import static com.fluxtion.ext.declarative.api.stream.StringPredicates.is;
 import org.junit.Test;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import org.junit.Ignore;
 
 /**
  *
@@ -56,6 +57,33 @@ public class StreamTest {
     }
     
     @Test
+    public void consumeTest() throws IllegalAccessException, Exception{
+        EventHandler handler = sepTestInstance((c) -> {
+            //convert to C from F
+            Wrapper<Double> tempC = select(TempF.class)
+                    .console("\n[1.TempF] ->")
+                    .filter(TempF::getSensorId, is("outside"))
+                    .console("[2.sensorId='outside'] ->")
+                    .filter(TempF::getFahrenheit, StreamTest::gt10)
+                    .console("[3.temp>10] ->")
+                    .map(StreamTest::fahrToCentigrade)
+                    .console("[4.degC] ->")
+                    ;
+            //convert to log temps
+
+        }, "com.fluxtion.ext.declarative.builder.tempsensorconsumer", "TempConsumer");
+//        //fire some data in
+        handler.onEvent(new TempF(10, "outside"));
+        handler.onEvent(new TempF(32, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
+        handler.onEvent(new TempF(100, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
+    }
+    
+    @Test
+    @Ignore
     public void testCumSum() throws Exception {
         EventHandler handler = (EventHandler) Class.forName("com.fluxtion.ext.declarative.builder.tempsensortest.TempMonitor").newInstance();
         ((Lifecycle) handler).init();
@@ -111,6 +139,11 @@ public class StreamTest {
         
         public void setSensorId(String sensorId) {
             this.sensorId = sensorId;
+        }
+
+        @Override
+        public String toString() {
+            return "TempF{" + "fahrenheit=" + fahrenheit + ", sensorId=" + sensorId + '}';
         }
         
     }

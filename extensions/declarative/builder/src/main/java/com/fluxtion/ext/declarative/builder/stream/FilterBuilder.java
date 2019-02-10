@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Test;
@@ -44,9 +45,9 @@ import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.api.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -54,9 +55,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
 
 /**
  * Applies filtering logic to a node in the execution graph. The filter invokes
@@ -121,6 +119,7 @@ public class FilterBuilder<T, F> {
     private static final String TEMPLATE = "template/FilterTemplate.vsl";
     private static final String MAPPER_TEMPLATE = "template/MapperTemplate.vsl";
     private static final String MAPPER_PRIMITIVE_TEMPLATE = "template/MapperPrimitiveTemplate.vsl";
+    private static final String CONSUMER_TEMPLATE = "template/ConsumerTemplate.vsl";
     private static final String TEMPLATE_ARRAY = "template/TestArrayTemplate.vsl";
     private static final String INPUT_ARRAY_ELEMENT = "filterElementToTest";
     private static final String INPUT_ARRAY = "filterArray";
@@ -233,6 +232,42 @@ public class FilterBuilder<T, F> {
             }
         }
         filterBuilder.genClassSuffix = "Map_" + sourceString + "_By_" + mappingMethod.getName();
+        return filterBuilder;
+    }
+
+    public static <S, C> FilterBuilder consume(C consumer, Method mappingMethod, S source) {
+        if(consumer==System.out){
+            consumer =null;
+            mappingMethod = ((SerializableConsumer)StreamOperator::standardOut).method();
+        }
+        FilterBuilder filterBuilder;
+        if (consumer == null) {
+            filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+        } else {
+            GenerationContext.SINGLETON.addOrUseExistingNode(consumer);
+            filterBuilder = new FilterBuilder(consumer);
+        }
+        String sourceString = source.getClass().getSimpleName() ;
+        filterBuilder.currentTemplate = CONSUMER_TEMPLATE;
+        filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
+        filterBuilder.functionInfo.returnTypeClass = source.getClass();
+        filterBuilder.functionInfo.returnType = source.getClass().getName();
+        filterBuilder.key = new FunctionClassKey(getClassForInstance(consumer), mappingMethod, getClassForInstance(source), null, false, "consumer");
+//        if (mappingMethod.getReturnType().isPrimitive()) {
+//            filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
+//            filterBuilder.importMap.addImport(Number.class);
+//            filterBuilder.importMap.addImport(MutableNumber.class);
+//        }
+        filterBuilder.filterSubject = source;
+        if (source instanceof Wrapper) {
+            filterBuilder.filterSubjectWrapper = (Wrapper) source;
+            sourceString = filterBuilder.filterSubjectWrapper.eventClass().getSimpleName();
+            filterBuilder.functionInfo.appendParamLocal("filterSubject", (Wrapper) source, false);
+        } else {
+            filterBuilder.functionInfo.appendParamValue("filterSubject", false, false);
+        }
+        filterBuilder.genClassSuffix = "Consume_" + sourceString;
+//        + "_By_" + mappingMethod.getName();
         return filterBuilder;
     }
 

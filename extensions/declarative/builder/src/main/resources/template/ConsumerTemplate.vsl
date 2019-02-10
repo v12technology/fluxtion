@@ -1,0 +1,47 @@
+## Velocity Template.
+package ${functionPackage};
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * generated consumer wrapper for a reference type.
+ *
+ * target class  : ${targetClass}
+ * target method : ${targetMethod}
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
+
+    public ${sourceClass} filterSubject;
+#if(!${newFunction})
+    @NoEventReference
+    public ${targetClass} f;
+#end
+
+    @OnEvent
+    public void onEvent(){
+#if(${newFunction})
+        ${targetClass}.${targetMethod}(${input});
+#else
+        f.${targetMethod}(${input});
+#end
+    }
+
+    @Override
+    public ${filterSubjectClass} event() {
+#if(${wrappedSubject})
+        return filterSubject.event();
+#else
+        return filterSubject;
+#end
+    }
+
+    @Override
+    public Class<${filterSubjectClass}> eventClass() {
+        return ${filterSubjectClass}.class;
+    }
+
+}
+

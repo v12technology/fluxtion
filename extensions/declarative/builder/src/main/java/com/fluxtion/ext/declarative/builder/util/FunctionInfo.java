@@ -118,14 +118,17 @@ public class FunctionInfo {
         sep = ", ";
         count++;
     }
-
+    
     public <S> void appendParamLocal(String id, Wrapper<S> handler, boolean isCast) {
-        String eventClass = handler.eventClass().getCanonicalName();
+        Class<S> eventClazz = handler.eventClass();
+        String eventClass = eventClazz.getCanonicalName();
         if (importMap != null) {
             eventClass = importMap.addImport(handler.eventClass());
         }
         paramString += sep + cast(isCast) + "((" + eventClass + ")" + id + ".event())";
-        checkAddPrimitiveAccess();
+        if (!eventClazz.isPrimitive() && Number.class.isAssignableFrom(eventClazz)) {
+            checkAddPrimitiveAccess();
+        }
         sep = ", ";
         count++;
     }
