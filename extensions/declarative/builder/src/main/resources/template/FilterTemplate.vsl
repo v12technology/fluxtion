@@ -7,8 +7,10 @@ import $import;
 /**
  * generated filter function wrapper.
  *
- * target class  : ${targetClass}
- * target method : ${targetMethod}
+ *<ul>
+ * <li>input class     : {@link ${filterSubjectClass}}
+ * <li>filter function : {@link ${targetClass}#${targetMethod}}
+ *</ul>
  * 
  * @author Greg Higgins
  */
@@ -23,7 +25,11 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     @NoEventReference
     public ${targetClass} f;
 #end
-#if(${changetNotifier})
+#if(${stateful})
+    @NoEventReference
+    public Object resetNotifier;
+#end
+    private boolean notifyOnChangeOnly = false;
     private boolean result;
 
     @Initialise
@@ -39,22 +45,39 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 #else
         result = f.${targetMethod}(${input});
 #end
-        //updated = (oldValue != result) & result;
-        return (!oldValue) & result;
+        //this is probably right - to be tested
+        //return (!notifyOnChangeOnly | !oldValue) & result;
+        return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
     }
 
-#else
+#if(${stateful})
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier){
+        result = false;
+        f.reset();
+    }
 
-    @OnEvent
-    public boolean onEvent(){
-#if(${newFunction})
-        return ${targetClass}.${targetMethod}(${input});
-#else
-        return f.${targetMethod}(${input});
-#end
+    @Override
+    public Wrapper<${filterSubjectClass}> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
     }
 
 #end
+    @Override
+    public Wrapper<${filterSubjectClass}> notifyOnChange(boolean notifyOnChange){
+        this.notifyOnChangeOnly = notifyOnChange;
+        return this;
+    }
+
+    public boolean isNotifyOnChangeOnly() {
+        return notifyOnChangeOnly;
+    }
+
+    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
+        this.notifyOnChangeOnly = notifyOnChangeOnly;
+    }
+
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})

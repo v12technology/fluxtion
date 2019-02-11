@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api;
 
+import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
@@ -59,13 +60,21 @@ public interface Wrapper<T> {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
 
-    default  Wrapper<T> forEach(SerializableConsumer<T> consumer) {
+    default Wrapper<T> forEach(SerializableConsumer<T> consumer) {
         return (Wrapper<T>) StreamOperator.service().forEach(consumer, this);
     }
 
     default Wrapper<T> console(String prefix) {
         StreamOperator.PrefixToConsole console = new StreamOperator.PrefixToConsole(prefix);
         return StreamOperator.service().forEach(console::standardOut, this);
+    }
+
+    default Wrapper<T> resetNotifier(Object resetNotifier) {
+        return this;
+    }
+    
+    default  Wrapper<T> notifyOnChange(boolean notifyOnChange){
+        return this;
     }
 
 }

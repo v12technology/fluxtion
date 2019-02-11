@@ -5,10 +5,12 @@ import $import;
 #end
 
 /**
- * generated mapper function wrapper for a reference type.
- *
- * target class  : ${targetClass}
- * target method : ${targetMethod}
+ * Generated mapper function wrapper for a reference type.
+ *<ul>
+ * <li>output class       : {@link ${outputClass}}
+ * <li>input class        : {@link ${filterSubjectClass}}
+ * <li>converter function : {@link ${targetClass}#${targetMethod}}
+ *</ul>
  * 
  * @author Greg Higgins
  */
@@ -20,6 +22,11 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     public ${targetClass} f;
 #end
     private ${outputClass} result;
+#if(${stateful})
+    @NoEventReference
+    public Object resetNotifier;
+#end
+    private boolean notifyOnChangeOnly = false;
 
     @Initialise
     public void init(){
@@ -34,8 +41,35 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
 #else
         result = f.${targetMethod}(${input});
 #end
+        return !notifyOnChangeOnly || (!oldValue.equals(result));
+    }
+#if(${stateful})
 
-        return  (oldValue != result);
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier){
+        result = null;
+        f.reset();
+    }
+
+    @Override
+    public Wrapper<${outputClass}> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+#end
+
+    @Override
+    public Wrapper<${outputClass}> notifyOnChange(boolean notifyOnChange){
+        this.notifyOnChangeOnly = notifyOnChange;
+        return this;
+    }
+
+    public boolean isNotifyOnChangeOnly() {
+        return notifyOnChangeOnly;
+    }
+
+    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
+        this.notifyOnChangeOnly = notifyOnChangeOnly;
     }
 
     @Override
@@ -47,6 +81,5 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     public Class<${outputClass}> eventClass() {
         return ${outputClass}.class;
     }
-
 }
 
