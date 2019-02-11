@@ -70,7 +70,7 @@ public class StreamTest implements Stateful {
     }
 
     @Test
-    public void testMapToClass() throws Exception{
+    public void testMapToClass() throws Exception {
         EventHandler handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<TempC> tempC = select(TempF.class)
@@ -116,15 +116,18 @@ public class StreamTest implements Stateful {
     @Test
     @Ignore
     public void testCumSum() throws Exception {
-        EventHandler handler = (EventHandler) Class.forName("com.fluxtion.ext.declarative.builder.tempsensortest.TempMonitor").newInstance();
+        String className = "com.fluxtion.ext.declarative.builder.filterstaeful.StatefulFilter";
+        EventHandler handler = (EventHandler) Class.forName(className).newInstance();
         ((Lifecycle) handler).init();
+        handler.onEvent(new DataEvent(10));
+        handler.onEvent(new DataEvent(50));
+        handler.onEvent(new DataEvent(15));
+        handler.onEvent(new DataEvent(18));
+        handler.onEvent(new DataEvent(5));
         handler.onEvent(new TempF(10, "outside"));
-        handler.onEvent(new TempF(32, "outside"));
-        handler.onEvent(new TempF(60, "outside"));
-        handler.onEvent(new TempF(60, "outside"));
-        handler.onEvent(new TempF(-10, "ignore me"));
-        handler.onEvent(new TempF(100, "outside"));
-        handler.onEvent(new TempF(-10, "ignore me"));
+        handler.onEvent(new DataEvent(5));
+        handler.onEvent(new DataEvent(5));
+        handler.onEvent(new DataEvent(5));
 
     }
 
@@ -132,18 +135,31 @@ public class StreamTest implements Stateful {
     public void graphOfStreamsTest() throws Exception {
         EventHandler handler = sepTestInstance((c) -> {
             Wrapper<DataEvent> f = select(DataEvent.class)
+                    .console("[data in] ->")
                     .filter(DataEvent::getValue, positive())
-                    .filter(DataEvent::getValue, lt(20));
+                    .filter(DataEvent::getValue, lt(20))
+                    .console("[val: +ve and <20] ->");
             //tee1
             f.filter(StreamTest::validData)
                     .filter(DataEvent::getValue, gt(-20))
                     .filter(DataEvent::getValue, negative());
             //tee 2
-            f.filter(StreamTest::validData);
+            f.filter(new StreamTest()::ignoreFirsTwo).resetNotifier(
+                    select(TempF.class).console("[reset event] ->"))
+                    .console("[ignored first two] ->");
             //tee 3
             f.filter(StreamTest::validData)
                     .filter(DataEvent::getValue, gt(20));
-        }, "com.fluxtion.ext.declarative.builder.graphtest", "GraphTempSensor");
+        }, "com.fluxtion.ext.declarative.builder.filterstaeful", "StatefulFilter");
+        handler.onEvent(new DataEvent(10));
+        handler.onEvent(new DataEvent(50));
+        handler.onEvent(new DataEvent(15));
+        handler.onEvent(new DataEvent(18));
+        handler.onEvent(new DataEvent(5));
+        handler.onEvent(new TempF(10, "outside"));
+        handler.onEvent(new DataEvent(5));
+        handler.onEvent(new DataEvent(5));
+        handler.onEvent(new DataEvent(5));
     }
 
     public static class TempF extends Event {
@@ -278,6 +294,11 @@ public class StreamTest implements Stateful {
         return true;
     }
 
+    public boolean ignoreFirsTwo(DataEvent d) {
+        sum++;
+        return sum > 2;
+    }
+
     public static double fahrToCentigrade(TempF tempEvent) {
         double tempF = tempEvent.getFahrenheit();
         return (tempF - 32) * 5 / 9;
@@ -304,6 +325,7 @@ public class StreamTest implements Stateful {
 
     @Override
     public void reset() {
+        System.out.println("---- reset sum");
         sum = 0;
     }
 

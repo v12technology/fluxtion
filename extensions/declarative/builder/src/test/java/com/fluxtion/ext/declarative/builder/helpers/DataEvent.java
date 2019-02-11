@@ -24,6 +24,11 @@ public class DataEvent extends Event{
     public DataEvent() {
         super(ID);
     }
+
+    public DataEvent(int value) {
+        super(ID);
+        this.value = value;
+    }
     
     public int value;
 
@@ -37,6 +42,11 @@ public class DataEvent extends Event{
     
     public void setDataKey(String key){
         this.filterString = key;
+    }
+
+    @Override
+    public String toString() {
+        return "DataEvent{" + "value=" + value + '}';
     }
     
 }
