@@ -23,6 +23,9 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     @NoEventReference
     public ${targetClass} f;
 #end
+#if(${stateful})
+    public Object resetNotifier;
+#end
 #if(${changetNotifier})
     private boolean result;
 
@@ -52,6 +55,19 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 #else
         return f.${targetMethod}(${input});
 #end
+    }
+
+#end
+#if(${stateful})
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier){
+        f.reset();
+    }
+
+    @Override
+    public Wrapper<Number> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
     }
 
 #end

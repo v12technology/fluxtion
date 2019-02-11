@@ -45,8 +45,10 @@ import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
+import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -154,7 +156,7 @@ public class FilterBuilder<T, F> {
 
     private FilterBuilder(T testInstance) {
         this.testFunctionClass = (Class<T>) testInstance.getClass();
-        this.testFunction = testInstance;
+        this.testFunction = GenerationContext.SINGLETON.addOrUseExistingNode(testInstance);
         notifyOnChange = false;
         isArray = false;
         standardImports();
@@ -236,28 +238,22 @@ public class FilterBuilder<T, F> {
     }
 
     public static <S, C> FilterBuilder consume(C consumer, Method mappingMethod, S source) {
-        if(consumer==System.out){
-            consumer =null;
-            mappingMethod = ((SerializableConsumer)StreamOperator::standardOut).method();
+        if (consumer == System.out) {
+            consumer = null;
+            mappingMethod = ((SerializableConsumer) StreamOperator::standardOut).method();
         }
         FilterBuilder filterBuilder;
         if (consumer == null) {
             filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
         } else {
-            GenerationContext.SINGLETON.addOrUseExistingNode(consumer);
             filterBuilder = new FilterBuilder(consumer);
         }
-        String sourceString = source.getClass().getSimpleName() ;
+        String sourceString = source.getClass().getSimpleName();
         filterBuilder.currentTemplate = CONSUMER_TEMPLATE;
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
         filterBuilder.functionInfo.returnTypeClass = source.getClass();
         filterBuilder.functionInfo.returnType = source.getClass().getName();
         filterBuilder.key = new FunctionClassKey(getClassForInstance(consumer), mappingMethod, getClassForInstance(source), null, false, "consumer");
-//        if (mappingMethod.getReturnType().isPrimitive()) {
-//            filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
-//            filterBuilder.importMap.addImport(Number.class);
-//            filterBuilder.importMap.addImport(MutableNumber.class);
-//        }
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -359,6 +355,7 @@ public class FilterBuilder<T, F> {
             ctx.put(targetMethod.name(), functionInfo.calculateMethod);
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(filter.name(), true);
+            ctx.put(stateful.name(), isStateful(functionInfo.getFunctionMethod()));
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
                 ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
@@ -408,19 +405,27 @@ public class FilterBuilder<T, F> {
         this.notifyOnChange = notifyOnChange;
         return this;
     }
-    
-    private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception{
+
+    private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception {
         Map<FunctionClassKey, Class<Wrapper<F>>> cache = GenerationContext.SINGLETON.getCache(FilterBuilder.class);
         Class<Wrapper<F>> clazz = cache.get(key);
-        if(clazz==null){
+        if (clazz == null) {
             clazz = FunctionGeneratorHelper.generateAndCompile(null, currentTemplate, GenerationContext.SINGLETON, ctx);
             cache.put(key, clazz);
         }
         return clazz;
     }
-    
-    private static Class getClassForInstance(Object o){
-        if(o==null){
+
+    private boolean isStateful(Method method) {
+        if (!Modifier.isStatic(method.getModifiers()) && Stateful.class.isAssignableFrom(method.getDeclaringClass())) {
+            importMap.addImport(Stateful.class);
+            return true;
+        }
+        return false;
+    }
+
+    private static Class getClassForInstance(Object o) {
+        if (o == null) {
             return null;
         }
         return o.getClass();
@@ -437,7 +442,7 @@ public class FilterBuilder<T, F> {
     }
 
     private int sourceCount;
-    
+
     private SourceInfo addSource(Object input) {
 
         return inst2SourceInfo.computeIfAbsent(input, (in) -> new SourceInfo(

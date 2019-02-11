@@ -21,6 +21,9 @@ public class ${functionClass} implements Wrapper<Number>{
     public ${targetClass} f;
 #end
     private ${outputClass} result;
+#if(${stateful})
+    public Object resetNotifier;
+#end
     private MutableNumber value;
     private MutableNumber oldValue;
 
@@ -42,6 +45,19 @@ public class ${functionClass} implements Wrapper<Number>{
         value.set(result);
         return (!oldValue.equals(value));
     }
+#if(${stateful})
+
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier){
+        f.reset();
+    }
+
+    @Override
+    public Wrapper<Number> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+#end
 
     @Override
     public Number event() {

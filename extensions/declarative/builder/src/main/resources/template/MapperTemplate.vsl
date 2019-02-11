@@ -20,6 +20,9 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     public ${targetClass} f;
 #end
     private ${outputClass} result;
+#if(${stateful})
+    public Object resetNotifier;
+#end
 
     @Initialise
     public void init(){
@@ -37,6 +40,19 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
 
         return  (oldValue != result);
     }
+#if(${stateful})
+
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier){
+        f.reset();
+    }
+
+    @Override
+    public Wrapper<${outputClass}> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+#end
 
     @Override
     public ${outputClass} event() {
@@ -47,6 +63,5 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     public Class<${outputClass}> eventClass() {
         return ${outputClass}.class;
     }
-
 }
 

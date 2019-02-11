@@ -118,7 +118,7 @@ public class FunctionInfo {
         sep = ", ";
         count++;
     }
-    
+
     public <S> void appendParamLocal(String id, Wrapper<S> handler, boolean isCast) {
         Class<S> eventClazz = handler.eventClass();
         String eventClass = eventClazz.getCanonicalName();
@@ -183,6 +183,10 @@ public class FunctionInfo {
 
     public TypeKind getReturnTypeKind() {
         return TypeKind.valueOf(returnType.toUpperCase());
+    }
+
+    public Method getFunctionMethod() {
+        return functionMethod;
     }
 
     @Override
