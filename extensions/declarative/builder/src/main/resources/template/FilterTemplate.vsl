@@ -65,7 +65,7 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     }
 
     @Override
-    public Wrapper<Number> resetNotifier(Object resetNotifier) {
+    public Wrapper<${filterSubjectClass}> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
     }

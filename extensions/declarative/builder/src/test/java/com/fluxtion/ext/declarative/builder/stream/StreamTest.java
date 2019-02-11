@@ -17,6 +17,7 @@ import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import java.util.Objects;
 import org.junit.Ignore;
 
 /**
@@ -37,8 +38,15 @@ public class StreamTest implements Stateful {
 //            StreamTest instance = c.addNode(new StreamTest());
             Wrapper<Double> logTemp = select(TempF.class)
                     .map(Math::log, TempF::getFahrenheit)
-                    .map(new StreamTest()::cumSum).resetNotifier(select(DataEvent.class))
+                    .map(new StreamTest()::cumSum)
+                    .resetNotifier(select(DataEvent.class).console("[reset] ->"))
                     .console("[cum sum] ->");
+            //on change
+            select(TempF.class)
+                    .map(Math::log, TempF::getFahrenheit)
+                    .notifyOnChange(true)
+                    .map(new StreamTest()::cumSum).resetNotifier(select(DataEvent.class))
+                    .console("[cum sum notifyOnChange] ->");
 
             c.addPublicNode(logTemp, "cumLogTemp");
             //control signals depend on temp value
@@ -50,12 +58,32 @@ public class StreamTest implements Stateful {
         }, "com.fluxtion.ext.declarative.builder.tempsensortest", "TempMonitor");
         //fire some data in
         handler.onEvent(new TempF(10, "outside"));
-        handler.onEvent(new TempF(32, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
         handler.onEvent(new TempF(60, "outside"));
         handler.onEvent(new TempF(60, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
         //reset
         handler.onEvent(new DataEvent());
+        handler.onEvent(new TempF(100, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
+    }
+
+    @Test
+    public void testMapToClass() throws Exception{
+        EventHandler handler = sepTestInstance((c) -> {
+            //convert to C from F
+            Wrapper<TempC> tempC = select(TempF.class)
+                    .console("[f] ->")
+                    .map(StreamTest::tempFtoTempC)
+                    .console("[c] ->");
+            //control signals depend on temp value
+        }, "com.fluxtion.ext.declarative.builder.tempMapToClass", "TempConverter");
+        handler.onEvent(new TempF(10, "outside"));
+        handler.onEvent(new TempF(32, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
     }
@@ -149,6 +177,97 @@ public class StreamTest implements Stateful {
             return "TempF{" + "fahrenheit=" + fahrenheit + ", sensorId=" + sensorId + '}';
         }
 
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 53 * hash + (int) (Double.doubleToLongBits(this.fahrenheit) ^ (Double.doubleToLongBits(this.fahrenheit) >>> 32));
+            hash = 53 * hash + Objects.hashCode(this.sensorId);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final TempF other = (TempF) obj;
+            if (Double.doubleToLongBits(this.fahrenheit) != Double.doubleToLongBits(other.fahrenheit)) {
+                return false;
+            }
+            if (!Objects.equals(this.sensorId, other.sensorId)) {
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    public static class TempC extends Event {
+
+        double centigrade;
+        String sensorId;
+
+        public TempC(double centigrade, String sensorId) {
+            this.centigrade = centigrade;
+            this.sensorId = sensorId;
+        }
+
+        public double getCentigrade() {
+            return centigrade;
+        }
+
+        public void setCentigrade(double centigrade) {
+            this.centigrade = centigrade;
+        }
+
+        public String getSensorId() {
+            return sensorId;
+        }
+
+        public void setSensorId(String sensorId) {
+            this.sensorId = sensorId;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 43 * hash + (int) (Double.doubleToLongBits(this.centigrade) ^ (Double.doubleToLongBits(this.centigrade) >>> 32));
+            hash = 43 * hash + Objects.hashCode(this.sensorId);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final TempC other = (TempC) obj;
+            if (Double.doubleToLongBits(this.centigrade) != Double.doubleToLongBits(other.centigrade)) {
+                return false;
+            }
+            if (!Objects.equals(this.sensorId, other.sensorId)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "TempC{" + "centigrade=" + centigrade + ", sensorId=" + sensorId + '}';
+        }
+
     }
 
     public static boolean gt10(double test) {
@@ -162,6 +281,12 @@ public class StreamTest implements Stateful {
     public static double fahrToCentigrade(TempF tempEvent) {
         double tempF = tempEvent.getFahrenheit();
         return (tempF - 32) * 5 / 9;
+    }
+
+    public static TempC tempFtoTempC(TempF tempEvent) {
+        double tempF = tempEvent.getFahrenheit();
+        TempC tempc = new TempC((tempF - 32) * 5 / 9, tempEvent.getSensorId());
+        return tempc;
     }
 
     public static SerializableFunction<Number, Double> logS() {
