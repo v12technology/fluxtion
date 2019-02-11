@@ -72,5 +72,9 @@ public interface Wrapper<T> {
     default Wrapper<T> resetNotifier(Object resetNotifier) {
         return this;
     }
+    
+    default  Wrapper<T> notifyOnChange(boolean notifyOnChange){
+        return this;
+    }
 
 }
