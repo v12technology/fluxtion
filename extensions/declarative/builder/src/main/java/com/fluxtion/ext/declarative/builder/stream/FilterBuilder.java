@@ -132,10 +132,11 @@ public class FilterBuilder<T, F> {
     private final HashMap<Object, SourceInfo> inst2SourceInfo = new HashMap<>();
     private FunctionInfo functionInfo;
     private final Class<T> testFunctionClass;
-    private boolean notifyOnChange;
     //only used for filtering functionality
     private F filterSubject;
     private Wrapper filterSubjectWrapper;
+    //for sources id's
+    private int sourceCount;
     //array
     private boolean isArray;
     private F[] filterSubjectArray;
@@ -147,7 +148,6 @@ public class FilterBuilder<T, F> {
 
     private FilterBuilder(Class<T> testFunctionClass) {
         this.testFunctionClass = testFunctionClass;
-        notifyOnChange = false;
         isArray = false;
         Method[] methods = testFunctionClass.getDeclaredMethods();
         functionInfo = new FunctionInfo(methods[0], importMap);
@@ -157,7 +157,6 @@ public class FilterBuilder<T, F> {
     private FilterBuilder(T testInstance) {
         this.testFunctionClass = (Class<T>) testInstance.getClass();
         this.testFunction = GenerationContext.SINGLETON.addOrUseExistingNode(testInstance);
-        notifyOnChange = false;
         isArray = false;
         standardImports();
     }
@@ -347,7 +346,6 @@ public class FilterBuilder<T, F> {
         }
         try {
             VelocityContext ctx = new VelocityContext();
-//            String genClassName = testFunctionClass.getSimpleName() + genClassSuffix + GenerationContext.nextId();
             String genClassName = genClassSuffix + "_" + GenerationContext.nextId();
             ctx.put(functionClass.name(), genClassName);
             ctx.put(outputClass.name(), functionInfo.returnType);
@@ -365,9 +363,6 @@ public class FilterBuilder<T, F> {
                 ctx.put(filterSubjectClass.name(), filterSubject.getClass().getSimpleName());
                 ctx.put(sourceClass.name(), filterSubject.getClass().getSimpleName());
                 importMap.addImport(filterSubject.getClass());
-            }
-            if (notifyOnChange) {
-                ctx.put(FunctionKeys.changetNotifier.name(), notifyOnChange);
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put(imports.name(), importMap.asString());
@@ -391,19 +386,11 @@ public class FilterBuilder<T, F> {
             } else {
                 aggClass.getField("filterSubject").set(result, filterSubject);
             }
-//            if (resetNotifier != null) {
-//                aggClass.getField("resetNotifier").set(result, resetNotifier);
-//            }
             GenerationContext.SINGLETON.getNodeList().add(result);
             return result;
         } catch (Exception e) {
             throw new RuntimeException("could not buuld function " + toString(), e);
         }
-    }
-
-    public FilterBuilder<T, F> notifyOnChange(boolean notifyOnChange) {
-        this.notifyOnChange = notifyOnChange;
-        return this;
     }
 
     private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception {
@@ -431,7 +418,7 @@ public class FilterBuilder<T, F> {
         return o.getClass();
     }
 
-    private final void standardImports() {
+    private void standardImports() {
         importMap.addImport(OnEvent.class);
         importMap.addImport(Wrapper.class);
         importMap.addImport(Initialise.class);
@@ -440,8 +427,6 @@ public class FilterBuilder<T, F> {
         importMap.addImport(Wrapper.class);
         importMap.addImport(Test.class);
     }
-
-    private int sourceCount;
 
     private SourceInfo addSource(Object input) {
 

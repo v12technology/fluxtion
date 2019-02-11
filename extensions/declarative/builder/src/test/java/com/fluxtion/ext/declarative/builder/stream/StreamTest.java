@@ -14,7 +14,6 @@ import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive
 import static com.fluxtion.ext.declarative.api.stream.StringPredicates.is;
 import org.junit.Test;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.Objects;
