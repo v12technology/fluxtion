@@ -52,7 +52,9 @@ public class FunctionInfo {
                 : importMap.addImport(method.getDeclaringClass());
         calculateClazz = method.getDeclaringClass();
         returnTypeClass = method.getReturnType();
-        returnType = method.getReturnType().getName();
+        returnType = importMap == null
+                ? method.getReturnType().getCanonicalName()
+                : importMap.addImport(method.getReturnType());
         paramString = "";
         sep = "";
         this.importMap = importMap;
