@@ -7,8 +7,10 @@ import $import;
 /**
  * generated consumer wrapper for a reference type.
  *
- * target class  : ${targetClass}
- * target method : ${targetMethod}
+ *<ul>
+ * <li>input class       : {@link ${filterSubjectClass}}
+ * <li>consumer function : {@link ${targetClass}#${targetMethod}}
+ *</ul>
  * 
  * @author Greg Higgins
  */

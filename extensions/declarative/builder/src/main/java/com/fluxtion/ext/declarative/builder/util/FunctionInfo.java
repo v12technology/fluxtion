@@ -52,7 +52,9 @@ public class FunctionInfo {
                 : importMap.addImport(method.getDeclaringClass());
         calculateClazz = method.getDeclaringClass();
         returnTypeClass = method.getReturnType();
-        returnType = method.getReturnType().getName();
+        returnType = importMap == null
+                ? method.getReturnType().getCanonicalName()
+                : importMap.addImport(method.getReturnType());
         paramString = "";
         sep = "";
         this.importMap = importMap;
@@ -118,7 +120,7 @@ public class FunctionInfo {
         sep = ", ";
         count++;
     }
-    
+
     public <S> void appendParamLocal(String id, Wrapper<S> handler, boolean isCast) {
         Class<S> eventClazz = handler.eventClass();
         String eventClass = eventClazz.getCanonicalName();
@@ -183,6 +185,10 @@ public class FunctionInfo {
 
     public TypeKind getReturnTypeKind() {
         return TypeKind.valueOf(returnType.toUpperCase());
+    }
+
+    public Method getFunctionMethod() {
+        return functionMethod;
     }
 
     @Override

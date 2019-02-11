@@ -18,7 +18,7 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.api.StreamOperator;
+import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;

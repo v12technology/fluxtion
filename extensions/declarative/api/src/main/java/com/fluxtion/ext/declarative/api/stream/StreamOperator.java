@@ -14,10 +14,11 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.declarative.api;
+package com.fluxtion.ext.declarative.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
 

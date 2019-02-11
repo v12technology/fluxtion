@@ -45,8 +45,10 @@ import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.ext.declarative.api.StreamOperator;
+import com.fluxtion.ext.declarative.api.Stateful;
+import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
+import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -130,10 +132,11 @@ public class FilterBuilder<T, F> {
     private final HashMap<Object, SourceInfo> inst2SourceInfo = new HashMap<>();
     private FunctionInfo functionInfo;
     private final Class<T> testFunctionClass;
-    private boolean notifyOnChange;
     //only used for filtering functionality
     private F filterSubject;
     private Wrapper filterSubjectWrapper;
+    //for sources id's
+    private int sourceCount;
     //array
     private boolean isArray;
     private F[] filterSubjectArray;
@@ -145,7 +148,6 @@ public class FilterBuilder<T, F> {
 
     private FilterBuilder(Class<T> testFunctionClass) {
         this.testFunctionClass = testFunctionClass;
-        notifyOnChange = false;
         isArray = false;
         Method[] methods = testFunctionClass.getDeclaredMethods();
         functionInfo = new FunctionInfo(methods[0], importMap);
@@ -154,8 +156,7 @@ public class FilterBuilder<T, F> {
 
     private FilterBuilder(T testInstance) {
         this.testFunctionClass = (Class<T>) testInstance.getClass();
-        this.testFunction = testInstance;
-        notifyOnChange = false;
+        this.testFunction = GenerationContext.SINGLETON.addOrUseExistingNode(testInstance);
         isArray = false;
         standardImports();
     }
@@ -236,28 +237,22 @@ public class FilterBuilder<T, F> {
     }
 
     public static <S, C> FilterBuilder consume(C consumer, Method mappingMethod, S source) {
-        if(consumer==System.out){
-            consumer =null;
-            mappingMethod = ((SerializableConsumer)StreamOperator::standardOut).method();
+        if (consumer == System.out) {
+            consumer = null;
+            mappingMethod = ((SerializableConsumer) StreamOperator::standardOut).method();
         }
         FilterBuilder filterBuilder;
         if (consumer == null) {
             filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
         } else {
-            GenerationContext.SINGLETON.addOrUseExistingNode(consumer);
             filterBuilder = new FilterBuilder(consumer);
         }
-        String sourceString = source.getClass().getSimpleName() ;
+        String sourceString = source.getClass().getSimpleName();
         filterBuilder.currentTemplate = CONSUMER_TEMPLATE;
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
         filterBuilder.functionInfo.returnTypeClass = source.getClass();
         filterBuilder.functionInfo.returnType = source.getClass().getName();
         filterBuilder.key = new FunctionClassKey(getClassForInstance(consumer), mappingMethod, getClassForInstance(source), null, false, "consumer");
-//        if (mappingMethod.getReturnType().isPrimitive()) {
-//            filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
-//            filterBuilder.importMap.addImport(Number.class);
-//            filterBuilder.importMap.addImport(MutableNumber.class);
-//        }
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -351,7 +346,6 @@ public class FilterBuilder<T, F> {
         }
         try {
             VelocityContext ctx = new VelocityContext();
-//            String genClassName = testFunctionClass.getSimpleName() + genClassSuffix + GenerationContext.nextId();
             String genClassName = genClassSuffix + "_" + GenerationContext.nextId();
             ctx.put(functionClass.name(), genClassName);
             ctx.put(outputClass.name(), functionInfo.returnType);
@@ -359,6 +353,7 @@ public class FilterBuilder<T, F> {
             ctx.put(targetMethod.name(), functionInfo.calculateMethod);
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(filter.name(), true);
+            ctx.put(stateful.name(), isStateful(functionInfo.getFunctionMethod()));
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
                 ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
@@ -368,9 +363,6 @@ public class FilterBuilder<T, F> {
                 ctx.put(filterSubjectClass.name(), filterSubject.getClass().getSimpleName());
                 ctx.put(sourceClass.name(), filterSubject.getClass().getSimpleName());
                 importMap.addImport(filterSubject.getClass());
-            }
-            if (notifyOnChange) {
-                ctx.put(FunctionKeys.changetNotifier.name(), notifyOnChange);
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put(imports.name(), importMap.asString());
@@ -394,9 +386,6 @@ public class FilterBuilder<T, F> {
             } else {
                 aggClass.getField("filterSubject").set(result, filterSubject);
             }
-//            if (resetNotifier != null) {
-//                aggClass.getField("resetNotifier").set(result, resetNotifier);
-//            }
             GenerationContext.SINGLETON.getNodeList().add(result);
             return result;
         } catch (Exception e) {
@@ -404,29 +393,32 @@ public class FilterBuilder<T, F> {
         }
     }
 
-    public FilterBuilder<T, F> notifyOnChange(boolean notifyOnChange) {
-        this.notifyOnChange = notifyOnChange;
-        return this;
-    }
-    
-    private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception{
+    private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception {
         Map<FunctionClassKey, Class<Wrapper<F>>> cache = GenerationContext.SINGLETON.getCache(FilterBuilder.class);
         Class<Wrapper<F>> clazz = cache.get(key);
-        if(clazz==null){
+        if (clazz == null) {
             clazz = FunctionGeneratorHelper.generateAndCompile(null, currentTemplate, GenerationContext.SINGLETON, ctx);
             cache.put(key, clazz);
         }
         return clazz;
     }
-    
-    private static Class getClassForInstance(Object o){
-        if(o==null){
+
+    private boolean isStateful(Method method) {
+        if (!Modifier.isStatic(method.getModifiers()) && Stateful.class.isAssignableFrom(method.getDeclaringClass())) {
+            importMap.addImport(Stateful.class);
+            return true;
+        }
+        return false;
+    }
+
+    private static Class getClassForInstance(Object o) {
+        if (o == null) {
             return null;
         }
         return o.getClass();
     }
 
-    private final void standardImports() {
+    private void standardImports() {
         importMap.addImport(OnEvent.class);
         importMap.addImport(Wrapper.class);
         importMap.addImport(Initialise.class);
@@ -436,8 +428,6 @@ public class FilterBuilder<T, F> {
         importMap.addImport(Test.class);
     }
 
-    private int sourceCount;
-    
     private SourceInfo addSource(Object input) {
 
         return inst2SourceInfo.computeIfAbsent(input, (in) -> new SourceInfo(
