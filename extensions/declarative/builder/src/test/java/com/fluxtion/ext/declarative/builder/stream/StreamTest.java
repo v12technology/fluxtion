@@ -144,8 +144,8 @@ public class StreamTest implements Stateful {
                     .filter(DataEvent::getValue, gt(-20))
                     .filter(DataEvent::getValue, negative());
             //tee 2
-            f.filter(new StreamTest()::ignoreFirsTwo).resetNotifier(
-                    select(TempF.class).console("[reset event] ->"))
+            f.filter(new StreamTest()::ignoreFirsTwo)
+                    .resetNotifier(select(TempF.class).console("[reset event] ->"))
                     .console("[ignored first two] ->");
             //tee 3
             f.filter(StreamTest::validData)
@@ -160,6 +160,28 @@ public class StreamTest implements Stateful {
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
+    }
+    
+    @Test
+    public void notifyOnChangeFilter() throws Exception {
+        EventHandler handler = sepTestInstance((c) -> {
+            //notify when > 20 on breach only
+            Wrapper<TempF> tempC = select(TempF.class)
+                    .console("\n[1.TempF] ->")
+                    .filter(TempF::getFahrenheit, gt(20)).notifyOnChange(true)
+                    .console("[2.temp>20] ->")
+                    //convert to log temps
+;
+
+        }, "com.fluxtion.ext.declarative.builder.filternotify", "FilterNotifyOnChange");
+//        //fire some data in
+        handler.onEvent(new TempF(10, "outside"));
+        handler.onEvent(new TempF(32, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(60, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
+        handler.onEvent(new TempF(100, "outside"));
+        handler.onEvent(new TempF(-10, "ignore me"));
     }
 
     public static class TempF extends Event {
