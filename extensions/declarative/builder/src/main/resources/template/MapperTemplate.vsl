@@ -46,6 +46,7 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
 
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier){
+        result = null;
         f.reset();
     }
 

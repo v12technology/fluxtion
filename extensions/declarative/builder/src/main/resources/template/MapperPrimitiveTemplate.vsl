@@ -52,6 +52,7 @@ public class ${functionClass} implements Wrapper<Number>{
 
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier){
+        result = 0;
         f.reset();
     }
 
