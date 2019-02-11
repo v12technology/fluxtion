@@ -8,7 +8,7 @@ import $import;
  * generated filter function wrapper.
  *
  *<ul>
- * <li>input class        : {@link ${filterSubjectClass}}
+ * <li>input class     : {@link ${filterSubjectClass}}
  * <li>filter function : {@link ${targetClass}#${targetMethod}}
  *</ul>
  * 
@@ -26,6 +26,7 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     public ${targetClass} f;
 #end
 #if(${stateful})
+    @NoEventReference
     public Object resetNotifier;
 #end
     private boolean notifyOnChangeOnly = false;
@@ -44,7 +45,6 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 #else
         result = f.${targetMethod}(${input});
 #end
-        //updated = (oldValue != result) & result;
         //this is probably right - to be tested
         //return (!notifyOnChangeOnly | !oldValue) & result;
         return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
@@ -64,6 +64,20 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     }
 
 #end
+    @Override
+    public Wrapper<${filterSubjectClass}> notifyOnChange(boolean notifyOnChange){
+        this.notifyOnChangeOnly = notifyOnChange;
+        return this;
+    }
+
+    public boolean isNotifyOnChangeOnly() {
+        return notifyOnChangeOnly;
+    }
+
+    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
+        this.notifyOnChangeOnly = notifyOnChangeOnly;
+    }
+
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})
