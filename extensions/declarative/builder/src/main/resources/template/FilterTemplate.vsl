@@ -7,8 +7,10 @@ import $import;
 /**
  * generated filter function wrapper.
  *
- * target class  : ${targetClass}
- * target method : ${targetMethod}
+ *<ul>
+ * <li>input class        : {@link ${filterSubjectClass}}
+ * <li>filter function : {@link ${targetClass}#${targetMethod}}
+ *</ul>
  * 
  * @author Greg Higgins
  */
@@ -26,7 +28,7 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 #if(${stateful})
     public Object resetNotifier;
 #end
-#if(${changetNotifier})
+    private boolean notifyOnChangeOnly = false;
     private boolean result;
 
     @Initialise
@@ -43,24 +45,15 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
         result = f.${targetMethod}(${input});
 #end
         //updated = (oldValue != result) & result;
-        return (!oldValue) & result;
+        //this is probably right - to be tested
+        //return (!notifyOnChangeOnly | !oldValue) & result;
+        return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
     }
 
-#else
-
-    @OnEvent
-    public boolean onEvent(){
-#if(${newFunction})
-        return ${targetClass}.${targetMethod}(${input});
-#else
-        return f.${targetMethod}(${input});
-#end
-    }
-
-#end
 #if(${stateful})
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier){
+        result = false;
         f.reset();
     }
 
