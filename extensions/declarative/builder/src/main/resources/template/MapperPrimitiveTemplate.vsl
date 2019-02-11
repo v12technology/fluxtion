@@ -24,6 +24,7 @@ public class ${functionClass} implements Wrapper<Number>{
 #end
     private ${outputClass} result;
 #if(${stateful})
+    @NoEventReference
     public Object resetNotifier;
 #end
     private MutableNumber value;

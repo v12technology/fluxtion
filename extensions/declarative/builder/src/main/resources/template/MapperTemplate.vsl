@@ -23,6 +23,7 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
 #end
     private ${outputClass} result;
 #if(${stateful})
+    @NoEventReference
     public Object resetNotifier;
 #end
     private boolean notifyOnChangeOnly = false;
