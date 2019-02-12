@@ -164,6 +164,10 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
 
         //override node names
         publicNodeList = new ArrayList<>();
+        if(context!=null && context.getPublicNodes()!=null){
+            inst2Name.putAll(context.getPublicNodes());
+            publicNodeList.addAll(context.getPublicNodes().keySet());
+        }
         if (publicNodes != null) {
             inst2Name.putAll(publicNodes);
             publicNodeList.addAll(publicNodes.keySet());

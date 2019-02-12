@@ -5,16 +5,17 @@ import $import;
 #end
 
 /**
- * Generated mapper function wrapper for a reference type.
+ * generated mapper function wrapper for a numeric primitive.
+ *  
  *<ul>
- * <li>output class       : {@link ${outputClass}}
+ * <li>output class       : {@link Boolean}
  * <li>input class        : {@link ${filterSubjectClass}}
  * <li>converter function : {@link ${targetClass}#${targetMethod}}
  *</ul>
  * 
  * @author Greg Higgins
  */
-public class ${functionClass} implements Wrapper<${outputClass}>{
+public class ${functionClass} implements Wrapper<Boolean>{
 
     public ${sourceClass} filterSubject;
 #if(!${newFunction})
@@ -26,40 +27,45 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     @NoEventReference
     public Object resetNotifier;
 #end
+    private boolean value;
+    private boolean oldValue;
     private boolean notifyOnChangeOnly = false;
 
     @Initialise
     public void init(){
-        result = null;
+        result = false;
+        value = false;
+        oldValue = false;
     }
 
     @OnEvent
     public boolean onEvent(){
-        ${outputClass} oldValue = result;
+        oldValue = result;
 #if(${newFunction})
         result = ${targetClass}.${targetMethod}(${input});
 #else
         result = f.${targetMethod}(${input});
 #end
-        return !notifyOnChangeOnly || (!result.equals(oldValue));
+        value = result;
+        return !notifyOnChangeOnly || (oldValue != value);
     }
 #if(${stateful})
 
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier){
-        result = null;
+        result = false;
         f.reset();
     }
 
     @Override
-    public Wrapper<${outputClass}> resetNotifier(Object resetNotifier) {
+    public Wrapper<Boolean> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
     }
 #end
 
     @Override
-    public Wrapper<${outputClass}> notifyOnChange(boolean notifyOnChange){
+    public Wrapper<Boolean> notifyOnChange(boolean notifyOnChange){
         this.notifyOnChangeOnly = notifyOnChange;
         return this;
     }
@@ -73,13 +79,14 @@ public class ${functionClass} implements Wrapper<${outputClass}>{
     }
 
     @Override
-    public ${outputClass} event() {
-        return result;
+    public Boolean event() {
+        return value;
     }
 
     @Override
-    public Class<${outputClass}> eventClass() {
-        return ${outputClass}.class;
+    public Class<Boolean> eventClass() {
+        return Boolean.class;
     }
+
 }
 

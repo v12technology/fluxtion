@@ -20,6 +20,7 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.test.AndOperator;
+import com.fluxtion.ext.declarative.api.test.BooleanEitherFilter;
 import com.fluxtion.ext.declarative.api.test.BooleanFilter;
 import com.fluxtion.ext.declarative.api.test.BooleanMatchFilter;
 import com.fluxtion.ext.declarative.api.test.NotOperator;
@@ -69,6 +70,17 @@ public class BooleanBuilder {
     
     public static <T> Wrapper<T> filter(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
+    }
+    public static <T> Wrapper<T> filterEither(Wrapper<T> trackedWrapped, Object notifier) {
+        BooleanEitherFilter<T> filter = new BooleanEitherFilter<>( trackedWrapped, notifier);
+        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        return filter;
+    }
+    
+    public static <T> Wrapper<T> filterEither(T tracked, Object notifier) {
+        BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }

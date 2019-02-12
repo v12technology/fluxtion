@@ -121,6 +121,7 @@ public class FilterBuilder<T, F> {
     private static final String TEMPLATE = "template/FilterTemplate.vsl";
     private static final String MAPPER_TEMPLATE = "template/MapperTemplate.vsl";
     private static final String MAPPER_PRIMITIVE_TEMPLATE = "template/MapperPrimitiveTemplate.vsl";
+    private static final String MAPPER_BOOLEAN_TEMPLATE = "template/MapperBooleanTemplate.vsl";
     private static final String CONSUMER_TEMPLATE = "template/ConsumerTemplate.vsl";
     private static final String TEMPLATE_ARRAY = "template/TestArrayTemplate.vsl";
     private static final String INPUT_ARRAY_ELEMENT = "filterElementToTest";
@@ -211,10 +212,13 @@ public class FilterBuilder<T, F> {
         filterBuilder.currentTemplate = MAPPER_TEMPLATE;
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
         filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
-        if (mappingMethod.getReturnType().isPrimitive()) {
+        if (mappingMethod.getReturnType().isPrimitive() && mappingMethod.getReturnType() != boolean.class) {
             filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
             filterBuilder.importMap.addImport(Number.class);
             filterBuilder.importMap.addImport(MutableNumber.class);
+        }else if( mappingMethod.getReturnType() == boolean.class){
+            filterBuilder.currentTemplate = MAPPER_BOOLEAN_TEMPLATE;
+            filterBuilder.importMap.addImport(Boolean.class);
         }
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
@@ -356,12 +360,12 @@ public class FilterBuilder<T, F> {
             ctx.put(stateful.name(), isStateful(functionInfo.getFunctionMethod()));
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
-                ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
+                ctx.put(filterSubjectClass.name(), importMap.addImport(filterSubjectWrapper.eventClass()));//.getSimpleName());
                 importMap.addImport(filterSubjectWrapper.eventClass());
-                ctx.put(sourceClass.name(), filterSubjectWrapper.getClass().getSimpleName());
+                ctx.put(sourceClass.name(), importMap.addImport(filterSubjectWrapper.getClass()));//.getSimpleName());
             } else {
-                ctx.put(filterSubjectClass.name(), filterSubject.getClass().getSimpleName());
-                ctx.put(sourceClass.name(), filterSubject.getClass().getSimpleName());
+                ctx.put(filterSubjectClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
+                ctx.put(sourceClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 importMap.addImport(filterSubject.getClass());
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));

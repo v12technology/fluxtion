@@ -123,8 +123,16 @@ public class GenerationContext {
      */
     private final Map<Object, String> proxyClassMap = new HashMap<>();
 
+    /**
+     * Nodes that are to be added to the SEP
+     */
     private final List<?> nodeList = new ArrayList<>();
 
+    /**
+     * public named nodes to be added to the generated SEP
+     */
+    private final Map<Object, String> publicNodes = new HashMap<>();
+    
     private final ClassLoader classLoader;
 
     /**
@@ -255,6 +263,19 @@ public class GenerationContext {
      */
     public <K, V> Map<K, V> getCache(Object key) {
         return cacheMap.computeIfAbsent(key, (k) -> new HashMap());
+    }
+
+    public <T> T nameNode(T node, String name) {
+        publicNodes.put(node, name);
+        return node;
+    }
+
+    public Map<Object, String> getPublicNodes() {
+        return publicNodes;
+    }
+    
+    public String publicNameForNode(Object node){
+        return publicNodes.get(node);
     }
 
     /**

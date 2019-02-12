@@ -18,8 +18,10 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -80,7 +82,7 @@ public class StreamBuilder implements StreamOperator {
     }
 
     @Override
-    public <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source) {
+    public <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source, String consumerId) {
         Method consumerMethod = consumer.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(consumerMethod.getModifiers())) {
@@ -88,8 +90,21 @@ public class StreamBuilder implements StreamOperator {
         } else {
             builder = FilterBuilder.consume(consumer.captured()[0], consumerMethod, source);
         }
-        builder.build();
+        nodeId(builder.build(), consumerId);
         return source;
+    }
+
+    @Override
+    public <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
+        return BooleanBuilder.filterEither(source, notifier);
+    }
+    
+    @Override
+    public <T> T nodeId(T node, String name) {
+        if(name==null || node==null){
+            return node;
+        }
+        return GenerationContext.SINGLETON.nameNode(node, name);
     }
 
 }
