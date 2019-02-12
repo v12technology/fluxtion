@@ -356,12 +356,12 @@ public class FilterBuilder<T, F> {
             ctx.put(stateful.name(), isStateful(functionInfo.getFunctionMethod()));
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
-                ctx.put(filterSubjectClass.name(), filterSubjectWrapper.eventClass().getSimpleName());
+                ctx.put(filterSubjectClass.name(),  importMap.addImport(filterSubjectWrapper.eventClass()));//.getSimpleName());
                 importMap.addImport(filterSubjectWrapper.eventClass());
-                ctx.put(sourceClass.name(), filterSubjectWrapper.getClass().getSimpleName());
+                ctx.put(sourceClass.name(), importMap.addImport(filterSubjectWrapper.getClass()));//.getSimpleName());
             } else {
-                ctx.put(filterSubjectClass.name(), filterSubject.getClass().getSimpleName());
-                ctx.put(sourceClass.name(), filterSubject.getClass().getSimpleName());
+                ctx.put(filterSubjectClass.name(),  importMap.addImport(filterSubject.getClass()));//.getSimpleName());
+                ctx.put(sourceClass.name(),  importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 importMap.addImport(filterSubject.getClass());
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
