@@ -160,18 +160,20 @@ public class StreamTest implements Stateful {
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
     }
-    
+
     @Test
     public void notifyOnChangeFilter() throws Exception {
         EventHandler handler = sepTestInstance((c) -> {
             //notify when > 20 on breach only
-            Wrapper<TempF> tempC = select(TempF.class).id("tempIn")
+            Wrapper tempC = select(TempF.class).id("tempIn")
                     .console("\n[1.TempF] ->")
-                    .filter(TempF::getFahrenheit, gt(20)).notifyOnChange(true).id("breach20C")
-                    .eventNotifier(select(DataEvent.class).id("logTrigger").console("[trigger event]"))
+                    .filter(TempF::getFahrenheit, gt(20)).id("breach20C")
+                    .eventNotifier(select(DataEvent.class).id("logTrigger").console("\n[trigger event]"))
                     .console("[2.temp>20] ->")
-                    //convert to log temps
-;
+                    .map(new StreamTest()::max, TempF::getFahrenheit).notifyOnChange(true).id("maxTemp")
+                    .console("[3.new max temp] ->");
+            //convert to log temps
+            ;
 
         }, "com.fluxtion.ext.declarative.builder.filternotify", "FilterNotifyOnChange");
 //        //fire some data in
@@ -183,6 +185,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new DataEvent(12));
+        handler.onEvent(new TempF(40, "outside"));
     }
 
     public static class TempF extends Event {
@@ -317,6 +320,14 @@ public class StreamTest implements Stateful {
         return true;
     }
 
+    
+    public double max(double num) {
+        if (num > currentMax) {
+            currentMax = num;
+        }
+        return currentMax;
+    }
+
     public boolean ignoreFirsTwo(DataEvent d) {
         sum++;
         return sum > 2;
@@ -338,6 +349,7 @@ public class StreamTest implements Stateful {
     }
 
     double sum;
+    double currentMax = Integer.MIN_VALUE;
 
     public double cumSum(double value) {
         if (!Double.isNaN(value)) {
@@ -350,6 +362,7 @@ public class StreamTest implements Stateful {
     public void reset() {
         System.out.println("---- reset sum");
         sum = 0;
+        currentMax = Integer.MIN_VALUE;
     }
 
     public static double log(Number a) {
