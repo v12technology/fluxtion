@@ -72,9 +72,9 @@ public class StreamTest implements Stateful {
     public void testMapToClass() throws Exception {
         EventHandler handler = sepTestInstance((c) -> {
             //convert to C from F
-            Wrapper<TempC> tempC = select(TempF.class)
+            Wrapper<TempC> tempC = select(TempF.class).id("tempIn")
                     .console("[f] ->")
-                    .map(StreamTest::tempFtoTempC)
+                    .map(StreamTest::tempFtoTempC).id("convert_FtoC")
                     .console("[c] ->");
             //control signals depend on temp value
         }, "com.fluxtion.ext.declarative.builder.tempMapToClass", "TempConverter");
@@ -135,20 +135,20 @@ public class StreamTest implements Stateful {
         EventHandler handler = sepTestInstance((c) -> {
             Wrapper<DataEvent> f = select(DataEvent.class)
                     .console("[data in] ->")
-                    .filter(DataEvent::getValue, positive())
-                    .filter(DataEvent::getValue, lt(20))
+                    .filter(DataEvent::getValue, positive()).id("temp_AboveZero")
+                    .filter(DataEvent::getValue, lt(20)).id("tempLT20")
                     .console("[val: +ve and <20] ->");
             //tee1
-            f.filter(StreamTest::validData)
-                    .filter(DataEvent::getValue, gt(-20))
-                    .filter(DataEvent::getValue, negative());
+            f.filter(StreamTest::validData).id("validateData1")
+                    .filter(DataEvent::getValue, gt(-20)).id("temp_Above_Neg20")
+                    .filter(DataEvent::getValue, negative()).id("temp_BelowZero");
             //tee 2
-            f.filter(new StreamTest()::ignoreFirsTwo)
+            f.filter(new StreamTest()::ignoreFirsTwo).id("ignoreFirst2Events")
                     .resetNotifier(select(TempF.class).console("[reset event] ->"))
                     .console("[ignored first two] ->");
             //tee 3
-            f.filter(StreamTest::validData)
-                    .filter(DataEvent::getValue, gt(20));
+            f.filter(StreamTest::validData).id("validateData2")
+                    .filter(DataEvent::getValue, gt(20)).id("temp_Above_20");
         }, "com.fluxtion.ext.declarative.builder.filterstaeful", "StatefulFilter");
         handler.onEvent(new DataEvent(10));
         handler.onEvent(new DataEvent(50));
@@ -165,9 +165,10 @@ public class StreamTest implements Stateful {
     public void notifyOnChangeFilter() throws Exception {
         EventHandler handler = sepTestInstance((c) -> {
             //notify when > 20 on breach only
-            Wrapper<TempF> tempC = select(TempF.class)
+            Wrapper<TempF> tempC = select(TempF.class).id("tempIn")
                     .console("\n[1.TempF] ->")
-                    .filter(TempF::getFahrenheit, gt(20)).notifyOnChange(true)
+                    .filter(TempF::getFahrenheit, gt(20)).notifyOnChange(true).id("breach20C")
+                    .eventNotifier(select(DataEvent.class).id("logTrigger").console("[trigger event]"))
                     .console("[2.temp>20] ->")
                     //convert to log temps
 ;
@@ -181,6 +182,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
+        handler.onEvent(new DataEvent(12));
     }
 
     public static class TempF extends Event {

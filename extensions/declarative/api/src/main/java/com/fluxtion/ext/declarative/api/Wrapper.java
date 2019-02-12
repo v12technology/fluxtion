@@ -19,6 +19,8 @@ package com.fluxtion.ext.declarative.api;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Consumer;
 
 /**
  * A wrapper class that holds a reference to a node in the SEP. Any node in SEP
@@ -60,21 +62,94 @@ public interface Wrapper<T> {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
 
+    /**
+     * Registers a {@link Consumer} to operate on the current node when an event
+     * wave is passing through this node. The consumer can perform any operation
+     * on the node including mutations. This node, possibly mutated, is passed
+     * as a reference to child nodes. No new nodes are created in the stream as
+     * a side-effect of this processing.
+     *
+     * @param consumer {@link Consumer} of this node
+     * @return The current node
+     */
     default Wrapper<T> forEach(SerializableConsumer<T> consumer) {
-        return (Wrapper<T>) StreamOperator.service().forEach(consumer, this);
+        return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, null);
     }
 
+    default Wrapper<T> forEach(SerializableConsumer<T> consumer, String consumerId) {
+        return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, consumerId);
+    }
+
+    static LongAdder counter = new LongAdder();
+
+    /**
+     * dump this node to console, prefixed with the supplied message. {@link Object#toString()
+     * } will be invoked on the node instance.
+     *
+     * @param prefix String prefix for the console message
+     * @return The current node
+     */
     default Wrapper<T> console(String prefix) {
         StreamOperator.PrefixToConsole console = new StreamOperator.PrefixToConsole(prefix);
-        return StreamOperator.service().forEach(console::standardOut, this);
+        counter.increment();
+        StreamOperator.service().nodeId(console, "consoleMsg_" + counter.intValue());
+        return StreamOperator.service().forEach(console::standardOut, this, "consoleLog_" + counter.intValue());
     }
 
+    /**
+     * Attaches a reset notifier instance to the current stream node. If the
+     * node is {@link Stateful} it may be desirable to reset its state under
+     * controlled conditions. When the resetNotifier is on an execution path it
+     * will invoke the reset method of this node if it is {@link Stateful}
+     *
+     * @param resetNotifier external notifier
+     * @return
+     */
     default Wrapper<T> resetNotifier(Object resetNotifier) {
         return this;
     }
-    
-    default  Wrapper<T> notifyOnChange(boolean notifyOnChange){
+
+    /**
+     * Attaches an event notification instance to the current stream node. When
+     * the notifier updates all the child nodes of this stream node will be on
+     * the execution path and invoked following normal SEP rules.
+     *
+     * @param eventNotifier external event notifier
+     * @return
+     */
+    default Wrapper<T> eventNotifier(Object eventNotifier) {
+        return StreamOperator.service().eventNotifer(this,  eventNotifier);
+    }
+
+    /**
+     * Controls the notification policy of event notification to child nodes for
+     * this stream node. The default policy is to invoke child nodes when the
+     * return of the parent event method is true. NotifyOnChange notifies the
+     * child only when the parent node return of the previous cycle is false and
+     * this one is true.
+     * <p>
+     *
+     * This can be useful if a single notification of a breach is required and
+     * subsequent continued breaches are swallowed, for example this can prevent
+     * logging spamming when combined with filters.
+     *
+     * @param notifyOnChange false = notify always. true = notify on change only
+     * @return The current node
+     */
+    default Wrapper<T> notifyOnChange(boolean notifyOnChange) {
         return this;
+    }
+
+    /**
+     * Set the node id for this node within the generated SEP. This is the
+     * variable name of the node in a Java SEP. The id must be unique for the
+     * SEP.
+     *
+     * @param id the unique id of the node in the SEP
+     * @return The current node
+     */
+    default Wrapper<T> id(String id) {
+        return StreamOperator.service().nodeId(this, id);
     }
 
 }

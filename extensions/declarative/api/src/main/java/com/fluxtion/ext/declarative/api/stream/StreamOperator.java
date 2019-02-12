@@ -23,7 +23,9 @@ import java.lang.reflect.Method;
 import java.util.ServiceLoader;
 
 /**
- * An interface defining stream operations on a node in a SEP graph.
+ * An interface defining stream operations on a node in a SEP graph. The
+ * {@link ServiceLoader} mechanism is used to load an implementation at runtime
+ * for the StreamOperator interface.
  *
  * @author V12 Technology Ltd.
  */
@@ -47,10 +49,27 @@ public interface StreamOperator {
         return null;
     }
 
-    default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source) {
+    /**
+     * 
+     * @param <T>
+     * @param <S>
+     * @param consumer
+     * @param source
+     * @param consumerId - id for node in SEP, can be null for autonaming
+     * @return 
+     */
+    default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source, String consumerId) {
+        return source;
+    }
+    
+    default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier){
         return source;
     }
 
+    default <T> T nodeId(T node, String name){
+        return node;
+    }
+    
     public static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
         if (load.iterator().hasNext()) {
