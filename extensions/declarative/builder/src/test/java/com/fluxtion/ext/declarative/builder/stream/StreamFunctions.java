@@ -17,34 +17,84 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import javafx.util.Pair;
+
+
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class StreamFunctions {
 
+    //from Strng to primitive
     public int String2Int(String s) {
-        return (int) Double.parseDouble(s);
+        try {
+            return (int) Double.parseDouble(s);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     public double String2Double(String s) {
-        return Double.parseDouble(s);
+        try {
+            return Double.parseDouble(s);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     public Number String2Number(String s) {
-        return Double.parseDouble(s);
+        try {
+            return Double.parseDouble(s);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public boolean String2Boolean(String b) {
+        try {
+            return Boolean.valueOf(b);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    //From primitve to String
+    public String number2String(Number i) {
+        try {
+            return i.doubleValue()+ "";
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     public String int2String(int i) {
-        return i + "";
+        try {
+            return i + "";
+        } catch (Exception e) {
+            return "";
+        }
     }
 
-    public String number2String(Number i) {
-        return i.intValue() + "";
+    public String double2String(double i) {
+        try {
+            return i + "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public String boolean2String(boolean i) {
+        try {
+            return i + "";
+        } catch (Exception e) {
+            return "";
+        }
     }
     
-    public boolean String2Boolean(String b){
-        return Boolean.valueOf(b);
+    //Ref to Ref
+    public Pair<String, Integer> int2Pair(int val){
+        return new Pair<>(int2String(val), val);
     }
-
+    
 }
