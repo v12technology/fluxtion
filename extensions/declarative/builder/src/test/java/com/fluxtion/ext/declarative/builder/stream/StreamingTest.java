@@ -90,33 +90,76 @@ public class StreamingTest extends BaseSepInprocessTest {
         valBoolean = getField("boolean2Str");
         assertThat(valBoolean.event(), is("false"));
     }
-    
+
     @Test
-    public void mapRef2Ref(){
+    public void mapRef2Ref() {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(new StreamFunctions()::int2Pair, StreamData::getIntValue).id("pair");
-        }); 
+            in.map(StaticFunctions::int2Pair, StreamData::getIntValue).id("pairStatic");
+        });
         onEvent(new StreamData(89));
-        Wrapper<Pair<String, Integer>> valBoolean = getField("pair");
-        assertThat(valBoolean.event().getKey(), is("89"));
-        assertThat(valBoolean.event().getValue(), is(89));
-        
+        Wrapper<Pair<String, Integer>> valInstance = getField("pair");
+        Wrapper<Pair<String, Integer>> valStatic= getField("pairStatic");
+        assertThat(valInstance.event().getKey(), is("89"));
+        assertThat(valInstance.event().getValue(), is(89));
+        assertThat(valStatic.event().getKey(), is("89"));
+        assertThat(valStatic.event().getValue(), is(89));
+
     }
-    
+
     @Test
-    public void mapStaticPrimitiveFromString(){
+    public void mapStaticPrimitiveFromString() {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(StaticFunctions::statStr2Int, StreamData::getStringValue).id("str2Int");
-        }); 
+            in.map(StaticFunctions::statStr2Number, StreamData::getStringValue).id("str2Number");
+            in.map(StaticFunctions::statStr2Boolean, StreamData::getStringValue).id("str2Boolean");
+        });
         onEvent(new StreamData("123"));
         Wrapper<Number> valInt = getField("str2Int");
         assertThat(valInt.event().intValue(), is(123));
+        Wrapper<Number> valNumber = getField("str2Number");
+        assertThat(valNumber.event().intValue(), is(123));
+        //boolean
+        Wrapper<Boolean> val = getField("str2Boolean");
+        onEvent(new StreamData("true"));
+        assertThat(val.event(), is(true));
+        onEvent(new StreamData("false"));
+        assertThat(val.event(), is(false));
     }
-    
-    
+
+    @Test
+    public void mapStaticStringFromPrimitive() {
+        fixedPkg = true;
+        sep((c) -> {
+            Wrapper<StreamData> in = select(StreamData.class);
+            in.map(StaticFunctions::int2String, StreamData::getIntValue).id("int2Str");
+            in.map(StaticFunctions::double2String, StreamData::getDoubleValue).id("double2Str");
+            in.map(StaticFunctions::boolean2String, StreamData::isBooleanValue).id("boolean2Str");
+            in.map(StaticFunctions::number2String, StreamData::getNumberValue).id("number2Str");
+        });
+        //
+        onEvent(new StreamData(23));
+        Wrapper<String> valInt = getField("int2Str");
+        assertThat(valInt.event(), is("23"));
+        //
+        onEvent(new StreamData(23.34));
+        Wrapper<String> valDouble = getField("double2Str");
+        assertThat(valDouble.event(), is("23.34"));
+        //
+        onEvent(new StreamData(31.34));
+        Wrapper<String> valNumber = getField("number2Str");
+        assertThat(valNumber.event(), is("31.34"));
+        //boolean
+        onEvent(new StreamData(true));
+        Wrapper<String> valBoolean = getField("boolean2Str");
+        assertThat(valBoolean.event(), is("true"));
+        onEvent(new StreamData(false));
+        valBoolean = getField("boolean2Str");
+        assertThat(valBoolean.event(), is("false"));
+    }
 
 }
