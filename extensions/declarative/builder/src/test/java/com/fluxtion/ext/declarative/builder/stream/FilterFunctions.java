@@ -25,4 +25,8 @@ public class FilterFunctions {
     public boolean positive(int val){
         return val  > 0;
     }
+    
+    public static boolean posStatic(int val){
+        return val  > 0;
+    }
 }

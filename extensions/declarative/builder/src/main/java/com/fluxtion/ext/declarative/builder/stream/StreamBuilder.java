@@ -16,11 +16,14 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
+import static com.fluxtion.ext.declarative.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
@@ -79,6 +82,13 @@ public class StreamBuilder implements StreamOperator {
             builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, source, accessor, true);
         }
         return builder.build();
+    }
+
+    @Override
+    public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
+//        final Object sourceInstance = unWrap(source);
+        final Object targetInstance = unWrap(consumer);
+        FilterBuilder.push(targetInstance, consumer.method(), source, accessor, true).build(); 
     }
 
     @Override

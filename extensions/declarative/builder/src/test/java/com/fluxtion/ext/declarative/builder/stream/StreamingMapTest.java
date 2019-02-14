@@ -63,7 +63,7 @@ public class StreamingMapTest extends BaseSepInprocessTest {
 
     @Test
     public void mapStringFromPrimitive() {
-        fixedPkg = true;
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(new MapFunctions()::int2String, StreamData::getIntValue).id("int2Str");
@@ -94,7 +94,7 @@ public class StreamingMapTest extends BaseSepInprocessTest {
 
     @Test
     public void mapRef2Ref() {
-        fixedPkg = true;
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(new MapFunctions()::int2Pair, StreamData::getIntValue).id("pair");
@@ -112,7 +112,7 @@ public class StreamingMapTest extends BaseSepInprocessTest {
     
     @Test
     public void mapStaticPrimitiveFromString() {
-        fixedPkg = true;
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(MapStaticFunctions::statStr2Int, StreamData::getStringValue).id("str2Int");
@@ -134,7 +134,7 @@ public class StreamingMapTest extends BaseSepInprocessTest {
 
     @Test
     public void mapStaticStringFromPrimitive() {
-        fixedPkg = true;
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(MapStaticFunctions::int2String, StreamData::getIntValue).id("int2Str");

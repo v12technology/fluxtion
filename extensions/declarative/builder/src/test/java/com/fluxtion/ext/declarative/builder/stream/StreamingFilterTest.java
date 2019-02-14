@@ -32,26 +32,27 @@ public class StreamingFilterTest extends BaseSepInprocessTest {
 
     @Test
     public void mapRef2Ref() {
-        fixedPkg = true;
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
+            in.filter(StreamData::getIntValue, FilterFunctions::posStatic)
+                    .map(new MapFunctions()::count).id("countStatic");
             in.filter(StreamData::getIntValue, new FilterFunctions()::positive).id("data")
                     .map(new MapFunctions()::count).id("count");
         });
         Wrapper<StreamData> data = getField("data");
         Wrapper<Number> count = getField("count");
+        Wrapper<Number> countStatic = getField("countStatic");
         onEvent(new StreamData(89));
         assertThat(count.event().intValue(), is(1));
+        assertThat(countStatic.event().intValue(), is(1));
         onEvent(new StreamData(89));
         assertThat(count.event().intValue(), is(2));
+        assertThat(countStatic .event().intValue(), is(2));
         onEvent(new StreamData(-10));
         assertThat(count.event().intValue(), is(2));
+        assertThat(countStatic .event().intValue(), is(2));
         
-//        Wrapper<Pair<String, Integer>> valStatic= getField("pairStatic");
-//        assertThat(valInstance.event().getKey(), is("89"));
-//        assertThat(valInstance.event().getValue(), is(89));
-//        assertThat(valStatic.event().getKey(), is("89"));
-//        assertThat(valStatic.event().getValue(), is(89));
 
     }
 }
