@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api.stream;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -48,6 +49,9 @@ public interface StreamOperator {
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
         return null;
     }
+    
+    default <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer){}
+    
 
     /**
      * 
