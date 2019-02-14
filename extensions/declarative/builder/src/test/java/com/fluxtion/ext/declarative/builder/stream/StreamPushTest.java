@@ -29,19 +29,4 @@ public class StreamPushTest extends BaseSepInprocessTest {
         assertThat(target.count, is(1));
     }
 
-    public static class PushTarget {
-
-        public int count;
-        public int val;
-
-        @OnEvent
-        public void update() {
-            count++;
-        }
-
-        public void setVal(int val) {
-            this.val = val * 10;
-        }
-
-    }
 }
