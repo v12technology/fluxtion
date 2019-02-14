@@ -56,6 +56,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -203,8 +205,16 @@ public class FilterBuilder<T, F> {
 
     public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder;
-        if (mapper == null) {
+        boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
+        if (mapper == null && staticMeth ) {
             filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+        } else if(mapper == null && !staticMeth) {
+            try {
+                mapper = (F) mappingMethod.getDeclaringClass().newInstance();
+            } catch (IllegalAccessException | InstantiationException ex) {
+                throw new RuntimeException("unable to create mapper instance must have public default consturctor", ex);
+            }
+            filterBuilder = new FilterBuilder(mapper);
         } else {
             filterBuilder = new FilterBuilder(mapper);
         }

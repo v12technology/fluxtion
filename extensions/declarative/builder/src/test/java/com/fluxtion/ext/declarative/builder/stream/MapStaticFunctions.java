@@ -6,7 +6,7 @@ import javafx.util.Pair;
  *
  * @author V12 Technology Ltd.
  */
-public class StaticFunctions {
+public class MapStaticFunctions {
 
     public static int statStr2Int(String val) {
         try {

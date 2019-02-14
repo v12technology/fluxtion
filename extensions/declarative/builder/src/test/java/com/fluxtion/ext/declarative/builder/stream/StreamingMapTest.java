@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import javafx.util.Pair;
@@ -28,16 +29,16 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamingTest extends BaseSepInprocessTest {
+public class StreamingMapTest extends BaseSepInprocessTest {
 
     @Test
     public void mapPrimitiveFromString() {
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(new StreamFunctions()::String2Number, StreamData::getStringValue).id("str2Number");
-            in.map(new StreamFunctions()::String2Int, StreamData::getStringValue).id("str2Int");
-            in.map(new StreamFunctions()::String2Double, StreamData::getStringValue).id("str2Double");
-            in.map(new StreamFunctions()::String2Boolean, StreamData::getStringValue).id("str2Boolean");
+            in.map(new MapFunctions()::String2Number, StreamData::getStringValue).id("str2Number");
+            in.map(new MapFunctions()::String2Int, StreamData::getStringValue).id("str2Int");
+            in.map(new MapFunctions()::String2Double, StreamData::getStringValue).id("str2Double");
+            in.map(new MapFunctions()::String2Boolean, StreamData::getStringValue).id("str2Boolean");
         });
         onEvent(new StreamData("23"));
         //int
@@ -65,10 +66,10 @@ public class StreamingTest extends BaseSepInprocessTest {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(new StreamFunctions()::int2String, StreamData::getIntValue).id("int2Str");
-            in.map(new StreamFunctions()::double2String, StreamData::getDoubleValue).id("double2Str");
-            in.map(new StreamFunctions()::boolean2String, StreamData::isBooleanValue).id("boolean2Str");
-            in.map(new StreamFunctions()::number2String, StreamData::getNumberValue).id("number2Str");
+            in.map(new MapFunctions()::int2String, StreamData::getIntValue).id("int2Str");
+            in.map(new MapFunctions()::double2String, StreamData::getDoubleValue).id("double2Str");
+            in.map(new MapFunctions()::boolean2String, StreamData::isBooleanValue).id("boolean2Str");
+            in.map(new MapFunctions()::number2String, StreamData::getNumberValue).id("number2Str");
         });
         //
         onEvent(new StreamData(23));
@@ -96,8 +97,8 @@ public class StreamingTest extends BaseSepInprocessTest {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(new StreamFunctions()::int2Pair, StreamData::getIntValue).id("pair");
-            in.map(StaticFunctions::int2Pair, StreamData::getIntValue).id("pairStatic");
+            in.map(new MapFunctions()::int2Pair, StreamData::getIntValue).id("pair");
+            in.map(MapStaticFunctions::int2Pair, StreamData::getIntValue).id("pairStatic");
         });
         onEvent(new StreamData(89));
         Wrapper<Pair<String, Integer>> valInstance = getField("pair");
@@ -108,15 +109,15 @@ public class StreamingTest extends BaseSepInprocessTest {
         assertThat(valStatic.event().getValue(), is(89));
 
     }
-
+    
     @Test
     public void mapStaticPrimitiveFromString() {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(StaticFunctions::statStr2Int, StreamData::getStringValue).id("str2Int");
-            in.map(StaticFunctions::statStr2Number, StreamData::getStringValue).id("str2Number");
-            in.map(StaticFunctions::statStr2Boolean, StreamData::getStringValue).id("str2Boolean");
+            in.map(MapStaticFunctions::statStr2Int, StreamData::getStringValue).id("str2Int");
+            in.map(MapStaticFunctions::statStr2Number, StreamData::getStringValue).id("str2Number");
+            in.map(MapStaticFunctions::statStr2Boolean, StreamData::getStringValue).id("str2Boolean");
         });
         onEvent(new StreamData("123"));
         Wrapper<Number> valInt = getField("str2Int");
@@ -136,10 +137,10 @@ public class StreamingTest extends BaseSepInprocessTest {
         fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(StaticFunctions::int2String, StreamData::getIntValue).id("int2Str");
-            in.map(StaticFunctions::double2String, StreamData::getDoubleValue).id("double2Str");
-            in.map(StaticFunctions::boolean2String, StreamData::isBooleanValue).id("boolean2Str");
-            in.map(StaticFunctions::number2String, StreamData::getNumberValue).id("number2Str");
+            in.map(MapStaticFunctions::int2String, StreamData::getIntValue).id("int2Str");
+            in.map(MapStaticFunctions::double2String, StreamData::getDoubleValue).id("double2Str");
+            in.map(MapStaticFunctions::boolean2String, StreamData::isBooleanValue).id("boolean2Str");
+            in.map(MapStaticFunctions::number2String, StreamData::getNumberValue).id("number2Str");
         });
         //
         onEvent(new StreamData(23));

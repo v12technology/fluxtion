@@ -24,7 +24,7 @@ import javafx.util.Pair;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamFunctions {
+public class MapFunctions {
 
     //from Strng to primitive
     public int String2Int(String s) {
@@ -95,6 +95,12 @@ public class StreamFunctions {
     //Ref to Ref
     public Pair<String, Integer> int2Pair(int val){
         return new Pair<>(int2String(val), val);
+    }
+    
+    private int count;
+    //help
+    public int count(Object o){
+        return ++count;
     }
     
 }
