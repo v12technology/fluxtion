@@ -20,9 +20,8 @@ public class StreamPushTest extends BaseSepInprocessTest {
             Wrapper<StreamData> in = select(StreamData.class);
             PushTarget target = c.addNode(new PushTarget(), "target");
             in.filter(StreamData::getIntValue, new FilterFunctions()::positive).id("data")
-                    .push(target::setVal, StreamData::getIntValue);
+                    .push(StreamData::getIntValue, target::setVal);
         });
-        Wrapper<StreamData> data = getField("data");
         PushTarget target = getField("target");
         onEvent(new StreamData(89));
         assertThat(target.val, is(890));

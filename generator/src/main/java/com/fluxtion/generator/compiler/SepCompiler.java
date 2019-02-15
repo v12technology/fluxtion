@@ -215,6 +215,7 @@ public class SepCompiler {
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
+        LOG.info("generated sep: " + file.getCanonicalPath());
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();

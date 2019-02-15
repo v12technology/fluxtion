@@ -63,19 +63,18 @@ public interface Wrapper<T> {
     }
 
     /**
-     * pushes a data item from the current node in the stream to any node. The
-     * target node will become part of the same execution graph as the source.
-     * <p>
+     * pushes a data item from the current node in the stream to any node.The
+ target node will become part of the same execution graph as the source.<p>
      * The returned node is the current node in the stream.
      *
      * @param <T>
      * @param <R>
      * @param <S>
-     * @param mapper
      * @param supplier
-     * @return
+     * @param mapper
+     * @return the com.fluxtion.ext.declarative.api.Wrapper<T>
      */
-    default <T, R, S extends R> Wrapper<T> push(SerializableConsumer< R> mapper, SerializableFunction<T, S> supplier) {
+    default <T, R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer< R> mapper) {
         StreamOperator.service().push(this, supplier.method(), mapper);
         return (Wrapper<T>) this;
     }
