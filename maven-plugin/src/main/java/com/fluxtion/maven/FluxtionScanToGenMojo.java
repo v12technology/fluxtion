@@ -94,7 +94,7 @@ public class FluxtionScanToGenMojo extends AbstractMojo {
             }
             CompilerUtils.addClassPath(cpFile.getPath());
         }
-        getLog().info("user classpath URL list:" + Arrays.toString(urls));
+        getLog().debug("user classpath URL list:" + Arrays.toString(urls));
         classLoader = URLClassLoader.newInstance(urls);
         return classLoader;
     }

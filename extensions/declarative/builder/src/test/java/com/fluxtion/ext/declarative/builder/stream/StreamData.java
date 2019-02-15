@@ -81,4 +81,7 @@ public class StreamData extends Event{
         this.booleanValue = booleanValue;
     }
     
+    public Number getNumberValue(){
+        return getDoubleValue();
+    }
 }

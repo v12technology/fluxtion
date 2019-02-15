@@ -21,30 +21,12 @@ package com.fluxtion.ext.declarative.builder.stream;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamFunctions {
-
-    public int String2Int(String s) {
-        return (int) Double.parseDouble(s);
-    }
-
-    public double String2Double(String s) {
-        return Double.parseDouble(s);
-    }
-
-    public Number String2Number(String s) {
-        return Double.parseDouble(s);
-    }
-
-    public String int2String(int i) {
-        return i + "";
-    }
-
-    public String number2String(Number i) {
-        return i.intValue() + "";
+public class FilterFunctions {
+    public boolean positive(int val){
+        return val  > 0;
     }
     
-    public boolean String2Boolean(String b){
-        return Boolean.valueOf(b);
+    public static boolean posStatic(int val){
+        return val  > 0;
     }
-
 }

@@ -15,7 +15,9 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.declarative.api.stream;
+//      com.fluxtion.ext.declarative.api.stream
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -49,34 +51,42 @@ public interface StreamOperator {
         return null;
     }
 
+    default <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
+    }
+
     /**
-     * 
+     *
      * @param <T>
      * @param <S>
      * @param consumer
      * @param source
      * @param consumerId - id for node in SEP, can be null for autonaming
-     * @return 
+     * @return
      */
     default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source, String consumerId) {
         return source;
     }
-    
-    default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier){
+
+    default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
         return source;
     }
 
-    default <T> T nodeId(T node, String name){
+    default <T> T nodeId(T node, String name) {
         return node;
     }
-    
+
     public static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
         if (load.iterator().hasNext()) {
             return load.iterator().next();
         } else {
-            return new StreamOperator() {
-            };
+            load = ServiceLoader.load(StreamOperator.class, StreamOperator.class.getClassLoader());
+            if (load.iterator().hasNext()) {
+                return load.iterator().next();
+            } else {
+                return new StreamOperator() {
+                };
+            }
         }
     }
 

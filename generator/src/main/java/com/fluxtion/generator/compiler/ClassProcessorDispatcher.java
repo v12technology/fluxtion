@@ -55,7 +55,7 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
         loadServices.forEach((t) -> {
             subTypes.add(t.getClass());
         });
-        LOGGER.info("loaded AnnotationProcessors: {}", subTypes);
+        LOGGER.debug("loaded AnnotationProcessors: {}", subTypes);
         final File outDir;
         final File resDir;
         if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getSourceRootDirectory() != null) {

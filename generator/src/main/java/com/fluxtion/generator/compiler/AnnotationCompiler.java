@@ -50,7 +50,7 @@ public class AnnotationCompiler implements ClassProcessor {
         }
         try {
             File fin = new File(classPath.toURI());
-            LOGGER.info("AnnotationCompiler scanning url:'{}' for SepBuilder annotations", fin);
+            LOGGER.debug("AnnotationCompiler scanning url:'{}' for SepBuilder annotations", fin);
             try (ScanResult scanResult = new ClassGraph()
                     .enableAllInfo()
                     .overrideClasspath(fin)

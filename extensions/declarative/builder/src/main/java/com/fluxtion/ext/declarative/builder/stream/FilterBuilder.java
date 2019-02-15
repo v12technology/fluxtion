@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
@@ -56,6 +57,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -120,6 +123,7 @@ public class FilterBuilder<T, F> {
 
     private static final String TEMPLATE = "template/FilterTemplate.vsl";
     private static final String MAPPER_TEMPLATE = "template/MapperTemplate.vsl";
+    private static final String PUSH_TEMPLATE = "template/PushTemplate.vsl";
     private static final String MAPPER_PRIMITIVE_TEMPLATE = "template/MapperPrimitiveTemplate.vsl";
     private static final String MAPPER_BOOLEAN_TEMPLATE = "template/MapperBooleanTemplate.vsl";
     private static final String CONSUMER_TEMPLATE = "template/ConsumerTemplate.vsl";
@@ -203,8 +207,16 @@ public class FilterBuilder<T, F> {
 
     public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder;
-        if (mapper == null) {
+        boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
+        if (mapper == null && staticMeth ) {
             filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+        } else if(mapper == null && !staticMeth) {
+            try {
+                mapper = (F) mappingMethod.getDeclaringClass().newInstance();
+            } catch (IllegalAccessException | InstantiationException ex) {
+                throw new RuntimeException("unable to create mapper instance must have public default consturctor", ex);
+            }
+            filterBuilder = new FilterBuilder(mapper);
         } else {
             filterBuilder = new FilterBuilder(mapper);
         }
@@ -237,6 +249,46 @@ public class FilterBuilder<T, F> {
             }
         }
         filterBuilder.genClassSuffix = "Map_" + sourceString + "_By_" + mappingMethod.getName();
+        return filterBuilder;
+    }
+    
+    public static <T, R extends Boolean, S, F> FilterBuilder push(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
+        FilterBuilder filterBuilder;
+        boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
+        if (mapper == null && staticMeth ) {
+            filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+        } else if(mapper == null && !staticMeth) {
+            try {
+                mapper = (F) mappingMethod.getDeclaringClass().newInstance();
+            } catch (IllegalAccessException | InstantiationException ex) {
+                throw new RuntimeException("unable to create mapper instance must have public default consturctor", ex);
+            }
+            filterBuilder = new FilterBuilder(mapper);
+        } else {
+            filterBuilder = new FilterBuilder(mapper);
+        }
+        String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
+        filterBuilder.currentTemplate = PUSH_TEMPLATE;
+        filterBuilder.importMap.addImport(PushReference.class);
+        filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
+        filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
+        filterBuilder.filterSubject = source;
+        if (source instanceof Wrapper) {
+            filterBuilder.filterSubjectWrapper = (Wrapper) source;
+            sourceString = accessor == null ? filterBuilder.filterSubjectWrapper.eventClass().getSimpleName() : accessor.getName();
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamLocal("filterSubject", (Wrapper) source, cast);
+            } else {
+                filterBuilder.functionInfo.appendParamLocal(accessor, "filterSubject", (Wrapper) source, cast);
+            }
+        } else {
+            if (accessor == null) {
+                filterBuilder.functionInfo.appendParamValue("filterSubject", cast, true);
+            } else {
+                filterBuilder.functionInfo.appendParamLocal(accessor, "filterSubject", cast);
+            }
+        }
+        filterBuilder.genClassSuffix = "Push_" + sourceString + "_To_" + mappingMethod.getName();
         return filterBuilder;
     }
 
