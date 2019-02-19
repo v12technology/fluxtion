@@ -16,18 +16,20 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
-import com.fluxtion.api.partition.LambdaReflection;
+
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
+import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  *
@@ -88,7 +90,7 @@ public class StreamBuilder implements StreamOperator {
     public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
 //        final Object sourceInstance = unWrap(source);
         final Object targetInstance = unWrap(consumer);
-        FilterBuilder.push(targetInstance, consumer.method(), source, accessor, true).build(); 
+        FilterBuilder.push(targetInstance, consumer.method(), source, accessor, true).build();
     }
 
     @Override
@@ -108,13 +110,39 @@ public class StreamBuilder implements StreamOperator {
     public <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
         return BooleanBuilder.filterEither(source, notifier);
     }
-    
+
     @Override
     public <T> T nodeId(T node, String name) {
-        if(name==null || node==null){
+        if (name == null || node == null) {
             return node;
         }
         return GenerationContext.SINGLETON.nameNode(node, name);
     }
+
+    @Override
+    public <T> Wrapper<T> stream(T node) {
+        if (node instanceof Wrapper) {
+            return (Wrapper) node;
+        }
+        Optional findAny = GenerationContext.SINGLETON.getNodeList().stream().filter(new Predicate() {
+            @Override
+            public boolean test(Object t) {
+                boolean matched = false;
+                if (t instanceof Wrapper) {
+                    Object testWrapped = ((Wrapper) t).event();
+                    matched = testWrapped.equals(node);
+                }
+                return matched;
+            }
+        }).findAny();
+        
+        if(findAny.isPresent()){
+            return (Wrapper<T>) findAny.get();
+        }
+        Wrapper ret = new NodeWrapper(node);
+        GenerationContext.SINGLETON.addOrUseExistingNode(ret);
+        return ret;
+    }
+
 
 }

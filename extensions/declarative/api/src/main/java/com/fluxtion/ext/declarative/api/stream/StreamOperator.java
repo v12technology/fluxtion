@@ -15,9 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.declarative.api.stream;
-//      com.fluxtion.ext.declarative.api.stream
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -51,10 +49,37 @@ public interface StreamOperator {
         return null;
     }
 
+    /**
+     * push data from the wrapper to the consumer
+     *
+     * @param <T>
+     * @param <R>
+     * @param source
+     * @param accessor
+     * @param consumer
+     */
     default <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
     }
 
     /**
+     * Wrap a node with a {@link Wrapper} allowing stream operations to be
+     * applied to the node.
+     *
+     * @param <T>
+     * @param node
+     * @return
+     */
+    default <T> Wrapper<T> stream(T node) {
+        return null;
+    }
+    
+    public static <T> Wrapper<T> wrap(T node){
+        return service().stream(node);
+    }
+
+    /**
+     * Supply the wrapper to a consumer when the wrapper is on the execution
+     * path
      *
      * @param <T>
      * @param <S>
@@ -67,10 +92,26 @@ public interface StreamOperator {
         return source;
     }
 
+    /**
+     * adds the wrapper to an execution path
+     *
+     * @param <T>
+     * @param source
+     * @param notifier
+     * @return
+     */
     default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
         return source;
     }
 
+    /**
+     * name a StreamOperator node in the generated SEP.
+     *
+     * @param <T>
+     * @param node
+     * @param name
+     * @return
+     */
     default <T> T nodeId(T node, String name) {
         return node;
     }

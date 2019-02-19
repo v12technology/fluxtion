@@ -64,7 +64,8 @@ public interface Wrapper<T> {
 
     /**
      * pushes a data item from the current node in the stream to any node.The
- target node will become part of the same execution graph as the source.<p>
+     * target node will become part of the same execution graph as the
+     * source.<p>
      * The returned node is the current node in the stream.
      *
      * @param <T>
