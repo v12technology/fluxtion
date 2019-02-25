@@ -103,6 +103,10 @@ public interface StreamOperator {
     default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
         return source;
     }
+    
+    default <T> Wrapper<T> eventFilter(Wrapper<T> source, Object notifier) {
+        return source;
+    }
 
     /**
      * name a StreamOperator node in the generated SEP.

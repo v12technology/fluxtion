@@ -112,6 +112,11 @@ public class StreamBuilder implements StreamOperator {
     }
 
     @Override
+    public <T> Wrapper<T> eventFilter(Wrapper<T> source, Object notifier) {
+        return BooleanBuilder.filter(source, notifier);
+    }
+
+    @Override
     public <T> T nodeId(T node, String name) {
         if (name == null || node == null) {
             return node;

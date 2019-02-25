@@ -131,12 +131,27 @@ public interface Wrapper<T> {
      * Attaches an event notification instance to the current stream node. When
      * the notifier updates all the child nodes of this stream node will be on
      * the execution path and invoked following normal SEP rules.
+     * 
+     * The existing execution path will be unaltered if either the parent wrapped
+     * node or the eventNotifier updates then the execution path will progress.
      *
      * @param eventNotifier external event notifier
      * @return
      */
     default Wrapper<T> eventNotifier(Object eventNotifier) {
         return StreamOperator.service().eventNotifer(this, eventNotifier);
+    }
+    
+    /**
+     * Attaches an event notification instance to the current stream node. When
+     * the notifier updates all the child nodes of this stream node will be on
+     * the execution path and invoked following normal SEP rules.
+     *
+     * @param eventNotifier external event notifier
+     * @return
+     */
+    default Wrapper<T> eventFilter(Object eventNotifier) {
+        return StreamOperator.service().eventFilter(this, eventNotifier);
     }
 
     /**
