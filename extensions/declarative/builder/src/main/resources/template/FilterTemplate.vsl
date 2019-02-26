@@ -14,7 +14,7 @@ import $import;
  * 
  * @author Greg Higgins
  */
-public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
+public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass}> {
 
     //source operand inputs
     public ${sourceClass} filterSubject;
@@ -28,8 +28,8 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 #if(${stateful})
     @NoEventReference
     public Object resetNotifier;
+    private boolean parentReset = false;
 #end
-    private boolean notifyOnChangeOnly = false;
     private boolean result;
 
     @Initialise
@@ -52,9 +52,22 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
 
 #if(${stateful})
     @OnParentUpdate("resetNotifier")
-    public void resetNotification(Object resetNotifier){
-        result = false;
-        f.reset();
+    public void resetNotification(Object resetNotifier) {
+        parentReset = true;
+        if (isResetImmediate()) {
+            result = false;
+            f.reset();
+            parentReset = false;
+        }
+    }
+
+    @AfterEvent
+    public void resetAfterEvent() {
+        if (parentReset) {
+            result = false;
+            f.reset();
+        }
+        parentReset = false;
     }
 
     @Override
@@ -64,20 +77,6 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     }
 
 #end
-    @Override
-    public Wrapper<${filterSubjectClass}> notifyOnChange(boolean notifyOnChange){
-        this.notifyOnChangeOnly = notifyOnChange;
-        return this;
-    }
-
-    public boolean isNotifyOnChangeOnly() {
-        return notifyOnChangeOnly;
-    }
-
-    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
-        this.notifyOnChangeOnly = notifyOnChangeOnly;
-    }
-
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})

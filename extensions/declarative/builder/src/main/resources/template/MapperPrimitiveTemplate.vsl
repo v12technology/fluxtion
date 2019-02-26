@@ -15,7 +15,7 @@ import $import;
  * 
  * @author Greg Higgins
  */
-public class ${functionClass} implements Wrapper<Number>{
+public class ${functionClass} extends AbstractFilterWrapper<Number>{
 
     public ${sourceClass} filterSubject;
 #if(!${newFunction})
@@ -26,10 +26,10 @@ public class ${functionClass} implements Wrapper<Number>{
 #if(${stateful})
     @NoEventReference
     public Object resetNotifier;
+    private boolean parentReset = false;
 #end
     private MutableNumber value;
     private MutableNumber oldValue;
-    private boolean notifyOnChangeOnly = false;
 
     @Initialise
     public void init(){
@@ -52,9 +52,22 @@ public class ${functionClass} implements Wrapper<Number>{
 #if(${stateful})
 
     @OnParentUpdate("resetNotifier")
-    public void resetNotification(Object resetNotifier){
-        result = 0;
-        f.reset();
+    public void resetNotification(Object resetNotifier) {
+        parentReset = true;
+        if (isResetImmediate()) {
+            result = 0;
+            f.reset();
+            parentReset = false;
+        }
+    }
+
+    @AfterEvent
+    public void resetAfterEvent() {
+        if (parentReset) {
+            result = 0;
+            f.reset();
+        }
+        parentReset = false;
     }
 
     @Override
@@ -63,20 +76,6 @@ public class ${functionClass} implements Wrapper<Number>{
         return this;
     }
 #end
-
-    @Override
-    public Wrapper<Number> notifyOnChange(boolean notifyOnChange){
-        this.notifyOnChangeOnly = notifyOnChange;
-        return this;
-    }
-
-    public boolean isNotifyOnChangeOnly() {
-        return notifyOnChangeOnly;
-    }
-
-    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
-        this.notifyOnChangeOnly = notifyOnChangeOnly;
-    }
 
     @Override
     public Number event() {

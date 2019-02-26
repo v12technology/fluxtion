@@ -131,8 +131,9 @@ public interface Wrapper<T> {
      * Attaches an event notification instance to the current stream node. When
      * the notifier updates all the child nodes of this stream node will be on
      * the execution path and invoked following normal SEP rules.
-     * 
-     * The existing execution path will be unaltered if either the parent wrapped
+     *
+     * The existing execution path will be unaltered if either the parent
+     * wrapped
      * node or the eventNotifier updates then the execution path will progress.
      *
      * @param eventNotifier external event notifier
@@ -141,7 +142,7 @@ public interface Wrapper<T> {
     default Wrapper<T> eventNotifier(Object eventNotifier) {
         return StreamOperator.service().eventNotifer(this, eventNotifier);
     }
-    
+
     /**
      * Attaches an event notification instance to the current stream node. When
      * the notifier updates all the child nodes of this stream node will be on
@@ -153,9 +154,20 @@ public interface Wrapper<T> {
     default Wrapper<T> eventFilter(Object eventNotifier) {
         return StreamOperator.service().eventFilter(this, eventNotifier);
     }
-    
+
+    /**
+     * resets the stateful node and publishes the current value. The reset is
+     * after
+     * the last child on the execution path is executed, equivalent to {@link #immediateReset(boolean)
+     * }
+     * with value of false.
+     *
+     * @param notifier
+     * @return
+     */
     default Wrapper<T> publishAndReset(Object notifier) {
         resetNotifier(notifier);
+        immediateReset(false);
         return eventFilter(notifier);
     }
 
@@ -175,6 +187,23 @@ public interface Wrapper<T> {
      * @return The current node
      */
     default Wrapper<T> notifyOnChange(boolean notifyOnChange) {
+        return this;
+    }
+
+    /**
+     * Controls reset policy for stateful nodes, that are reset with {@link #resetNotifier(java.lang.Object)
+     * }. The policy has the following behaviour:
+     * <ul>
+     * <li>true - the stateful node will be reset before any child nodes are
+     * invoked on the execution path
+     * <li>false: - the stateful node will be reset after the final node on the
+     * execution path
+     * </ul>
+     *
+     * @param immediateReset reset policy
+     * @return
+     */
+    default Wrapper<T> immediateReset(boolean immediateReset) {
         return this;
     }
 

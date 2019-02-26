@@ -28,7 +28,6 @@ import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Test;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper;
-import com.fluxtion.ext.declarative.builder.factory.FunctionKeys;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.filterSubjectClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.functionClass;
@@ -49,6 +48,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
+import com.fluxtion.ext.declarative.api.stream.AbstractFilterWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
@@ -57,8 +57,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -482,6 +480,8 @@ public class FilterBuilder<T, F> {
         importMap.addImport(OnParentUpdate.class);
         importMap.addImport(Wrapper.class);
         importMap.addImport(Test.class);
+        importMap.addImport(AbstractFilterWrapper.class);
+        importMap.addImport(AfterEvent.class);
     }
 
     private SourceInfo addSource(Object input) {

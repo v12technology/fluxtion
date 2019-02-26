@@ -27,6 +27,14 @@ public class NumericPredicates {
     public static SerializableFunction<Number, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
+    
+    public static SerializableFunction<Number, Boolean> gtInt(int test) {
+        return new NumericPredicates(test)::greaterThan;
+    }
+    
+    public static SerializableFunction<Number, Boolean> gtNum(Number test) {
+        return new NumericPredicates(test.doubleValue())::greaterThan;
+    }
 
     public static SerializableFunction<Number, Boolean> lt(double test) {
         return new NumericPredicates(test)::lessThan;
