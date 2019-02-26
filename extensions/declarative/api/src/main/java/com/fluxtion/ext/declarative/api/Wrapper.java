@@ -153,6 +153,11 @@ public interface Wrapper<T> {
     default Wrapper<T> eventFilter(Object eventNotifier) {
         return StreamOperator.service().eventFilter(this, eventNotifier);
     }
+    
+    default Wrapper<T> publishAndReset(Object notifier) {
+        resetNotifier(notifier);
+        return eventFilter(notifier);
+    }
 
     /**
      * Controls the notification policy of event notification to child nodes for
