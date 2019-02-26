@@ -81,7 +81,7 @@ public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})
-        return filterSubject.event();
+        return (${filterSubjectClass})filterSubject.event();
 #else
         return filterSubject;
 #end
