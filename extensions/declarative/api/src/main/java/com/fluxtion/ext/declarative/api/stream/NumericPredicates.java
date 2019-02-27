@@ -17,6 +17,8 @@
 package com.fluxtion.ext.declarative.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.api.Stateful;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 
 /**
  *
@@ -26,14 +28,6 @@ public class NumericPredicates {
 
     public static SerializableFunction<Number, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
-    }
-    
-    public static SerializableFunction<Number, Boolean> gtInt(int test) {
-        return new NumericPredicates(test)::greaterThan;
-    }
-    
-    public static SerializableFunction<Number, Boolean> gtNum(Number test) {
-        return new NumericPredicates(test.doubleValue())::greaterThan;
     }
 
     public static SerializableFunction<Number, Boolean> lt(double test) {
@@ -86,14 +80,14 @@ public class NumericPredicates {
     public boolean lessThan(Number subject) {
         return subject.doubleValue() < doubleLimit_0;
     }
-    
-    public boolean inRange(Number subject){
+
+    public boolean inRange(Number subject) {
         return subject.doubleValue() > doubleLimit_0 & doubleLimit_1 >= subject.doubleValue();
     }
-    
-    public boolean outsideRange(Number subject){
+
+    public boolean outsideRange(Number subject) {
         return !inRange(subject);
     }
-    
-    
+
+
 }
