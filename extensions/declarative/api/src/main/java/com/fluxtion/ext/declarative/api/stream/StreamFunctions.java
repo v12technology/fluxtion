@@ -31,6 +31,14 @@ public class StreamFunctions {
         return new Message(message)::publishMessage;
     }
 
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> percentDelta() {
+        return new PercentDelta()::value;
+    }
+
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> max() {
+        return new Max()::max;
+    }
+
     public static class Count implements Stateful {
 
         private int count;
@@ -66,6 +74,23 @@ public class StreamFunctions {
         }
     }
 
+    public static class Max implements Stateful {
+
+        private MutableNumber max = new MutableNumber();
+
+        public Number max(Number val) {
+            if(max.doubleValue() < val.doubleValue()){
+                max.set(val.doubleValue());
+            }
+            return max;
+        }
+
+        @Override
+        public void reset() {
+            max.set(0);
+        }
+    }
+
     public static class Average implements Stateful {
 
         private double sum;
@@ -92,7 +117,7 @@ public class StreamFunctions {
         public double previous = Double.NaN;
         private MutableNumber result = new MutableNumber();
 
-        public Number exceedsBarrier(Number newVal) {
+        public Number value(Number newVal) {
             result.set(newVal.doubleValue() / previous);
             previous = newVal.doubleValue();
             return result;

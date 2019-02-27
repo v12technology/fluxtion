@@ -29,9 +29,17 @@ public class NumericPredicates {
     public static SerializableFunction<Number, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
+    
+    public static SerializableFunction<Number, Boolean> deltaGt(double test) {
+        return new NumericPredicates(test)::deltaGreaterThan;
+    }
 
     public static SerializableFunction<Number, Boolean> lt(double test) {
         return new NumericPredicates(test)::lessThan;
+    }
+    
+    public static SerializableFunction<Number, Boolean> deltaLt(double test) {
+        return new NumericPredicates(test)::deltaLessThan;
     }
 
     public static SerializableFunction<Number, Boolean> inRange(double lowerLimit, double upperLimit) {
@@ -52,6 +60,8 @@ public class NumericPredicates {
 
     public double doubleLimit_0 = Double.NaN;
     public double doubleLimit_1 = Double.NaN;
+    private double previous = Double.NaN;
+    private MutableNumber result = new MutableNumber();
 
     public NumericPredicates() {
     }
@@ -89,8 +99,17 @@ public class NumericPredicates {
         return !inRange(subject);
     }
 
-    public boolean deltaGt(Number newVal){
-//        return true;
-        throw new UnsupportedOperationException();
+    public boolean deltaGreaterThan(Number newVal) {
+        return delta(newVal).doubleValue > doubleLimit_0;
+    }
+
+    public boolean deltaLessThan(Number newVal) {
+        return delta(newVal).doubleValue < doubleLimit_0;
+    }
+    
+    private MutableNumber delta(Number val){
+        result.setDoubleValue(val.doubleValue() - previous);
+        previous = val.doubleValue();
+        return result;
     }
 }
