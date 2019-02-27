@@ -89,5 +89,8 @@ public class NumericPredicates {
         return !inRange(subject);
     }
 
-
+    public boolean deltaGt(Number newVal){
+//        return true;
+        throw new UnsupportedOperationException();
+    }
 }
