@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.11-SNAPSHOT</version>
+        <version>1.6.12-SNAPSHOT</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
 	
