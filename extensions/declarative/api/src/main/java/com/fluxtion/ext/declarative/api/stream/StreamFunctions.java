@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.declarative.api.stream;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 
@@ -25,6 +26,18 @@ import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class StreamFunctions {
+
+    public static <T> LambdaReflection.SerializableFunction<T, String> message(String message) {
+        return new Message(message)::publishMessage;
+    }
+
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> percentDelta() {
+        return new PercentDelta()::value;
+    }
+
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> max() {
+        return new Max()::max;
+    }
 
     public static class Count implements Stateful {
 
@@ -41,8 +54,8 @@ public class StreamFunctions {
             count = 0;
             num.set(count);
         }
-
     }
+
     public static class Sum implements Stateful {
 
         private double sum;
@@ -59,7 +72,23 @@ public class StreamFunctions {
             sum = 0;
             num.set(sum);
         }
+    }
 
+    public static class Max implements Stateful {
+
+        private MutableNumber max = new MutableNumber();
+
+        public Number max(Number val) {
+            if(max.doubleValue() < val.doubleValue()){
+                max.set(val.doubleValue());
+            }
+            return max;
+        }
+
+        @Override
+        public void reset() {
+            max.set(0);
+        }
     }
 
     public static class Average implements Stateful {
@@ -71,7 +100,7 @@ public class StreamFunctions {
         public Number addValue(Number val) {
             sum += val.doubleValue();
             count++;
-            average.setDoubleValue( sum / count);
+            average.setDoubleValue(sum / count);
             return average;
         }
 
@@ -81,16 +110,15 @@ public class StreamFunctions {
             count = 0;
             average.set(0);
         }
-
     }
-    
+
     public static class PercentDelta implements Stateful {
 
         public double previous = Double.NaN;
         private MutableNumber result = new MutableNumber();
 
-        public Number exceedsBarrier(Number newVal) {
-            result.set(newVal.doubleValue() / previous) ;
+        public Number value(Number newVal) {
+            result.set(newVal.doubleValue() / previous);
             previous = newVal.doubleValue();
             return result;
         }
@@ -100,7 +128,19 @@ public class StreamFunctions {
             previous = 0;
             result.set(0);
         }
-
     }
-    
+
+    public static class Message {
+
+        private final String outputMessage;
+
+        public Message(String outputMessage) {
+            this.outputMessage = outputMessage;
+        }
+
+        public String publishMessage(Object o) {
+            return outputMessage;
+        }
+    }
+
 }

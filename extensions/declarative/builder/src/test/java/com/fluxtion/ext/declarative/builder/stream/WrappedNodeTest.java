@@ -21,7 +21,7 @@ public class WrappedNodeTest extends BaseSepInprocessTest {
             
             StreamDataHandler handler = c.addNode(new StreamDataHandler());
             
-            Wrapper<StreamDataHandler> in = StreamOperator.wrap(handler);
+            Wrapper<StreamDataHandler> in = StreamBuilder.stream(handler);
             in.map(new MapFunctions()::String2Number, StreamDataHandler::stringValue).id("str2Number");
         });
         

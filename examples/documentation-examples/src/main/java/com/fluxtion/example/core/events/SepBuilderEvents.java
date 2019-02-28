@@ -164,6 +164,7 @@ public class SepBuilderEvents {
     @SepBuilder(name = "SampleProcessor", packageName = "com.fluxtion.example.core.events.propagation.generated",
             outputDir = "src/main/java"
     )
+    @Disabled //fix bug on repeateable generation - graphml is undpredictable
     public void buildPropagation(SEPConfig cfg) {
         DataEventHandler dataHandler_1 = cfg.addNode(new DataEventHandler());
         PropagateControlledhandler myEventHandler_2 = cfg.addNode(new PropagateControlledhandler());

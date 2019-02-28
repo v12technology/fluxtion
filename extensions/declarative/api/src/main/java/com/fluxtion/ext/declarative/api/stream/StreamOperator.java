@@ -60,23 +60,7 @@ public interface StreamOperator {
      */
     default <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
     }
-
-    /**
-     * Wrap a node with a {@link Wrapper} allowing stream operations to be
-     * applied to the node.
-     *
-     * @param <T>
-     * @param node
-     * @return
-     */
-    default <T> Wrapper<T> stream(T node) {
-        return null;
-    }
     
-    public static <T> Wrapper<T> wrap(T node){
-        return service().stream(node);
-    }
-
     /**
      * Supply the wrapper to a consumer when the wrapper is on the execution
      * path

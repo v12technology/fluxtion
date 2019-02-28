@@ -28,6 +28,7 @@ import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -123,9 +124,8 @@ public class StreamBuilder implements StreamOperator {
         }
         return GenerationContext.SINGLETON.nameNode(node, name);
     }
-
-    @Override
-    public <T> Wrapper<T> stream(T node) {
+    
+    public static <T> Wrapper<T> stream(T node) {
         if (node instanceof Wrapper) {
             return (Wrapper) node;
         }
@@ -134,8 +134,7 @@ public class StreamBuilder implements StreamOperator {
             public boolean test(Object t) {
                 boolean matched = false;
                 if (t instanceof Wrapper) {
-                    Object testWrapped = ((Wrapper) t).event();
-                    matched = testWrapped.equals(node);
+                    matched = Objects.equals(node,  ((Wrapper) t).event());
                 }
                 return matched;
             }
