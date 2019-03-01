@@ -35,7 +35,7 @@ public class StreamTest {
         NodeWrapper<Data> d = null;
         NodeWrapper<SubData> s = null;
         
-        merger.merge(d, s);
+        merger.mergeWrappers(d, s);
     }
     
     

@@ -38,6 +38,10 @@ public class StreamFunctions {
     public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> max() {
         return new Max()::max;
     }
+    
+    public static <T> LambdaReflection.SerializableFunction<T, Number> count() {
+        return new Count()::increment;
+    }
 
     public static class Count implements Stateful {
 
