@@ -1,11 +1,13 @@
 package com.fluxtion.ext.declarative.api;
 
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Merges streams into a single node in the SEP execution graph.
+ *
  * @author V12 Technology Ltd.
  */
 public class MergingWrapper<T> implements Wrapper<T> {
@@ -14,6 +16,7 @@ public class MergingWrapper<T> implements Wrapper<T> {
     private Class<T> clazz;
     private final String className;
     public List<Wrapper> wrappedNodes;
+    public List nodes;
 
     public MergingWrapper(String className) {
         this.className = className;
@@ -28,19 +31,31 @@ public class MergingWrapper<T> implements Wrapper<T> {
         this(clazz.getCanonicalName());
         this.clazz = clazz;
     }
-    
+
     @OnParentUpdate("wrappedNodes")
-    public void wrapperUpdate(Wrapper<? extends T> wrappedNode){
+    public void dependencyUpdate(Wrapper<? extends T> wrappedNode) {
         event = wrappedNode.event();
     }
 
-    public Wrapper<T> merge(Wrapper<? extends T>... nodes){
+    @OnEvent
+    public boolean updated() {
+        return true;
+    }
+
+    public Wrapper<T> merge(Wrapper<? extends T>... nodes) {
         for (Wrapper node : nodes) {
-            wrappedNodes.add( node);
+            wrappedNodes.add(node);
         }
         return this;
     }
     
+    public <S extends T> Wrapper merge(S... nodesT){
+        for (S node : nodesT) {
+            nodes.add(node);
+        }
+        return this;
+    }
+
     @Override
     public T event() {
         return event;
@@ -50,5 +65,5 @@ public class MergingWrapper<T> implements Wrapper<T> {
     public Class<T> eventClass() {
         return clazz;
     }
-    
+
 }
