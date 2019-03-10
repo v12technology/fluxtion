@@ -183,7 +183,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        filterBuilder.key = new FunctionClassKey(null, filterMethod, getClassForInstance(source), accessor, cast, "filter");
+        filterBuilder.key = new FunctionClassKey(null, filterMethod, source, accessor, cast, "filter");
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
             sourceString = accessor == null ? filterBuilder.filterSubjectWrapper.eventClass().getSimpleName() : accessor.getName();
@@ -221,7 +221,7 @@ public class FilterBuilder<T, F> {
         String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
         filterBuilder.currentTemplate = MAPPER_TEMPLATE;
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
+        filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         if (mappingMethod.getReturnType().isPrimitive() && mappingMethod.getReturnType() != boolean.class) {
             filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
             filterBuilder.importMap.addImport(Number.class);
@@ -269,7 +269,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.currentTemplate = PUSH_TEMPLATE;
         filterBuilder.importMap.addImport(PushReference.class);
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
+        filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -306,7 +306,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
         filterBuilder.functionInfo.returnTypeClass = source.getClass();
         filterBuilder.functionInfo.returnType = source.getClass().getName();
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(consumer), mappingMethod, getClassForInstance(source), null, false, "consumer");
+        filterBuilder.key = new FunctionClassKey(consumer, mappingMethod, source, null, false, "consumer");
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -341,7 +341,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(filter), filterMethod, getClassForInstance(source), accessor, cast, "filter");
+        filterBuilder.key = new FunctionClassKey(filter, filterMethod, source, accessor, cast, "filter");
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
             sourceString = accessor == null ? filterBuilder.filterSubjectWrapper.eventClass().getSimpleName() : accessor.getName();
@@ -465,12 +465,12 @@ public class FilterBuilder<T, F> {
         return false;
     }
 
-    private static Class getClassForInstance(Object o) {
-        if (o == null) {
-            return null;
-        }
-        return o.getClass();
-    }
+//    private static Class getClassForInstance(Object o) {
+//        if (o == null) {
+//            return null;
+//        }
+//        return o.getClass();
+//    }
 
     private void standardImports() {
         importMap.addImport(OnEvent.class);

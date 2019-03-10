@@ -18,6 +18,7 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Average;
@@ -45,5 +46,11 @@ public class FunctionBuilder {
     
     public static  <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, R> supplier){
         return select(supplier.getContainingClass()).map(mapper, supplier);
+    }
+    
+    public static  <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, LambdaReflection.SerializableSupplier< R> supplier){
+        FilterBuilder builder = FilterBuilder.map(mapper.captured()[0], mapper.method(), 
+                StreamBuilder.stream(supplier.captured()[0]), supplier.method(), true);
+        return builder.build();
     }
 }

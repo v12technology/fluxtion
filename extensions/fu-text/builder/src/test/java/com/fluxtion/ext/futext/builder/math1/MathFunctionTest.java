@@ -19,12 +19,16 @@ package com.fluxtion.ext.futext.builder.math1;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
+import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
+import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericResultRelay;
 import com.fluxtion.ext.declarative.api.numeric.NumericResultTarget;
 import static com.fluxtion.ext.futext.builder.math.MultiplyFunctions.multiply;
 import static com.fluxtion.ext.futext.builder.math.AddFunctions.add;
 import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent_2;
 import com.fluxtion.generator.util.BaseSepTest;
@@ -53,12 +57,12 @@ public class MathFunctionTest extends BaseSepTest{
     public void testIncSumArray() throws Exception {
         buildAndInitSep(BuilderSumIncArray.class);
         //add results listeners
-        NumericResultTarget targetColours = new NumericResultTarget("red,green");
-        NumericResultTarget targetNumbers = new NumericResultTarget("1,2,3");
-        NumericResultTarget targetAnimals = new NumericResultTarget("dog,cat");
-        sep.onEvent(targetColours);
-        sep.onEvent(targetNumbers);
-        sep.onEvent(targetAnimals);
+//        NumericResultTarget targetColours = new NumericResultTarget("red,green");
+//        NumericResultTarget targetNumbers = new NumericResultTarget("1,2,3");
+//        NumericResultTarget targetAnimals = new NumericResultTarget("dog,cat");
+//        sep.onEvent(targetColours);
+//        sep.onEvent(targetNumbers);
+//        sep.onEvent(targetAnimals);
         //fire some events for FX - ignored ny EQ 
         DataEvent de1 = new DataEvent();
         de1.setFilterString("RED");
@@ -72,13 +76,20 @@ public class MathFunctionTest extends BaseSepTest{
         sep.onEvent(de1);
         de1.setFilterInt(2);
         sep.onEvent(de1);
+        
+        
+        Wrapper<Number> colours = getField("redGreen");
+        Wrapper<Number> nums = getField("num_1_2_3");
 
-        assertThat(targetColours.getTarget().intValue(), is(1000));
-        assertThat(targetNumbers.getTarget().intValue(), is(600));
-        assertThat(targetAnimals.getTarget().intValue(), is(0));
-        System.out.println("ResultColours:" + targetColours.getTarget().intValue());
-        System.out.println("ResultNumbers:" + targetNumbers.getTarget().intValue());
-        System.out.println("ResultAnimals:" + targetAnimals.getTarget().intValue());
+        assertThat(colours.event().intValue(), is(1000));
+        assertThat(nums.event().intValue(), is(600));
+        
+//        assertThat(targetColours.getTarget().intValue(), is(1000));
+//        assertThat(targetNumbers.getTarget().intValue(), is(600));
+//        assertThat(targetAnimals.getTarget().intValue(), is(0));
+//        System.out.println("ResultColours:" + targetColours.getTarget().intValue());
+//        System.out.println("ResultNumbers:" + targetNumbers.getTarget().intValue());
+//        System.out.println("ResultAnimals:" + targetAnimals.getTarget().intValue());
     }
 
     public static class Builder extends SEPConfig {
@@ -106,11 +117,21 @@ public class MathFunctionTest extends BaseSepTest{
     public static class BuilderSumIncArray extends SEPConfig {
 
         public BuilderSumIncArray() {
-            NumericValue sumFx = cumSum(DataEvent.class, DataEvent::getValue, "RED", "GREEN");
-            NumericValue sumEq = cumSum(DataEvent.class, DataEvent::getValue, 1, 2, 3);
-            //results collector for testing
-            addNode(new NumericResultRelay("red,green", sumFx));
-            addNode(new NumericResultRelay("1,2,3", sumEq));
+//            NumericValue sumFx = cumSum(DataEvent.class, DataEvent::getValue, "RED", "GREEN");
+//            NumericValue sumEq = cumSum(DataEvent.class, DataEvent::getValue, 1, 2, 3);
+//            //results collector for testing
+//            addNode(new NumericResultRelay("red,green", sumFx));
+//            addNode(new NumericResultRelay("1,2,3", sumEq));
+            
+            
+            merge(select(DataEvent.class, "RED", "GREEN"))
+                    .map(StreamFunctions.cumSum(), DataEvent::getValue)
+                    .id("redGreen");
+            
+            merge(select(DataEvent.class, 1, 2, 3))
+                    .map(StreamFunctions.cumSum(), DataEvent::getValue)
+                    .id("num_1_2_3");
+            
         }
 
     }

@@ -626,7 +626,11 @@ public class SepJavaSourceModelHugeFilter {
                     DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
                     String dirtyAssignment = "";
                     if (dirtyFlagForUpdateCb != null) {
+                        if(dirtyFlagForUpdateCb.alwaysDirty){
+                            dirtyAssignment =  dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                        }else{
                             dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
+                        }
                     }
                     //protect with guards
                     Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -149,6 +150,7 @@ public interface JavaGenHelper {
 
     public static String getIdentifier(String str) {
         StringBuilder sb = new StringBuilder();
+        str = StringUtils.uncapitalize(str);
         if(!Character.isJavaIdentifierStart(str.charAt(0))) {
             sb.append("_");
         }

@@ -24,15 +24,23 @@ package com.fluxtion.generator.model;
 public class DirtyFlag {
     public final Field node;
     public final String name;
+    public final boolean alwaysDirty;
 
     public DirtyFlag(Field node, String name) {
         this.node = node;
         this.name = name;
+        alwaysDirty = false;
+    }
+
+    public DirtyFlag(Field node, String name, boolean alwaysDirty) {
+        this.node = node;
+        this.name = name;
+        this.alwaysDirty = alwaysDirty;
     }
 
     @Override
     public String toString() {
-        return "DirtyFlag{" + "node=" + node + ", name=" + name + '}';
+        return "DirtyFlag{" + "node=" + node + ", name=" + name + ", defaultVal=" + alwaysDirty + '}';
     }
-    
+
 }

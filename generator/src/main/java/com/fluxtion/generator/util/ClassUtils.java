@@ -80,8 +80,11 @@ public interface ClassUtils {
     }
 
     public static boolean typeSupported(Class<?> type) {
-        return type.isPrimitive() || type == String.class
-                || type.isEnum() || List.class.isAssignableFrom(type)
+        return type.isPrimitive() 
+                || type == String.class
+                || type == Class.class
+                || type.isEnum() 
+                || List.class.isAssignableFrom(type)
                 || type.isArray();
     }
 
@@ -138,6 +141,10 @@ public interface ClassUtils {
             primitivePrefix = "\"";
             primitiveSuffix = "\"";
             primitiveVal = StringEscapeUtils.escapeJava(primitiveVal.toString());
+        }
+        if (clazz == Class.class){
+            importList.add((Class)primitiveVal);
+            primitiveVal = ((Class)primitiveVal).getSimpleName() + ".class";
         }
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {

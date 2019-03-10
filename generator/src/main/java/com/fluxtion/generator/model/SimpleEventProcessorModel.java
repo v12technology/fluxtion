@@ -378,7 +378,7 @@ public class SimpleEventProcessorModel {
                 LOGGER.debug("{}:default constructor applicable", f.name);
 //                continue;
             } else {
-                LOGGER.debug("{}:match comoplex constructor private fields:{}", f.name, privateFields);
+                LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
                 boolean[] matched = new boolean[]{false};
 //                Set<Constructor> allConstructors = getAllConstructors(fieldClass, input -> {
                 Set<Constructor> allConstructors = getConstructors(fieldClass, input -> {
@@ -834,6 +834,9 @@ public class SimpleEventProcessorModel {
                 if (cbHandle != null && cbHandle.method.getReturnType() == boolean.class) {
                     DirtyFlag flag = new DirtyFlag(node, "isDirty_" + node.name);
                     dirtyFieldMap.put(node, flag);
+                }else if(cbHandle != null && cbHandle.method.getReturnType() == void.class) {
+                    DirtyFlag flag = new DirtyFlag(node, "isDirty_" + node.name, true);
+                    dirtyFieldMap.put(node, flag);                    
                 }
             }
             //build the guard conditions for nodes
@@ -916,7 +919,17 @@ public class SimpleEventProcessorModel {
         Collections.sort(guards, (DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
         return guards;
     }
-
+    
+    /**
+     * Provides a list of guard conditions for a node, but only if
+     * supportDirtyFiltering is configured and all of the parents of the node
+     * support the dirty flag.If any parent does not support the dirty flag
+     * then the node updated method will always be called after a parent has
+     * been notified of an event.
+     *
+     * @param cb
+     * @return collection of dirty flags that guard the node
+     */
     public Collection<DirtyFlag> getNodeGuardConditions(CbMethodHandle cb) {
         if (cb.isPostEventHandler && dependencyGraph.getDirectParents(cb.instance).isEmpty()) {
             final DirtyFlag dirtyFlagForNode = getDirtyFlagForNode(cb.instance);
@@ -927,36 +940,27 @@ public class SimpleEventProcessorModel {
         return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
     }
 
-    /**
-     * Provides a list of guard conditions for a node, but only if
-     * supportDirtyFiltering is configured and all of the parents of the node
-     * support the dirty flag. If any parent does not support the dirty flag
-     * then the node updated method will always be called after a parent has
-     * been notified of an event.
-     *
-     * @param node the node to introspect
-     * @return collection of dirty flags that guard the node
-     */
-    public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
-        ArrayList<DirtyFlag> guards = new ArrayList<>();
-        if (supportDirtyFiltering()) {
-            List<?> directParents = dependencyGraph.getDirectParents(node);
-            for (Object parent : directParents) {
-                DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
-                if (parentDirtyFlag == null) {
-                    guards.clear();
-                    break;
-                } else {
-                    guards.add(parentDirtyFlag);
-                }
-            }
-        }
-        return guards;
-    }
+
+//    public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
+//        ArrayList<DirtyFlag> guards = new ArrayList<>();
+//        if (supportDirtyFiltering()) {
+//            List<?> directParents = dependencyGraph.getDirectParents(node);
+//            for (Object parent : directParents) {
+//                DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
+//                if (parentDirtyFlag == null) {
+//                    guards.clear();
+//                    break;
+//                } else {
+//                    guards.add(parentDirtyFlag);
+//                }
+//            }
+//        }
+//        return guards;
+//    }
 
     public DirtyFlag getDirtyFlagForUpdateCb(CbMethodHandle cbHandle) {
         DirtyFlag flag = null;
-        if (supportDirtyFiltering() && cbHandle != null && cbHandle.method.getReturnType() == boolean.class) {
+        if (supportDirtyFiltering() && cbHandle != null){
             flag = dirtyFieldMap.get(getFieldForInstance(cbHandle.instance));
         }
         return flag;
@@ -1127,7 +1131,9 @@ public class SimpleEventProcessorModel {
             Method onEventMethod = ehMethodList.iterator().next();
 
             String name = dependencyGraph.variableName(eh);
-            dispatchMethods.add(new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true));
+            final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true);
+            dispatchMethods.add(cbMethodHandle);
+            node2UpdateMethodMap.put(eh, cbMethodHandle);
             for (int i = 1; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
                 name = dependencyGraph.variableName(object);

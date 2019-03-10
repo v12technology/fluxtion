@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.ext.declarative.api.Wrapper;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -28,18 +29,45 @@ public class FunctionClassKey {
     Class filterClass;
     Method filterMethod;
     Class sourceClass;
+    Class wrappedSourceClass;
     Method accessor;
     boolean cast;
     String type;
 
 
-    public FunctionClassKey(Class filterClass, Method filterMethod, Class sourceClass, Method accessor, boolean cast, String type) {
-        this.filterClass = filterClass;
+//    public FunctionClassKey(Class filterClass, Method filterMethod, Class sourceClass, Method accessor, boolean cast, String type) {
+//        this.filterClass = filterClass;
+//        this.filterMethod = filterMethod;
+//        this.sourceClass = sourceClass;
+//        this.accessor = accessor;
+//        this.cast = cast;
+//        this.type = type;
+//    }
+    public FunctionClassKey(Object filter, Method filterMethod, Object source, Method accessor, boolean cast, String type) {
+        this.filterClass = getClassForInstance(filter);
         this.filterMethod = filterMethod;
-        this.sourceClass = sourceClass;
+        this.sourceClass = getClassForInstance(source);
+        this.wrappedSourceClass = getWrappedClass(source);
         this.accessor = accessor;
         this.cast = cast;
         this.type = type;
+    }
+    
+    private static Class getClassForInstance(Object o) {
+        if (o == null) {
+            return null;
+        }
+        return o.getClass();
+    }
+    
+    private static Class getWrappedClass(Object o){
+        if(o == null){
+            return null;
+        }
+        if(o instanceof Wrapper){
+            return ((Wrapper)o).eventClass();
+        }
+        return null;
     }
 
     @Override
@@ -48,6 +76,7 @@ public class FunctionClassKey {
         hash = 97 * hash + Objects.hashCode(this.filterClass);
         hash = 97 * hash + Objects.hashCode(this.filterMethod);
         hash = 97 * hash + Objects.hashCode(this.sourceClass);
+        hash = 97 * hash + Objects.hashCode(this.wrappedSourceClass);
         hash = 97 * hash + Objects.hashCode(this.accessor);
         hash = 97 * hash + (this.cast ? 1 : 0);
         hash = 97 * hash + Objects.hashCode(this.type);
@@ -79,6 +108,9 @@ public class FunctionClassKey {
             return false;
         }
         if (!Objects.equals(this.sourceClass, other.sourceClass)) {
+            return false;
+        }
+        if (!Objects.equals(this.wrappedSourceClass, other.wrappedSourceClass)) {
             return false;
         }
         if (!Objects.equals(this.accessor, other.accessor)) {

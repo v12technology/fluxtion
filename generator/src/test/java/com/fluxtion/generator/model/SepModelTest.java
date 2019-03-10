@@ -779,7 +779,7 @@ public class SepModelTest {
         method = ParentUpdateListener.class.getMethod("onEvent");
         handle = new CbMethodHandle(method, pl_1, "who_knows");
         dirtyFlag = sep.getDirtyFlagForUpdateCb(handle);
-        assertNull(dirtyFlag);
+        assertEquals(pl_1, dirtyFlag.node.instance);
     }
 
 }
