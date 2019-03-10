@@ -16,6 +16,8 @@
  */
 package com.fluxtion.generator.model;
 
+import java.util.Objects;
+
 /**
  * A flag that represents the state of a node in a SEP.
  * 
@@ -43,4 +45,37 @@ public class DirtyFlag {
         return "DirtyFlag{" + "node=" + node + ", name=" + name + ", defaultVal=" + alwaysDirty + '}';
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.node);
+        hash = 53 * hash + Objects.hashCode(this.name);
+        hash = 53 * hash + (this.alwaysDirty ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DirtyFlag other = (DirtyFlag) obj;
+        if (this.alwaysDirty != other.alwaysDirty) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.node, other.node)) {
+            return false;
+        }
+        return true;
+    }
+    
 }

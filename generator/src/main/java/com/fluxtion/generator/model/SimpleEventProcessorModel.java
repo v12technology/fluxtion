@@ -962,6 +962,11 @@ public class SimpleEventProcessorModel {
         DirtyFlag flag = null;
         if (supportDirtyFiltering() && cbHandle != null){
             flag = dirtyFieldMap.get(getFieldForInstance(cbHandle.instance));
+            if(cbHandle.method.getReturnType()!=boolean.class){
+                //trap the case where evemthandler and onEvent in same class
+                //and onEvent does not return true
+                flag = new DirtyFlag(flag.node, flag.name, true);
+            }
         }
         return flag;
     }
