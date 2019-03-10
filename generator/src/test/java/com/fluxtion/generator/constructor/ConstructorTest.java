@@ -42,6 +42,13 @@ public class ConstructorTest extends BaseSepTest {
         buildAndInitSep(ConstructorCollectionBuilder.class);
         //TODO - actually add some asserts!!
     }
+    
+
+    @Test
+    public void testConstructorForClass() {
+        buildAndInitSep(ClassHolderBuilder.class);
+        //TODO - actually add some asserts!!
+    }
 
     @Test
     public void testPrimitiveCollection() {
@@ -292,7 +299,32 @@ public class ConstructorTest extends BaseSepTest {
             return handlers.stream().filter(o -> o.name.equals(name)).findAny().get();
         }
     }
+    
+    
+    public static class MyClassHolder{
+        private final Class clazz;
 
+        public MyClassHolder(Class clazz) {
+            this.clazz = clazz;
+        }
+        
+        
+        @EventHandler
+        public void newOrderEvent(NewOrderEvent configEvent) {
+
+        }
+    }
+
+    
+    
+    
+    public static final class ClassHolderBuilder extends SEPConfig {
+        @Override
+        public void buildConfig() {
+            addNode(new MyClassHolder(String.class));
+        }
+        
+    }
     public static final class PrimitiveCollectionsBuilder extends SEPConfig {
 
         @Override
