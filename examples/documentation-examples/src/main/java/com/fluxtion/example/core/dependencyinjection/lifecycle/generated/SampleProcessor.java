@@ -34,7 +34,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
       new DirtyCleanCombiner(cleanListener_3, cleanListener_3);
   private final DirtyListener dirtyListener_5 = new DirtyListener(conditioningHandler_1);
   //Dirty flags
+  private boolean isDirty_cleanListener_3 = false;
   private boolean isDirty_conditioningHandler_1 = false;
+  private boolean isDirty_dirtyCleanCombiner_7 = false;
+  private boolean isDirty_dirtyListener_5 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -55,12 +58,15 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     //Default, no filter methods
     isDirty_conditioningHandler_1 = conditioningHandler_1.onEvent(typedEvent);
     if (!isDirty_conditioningHandler_1) {
+      isDirty_cleanListener_3 = true;
       cleanListener_3.noChangeUpdate();
     }
-    if (isDirty_conditioningHandler_1) {
+    if (isDirty_cleanListener_3) {
+      isDirty_dirtyCleanCombiner_7 = true;
       dirtyCleanCombiner_7.changeUpdate();
     }
     if (isDirty_conditioningHandler_1) {
+      isDirty_dirtyListener_5 = true;
       dirtyListener_5.changeUpdate();
     }
     //event stack unwind callbacks
@@ -70,7 +76,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
 
+    isDirty_cleanListener_3 = false;
     isDirty_conditioningHandler_1 = false;
+    isDirty_dirtyCleanCombiner_7 = false;
+    isDirty_dirtyListener_5 = false;
   }
 
   @Override

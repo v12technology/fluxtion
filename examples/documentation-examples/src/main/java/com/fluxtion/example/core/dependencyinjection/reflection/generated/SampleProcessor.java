@@ -31,7 +31,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final FactoryNode factoryNode_3 =
       constructor.on(FactoryNode.class).invoke().constructor().bypasser();
   //Dirty flags
-
+  private boolean isDirty_factoryNode_3 = false;
+  private boolean isDirty_myEventHandler_1 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -54,14 +55,22 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
-    factoryNode_3.onEvent();
+    if (isDirty_myEventHandler_1) {
+      isDirty_factoryNode_3 = true;
+      factoryNode_3.onEvent();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_factoryNode_3 = false;
+    isDirty_myEventHandler_1 = false;
+  }
 
   @Override
   public void init() {}

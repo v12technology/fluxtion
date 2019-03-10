@@ -28,7 +28,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   //Node declarations
   private final MyEventProcessor myEventProcessor_1 = new MyEventProcessor("cfg.acl");
   //Dirty flags
-
+  private boolean isDirty_myEventProcessor_1 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -55,31 +55,41 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     switch (typedEvent.filterString()) {
         //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[cfg.acl]
       case ("cfg.acl"):
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleMyVariableConfig(typedEvent);
         afterEvent();
         return;
         //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[java.util.Date]
       case ("java.util.Date"):
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.dateConfig(typedEvent);
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleConfigEvent(typedEvent);
         afterEvent();
         return;
         //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[maxConnection]
       case ("maxConnection"):
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleMaxConnectionsConfig(typedEvent);
         afterEvent();
         return;
         //Event Class:[com.fluxtion.example.shared.ConfigEvent] filterString:[timeout]
       case ("timeout"):
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleConfigEvent(typedEvent);
+        isDirty_myEventProcessor_1 = true;
         myEventProcessor_1.handleTimeoutConfig(typedEvent);
         afterEvent();
         return;
     }
     //Default, no filter methods
+    isDirty_myEventProcessor_1 = true;
     myEventProcessor_1.handleConfigEvent(typedEvent);
+    isDirty_myEventProcessor_1 = true;
     myEventProcessor_1.unHandledConfig(typedEvent);
     //event stack unwind callbacks
     afterEvent();
@@ -87,13 +97,17 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventProcessor_1 = true;
     myEventProcessor_1.handleEvent(typedEvent);
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_myEventProcessor_1 = false;
+  }
 
   @Override
   public void init() {}

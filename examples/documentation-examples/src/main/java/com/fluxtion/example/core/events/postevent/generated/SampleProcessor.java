@@ -34,7 +34,9 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final ResetGlobal resetGlobal_5 = new ResetGlobal(resetDataEvent_3);
   private final ResetAfterEvent resetAfterEvent_7 = new ResetAfterEvent(resetGlobal_5);
   //Dirty flags
-
+  private boolean isDirty_dataEventHandler_1 = false;
+  private boolean isDirty_resetDataEvent_3 = false;
+  private boolean isDirty_resetGlobal_5 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -59,21 +61,38 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(ConfigEvent typedEvent) {
     //Default, no filter methods
+    isDirty_resetGlobal_5 = true;
     resetGlobal_5.conifgUpdate(typedEvent);
-    resetGlobal_5.eventUpdate();
+    if (isDirty_resetDataEvent_3) {
+      isDirty_resetGlobal_5 = true;
+      resetGlobal_5.eventUpdate();
+    }
     //event stack unwind callbacks
-    resetGlobal_5.eventComplete();
+    if (isDirty_resetDataEvent_3) {
+      resetGlobal_5.eventComplete();
+    }
     afterEvent();
   }
 
   public void handleEvent(DataEvent typedEvent) {
     //Default, no filter methods
+    isDirty_dataEventHandler_1 = true;
     dataEventHandler_1.handleEvent(typedEvent);
-    resetDataEvent_3.eventUpdate();
-    resetGlobal_5.eventUpdate();
+    if (isDirty_dataEventHandler_1) {
+      isDirty_resetDataEvent_3 = true;
+      resetDataEvent_3.eventUpdate();
+    }
+    if (isDirty_resetDataEvent_3) {
+      isDirty_resetGlobal_5 = true;
+      resetGlobal_5.eventUpdate();
+    }
     //event stack unwind callbacks
-    resetDataEvent_3.dataEventReset();
-    resetGlobal_5.eventComplete();
+    if (isDirty_dataEventHandler_1) {
+      resetDataEvent_3.dataEventReset();
+    }
+    if (isDirty_resetDataEvent_3) {
+      resetGlobal_5.eventComplete();
+    }
     afterEvent();
   }
 
@@ -81,6 +100,9 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public void afterEvent() {
     resetAfterEvent_7.afterEvent();
     resetGlobal_5.afterEvent();
+    isDirty_dataEventHandler_1 = false;
+    isDirty_resetDataEvent_3 = false;
+    isDirty_resetGlobal_5 = false;
   }
 
   @Override
