@@ -42,21 +42,9 @@ public class Functions {
     public static <T extends Event> Wrapper<Number> cumSum(SerializableFunction<T, Number> supplier){
         return map(new Sum()::addValue, supplier);
     } 
-    
+      
     public static <T> Wrapper<Number> cumSum(LambdaReflection.SerializableSupplier<Number> supplier){
         return map(new Sum()::addValue, supplier);
-//        Method m = supplier.method();
-//        Class clazz = supplier.getContainingClass();
-//        Object obj = supplier.captured().length<1?"NULL":supplier.captured()[0];
-//        System.out.printf("method:%s%nclass:%s%nobj:%s%n", m.toString(), clazz, obj);
     }
-    
-//    public static <T extends Event> Wrapper<Number> cumSum2(SerializableFunction<T, Number> supplier){
-//        Method m = supplier.method();
-//        Class clazz = supplier.getContainingClass();
-//        Object obj = supplier.captured().length<1?"NULL":supplier.captured()[0];
-//        System.out.printf("method:%s%nclass:%s%nobj:%s%n", m.toString(), clazz, obj);
-//        return null;
-//    }
     
 }
