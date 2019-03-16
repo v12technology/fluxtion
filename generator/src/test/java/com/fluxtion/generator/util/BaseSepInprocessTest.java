@@ -28,7 +28,8 @@ import org.junit.Rule;
 import org.junit.rules.TestName;
 
 /**
- *
+ * Test class utility for building a SEP in process
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class BaseSepInprocessTest {
