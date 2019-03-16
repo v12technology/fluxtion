@@ -23,6 +23,7 @@ import com.fluxtion.generator.targets.JavaGenHelper;
 import com.google.auto.service.AutoService;
 
 /**
+ * A Service that implements node naming strategy for EventHandler nodes
  *
  * @author V12 Technology Ltd.
  */
@@ -34,9 +35,9 @@ public class EventHandlerNamer implements NodeNameProducer {
         String name = null;
         if (nodeToMap instanceof EventHandler) {
             name = "handler" + ((EventHandler) nodeToMap).eventClass().getSimpleName();
-            if (nodeToMap instanceof FilteredEventHandler 
-                    && ((FilteredEventHandler)nodeToMap).filterId() != Integer.MAX_VALUE) {
-                    name += "_" + ((FilteredEventHandler)nodeToMap).filterId();
+            if (nodeToMap instanceof FilteredEventHandler
+                    && ((FilteredEventHandler) nodeToMap).filterId() != Integer.MAX_VALUE) {
+                name += "_" + ((FilteredEventHandler) nodeToMap).filterId();
             }
             name = JavaGenHelper.getIdentifier(name);
         }
