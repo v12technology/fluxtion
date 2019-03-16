@@ -90,8 +90,7 @@ import org.apache.velocity.VelocityContext;
  * Below is an example creating a filter on a primitive double property. The
  * filter is accets an int parmter all casts are managed
  * <p>
- * <
- * pre><code>
+ * <pre><code>
  * {@code @SepBuilder(name = "FilterTest", packageName = "com.fluxtion.testfilter")}
  * public void buildFilter(SEPConfig cfg) { MyDataHandler dh1 = cfg.addNode(new
  * MyDataHandler("dh1")); filter(lt(34), dh1::getDoubleVal).build();
