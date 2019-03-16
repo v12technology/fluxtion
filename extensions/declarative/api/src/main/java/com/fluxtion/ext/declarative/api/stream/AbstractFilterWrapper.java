@@ -3,7 +3,8 @@ package com.fluxtion.ext.declarative.api.stream;
 import com.fluxtion.ext.declarative.api.Wrapper;
 
 /**
- *
+ * A base class for stream functions. 
+ * 
  * @author V12 Technology Ltd.
  * @param <T>
  */
