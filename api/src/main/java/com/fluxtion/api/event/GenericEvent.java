@@ -23,14 +23,12 @@ import com.fluxtion.api.event.Event;
  * handler can use the following syntax to receive events filtered by generic
  * type:
  * <pre>
- *
- *{@literal @}EventHandler
- * public void someMethod(GenericEvent&lt;MyType&gt; event){
- * ...
- * }
+ * 
+ *  {@literal@}EventHandler
+ *  public void someMethod(GenericEvent<MyType> event){
+ *     //...
+ *  }
  * </pre>
- *
- * <p>
  * The generated SEP provide all filtering logic within the generated dispatch.
  * The Fluxtion compiler analyses the generic type and sets the
  * {@link  #filterString} to the canonical class name of the type.
