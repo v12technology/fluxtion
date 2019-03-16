@@ -21,30 +21,59 @@ import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Sum;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.map;
 
 /**
- * Prototype example of using he 
+ * Prototype example of using he
+ *
  * @author V12 Technology Ltd.
  */
 public class Functions {
 
     /**
      * Cumsum function for use in a stream.
+     *
      * @param <T>
-     * @return 
+     * @return
      */
     public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> cumSum() {
         return new StreamFunctions.Sum()::addValue;
     }
-    
-    public static <T extends Event> Wrapper<Number> cumSum(SerializableFunction<T, Number> supplier){
-        return map(new Sum()::addValue, supplier);
-    } 
-      
-    public static <T> Wrapper<Number> cumSum(LambdaReflection.SerializableSupplier<Number> supplier){
+
+    public static <T extends Event> Wrapper<Number> cumSum(SerializableFunction<T, Number> supplier) {
         return map(new Sum()::addValue, supplier);
     }
+
+    public static <T> Wrapper<Number> cumSum(LambdaReflection.SerializableSupplier<Number> supplier) {
+        return map(new Sum()::addValue, supplier);
+    }
+
+    //count - no args
+    public static <T> LambdaReflection.SerializableFunction<T, Number> count() {
+        return new StreamFunctions.Count()::increment;
+    }
+
+    public static <T extends Event> Wrapper<Number> count(Class<T> eventClass) {
+        return select(eventClass).map(new StreamFunctions.Count()::increment);
+    }
+
+    public static <T> Wrapper<Number> count(LambdaReflection.SerializableSupplier supplier) {
+        return map(new Sum()::addValue, supplier);
+    }
+
+    //avg
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> avg() {
+        return new Average()::addValue;
+    }
+
+    public static <T extends Event> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
+        return map(new Average()::addValue, supplier);
+    }
     
+    public static <T> Wrapper<Number> avg(LambdaReflection.SerializableSupplier<Number> supplier) {
+        return map(new Average()::addValue, supplier);
+    }
 }
