@@ -42,7 +42,13 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
           new Object[] {myEventHandler_1, myEventHandler_3, dataEventHandler_5, configHandler_7},
           Arrays.asList(configHandler_9, configHandler_11));
   //Dirty flags
-
+  private boolean isDirty_aggregator_13 = false;
+  private boolean isDirty_configHandler_7 = false;
+  private boolean isDirty_configHandler_9 = false;
+  private boolean isDirty_configHandler_11 = false;
+  private boolean isDirty_dataEventHandler_5 = false;
+  private boolean isDirty_myEventHandler_1 = false;
+  private boolean isDirty_myEventHandler_3 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -73,39 +79,90 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(ConfigEvent typedEvent) {
     //Default, no filter methods
+    isDirty_configHandler_7 = true;
     configHandler_7.cfgUpdate(typedEvent);
-    aggregator_13.parentUdated(configHandler_7);
+    if (isDirty_configHandler_7) {
+      aggregator_13.parentUdated(configHandler_7);
+    }
+    isDirty_configHandler_9 = true;
     configHandler_9.cfgUpdate(typedEvent);
-    aggregator_13.parentCfgUdated(configHandler_9);
+    if (isDirty_configHandler_9) {
+      aggregator_13.parentCfgUdated(configHandler_9);
+    }
+    isDirty_configHandler_11 = true;
     configHandler_11.cfgUpdate(typedEvent);
-    aggregator_13.parentCfgUdated(configHandler_11);
-    aggregator_13.update();
+    if (isDirty_configHandler_11) {
+      aggregator_13.parentCfgUdated(configHandler_11);
+    }
+    if (isDirty_configHandler_7
+        | isDirty_configHandler_9
+        | isDirty_configHandler_11
+        | isDirty_dataEventHandler_5
+        | isDirty_myEventHandler_1
+        | isDirty_myEventHandler_3) {
+      isDirty_aggregator_13 = true;
+      aggregator_13.update();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   public void handleEvent(DataEvent typedEvent) {
     //Default, no filter methods
+    isDirty_dataEventHandler_5 = true;
     dataEventHandler_5.handleEvent(typedEvent);
-    aggregator_13.parentUdated(dataEventHandler_5);
-    aggregator_13.update();
+    if (isDirty_dataEventHandler_5) {
+      aggregator_13.parentUdated(dataEventHandler_5);
+    }
+    if (isDirty_configHandler_7
+        | isDirty_configHandler_9
+        | isDirty_configHandler_11
+        | isDirty_dataEventHandler_5
+        | isDirty_myEventHandler_1
+        | isDirty_myEventHandler_3) {
+      isDirty_aggregator_13 = true;
+      aggregator_13.update();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
-    aggregator_13.parentUdated(myEventHandler_1);
+    if (isDirty_myEventHandler_1) {
+      aggregator_13.parentUdated(myEventHandler_1);
+    }
+    isDirty_myEventHandler_3 = true;
     myEventHandler_3.handleEvent(typedEvent);
-    aggregator_13.parentUdated(myEventHandler_3);
-    aggregator_13.update();
+    if (isDirty_myEventHandler_3) {
+      aggregator_13.parentUdated(myEventHandler_3);
+    }
+    if (isDirty_configHandler_7
+        | isDirty_configHandler_9
+        | isDirty_configHandler_11
+        | isDirty_dataEventHandler_5
+        | isDirty_myEventHandler_1
+        | isDirty_myEventHandler_3) {
+      isDirty_aggregator_13 = true;
+      aggregator_13.update();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_aggregator_13 = false;
+    isDirty_configHandler_7 = false;
+    isDirty_configHandler_9 = false;
+    isDirty_configHandler_11 = false;
+    isDirty_dataEventHandler_5 = false;
+    isDirty_myEventHandler_1 = false;
+    isDirty_myEventHandler_3 = false;
+  }
 
   @Override
   public void init() {}

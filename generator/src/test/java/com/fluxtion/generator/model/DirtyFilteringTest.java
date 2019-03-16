@@ -1,5 +1,6 @@
 /* 
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (c) 2019, V12 Technology Ltd.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -8,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side License for more details.
+ * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
  * along with this program.  If not, see 
@@ -69,42 +70,46 @@ public class DirtyFilteringTest {
 
         sep.getFieldForInstance(dirty_1);
 
+        System.out.println("flags:" + sep.getDirtyFieldMap().keySet());
+        sep.getDirtyFieldMap().keySet().stream().map((Field c) -> c.name).forEach(System.out::println);
+        
         assertThat(sep.getDirtyFieldMap().keySet(), containsInAnyOrder(
+                sep.getFieldForInstance(e1),
+                sep.getFieldForInstance(e2),
+                sep.getFieldForInstance(i1),
+                sep.getFieldForInstance(i2),
+                sep.getFieldForInstance(i3),
+                sep.getFieldForInstance(eRoot),
                 sep.getFieldForInstance(dirty_1),
                 sep.getFieldForInstance(dirty_2),
                 sep.getFieldForInstance(dirty_3)
         ));
 
+        assertTrue(sep.getNodeGuardConditions(e1).isEmpty());
+        assertTrue(sep.getNodeGuardConditions(e2).isEmpty());
+        assertThat(sep.getNodeGuardConditions(i1), containsInAnyOrder(
+                sep.getDirtyFlagForNode(e1)
+        ));
         assertThat(sep.getNodeGuardConditions(i2), containsInAnyOrder(
                 sep.getDirtyFlagForNode(dirty_1),
                 sep.getDirtyFlagForNode(dirty_2)
         ));
-
+        assertThat(sep.getNodeGuardConditions(i3), containsInAnyOrder(
+                sep.getDirtyFlagForNode(e2)
+        ));
+        assertThat(sep.getNodeGuardConditions(dirty_1), containsInAnyOrder(
+                sep.getDirtyFlagForNode(e1)
+        ));
+        assertThat(sep.getNodeGuardConditions(dirty_2), containsInAnyOrder(
+                sep.getDirtyFlagForNode(e2)
+        ));
+        assertThat(sep.getNodeGuardConditions(dirty_3), containsInAnyOrder(
+                sep.getDirtyFlagForNode(i1),
+                sep.getDirtyFlagForNode(i3)
+        ));
         assertThat(sep.getNodeGuardConditions(eRoot), containsInAnyOrder(
                 sep.getDirtyFlagForNode(dirty_3)
         ));
-
-        assertTrue(sep.getNodeGuardConditions(e1).isEmpty());
-        assertTrue(sep.getNodeGuardConditions(e2).isEmpty());
-        assertTrue(sep.getNodeGuardConditions(i1).isEmpty());
-        assertTrue(sep.getNodeGuardConditions(i3).isEmpty());
-        assertTrue(sep.getNodeGuardConditions(dirty_3).isEmpty());
-
-        //using new method
-        assertThat(sep.getNodeGuardConditions_OLD(i2), containsInAnyOrder(
-                sep.getDirtyFlagForNode(dirty_1),
-                sep.getDirtyFlagForNode(dirty_2)
-        ));
-
-        assertThat(sep.getNodeGuardConditions_OLD(eRoot), containsInAnyOrder(
-                sep.getDirtyFlagForNode(dirty_3)
-        ));
-
-        assertTrue(sep.getNodeGuardConditions_OLD(e1).isEmpty());
-        assertTrue(sep.getNodeGuardConditions_OLD(e2).isEmpty());
-        assertTrue(sep.getNodeGuardConditions_OLD(i1).isEmpty());
-        assertTrue(sep.getNodeGuardConditions_OLD(i3).isEmpty());
-        assertTrue(sep.getNodeGuardConditions_OLD(dirty_3).isEmpty());
     }
 
     /**
@@ -145,12 +150,11 @@ public class DirtyFilteringTest {
         sep.generateMetaModel(true);
 
         assertThat(sep.getNodeGuardConditions(i5), containsInAnyOrder(
-                sep.getDirtyFlagForNode(dirty_1)
+                sep.getDirtyFlagForNode(i2)
         ));
 
         assertThat(sep.getNodeGuardConditions(i6), containsInAnyOrder(
-                sep.getDirtyFlagForNode(dirty_1),
-                sep.getDirtyFlagForNode(dirty_2)
+                sep.getDirtyFlagForNode(i3)
         ));
     }
 

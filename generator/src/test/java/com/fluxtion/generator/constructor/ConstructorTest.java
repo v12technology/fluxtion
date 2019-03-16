@@ -1,5 +1,6 @@
 /* 
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (c) 2019, V12 Technology Ltd.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -8,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side License for more details.
+ * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
  * along with this program.  If not, see 
@@ -40,6 +41,13 @@ public class ConstructorTest extends BaseSepTest {
     @Test
     public void testConstructorWithCollection() {
         buildAndInitSep(ConstructorCollectionBuilder.class);
+        //TODO - actually add some asserts!!
+    }
+    
+
+    @Test
+    public void testConstructorForClass() {
+        buildAndInitSep(ClassHolderBuilder.class);
         //TODO - actually add some asserts!!
     }
 
@@ -292,7 +300,32 @@ public class ConstructorTest extends BaseSepTest {
             return handlers.stream().filter(o -> o.name.equals(name)).findAny().get();
         }
     }
+    
+    
+    public static class MyClassHolder{
+        private final Class clazz;
 
+        public MyClassHolder(Class clazz) {
+            this.clazz = clazz;
+        }
+        
+        
+        @EventHandler
+        public void newOrderEvent(NewOrderEvent configEvent) {
+
+        }
+    }
+
+    
+    
+    
+    public static final class ClassHolderBuilder extends SEPConfig {
+        @Override
+        public void buildConfig() {
+            addNode(new MyClassHolder(String.class));
+        }
+        
+    }
     public static final class PrimitiveCollectionsBuilder extends SEPConfig {
 
         @Override

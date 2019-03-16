@@ -1,6 +1,8 @@
 package com.fluxtion.ext.declarative.api.util;
 
+import com.fluxtion.ext.declarative.api.MergingWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
 import org.junit.Test;
 
 /**
@@ -26,6 +28,17 @@ public class StreamTest {
 //        dwrapper.filter(StreamTest::isZero, Data::getVal);
     }
 
+    
+    @Test
+    public void wrapperTest(){
+        MergingWrapper<Data> merger = new MergingWrapper<>(Data.class);
+        NodeWrapper<Data> d = null;
+        NodeWrapper<SubData> s = null;
+        
+        merger.mergeWrappers(d, s);
+    }
+    
+    
     public static class Data {
 
         public int getVal() {
@@ -33,6 +46,8 @@ public class StreamTest {
         }
     }
 
+    public static class SubData extends Data{}
+    
     public static boolean isZero(double im) {
         return im == 0;
     }

@@ -31,7 +31,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final InjectingDataProcessor injectingDataProcessor_1 =
       new InjectingDataProcessor("myfilter_string");
   //Dirty flags
-
+  private boolean isDirty_filteredDataHandler_2 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -55,6 +55,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     switch (typedEvent.filterString()) {
         //filtering for myfilter_string
       case ("myfilter_string"):
+        isDirty_filteredDataHandler_2 = true;
         filteredDataHandler_2.dataEvent(typedEvent);
         afterEvent();
         return;
@@ -63,7 +64,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_filteredDataHandler_2 = false;
+  }
 
   @Override
   public void init() {}

@@ -29,11 +29,12 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.filterTy
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.ext.declarative.api.ReusableEventHandler;
 import java.util.Map;
 import org.apache.velocity.VelocityContext;
 
 /**
- *
+ * Utility functions for selecting and creating a stream from and incoming {@link Event}
  * @author Greg Higgins
  */
 public interface EventSelect {
@@ -41,6 +42,11 @@ public interface EventSelect {
     static final String TEMPLATE = Templates.PACKAGE + "/EventSelectTemplate.vsl";
 
     public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz) {
+        EventWrapper<T> handler = new ReusableEventHandler(eventClazz);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+    }
+
+    public static <T extends Event> EventWrapper<T> selectOLD(Class<T> eventClazz) {
         return build(eventClazz, null, null);
     }
 
@@ -64,9 +70,15 @@ public interface EventSelect {
         return build(eventClazz, filterId, "String");
     }
 
-    public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz, int filterId) {
+    public static <T extends Event> EventWrapper<T> selectOld(Class<T> eventClazz, int filterId) {
         return build(eventClazz, "" + filterId, "int");
     }
+    
+    
+    public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz, int filterId) {
+        EventWrapper<T> handler = new ReusableEventHandler(filterId, eventClazz);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+    } 
 
     static <T extends Event> EventWrapper<T> build(Class<T> eventClazz, String filterId, String filteringType) {
         String classKey = eventClazz.getSimpleName() + filteringType;

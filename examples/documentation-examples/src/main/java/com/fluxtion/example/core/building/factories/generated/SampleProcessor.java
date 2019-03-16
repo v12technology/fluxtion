@@ -29,7 +29,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final FilteredDataHandler handler = new FilteredDataHandler("myTestFilter");
   public final FactoryNode factoryBuilt = new FactoryNode(handler);
   //Dirty flags
-
+  private boolean isDirty_factoryBuilt = false;
+  private boolean isDirty_handler = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -52,8 +53,12 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     switch (typedEvent.filterString()) {
         //filtering for myTestFilter
       case ("myTestFilter"):
+        isDirty_handler = true;
         handler.dataEvent(typedEvent);
-        factoryBuilt.update();
+        if (isDirty_handler) {
+          isDirty_factoryBuilt = true;
+          factoryBuilt.update();
+        }
         afterEvent();
         return;
     }
@@ -61,7 +66,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_factoryBuilt = false;
+    isDirty_handler = false;
+  }
 
   @Override
   public void init() {}

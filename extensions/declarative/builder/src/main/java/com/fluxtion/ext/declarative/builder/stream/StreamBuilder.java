@@ -108,12 +108,12 @@ public class StreamBuilder implements StreamOperator {
     }
 
     @Override
-    public <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
+    public <T> Wrapper<T> notiferMerge(Wrapper<T> source, Object notifier) {
         return BooleanBuilder.filterEither(source, notifier);
     }
 
     @Override
-    public <T> Wrapper<T> eventFilter(Wrapper<T> source, Object notifier) {
+    public <T> Wrapper<T> notifierOverride(Wrapper<T> source, Object notifier) {
         return BooleanBuilder.filter(source, notifier);
     }
 

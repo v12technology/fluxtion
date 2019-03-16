@@ -8,9 +8,10 @@ import $import;
 /**
  * generated NumericFunction wrapper.
  * Wraps a numeric function for invocation.
- * target class  : ${targetClass}
- * target method : ${targetMethod}
- * 
+ * <ul>
+ *   <li>target class  : ${targetClass}
+ *   <li>target method : ${targetMethod}
+ * </ul>
  * @author Greg Higgins
  */
 public class ${functionClass} extends Number implements NumericValue{

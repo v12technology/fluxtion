@@ -40,7 +40,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final Combiner combiner_9 = new Combiner(childNode_3, pipelineNode_7);
   public final NodeAuditor nodeAuditor = new NodeAuditor();
   //Dirty flags
+  private boolean isDirty_childNode_3 = false;
   private boolean isDirty_combiner_9 = false;
+  private boolean isDirty_dataEventHandler_5 = false;
+  private boolean isDirty_myEventHandler_1 = false;
+  private boolean isDirty_pipelineNode_7 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -77,8 +81,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     //Default, no filter methods
     auditInvocation(combiner_9, "combiner_9", "processConfig", typedEvent);
     isDirty_combiner_9 = combiner_9.processConfig(typedEvent);
-    auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-    combiner_9.onEvent();
+    if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
+      auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
+      isDirty_combiner_9 = true;
+      combiner_9.onEvent();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
@@ -87,11 +94,18 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(dataEventHandler_5, "dataEventHandler_5", "handleEvent", typedEvent);
+    isDirty_dataEventHandler_5 = true;
     dataEventHandler_5.handleEvent(typedEvent);
-    auditInvocation(pipelineNode_7, "pipelineNode_7", "update", typedEvent);
-    pipelineNode_7.update();
-    auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-    combiner_9.onEvent();
+    if (isDirty_dataEventHandler_5) {
+      auditInvocation(pipelineNode_7, "pipelineNode_7", "update", typedEvent);
+      isDirty_pipelineNode_7 = true;
+      pipelineNode_7.update();
+    }
+    if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
+      auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
+      isDirty_combiner_9 = true;
+      combiner_9.onEvent();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
@@ -100,11 +114,18 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(myEventHandler_1, "myEventHandler_1", "handleEvent", typedEvent);
+    isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
-    auditInvocation(childNode_3, "childNode_3", "recalculate", typedEvent);
-    childNode_3.recalculate();
-    auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-    combiner_9.onEvent();
+    if (isDirty_myEventHandler_1) {
+      auditInvocation(childNode_3, "childNode_3", "recalculate", typedEvent);
+      isDirty_childNode_3 = true;
+      childNode_3.recalculate();
+    }
+    if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
+      auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
+      isDirty_combiner_9 = true;
+      combiner_9.onEvent();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
@@ -129,7 +150,11 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
     nodeAuditor.processingComplete();
+    isDirty_childNode_3 = false;
     isDirty_combiner_9 = false;
+    isDirty_dataEventHandler_5 = false;
+    isDirty_myEventHandler_1 = false;
+    isDirty_pipelineNode_7 = false;
   }
 
   @Override
