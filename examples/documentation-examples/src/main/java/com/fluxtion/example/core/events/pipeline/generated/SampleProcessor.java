@@ -29,7 +29,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final DataEventHandler dataEventHandler_1 = new DataEventHandler();
   private final PipelineNode pipelineNode_3 = new PipelineNode(dataEventHandler_1);
   //Dirty flags
-
+  private boolean isDirty_dataEventHandler_1 = false;
+  private boolean isDirty_pipelineNode_3 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -48,14 +49,22 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(DataEvent typedEvent) {
     //Default, no filter methods
+    isDirty_dataEventHandler_1 = true;
     dataEventHandler_1.handleEvent(typedEvent);
-    pipelineNode_3.update();
+    if (isDirty_dataEventHandler_1) {
+      isDirty_pipelineNode_3 = true;
+      pipelineNode_3.update();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_dataEventHandler_1 = false;
+    isDirty_pipelineNode_3 = false;
+  }
 
   @Override
   public void init() {}

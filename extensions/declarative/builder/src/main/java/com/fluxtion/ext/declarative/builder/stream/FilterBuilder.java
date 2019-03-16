@@ -50,6 +50,7 @@ import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.api.stream.AbstractFilterWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
+import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -89,8 +90,7 @@ import org.apache.velocity.VelocityContext;
  * Below is an example creating a filter on a primitive double property. The
  * filter is accets an int parmter all casts are managed
  * <p>
- * <
- * pre><code>
+ * <pre><code>
  * {@code @SepBuilder(name = "FilterTest", packageName = "com.fluxtion.testfilter")}
  * public void buildFilter(SEPConfig cfg) { MyDataHandler dh1 = cfg.addNode(new
  * MyDataHandler("dh1")); filter(lt(34), dh1::getDoubleVal).build();
@@ -183,7 +183,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        filterBuilder.key = new FunctionClassKey(null, filterMethod, getClassForInstance(source), accessor, cast, "filter");
+        filterBuilder.key = new FunctionClassKey(null, filterMethod, source, accessor, cast, "filter");
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
             sourceString = accessor == null ? filterBuilder.filterSubjectWrapper.eventClass().getSimpleName() : accessor.getName();
@@ -202,7 +202,14 @@ public class FilterBuilder<T, F> {
         filterBuilder.genClassSuffix = "Filter_" + sourceString + "_By_" + filterMethod.getName();
         return filterBuilder;
     }
-
+    
+    public static <T, R extends Boolean, S, F> FilterBuilder mapSet(F mapper, FunctionArg... args) {
+        //call map then add sources
+        //update the key
+        //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
+        return null;
+    }
+    
     public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder;
         boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
@@ -221,7 +228,7 @@ public class FilterBuilder<T, F> {
         String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
         filterBuilder.currentTemplate = MAPPER_TEMPLATE;
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
+        filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         if (mappingMethod.getReturnType().isPrimitive() && mappingMethod.getReturnType() != boolean.class) {
             filterBuilder.currentTemplate = MAPPER_PRIMITIVE_TEMPLATE;
             filterBuilder.importMap.addImport(Number.class);
@@ -269,7 +276,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.currentTemplate = PUSH_TEMPLATE;
         filterBuilder.importMap.addImport(PushReference.class);
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(mapper), mappingMethod, getClassForInstance(source), accessor, cast, "mapper");
+        filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -306,7 +313,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(mappingMethod, filterBuilder.importMap);
         filterBuilder.functionInfo.returnTypeClass = source.getClass();
         filterBuilder.functionInfo.returnType = source.getClass().getName();
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(consumer), mappingMethod, getClassForInstance(source), null, false, "consumer");
+        filterBuilder.key = new FunctionClassKey(consumer, mappingMethod, source, null, false, "consumer");
         filterBuilder.filterSubject = source;
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
@@ -341,7 +348,7 @@ public class FilterBuilder<T, F> {
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
         SourceInfo sourceInfo = filterBuilder.addSource(source);
-        filterBuilder.key = new FunctionClassKey(getClassForInstance(filter), filterMethod, getClassForInstance(source), accessor, cast, "filter");
+        filterBuilder.key = new FunctionClassKey(filter, filterMethod, source, accessor, cast, "filter");
         if (source instanceof Wrapper) {
             filterBuilder.filterSubjectWrapper = (Wrapper) source;
             sourceString = accessor == null ? filterBuilder.filterSubjectWrapper.eventClass().getSimpleName() : accessor.getName();
@@ -465,12 +472,12 @@ public class FilterBuilder<T, F> {
         return false;
     }
 
-    private static Class getClassForInstance(Object o) {
-        if (o == null) {
-            return null;
-        }
-        return o.getClass();
-    }
+//    private static Class getClassForInstance(Object o) {
+//        if (o == null) {
+//            return null;
+//        }
+//        return o.getClass();
+//    }
 
     private void standardImports() {
         importMap.addImport(OnEvent.class);

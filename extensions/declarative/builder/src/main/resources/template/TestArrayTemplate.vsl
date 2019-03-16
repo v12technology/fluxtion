@@ -72,7 +72,7 @@ public class ${functionClass} implements Test{
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})
-        return filterElementToTest.event();
+        return (${filterSubjectClass})filterElementToTest.event();
 #else
         return filterElementToTest;
 #end

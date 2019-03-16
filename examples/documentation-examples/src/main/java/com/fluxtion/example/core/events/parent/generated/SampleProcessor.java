@@ -34,7 +34,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final ParentIdentifier parentIdentifier_7 =
       new ParentIdentifier(dataEventHandler_1, dataEventHandler_3, myEventHandler_5);
   //Dirty flags
-
+  private boolean isDirty_dataEventHandler_1 = false;
+  private boolean isDirty_dataEventHandler_3 = false;
+  private boolean isDirty_myEventHandler_5 = false;
+  private boolean isDirty_parentIdentifier_7 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -59,26 +62,47 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(DataEvent typedEvent) {
     //Default, no filter methods
+    isDirty_dataEventHandler_1 = true;
     dataEventHandler_1.handleEvent(typedEvent);
-    parentIdentifier_7.dataHandler_1_changed(dataEventHandler_1);
+    if (isDirty_dataEventHandler_1) {
+      parentIdentifier_7.dataHandler_1_changed(dataEventHandler_1);
+    }
+    isDirty_dataEventHandler_3 = true;
     dataEventHandler_3.handleEvent(typedEvent);
-    parentIdentifier_7.dataHandler_2_changed(dataEventHandler_3);
-    parentIdentifier_7.process();
+    if (isDirty_dataEventHandler_3) {
+      parentIdentifier_7.dataHandler_2_changed(dataEventHandler_3);
+    }
+    if (isDirty_dataEventHandler_1 | isDirty_dataEventHandler_3 | isDirty_myEventHandler_5) {
+      isDirty_parentIdentifier_7 = true;
+      parentIdentifier_7.process();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_5 = true;
     myEventHandler_5.handleEvent(typedEvent);
-    parentIdentifier_7.myEventHandler_changed(myEventHandler_5);
-    parentIdentifier_7.process();
+    if (isDirty_myEventHandler_5) {
+      parentIdentifier_7.myEventHandler_changed(myEventHandler_5);
+    }
+    if (isDirty_dataEventHandler_1 | isDirty_dataEventHandler_3 | isDirty_myEventHandler_5) {
+      isDirty_parentIdentifier_7 = true;
+      parentIdentifier_7.process();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_dataEventHandler_1 = false;
+    isDirty_dataEventHandler_3 = false;
+    isDirty_myEventHandler_5 = false;
+    isDirty_parentIdentifier_7 = false;
+  }
 
   @Override
   public void init() {}

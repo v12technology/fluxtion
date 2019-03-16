@@ -29,7 +29,9 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final DataHandler handler_EQUITIES = new DataHandler("EQUITIES");
   private final DataHandler handler_BONDS = new DataHandler("BONDS");
   //Dirty flags
-
+  private boolean isDirty_handler_BONDS = false;
+  private boolean isDirty_handler_EQUITIES = false;
+  private boolean isDirty_handler_FX = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -50,16 +52,19 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     switch (typedEvent.filterString()) {
         //filtering for BONDS
       case ("BONDS"):
+        isDirty_handler_BONDS = true;
         handler_BONDS.processUpdate(typedEvent);
         afterEvent();
         return;
         //filtering for EQUITIES
       case ("EQUITIES"):
+        isDirty_handler_EQUITIES = true;
         handler_EQUITIES.processUpdate(typedEvent);
         afterEvent();
         return;
         //filtering for FX
       case ("FX"):
+        isDirty_handler_FX = true;
         handler_FX.processUpdate(typedEvent);
         afterEvent();
         return;
@@ -68,7 +73,12 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_handler_BONDS = false;
+    isDirty_handler_EQUITIES = false;
+    isDirty_handler_FX = false;
+  }
 
   @Override
   public void init() {}

@@ -8,12 +8,13 @@ import ${sourceInfo.typeFqn};
 #end
 
 /**
- * generated NumericFunction wrapper.
- * Wraps a numeric function for invocation.
- * source class  : ${sourceInfo.type}
- * target class  : ${targetClass}
- * target method : ${targetMethod}
- * 
+ * NumericFunction wrapper.
+ * Wraps a numeric function for invocation, sourced from an array of inputs.
+ * <ul>
+ *   <li> source class  : ${sourceInfo.type}
+ *   <li> target class  : ${targetClass}
+ *   <li> target method : ${targetMethod}
+ * </ul>
  * @author Greg Higgins
  */
 public class ${functionClass} implements NumericValue{

@@ -38,9 +38,13 @@ public class StreamFunctions {
     public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> max() {
         return new Max()::max;
     }
-    
+
     public static <T> LambdaReflection.SerializableFunction<T, Number> count() {
         return new Count()::increment;
+    }
+
+    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> cumSum() {
+        return new Sum()::addValue;
     }
 
     public static class Count implements Stateful {
@@ -83,7 +87,7 @@ public class StreamFunctions {
         private MutableNumber max = new MutableNumber();
 
         public Number max(Number val) {
-            if(max.doubleValue() < val.doubleValue()){
+            if (max.doubleValue() < val.doubleValue()) {
                 max.set(val.doubleValue());
             }
             return max;

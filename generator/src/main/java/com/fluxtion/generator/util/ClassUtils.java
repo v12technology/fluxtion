@@ -1,5 +1,6 @@
 /* 
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (c) 2019, V12 Technology Ltd.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -80,8 +81,11 @@ public interface ClassUtils {
     }
 
     public static boolean typeSupported(Class<?> type) {
-        return type.isPrimitive() || type == String.class
-                || type.isEnum() || List.class.isAssignableFrom(type)
+        return type.isPrimitive() 
+                || type == String.class
+                || type == Class.class
+                || type.isEnum() 
+                || List.class.isAssignableFrom(type)
                 || type.isArray();
     }
 
@@ -138,6 +142,10 @@ public interface ClassUtils {
             primitivePrefix = "\"";
             primitiveSuffix = "\"";
             primitiveVal = StringEscapeUtils.escapeJava(primitiveVal.toString());
+        }
+        if (clazz == Class.class){
+            importList.add((Class)primitiveVal);
+            primitiveVal = ((Class)primitiveVal).getSimpleName() + ".class";
         }
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {

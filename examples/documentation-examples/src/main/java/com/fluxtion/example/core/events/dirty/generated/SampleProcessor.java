@@ -37,9 +37,12 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final DirtyAggregator dirtyAggregator_11 =
       new DirtyAggregator(dirtyNode_5, dirtyNode_7, dirtyNode_9);
   //Dirty flags
+  private boolean isDirty_dataEventHandler_1 = false;
+  private boolean isDirty_dirtyAggregator_11 = false;
   private boolean isDirty_dirtyNode_5 = false;
   private boolean isDirty_dirtyNode_7 = false;
   private boolean isDirty_dirtyNode_9 = false;
+  private boolean isDirty_myEventHandler_3 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -64,10 +67,16 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(DataEvent typedEvent) {
     //Default, no filter methods
+    isDirty_dataEventHandler_1 = true;
     dataEventHandler_1.handleEvent(typedEvent);
-    isDirty_dirtyNode_5 = dirtyNode_5.isDirty();
-    isDirty_dirtyNode_7 = dirtyNode_7.isDirty();
+    if (isDirty_dataEventHandler_1) {
+      isDirty_dirtyNode_5 = dirtyNode_5.isDirty();
+    }
+    if (isDirty_dataEventHandler_1) {
+      isDirty_dirtyNode_7 = dirtyNode_7.isDirty();
+    }
     if (isDirty_dirtyNode_5 | isDirty_dirtyNode_7 | isDirty_dirtyNode_9) {
+      isDirty_dirtyAggregator_11 = true;
       dirtyAggregator_11.publishDirty();
     }
     //event stack unwind callbacks
@@ -76,9 +85,13 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_3 = true;
     myEventHandler_3.handleEvent(typedEvent);
-    isDirty_dirtyNode_9 = dirtyNode_9.isDirty();
+    if (isDirty_myEventHandler_3) {
+      isDirty_dirtyNode_9 = dirtyNode_9.isDirty();
+    }
     if (isDirty_dirtyNode_5 | isDirty_dirtyNode_7 | isDirty_dirtyNode_9) {
+      isDirty_dirtyAggregator_11 = true;
       dirtyAggregator_11.publishDirty();
     }
     //event stack unwind callbacks
@@ -88,9 +101,12 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
 
+    isDirty_dataEventHandler_1 = false;
+    isDirty_dirtyAggregator_11 = false;
     isDirty_dirtyNode_5 = false;
     isDirty_dirtyNode_7 = false;
     isDirty_dirtyNode_9 = false;
+    isDirty_myEventHandler_3 = false;
   }
 
   @Override

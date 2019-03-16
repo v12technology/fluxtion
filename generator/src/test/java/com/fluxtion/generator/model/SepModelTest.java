@@ -1,5 +1,6 @@
 /* 
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (c) 2019, V12 Technology Ltd.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -8,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side License for more details.
+ * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
  * along with this program.  If not, see 
@@ -779,7 +780,7 @@ public class SepModelTest {
         method = ParentUpdateListener.class.getMethod("onEvent");
         handle = new CbMethodHandle(method, pl_1, "who_knows");
         dirtyFlag = sep.getDirtyFlagForUpdateCb(handle);
-        assertNull(dirtyFlag);
+        assertEquals(pl_1, dirtyFlag.node.instance);
     }
 
 }

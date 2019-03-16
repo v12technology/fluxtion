@@ -60,7 +60,7 @@ public interface StreamOperator {
      */
     default <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
     }
-    
+
     /**
      * Supply the wrapper to a consumer when the wrapper is on the execution
      * path
@@ -77,18 +77,35 @@ public interface StreamOperator {
     }
 
     /**
-     * adds the wrapper to an execution path
+     * Attaches an event notification instance to the current stream node and
+     * merges notifications from stream and the added notifier.When
+     * the notifier updates all the child nodes of this stream node will be on
+     * the execution path and invoked following normal SEP rules.The existing
+     * execution path will be unaltered if either the parent
+     * wrapped
+     * node or the eventNotifier updates then the execution path will progress.
      *
      * @param <T>
      * @param source
      * @param notifier
      * @return
      */
-    default <T> Wrapper<T> eventNotifer(Wrapper<T> source, Object notifier) {
+    default <T> Wrapper<T> notiferMerge(Wrapper<T> source, Object notifier) {
         return source;
     }
-    
-    default <T> Wrapper<T> eventFilter(Wrapper<T> source, Object notifier) {
+
+    /**
+     * Attaches an event notification instance to the current stream node,
+     * overriding the execution path of the current stream.Only when
+     * the notifier updates will the child nodes of this stream node be on
+     * the execution path.
+     *
+     * @param <T>
+     * @param source 
+     * @param notifier external event notifier
+     * @return
+     */
+    default <T> Wrapper<T> notifierOverride(Wrapper<T> source, Object notifier) {
         return source;
     }
 

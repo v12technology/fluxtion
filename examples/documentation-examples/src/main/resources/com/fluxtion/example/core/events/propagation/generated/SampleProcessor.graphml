@@ -29,20 +29,20 @@
 </jGraph:ShapeNode>
 </data>
 </node>
-<node id="ConfigEvent">
-<data key="vertex_label">
-<jGraph:ShapeNode>
-<jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;ConfigEvent"/>
-<jGraph:Style properties="EVENT"/>
-</jGraph:ShapeNode>
-</data>
-</node>
 <node id="MyEvent">
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
 <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;MyEvent"/>
+<jGraph:Style properties="EVENT"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="ConfigEvent">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;ConfigEvent"/>
 <jGraph:Style properties="EVENT"/>
 </jGraph:ShapeNode>
 </data>
@@ -66,12 +66,12 @@
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="3" source="ConfigEvent" target="propagateControlledhandler_3">
+<edge id="3" source="MyEvent" target="propagateControlledhandler_3">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="4" source="MyEvent" target="propagateControlledhandler_3">
+<edge id="4" source="ConfigEvent" target="propagateControlledhandler_3">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>

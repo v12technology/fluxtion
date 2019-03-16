@@ -33,7 +33,10 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final Cache cache_3 = new Cache();
   private final CacheReader cacheReader_5 = new CacheReader(cache_3, myEventHandler_1);
   //Dirty flags
-
+  private boolean isDirty_cacheReader_5 = false;
+  private boolean isDirty_cacheWriter_7 = false;
+  private boolean isDirty_cache_3 = false;
+  private boolean isDirty_myEventHandler_1 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -54,16 +57,32 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
-    cacheWriter_7.pushToCache();
-    cache_3.reconcileCache();
-    cacheReader_5.readFromCache();
+    if (isDirty_myEventHandler_1) {
+      isDirty_cacheWriter_7 = true;
+      cacheWriter_7.pushToCache();
+    }
+    if (isDirty_cacheWriter_7) {
+      isDirty_cache_3 = true;
+      cache_3.reconcileCache();
+    }
+    if (isDirty_cache_3 | isDirty_myEventHandler_1) {
+      isDirty_cacheReader_5 = true;
+      cacheReader_5.readFromCache();
+    }
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_cacheReader_5 = false;
+    isDirty_cacheWriter_7 = false;
+    isDirty_cache_3 = false;
+    isDirty_myEventHandler_1 = false;
+  }
 
   @Override
   public void init() {}

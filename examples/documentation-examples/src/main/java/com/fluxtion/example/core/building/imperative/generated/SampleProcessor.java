@@ -31,7 +31,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public final SubNode subNode = new SubNode(myEventHandler_1);
   public final PropertySubNode propNode = new PropertySubNode();
   //Dirty flags
-
+  private boolean isDirty_myEventHandler_1 = false;
   //Filter constants
 
   public SampleProcessor() {
@@ -53,13 +53,17 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
+    isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {}
+  public void afterEvent() {
+
+    isDirty_myEventHandler_1 = false;
+  }
 
   @Override
   public void init() {}
