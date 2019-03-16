@@ -34,7 +34,7 @@ import java.util.Map;
 import org.apache.velocity.VelocityContext;
 
 /**
- *
+ * Utility functions for selecting and creating a stream from and incoming {@link Event}
  * @author Greg Higgins
  */
 public interface EventSelect {
