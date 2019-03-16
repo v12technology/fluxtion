@@ -168,7 +168,7 @@ public class StreamTest implements Stateful {
             Wrapper tempC = select(TempF.class).id("tempIn")
                     .console("\n[1.TempF] ->")
                     .filter(TempF::getFahrenheit, gt(20)).id("breach20C")
-                    .eventNotifier(select(DataEvent.class).id("logTrigger").console("\n[trigger event]"))
+                    .notiferMerge(select(DataEvent.class).id("logTrigger").console("\n[trigger event]"))
                     .console("[2.temp>20] ->")
                     .map(new StreamTest()::max, TempF::getFahrenheit).notifyOnChange(true).id("maxTemp")
                     .console("[3.new max temp] ->");
