@@ -50,6 +50,7 @@ import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.api.stream.AbstractFilterWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
+import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -202,7 +203,14 @@ public class FilterBuilder<T, F> {
         filterBuilder.genClassSuffix = "Filter_" + sourceString + "_By_" + filterMethod.getName();
         return filterBuilder;
     }
-
+    
+    public static <T, R extends Boolean, S, F> FilterBuilder mapSet(F mapper, FunctionArg... args) {
+        //call map then add sources
+        //update the key
+        //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
+        return null;
+    }
+    
     public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
         FilterBuilder filterBuilder;
         boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
