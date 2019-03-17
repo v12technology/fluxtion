@@ -22,11 +22,10 @@ import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Average;
-import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Count;
-import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Sum;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  *
@@ -34,25 +33,18 @@ import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
  */
 public class FunctionBuilder {
 
-//    public static <T extends Event> Wrapper<Number> count(Class<T> eventClass) {
-//        return select(eventClass).map(new Count()::increment);
-//    }
-//
-//    public static <T extends Event> Wrapper<Number> sum(SerializableFunction<T, Number> supplier) {
-//        return map(new Sum()::addValue, supplier);
-//    }
-//
-//    public static <T extends Event> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
-//        return map(new Average()::addValue, supplier);
-//    }
-
-    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, R> supplier) {
+    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
     }
 
     public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
             LambdaReflection.SerializableSupplier<S> supplier) {
-        FilterBuilder builder = FilterBuilder.map(mapper.captured()[0], mapper.method(),
+        Method m = mapper.method();
+        Object captured = null;
+        if(!Modifier.isStatic(m.getModifiers())){
+            captured = mapper.captured()[0];
+        }
+        FilterBuilder builder = FilterBuilder.map(captured, m,
                 StreamBuilder.stream(supplier.captured()[0]), supplier.method(), true);
         return builder.build();
     }
