@@ -17,6 +17,7 @@
 package com.fluxtion.ext.declarative.builder.util;
 
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.generator.targets.JavaGenHelper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,8 +56,13 @@ public class ImportMap {
         String className = clazz.getEnclosingClass()==null?
                 clazz.getCanonicalName():clazz.getEnclosingClass().getCanonicalName();
         String simpleName = clazz.getSimpleName();
+        String pkgName = "";
+        try{
+            pkgName = GenerationContext.SINGLETON.getPackageName();
+        }catch (Exception e){ }
+        pkgName = pkgName==null?"":pkgName;
         if(clazz.isPrimitive() || className.startsWith("java.lang") 
-                || GenerationContext.SINGLETON.getPackageName().startsWith(className)){
+                || pkgName.startsWith(className)){
             return simpleName;
         }
         if (importedClassSet.contains(clazz)) {
