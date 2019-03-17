@@ -1,15 +1,84 @@
 ## Velocity Template.
-package ${package};
+package ${functionPackage};
 #foreach( $import in $imports)
 import $import;
 #end
 
 /**
+ * Generated mapper function wrapper for a reference type.
+ *<ul>
+ * <li>output class       : {@link ${outputClass}}
+ * <li>input class        : {@link ${filterSubjectClass}}
+ * <li>converter function : {@link ${targetClass}#${targetMethod}}
+ *</ul>
  * 
  * @author Greg Higgins
  */
 public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
 
+    public ${sourceClass} filterSubject;
+#if(!${newFunction})
+    @NoEventReference
+    public ${targetClass} f;
+#end
+    private ${outputClass} result;
+#if(${stateful})
+    @NoEventReference
+    public Object resetNotifier;
+    private boolean parentReset = false;
+#end
 
+    @Initialise
+    public void init(){
+        result = null;
+    }
+
+    @OnEvent
+    public boolean onEvent(){
+        ${outputClass} oldValue = result;
+#if(${newFunction})
+        result = ${targetClass}.${targetMethod}(${input});
+#else
+        result = f.${targetMethod}(${input});
+#end
+        return !notifyOnChangeOnly || (!result.equals(oldValue));
+    }
+#if(${stateful})
+
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier) {
+        parentReset = true;
+        if (isResetImmediate()) {
+            f.reset();
+            parentReset = false;
+        }
+    }
+
+    @AfterEvent
+    public void resetAfterEvent() {
+        if (parentReset) {
+            f.reset();
+        }
+        parentReset = false;
+    }
+  
+    @Override
+    public Wrapper<${outputClass}> resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+#end
+
+    @Override
+    public ${outputClass} event() {
+        return result;
+    }
+
+    @Override
+    public Class<${outputClass}> eventClass() {
+        return ${outputClass}.class;
+    }
 }
+
+
 

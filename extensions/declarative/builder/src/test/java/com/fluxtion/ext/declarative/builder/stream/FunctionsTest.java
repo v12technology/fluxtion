@@ -18,8 +18,6 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
@@ -33,9 +31,8 @@ public class FunctionsTest extends BaseSepInprocessTest {
 //        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(Functions.cumSum(), StreamData::getIntValue);
-            
-            
+            in.map(StreamFunctionsBuilder.cumSum(), StreamData::getIntValue);
+
             in.filter(StreamData::getIntValue, FilterFunctions::posStatic)
                     .map(new MapFunctions()::count).id("countStatic");
             in.filter(StreamData::getIntValue, new FilterFunctions()::positive).id("data")
@@ -53,14 +50,20 @@ public class FunctionsTest extends BaseSepInprocessTest {
 //        onEvent(new StreamData(-10));
 //        assertThat(count.event().intValue(), is(2));
 //        assertThat(countStatic .event().intValue(), is(2));
-        
-
     }
-    
+
     @Test
-    public void testReflection(){
-        Functions.cumSum(StreamData::getDoubleValue);
-        StreamData sd = new StreamData();
-        Functions.cumSum(sd::getIntValue);
+    public void testReflection() {
+        sep((c) -> {
+            StreamFunctionsBuilder.cumSum(StreamData::getDoubleValue);
+            StreamFunctionsBuilder.cumSum(new StreamData()::getIntValue);
+        });
+    }
+
+    @Test
+    public void testReflectionStatic() {
+        sep((c) -> {
+            StreamFunctionsBuilder.ceil(new StreamData()::getDoubleValue);
+        });
     }
 }

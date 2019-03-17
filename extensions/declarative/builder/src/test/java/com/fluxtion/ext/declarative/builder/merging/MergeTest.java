@@ -24,7 +24,7 @@ import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.BaseSepInprocessTest;
-import static com.fluxtion.ext.declarative.builder.stream.Functions.count;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
