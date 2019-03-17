@@ -323,7 +323,6 @@ public class FilterBuilder<T, F> {
             filterBuilder.functionInfo.appendParamValue("filterSubject", false, false);
         }
         filterBuilder.genClassSuffix = "Consume_" + sourceString;
-//        + "_By_" + mappingMethod.getName();
         return filterBuilder;
     }
 
@@ -428,7 +427,6 @@ public class FilterBuilder<T, F> {
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put(imports.name(), importMap.asString());
             ctx.put(newFunction.name(), testFunction == null);
-//            Class<Wrapper<F>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, currentTemplate, GenerationContext.SINGLETON, ctx);
             Class<Wrapper<F>> aggClass = compileIfAbsent(ctx);
             Wrapper<F> result = aggClass.newInstance();
             //set function instance
@@ -471,13 +469,6 @@ public class FilterBuilder<T, F> {
         }
         return false;
     }
-
-//    private static Class getClassForInstance(Object o) {
-//        if (o == null) {
-//            return null;
-//        }
-//        return o.getClass();
-//    }
 
     private void standardImports() {
         importMap.addImport(OnEvent.class);
