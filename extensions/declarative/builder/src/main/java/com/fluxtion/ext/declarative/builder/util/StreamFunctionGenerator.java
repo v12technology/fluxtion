@@ -16,10 +16,26 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
-import static com.fluxtion.generator.util.TemplatingCompiler.TemplateKeys.packageName;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Average;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Max;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.PercentDelta;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Sum;
+import com.fluxtion.ext.declarative.builder.event.EventSelect;
+import com.fluxtion.ext.declarative.builder.stream.FunctionBuilder;
+import com.fluxtion.ext.declarative.builder.stream.StreamBuilder;
+import com.fluxtion.generator.targets.JavaGenHelper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -33,24 +49,57 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  */
 public class StreamFunctionGenerator {
 
-    private String templateFile;
+    private String templateFile = "/template/FunctionsTemplate.vsl";
     private String packageName = "com.fluxtion.ext.declarative.builder.stream";
-    private String className = "MyFunctions";
+    private String className = "StreamFunctionsBuilder";
+    private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
+    private List<FunctionInfo> functionList = new ArrayList<>();
+    private List<FunctionInfo> consumerFunctionList = new ArrayList<>();
 
-    private void generate() throws IOException {
+    public static void main(String[] args) throws IOException {
+        StreamFunctionGenerator gen = new StreamFunctionGenerator();
+        gen.addUnaryFunction(new Sum()::addValue, "cumSum");
+        gen.addUnaryFunction(new Average()::addValue, "avg");
+        gen.addUnaryFunction(new Max()::max, "max");
+        gen.addUnaryFunction(new PercentDelta()::value, "percentChange");
+        gen.addUnaryFunction(Math::ceil, "ceil");
+        gen.addUnaryFunction(Math::floor, "floor");
+        //consumer
+        gen.addConsumerFunction(new Count()::increment, "count");
+        gen.generate();
+    }
+
+    public <T, R> void addUnaryFunction(SerializableFunction<T, R> func, String name) {
+        functionList.add(new FunctionInfo(func, name));
+    }
+
+    public <T, R> void addConsumerFunction(SerializableFunction<T, R> func, String name) {
+        consumerFunctionList.add(new FunctionInfo(func, name));
+    }
+
+    public void generate() throws IOException {
+        //velocity setup
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
         Velocity.init();
         Template template = Velocity.getTemplate(templateFile);
         Context ctx = new VelocityContext();
-//        ctx.put("package", packageName);
-//        ctx.put("className", className);
-//        ctx.put("functionName", functionName);
-//        ctx.put("functionClass", functionClass);
-//        ctx.put("functionClassFqn", functionClassFqn);
-//        ctx.put("isArrayFunction", isArrayFunction);
-//        ctx.put("isStatefulFunction", isStatefulFunction);
+        //standard imports 
+        imports.addImport(Event.class);
+        imports.addImport(SerializableFunction.class);
+        imports.addImport(SerializableSupplier.class);
+        imports.addImport(Wrapper.class);
+        imports.addStaticImport(EventSelect.class);
+        imports.addStaticImport(FunctionBuilder.class);
+        imports.addStaticImport(StreamBuilder.class);
+        //setup context
+        ctx.put("imports", imports.asString());
+        ctx.put("functions", functionList);
+        ctx.put("consumers", consumerFunctionList);
+        ctx.put("package", packageName);
+        ctx.put("className", className);
+        //generate
         File srcPackageDirectory = new File(SRC_DIR, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
         File outFile = new File(srcPackageDirectory, className + ".java");
@@ -59,18 +108,38 @@ public class StreamFunctionGenerator {
         templateWriter.flush();
     }
 
-
-
-    public static class FunctionInfo {
+    public class FunctionInfo {
 
         String methodName;
         String invoke;
-        String type;
+        String returnType;
+        String inputType;
+        String functionName;
 
-        public FunctionInfo(String methodName, String invoke, String type) {
-            this.methodName = methodName;
-            this.invoke = invoke;
-            this.type = type;
+        public FunctionInfo(SerializableFunction func, String name) {
+            final Method m = func.method();
+            this.functionName = name;
+            String clazz = imports.addImport(func.getContainingClass());
+            methodName = clazz + "#" + m.getName();
+            if (Modifier.isStatic(m.getModifiers())) {
+                invoke = clazz + "::" + m.getName();
+            } else {
+                //new Sum()::addValue
+                invoke = "new " + clazz + "()::" + m.getName();
+            }
+            Class<?> returnClass = m.getReturnType();
+            if(returnClass.isPrimitive()){
+                returnClass =JavaGenHelper.mapPrimitiveToWrapper(returnClass);
+            }
+            returnType = imports.addImport(returnClass);
+            Class<?> inType = m.getParameterTypes()[0];
+            if (inType == Object.class) {
+                inputType = "T";
+            } else if (inType.isPrimitive()) {
+                inputType = imports.addImport(JavaGenHelper.mapPrimitiveToWrapper(inType));
+            } else {
+                inputType = imports.addImport(inType);
+            }
         }
 
         public String getMethodName() {
@@ -81,6 +150,14 @@ public class StreamFunctionGenerator {
             this.methodName = methodName;
         }
 
+        public String getFunctionName() {
+            return functionName;
+        }
+
+        public void setFunctionName(String functionName) {
+            this.functionName = functionName;
+        }
+
         public String getInvoke() {
             return invoke;
         }
@@ -89,12 +166,20 @@ public class StreamFunctionGenerator {
             this.invoke = invoke;
         }
 
-        public String getType() {
-            return type;
+        public String getReturnType() {
+            return returnType;
         }
 
-        public void setType(String type) {
-            this.type = type;
+        public void setReturnType(String returnType) {
+            this.returnType = returnType;
+        }
+
+        public String getInputType() {
+            return inputType;
+        }
+
+        public void setInputType(String inputType) {
+            this.inputType = inputType;
         }
 
     }
