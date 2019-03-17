@@ -31,14 +31,6 @@ public class StreamFunctions {
         return new Message(message)::publishMessage;
     }
 
-    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> percentDelta() {
-        return new PercentDelta()::value;
-    }
-
-    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> max() {
-        return new Max()::max;
-    }
-
     public static class Count implements Stateful {
 
         private int count;
@@ -88,6 +80,23 @@ public class StreamFunctions {
         @Override
         public void reset() {
             max.set(0);
+        }
+    }
+
+    public static class Min implements Stateful {
+
+        private MutableNumber min = new MutableNumber();
+
+        public Number min(Number val) {
+            if (min.doubleValue() > val.doubleValue()) {
+                min.set(val.doubleValue());
+            }
+            return min;
+        }
+
+        @Override
+        public void reset() {
+            min.set(0);
         }
     }
 
