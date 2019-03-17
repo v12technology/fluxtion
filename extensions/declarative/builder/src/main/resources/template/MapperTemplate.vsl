@@ -80,3 +80,5 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
     }
 }
 
+
+

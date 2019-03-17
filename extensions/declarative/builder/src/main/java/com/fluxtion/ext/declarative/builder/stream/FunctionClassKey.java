@@ -34,15 +34,6 @@ public class FunctionClassKey {
     boolean cast;
     String type;
 
-
-//    public FunctionClassKey(Class filterClass, Method filterMethod, Class sourceClass, Method accessor, boolean cast, String type) {
-//        this.filterClass = filterClass;
-//        this.filterMethod = filterMethod;
-//        this.sourceClass = sourceClass;
-//        this.accessor = accessor;
-//        this.cast = cast;
-//        this.type = type;
-//    }
     public FunctionClassKey(Object filter, Method filterMethod, Object source, Method accessor, boolean cast, String type) {
         this.filterClass = getClassForInstance(filter);
         this.filterMethod = filterMethod;

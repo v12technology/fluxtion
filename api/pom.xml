@@ -21,7 +21,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.6.12</version>
+        <version>1.6.13</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
