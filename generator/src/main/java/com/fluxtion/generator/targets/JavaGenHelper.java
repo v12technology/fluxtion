@@ -203,4 +203,34 @@ public interface JavaGenHelper {
         }
         return retClass;
     }
+    
+    public static Class mapPrimitiveToWrapper(Class clazz){
+        Class retClass = void.class;
+        switch(clazz.getSimpleName()){
+            case "int":
+                retClass = Integer.class;
+                break;
+            case "double":
+                retClass = Double.class;
+                break;
+            case "float":
+                retClass = Float.class;
+                break;
+            case "short":
+                retClass = Short.class;
+                break;
+            case "byte":
+                retClass = Byte.class;
+                break;
+            case "long":
+                retClass = Long.class;
+                break;
+            case "char":
+                retClass = Character.class;
+                break;
+        }
+        return retClass;
+    }
+    
+    
 }
