@@ -39,14 +39,6 @@ public class StreamFunctions {
         return new Max()::max;
     }
 
-    public static <T> LambdaReflection.SerializableFunction<T, Number> count() {
-        return new Count()::increment;
-    }
-
-    public static <T extends Number> LambdaReflection.SerializableFunction<T, Number> cumSum() {
-        return new Sum()::addValue;
-    }
-
     public static class Count implements Stateful {
 
         private int count;

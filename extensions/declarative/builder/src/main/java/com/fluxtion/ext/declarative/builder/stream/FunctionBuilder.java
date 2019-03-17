@@ -34,17 +34,17 @@ import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
  */
 public class FunctionBuilder {
 
-    public static <T extends Event> Wrapper<Number> count(Class<T> eventClass) {
-        return select(eventClass).map(new Count()::increment);
-    }
-
-    public static <T extends Event> Wrapper<Number> sum(SerializableFunction<T, Number> supplier) {
-        return map(new Sum()::addValue, supplier);
-    }
-
-    public static <T extends Event> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
-        return map(new Average()::addValue, supplier);
-    }
+//    public static <T extends Event> Wrapper<Number> count(Class<T> eventClass) {
+//        return select(eventClass).map(new Count()::increment);
+//    }
+//
+//    public static <T extends Event> Wrapper<Number> sum(SerializableFunction<T, Number> supplier) {
+//        return map(new Sum()::addValue, supplier);
+//    }
+//
+//    public static <T extends Event> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
+//        return map(new Average()::addValue, supplier);
+//    }
 
     public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, R> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);

@@ -21,14 +21,11 @@ import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.numeric.NumericResultRelay;
-import com.fluxtion.ext.declarative.api.numeric.NumericResultTarget;
 import static com.fluxtion.ext.futext.builder.math.MultiplyFunctions.multiply;
 import static com.fluxtion.ext.futext.builder.math.AddFunctions.add;
 import static com.fluxtion.ext.futext.builder.math.CumSumFunctions.cumSum;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.ext.declarative.api.stream.StreamFunctions;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import com.fluxtion.ext.declarative.builder.stream.Functions;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.DataEvent_2;
 import com.fluxtion.generator.util.BaseSepTest;
@@ -125,11 +122,11 @@ public class MathFunctionTest extends BaseSepTest{
             
             
             merge(select(DataEvent.class, "RED", "GREEN"))
-                    .map(StreamFunctions.cumSum(), DataEvent::getValue)
+                    .map(Functions.cumSum(), DataEvent::getValue)
                     .id("redGreen");
             
             merge(select(DataEvent.class, 1, 2, 3))
-                    .map(StreamFunctions.cumSum(), DataEvent::getValue)
+                    .map(Functions.cumSum(), DataEvent::getValue)
                     .id("num_1_2_3");
             
         }
