@@ -143,7 +143,7 @@ public class StreamBuilder implements StreamOperator {
         if(findAny.isPresent()){
             return (Wrapper<T>) findAny.get();
         }
-        Wrapper ret = new NodeWrapper(node);
+        Wrapper ret = new NodeWrapper(GenerationContext.SINGLETON.addOrUseExistingNode(node));
         GenerationContext.SINGLETON.addOrUseExistingNode(ret);
         return ret;
     }
