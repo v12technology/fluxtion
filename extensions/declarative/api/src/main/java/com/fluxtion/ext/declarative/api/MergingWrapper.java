@@ -29,8 +29,7 @@ import java.util.List;
 public class MergingWrapper<T> implements Wrapper<T> {
 
     private T event;
-    private Class<T> clazz;
-    private final String className;
+    private final Class<T> clazz;
     public List<Wrapper> wrappedNodes;
     public List nodes;
     
@@ -58,18 +57,9 @@ public class MergingWrapper<T> implements Wrapper<T> {
         return SepContext.service().add(merger);
     }
 
-    public MergingWrapper(String className) {
-        this.className = className;
-        try {
-            this.clazz = (Class<T>) Class.forName(className);
-        } catch (ClassNotFoundException ex) {
-        }
-        wrappedNodes = new ArrayList<>();
-    }
-
     public MergingWrapper(Class<T> clazz) {
-        this(clazz.getCanonicalName());
         this.clazz = clazz;
+        wrappedNodes = new ArrayList<>();
     }
 
     @OnParentUpdate("wrappedNodes")
