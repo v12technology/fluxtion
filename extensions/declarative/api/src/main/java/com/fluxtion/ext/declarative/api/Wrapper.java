@@ -192,8 +192,10 @@ public interface Wrapper<T> {
     }
 
     /**
-     * Controls reset policy for stateful nodes, that are reset with {@link #resetNotifier(java.lang.Object)
-     * }. The policy has the following behaviour:
+     * Controls reset timing policy for stateful nodes. Stateful nodes are
+     * reset with {@link #resetNotifier(java.lang.Object)
+     * } or {@link #alwaysReset(boolean) }. The timing policy has the following
+     * behaviour:
      * <ul>
      * <li>true - the stateful node will be reset before any child nodes are
      * invoked on the execution path
@@ -201,10 +203,26 @@ public interface Wrapper<T> {
      * execution path
      * </ul>
      *
-     * @param immediateReset reset policy
+     * @param immediateReset reset timing policy
      * @return
      */
     default Wrapper<T> immediateReset(boolean immediateReset) {
+        return this;
+    }
+
+    /**
+     * Reset a stateful node after every execution cycle, without the need for a
+     * an external need {@link #resetNotifier(java.lang.Object) }.
+     * <ul>
+     * <li>true - the stateful node will be reset after every execution cycle
+     * <li>false: - the stateful node will only be reset with {@link #resetNotifier(java.lang.Object)
+     * }
+     * </ul>
+     *
+     * @param alwaysReset - reset policy for stateful nodes
+     * @return
+     */
+    default Wrapper<T> alwaysReset(boolean alwaysReset) {
         return this;
     }
 
