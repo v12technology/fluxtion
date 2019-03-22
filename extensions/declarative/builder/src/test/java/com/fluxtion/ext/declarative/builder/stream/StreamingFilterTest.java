@@ -52,7 +52,5 @@ public class StreamingFilterTest extends BaseSepInprocessTest {
         onEvent(new StreamData(-10));
         assertThat(count.event().intValue(), is(2));
         assertThat(countStatic .event().intValue(), is(2));
-        
-
     }
 }

@@ -18,30 +18,51 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
+import com.fluxtion.ext.declarative.builder.util.FunctionArg;
+import static com.fluxtion.ext.declarative.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
+ * Provides helper methods to build mapping functions from nodes and Events.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class FunctionBuilder {
 
-    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, S> supplier) {
+    public static <E1 extends Event, E2 extends Event, R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper,
+            SerializableFunction<E1, U> supplier1,
+            SerializableFunction<E2, S> supplier2) {
+
+        FunctionArg arg1 = arg(supplier1);
+        FunctionArg arg2 = arg(supplier2);
+        Method mappingMethod = mapper.method();
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+        } else {
+            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+        }
+        return builder.build();
+    }
+
+    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
+            SerializableFunction<T, S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
     }
 
     public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
-            LambdaReflection.SerializableSupplier<S> supplier) {
+            SerializableSupplier<S> supplier) {
         Method m = mapper.method();
         Object captured = null;
-        if(!Modifier.isStatic(m.getModifiers())){
+        if (!Modifier.isStatic(m.getModifiers())) {
             captured = mapper.captured()[0];
         }
         FilterBuilder builder = FilterBuilder.map(captured, m,
@@ -49,7 +70,37 @@ public class FunctionBuilder {
         return builder.build();
     }
 
-    public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
+    /**
+     * Maps a set of nodes with a single mapping function. Only nodes that
+     * notify a change are processed by the mapping function. The function will
+     * consult each node on every update.
+     *
+     * @param <R>
+     * @param <S>
+     * @param mapper
+     * @param suppliers
+     * @return
+     */
+    public static <R, S> Wrapper<R> mapSet(SerializableFunction<S, R> mapper,
+            FunctionArg... suppliers) {
+        FilterBuilder builder = FilterBuilder.mapSet(mapper.captured()[0], mapper.method(), suppliers);
+        final Wrapper wrapper = builder.build();
+        wrapper.alwaysReset(true);
+        return wrapper;
+    }
+
+    /**
+     * Maps a set of nodes with a mapping function. Only nodes that notify in
+     * the
+     * current execution path are included in the mapping function.
+     *
+     * @param <R>
+     * @param <S>
+     * @param mapper
+     * @param suppliers
+     * @return
+     */
+    public static <R, S> Wrapper<R> mapSetOnUpdate(SerializableFunction<S, R> mapper,
             SerializableSupplier<S>... suppliers) {
         //create instance of function and wrap
         final Object targetInstance = mapper.captured()[0];

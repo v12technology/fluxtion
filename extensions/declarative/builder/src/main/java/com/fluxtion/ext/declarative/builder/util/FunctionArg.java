@@ -16,7 +16,10 @@
  */
 package com.fluxtion.ext.declarative.builder.util;
 
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import java.lang.reflect.Method;
 
 /**
@@ -30,8 +33,21 @@ public class FunctionArg {
     public Method accessor;
     public boolean cast;
     
+    public static <T, S> FunctionArg argI(SerializableFunction<T, S> supplier){
+        
+        return new FunctionArg(select(supplier.getContainingClass()), supplier.method(), true);
+    }
+    
+    public static <T extends Event, S> FunctionArg arg(SerializableFunction<T, S> supplier){
+        return new FunctionArg(select(supplier.getContainingClass()), supplier.method(), true);
+    }
+    
     public static FunctionArg arg(SerializableSupplier supplier){
         return new FunctionArg(supplier.captured()[0], supplier.method(), true);
+    }
+    
+    public static FunctionArg arg(Object supplier){
+        return new FunctionArg(supplier, null, true);
     }
 
     public FunctionArg(Object source, Method accessor, boolean cast) {
