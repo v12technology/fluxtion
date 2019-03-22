@@ -1,5 +1,6 @@
 package com.fluxtion.ext.declarative.api.stream;
 
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import java.util.Objects;
 
@@ -15,6 +16,11 @@ public class NodeWrapper<T> implements Wrapper<T> {
 
     public NodeWrapper(T node) {
         this.node = node;
+    }
+    
+    @OnEvent
+    public boolean onEvent(){
+        return true;
     }
 
     @Override

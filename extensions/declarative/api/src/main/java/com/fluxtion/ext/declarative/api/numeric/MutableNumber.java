@@ -47,6 +47,12 @@ public class MutableNumber extends Number {
         return doubleValue;
     }
 
+    public void set(Number number){
+        intValue = number.intValue();
+        longValue = number.longValue();
+        doubleValue = number.doubleValue(); 
+    }
+    
     public void set(int value){
         setIntValue(value);
     }
