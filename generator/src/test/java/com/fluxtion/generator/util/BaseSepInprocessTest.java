@@ -19,6 +19,7 @@ package com.fluxtion.generator.util;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.function.Consumer;
@@ -29,7 +30,7 @@ import org.junit.rules.TestName;
 
 /**
  * Test class utility for building a SEP in process
- * 
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class BaseSepInprocessTest {
@@ -42,6 +43,18 @@ public class BaseSepInprocessTest {
     @Before
     public void beforeTest() {
         fixedPkg = false;
+    }
+
+    protected EventHandler sep(Class<? extends EventHandler> handlerClass) {
+        try {
+            sep = handlerClass.newInstance();
+            if (sep instanceof Lifecycle) {
+                ((Lifecycle) sep).init();
+            }
+            return sep;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     protected EventHandler sep(Consumer<SEPConfig> cfgBuilder) {
