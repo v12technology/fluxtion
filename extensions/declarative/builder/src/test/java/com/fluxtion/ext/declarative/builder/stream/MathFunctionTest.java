@@ -22,7 +22,11 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.lt;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.buildLog;
 import static com.fluxtion.ext.declarative.builder.stream.FilterBuilder.map;
 import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.mapSet;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
@@ -263,7 +267,76 @@ public class MathFunctionTest extends BaseSepInprocessTest {
         assertThat(colours.event().intValue(), is(1000));
         assertThat(nums.event().intValue(), is(600));
     }
+    
+    
+    @Test
+    public void testCombiningArray(){
+        sep((c) -> {
+            Wrapper<Number> eurDealtPos = merge(select(DataEvent.class, "EU", "EC", "EG", "EY"))
+                    .map(cumSum(), DataEvent::getValue)
+                    .id("eurDealtPos");
+            
+            Wrapper<Number> eurContraPos = merge(select(DataEvent.class, "UE", "CE", "GE", "YE"))
+                    .map(cumSum(), DataEvent::getValue)
+                    .id("eurContraPos");
+            
+            Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
 
+            Log("-> Trade recived:'{}'@'{}' ", select(DataEvent.class),
+                    DataEvent::getStringValue, DataEvent::getValue);         
+            
+            buildLog("<- Position update: EUR net:{} dealt:{} contra:{}", select(DataEvent.class))
+                    .input(netPos, Number::intValue)
+                    .input(eurDealtPos, Number::intValue)
+                    .input(eurContraPos, Number::intValue)
+                    .build();
+            
+            buildLog("NEW 1 <- *  POS WARNING  * create    : -> EUR position:'{}' breached warn limit of 10", netPos.filter(gt(10.0)).notifyOnChange(true))
+                    .input(netPos,  Number::intValue).build();
+            buildLog("NEW 2 <- *  POS WARNING  * delete : X  EUR position:'{}' dropped below warn limit of 10", netPos.filter(lt(10.0)).notifyOnChange(true))
+                    .input(netPos,  Number::intValue).build();
+            
+        }); 
+        
+        DataEvent de1 = new DataEvent();
+        de1.setFilterString("EU");
+        de1.value = 2;
+        sep.onEvent(de1);
+        de1.setFilterString("EC");
+        sep.onEvent(de1);
+        de1.setFilterString("UE");
+        sep.onEvent(de1);
+        de1.value = 600;
+        sep.onEvent(de1);
+        de1.setFilterString("EY");
+        sep.onEvent(de1);
+        de1.setFilterString("CE");
+        sep.onEvent(de1);
+        de1.value = -1000;
+        sep.onEvent(de1);
+        sep.onEvent(de1);
+        de1.value = 500;
+        sep.onEvent(de1);
+        sep.onEvent(de1);
+        sep.onEvent(de1);
+        sep.onEvent(de1);
+        de1.value = -1500;
+        sep.onEvent(de1);
+    }
+    
+    @Test
+    public void chainedFunctions(){
+        sep((c) ->{
+            Wrapper<Number> add = StreamFunctionsHelper.add(arg(25), arg(DataEvent::getValue));
+            multiply(arg(0.5), arg(add)).id("result");
+        });
+        DataEvent event = new DataEvent();
+        event.value = 10;
+        sep.onEvent(event);
+        Wrapper<Number> sum = getField("result");
+        assertThat(sum.event().doubleValue(), is(17.5));
+    }
+    
     public static class DataEvent extends Event {
 
         public static final int ID = 1;
