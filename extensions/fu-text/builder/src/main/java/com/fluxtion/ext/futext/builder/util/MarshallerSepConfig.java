@@ -16,12 +16,9 @@
  */
 package com.fluxtion.ext.futext.builder.util;
 
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.futext.api.ascii.Csv2ByteBuffer;
 import com.fluxtion.ext.futext.api.ascii.Csv2ByteBufferTemp;
 import com.fluxtion.ext.futext.api.util.marshaller.CsvMultiTypeMarshaller;
-import com.fluxtion.ext.futext.builder.ascii.AsciiHelper;
 
 /**
  *
@@ -30,11 +27,8 @@ import com.fluxtion.ext.futext.builder.ascii.AsciiHelper;
 public class MarshallerSepConfig extends SEPConfig {
 
     {
-
         CsvMultiTypeMarshaller multiType = addPublicNode(new CsvMultiTypeMarshaller(), "dispatcher");
-//        multiType.type = AsciiHelper.readBytesCsv(0);
         multiType.type = addNode(new Csv2ByteBufferTemp(0, ",", 0));
-        
         maxFiltersInline = 5;
     }
 }
