@@ -34,7 +34,7 @@ import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
  * 
  * @author Greg Higgins
  */
-public class Csv2Value implements NumericValue {
+public class Csv2Value extends Number implements NumericValue {
 
     /**
      * field number to extract value from, zero indexed
@@ -77,6 +77,11 @@ public class Csv2Value implements NumericValue {
 
     public Csv2Value() {
         terminatorChars = ",";
+    }
+
+    @Override
+    public float floatValue() {
+        return (float) doubleValue();
     }
 
     @EventHandler(filterId = '\n')

@@ -16,16 +16,24 @@
  */
 package com.fluxtion.ext.declarative.api.numeric;
 
+import com.fluxtion.ext.declarative.api.Constant;
+
 /**
  * Mutable numeric value
  * 
  * @author Greg Higgins
  */
-public class MutableNumber extends Number {
+public class ConstantNumber extends Number implements Constant{
 
-    public int intValue;
-    public long longValue;
-    public double doubleValue;
+    private int intValue;
+    private long longValue;
+    private final double doubleValue;
+
+    public ConstantNumber(double doubleValue) {
+        this.doubleValue = doubleValue;
+        this.intValue = (int) doubleValue;
+        this.longValue = (long) doubleValue;
+    }
 
     @Override
     public float floatValue(){
@@ -45,64 +53,6 @@ public class MutableNumber extends Number {
     @Override
     public double doubleValue() {
         return doubleValue;
-    }
-
-    public void set(Number number){
-        intValue = number.intValue();
-        longValue = number.longValue();
-        doubleValue = number.doubleValue(); 
-    }
-    
-    public void set(int value){
-        setIntValue(value);
-    }
-    
-    public void set(long value){
-        setLongValue(value);
-    }
-    
-    public void set(double value){
-        setDoubleValue(value);
-    }
-    
-    public void setCharValue(char charValue){
-        setIntValue(charValue);
-    }
-
-    public void setByteValue(byte byteValue){
-        setIntValue(byteValue);
-    }
-
-    public void setShortValue(short shortValue){
-        setIntValue(shortValue);
-    }
-    
-    public void setIntValue(int intValue) {
-        this.intValue = intValue;
-        this.longValue = intValue;
-        this.doubleValue = intValue;
-    }
-
-    public void setLongValue(long longValue) {
-        this.longValue = longValue;
-        this.intValue = (int) longValue;
-        this.doubleValue = longValue;
-    }
-
-    public void setfloatValue(float floatValue){
-        setDoubleValue(floatValue);
-    }
-    
-    public void setDoubleValue(double doubleValue) {
-        this.doubleValue = doubleValue;
-        this.longValue = (long) doubleValue;
-        this.intValue = (int) doubleValue;
-    }
-    
-    public void copyFrom(NumericValue source){
-        intValue = source.intValue();
-        longValue = source.longValue();
-        doubleValue = source.doubleValue();
     }
 
     @Override

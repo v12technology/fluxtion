@@ -19,23 +19,14 @@ package com.fluxtion.ext.futext.builder.filter;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.ascii.AsciiMatchFilterFactory;
-import com.fluxtion.ext.futext.builder.math.AddFunctions;
-import com.fluxtion.ext.futext.builder.math.MultiplyFunctions;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.ext.futext.builder.test.helpers.DataEvent;
 import com.fluxtion.ext.futext.builder.test.helpers.TextMatchPrinter;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -64,19 +55,6 @@ public class TextMatchTest extends BaseSepTest {
 
     }
 
-    @Test
-    public void mathFunctions() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException {
-        System.out.println("Integration test::mathFunctions");
-        EventHandler sep = buildAndInitSep(NumericBuilder.class);
-        NumericValue textPrinter = getField(RESULT_VARIABLE_NAME);
-
-        DataEvent event = new DataEvent();
-        event.value = 10;
-        sep.onEvent(event);
-
-        assertThat(textPrinter.doubleValue(), is(17.5));
-    }
-
     public static class Builder extends SEPConfig {
 
         {
@@ -87,17 +65,5 @@ public class TextMatchTest extends BaseSepTest {
         }
     }
 
-    public static class NumericBuilder extends SEPConfig {
-
-        {
-            NumericValue addNode;
-            try {
-                addNode = addNode(AddFunctions.add(25, DataEvent.class, DataEvent::getValue));
-                addPublicNode(MultiplyFunctions.multiply(0.5, addNode), RESULT_VARIABLE_NAME);
-            } catch (Exception ex) {
-                Logger.getLogger(TextMatchTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
 
 }

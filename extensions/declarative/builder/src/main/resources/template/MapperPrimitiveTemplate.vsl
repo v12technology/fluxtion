@@ -8,9 +8,9 @@ import $import;
  * generated mapper function wrapper for a numeric primitive.
  *  
  *<ul>
- * <li>output class       : {@link Number}
- * <li>input class        : {@link ${filterSubjectClass}}
- * <li>converter function : {@link ${targetClass}#${targetMethod}}
+ * <li>output class : {@link Number}
+ * <li>input class  : {@link ${filterSubjectClass}}
+ * <li>map function : {@link ${targetClass}#${targetMethod}}
  *</ul>
  * 
  * @author Greg Higgins
@@ -18,6 +18,13 @@ import $import;
 public class ${functionClass} extends AbstractFilterWrapper<Number>{
 
     public ${sourceClass} filterSubject;
+    private boolean filterSubjectUpdated;
+#foreach($sourceInfo in $sourceMappingList)
+    public ${sourceInfo.type} ${sourceInfo.id};
+#if(!${sourceInfo.constant})
+    private boolean ${sourceInfo.id}Updated;
+#end
+#end
 #if(!${newFunction})
     @NoEventReference
     public ${targetClass} f;
@@ -31,24 +38,62 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     private MutableNumber value;
     private MutableNumber oldValue;
 
-    @Initialise
-    public void init(){
-        result = 0;
-        value = new MutableNumber();
-        oldValue = new MutableNumber();
-    }
-
     @OnEvent
     public boolean onEvent(){
         oldValue.set(result);
 #if(${newFunction})
-        result = ${targetClass}.${targetMethod}(${input});
+#if(${multiArgFunc})
+        if(allSourcesUpdated()){
+            result = ${targetClass}.${targetMethod}(${input});
+        }
 #else
-        result = f.${targetMethod}(${input});
+         result = ${targetClass}.${targetMethod}(${input});
+#end
+#else
+#if(${multiArgFunc})
+        if(allSourcesUpdated()){
+#else
+        if(filterSubjectUpdated){
+#end
+            result = f.${targetMethod}(${input});
+        }
+#foreach($functionInfo in $sourceFunctions)
+        if(${functionInfo.sourceInfo.id}Updated){
+            result =  f.${targetMethod}(${functionInfo.paramString});
+        }
+#end
 #end
         value.set(result);
-        return !notifyOnChangeOnly || (!oldValue.equals(value));
+        return #if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly | (!oldValue.equals(value));
     }
+#if(!${newFunction} || ${multiArgFunc} )
+
+    private boolean allSourcesUpdated(){
+        boolean updated = filterSubjectUpdated;
+#foreach($sourceInfo in $sourceMappingList)
+#if(!${sourceInfo.constant})
+        updated &= ${sourceInfo.id}Updated;
+#end
+#end
+        return updated;
+    }
+#if(!${sourceInfo.constant})
+
+    @OnParentUpdate("filterSubject")
+    public void updated_filterSubject(${sourceClass} updated){
+        filterSubjectUpdated = true;
+    }
+#end
+
+#foreach($sourceInfo in $sourceMappingList)
+#if(!${sourceInfo.constant})
+    @OnParentUpdate("${sourceInfo.id}")
+    public void updated_${sourceInfo.id}(${sourceInfo.type} updated){
+        ${sourceInfo.id}Updated = true;
+    }
+#end
+#end
+#end
 #if(${stateful})
 
     @OnParentUpdate("resetNotifier")
@@ -63,7 +108,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
 
     @AfterEvent
     public void resetAfterEvent() {
-        if (parentReset) {
+        if (parentReset | alwaysReset) {
             result = 0;
             f.reset();
         }
@@ -85,6 +130,14 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     @Override
     public Class<Number> eventClass() {
         return Number.class;
+    }
+
+    @Initialise
+    public void init(){
+        result = 0;
+        value = new MutableNumber();
+        oldValue = new MutableNumber();
+        filterSubjectUpdated = ${sourceConstant};
     }
 
 }

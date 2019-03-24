@@ -31,7 +31,7 @@ import com.fluxtion.ext.futext.api.filter.AsciiMatchFilter;
  *
  * @author Greg Higgins
  */
-public abstract class Ascii2Value implements NumericValue {
+public abstract class Ascii2Value extends Number implements NumericValue {
 
     /**
      * notifies the converter the search filter can be applied.
@@ -140,6 +140,11 @@ public abstract class Ascii2Value implements NumericValue {
         return doubleValue;
     }
 
+    @Override
+    public float floatValue() {
+        return (float)doubleValue();
+    }
+    
     @Initialise
     public void init() {
         ignoreNotifier = notifier == null;

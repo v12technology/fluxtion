@@ -40,7 +40,8 @@ public class MergeTest extends BaseSepInprocessTest {
     public void multipleSelect() {
         EventHandler handler = sep((c) -> {
             select(DataEvent.class).console("dataEvent").id("nonMergedCount")
-                    .map(count()).resetNotifier(select(StreamTest.TempF.class).console("[reset event] ->"));
+                    .map(count())
+                    .resetNotifier(select(StreamTest.TempF.class).console("[reset event] ->"));
         });
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new StreamTest.TempF(10, "outside")); 

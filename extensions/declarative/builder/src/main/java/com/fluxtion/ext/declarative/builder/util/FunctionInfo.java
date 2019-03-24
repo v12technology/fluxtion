@@ -35,6 +35,7 @@ public class FunctionInfo {
     public String calculateMethod;
     public String calculateClass;
     public Class calculateClazz;
+    public SourceInfo sourceInfo;
     private final Method functionMethod;
     private String sep;
     private int count;
@@ -191,6 +192,14 @@ public class FunctionInfo {
         return functionMethod;
     }
 
+    public String getParamString() {
+        return paramString;
+    }
+
+    public SourceInfo getSourceInfo() {
+        return sourceInfo;
+    }
+    
     @Override
     public String toString() {
         return "FunctionInfo{" + "paramString=" + paramString + ", returnType=" + returnType + ", returnTypeClass=" + returnTypeClass + ", calculateMethod=" + calculateMethod + ", calculateClass=" + calculateClass + ", functionMethod=" + functionMethod + ", sep=" + sep + ", count=" + count + '}';

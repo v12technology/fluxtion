@@ -12,6 +12,7 @@ public abstract class AbstractFilterWrapper<T> implements Wrapper<T> {
 
     protected boolean notifyOnChangeOnly = false;
     protected boolean resetImmediate = true;
+    protected boolean alwaysReset = false;
     
     @Override
     public Wrapper<T> notifyOnChange(boolean notifyOnChange) {
@@ -22,6 +23,12 @@ public abstract class AbstractFilterWrapper<T> implements Wrapper<T> {
     @Override
     public Wrapper<T> immediateReset(boolean immediateReset) {
         this.resetImmediate = immediateReset;
+        return this;
+    }
+    
+    @Override
+    public Wrapper<T> alwaysReset(boolean alwaysReset) {
+        this.alwaysReset = alwaysReset;
         return this;
     }
 
@@ -40,4 +47,13 @@ public abstract class AbstractFilterWrapper<T> implements Wrapper<T> {
     public void setResetImmediate(boolean resetImmediate) {
         this.resetImmediate = resetImmediate;
     }
+
+    public boolean isAlwaysReset() {
+        return alwaysReset;
+    }
+
+    public void setAlwaysReset(boolean alwaysReset) {
+        this.alwaysReset = alwaysReset;
+    }
+    
 }

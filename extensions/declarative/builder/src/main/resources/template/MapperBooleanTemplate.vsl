@@ -8,9 +8,9 @@ import $import;
  * generated mapper function wrapper for a numeric primitive.
  *  
  *<ul>
- * <li>output class       : {@link Boolean}
- * <li>input class        : {@link ${filterSubjectClass}}
- * <li>converter function : {@link ${targetClass}#${targetMethod}}
+ * <li>output class : {@link Boolean}
+ * <li>input class  : {@link ${filterSubjectClass}}
+ * <li>map function : {@link ${targetClass}#${targetMethod}}
  *</ul>
  * 
  * @author Greg Higgins
@@ -18,6 +18,11 @@ import $import;
 public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
 
     public ${sourceClass} filterSubject;
+    private boolean filterSubjectUpdated;
+#foreach($sourceInfo in $sourceMappingList)
+    public ${sourceInfo.type} ${sourceInfo.id};
+    private boolean ${sourceInfo.id}Updated;
+#end
 #if(!${newFunction})
     @NoEventReference
     public ${targetClass} f;
@@ -31,24 +36,38 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
     private boolean value;
     private boolean oldValue;
 
-    @Initialise
-    public void init(){
-        result = false;
-        value = false;
-        oldValue = false;
-    }
-
     @OnEvent
     public boolean onEvent(){
         oldValue = result;
 #if(${newFunction})
         result = ${targetClass}.${targetMethod}(${input});
 #else
-        result = f.${targetMethod}(${input});
+        if(filterSubjectUpdated){
+            result = f.${targetMethod}(${input});
+        }
+#foreach($functionInfo in $sourceFunctions)
+        if(${functionInfo.sourceInfo.id}Updated){
+            result =  f.${targetMethod}(${functionInfo.paramString});
+        }
+#end
 #end
         value = result;
         return !notifyOnChangeOnly || (oldValue != value);
     }
+#if(!${newFunction})
+
+    @OnParentUpdate("filterSubject")
+    public void updated_filterSubject(${sourceClass} updated){
+        filterSubjectUpdated = true;
+    }
+
+#foreach($sourceInfo in $sourceMappingList)
+    @OnParentUpdate("${sourceInfo.id}")
+    public void updated_${sourceInfo.id}(${sourceInfo.type} updated){
+        ${sourceInfo.id}Updated = true;
+    }
+#end
+#end
 #if(${stateful})
 
     @OnParentUpdate("resetNotifier")
@@ -63,7 +82,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
 
     @AfterEvent
     public void resetAfterEvent() {
-        if (parentReset) {
+        if (parentReset | alwaysReset) {
             result = false;
             f.reset();
         }
@@ -85,6 +104,16 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
     @Override
     public Class<Boolean> eventClass() {
         return Boolean.class;
+    }
+
+    @Initialise
+    public void init(){
+        result = false;
+        value = false;
+        oldValue = false;
+#foreach($sourceInfo in $sourceMappingList)
+        ${sourceInfo.id}Updated = false;
+#end
     }
 
 }

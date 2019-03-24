@@ -17,9 +17,10 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import javafx.util.Pair;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -48,11 +49,63 @@ public class StreamingFilterTest extends BaseSepInprocessTest {
         assertThat(countStatic.event().intValue(), is(1));
         onEvent(new StreamData(89));
         assertThat(count.event().intValue(), is(2));
-        assertThat(countStatic .event().intValue(), is(2));
+        assertThat(countStatic.event().intValue(), is(2));
         onEvent(new StreamData(-10));
         assertThat(count.event().intValue(), is(2));
-        assertThat(countStatic .event().intValue(), is(2));
+        assertThat(countStatic.event().intValue(), is(2));
+    }
+
+    @Test
+    public void countIntervals() {
+        sep((c) -> {
+            select(StreamData.class)
+                    .filter(new FilterIntervalCount(3)::interval)
+                    .map(count()).id("intervalCount");
+        });
+        Wrapper<Number> count = getField("intervalCount");
+        assertThat(count.event().intValue(), is(0));
+        //1
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(0));
         
+        //2
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(0));
+
+        //3
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(1));
+
+        //4
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(1));
+
+        //5
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(1));
+
+        //6
+        onEvent(new StreamData(1));
+        assertThat(count.event().intValue(), is(2));
+    }
+
+    public static class FilterIntervalCount implements Stateful {
+
+        private final int interval;
+        private int count = 0;
+
+        public FilterIntervalCount(int interval) {
+            this.interval = interval;
+        }
+
+        public <T> boolean interval(T o) {
+            return (++count) % interval == 0;
+        }
+
+        @Override
+        public void reset() {
+            count = 0;
+        }
 
     }
 }

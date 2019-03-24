@@ -54,10 +54,56 @@ public interface Wrapper<T> {
         return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
 
+    /**
+     * Maps a value using the provided mapping function. The input is the wrapped 
+     * instance inside this {@link Wrapper}.
+     * @param <R> The return type of the mapping function
+     * @param mapper the mapping function
+     * @return A wrapped value containing the result of the mapping operation
+     */
     default <R> Wrapper<R> map(SerializableFunction<T, R> mapper) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
     }
+    
+    /**
+     * Invokes a mapping function that accepts a {@link Double} as an input
+     * @param <R> The return type of the mapping function
+     * @param mapper the mapping function
+     * @return A wrapped value containing the result of the mapping operation
+     */
+    default <R> Wrapper<R> mapDouble(SerializableFunction<? extends Double, R> mapper) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
+    }
+    
+    /**
+     * Invokes a mapping function that accepts a {@link Integer} as an input
+     * @param <R> The return type of the mapping function
+     * @param mapper the mapping function
+     * @return A wrapped value containing the result of the mapping operation
+     */
+    default <R> Wrapper<R> mapInt(SerializableFunction<? extends Integer, R> mapper) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
+    }
+    
+    /**
+     * Invokes a mapping function that accepts a {@link Long} as an input
+     * @param <R> The return type of the mapping function
+     * @param mapper the mapping function
+     * @return A wrapped value containing the result of the mapping operation
+     */
+    default <R> Wrapper<R> mapLong(SerializableFunction<? extends Long, R> mapper) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
+    }
 
+    /**
+     * Maps a value using the provided mapping function. The input is the return
+     * value of the supplier function invoked on the wrapped instance.
+     * @param <R> The return type of the mapping function
+     * @param <S> The input type required by the mapping function
+     * @param mapper the mapping function
+     * @param supplier
+     * @return A wrapped value containing the result of the mapping operation
+     */
     default <R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
@@ -192,8 +238,10 @@ public interface Wrapper<T> {
     }
 
     /**
-     * Controls reset policy for stateful nodes, that are reset with {@link #resetNotifier(java.lang.Object)
-     * }. The policy has the following behaviour:
+     * Controls reset timing policy for stateful nodes. Stateful nodes are
+     * reset with {@link #resetNotifier(java.lang.Object)
+     * } or {@link #alwaysReset(boolean) }. The timing policy has the following
+     * behaviour:
      * <ul>
      * <li>true - the stateful node will be reset before any child nodes are
      * invoked on the execution path
@@ -201,10 +249,26 @@ public interface Wrapper<T> {
      * execution path
      * </ul>
      *
-     * @param immediateReset reset policy
+     * @param immediateReset reset timing policy
      * @return
      */
     default Wrapper<T> immediateReset(boolean immediateReset) {
+        return this;
+    }
+
+    /**
+     * Reset a stateful node after every execution cycle, without the need for a
+     * an external need {@link #resetNotifier(java.lang.Object) }.
+     * <ul>
+     * <li>true - the stateful node will be reset after every execution cycle
+     * <li>false: - the stateful node will only be reset with {@link #resetNotifier(java.lang.Object)
+     * }
+     * </ul>
+     *
+     * @param alwaysReset - reset policy for stateful nodes
+     * @return
+     */
+    default Wrapper<T> alwaysReset(boolean alwaysReset) {
         return this;
     }
 
