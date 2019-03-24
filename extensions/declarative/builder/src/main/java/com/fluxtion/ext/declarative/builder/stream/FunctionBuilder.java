@@ -37,6 +37,19 @@ import java.lang.reflect.Modifier;
  */
 public class FunctionBuilder {
 
+    public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
+            FunctionArg<U> arg1,
+            FunctionArg<S> arg2) {
+        Method mappingMethod = mapper.method();
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+        } else {
+            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+        }
+        return builder.build();
+    }
+
     public static <E1 extends Event, E2 extends Event, R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper,
             SerializableFunction<E1, U> supplier1,
             SerializableFunction<E2, S> supplier2) {
@@ -91,8 +104,7 @@ public class FunctionBuilder {
 
     /**
      * Maps a set of nodes with a mapping function. Only nodes that notify in
-     * the
-     * current execution path are included in the mapping function.
+     * the current execution path are included in the mapping function.
      *
      * @param <R>
      * @param <S>

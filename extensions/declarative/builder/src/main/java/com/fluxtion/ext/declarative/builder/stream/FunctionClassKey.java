@@ -17,7 +17,10 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,6 +36,8 @@ public class FunctionClassKey {
     Method accessor;
     boolean cast;
     String type;
+    boolean multiArg;
+    List<FunctionArg> argsList = new ArrayList<>();
 
     public FunctionClassKey(Object filter, Method filterMethod, Object source, Method accessor, boolean cast, String type) {
         this.filterClass = getClassForInstance(filter);
@@ -63,14 +68,16 @@ public class FunctionClassKey {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.filterClass);
-        hash = 97 * hash + Objects.hashCode(this.filterMethod);
-        hash = 97 * hash + Objects.hashCode(this.sourceClass);
-        hash = 97 * hash + Objects.hashCode(this.wrappedSourceClass);
-        hash = 97 * hash + Objects.hashCode(this.accessor);
-        hash = 97 * hash + (this.cast ? 1 : 0);
-        hash = 97 * hash + Objects.hashCode(this.type);
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.filterClass);
+        hash = 37 * hash + Objects.hashCode(this.filterMethod);
+        hash = 37 * hash + Objects.hashCode(this.sourceClass);
+        hash = 37 * hash + Objects.hashCode(this.wrappedSourceClass);
+        hash = 37 * hash + Objects.hashCode(this.accessor);
+        hash = 37 * hash + (this.cast ? 1 : 0);
+        hash = 37 * hash + Objects.hashCode(this.type);
+        hash = 37 * hash + (this.multiArg ? 1 : 0);
+        hash = 37 * hash + Objects.hashCode(this.argsList);
         return hash;
     }
 
@@ -89,6 +96,9 @@ public class FunctionClassKey {
         if (this.cast != other.cast) {
             return false;
         }
+        if (this.multiArg != other.multiArg) {
+            return false;
+        }
         if (!Objects.equals(this.type, other.type)) {
             return false;
         }
@@ -105,6 +115,9 @@ public class FunctionClassKey {
             return false;
         }
         if (!Objects.equals(this.accessor, other.accessor)) {
+            return false;
+        }
+        if (!Objects.equals(this.argsList, other.argsList)) {
             return false;
         }
         return true;

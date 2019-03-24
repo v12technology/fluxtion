@@ -22,6 +22,7 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
@@ -40,11 +41,11 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMa
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.targetMethod;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.wrappedSubject;
-import com.fluxtion.ext.declarative.builder.util.ArraySourceInfo;
 import com.fluxtion.ext.declarative.builder.util.FunctionInfo;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.api.Constant;
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
@@ -207,6 +208,8 @@ public class FilterBuilder<T, F> {
         FilterBuilder builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
+            builder.key.multiArg = false;
+            builder.key.argsList.add(arg);
             SourceInfo srcInfo = builder.addSource(arg.getSource());
             FunctionInfo srcFuncInfo = new FunctionInfo(mappingMethod, builder.importMap);
             srcFuncInfo.sourceInfo = srcInfo;
@@ -233,7 +236,46 @@ public class FilterBuilder<T, F> {
     }
 
     /**
+     * Maps a binary function without type checking the generic parameters
+     *
+     * @param <R>
+     * @param <S>
+     * @param <G>
+     * @param <H>
+     * @param <U>
+     * @param mapper
+     * @param arg1
+     * @param arg2
+     * @return
+     */
+    public static <R, S, G, H, U> Wrapper<R> map(SerializableBiFunction<G, H, R> mapper,
+            FunctionArg<U> arg1,
+            FunctionArg<S> arg2) {
+        Method mappingMethod = mapper.method();
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+        } else {
+            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+        }
+        return builder.build();
+    }
+
+    public static <R, G, U> Wrapper<R> map(SerializableFunction<G, R> mapper,
+            FunctionArg<U> arg1) {
+        Method mappingMethod = mapper.method();
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, arg1);
+        } else {
+            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1);
+        }
+        return builder.build();
+    }
+
+    /**
      * Map an n-ary function
+     *
      * @param <T>
      * @param <R>
      * @param <S>
@@ -241,13 +283,15 @@ public class FilterBuilder<T, F> {
      * @param mapper
      * @param mappingMethod
      * @param args
-     * @return 
+     * @return
      */
     public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, FunctionArg... args) {
         FunctionArg arg = args[0];
         FilterBuilder builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
+            builder.key.multiArg = true;
+            builder.key.argsList.add(arg);
             SourceInfo srcInfo = builder.addSource(arg.getSource());
             Object source = arg.getSource();
             GenerationContext.SINGLETON.addOrUseExistingNode(source);
@@ -481,10 +525,12 @@ public class FilterBuilder<T, F> {
                 ctx.put(filterSubjectClass.name(), importMap.addImport(filterSubjectWrapper.eventClass()));//.getSimpleName());
                 importMap.addImport(filterSubjectWrapper.eventClass());
                 ctx.put(sourceClass.name(), importMap.addImport(filterSubjectWrapper.getClass()));//.getSimpleName());
+                ctx.put("sourceConstant", Constant.class.isAssignableFrom(filterSubjectWrapper.eventClass()));
             } else {
                 ctx.put(filterSubjectClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 ctx.put(sourceClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 importMap.addImport(filterSubject.getClass());
+                ctx.put("sourceConstant", Constant.class.isAssignableFrom(filterSubject.getClass()));
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put("sourceFunctions", sourceFunctions);
@@ -547,9 +593,13 @@ public class FilterBuilder<T, F> {
 
     private SourceInfo addSource(Object input) {
 
-        return inst2SourceInfo.computeIfAbsent(input, (in) -> new SourceInfo(
-                importMap.addImport(input.getClass()),
-                "source_" + sourceCount++));
+        return inst2SourceInfo.computeIfAbsent(input, (in) -> {
+            final SourceInfo srcInfo = new SourceInfo(
+                    importMap.addImport(input.getClass()),
+                    "source_" + sourceCount++);
+            srcInfo.setConstant(Constant.class.isAssignableFrom(input.getClass()));
+            return srcInfo;
+        });
 
     }
 }

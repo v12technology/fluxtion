@@ -21,7 +21,9 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     private boolean filterSubjectUpdated;
 #foreach($sourceInfo in $sourceMappingList)
     public ${sourceInfo.type} ${sourceInfo.id};
+#if(!${sourceInfo.constant})
     private boolean ${sourceInfo.id}Updated;
+#end
 #end
 #if(!${newFunction})
     @NoEventReference
@@ -62,28 +64,34 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
 #end
 #end
         value.set(result);
-        return !notifyOnChangeOnly || (!oldValue.equals(value));
+        return #if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly | (!oldValue.equals(value));
     }
 #if(!${newFunction} || ${multiArgFunc} )
 
     private boolean allSourcesUpdated(){
         boolean updated = filterSubjectUpdated;
 #foreach($sourceInfo in $sourceMappingList)
+#if(!${sourceInfo.constant})
         updated &= ${sourceInfo.id}Updated;
+#end
 #end
         return updated;
     }
+#if(!${sourceInfo.constant})
 
     @OnParentUpdate("filterSubject")
     public void updated_filterSubject(${sourceClass} updated){
         filterSubjectUpdated = true;
     }
+#end
 
 #foreach($sourceInfo in $sourceMappingList)
+#if(!${sourceInfo.constant})
     @OnParentUpdate("${sourceInfo.id}")
     public void updated_${sourceInfo.id}(${sourceInfo.type} updated){
         ${sourceInfo.id}Updated = true;
     }
+#end
 #end
 #end
 #if(${stateful})
@@ -129,6 +137,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
         result = 0;
         value = new MutableNumber();
         oldValue = new MutableNumber();
+        filterSubjectUpdated = ${sourceConstant};
     }
 
 }

@@ -24,6 +24,7 @@ public class SourceInfo {
     public String wrapperType;
     public String type;
     public String id;
+    public boolean constant;
 
     public SourceInfo(String type, String id) {
         this.type = type;
@@ -54,8 +55,17 @@ public class SourceInfo {
         this.wrapperType = wrapperType;
     }
 
+    public boolean isConstant() {
+        return constant;
+    }
+
+    public void setConstant(boolean constant) {
+        this.constant = constant;
+    }
+
     @Override
     public String toString() {
-        return "SourceInfo{" + "wrapperType=" + wrapperType + ", type=" + type + ", id=" + id + '}';
+        return "SourceInfo{" + "wrapperType=" + wrapperType + ", type=" + type + ", id=" + id + ", constant=" + constant + '}';
     }
+ 
 }

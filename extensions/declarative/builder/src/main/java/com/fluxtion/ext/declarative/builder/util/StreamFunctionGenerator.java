@@ -17,11 +17,14 @@
 package com.fluxtion.ext.declarative.builder.util;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.declarative.api.stream.StreamFunctions.IntCount;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Sum;
@@ -51,14 +54,21 @@ public class StreamFunctionGenerator {
 
     private String templateFile = "/template/FunctionsTemplate.vsl";
     private String packageName = "com.fluxtion.ext.declarative.builder.stream";
-    private String className = "StreamFunctionsBuilder";
+    private String className = "StreamFunctionsHelper";
     private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
     private List<FunctionInfo> functionList = new ArrayList<>();
+    private List<FunctionInfo> biFunctionList = new ArrayList<>();
     private List<FunctionInfo> consumerFunctionList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         StreamFunctionGenerator gen = new StreamFunctionGenerator();
+        //bifunctions
+        gen.addBinaryFunction(StreamFunctions::add, "add");
+        gen.addBinaryFunction(StreamFunctions::subtract, "subtract");
+        gen.addBinaryFunction(StreamFunctions::multiply, "multiply");
+        gen.addBinaryFunction(StreamFunctions::divide, "divide");
+        //unary functions
         gen.addUnaryFunction(new Sum()::addValue, "cumSum");
         gen.addUnaryFunction(new Average()::addValue, "avg");
         gen.addUnaryFunction(new Max()::max, "max");
@@ -67,7 +77,12 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(Math::floor, "floor");
         //consumer
         gen.addConsumerFunction(new Count()::increment, "count");
+        gen.addConsumerFunction(new IntCount()::increment, "intCount");
         gen.generate();
+    }
+
+    public <T, S, R> void addBinaryFunction(SerializableBiFunction<T, S, R> func, String name) {
+        biFunctionList.add(new FunctionInfo(func, name));
     }
 
     public <T, R> void addUnaryFunction(SerializableFunction<T, R> func, String name) {
@@ -88,14 +103,18 @@ public class StreamFunctionGenerator {
         //standard imports 
         imports.addImport(Event.class);
         imports.addImport(SerializableFunction.class);
+        imports.addImport(SerializableBiFunction.class);
         imports.addImport(SerializableSupplier.class);
         imports.addImport(Wrapper.class);
         imports.addStaticImport(EventSelect.class);
         imports.addStaticImport(FunctionBuilder.class);
+        imports.addImport(FunctionArg.class);
+        imports.addStaticImport(FunctionArg.class);
         imports.addStaticImport(StreamBuilder.class);
         //setup context
         ctx.put("imports", imports.asString());
         ctx.put("functions", functionList);
+        ctx.put("bifunctions", biFunctionList);
         ctx.put("consumers", consumerFunctionList);
         ctx.put("package", packageName);
         ctx.put("className", className);
@@ -113,9 +132,29 @@ public class StreamFunctionGenerator {
         String methodName;
         String invoke;
         String returnType;
-        String inputType;
+        List<String[]> argsList = new ArrayList<>();
         String functionName;
 
+        public FunctionInfo(SerializableBiFunction func, String name) {
+            final Method m = func.method();
+            this.functionName = name;
+            String clazz = imports.addImport(func.getContainingClass());
+            methodName = clazz + "#" + m.getName();
+            if (Modifier.isStatic(m.getModifiers())) {
+                invoke = clazz + "::" + m.getName();
+            } else {
+                invoke = "new " + clazz + "()::" + m.getName();
+            }
+            Class<?> returnClass = m.getReturnType();
+            if(returnClass.isPrimitive()){
+                returnClass = Number.class;
+            }
+            returnType = imports.addImport(returnClass);            
+            for (Class<?> parameterType : m.getParameterTypes()) {
+                argsList.add(inTypes(parameterType));
+            }
+        }
+        
         public FunctionInfo(SerializableFunction func, String name) {
             final Method m = func.method();
             this.functionName = name;
@@ -124,23 +163,34 @@ public class StreamFunctionGenerator {
             if (Modifier.isStatic(m.getModifiers())) {
                 invoke = clazz + "::" + m.getName();
             } else {
-                //new Sum()::addValue
                 invoke = "new " + clazz + "()::" + m.getName();
             }
             Class<?> returnClass = m.getReturnType();
             if(returnClass.isPrimitive()){
-                returnClass =JavaGenHelper.mapPrimitiveToWrapper(returnClass);
+                returnClass = Number.class;
             }
-            returnType = imports.addImport(returnClass);
-            Class<?> inType = m.getParameterTypes()[0];
-            if (inType == Object.class) {
-                inputType = "T";
-            } else if (inType.isPrimitive()) {
-                inputType = imports.addImport(JavaGenHelper.mapPrimitiveToWrapper(inType));
-            } else {
-                inputType = imports.addImport(inType);
+            returnType = imports.addImport(returnClass);            
+            for (Class<?> parameterType : m.getParameterTypes()) {
+                argsList.add(inTypes(parameterType));
             }
         }
+        
+        private String[] inTypes(Class inType){
+            String inputType;
+            String inputTypeReal;
+            if (inType == Object.class) {
+                inputType = "T";
+                inputTypeReal = inputType;
+            } else if (inType.isPrimitive()) {
+                inputTypeReal = imports.addImport(JavaGenHelper.mapPrimitiveToWrapper(inType));
+                inputType = imports.addImport(Number.class);
+            } else {
+                inputType = imports.addImport(inType);
+                inputTypeReal = inputType;
+            }
+            return new String[]{inputType, inputTypeReal};
+        }
+        
 
         public String getMethodName() {
             return methodName;
@@ -175,12 +225,20 @@ public class StreamFunctionGenerator {
         }
 
         public String getInputType() {
-            return inputType;
+            return argsList.get(0)[0];
         }
 
-        public void setInputType(String inputType) {
-            this.inputType = inputType;
+        public String getInputTypeReal() {
+            return argsList.get(0)[1];
+        }
+        
+        public String getInput1Type() {
+            return argsList.get(1)[0];
         }
 
+        public String getInput1TypeReal() {
+            return argsList.get(1)[1];
+        }
+        
     }
 }

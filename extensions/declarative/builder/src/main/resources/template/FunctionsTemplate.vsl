@@ -30,6 +30,38 @@ import $import;
  */
 public class ${className}  {
 
+#foreach( $FunctionInfo in $bifunctions)
+
+    public static <T extends ${FunctionInfo.inputTypeReal}, S extends ${FunctionInfo.input1TypeReal}> SerializableBiFunction<T, S, ${FunctionInfo.returnType}> ${FunctionInfo.functionName}() {
+        return ${FunctionInfo.invoke};
+    }
+
+    public static <T, S> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier1, SerializableFunction<S, ${FunctionInfo.input1Type}> supplier2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
+    }
+
+    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
+    }
+
+    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg1, arg2);
+    }
+
+    public static <T, S extends ${FunctionInfo.inputType}, R extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper, supplier1), arg(wrapper, supplier2));
+    }
+
+    public static <T, U, S extends ${FunctionInfo.inputType}, R extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+    }
+
+    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper1), arg(wrapper2));
+    }
+
+#end
+
 #foreach( $FunctionInfo in $functions)
     /**
      * Wrap {@link ${FunctionInfo.methodName} } function for use as a map operation in an existing
@@ -39,7 +71,7 @@ public class ${className}  {
      * @param <T> input to {@link ${FunctionInfo.methodName} }
      * @return {@link SerializableFunction} of {@link ${FunctionInfo.methodName} }
      */
-    public static <T extends ${FunctionInfo.inputType}> SerializableFunction<T, ${FunctionInfo.returnType}> ${FunctionInfo.functionName}() {
+    public static <T extends ${FunctionInfo.inputTypeReal}> SerializableFunction<T, ${FunctionInfo.returnType}> ${FunctionInfo.functionName}() {
         return ${FunctionInfo.invoke};
     }
 
@@ -54,8 +86,12 @@ public class ${className}  {
      * @param supplier The input value to the function {@link ${FunctionInfo.methodName}
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
-    public static <T extends Event> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier) {
-        return map(${FunctionInfo.invoke}, supplier);
+    public static <T> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier));
+    }
+
+    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg);
     }
 
     /**
@@ -69,8 +105,16 @@ public class ${className}  {
      * @param supplier The wrapped instance supplying values to the function {@link ${FunctionInfo.methodName}
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
-    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}>  ${FunctionInfo.functionName}(SerializableSupplier<T> supplier) {
-        return map(${FunctionInfo.invoke}, supplier);
+    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableSupplier<T> supplier) {
+        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier));
+    }
+
+    public static <T, S extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return FilterBuilder.map(${FunctionInfo.invoke},  arg(wrapper, supplier));
+    }
+
+    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper) {
+        return FilterBuilder.map(${FunctionInfo.invoke},  arg(wrapper));
     }
 
 #end
