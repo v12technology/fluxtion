@@ -30,6 +30,37 @@ public class StreamFunctions {
     public static <T> LambdaReflection.SerializableFunction<T, String> message(String message) {
         return new Message(message)::publishMessage;
     }
+    
+    public static double add(double a, double b){
+        return a + b;
+    }
+    
+    public static double subtract(double a, double b){
+        return a - b;
+    }
+    
+    public static double multiply(double a, double b){
+        return a * b;
+    }
+    
+    public static double divide(double a, double b){
+        return a / b;
+    }
+    
+    public static class IntCount implements Stateful{
+
+        private int count = 0;
+        
+        @Override
+        public void reset() {
+            count = 0;
+        }
+        
+        public int increment(Object o){
+            return ++count;
+        }
+        
+    }
 
     public static class Count implements Stateful {
 
