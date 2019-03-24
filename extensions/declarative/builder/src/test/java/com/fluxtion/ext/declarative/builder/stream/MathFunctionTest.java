@@ -74,18 +74,27 @@ public class MathFunctionTest extends BaseSepInprocessTest {
     }
 
     @Test
+    public void generateProcessor() throws Exception {
+        sep((c) -> {
+            StreamFunctionsHelper.add(DataEvent::getValue, Data1::getVal);
+            multiply(select(DataEvent.class, "temp"), DataEvent::getValue, select(DataEvent.class, "offset"), DataEvent::getValue);
+        });
+
+    }
+
+    @Test
     public void testTwoMultiArgAdd() {
         sep((c) -> {
             Wrapper<Number> sum1 = intHelper(arg(Data1::getVal), arg(Data1::getVal)).id("sum1");
             Wrapper<Number> sum2 = intHelper(arg(Data1::getVal), arg(Data2::getVal)).id("sum2");
             multiply(select(Data1.class), Data1::getVal, select(Data2.class), Data2::getVal).id("multiply");
-            subtract( arg(Data1::getVal), arg(Data2::getVal)).id("subtract");
-            subtract( sum2, sum1).id("subtractSum");
+            subtract(arg(Data1::getVal), arg(Data2::getVal)).id("subtract");
+            subtract(sum2, sum1).id("subtractSum");
             FunctionBuilder.map(divide(), arg(Data1::getVal), arg(Data2::getVal)).id("divide");
             multiply(Data2::getVal, Data2::getVal).id("squared");
             multiply(arg(Data2::getVal), arg(25)).id("times25");
         });
-        
+
         Wrapper<Number> sum1 = getField("sum1");
         Wrapper<Number> sum2 = getField("sum2");
         Wrapper<Number> multiply = getField("multiply");
@@ -94,7 +103,7 @@ public class MathFunctionTest extends BaseSepInprocessTest {
         Wrapper<Number> divide = getField("divide");
         Wrapper<Number> squared = getField("squared");
         Wrapper<Number> times25 = getField("times25");
-        
+
         sep.onEvent(new Data1(10));
         assertThat(sum1.event().intValue(), is(20));
         assertThat(sum2.event().intValue(), is(0));
