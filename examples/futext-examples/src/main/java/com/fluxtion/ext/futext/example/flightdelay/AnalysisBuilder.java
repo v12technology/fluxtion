@@ -19,16 +19,18 @@ package com.fluxtion.ext.futext.example.flightdelay;
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.group.Group;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.count;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
 import com.fluxtion.ext.futext.builder.test.GreaterThanHelper;
 import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanFilter;
+import java.util.function.Function;
 
 /**
  *

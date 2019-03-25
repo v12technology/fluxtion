@@ -42,25 +42,34 @@
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="totalFlights:&#10;CountFunction"/>
+<jGraph:label text="totalFlights:&#10;Map_FlightDetails_By_increment_8"/>
 <jGraph:Style properties="NODE"/>
 </jGraph:ShapeNode>
 </data>
 </node>
-<node id="validationLogger_5">
+<node id="count_4">
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="validationLogger_5:&#10;ValidationLogger"/>
+<jGraph:label text="count_4:&#10;Count"/>
 <jGraph:Style properties="NODE"/>
 </jGraph:ShapeNode>
 </data>
 </node>
-<node id="validationLogSink_6">
+<node id="validationLogger_6">
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;validationLogSink_6:&#10;ValidationLogSink"/>
+<jGraph:label text="validationLogger_6:&#10;ValidationLogger"/>
+<jGraph:Style properties="NODE"/>
+</jGraph:ShapeNode>
+</data>
+</node>
+<node id="validationLogSink_7">
+<data key="vertex_label">
+<jGraph:ShapeNode>
+<jGraph:Geometry height="70" width="160" x="20" y="20"/>
+<jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;validationLogSink_7:&#10;ValidationLogSink"/>
 <jGraph:Style properties="EVENTHANDLER"/>
 </jGraph:ShapeNode>
 </data>
@@ -121,32 +130,37 @@
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="5" source="flightDetailsCsvDecoder0_0" target="validationLogger_5">
+<edge id="5" source="count_4" target="totalFlights">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="6" source="validationLogger_5" target="validationLogSink_6">
+<edge id="6" source="flightDetailsCsvDecoder0_0" target="validationLogger_6">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="7" source="RegisterEventHandler" target="eventPublsher_1">
+<edge id="7" source="validationLogger_6" target="validationLogSink_7">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="8" source="EofEvent" target="flightDetailsCsvDecoder0_0">
+<edge id="8" source="RegisterEventHandler" target="eventPublsher_1">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="9" source="CharEvent" target="flightDetailsCsvDecoder0_0">
+<edge id="9" source="EofEvent" target="flightDetailsCsvDecoder0_0">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>
 </edge>
-<edge id="10" source="LogControlEvent" target="validationLogSink_6">
+<edge id="10" source="CharEvent" target="flightDetailsCsvDecoder0_0">
+<data key="edge_label">
+<jGraph:ShapeEdge/>
+</data>
+</edge>
+<edge id="11" source="LogControlEvent" target="validationLogSink_7">
 <data key="edge_label">
 <jGraph:ShapeEdge/>
 </data>

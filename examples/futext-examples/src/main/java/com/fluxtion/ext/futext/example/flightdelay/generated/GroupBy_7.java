@@ -14,6 +14,7 @@ import com.fluxtion.ext.declarative.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.declarative.api.group.GroupByTargetMap;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.GreaterThanDecorator_2;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -44,17 +45,17 @@ public final class GroupBy_7 implements GroupBy<CarrierDelay> {
       instance.aggregateCount5 = value;
     }
     {
+      double value = instance.aggregateSum6;
+      value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
+      target.setTotalDelayMins((int) value);
+      instance.aggregateSum6 = value;
+    }
+    {
       double value = instance.aggregateAverage4;
       value =
           instance.aggregateAverage4Function.calcAverage((double) event.getDelay(), (double) value);
       target.setAvgDelay((int) value);
       instance.aggregateAverage4 = value;
-    }
-    {
-      double value = instance.aggregateSum6;
-      value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
-      target.setTotalDelayMins((int) value);
-      instance.aggregateSum6 = value;
     }
     return allMatched;
   }

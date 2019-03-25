@@ -14,6 +14,7 @@ import com.fluxtion.ext.declarative.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.declarative.api.group.GroupByTargetMap;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.GreaterThanDecorator_2;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -32,9 +33,9 @@ public final class CalculationStateGroupBy_7 implements Wrapper<CarrierDelay> {
 
   public CarrierDelay target;
   public int aggregateCount5;
+  public double aggregateSum6;
   public AggregateAverage aggregateAverage4Function = new AggregateAverage();
   public double aggregateAverage4;
-  public double aggregateSum6;
 
   public CalculationStateGroupBy_7() {
     target = new CarrierDelay();
