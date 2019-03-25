@@ -16,9 +16,13 @@
  */
 package com.fluxtion.ext.declarative.builder.filter;
 
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
+import static org.hamcrest.CoreMatchers.is;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -28,9 +32,25 @@ import org.junit.Test;
 public class FilterTest extends StreamInprocessTest {
 
     @Test
-    public void testOnNotifyControl(){
+    public void testOnNotifyControl() {
         sep((c) -> {
-            cumSum(DataEvent::getDoubleVal);
+            cumSum(DataEvent::getValue).id("sum")
+                    .filter(gt(10))
+                    .map(count()).id("count");
         });
+
+        Number count = getWrappedField("count");
+        Number sum = getWrappedField("sum");
+        DataEvent de1 = new DataEvent();
+        de1.value = 2;
+        sep.onEvent(de1);
+        sep.onEvent(de1);
+        Assert.assertThat(sum.intValue(), is (4));
+        Assert.assertThat(count.intValue(), is (0));
+        
+        de1.value = 10;
+        sep.onEvent(de1);
+        Assert.assertThat(sum.intValue(), is (14));
+        Assert.assertThat(count.intValue(), is (1));
     }
 }
