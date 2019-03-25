@@ -48,7 +48,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class MathFunctionTest extends BaseSepInprocessTest {
+public class MathFunctionTest extends StreamInprocessTest {
 
     public static int intFun(int a, int b) {
         return a + b;

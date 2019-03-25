@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamingFilterTest extends BaseSepInprocessTest {
+public class StreamingFilterTest extends StreamInprocessTest {
 
     @Test
     public void mapRef2Ref() {

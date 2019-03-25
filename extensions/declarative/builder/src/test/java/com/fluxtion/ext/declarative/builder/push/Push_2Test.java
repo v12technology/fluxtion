@@ -8,7 +8,7 @@ import com.fluxtion.ext.declarative.builder.factory.PushBuilder;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
-import com.fluxtion.ext.declarative.builder.stream.BaseSepInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.declarative.builder.stream.StreamBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class Push_2Test extends BaseSepInprocessTest{
+public class Push_2Test extends StreamInprocessTest{
  
     @Test
     public void pushNotification(){

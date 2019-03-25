@@ -23,7 +23,7 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.BaseSepInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamTest;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +34,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class MergeTest extends BaseSepInprocessTest {
+public class MergeTest extends StreamInprocessTest {
 
     @Test
     public void multipleSelect() {

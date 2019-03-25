@@ -32,7 +32,7 @@ import org.junit.rules.TestName;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class BaseSepInprocessTest {
+public class StreamInprocessTest {
 
     protected EventHandler sep;
     protected boolean fixedPkg = false;

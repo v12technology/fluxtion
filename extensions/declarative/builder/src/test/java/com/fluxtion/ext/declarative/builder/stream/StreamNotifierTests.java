@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamNotifierTests  extends BaseSepInprocessTest {
+public class StreamNotifierTests  extends StreamInprocessTest {
 
     @Test
     public void testOnNotifyControl(){

@@ -11,7 +11,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamPushTest extends BaseSepInprocessTest {
+public class StreamPushTest extends StreamInprocessTest {
 
     @Test
     public void mapRef2Ref() {
