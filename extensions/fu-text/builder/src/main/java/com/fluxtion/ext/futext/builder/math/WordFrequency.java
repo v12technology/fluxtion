@@ -17,26 +17,18 @@
 package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.ext.declarative.builder.group.Group;
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.declarative.api.numeric.MutableInt;
-import java.util.function.Function;
+import com.fluxtion.ext.declarative.builder.group.Frequency;
 
 /**
- *
+ * 
  * @author gregp
  */
-public interface Frequency {
+public interface WordFrequency {
 
-    public static <K, T> GroupBy<MutableInt> frequency(ByteBufferDelimiter buffer) {
-        return frequency(buffer, ByteBufferDelimiter::asString);
+    public static <K, T> GroupBy<MutableInt> wordFrequency(ByteBufferDelimiter buffer) {
+        return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
 
-    public static <K, T> GroupBy<MutableInt> frequency(K k, Function<K, ?> f) {
-        GroupByBuilder<K, MutableInt> wcQuery = Group.groupBy(k, f, MutableInt.class);
-        wcQuery.count(MutableInt::setValue);
-        GroupBy<MutableInt> wc = wcQuery.build();
-        return wc;
-    }
 }

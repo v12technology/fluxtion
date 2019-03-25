@@ -21,13 +21,13 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.ext.declarative.api.numeric.MutableInt;
 import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.wordSplitter;
-import static com.fluxtion.ext.futext.builder.math.Frequency.frequency;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import static com.fluxtion.ext.futext.builder.math.WordFrequency.wordFrequency;
 
 /**
  *
@@ -51,7 +51,7 @@ public class DelimiterByteArrayTest extends BaseSepTest {
     }
 
     public static class CsvBuilderTest extends SEPConfig {{
-            addPublicNode(frequency(wordSplitter()), VAR_BUFFER);
+            addPublicNode(wordFrequency(wordSplitter()), VAR_BUFFER);
     }}
 
 }
