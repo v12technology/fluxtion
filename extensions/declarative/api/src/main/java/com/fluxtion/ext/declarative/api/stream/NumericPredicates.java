@@ -42,11 +42,11 @@ public class NumericPredicates {
         return new NumericPredicates(test)::deltaLessThan;
     }
 
-    public static SerializableFunction<Number, Boolean> inRange(double lowerLimit, double upperLimit) {
+    public static SerializableFunction<Number, Boolean> inBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::inRange;
     }
 
-    public static SerializableFunction<Number, Boolean> outsideRange(double lowerLimit, double upperLimit) {
+    public static SerializableFunction<Number, Boolean> outsideBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::outsideRange;
     }
 

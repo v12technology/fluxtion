@@ -23,10 +23,11 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.lt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.inBand;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.outsideBand;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.buildLog;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.stream.FilterBuilder.map;
 import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.mapSet;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
@@ -281,6 +282,11 @@ public class MathFunctionTest extends BaseSepInprocessTest {
                     .id("eurContraPos");
             
             Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
+            
+            netPos.filter(Number::doubleValue, inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
 
             Log("-> Trade recived:'{}'@'{}' ", select(DataEvent.class),
                     DataEvent::getStringValue, DataEvent::getValue);         
@@ -290,11 +296,6 @@ public class MathFunctionTest extends BaseSepInprocessTest {
                     .input(eurDealtPos, Number::intValue)
                     .input(eurContraPos, Number::intValue)
                     .build();
-            
-            buildLog("NEW 1 <- *  POS WARNING  * create    : -> EUR position:'{}' breached warn limit of 10", netPos.filter(gt(10.0)).notifyOnChange(true))
-                    .input(netPos,  Number::intValue).build();
-            buildLog("NEW 2 <- *  POS WARNING  * delete : X  EUR position:'{}' dropped below warn limit of 10", netPos.filter(lt(10.0)).notifyOnChange(true))
-                    .input(netPos,  Number::intValue).build();
             
         }); 
         
@@ -306,7 +307,7 @@ public class MathFunctionTest extends BaseSepInprocessTest {
         sep.onEvent(de1);
         de1.setFilterString("UE");
         sep.onEvent(de1);
-        de1.value = 600;
+        de1.value = 50;
         sep.onEvent(de1);
         de1.setFilterString("EY");
         sep.onEvent(de1);
