@@ -19,7 +19,6 @@ package com.fluxtion.ext.declarative.builder.merging;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
-import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
@@ -63,8 +62,8 @@ public class MergeTest extends StreamInprocessTest {
             merge(Events.class, select(EventA.class), select(EventB.class)).id("mergedStreams")
                     .map(count()).id("mergedCount");
         });
-        Wrapper<Number> nonMerged = getField("nonMergedCount");
-        Wrapper<Number> merged = getField("mergedCount");
+        Number nonMerged = getWrappedField("nonMergedCount");
+        Number merged = getWrappedField("mergedCount");
         onEvent(new EventA());
         onEvent(new EventA());
         onEvent(new EventB());
@@ -74,10 +73,10 @@ public class MergeTest extends StreamInprocessTest {
         onEvent(new EventC());
         onEvent(new EventA());
         //
-        assertThat(merged.event().intValue(), is(6));
-        assertThat(nonMerged.event().intValue(), is(2));
+        assertThat(merged.intValue(), is(6));
+        assertThat(nonMerged.intValue(), is(2));
     }
-
+    
     public static class Events extends Event {
     }
 
@@ -89,5 +88,5 @@ public class MergeTest extends StreamInprocessTest {
 
     public static class EventC extends Events {
     }
-
+    
 }
