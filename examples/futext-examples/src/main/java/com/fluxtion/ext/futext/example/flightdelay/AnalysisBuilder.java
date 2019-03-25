@@ -20,6 +20,7 @@ import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
 import com.fluxtion.ext.declarative.builder.group.Group;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
@@ -28,8 +29,6 @@ import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import com.fluxtion.ext.futext.builder.test.GreaterThanHelper;
-import static com.fluxtion.ext.futext.builder.test.GreaterThanHelper.greaterThanFilter;
 import java.util.function.Function;
 
 /**
@@ -109,7 +108,7 @@ public class AnalysisBuilder {
                 .map(14, FlightDetails::setDelay)
                 .map(8, FlightDetails::setCarrier).tokenConfig(CharTokenConfig.WINDOWS).build();
         //filter for positive delays
-        Wrapper<FlightDetails> delayedFlight = greaterThanFilter(flightDetails, FlightDetails::getDelay, 0);
+        Wrapper<FlightDetails> delayedFlight = flightDetails.filter(FlightDetails::getDelay, positive());
         //group by carrier name and store in map<"carrier", CarrierDelay> 
         GroupByBuilder<FlightDetails, CarrierDelay> carrierDelay = groupBy(delayedFlight, FlightDetails::getCarrier, CarrierDelay.class);
         //init each group record with human readable name

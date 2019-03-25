@@ -25,7 +25,7 @@ import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDetailsCsvDec
  *
  * @author Greg Higgins
  */
-public class Map_FlightDetails_By_increment_8 extends AbstractFilterWrapper<Number> {
+public class Map_FlightDetails_By_increment_7 extends AbstractFilterWrapper<Number> {
 
   public FlightDetailsCsvDecoder0 filterSubject;
   private boolean filterSubjectUpdated;

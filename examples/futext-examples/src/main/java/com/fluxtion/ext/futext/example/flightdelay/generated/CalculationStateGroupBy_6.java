@@ -14,7 +14,7 @@ import com.fluxtion.ext.declarative.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.declarative.api.group.GroupByTargetMap;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.GreaterThanDecorator_2;
+import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt_1;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -26,18 +26,18 @@ import java.util.Map;
  *
  * @author Greg Higgins
  */
-public final class CalculationStateGroupBy_7 implements Wrapper<CarrierDelay> {
+public final class CalculationStateGroupBy_6 implements Wrapper<CarrierDelay> {
 
   private static final int SOURCE_COUNT = 1;
   private final BitSet updateMap = new BitSet(SOURCE_COUNT);
 
   public CarrierDelay target;
-  public int aggregateCount5;
-  public double aggregateSum6;
-  public AggregateAverage aggregateAverage4Function = new AggregateAverage();
-  public double aggregateAverage4;
+  public double aggregateSum5;
+  public AggregateAverage aggregateAverage3Function = new AggregateAverage();
+  public double aggregateAverage3;
+  public int aggregateCount4;
 
-  public CalculationStateGroupBy_7() {
+  public CalculationStateGroupBy_6() {
     target = new CarrierDelay();
   }
 

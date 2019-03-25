@@ -35,16 +35,17 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   private final FlightDetailsCsvDecoder0 flightDetailsCsvDecoder0_0 =
       new FlightDetailsCsvDecoder0();
   private final EventPublsher eventPublsher_1 = new EventPublsher();
-  private final GreaterThanDecorator_2 greaterThanDecorator_2_2 = new GreaterThanDecorator_2();
-  public final GroupBy_7 carrierDelayMap = new GroupBy_7();
-  public final Map_FlightDetails_By_increment_8 totalFlights =
-      new Map_FlightDetails_By_increment_8();
+  private final Filter_getDelay_By_positiveInt_1 filter_getDelay_By_positiveInt_1_2 =
+      new Filter_getDelay_By_positiveInt_1();
+  public final GroupBy_6 carrierDelayMap = new GroupBy_6();
+  public final Map_FlightDetails_By_increment_7 totalFlights =
+      new Map_FlightDetails_By_increment_7();
   private final ValidationLogger validationLogger_6 = new ValidationLogger("validationLog");
   private final ValidationLogSink validationLogSink_7 = new ValidationLogSink("validationLogSink");
   //Dirty flags
   private boolean isDirty_eventPublsher_1 = false;
+  private boolean isDirty_filter_getDelay_By_positiveInt_1_2 = false;
   private boolean isDirty_flightDetailsCsvDecoder0_0 = false;
-  private boolean isDirty_greaterThanDecorator_2_2 = false;
   private boolean isDirty_totalFlights = false;
   private boolean isDirty_validationLogSink_7 = false;
   //Filter constants
@@ -53,10 +54,13 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
     validationLogSink_7.setPublishLogImmediately(true);
     validationLogger_6.logSink = validationLogSink_7;
     eventPublsher_1.publishOnValidate = (boolean) false;
+    filter_getDelay_By_positiveInt_1_2.setAlwaysReset(false);
+    filter_getDelay_By_positiveInt_1_2.setNotifyOnChangeOnly(false);
+    filter_getDelay_By_positiveInt_1_2.setResetImmediate(true);
+    filter_getDelay_By_positiveInt_1_2.filterSubject = flightDetailsCsvDecoder0_0;
+    filter_getDelay_By_positiveInt_1_2.source_0 = flightDetailsCsvDecoder0_0;
     flightDetailsCsvDecoder0_0.errorLog = validationLogger_6;
-    greaterThanDecorator_2_2.filterSubject = flightDetailsCsvDecoder0_0;
-    greaterThanDecorator_2_2.source_FlightDetailsCsvDecoder0_1 = flightDetailsCsvDecoder0_0;
-    carrierDelayMap.greaterThanDecorator_20 = greaterThanDecorator_2_2;
+    carrierDelayMap.filter_getDelay_By_positiveInt_10 = filter_getDelay_By_positiveInt_1_2;
     totalFlights.setAlwaysReset(false);
     totalFlights.setNotifyOnChangeOnly(false);
     totalFlights.setResetImmediate(true);
@@ -114,9 +118,9 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
       totalFlights.updated_filterSubject(flightDetailsCsvDecoder0_0);
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
-      isDirty_greaterThanDecorator_2_2 = greaterThanDecorator_2_2.onEvent();
-      if (isDirty_greaterThanDecorator_2_2) {
-        carrierDelayMap.updategreaterThanDecorator_20(greaterThanDecorator_2_2);
+      isDirty_filter_getDelay_By_positiveInt_1_2 = filter_getDelay_By_positiveInt_1_2.onEvent();
+      if (isDirty_filter_getDelay_By_positiveInt_1_2) {
+        carrierDelayMap.updatefilter_getDelay_By_positiveInt_10(filter_getDelay_By_positiveInt_1_2);
       }
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
@@ -134,9 +138,9 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
       totalFlights.updated_filterSubject(flightDetailsCsvDecoder0_0);
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
-      isDirty_greaterThanDecorator_2_2 = greaterThanDecorator_2_2.onEvent();
-      if (isDirty_greaterThanDecorator_2_2) {
-        carrierDelayMap.updategreaterThanDecorator_20(greaterThanDecorator_2_2);
+      isDirty_filter_getDelay_By_positiveInt_1_2 = filter_getDelay_By_positiveInt_1_2.onEvent();
+      if (isDirty_filter_getDelay_By_positiveInt_1_2) {
+        carrierDelayMap.updatefilter_getDelay_By_positiveInt_10(filter_getDelay_By_positiveInt_1_2);
       }
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
@@ -158,8 +162,8 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   public void afterEvent() {
     totalFlights.resetAfterEvent();
     isDirty_eventPublsher_1 = false;
+    isDirty_filter_getDelay_By_positiveInt_1_2 = false;
     isDirty_flightDetailsCsvDecoder0_0 = false;
-    isDirty_greaterThanDecorator_2_2 = false;
     isDirty_totalFlights = false;
     isDirty_validationLogSink_7 = false;
   }
@@ -168,7 +172,7 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   public void init() {
     flightDetailsCsvDecoder0_0.init();
     eventPublsher_1.init();
-    greaterThanDecorator_2_2.init();
+    filter_getDelay_By_positiveInt_1_2.init();
     carrierDelayMap.init();
     totalFlights.init();
     validationLogSink_7.init();
