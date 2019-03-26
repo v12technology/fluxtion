@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamNotifierTests  extends BaseSepInprocessTest {
+public class StreamNotifierTest  extends StreamInprocessTest {
 
     @Test
     public void testOnNotifyControl(){
@@ -38,18 +38,17 @@ public class StreamNotifierTests  extends BaseSepInprocessTest {
             in.filter(StreamData::getIntValue, new FilterFunctions()::positive).id("data")
                     .map(new MapFunctions()::count).id("count");
         });
-        Wrapper<StreamData> data = getField("data");
-        Wrapper<Number> count = getField("count");
-        Wrapper<Number> countStatic = getField("countStatic");
+        Number count = getWrappedField("count");
+        Number countStatic = getWrappedField("countStatic");
         onEvent(new StreamData(89));
-        assertThat(count.event().intValue(), is(1));
-        assertThat(countStatic.event().intValue(), is(1));
+        assertThat(count.intValue(), is(1));
+        assertThat(countStatic.intValue(), is(1));
         onEvent(new StreamData(89));
-        assertThat(count.event().intValue(), is(2));
-        assertThat(countStatic .event().intValue(), is(2));
+        assertThat(count.intValue(), is(2));
+        assertThat(countStatic.intValue(), is(2));
         onEvent(new StreamData(-10));
-        assertThat(count.event().intValue(), is(2));
-        assertThat(countStatic .event().intValue(), is(2));
+        assertThat(count.intValue(), is(2));
+        assertThat(countStatic.intValue(), is(2));
     }
 
     

@@ -19,11 +19,10 @@ package com.fluxtion.ext.declarative.builder.merging;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
-import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.BaseSepInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamTest;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +33,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class MergeTest extends BaseSepInprocessTest {
+public class MergeTest extends StreamInprocessTest {
 
     @Test
     public void multipleSelect() {
@@ -63,8 +62,8 @@ public class MergeTest extends BaseSepInprocessTest {
             merge(Events.class, select(EventA.class), select(EventB.class)).id("mergedStreams")
                     .map(count()).id("mergedCount");
         });
-        Wrapper<Number> nonMerged = getField("nonMergedCount");
-        Wrapper<Number> merged = getField("mergedCount");
+        Number nonMerged = getWrappedField("nonMergedCount");
+        Number merged = getWrappedField("mergedCount");
         onEvent(new EventA());
         onEvent(new EventA());
         onEvent(new EventB());
@@ -74,10 +73,10 @@ public class MergeTest extends BaseSepInprocessTest {
         onEvent(new EventC());
         onEvent(new EventA());
         //
-        assertThat(merged.event().intValue(), is(6));
-        assertThat(nonMerged.event().intValue(), is(2));
+        assertThat(merged.intValue(), is(6));
+        assertThat(nonMerged.intValue(), is(2));
     }
-
+    
     public static class Events extends Event {
     }
 
@@ -89,5 +88,5 @@ public class MergeTest extends BaseSepInprocessTest {
 
     public static class EventC extends Events {
     }
-
+    
 }

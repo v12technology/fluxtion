@@ -46,7 +46,7 @@ public class Main {
         double duration = (delta / 1_000_000) / 1000.0;
         System.out.println("processed file:" + dataFile.getAbsolutePath());
         processor.carrierDelayMap.getMap().values().stream().map(Wrapper::event).forEach(System.out::println);
-        System.out.println("row count:" + processor.totalFlights.intValue() + "\nprocessing time:" + duration + " seconds");
+        System.out.println("row count:" + processor.totalFlights.event().intValue() + "\nprocessing time:" + duration + " seconds");
     }
 
 }

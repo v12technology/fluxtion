@@ -14,6 +14,7 @@ import com.fluxtion.ext.declarative.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.declarative.api.group.GroupByTargetMap;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt_1;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -24,45 +25,48 @@ import java.util.Map;
  *
  * @author Greg Higgins
  */
-public final class GroupBy_7 implements GroupBy<CarrierDelay> {
+public final class GroupBy_6 implements GroupBy<CarrierDelay> {
 
-  public GreaterThanDecorator_2 greaterThanDecorator_20;
+  public Filter_getDelay_By_positiveInt_1 filter_getDelay_By_positiveInt_10;
   private CarrierDelay target;
-  private GroupByTargetMap<CarrierDelay, CalculationStateGroupBy_7> calcState;
-  private GroupByIniitialiser<FlightDetails, CarrierDelay> initialisergreaterThanDecorator_20;
+  private GroupByTargetMap<CarrierDelay, CalculationStateGroupBy_6> calcState;
+  private GroupByIniitialiser<FlightDetails, CarrierDelay>
+      initialiserfilter_getDelay_By_positiveInt_10;
 
-  @OnParentUpdate("greaterThanDecorator_20")
-  public boolean updategreaterThanDecorator_20(GreaterThanDecorator_2 eventWrapped) {
+  @OnParentUpdate("filter_getDelay_By_positiveInt_10")
+  public boolean updatefilter_getDelay_By_positiveInt_10(
+      Filter_getDelay_By_positiveInt_1 eventWrapped) {
     FlightDetails event = eventWrapped.event();
-    CalculationStateGroupBy_7 instance = calcState.getOrCreateInstance(event.getCarrier());
-    boolean allMatched = instance.processSource(1, initialisergreaterThanDecorator_20, event);
+    CalculationStateGroupBy_6 instance = calcState.getOrCreateInstance(event.getCarrier());
+    boolean allMatched =
+        instance.processSource(1, initialiserfilter_getDelay_By_positiveInt_10, event);
     target = instance.target;
     {
-      int value = instance.aggregateCount5;
-      value = AggregateCount.increment((int) 0, (int) value);
-      target.setTotalFlights((int) value);
-      instance.aggregateCount5 = value;
-    }
-    {
-      double value = instance.aggregateAverage4;
-      value =
-          instance.aggregateAverage4Function.calcAverage((double) event.getDelay(), (double) value);
-      target.setAvgDelay((int) value);
-      instance.aggregateAverage4 = value;
-    }
-    {
-      double value = instance.aggregateSum6;
+      double value = instance.aggregateSum5;
       value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
       target.setTotalDelayMins((int) value);
-      instance.aggregateSum6 = value;
+      instance.aggregateSum5 = value;
+    }
+    {
+      double value = instance.aggregateAverage3;
+      value =
+          instance.aggregateAverage3Function.calcAverage((double) event.getDelay(), (double) value);
+      target.setAvgDelay((int) value);
+      instance.aggregateAverage3 = value;
+    }
+    {
+      int value = instance.aggregateCount4;
+      value = AggregateCount.increment((int) 0, (int) value);
+      target.setTotalFlights((int) value);
+      instance.aggregateCount4 = value;
     }
     return allMatched;
   }
 
   @Initialise
   public void init() {
-    calcState = new GroupByTargetMap<>(CalculationStateGroupBy_7.class);
-    initialisergreaterThanDecorator_20 =
+    calcState = new GroupByTargetMap<>(CalculationStateGroupBy_6.class);
+    initialiserfilter_getDelay_By_positiveInt_10 =
         new GroupByIniitialiser<FlightDetails, CarrierDelay>() {
 
           @Override

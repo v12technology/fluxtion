@@ -22,18 +22,18 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.lt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.inBand;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.outsideBand;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.buildLog;
+import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.stream.FilterBuilder.map;
 import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.mapSet;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.divide;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.intCount;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.multiply;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.subtract;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.divide;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.intCount;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.multiply;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.subtract;
 import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import static com.fluxtion.ext.declarative.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;
@@ -47,7 +47,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class MathFunctionTest extends BaseSepInprocessTest {
+public class MathFunctionTest extends StreamInprocessTest {
 
     public static int intFun(int a, int b) {
         return a + b;
@@ -80,7 +80,7 @@ public class MathFunctionTest extends BaseSepInprocessTest {
     @Test
     public void generateProcessor() throws Exception {
         sep((c) -> {
-            StreamFunctionsHelper.add(DataEvent::getValue, Data1::getVal);
+            StreamFunctionsBuilder.add(DataEvent::getValue, Data1::getVal);
             multiply(select(DataEvent.class, "temp"), DataEvent::getValue, select(DataEvent.class, "offset"), DataEvent::getValue);
         });
 
@@ -146,13 +146,13 @@ public class MathFunctionTest extends BaseSepInprocessTest {
                     .mapDouble(Math::rint).id("random")
                     .map(cumSum()).console("sum:").id("add")
                     .map(intCount()).id("intCount")
-                    .map(StreamFunctionsHelper.ceil(), Number::doubleValue)
+                    .map(StreamFunctionsBuilder.ceil(), Number::doubleValue)
                     .map(StreamFunctionsBuilder.avg());
             ceil(Data1::getVal).id("celiFromEvent").map(cumSum()).id("cumSum");
             ceil(Data1Handler::val).id("ceilFromHandler");
             ceil(new Data1Handler()::val).id("ceilFromInstanceHandler");
             ceil(sum).id("ceilFromWrapper");
-            StreamFunctionsHelper.add(Data1::getVal, Data2::getVal).id("adding");
+            StreamFunctionsBuilder.add(Data1::getVal, Data2::getVal).id("adding");
         });
     }
 
@@ -281,6 +281,11 @@ public class MathFunctionTest extends BaseSepInprocessTest {
                     .id("eurContraPos");
             
             Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
+            
+            netPos.filter(Number::doubleValue, inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
+            netPos.filter(Number::doubleValue, outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
 
             Log("-> Trade recived:'{}'@'{}' ", select(DataEvent.class),
                     DataEvent::getStringValue, DataEvent::getValue);         
@@ -290,11 +295,6 @@ public class MathFunctionTest extends BaseSepInprocessTest {
                     .input(eurDealtPos, Number::intValue)
                     .input(eurContraPos, Number::intValue)
                     .build();
-            
-            buildLog("NEW 1 <- *  POS WARNING  * create    : -> EUR position:'{}' breached warn limit of 10", netPos.filter(gt(10.0)).notifyOnChange(true))
-                    .input(netPos,  Number::intValue).build();
-            buildLog("NEW 2 <- *  POS WARNING  * delete : X  EUR position:'{}' dropped below warn limit of 10", netPos.filter(lt(10.0)).notifyOnChange(true))
-                    .input(netPos,  Number::intValue).build();
             
         }); 
         
@@ -306,7 +306,7 @@ public class MathFunctionTest extends BaseSepInprocessTest {
         sep.onEvent(de1);
         de1.setFilterString("UE");
         sep.onEvent(de1);
-        de1.value = 600;
+        de1.value = 50;
         sep.onEvent(de1);
         de1.setFilterString("EY");
         sep.onEvent(de1);
@@ -327,7 +327,7 @@ public class MathFunctionTest extends BaseSepInprocessTest {
     @Test
     public void chainedFunctions(){
         sep((c) ->{
-            Wrapper<Number> add = StreamFunctionsHelper.add(arg(25), arg(DataEvent::getValue));
+            Wrapper<Number> add = StreamFunctionsBuilder.add(arg(25), arg(DataEvent::getValue));
             multiply(arg(0.5), arg(add)).id("result");
         });
         DataEvent event = new DataEvent();

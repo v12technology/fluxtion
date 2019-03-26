@@ -29,7 +29,7 @@ import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
-import static com.fluxtion.ext.futext.builder.math.CountBuilder.count;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
@@ -52,7 +52,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvNoHeader() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -75,7 +75,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvNoHeader_Trim() {
         final EventHandler sep = buildAndInitSep(WorldCitiesTrimCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
                 + "mexico,    aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "   brazil   ,santiago,Aixirivall,06,,130,1.5\n";
@@ -93,7 +93,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvNoHeader_Trim_skipEmtyLines() {
         final EventHandler sep = buildAndInitSep(WorldCitiesTrimSkipEmptyCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
                 + "\n"
                 + "mexico,    aixirivali,Aixirivali,06,,25.19,1.5\n"
@@ -112,7 +112,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithHeaderManualMapping() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -129,7 +129,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithAutoBeanMapping() {
         final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
         WorldCityBean city = ((Wrapper<WorldCityBean>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -183,7 +183,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithAutoBeanMapping_UseEof() {
         final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
         WorldCityBean city = ((Wrapper<WorldCityBean>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5";
@@ -200,7 +200,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithMappingHeader() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeader.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -217,7 +217,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWindowsWithMappingHeader() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeaderWindows.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\r\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\r\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\r\n";
@@ -234,7 +234,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithHeaderSkipCommentSkipEmpty() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_SkipEmpty_SkipComments.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "\n"
@@ -255,7 +255,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     public void testCsvWithHeaderAndConverter() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_and_Converter_Cfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
-        NumericValue count = getField("count");
+        Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -297,8 +297,8 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     //the OnEvent callback method
     public void testCsvWithHeaderAndRowCBFailedValidation() {
         final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
-        NumericValue count = getField("count");
-        NumericValue failedValidationcount = getField("failedValidationCount");
+        Number count = ((Wrapper<Number>)getField("count")).event();
+        Number failedValidationcount = ((Wrapper<Number>)getField("failedValidationCount")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n"
@@ -326,8 +326,8 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                 + "#comment line\n"
                 + "brazil    sao paolo  123.5    35.78 \n";
         WorldCityOnEvent city = ((Wrapper<WorldCityOnEvent>) getField("city")).event();
-        NumericValue count = getField("count");
-        NumericValue failedValidationcount = getField("failedValidationCount");
+        Number count = ((Wrapper<Number>)getField("count")).event();
+        Number failedValidationcount = ((Wrapper<Number>)getField("failedValidationCount")).event();
         StringDriver.streamChars(dataCsh, sep, false);
         Assert.assertEquals(3, city.parse);
         Assert.assertEquals(3, city.postProcess);

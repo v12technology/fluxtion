@@ -31,7 +31,7 @@ public class MergingWrapper<T> implements Wrapper<T> {
     private T event;
     private final Class<T> clazz;
     public List<Wrapper> wrappedNodes;
-    public List nodes;
+    public List<T> nodes;
     
     public static <T> MergingWrapper<T> merge(Class<T> clazz, Wrapper<? extends T>... nodes){
         MergingWrapper<T> merger = new MergingWrapper<>(clazz);
@@ -60,6 +60,7 @@ public class MergingWrapper<T> implements Wrapper<T> {
     public MergingWrapper(Class<T> clazz) {
         this.clazz = clazz;
         wrappedNodes = new ArrayList<>();
+        nodes = new ArrayList<>();
     }
 
     @OnParentUpdate("wrappedNodes")

@@ -36,14 +36,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import org.apache.velocity.VelocityContext;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import org.apache.commons.lang.StringUtils;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.util.HashSet;
-import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Map;
@@ -84,7 +83,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <S> GroupByBuilder<S, T> join(Wrapper<S> k, Function<S, ?> f) {
+    public <S> GroupByBuilder<S, T> join(Wrapper<S> k, SerializableFunction<S, ?> f) {
         Group<S, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext<S, T> secondaryContext = new SourceContext<>(joinedGroup);
         contexts.add(secondaryContext);
@@ -92,7 +91,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, Function<K, ?> f) {
+    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);
         contexts.add(secondaryContext);
@@ -100,7 +99,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, Function<K, ?>... f) {
+    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);
         contexts.add(secondaryContext);
@@ -108,7 +107,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <K> GroupByBuilder<K, T> join(K k, Function<K, ?> f) {
+    public <K> GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);
         contexts.add(secondaryContext);
@@ -230,9 +229,9 @@ public class GroupByContext<K, T> {
                 multiKeyId = group.getMultiKey().getClass().getSimpleName() + GenerationContext.nextId();
                 multiKeyId = StringUtils.uncapitalize(multiKeyId);
             } else if (group.isWrapped()) {
-                keyMethod = methodFromLambda(((Wrapper) keyProvider).eventClass(), group.getKeyFunction());
+                keyMethod = group.getKeyFunction().method();
             } else {
-                keyMethod = methodFromLambda(keyProvider, group.getKeyFunction());
+                keyMethod = group.getKeyFunction().method();
             }
             String id = StringUtils.uncapitalize(keyProvider.getClass().getSimpleName() + (count++));
 

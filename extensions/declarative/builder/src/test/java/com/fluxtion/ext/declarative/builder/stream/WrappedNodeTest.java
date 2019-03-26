@@ -13,7 +13,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class WrappedNodeTest extends BaseSepInprocessTest {
+public class WrappedNodeTest extends StreamInprocessTest {
 
     @Test
     public void mapPrimitiveFromString() {

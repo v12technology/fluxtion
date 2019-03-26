@@ -11,27 +11,24 @@
  */
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.ext.declarative.api.Test;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.declarative.api.MergingWrapper;
+import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import com.fluxtion.ext.declarative.api.stream.StringPredicates;
+import com.fluxtion.ext.declarative.builder.event.EventSelect;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataChildNode;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
-import com.fluxtion.ext.declarative.builder.helpers.Tests.Greater;
-import static com.fluxtion.ext.declarative.builder.helpers.Tests.GreaterThan;
-import com.fluxtion.ext.declarative.builder.helpers.Tests.StringsEqual;
-import com.fluxtion.api.lifecycle.EventHandler;
+import static com.fluxtion.ext.declarative.builder.stream.StreamBuilder.stream;
+import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
-import static com.fluxtion.ext.declarative.builder.helpers.MyData.MyDataEvent;
-import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filterOnce;
-import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
-import com.fluxtion.ext.declarative.builder.helpers.DataHolder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
@@ -39,6 +36,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 
 /**
  *
@@ -84,21 +82,11 @@ public class ConditionalTestTest extends BaseSepTest {
     }
     
     public static class StringEqualsBuilder extends SEPConfig {
-
         {
             EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
-            DataHolder n = addNode(new DataHolder("EURJPY"));
-            Test test_1 = buildTest(StringsEqual.class, selectMyData, MyData::getStringVal)
-                    .arg(n::getStringVal).build();
-            Test test2 = buildTest(StringsEqual.class, selectMyData, MyData::getStringVal)
-                    .arg("EURUSD")
-                    .build();
-            Wrapper<MyData> filter_1 = buildTest(StringsEqual.class, selectMyData, MyData::getStringVal)
-                    .arg(n::getStringVal)
-                    .buildFilter();
-            addPublicNode(new TestResultListener(test_1), "results_1");
-            addPublicNode(new TestResultListener(test2), "results_2");
-            addPublicNode(new FilterResultListener(filter_1), "filter_1");
+            addPublicNode(new TestResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURJPY"))), "results_1");
+            addPublicNode(new TestResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURUSD"))), "results_2");
+            addPublicNode(new FilterResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURJPY"))), "filter_1");
         }
     }
 
@@ -365,8 +353,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
         public Builder() throws Exception {
             EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
-            Test test = buildTest(Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(200).build();
+            Object test = selectMyData.filter(MyData::getIntVal, gt(200));
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -374,9 +361,8 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class Builder2 extends SEPConfig {
 
         public Builder2() throws Exception {
-            EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
-            Test test = buildTest(Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(200).notifyOnChange(true).build();
+            EventWrapper<MyData> selectMyData = select(MyData.class);
+            Object test = selectMyData.filter(MyData::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -386,8 +372,7 @@ public class ConditionalTestTest extends BaseSepTest {
         public Builder3() throws Exception {
             MyDataHandler handler = addNode(new MyDataHandler());
             MyDataChildNode data = addNode(new MyDataChildNode(handler));
-            Test test = buildTest(Greater.class, data, data::getIntVal)
-                    .arg(200).notifyOnChange(true).build();
+            Object test = stream(data).filter(MyDataChildNode::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -395,8 +380,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class Builder4 extends SEPConfig {
 
         public Builder4() throws Exception {
-            Test test = buildTest(Greater.class, MyData.class, MyData::getIntVal)
-                    .arg(200).notifyOnChange(true).build();
+            Object test = select(MyData.class).filter(MyData::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -406,8 +390,7 @@ public class ConditionalTestTest extends BaseSepTest {
         public Builder5() throws Exception {
             MyDataHandler handler = addNode(new MyDataHandler());
             MyDataChildNode data = addNode(new MyDataChildNode(handler));
-            Wrapper<MyDataChildNode> filter = buildTest(Greater.class, data, data::getIntVal)
-                    .arg(200).notifyOnChange(true).buildFilter();
+            Wrapper<MyDataChildNode> filter = stream(data).filter(MyDataChildNode::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }
@@ -415,8 +398,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class Builder6 extends SEPConfig {
 
         public Builder6() throws Exception {
-            Wrapper<MyData> filter = buildTest(Greater.class, MyData.class, MyData::getIntVal)
-                    .arg(200).notifyOnChange(true).buildFilter();
+            Wrapper<MyData> filter = select(MyData.class).filter(MyData::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }
@@ -426,8 +408,7 @@ public class ConditionalTestTest extends BaseSepTest {
         public Builder7() throws Exception {
             MyDataHandler handler = addNode(new MyDataHandler());
             MyDataChildNode data = addNode(new MyDataChildNode(handler));
-            Test test = buildTest(Greater.class, data)
-                    .arg(200).notifyOnChange(true).build();
+            Object test = stream(data).filter(gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -439,9 +420,7 @@ public class ConditionalTestTest extends BaseSepTest {
             MyDataHandler handler2 = addNode(new MyDataHandler());
             MyDataChildNode data1 = addNode(new MyDataChildNode(handler1));
             MyDataChildNode data2 = addNode(new MyDataChildNode(handler2));
-            MyDataChildNode[] dataArr = new MyDataChildNode[]{data1, data2};
-            Test test = buildTest(Greater.class, dataArr, MyDataChildNode::getIntVal)
-                    .arg(200).notifyOnChange(true).build();
+            Object test = MergingWrapper.merge(data1, data2).filter(MyDataChildNode::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -450,8 +429,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
         public BuilderArray2() throws Exception {
             EventWrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");
-            Wrapper<MyData> filter = buildTest(Greater.class, myDataArr, MyData::getIntVal)
-                    .arg(200).notifyOnChange(true).buildFilter();
+            Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(true);  
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }
@@ -459,9 +437,8 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class BuilderArray3 extends SEPConfig {
 
         public BuilderArray3() throws Exception {
-            EventWrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");
-            Wrapper<MyData> filter = buildTest(Greater.class, myDataArr, MyData::getIntVal)
-                    .arg(200).notifyOnChange(false).buildFilter();
+            EventWrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");;
+            Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(false); 
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }
@@ -474,7 +451,8 @@ public class ConditionalTestTest extends BaseSepTest {
             MyDataChildNode data1 = addNode(new MyDataChildNode(handler1));
             MyDataChildNode data2 = addNode(new MyDataChildNode(handler2));
             MyDataChildNode[] dataArr = new MyDataChildNode[]{data1, data2};
-            Wrapper<MyDataChildNode> filter = buildTest(Greater.class, dataArr).arg(200).notifyOnChange(true).buildFilter();
+//            Wrapper<MyDataChildNode> filter = buildTest(Greater.class, dataArr).arg(200).notifyOnChange(true).buildFilter();
+            Wrapper<MyDataChildNode> filter = MergingWrapper.merge(dataArr).filter(gt(200)).notifyOnChange(true);
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }
@@ -482,8 +460,12 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class BuilderArray5 extends SEPConfig {
 
         public BuilderArray5() throws Exception {
-            Wrapper<MyData> filterOnce = filterOnce(MyDataEvent, new String[]{"EU", "UY"}, MyData::getIntVal, GreaterThan, 200);
-            Wrapper<MyData> filterAll = filter(MyDataEvent, MyData::getIntVal, GreaterThan, 200);
+            Wrapper<MyData> filterOnce = merge(select(MyData.class, "EU", "UY"))
+                    .filter(MyData::getIntVal, gt(200)).notifyOnChange(true);
+            Wrapper<MyData> filterAll = merge(select(MyData.class))
+                    .filter(MyData::getIntVal, gt(200));
+//            Wrapper<MyData> filterOnce = filterOnce(MyDataEvent, new String[]{"EU", "UY"}, MyData::getIntVal, GreaterThan, 200);
+//            Wrapper<MyData> filterAll = filter(MyDataEvent, MyData::getIntVal, GreaterThan, 200);
             addPublicNode(new FilterResultListener(filterOnce), "results");
         }
     }

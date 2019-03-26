@@ -11,17 +11,10 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.util.Date;
-import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
 import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
-import java.lang.reflect.Method;
-import java.util.function.BiConsumer;
-import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.numericSetMethod;
 import com.fluxtion.generator.util.BaseSepTest;
 
 /**
@@ -36,26 +29,6 @@ public class AggregateTest extends BaseSepTest{
             return prevVal + newVal;
         }
     }
-
-
-    @Test
-    public void testAggregateNonGroup() throws Exception {
-        TradeEvent te = new TradeEvent(1, 5000);
-        NumericValue result = NumericFunctionBuilder.function(CumSum.class)
-                .input(te, TradeEvent::getTradeVolume)
-                .build();
-    }
-
-    @Test
-    public void testAggregateNonGroupWithTarget() throws Exception {
-        TradeEvent te = new TradeEvent(1, 5000);
-        Date val = new Date();
-        NumericValue result = NumericFunctionBuilder.function(CumSum.class)
-                .input(te, TradeEvent::getTradeVolume)
-                .push(val, Date::setTime)
-                .build();
-    }
-
 
     @Test
     public void testPrimitvePush() {
@@ -74,9 +47,8 @@ public class AggregateTest extends BaseSepTest{
     }
 
 
-    public <T> Class<?> push(Class<T> clazz, BiConsumer<T, ? super Byte> target) {
-        Method result = numericSetMethod(clazz, target);
-        return result.getParameterTypes()[0];
+    public <T> Class<?> push(Class<T> clazz, SerializableBiConsumer<T, ? super Byte> target) {
+        return target.method().getParameterTypes()[0];
     }
 
     public static class AllPrimitives {

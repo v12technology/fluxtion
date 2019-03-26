@@ -14,44 +14,21 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.futext.api.math;
+package com.fluxtion.ext.futext.builder.math;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
-
+import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
+import com.fluxtion.ext.declarative.api.numeric.MutableInt;
+import com.fluxtion.ext.declarative.builder.group.Frequency;
 
 /**
- *
- * @author greg
+ * 
+ * @author gregp
  */
-public class CountFunction implements NumericValue{
-    public Object tracked;
-    private int count;
+public interface WordFrequency {
 
-    @OnEvent 
-    public void increment(){
-        count++;
-    }
-    
-    @Initialise
-    public void init(){
-        count = 0;
+    public static <K, T> GroupBy<MutableInt> wordFrequency(ByteBufferDelimiter buffer) {
+        return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
 
-    @Override
-    public int intValue() {
-        return count;
-    }
-
-    @Override
-    public long longValue() {
-        return count;
-    }
-
-    @Override
-    public double doubleValue() {
-        return count;
-    }
-    
 }

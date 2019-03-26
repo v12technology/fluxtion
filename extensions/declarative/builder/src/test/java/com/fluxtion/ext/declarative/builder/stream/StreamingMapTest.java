@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamingMapTest extends BaseSepInprocessTest {
+public class StreamingMapTest extends StreamInprocessTest {
 
     @Test
     public void mapPrimitiveFromString() {

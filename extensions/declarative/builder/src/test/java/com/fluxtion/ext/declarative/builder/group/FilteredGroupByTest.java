@@ -11,20 +11,20 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.generator.util.BaseSepTest;
-import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
+//import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
 import com.fluxtion.junit.Categories;
 import com.fluxtion.api.lifecycle.EventHandler;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -106,9 +106,8 @@ public class FilteredGroupByTest extends BaseSepTest {
     }
 
     public static class Builder extends SEPConfig {
-
         {
-            Wrapper<Order> largeOrders = filter(Order.class, Order::getSize, GreaterThan.class, 200);
+            Wrapper<Order> largeOrders = select(Order.class).filter( Order::getSize, gt(200));
             GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, Order::getCcyPair, OrderSummary.class);
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count( OrderSummary::setDealCount);
@@ -118,11 +117,8 @@ public class FilteredGroupByTest extends BaseSepTest {
     }
     
     public static class Builder1 extends SEPConfig {
-
         {
-            
-            Wrapper<Deal> validDeal = filter(Deal.class, Deal::getDealtSize, GreaterThan.class, 0);
-            
+            Wrapper<Deal> validDeal = select(Deal.class).filter( Deal::getDealtSize, positive());
             GroupByBuilder<Order, OrderSummary> orders = groupBy(Order.class, Order::getId, OrderSummary.class);
             GroupByBuilder<Deal, OrderSummary> deals = orders.join(validDeal, Deal::getOrderId);
             //set default vaules for a group by row

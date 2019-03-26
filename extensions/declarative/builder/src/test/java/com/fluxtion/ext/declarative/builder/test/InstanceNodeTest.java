@@ -1,24 +1,18 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.builder.node.SEPConfig;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
-import static com.fluxtion.ext.declarative.builder.test.InstanceNodeTest.NumberCompareValidators.gt;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class InstanceNodeTest extends BaseSepTest {
-
-//    @Override
-//    protected String testPackageID() {
-//        return "";
-//    }
 
     @Test
     public void testSelectValidator() {
@@ -43,9 +37,8 @@ public class InstanceNodeTest extends BaseSepTest {
         @Override
         public void buildConfig() {
             addPublicNode(new TestResultListener(
-                    buildTest(gt(20), DataEvent.class, DataEvent::getValue).build()
+                    select(DataEvent.class).filter(DataEvent::getValue, gt(20))
             ), "results");
-
         }
 
     }

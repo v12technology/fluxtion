@@ -21,19 +21,11 @@ import com.fluxtion.generator.Generator;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.openhft.compiler.CachedCompiler;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-import net.sf.cglib.proxy.Callback;
-import net.vidageek.mirror.dsl.Mirror;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
@@ -62,115 +54,6 @@ public interface FunctionGeneratorHelper {
         return defualtValue;
     }
 
-    public static <T> Method numericGetMethod(T instance, Function<T, ? super Number> f) {
-        return methodFromLambda(instance, f);
-    }
-
-    public static <T> Method numericGetMethod(Class<T> instance, Function<T, ? super Number> f) {
-        return methodFromLambda(instance, f);
-    }
-
-    public static <T> Method numericSetMethod(T instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptor(instance, result), (byte) 0);
-        return result[0];
-    }
-
-    public static <T> Method numericSetMethod(Class<T> instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        try {
-            ((BiConsumer<T, ? super Integer>) targetFunction).accept(generateInterceptorByClass(instance, result), 0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Double>) targetFunction).accept(generateInterceptorByClass(instance, result), 0.0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Long>) targetFunction).accept(generateInterceptorByClass(instance, result), 0l);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Short>) targetFunction).accept(generateInterceptorByClass(instance, result), (short) 0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Float>) targetFunction).accept(generateInterceptorByClass(instance, result), 0.0f);
-        } catch (Exception e) {
-        }
-        try {
-            targetFunction.accept(generateInterceptorByClass(instance, result), (byte) 0);
-        } catch (Exception e) {
-        }
-        return result[0];
-    }
-
-    public static <T> Method setCharMethod(T instance, BiConsumer<T, ? super Character> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptor(instance, result), (char) 0);
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(T instance, Function<T, ?> f) {
-        Method[] result = new Method[1];
-        f.apply(generateInterceptor(instance, result));
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(T target, BiConsumer<T, ?> targetFunction) {
-        return methodFromLambda((Class<T>) target.getClass(), targetFunction);
-    }
-
-    public static <T> Method methodFromLambda(Class<T> target, BiConsumer<T, ?> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptorByClass(target, result), null);
-        return result[0];
-
-    }
-
-    public static <T> Method numericMethodFromLambda(Class<T> instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptorByClass(instance, result), (byte) 0);
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(Class<T> instance, Function<T, ?> f) {
-        Method[] result = new Method[1];
-        f.apply(generateInterceptorByClass(instance, result));
-        return result[0];
-    }
-
-    static <T> T generateInterceptor(T instance, Method[] result) {
-        return generateInterceptorByClass((Class<T>) instance.getClass(), result);
-    }
-
-    static <T> T generateInterceptorByClass(Class<T> instance, Method[] result) {
-        final MethodInterceptor interceptor = (Object obj, Method method, Object[] args, MethodProxy proxy) -> {
-            result[0] = method;
-            return null;
-        };
-        final Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(instance);
-        enhancer.setCallbackType(interceptor.getClass());
-
-        final Class<?> proxyClass = enhancer.createClass();
-        Enhancer.registerCallbacks(proxyClass, new Callback[]{interceptor});
-
-        T proxy = (T) new Mirror().on(proxyClass).invoke().constructor().bypasser();
-        return proxy;
-    }
-
-//    public static <T> Class<T> generateAndCompileClass(Class class1, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
-//        String className = generationConfig.getPackageName() + "." + (String) ctx.get(FunctionKeys.functionClass.name());
-//        Class newClass = null;
-//        initVelocity();
-//        ctx.put(FunctionKeys.functionPackage.name(), generationConfig.getPackageName());
-//        Template template = Velocity.getTemplate(templateFile);
-//        Writer writer = new StringWriter();
-//        template.merge(ctx, writer);
-//        newClass = CACHED_COMPILER.loadFromJava(className, writer.toString());
-//        return newClass;
-//    }
     public static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;

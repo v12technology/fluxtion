@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class FunctionsTest extends BaseSepInprocessTest {
+public class FunctionsTest extends StreamInprocessTest {
 
     @Test
     public void mapRef2Ref() {

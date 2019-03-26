@@ -1047,7 +1047,10 @@ public class SepJavaSourceModelHugeFilter {
                             for (Object parent : list) {
                                 if (instanceField.getGenericType() instanceof ParameterizedType) {
                                     ParameterizedType integerListType = (ParameterizedType) instanceField.getGenericType();
-                                    final Class<?> classType = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                    Class<?> classType = Object.class;
+                                    if(integerListType.getActualTypeArguments()[0] instanceof Class){
+                                            classType = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                    }
                                     Field nodeParentReference = model.getFieldForInstance(parent);
                                     if (nodeParentReference != null) {
                                         nodeMemberAssignmentList.add(String.format("%4s%s%s%s.add(%s);", "", varName, joiner, instanceField.getName(), nodeParentReference.name));

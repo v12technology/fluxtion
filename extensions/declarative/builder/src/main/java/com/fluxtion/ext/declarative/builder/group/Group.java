@@ -19,14 +19,13 @@ package com.fluxtion.ext.declarative.builder.group;
 import com.fluxtion.ext.declarative.api.group.MultiKey;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * A class defining the grouping key used in aggregate processing of events.
@@ -47,7 +46,7 @@ public class Group <K, T> {
      * 
      * @return The actual grouping function.
      */
-    public static <K> Group<K, ?> groupBy(K k, Function<K, ?> f){
+    public static <K> Group<K, ?> groupBy(K k, SerializableFunction<K, ?> f){
         return new Group(k, f);
     }
     
@@ -61,18 +60,18 @@ public class Group <K, T> {
      * @param target target of any aggregate function created with this grouping
      * @return A builder
      */
-    public static <K, T> GroupByBuilder<K, T> groupBy(K k, Function<K, ?> f, Class<T> target){
+    public static <K, T> GroupByBuilder<K, T> groupBy(K k, SerializableFunction<K, ?> f, Class<T> target){
         final Group group = new Group(k, f, target);
         return GroupByContext.builder(group);
     }
     
-    public static <K, T> GroupByBuilder<K, T> groupBy(Wrapper<K> k, Function<K, ?> f, Class<T> target){
+    public static <K, T> GroupByBuilder<K, T> groupBy(Wrapper<K> k, SerializableFunction<K, ?> f, Class<T> target){
         final Group group = new Group(k, f, target);
         group.wrapped = true;
         return GroupByContext.builder(group);
     }
       
-    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, Function<K, ?> f, Class<T> target){
+    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, SerializableFunction<K, ?> f, Class<T> target){
         try {
             final Group group = new Group(k.newInstance(), f, target);
             group.eventClass = true;
@@ -82,13 +81,13 @@ public class Group <K, T> {
         }
     }
     
-    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, Class<T> target, Function<K, ?>... f){
+    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, Class<T> target, SerializableFunction<K, ?>... f){
         try {
             ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
             ImportMap importMap = ImportMap.newMap();
-            for (Function<K, ?> function : f) {
+            for (SerializableFunction<K, ?> function : f) {
                 MultiKeyInfo info = new MultiKeyInfo(importMap);
-                Method sourceMethod = methodFromLambda(k, function);
+                Method sourceMethod = function.method();
                 info.setSource(sourceMethod, sourceMethod.getName() + GenerationContext.nextId());
                 keyList.add(info);
             }
@@ -111,7 +110,7 @@ public class Group <K, T> {
     private boolean eventClass = false;
     private boolean wrapped = false;
     private final K inputSource;
-    private final Function<K, ?> keyFunction;
+    private final SerializableFunction<K, ?> keyFunction;
     private MultiKey<?> multiKey;
     private Class<T> target;
     private Group joinedGroup;
@@ -154,11 +153,11 @@ public class Group <K, T> {
     }
     
     
-    private Group(K input, Function<K, ?> keyFunction) {
+    private Group(K input, SerializableFunction<K, ?> keyFunction) {
         this(input, keyFunction, null);
     }
 
-    private Group(K input, Function<K, ?> keyFunction, Class<T> target) {
+    private Group(K input, SerializableFunction<K, ?> keyFunction, Class<T> target) {
         this.inputSource = input;
         this.keyFunction = keyFunction;
         this.target = target;
@@ -171,21 +170,21 @@ public class Group <K, T> {
         this.target = target;
     }
     
-    public <K1> Group<K1, T> join(K1 secondInput, Function<K1, ?> keyFunction){
+    public <K1> Group<K1, T> join(K1 secondInput, SerializableFunction<K1, ?> keyFunction){
         Group g = new Group(secondInput, keyFunction, getTargetClass());
         g.joinedGroup = this;
         return g;
     }
     
     
-    public <K1, T> Group<K1, T> join(Wrapper<K1> secondInput, Function<K1, ?> keyFunction){
+    public <K1, T> Group<K1, T> join(Wrapper<K1> secondInput, SerializableFunction<K1, ?> keyFunction){
         Group g = new Group(secondInput, keyFunction, getTargetClass());
         g.joinedGroup = this;
         g.wrapped = true;
         return g;
     }
     
-    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, Function<K1, ?> keyFunction){
+    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?> keyFunction){
         try {
             Group g = new Group(secondInput.newInstance(), keyFunction, getTargetClass());
             g.eventClass = true;
@@ -196,13 +195,13 @@ public class Group <K, T> {
         }
     }
     
-    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, Function<K1, ?>... keyFunction){
+    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?>... keyFunction){
         try {
             ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
             int i = 0;
-            for (Function<K1, ?> function : keyFunction) {
+            for (SerializableFunction<K1, ?> function : keyFunction) {
                 MultiKeyInfo info = new MultiKeyInfo(multiKeyImportMap);
-                Method sourceMethod = methodFromLambda(secondInput, function);
+                Method sourceMethod = function.method();
                 info.setSource(sourceMethod, multiKeyList.get(i).getId());
                 i++;
 //                info.setSource(sourceMethod, sourceMethod.getName() + GenerationContext.nextId());
@@ -239,7 +238,7 @@ public class Group <K, T> {
         return inputSource;
     }
 
-    public Function<K, ?> getKeyFunction() {
+    public SerializableFunction<K, ?> getKeyFunction() {
         return keyFunction;
     }
 

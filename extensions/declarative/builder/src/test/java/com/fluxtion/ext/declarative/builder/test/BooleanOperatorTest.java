@@ -9,12 +9,12 @@ import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nand;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.or;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.xor;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
-import com.fluxtion.ext.declarative.builder.helpers.Tests;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
 import net.vidageek.mirror.dsl.Mirror;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -140,8 +140,7 @@ public class BooleanOperatorTest extends BaseSepTest {
 
         public Builder() throws Exception {
             EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
-            Test test = buildTest(Tests.Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(200).build();
+            Wrapper<MyData> test = selectMyData.filter(MyData::getIntVal, gt(200));
             Test not = not(test);
             addPublicNode(new TestResultListener(not), "results");
         }
@@ -152,12 +151,9 @@ public class BooleanOperatorTest extends BaseSepTest {
 
         public BuilderAnd() throws Exception {
             EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
-            Test test_200 = buildTest(Tests.Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(200).build();
-            Test test_500 = buildTest(Tests.Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(500).build();
-            Test test_1000 = buildTest(Tests.Greater.class, selectMyData, MyData::getIntVal)
-                    .arg(1000).build();
+            Wrapper<MyData> test_200 = selectMyData.filter(MyData::getIntVal, gt(200));
+            Wrapper<MyData> test_500 = selectMyData.filter(MyData::getIntVal, gt(500));
+            Wrapper<MyData> test_1000 = selectMyData.filter(MyData::getIntVal, gt(1000));
             Test and = and(test_200, test_500, test_1000);
             Test nand = nand(test_200, test_500, test_1000);
             Test or = or(test_200, test_500, test_1000);

@@ -1,5 +1,6 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (c) 2019, V12 Technology Ltd.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -14,14 +15,22 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.declarative.api.numeric;
+package com.fluxtion.ext.declarative.builder.stream;
+
+import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
+import net.vidageek.mirror.dsl.Mirror;
 
 /**
- * A Marker interface for an aggregating numeric functions. If a class uses this
- * interface then it must implement only one public method.
  *
- * @author greg
+ * @author Greg Higgins greg.higgins@v12technology.com
  */
-public interface NumericArrayFunctionStateless {
+public class StreamInprocessTest extends BaseSepInprocessTest{
+
+    protected <T> T getWrappedField(String name) {
+        Wrapper<T> wrapped = (Wrapper<T>) new Mirror().on(sep).get().field(name);
+        return wrapped.event();
+    }
     
 }
+

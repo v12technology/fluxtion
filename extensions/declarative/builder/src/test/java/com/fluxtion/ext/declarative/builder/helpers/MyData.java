@@ -33,6 +33,18 @@ public class MyData extends Event {
     public int getIntVal() {
         return intVal;
     }
+    
+    public byte getByteVal(){
+        return (byte) intVal;
+    }
+    
+    public short getShortVal(){
+        return (byte) intVal;
+    }
+    
+    public char getCharVal(){
+        return (char) intVal;
+    }
 
     public double getDoubleVal() {
         return doubleVal;

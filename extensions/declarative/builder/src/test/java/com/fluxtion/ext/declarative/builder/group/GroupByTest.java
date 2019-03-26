@@ -11,7 +11,6 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -20,10 +19,9 @@ import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.ext.declarative.builder.helpers.Tests.Negative;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.ext.declarative.api.Test;
-import java.util.function.Function;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Count;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Sum;
@@ -31,10 +29,10 @@ import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.LogOnNotify;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
+//import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import org.junit.Ignore;
 
 /**
  *
@@ -77,7 +75,7 @@ public class GroupByTest extends BaseSepTest {
     
     
     @org.junit.Test
-    @Ignore
+//    @Ignore
     public void testGroupBy() {
         EventHandler sep = buildAndInitSep(Builder1.class);
         
@@ -86,13 +84,17 @@ public class GroupByTest extends BaseSepTest {
         sep.onEvent(new TradeEvent(2, 60));
 //        sep.onEvent(LogControlEvent.);
         sep.onEvent(new DealEvent(2, 6));
+        sep.onEvent(new TradeEvent(1, 100));
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new DealEvent(1, 25));
+        System.out.println("SENDING BAD DEAL");
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new TradeEvent(9, 2780));
         //TODO use assert to test the calculations.
+        Number badDealCount = ((Wrapper<Number>)getField("badDealCount")).event();
+        assertThat(badDealCount.intValue(), is(1));
     }
 
     public static class Builder1 extends SEPConfig {
@@ -101,8 +103,8 @@ public class GroupByTest extends BaseSepTest {
             GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent.class, TradeEvent::getTradeId, TradeSummary.class);
             GroupByBuilder<DealEvent, TradeSummary> deals = trades.join(DealEvent.class, DealEvent::getParentTradeId);
             //vars
-            Function<TradeEvent, ? super Number> tradeVol = TradeEvent::getTradeVolume;
-            Function<DealEvent, ? super Number> dealVol = DealEvent::getTradeVolume;
+            SerializableFunction<TradeEvent, ? super Number> tradeVol = TradeEvent::getTradeVolume;
+            SerializableFunction<DealEvent, ? super Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
             trades.function(Sum, tradeVol, TradeSummary::setTotalVolume);
             trades.function(Avg, tradeVol, TradeSummary::setAveragOrderSize);
@@ -110,20 +112,17 @@ public class GroupByTest extends BaseSepTest {
             deals.function(Sum, dealVol, TradeSummary::setTotalConfirmedVolume);
             deals.function(Count, dealVol, TradeSummary::setDealCount);
             Wrapper<TradeSummary> summary = trades.build();
-
             //debug logging
-            final EventWrapper<DealEvent> dealEvents = select(DealEvent.class);
-            Log(" -> trade  : {}", select(TradeEvent.class)).logLevel = 4;
-            Log(" -> deal  : {}", dealEvents).logLevel = 4;
-            Log(" <- summary: {}", summary).logLevel = 4;
+//            Log(" -> trade  : {}", select(TradeEvent.class)).logLevel = 10;
+//            Log(" -> deal  : {}", select(DealEvent.class)).logLevel = 10;
+//            Log(" <- summary: {}", summary).logLevel = 10;
             //warning log for unconfirmed trades
-            Test unconfirmedDeal = buildTest(
-                    Negative.class, summary, TradeSummary::getOutstandingVoulme)
-                    .notifyOnChange(true).build();
-
-            LogOnNotify("<- WARNING deal volume greater than order volume dealId:",
-                    unconfirmedDeal, dealEvents, DealEvent::getParentTradeId
-            ).logLevel = 2;
+            Wrapper<TradeSummary> overFilled = summary.filter(TradeSummary::getOutstandingVoulme, negative()).notifyOnChange(true);
+            
+            overFilled.map(count()).id("badDealCount");
+//            LogOnNotify("<- WARNING deal volume greater than order volume dealId:",
+//                    overFilled, dealEvents, DealEvent::getParentTradeId
+//            ).logLevel = 2;
         }
     }
 
