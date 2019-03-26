@@ -26,36 +26,36 @@ import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
  */
 public class NumericPredicates {
 
-    public static SerializableFunction<Number, Boolean> gt(double test) {
+    public static <T extends Number> SerializableFunction<T, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
     
-    public static SerializableFunction<Number, Boolean> deltaGt(double test) {
+    public static <T extends Number> SerializableFunction<T, Boolean> deltaGt(double test) {
         return new NumericPredicates(test)::deltaGreaterThan;
     }
 
-    public static SerializableFunction<Number, Boolean> lt(double test) {
+    public static <T extends Number> SerializableFunction<T, Boolean> lt(double test) {
         return new NumericPredicates(test)::lessThan;
     }
     
-    public static SerializableFunction<Number, Boolean> deltaLt(double test) {
+    public static <T extends Number> SerializableFunction<T, Boolean> deltaLt(double test) {
         return new NumericPredicates(test)::deltaLessThan;
     }
 
-    public static SerializableFunction<Number, Boolean> inBand(double lowerLimit, double upperLimit) {
+    public static <T extends Number> SerializableFunction<T, Boolean> inBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::inRange;
     }
 
-    public static SerializableFunction<Number, Boolean> outsideBand(double lowerLimit, double upperLimit) {
+    public static <T extends Number> SerializableFunction<T, Boolean> outsideBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::outsideRange;
     }
 
-    public static SerializableFunction<Number, Boolean> positive() {
+    public static <T extends Number> SerializableFunction<T, Boolean> positive() {
         return NumericPredicates::positiveInt;
     }
 
-    public static SerializableFunction<Number, Boolean> negative() {
-        return NumericPredicates::positiveInt;
+    public static <T extends Number> SerializableFunction<T, Boolean> negative() {
+        return NumericPredicates::negativeNum;
     }
 
     public double doubleLimit_0 = Double.NaN;

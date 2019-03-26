@@ -70,6 +70,7 @@ public class TradeSummary {
         return "TradeSummary{" + "traderId=" + traderId + 
                 ", TraderId=" + TraderId + 
                 ", totalVolume=" + totalVolume + 
+                ", outstandingVoulme=" + outstandingVoulme + 
                 ", dealCount=" + dealCount + 
                 ", tradeCount=" + tradeCount + 
                 ", averagOrderSize=" + averagOrderSize + 
