@@ -25,7 +25,7 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.log.LogControlEvent;
 import com.fluxtion.ext.declarative.api.log.LogService;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.count;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;

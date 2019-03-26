@@ -16,9 +16,9 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.ext.declarative.api.numeric.MutableInt;
-import java.util.function.Function;
 
 /**
  *
@@ -26,7 +26,7 @@ import java.util.function.Function;
  */
 public class Frequency {
 
-    public static <K, T> GroupBy<MutableInt> frequency(K k, Function<K, ?> f) {
+    public static <K, T> GroupBy<MutableInt> frequency(K k, LambdaReflection.SerializableFunction<K, ?> f) {
         GroupByBuilder<K, MutableInt> wcQuery = Group.groupBy(k, f, MutableInt.class);
         wcQuery.count(MutableInt::setValue);
         GroupBy<MutableInt> wc = wcQuery.build();

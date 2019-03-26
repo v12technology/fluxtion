@@ -29,7 +29,6 @@ import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.declarative.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
-import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
@@ -52,19 +51,19 @@ public class GroupByBuilder<K, T> {
         this.sourceContext = sourceContext;
     }
 
-    public <K> GroupByBuilder<K, T> join(K k, Function<K, ?> f) {
+    public <K> GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
         return groupBy.join(k, f);
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, Function<K, ?> f) {
+    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
         return groupBy.join(k, f);
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, Function<K, ?>... f) {
+    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
         return groupBy.join(k, f);
     }
 
-    public <S> GroupByBuilder<S, T> join(Wrapper<S> k, Function<S, ?> f) {
+    public <S> GroupByBuilder<S, T> join(Wrapper<S> k, SerializableFunction<S, ?> f) {
         return groupBy.join(k, f);
     }
 

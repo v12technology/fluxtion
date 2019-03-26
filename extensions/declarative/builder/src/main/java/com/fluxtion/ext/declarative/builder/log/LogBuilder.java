@@ -34,12 +34,12 @@ import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.function
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.sourceMappingList;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import java.util.Map;
 import java.util.Set;
 import org.apache.velocity.VelocityContext;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.updateNotifier;
-import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -75,7 +75,7 @@ public class LogBuilder {
     }
 
     @SafeVarargs
-    public static <T> LogBuilder buildLog(String message, T source, Function<T, ?>... data) {
+    public static <T> LogBuilder buildLog(String message, T source, SerializableFunction<T, ?>... data) {
         LogBuilder logger = new LogBuilder(message, null);
         logger.input(source, data);
         return logger;
@@ -109,19 +109,19 @@ public class LogBuilder {
         return Log(message, EventSelect.select(source));
     }
     
-    public static <E extends Event> MsgBuilder Log(String message, Class<E> source, Function<E, ?>... data) {
+    public static <E extends Event> MsgBuilder Log(String message, Class<E> source, SerializableFunction<E, ?>... data) {
         return Log(message, EventSelect.select(source), data);
     }
     
     @SafeVarargs
-    public static <S> MsgBuilder Log(String message, S source, Function<S, ?>... data) {
+    public static <S> MsgBuilder Log(String message, S source, SerializableFunction<S, ?>... data) {
         LogBuilder logger = new LogBuilder(message, null);
         logger.input(source, data);
         return logger.build();
     }
 
     @SafeVarargs
-    public static <E, W extends Wrapper<E>> MsgBuilder Log(String message, W source, Function<E, ?>... data) {
+    public static <E, W extends Wrapper<E>> MsgBuilder Log(String message, W source, SerializableFunction<E, ?>... data) {
         LogBuilder logger = new LogBuilder(message, null);
         logger.input(source, data);
         return logger.build();
@@ -150,7 +150,7 @@ public class LogBuilder {
     }
 
     @SafeVarargs
-    public static <S, N> MsgBuilder LogOnNotify(String message, N notifier, S source, Function<S, ?>... data) {
+    public static <S, N> MsgBuilder LogOnNotify(String message, N notifier, S source, SerializableFunction<S, ?>... data) {
         LogBuilder logger = new LogBuilder(message, notifier);
         logger.input(source, data);
         return logger.build();
@@ -158,26 +158,26 @@ public class LogBuilder {
 
     @SafeVarargs
 //    public static <N, E extends Event, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, Function<E, ?>... data) {
-    public static <N, E, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, Function<E, ?>... data) {
+    public static <N, E, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, SerializableFunction<E, ?>... data) {
         LogBuilder logger = new LogBuilder(message, notifier);
         logger.input(source, data);
         return logger.build();
     }
 
-    public <T> LogBuilder input(T source, Function<T, ?>... data) {
+    public <T> LogBuilder input(T source, SerializableFunction<T, ?>... data) {
         SourceInfo sourceInfo = addSource(source);
-        for (Function<T, ?> function : data) {
-            Method getMethod = methodFromLambda(source, function);
+        for (SerializableFunction<T, ?> function : data) {
+            Method getMethod = function.method();
             valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, getMethod));
             count++;
         }
         return this;
     }
 
-    public <T, W extends Wrapper<T>> LogBuilder input(W functionWrapper, Function<T, ?>... data) {
+    public <T, W extends Wrapper<T>> LogBuilder input(W functionWrapper, SerializableFunction<T, ?>... data) {
         SourceInfo sourceInfo = addSource(functionWrapper);
-        for (Function<T, ?> function : data) {
-            Method getMethod = methodFromLambda(functionWrapper.eventClass(), function);
+        for (SerializableFunction<T, ?> function : data) {
+            Method getMethod =  function.method();
             valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, functionWrapper, getMethod));
             count++;
         }

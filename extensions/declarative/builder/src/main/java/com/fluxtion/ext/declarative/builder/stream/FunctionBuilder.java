@@ -21,7 +21,6 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.ext.declarative.api.EventWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.factory.PushBuilder;

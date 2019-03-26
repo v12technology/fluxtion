@@ -31,6 +31,7 @@ import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.partition.LambdaReflection;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import com.fluxtion.ext.futext.builder.test.helpers.LeaguePosition;
 import com.fluxtion.ext.futext.builder.test.helpers.MatchResult;
@@ -167,7 +168,7 @@ public class GroupByTest extends BaseSepTest {
             addPublicNode(homeGoalsGroup, VAR_SUM_HOMEGOALS);
             addPublicNode(awayGoalsGroup, VAR_SUM_AWAYGOALS);
             //logging - we need to cast to Function<MutableNumericValue, ?>  as java type inference is breaking down
-            Function<MutableNumericValue, ?> f = MutableNumericValue::intValue;
+            LambdaReflection.SerializableFunction<MutableNumericValue, ?> f = MutableNumericValue::intValue;
             Log(result);
             LogBuilder.buildLog("XX Team:'{}' for:{} against:{} XX", result, MatchResult::getHomeTeamAsString)
                     .input(homeGoalsGroup, f)

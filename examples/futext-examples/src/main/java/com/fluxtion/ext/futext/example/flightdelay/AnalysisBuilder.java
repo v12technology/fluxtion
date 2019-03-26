@@ -24,7 +24,7 @@ import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive
 import com.fluxtion.ext.declarative.builder.group.Group;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.count;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
 import com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder;

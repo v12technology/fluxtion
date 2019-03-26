@@ -62,61 +62,6 @@ public interface FunctionGeneratorHelper {
         return defualtValue;
     }
 
-    public static <T> Method setCharMethod(T instance, BiConsumer<T, ? super Character> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptor(instance, result), (char) 0);
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(T instance, Function<T, ?> f) {
-        Method[] result = new Method[1];
-        f.apply(generateInterceptor(instance, result));
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(T target, BiConsumer<T, ?> targetFunction) {
-        return methodFromLambda((Class<T>) target.getClass(), targetFunction);
-    }
-
-    public static <T> Method methodFromLambda(Class<T> target, BiConsumer<T, ?> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptorByClass(target, result), null);
-        return result[0];
-
-    }
-
-    public static <T> Method numericMethodFromLambda(Class<T> instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptorByClass(instance, result), (byte) 0);
-        return result[0];
-    }
-
-    public static <T> Method methodFromLambda(Class<T> instance, Function<T, ?> f) {
-        Method[] result = new Method[1];
-        f.apply(generateInterceptorByClass(instance, result));
-        return result[0];
-    }
-
-    static <T> T generateInterceptor(T instance, Method[] result) {
-        return generateInterceptorByClass((Class<T>) instance.getClass(), result);
-    }
-
-    static <T> T generateInterceptorByClass(Class<T> instance, Method[] result) {
-        final MethodInterceptor interceptor = (Object obj, Method method, Object[] args, MethodProxy proxy) -> {
-            result[0] = method;
-            return null;
-        };
-        final Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(instance);
-        enhancer.setCallbackType(interceptor.getClass());
-
-        final Class<?> proxyClass = enhancer.createClass();
-        Enhancer.registerCallbacks(proxyClass, new Callback[]{interceptor});
-
-        T proxy = (T) new Mirror().on(proxyClass).invoke().constructor().bypasser();
-        return proxy;
-    }
-
     public static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;

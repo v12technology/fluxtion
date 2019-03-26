@@ -22,7 +22,6 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.inBand;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.outsideBand;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
@@ -31,10 +30,10 @@ import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.stream.FilterBuilder.map;
 import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.mapSet;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.divide;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.intCount;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.multiply;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsHelper.subtract;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.divide;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.intCount;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.multiply;
+import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.subtract;
 import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import static com.fluxtion.ext.declarative.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;
@@ -81,7 +80,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     @Test
     public void generateProcessor() throws Exception {
         sep((c) -> {
-            StreamFunctionsHelper.add(DataEvent::getValue, Data1::getVal);
+            StreamFunctionsBuilder.add(DataEvent::getValue, Data1::getVal);
             multiply(select(DataEvent.class, "temp"), DataEvent::getValue, select(DataEvent.class, "offset"), DataEvent::getValue);
         });
 
@@ -147,13 +146,13 @@ public class MathFunctionTest extends StreamInprocessTest {
                     .mapDouble(Math::rint).id("random")
                     .map(cumSum()).console("sum:").id("add")
                     .map(intCount()).id("intCount")
-                    .map(StreamFunctionsHelper.ceil(), Number::doubleValue)
+                    .map(StreamFunctionsBuilder.ceil(), Number::doubleValue)
                     .map(StreamFunctionsBuilder.avg());
             ceil(Data1::getVal).id("celiFromEvent").map(cumSum()).id("cumSum");
             ceil(Data1Handler::val).id("ceilFromHandler");
             ceil(new Data1Handler()::val).id("ceilFromInstanceHandler");
             ceil(sum).id("ceilFromWrapper");
-            StreamFunctionsHelper.add(Data1::getVal, Data2::getVal).id("adding");
+            StreamFunctionsBuilder.add(Data1::getVal, Data2::getVal).id("adding");
         });
     }
 
@@ -328,7 +327,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     @Test
     public void chainedFunctions(){
         sep((c) ->{
-            Wrapper<Number> add = StreamFunctionsHelper.add(arg(25), arg(DataEvent::getValue));
+            Wrapper<Number> add = StreamFunctionsBuilder.add(arg(25), arg(DataEvent::getValue));
             multiply(arg(0.5), arg(add)).id("result");
         });
         DataEvent event = new DataEvent();
