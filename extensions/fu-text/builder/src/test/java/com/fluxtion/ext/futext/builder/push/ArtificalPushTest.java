@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.futext.builder.push;
 
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.futext.builder.ascii.AsciiValuePushHelper;
+import static com.fluxtion.ext.declarative.builder.stream.StreamBuilder.stream;
+import com.fluxtion.ext.futext.builder.ascii.AsciiHelper;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,23 +28,17 @@ import org.junit.Test;
  *
  * @author greg
  */
-public class ArtificalPushTest extends BaseSepTest {
+public class ArtificalPushTest extends BaseSepInprocessTest {
 
     @Test
     public void generateProcessor() throws Exception {
-        buildAndInitSep(Builder.class);
+        sep((c) -> {
+            SaleItem saleItem = c.addPublicNode(new SaleItem(), "saleItem");
+            stream(AsciiHelper.readInt("quantity")).push(Number::intValue, saleItem::setQuantity);
+        });
         StringDriver.streamChars("quantity:250 nothing x", sep, true);
         SaleItem saleItem = getField("saleItem");
         Assert.assertThat(saleItem.getQuantity(), is(250));
-    }
-
-    public static class Builder extends SEPConfig {
-
-        public Builder() throws Exception {
-            SaleItem saleItem = addPublicNode(new SaleItem(), "saleItem");
-            AsciiValuePushHelper.setInt("quantity", saleItem, SaleItem::setQuantity);
-        }
-
     }
 
 }
