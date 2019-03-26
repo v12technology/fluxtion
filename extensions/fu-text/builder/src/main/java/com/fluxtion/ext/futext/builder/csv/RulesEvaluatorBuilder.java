@@ -20,16 +20,16 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.builder.factory.FunctionGeneratorHelper.methodFromLambda;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filter;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.filterMatch;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nand;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.not;
 import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.or;
-import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.declarative.builder.stream.FilterBuilder;
 import com.fluxtion.ext.futext.api.csv.ColumnName;
 import com.fluxtion.ext.futext.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
@@ -39,7 +39,6 @@ import com.fluxtion.ext.futext.api.util.EventPublsher;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import javafx.util.Pair;
 
 /**
@@ -64,18 +63,18 @@ public class RulesEvaluatorBuilder<T> {
 
     public static class BuilderRowProcessor<T> {
 
-        private RowProcessor<T> monitoredWrapped;
-        private List<Pair<SerializableConsumer, Function<T, ?>>> ruleList;
+        private final RowProcessor<T> monitoredWrapped;
+        private final List<Pair<SerializableConsumer, SerializableFunction<T, ?>>> ruleList;
 
         public BuilderRowProcessor(RowProcessor<T> monitored) {
             this.monitoredWrapped = monitored;
             ruleList = new ArrayList<>();
         }
 
-        public <R> BuilderRowProcessor<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
+        public <R> BuilderRowProcessor<T> addRule(SerializableConsumer<? extends R> rule, SerializableFunction<T, R> supplier) {
             Object test = rule.captured()[0];
             if (test instanceof ColumnName) {
-                Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
+                Method accessorMethod = supplier.method();
                 ((ColumnName) test).setName(accessorMethod.getName() + " ");
             }
             ruleList.add(new Pair(rule, supplier));
@@ -94,10 +93,12 @@ public class RulesEvaluatorBuilder<T> {
                 );
             } else {
                 List testList = new ArrayList();
-                for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
+                for (Pair<SerializableConsumer, SerializableFunction<T, ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
-                    Function<T, R> supplier = (Function<T, R>) pair.getValue();
-                    testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+                    SerializableFunction<T, R> supplier = (SerializableFunction<T, R>) pair.getValue();
+                    testList.add(
+                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
+                    );
                 }
 
                 evaluator = new RulesEvaluator<>(
@@ -120,18 +121,18 @@ public class RulesEvaluatorBuilder<T> {
 
     public static class BuilderWrapper<T> {
 
-        private Wrapper<T> monitoredWrapped;
-        private List<Pair<SerializableConsumer, Function<T, ?>>> ruleList;
+        private final Wrapper<T> monitoredWrapped;
+        private List<Pair<SerializableConsumer, SerializableFunction<T, ?>>> ruleList;
 
         public BuilderWrapper(Wrapper<T> monitored) {
             this.monitoredWrapped = monitored;
             ruleList = new ArrayList<>();
         }
 
-        public <R> BuilderWrapper<T> addRule(SerializableConsumer<? extends R> rule, Function<T, R> supplier) {
+        public <R> BuilderWrapper<T> addRule(SerializableConsumer<? extends R> rule, SerializableFunction<T, R> supplier) {
             Object test = rule.captured()[0];
             if (test instanceof ColumnName) {
-                Method accessorMethod = methodFromLambda((Class<T>) monitoredWrapped.eventClass(), supplier);
+                Method accessorMethod = supplier.method();
                 ((ColumnName) test).setName(accessorMethod.getName() + " ");
             }
             ruleList.add(new Pair(rule, supplier));
@@ -149,10 +150,13 @@ public class RulesEvaluatorBuilder<T> {
                 );
             } else {
                 List testList = new ArrayList();
-                for (Pair<SerializableConsumer, Function<T, ?>> pair : ruleList) {
+                for (Pair<SerializableConsumer, SerializableFunction<T, ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
-                    Function<T, R> supplier = (Function<T, R>) pair.getValue();
-                    testList.add(buildTest(rule, monitoredWrapped, supplier).build());
+                    SerializableFunction<T, R> supplier = (SerializableFunction<T, R>) pair.getValue();
+                    testList.add(
+                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
+                    );
+                    
                 }
                 evaluator = new RulesEvaluator<>(
                         filterMatch(monitoredWrapped, and(testList.toArray())),
@@ -173,7 +177,7 @@ public class RulesEvaluatorBuilder<T> {
     public static class Builder<T> {
 
         private final T monitored;
-        private List<Pair<SerializableConsumer, SerializableSupplier<?>>> ruleList;
+        private final List<Pair<SerializableConsumer, SerializableSupplier<?>>> ruleList;
 
         public Builder(T monitored) {
             this.monitored = monitored;
@@ -202,7 +206,9 @@ public class RulesEvaluatorBuilder<T> {
                 for (Pair<SerializableConsumer, SerializableSupplier< ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
                     SerializableSupplier< R> supplier = (SerializableSupplier< R>) pair.getValue();
-                    testList.add(buildTest(rule, supplier).build());
+                    testList.add(
+                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitored, supplier.method()).build()
+                    );
                 }
                 evaluator = new RulesEvaluator<>(
                         filterMatch(monitored, and(testList.toArray())),
