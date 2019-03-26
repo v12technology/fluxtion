@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.ascii;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.ext.declarative.api.numeric.MutableInt;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.wordSplitter;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
@@ -40,13 +40,13 @@ public class DelimiterByteArrayTest extends BaseSepTest {
     @Test
     public void testByteBufferDelimiter() throws Exception {
         final EventHandler sep = buildAndInitSep(CsvBuilderTest.class);
-        GroupBy<MutableInt> aggSales = getField(VAR_BUFFER);
+        GroupBy<MutableNumber> aggSales = getField(VAR_BUFFER);
         StringDriver.streamChars(".greg, fred... greg. greg?\nfred \"greg\" E\nbob ", sep, true);
-        final Map<?, Wrapper<MutableInt>> wordMap = aggSales.getMap();
-        assertEquals(4, wordMap.get("greg").event().getValue());
-        assertEquals(2, wordMap.get("fred").event().getValue());
-        assertEquals(1, wordMap.get("E").event().getValue());
-        assertEquals(1, wordMap.get("bob").event().getValue());
+        final Map<?, Wrapper<MutableNumber>> wordMap = aggSales.getMap();
+        assertEquals(4, wordMap.get("greg").event().intValue());
+        assertEquals(2, wordMap.get("fred").event().intValue());
+        assertEquals(1, wordMap.get("E").event().intValue());
+        assertEquals(1, wordMap.get("bob").event().intValue());
         System.out.println(wordMap);
     }
 

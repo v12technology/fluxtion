@@ -19,7 +19,6 @@ package com.fluxtion.ext.futext.example.flightdelay;
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
 import com.fluxtion.ext.declarative.builder.group.Group;
 import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
@@ -74,7 +73,7 @@ import java.util.function.Function;
  * <ul>
  * <li>Describe CSV marshalling using {@link CsvMarshallerBuilder#csvMarshaller(java.lang.Class)
  * } creating a {@link FlightDetails} bean for each csv record
- * <li>Filter records for delays &gt 0. Using {@link GreaterThanHelper#greaterThanFilter(Wrapper, Function, NumericValue)
+ * <li>Filter records for delays &gt 0. Using {@link GreaterThanHelper#greaterThanFilter(Wrapper, Function, )
  * }
  * <li>Define grouping using {@link CarrierDelay} as the target "table" for
  * aggregation using {@link Group#groupBy(Wrapper, Function, java.lang.Class) }

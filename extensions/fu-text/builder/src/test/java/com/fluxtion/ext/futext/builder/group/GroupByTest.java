@@ -21,7 +21,7 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.futext.api.ascii.Ascii2IntTerminator;
 import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.readBytesCsv;
 import com.fluxtion.ext.futext.builder.test.helpers.TradeDetails;
@@ -65,9 +65,9 @@ public class GroupByTest extends BaseSepTest {
                 + "trader_id=1 trade size=100\n",
                 sep, false);
 
-        GroupBy<MutableNumericValue> summary = getField(VAR_TRADE_SUMMARY);
-        Wrapper<MutableNumericValue> trader1 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 1).map(entry -> entry.getValue()).findAny().get();
-        Wrapper<MutableNumericValue> trader2 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 2).map(entry -> entry.getValue()).findAny().get();
+        GroupBy<MutableNumber> summary = getField(VAR_TRADE_SUMMARY);
+        Wrapper<MutableNumber> trader1 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 1).map(entry -> entry.getValue()).findAny().get();
+        Wrapper<MutableNumber> trader2 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 2).map(entry -> entry.getValue()).findAny().get();
         Assert.assertThat(300, is(trader1.event().intValue));
         Assert.assertThat(92, is(trader2.event().intValue));
     }
@@ -87,8 +87,8 @@ public class GroupByTest extends BaseSepTest {
                 + "yefiuregi,1114,6,arsenal\n"
                 + "everton,6,1,arsenal\n",
                 sep, false);
-        GroupBy<MutableNumericValue> homeGoals = getField(VAR_SUM_HOMEGOALS);
-        Wrapper<MutableNumericValue> liverpoolHome = homeGoals.getMap().entrySet().stream().filter(entry -> ((String) entry.getKey()).equals("liverpool")).map(entry -> entry.getValue()).findAny().get();
+        GroupBy<MutableNumber> homeGoals = getField(VAR_SUM_HOMEGOALS);
+        Wrapper<MutableNumber> liverpoolHome = homeGoals.getMap().entrySet().stream().filter(entry -> ((String) entry.getKey()).equals("liverpool")).map(entry -> entry.getValue()).findAny().get();
         Assert.assertThat(8, is(liverpoolHome.event().intValue));
     }
 
@@ -141,9 +141,9 @@ public class GroupByTest extends BaseSepTest {
             Ascii2IntTerminator tradeSize = readInt("trade size=");
             TradeDetails tradeDetails = addPublicNode(new TradeDetails(traderId, tradeSize), VAR_TRADE_DEIAILS);
             //groupby
-            GroupByBuilder<TradeDetails, MutableNumericValue> trades = groupBy(tradeDetails, TradeDetails::getTraderId, MutableNumericValue.class);
-            trades.sum(TradeDetails::getTradeSize, MutableNumericValue::set);
-            GroupBy<MutableNumericValue> tradesSummary = addPublicNode(trades.build(), VAR_TRADE_SUMMARY);
+            GroupByBuilder<TradeDetails, MutableNumber> trades = groupBy(tradeDetails, TradeDetails::getTraderId, MutableNumber.class);
+            trades.sum(TradeDetails::getTradeSize, MutableNumber::set);
+            GroupBy<MutableNumber> tradesSummary = addPublicNode(trades.build(), VAR_TRADE_SUMMARY);
             //logging
 //            Log(tradesSummary);
 //            Log(tradeDetails);
@@ -156,19 +156,19 @@ public class GroupByTest extends BaseSepTest {
             MatchResult result = addNode(
                     new MatchResult(readBytesCsv(0), readIntCsv(1), readIntCsv(2), readBytesCsv(3)));
             //group by definition
-            GroupByBuilder<MatchResult, MutableNumericValue> homeGoals = groupBy(result, MatchResult::getHomeTeamAsString, MutableNumericValue.class);
-            GroupByBuilder<MatchResult, MutableNumericValue> awayGoals = groupBy(result, MatchResult::getHomeTeamAsString, MutableNumericValue.class);
+            GroupByBuilder<MatchResult, MutableNumber> homeGoals = groupBy(result, MatchResult::getHomeTeamAsString, MutableNumber.class);
+            GroupByBuilder<MatchResult, MutableNumber> awayGoals = groupBy(result, MatchResult::getHomeTeamAsString, MutableNumber.class);
             //calculate aggregate values
-            homeGoals.sum(MatchResult::getHomeGoals, MutableNumericValue::set);
-            awayGoals.sum(MatchResult::getAwayGoals, MutableNumericValue::set);
+            homeGoals.sum(MatchResult::getHomeGoals, MutableNumber::set);
+            awayGoals.sum(MatchResult::getAwayGoals, MutableNumber::set);
             //build
-            final GroupBy<MutableNumericValue> homeGoalsGroup = homeGoals.build();
-            final GroupBy<MutableNumericValue> awayGoalsGroup = awayGoals.build();
+            final GroupBy<MutableNumber> homeGoalsGroup = homeGoals.build();
+            final GroupBy<MutableNumber> awayGoalsGroup = awayGoals.build();
             //debugging - make public
             addPublicNode(homeGoalsGroup, VAR_SUM_HOMEGOALS);
             addPublicNode(awayGoalsGroup, VAR_SUM_AWAYGOALS);
-            //logging - we need to cast to Function<MutableNumericValue, ?>  as java type inference is breaking down
-            LambdaReflection.SerializableFunction<MutableNumericValue, ?> f = MutableNumericValue::intValue;
+            //logging - we need to cast to Function<MutableNumber, ?>  as java type inference is breaking down
+            LambdaReflection.SerializableFunction<MutableNumber, ?> f = MutableNumber::intValue;
             Log(result);
             LogBuilder.buildLog("XX Team:'{}' for:{} against:{} XX", result, MatchResult::getHomeTeamAsString)
                     .input(homeGoalsGroup, f)

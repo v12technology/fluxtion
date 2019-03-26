@@ -11,7 +11,6 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
@@ -26,7 +25,6 @@ import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.MaxCcyTraderPosConfig.TRADER_POS_CFG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import org.junit.Ignore;
 
 /**
  *

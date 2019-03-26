@@ -17,7 +17,7 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.api.group.MultiKey;
-import com.fluxtion.ext.declarative.api.numeric.MutableNumericValue;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import java.lang.reflect.Method;
 
@@ -32,12 +32,12 @@ public class MultiKeyInfo {
     private Method sourceMethod;
     private String sourceMethodName;
     private String sourceType;
-    private String mutNum = MutableNumericValue.class.getSimpleName();
+    private String mutNum = MutableNumber.class.getSimpleName();
     public final ImportMap importMap;
 
     public MultiKeyInfo(ImportMap importMap) {
         this.importMap = importMap;
-        importMap.addImport(MutableNumericValue.class);
+        importMap.addImport(MutableNumber.class);
         importMap.addImport(MultiKey.class);
     }
 
