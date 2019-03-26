@@ -17,7 +17,7 @@ import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Date;
-import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
+//import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
 import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
@@ -36,17 +36,6 @@ public class AggregateTest extends BaseSepTest{
             return prevVal + newVal;
         }
     }
-
-
-    @Test
-    public void testAggregateNonGroup() throws Exception {
-        TradeEvent te = new TradeEvent(1, 5000);
-        NumericValue result = NumericFunctionBuilder.function(CumSum.class)
-                .input(te, TradeEvent::getTradeVolume)
-                .build();
-    }
-
-
 
     @Test
     public void testPrimitvePush() {
