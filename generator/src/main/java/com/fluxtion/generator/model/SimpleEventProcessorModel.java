@@ -361,7 +361,7 @@ public class SimpleEventProcessorModel {
                         collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
                         if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
                             privateFields.add(collectionField);
-                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));                        
+                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
                         }
                     } else if (MappedField.typeSupported(input)) {
                         LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
@@ -578,7 +578,11 @@ public class SimpleEventProcessorModel {
                             //list
                             if (Collection.class.isAssignableFrom(field.getType())) {
                                 ParameterizedType integerListType = (ParameterizedType) field.getGenericType();
-                                final Class<?> classType = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                Class<?> classTypeX = Object.class;
+                                if (integerListType.getActualTypeArguments()[0] instanceof Class) {
+                                    classTypeX = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                }
+                                final Class<?> classType = classTypeX;
                                 Collection list = (Collection) field.get(object);
                                 list.forEach((parent1) -> {
                                     ParentFilter testFilter = new ParentFilter(classType, val, null);
@@ -835,9 +839,9 @@ public class SimpleEventProcessorModel {
                 if (cbHandle != null && cbHandle.method.getReturnType() == boolean.class) {
                     DirtyFlag flag = new DirtyFlag(node, "isDirty_" + node.name);
                     dirtyFieldMap.put(node, flag);
-                }else if(cbHandle != null && cbHandle.method.getReturnType() == void.class) {
+                } else if (cbHandle != null && cbHandle.method.getReturnType() == void.class) {
                     DirtyFlag flag = new DirtyFlag(node, "isDirty_" + node.name, true);
-                    dirtyFieldMap.put(node, flag);                    
+                    dirtyFieldMap.put(node, flag);
                 }
             }
             //build the guard conditions for nodes
@@ -920,7 +924,7 @@ public class SimpleEventProcessorModel {
         Collections.sort(guards, (DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
         return guards;
     }
-    
+
     /**
      * Provides a list of guard conditions for a node, but only if
      * supportDirtyFiltering is configured and all of the parents of the node
@@ -941,7 +945,6 @@ public class SimpleEventProcessorModel {
         return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
     }
 
-
 //    public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
 //        ArrayList<DirtyFlag> guards = new ArrayList<>();
 //        if (supportDirtyFiltering()) {
@@ -958,12 +961,11 @@ public class SimpleEventProcessorModel {
 //        }
 //        return guards;
 //    }
-
     public DirtyFlag getDirtyFlagForUpdateCb(CbMethodHandle cbHandle) {
         DirtyFlag flag = null;
-        if (supportDirtyFiltering() && cbHandle != null){
+        if (supportDirtyFiltering() && cbHandle != null) {
             flag = dirtyFieldMap.get(getFieldForInstance(cbHandle.instance));
-            if(cbHandle.method.getReturnType()!=boolean.class){
+            if (cbHandle.method.getReturnType() != boolean.class) {
                 //trap the case where evemthandler and onEvent in same class
                 //and onEvent does not return true
                 flag = new DirtyFlag(flag.node, flag.name, true);
