@@ -46,15 +46,6 @@ public class AggregateTest extends BaseSepTest{
                 .build();
     }
 
-    @Test
-    public void testAggregateNonGroupWithTarget() throws Exception {
-        TradeEvent te = new TradeEvent(1, 5000);
-        Date val = new Date();
-        NumericValue result = NumericFunctionBuilder.function(CumSum.class)
-                .input(te, TradeEvent::getTradeVolume)
-                .push(val, Date::setTime)
-                .build();
-    }
 
 
     @Test

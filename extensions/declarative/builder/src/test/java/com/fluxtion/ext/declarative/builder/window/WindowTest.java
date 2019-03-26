@@ -12,18 +12,13 @@
 package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.builder.event.EventSelect;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import com.fluxtion.ext.declarative.api.EventWrapper;
-import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder;
 import static com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilder.function;
-import com.fluxtion.ext.declarative.builder.function.NumericFunctionBuilderTest.CumSum;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
 import com.fluxtion.ext.declarative.api.numeric.NumericValue;
+import com.fluxtion.ext.declarative.builder.group.AggregateTest.CumSum;
 import com.fluxtion.generator.util.BaseSepTest;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

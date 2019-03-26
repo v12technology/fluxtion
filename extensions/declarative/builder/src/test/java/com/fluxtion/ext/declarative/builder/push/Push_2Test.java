@@ -1,6 +1,7 @@
 package com.fluxtion.ext.declarative.builder.push;
 
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
@@ -10,6 +11,7 @@ import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.declarative.builder.stream.StreamBuilder;
+import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,11 +20,11 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class Push_2Test extends StreamInprocessTest{
- 
+public class Push_2Test extends StreamInprocessTest {
+
     @Test
-    public void pushNotification(){
-        fixedPkg = true;
+    public void pushNotification() {
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -31,7 +33,7 @@ public class Push_2Test extends StreamInprocessTest{
             PushBuilder.push(inSD, counter);
             PushBuilder.push(inDA, counter);
         });
-        
+
         sep.onEvent(new DealEvent());
         sep.onEvent(new DataEvent());
         sep.onEvent(new DealEvent());
@@ -39,10 +41,10 @@ public class Push_2Test extends StreamInprocessTest{
         UpdateCount counter = getField("counter");
         Assert.assertThat(counter.count, is(3));
     }
-    
+
     @Test
-    public void pushNotificationDataViaStream(){
-        fixedPkg = true;
+    public void pushNotificationDataViaStream() {
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -53,12 +55,12 @@ public class Push_2Test extends StreamInprocessTest{
             PushBuilder.push(inDA, counter);
             //push data
             PushBuilder.push(counter::getCount, pushTarget::setVal);
-            
+
             StreamBuilder.stream(pushTarget).id("streamedCumSum")
                     .filter(PushTarget::getVal, gt(25))
                     .console("[above 25]");
         });
-        
+
         sep.onEvent(new DealEvent());
         sep.onEvent(new DataEvent());
         sep.onEvent(new DealEvent());
@@ -69,10 +71,10 @@ public class Push_2Test extends StreamInprocessTest{
         Assert.assertThat(target.count, is(3));
         Assert.assertThat(target.val, is(30));
     }
-    
+
     @Test
-    public void pushNotificationData(){
-        fixedPkg = true;
+    public void pushNotificationData() {
+//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -83,9 +85,9 @@ public class Push_2Test extends StreamInprocessTest{
             PushBuilder.push(inDA, counter);
             //push data
             PushBuilder.push(counter::getCount, pushTarget::setVal);
-            
+
         });
-        
+
         sep.onEvent(new DealEvent());
         sep.onEvent(new DataEvent());
         sep.onEvent(new DealEvent());
@@ -96,9 +98,39 @@ public class Push_2Test extends StreamInprocessTest{
         Assert.assertThat(target.count, is(3));
         Assert.assertThat(target.val, is(30));
     }
-    
-    
-    public static class UpdateCount{
+
+    @Test
+    public void pushToComplexObject() {
+        sep((c) -> {
+            select(LongNumber.class)
+                    .push(LongNumber::getVal, c.addPublicNode(new Date(), "date")::setTime);
+        });
+        
+        Date date = getField("date");
+        sep.onEvent(new LongNumber((1000)));
+        Assert.assertThat(date.getTime(), is(1000L));
+    }
+
+    public static class LongNumber extends Event{
+
+        long val;
+
+        public LongNumber(long val) {
+            this.val = val;
+        }
+
+        public long getVal() {
+            return val;
+        }
+
+        public void setVal(long val) {
+            this.val = val;
+        }
+
+    }
+
+    public static class UpdateCount {
+
         public int count;
 
         public int getCount() {
@@ -108,25 +140,26 @@ public class Push_2Test extends StreamInprocessTest{
         public void setCount(int count) {
             this.count = count;
         }
-        
-       @OnEvent
-       public void update(){
-           count++;
-       }
-        
+
+        @OnEvent
+        public void update() {
+            count++;
+        }
+
     }
-    
-    public static class PushTarget{
+
+    public static class PushTarget {
+
         public int count;
         public int val;
-        
-       @OnEvent
-       public void update(){
-           count++;
-       }
+
+        @OnEvent
+        public void update() {
+            count++;
+        }
 
         public void setVal(int val) {
-            this.val = val*10;
+            this.val = val * 10;
         }
 
         public int getCount() {
@@ -136,7 +169,7 @@ public class Push_2Test extends StreamInprocessTest{
         public int getVal() {
             return val;
         }
-        
+
     }
 
 }
