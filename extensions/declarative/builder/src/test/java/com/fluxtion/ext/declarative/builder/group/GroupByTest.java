@@ -11,7 +11,6 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -22,6 +21,7 @@ import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.ext.declarative.builder.helpers.Tests.Negative;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Test;
 import java.util.function.Function;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
@@ -101,8 +101,8 @@ public class GroupByTest extends BaseSepTest {
             GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent.class, TradeEvent::getTradeId, TradeSummary.class);
             GroupByBuilder<DealEvent, TradeSummary> deals = trades.join(DealEvent.class, DealEvent::getParentTradeId);
             //vars
-            Function<TradeEvent, ? super Number> tradeVol = TradeEvent::getTradeVolume;
-            Function<DealEvent, ? super Number> dealVol = DealEvent::getTradeVolume;
+            SerializableFunction<TradeEvent, ? super Number> tradeVol = TradeEvent::getTradeVolume;
+            SerializableFunction<DealEvent, ? super Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
             trades.function(Sum, tradeVol, TradeSummary::setTotalVolume);
             trades.function(Avg, tradeVol, TradeSummary::setAveragOrderSize);

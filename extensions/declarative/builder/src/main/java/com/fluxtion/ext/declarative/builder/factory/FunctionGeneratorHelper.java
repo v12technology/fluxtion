@@ -62,49 +62,6 @@ public interface FunctionGeneratorHelper {
         return defualtValue;
     }
 
-    public static <T> Method numericGetMethod(T instance, Function<T, ? super Number> f) {
-        return methodFromLambda(instance, f);
-    }
-
-    public static <T> Method numericGetMethod(Class<T> instance, Function<T, ? super Number> f) {
-        return methodFromLambda(instance, f);
-    }
-
-    public static <T> Method numericSetMethod(T instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        targetFunction.accept(generateInterceptor(instance, result), (byte) 0);
-        return result[0];
-    }
-
-    public static <T> Method numericSetMethod(Class<T> instance, BiConsumer<T, ? super Byte> targetFunction) {
-        Method[] result = new Method[1];
-        try {
-            ((BiConsumer<T, ? super Integer>) targetFunction).accept(generateInterceptorByClass(instance, result), 0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Double>) targetFunction).accept(generateInterceptorByClass(instance, result), 0.0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Long>) targetFunction).accept(generateInterceptorByClass(instance, result), 0l);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Short>) targetFunction).accept(generateInterceptorByClass(instance, result), (short) 0);
-        } catch (Exception e) {
-        }
-        try {
-            ((BiConsumer<T, ? super Float>) targetFunction).accept(generateInterceptorByClass(instance, result), 0.0f);
-        } catch (Exception e) {
-        }
-        try {
-            targetFunction.accept(generateInterceptorByClass(instance, result), (byte) 0);
-        } catch (Exception e) {
-        }
-        return result[0];
-    }
-
     public static <T> Method setCharMethod(T instance, BiConsumer<T, ? super Character> targetFunction) {
         Method[] result = new Method[1];
         targetFunction.accept(generateInterceptor(instance, result), (char) 0);
@@ -160,17 +117,6 @@ public interface FunctionGeneratorHelper {
         return proxy;
     }
 
-//    public static <T> Class<T> generateAndCompileClass(Class class1, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
-//        String className = generationConfig.getPackageName() + "." + (String) ctx.get(FunctionKeys.functionClass.name());
-//        Class newClass = null;
-//        initVelocity();
-//        ctx.put(FunctionKeys.functionPackage.name(), generationConfig.getPackageName());
-//        Template template = Velocity.getTemplate(templateFile);
-//        Writer writer = new StringWriter();
-//        template.merge(ctx, writer);
-//        newClass = CACHED_COMPILER.loadFromJava(className, writer.toString());
-//        return newClass;
-//    }
     public static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;
