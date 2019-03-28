@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api.test;
 
+import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.declarative.api.Test;
@@ -45,6 +46,11 @@ public class XorOperator implements Test {
         boolean ret = updateCount < tracked.length & updateCount > 0;
         updateCount = 0;
         return ret;
+    }
+    
+    @AfterEvent
+    public void reset(){
+        updateCount = 0;
     }
 
     @Override

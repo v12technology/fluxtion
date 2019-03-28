@@ -337,6 +337,12 @@ public class SepJavaSourceModelHugeFilter {
             dirtyFlagDeclarations += String.format("%4sprivate boolean %s = false;%n", "", flag.name);
             resetDirtyFlags += String.format("%8s%s = false;%n", "", flag.name);
         }
+        for (DirtyFlag flag : values) {
+            if(flag.requiresInvert){
+                dirtyFlagDeclarations += String.format("%4sprivate boolean not%s = false;%n", "", flag.name);
+                resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
+            }
+        }
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
@@ -657,7 +663,7 @@ public class SepJavaSourceModelHugeFilter {
                         OnEvent onEvent = method.method.getAnnotation(OnEvent.class);
                         String invert = "";
                         if(onEvent!=null && !onEvent.dirty()){
-                            invert = " !";
+                            invert = " not";
                         }
                         ct.append(s24).append("if(");
                         for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
@@ -690,6 +696,9 @@ public class SepJavaSourceModelHugeFilter {
                     } else {
                         //callTree += String.format("%24s%s%s.%s(typedEvent);%n", "", dirtyAssignment, method.variableName, method.method.getName());
                         ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+                    }
+                    if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
+                        ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
                     }
                     //child callbacks - listening to an individual parent change
                     //if guards are in operation for the parent node, conditionally invoke only on a change

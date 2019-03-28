@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator.model;
 
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -51,6 +52,8 @@ public class CbMethodHandle {
     public final boolean isEventHandler;
     
     public final boolean isPostEventHandler;
+    
+    public final boolean isInvertedDirtyHandler;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
@@ -63,6 +66,14 @@ public class CbMethodHandle {
         this.parameterClass = parameterClass;
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
+        this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+    }
+    
+    public boolean isInvertedDirtyHandler(){
+        if(isPostEventHandler || isEventHandler){
+            return false;
+        }
+        return method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
     }
 
     @Override
