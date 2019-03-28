@@ -19,22 +19,21 @@ package com.fluxtion.ext.futext.builder.test.helpers;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 
 /**
- * recceives
+ * receives
  *
  * @author Greg Higgins
  */
 public class TradeDetails {
 
-    public NumericValue traderId;
-    public NumericValue tradeSize;
+    public Number traderId;
+    public Number tradeSize;
 
     private boolean traderIdUpdated;
     private boolean tradeSizeUpdated;
 
-    public TradeDetails(NumericValue traderId, NumericValue tradeSize) {
+    public TradeDetails(Number traderId, Number tradeSize) {
         this.traderId = traderId;
         this.tradeSize = tradeSize;
     }
@@ -43,19 +42,19 @@ public class TradeDetails {
     }
 
     @OnParentUpdate("traderId")
-    public void tradeIdUpdated(NumericValue traderId){
+    public void tradeIdUpdated(Number traderId){
         traderIdUpdated = true;
     }
     
     @OnParentUpdate("tradeSize")
-    public void tradeSizeUpdated(NumericValue traderId){
+    public void tradeSizeUpdated(Number traderId){
         tradeSizeUpdated = true;
     }
     
     @OnEvent
     public boolean onEvent() {
         boolean ret = false;
-        if (traderIdUpdated  & tradeSizeUpdated ) {
+        if (traderIdUpdated & tradeSizeUpdated ) {
             ret = true;
             tradeSizeUpdated = false;
             traderIdUpdated = false;

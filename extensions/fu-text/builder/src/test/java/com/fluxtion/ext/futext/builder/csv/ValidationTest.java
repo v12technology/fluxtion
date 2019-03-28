@@ -17,7 +17,6 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;

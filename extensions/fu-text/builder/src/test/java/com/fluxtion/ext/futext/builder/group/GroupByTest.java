@@ -58,11 +58,11 @@ public class GroupByTest extends BaseSepTest {
     public void testGroupByNonEvent() {
         EventHandler sep = buildAndInitSep(TradeTextBuilder.class);
         StringDriver.streamChars(
-                "trader_id=1 trade size=100\n"
+                "trader_id=1 trade size=120\n"
                 + "trader_id=2 trade size=50\n"
                 + "trader_id=1 trade size=100\n"
                 + "trader_id=2 trade size=42\n"
-                + "trader_id=1 trade size=100\n",
+                + "trader_id=1 trade size=80\n",
                 sep, false);
 
         GroupBy<MutableNumber> summary = getField(VAR_TRADE_SUMMARY);

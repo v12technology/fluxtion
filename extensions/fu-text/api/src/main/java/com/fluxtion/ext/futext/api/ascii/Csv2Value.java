@@ -23,7 +23,6 @@ import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
 import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
 
@@ -34,7 +33,7 @@ import com.fluxtion.ext.futext.api.filter.AnyCharMatchFilter;
  * 
  * @author Greg Higgins
  */
-public class Csv2Value extends Number implements NumericValue {
+public class Csv2Value extends Number  {
 
     /**
      * field number to extract value from, zero indexed

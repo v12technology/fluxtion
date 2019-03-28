@@ -18,7 +18,6 @@ package com.fluxtion.ext.declarative.builder.util;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.EventWrapper;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.api.event.Event;
 import java.lang.reflect.Method;
 import javax.lang.model.type.TypeKind;
@@ -86,13 +85,6 @@ public class FunctionInfo {
     public void appendParamNumber(String name) {
         String getNumber = functionMethod.getParameterTypes()[count].getName() + "Value()";
         paramString += sep + name + "." + getNumber;
-        sep = ", ";
-        count++;
-    }
-
-    public void appendParamNumeric(NumericValue numeric, SourceInfo sourceInfo) {
-        String getNumber = functionMethod.getParameterTypes()[count].getName() + "Value()";
-        paramString += sep + sourceInfo.id + "." + getNumber;
         sep = ", ";
         count++;
     }
