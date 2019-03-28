@@ -17,10 +17,10 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.futext.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.log.LogControlEvent;
 import com.fluxtion.ext.declarative.api.log.LogService;
@@ -70,8 +70,8 @@ public class ValidationTest extends BaseSepTest {
 //        compileCfg.setGenerateDescription(false);
 //        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
         final EventHandler sep = buildAndInitSep(WorldCitiesCsvWithFailNotifier.class);
-        Number countPassed = ((Wrapper<Number>)getField("countPassed")).event();
-        Number countFailed = ((Wrapper<Number>)getField("countFailed")).event();
+        Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
+        Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,12,25.19,1.5\n"
                 + "mexico,aixirivali,Aixirivali,06,500,1.2,1.5\n"
@@ -88,8 +88,8 @@ public class ValidationTest extends BaseSepTest {
         compileCfg.setGenerateDescription(true);
 //        compileCfg.setFormatSource(true);
         final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
-        Number countPassed = ((Wrapper<Number>)getField("countPassed")).event();
-        Number countFailed = ((Wrapper<Number>)getField("countFailed")).event();
+        Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
+        Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
 
         CountingLogProvider logCount = new CountingLogProvider();
         sep.onEvent(LogControlEvent.setLogService(logCount));
@@ -115,8 +115,8 @@ public class ValidationTest extends BaseSepTest {
     public void testWrappedNoValidators() {
 //        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseWrapperNoValidationRules.class);
-        Number countPassed = ((Wrapper<Number>)getField("countPassed")).event();
-        Number countFailed = ((Wrapper<Number>)getField("countFailed")).event();
+        Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
+        Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
         sep.onEvent(new PurchaseBean());
         sep.onEvent(new PurchaseBean());
         sep.onEvent(new PurchaseBean());
@@ -128,8 +128,8 @@ public class ValidationTest extends BaseSepTest {
     public void testWrappedFailedValidators() {
 //        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseWrapperMinPriceValidationRules.class);
-        Number countPassed = ((Wrapper<Number>)getField("countPassed")).event();
-        Number countFailed = ((Wrapper<Number>)getField("countFailed")).event();
+        Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
+        Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
         sep.onEvent(new PurchaseBean(10, "good price"));
         sep.onEvent(new PurchaseBean(30000, "too expensive"));
         sep.onEvent(new PurchaseBean(-90, "oh no negative!!"));
@@ -141,8 +141,8 @@ public class ValidationTest extends BaseSepTest {
     public void testNodeNoValidators() {
 //        compileCfg.setGenerateDescription(true);
         buildAndInitSep(PurchaseNodeNoValidationRules.class);
-        Number countPassed = ((Wrapper<Number>)getField("countPassed")).event();
-        Number countFailed = ((Wrapper<Number>)getField("countFailed")).event();
+        Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
+        Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
         sep.onEvent(new PurchaseBean());
         sep.onEvent(new PurchaseBean());
         sep.onEvent(new PurchaseBean());
@@ -227,9 +227,8 @@ public class ValidationTest extends BaseSepTest {
 
         {
             CurrentPrice cp = addNode(new CurrentPrice());
-            RulesEvaluator<CurrentPrice> validator = validator(
-                    cp)
-//                    .addRule(withinRange(0, 2500), CurrentPrice::getPrice)
+            RulesEvaluator<CurrentPrice> validator = validator(cp)
+                    //                    .addRule(withinRange(0, 2500), CurrentPrice::getPrice)
                     .addRule(withinRange(0, 2500), cp::getPrice)
                     .build();
             addPublicNode(count(validator.passedNotifier()), "countPassed");

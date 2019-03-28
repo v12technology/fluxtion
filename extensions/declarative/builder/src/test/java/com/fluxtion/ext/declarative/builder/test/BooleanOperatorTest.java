@@ -74,7 +74,7 @@ public class BooleanOperatorTest extends BaseSepTest {
         assertTrue(resultsNand.receivedNotification);
         assertFalse(resultsOr.receivedNotification);
         assertFalse(resultsXor.receivedNotification);
-        assertTrue(resultsNorManual.receivedNotification);
+        assertFalse(resultsNorManual.receivedNotification);
         assertTrue(resultsNorAuto.receivedNotification);
 
         resultsAnd.reset();
@@ -103,7 +103,7 @@ public class BooleanOperatorTest extends BaseSepTest {
         assertFalse(resultsOr.receivedNotification);
         assertFalse(resultsXor.receivedNotification);
         assertFalse(resultsXor.receivedNotification);
-        assertTrue(resultsNorManual.receivedNotification);
+        assertFalse(resultsNorManual.receivedNotification);
         assertTrue(resultsNorAuto.receivedNotification);
 
         resultsAnd.reset();

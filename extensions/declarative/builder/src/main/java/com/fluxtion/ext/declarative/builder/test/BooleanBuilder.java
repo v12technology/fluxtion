@@ -23,6 +23,8 @@ import com.fluxtion.ext.declarative.api.test.AndOperator;
 import com.fluxtion.ext.declarative.api.test.BooleanEitherFilter;
 import com.fluxtion.ext.declarative.api.test.BooleanFilter;
 import com.fluxtion.ext.declarative.api.test.BooleanMatchFilter;
+import com.fluxtion.ext.declarative.api.test.NandOperator;
+import com.fluxtion.ext.declarative.api.test.NorOperator;
 import com.fluxtion.ext.declarative.api.test.NotOperator;
 import com.fluxtion.ext.declarative.api.test.OrOperator;
 import com.fluxtion.ext.declarative.api.test.XorOperator;
@@ -45,21 +47,23 @@ public class BooleanBuilder {
     }
 
     public static Test or(Object... tracked) {
-        OrOperator and = new OrOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(and);
+        OrOperator or = new OrOperator(tracked);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(or);
     }
 
     public static Test xor(Object... tracked) {
-        XorOperator and = new XorOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(and);
+        XorOperator xor = new XorOperator(tracked);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(xor);
     }
 
     public static Test nor(Object... tracked) {
-        return not(or(tracked));
+        NorOperator nor = new NorOperator(tracked);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(nor);
     }
 
     public static Test nand(Object... tracked) {
-        return not(and(tracked));
+        NandOperator nand = new NandOperator(tracked);
+        return GenerationContext.SINGLETON.addOrUseExistingNode(nand);
     }
     
     public static <T> Wrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {

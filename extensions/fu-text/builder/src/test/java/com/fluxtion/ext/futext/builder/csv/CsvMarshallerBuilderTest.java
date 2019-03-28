@@ -18,7 +18,6 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 import com.fluxtion.ext.declarative.builder.log.LogBuilder;
 import com.fluxtion.ext.futext.api.csv.RowProcessor;
 import static com.fluxtion.ext.futext.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;

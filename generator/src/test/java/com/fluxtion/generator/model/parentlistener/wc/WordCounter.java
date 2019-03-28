@@ -21,62 +21,62 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.builder.node.SEPConfig;
 
 /**
- * 
+ *
  * @author Greg Higgins
  */
 public class WordCounter {
 
-	public CharHandler anyCharHandler;
-	public CharHandler.DelimiterCharEventHandler[] delimiterHandlers;
-	public CharHandler.EolCharEventHandler eolHandler;
-	public CharHandler.UnMatchedCharEventHandler wordChardHandler;
+    public CharHandler anyCharHandler;
+    public CharHandler.DelimiterCharEventHandler[] delimiterHandlers;
+    public CharHandler.EolCharEventHandler eolHandler;
+    public CharHandler.UnMatchedCharEventHandler wordChardHandler;
 
-	public int wordCount;
-	public int charCount;
-	public int lineCount;
-	public int increment = 1;
+    public int wordCount;
+    public int charCount;
+    public int lineCount;
+    public int increment = 1;
 
-	@OnParentUpdate
-	public void onAnyChar(CharHandler anyCharHandler) {
-		charCount++;
-	}
+    @OnParentUpdate
+    public void onAnyChar(CharHandler anyCharHandler) {
+        charCount++;
+    }
 
-	@OnParentUpdate
-	public void onDelimiter(
-			CharHandler.DelimiterCharEventHandler delimiterHandler) {
-		increment = 1;
-	}
+    @OnParentUpdate
+    public void onDelimiter(
+            CharHandler.DelimiterCharEventHandler delimiterHandler) {
+        increment = 1;
+    }
 
-	@OnParentUpdate
-	public void onEol(CharHandler.EolCharEventHandler eolHandler) {
-		lineCount++;
-		increment = 1;
-	}
+    @OnParentUpdate
+    public void onEol(CharHandler.EolCharEventHandler eolHandler) {
+        lineCount++;
+        increment = 1;
+    }
 
-	@OnParentUpdate
-	public void onUnmatchedChar(
-			CharHandler.UnMatchedCharEventHandler wordChardHandler) {
-		wordCount += increment;
-		increment = 0;
-	}
+    @OnParentUpdate
+    public void onUnmatchedChar(
+            CharHandler.UnMatchedCharEventHandler wordChardHandler) {
+        wordCount += increment;
+        increment = 0;
+    }
 
-	@Override
-	public String toString() {
-		return "wc\n" + "charCount:" + charCount + "\nwordCount:" + wordCount
-				+ "\nlineCount:" + lineCount;
-	}
+    @Override
+    public String toString() {
+        return "wc\n" + "charCount:" + charCount + "\nwordCount:" + wordCount
+                + "\nlineCount:" + lineCount;
+    }
 
-	public static class Builder extends SEPConfig {
+    public static class Builder extends SEPConfig {
 
-		{
-			WordCounter root = addPublicNode(new WordCounter(), "result");
-			root.anyCharHandler = addNode(new CharHandler());
-			root.eolHandler = addNode(new CharHandler.EolCharEventHandler('\n'));
-			root.wordChardHandler = addNode(new CharHandler.UnMatchedCharEventHandler());
-			root.delimiterHandlers = new CharHandler.DelimiterCharEventHandler[]{
-					addNode(new CharHandler.DelimiterCharEventHandler(' ')),
-					addNode(new CharHandler.DelimiterCharEventHandler('\t'))};
-		}
-	}
+        {
+            WordCounter root = addPublicNode(new WordCounter(), "result");
+            root.anyCharHandler = addNode(new CharHandler());
+            root.eolHandler = addNode(new CharHandler.EolCharEventHandler('\n'));
+            root.wordChardHandler = addNode(new CharHandler.UnMatchedCharEventHandler());
+            root.delimiterHandlers = new CharHandler.DelimiterCharEventHandler[]{
+                addNode(new CharHandler.DelimiterCharEventHandler(' ')),
+                addNode(new CharHandler.DelimiterCharEventHandler('\t'))};
+        }
+    }
 
 }

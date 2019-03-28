@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.math;
 
 import com.fluxtion.ext.declarative.api.group.GroupBy;
 import com.fluxtion.ext.futext.api.ascii.ByteBufferDelimiter;
-import com.fluxtion.ext.declarative.api.numeric.MutableInt;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.builder.group.Frequency;
 
 /**
@@ -27,7 +27,7 @@ import com.fluxtion.ext.declarative.builder.group.Frequency;
  */
 public interface WordFrequency {
 
-    public static <K, T> GroupBy<MutableInt> wordFrequency(ByteBufferDelimiter buffer) {
+    public static <K, T> GroupBy<MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
         return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
 

@@ -19,7 +19,6 @@ package com.fluxtion.ext.futext.builder.test.helpers;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.ext.declarative.api.numeric.BufferValue;
 import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.declarative.api.numeric.NumericValue;
 
 /**
  *
@@ -27,15 +26,15 @@ import com.fluxtion.ext.declarative.api.numeric.NumericValue;
  */
 public class MatchResult {
 
-    public NumericValue homeGoals;
-    public NumericValue awayGoals;
+    public Number homeGoals;
+    public Number awayGoals;
     public BufferValue homeTeam;
     public BufferValue awayTeam;
     private int homeWin;
     private int homeLoss;
     private int draw;
 
-    public MatchResult(BufferValue homeTeam, NumericValue homeGoals, NumericValue awayGoals, BufferValue awayTeam) {
+    public MatchResult(BufferValue homeTeam, Number homeGoals, Number awayGoals, BufferValue awayTeam) {
         this.homeGoals = homeGoals;
         this.awayGoals = awayGoals;
         this.homeTeam = homeTeam;

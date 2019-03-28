@@ -872,8 +872,12 @@ public class SimpleEventProcessorModel {
                         guardSet.clear();
                         break;
                     }
-
                 }
+                CbMethodHandle cb = node2UpdateMethodMap.get(node);
+                final boolean invertedDirtyHandler = cb!=null && cb.isInvertedDirtyHandler;
+                guardSet.stream().forEach(d -> {
+                    d.requiresInvert |= invertedDirtyHandler;
+                });
                 nodeGuardMap.putAll(node, guardSet);
                 //
             }
@@ -928,9 +932,9 @@ public class SimpleEventProcessorModel {
     /**
      * Provides a list of guard conditions for a node, but only if
      * supportDirtyFiltering is configured and all of the parents of the node
-     * support the dirty flag.If any parent does not support the dirty flag
-     * then the node updated method will always be called after a parent has
-     * been notified of an event.
+     * support the dirty flag.If any parent does not support the dirty flag then
+     * the node updated method will always be called after a parent has been
+     * notified of an event.
      *
      * @param cb
      * @return collection of dirty flags that guard the node
@@ -968,7 +972,7 @@ public class SimpleEventProcessorModel {
             if (cbHandle.method.getReturnType() != boolean.class) {
                 //trap the case where evemthandler and onEvent in same class
                 //and onEvent does not return true
-                flag = new DirtyFlag(flag.node, flag.name, true);
+                flag.alwaysDirty = true;
             }
         }
         return flag;
