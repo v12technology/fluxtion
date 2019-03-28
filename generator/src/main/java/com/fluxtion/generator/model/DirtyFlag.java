@@ -27,12 +27,14 @@ import java.util.Objects;
 public class DirtyFlag {
     public final Field node;
     public final String name;
-    public final boolean alwaysDirty;
+    public boolean alwaysDirty;
+    public boolean requiresInvert = false;
 
     public DirtyFlag(Field node, String name) {
         this.node = node;
         this.name = name;
         alwaysDirty = false;
+        requiresInvert = false;
     }
 
     public DirtyFlag(Field node, String name, boolean alwaysDirty) {

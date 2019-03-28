@@ -335,9 +335,13 @@ public class SepJavaSourceModelHugeFilter {
         Collections.sort(values, (o1, o2) -> comparator.compare(o1.name, o2.name));
         for (DirtyFlag flag : values) {
             dirtyFlagDeclarations += String.format("%4sprivate boolean %s = false;%n", "", flag.name);
-            dirtyFlagDeclarations += String.format("%4sprivate boolean not%s = false;%n", "", flag.name);
             resetDirtyFlags += String.format("%8s%s = false;%n", "", flag.name);
-            resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
+        }
+        for (DirtyFlag flag : values) {
+            if(flag.requiresInvert){
+                dirtyFlagDeclarations += String.format("%4sprivate boolean not%s = false;%n", "", flag.name);
+                resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
+            }
         }
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
@@ -693,7 +697,7 @@ public class SepJavaSourceModelHugeFilter {
                         //callTree += String.format("%24s%s%s.%s(typedEvent);%n", "", dirtyAssignment, method.variableName, method.method.getName());
                         ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
-                    if (dirtyFlagForUpdateCb != null) {
+                    if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
                         ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
                     }
                     //child callbacks - listening to an individual parent change
