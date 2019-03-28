@@ -16,11 +16,16 @@
  */
 package com.fluxtion.ext.declarative.api.stream;
 
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An interface defining stream operations on a node in a SEP graph. The
@@ -101,7 +106,7 @@ public interface StreamOperator {
      * the execution path.
      *
      * @param <T>
-     * @param source 
+     * @param source
      * @param notifier external event notifier
      * @return
      */
@@ -140,16 +145,66 @@ public interface StreamOperator {
         System.out.println(out);
     }
 
-    public static class PrefixToConsole {
+    public static class ConsoleLog {
 
+        private final Object source;
+        private Wrapper wrapped;
         private final String prefix;
+        private boolean isWrapper;
+        private String methodSupplier;
+        private Method method;
 
-        public PrefixToConsole(String prefix) {
-            this.prefix = prefix + " ";
+        public ConsoleLog(Object source, String prefix) {
+            this.source = source;
+            this.prefix = prefix;
         }
 
-        public <I> void standardOut(I out) {
-            System.out.println(prefix + out);
+        public ConsoleLog(Object source) {
+            this(source, "");
         }
+
+        public <T, S> void suppliers(SerializableFunction<T, S>... supplier) {
+            if (supplier.length > 0) {
+                methodSupplier = supplier[0].method().getName();
+            }
+        }
+
+        public String getMethodSupplier() {
+            return methodSupplier;
+        }
+
+        public void setMethodSupplier(String methodSupplier) {
+            this.methodSupplier = methodSupplier;
+        }
+
+        @OnEvent
+        public boolean log() {
+            Object src = isWrapper ? wrapped.event() : source;
+            if (method != null) {
+                try {
+                    System.out.println(prefix + method.invoke(src));
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    System.out.println(prefix + "N/A");
+                }
+            } else {
+                System.out.println(prefix + src.toString());
+            }
+            return false;
+        }
+
+        @Initialise
+        public void init() {
+            if (source instanceof Wrapper) {
+                wrapped = (Wrapper) source;
+                isWrapper = true;
+            }
+            try {
+                Object src = isWrapper ? wrapped.event() : source;
+                method = src.getClass().getMethod(methodSupplier);
+            } catch (Exception e) {
+                method = null;
+            }
+        }
+
     }
 }

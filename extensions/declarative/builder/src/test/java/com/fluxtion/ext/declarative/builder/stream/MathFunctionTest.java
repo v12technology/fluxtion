@@ -165,7 +165,7 @@ public class MathFunctionTest extends StreamInprocessTest {
             intHelper(arg(Data1::getVal), arg(Data2::getVal)).map(cumSum()).console("sum:");
 
             FunctionBuilder.map(MathFunctionTest::addStatic, Data1::getVal, Data2::getVal)
-                    .notifyOnChange(true).id("addStatic").console("[addStatic]");
+                    .notifyOnChange(true).id("addStatic").console("[addStatic] = ", Number::intValue);
         });
         Wrapper<Number> addInstance = getField("addInstance");
         Wrapper<Number> addStatic = getField("addStatic");

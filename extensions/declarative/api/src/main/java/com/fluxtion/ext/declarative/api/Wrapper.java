@@ -147,17 +147,24 @@ public interface Wrapper<T> {
     static LongAdder counter = new LongAdder();
 
     /**
-     * dump this node to console, prefixed with the supplied message. {@link Object#toString()
-     * } will be invoked on the node instance.
+     * dump this node to console, prefixed with the supplied message.{@link Object#toString()} will be invoked on the node instance.
      *
+     * @param <S>
      * @param prefix String prefix for the console message
+     * @param supplier
      * @return The current node
      */
-    default Wrapper<T> console(String prefix) {
-        StreamOperator.PrefixToConsole console = new StreamOperator.PrefixToConsole(prefix);
+    default <S> Wrapper<T> console(String prefix, SerializableFunction<T, S>... supplier) {
+        StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
         counter.increment();
-        StreamOperator.service().nodeId(console, "consoleMsg_" + counter.intValue());
-        return StreamOperator.service().forEach(console::standardOut, this, "consoleLog_" + counter.intValue());
+        if(supplier.length == 0 && Number.class.isAssignableFrom(eventClass())){
+            consoleLog.suppliers(Number::doubleValue);
+        }else{
+            consoleLog.suppliers(supplier);
+        }
+        String consoleId =  "consoleMsg_" + counter.intValue();
+        SepContext.service().add(consoleLog, consoleId);
+        return this;
     }
 
     /**
