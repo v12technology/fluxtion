@@ -19,11 +19,8 @@ package com.fluxtion.generator.dirty;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.audit.RegistrationListenerTest;
-import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.test.event.TestEvent;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -32,19 +29,40 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class DirtyElseTest extends BaseSepTest {
+public class DirtyElseTest extends BaseSepInprocessTest {
 
     @Test
     public void testAudit() {
-        com.fluxtion.api.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
+//        com.fluxtion.api.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
+        fixedPkg = true;
+        
+        sep((c) -> {
+            GreaterThan gt_10 = c.addNode(new GreaterThan(10));
+            c.addPublicNode(new PassTest(gt_10), "passCount");
+            c.addPublicNode(new FailsTest(gt_10), "failCount");
+            IntermediateNode intermediate = c.addPublicNode(new IntermediateNode(gt_10), "intermediate");
+            c.addPublicNode(new PassTest(intermediate), "intermedaitePassCount");
+            c.addPublicNode(new FailsTest(intermediate), "intermedaiteFailCount");
+            c.formatSource = true;
+        });
+
         PassTest pass = getField("passCount");
         FailsTest fail = getField("failCount");
-        handler.onEvent(new NumberEvent(12));
+        PassTest passInt = getField("intermedaitePassCount");
+        FailsTest failInt = getField("intermedaiteFailCount");
+        
+        sep.onEvent(new NumberEvent(12));
         assertThat(pass.count, is(1));
         assertThat(fail.count, is(0));
-        handler.onEvent(new NumberEvent(3));
+        assertThat(passInt.count, is(1));
+        assertThat(failInt.count, is(0));
+        
+        
+        sep.onEvent(new NumberEvent(3));
         assertThat(pass.count, is(1));
         assertThat(fail.count, is(1));
+        assertThat(passInt.count, is(1));
+        assertThat(failInt.count, is(0));
     }
 
     public static class NumberEvent extends Event {
@@ -71,13 +89,26 @@ public class DirtyElseTest extends BaseSepTest {
             return number.value > barrier;
         }
     }
+    
+    public static class IntermediateNode{
+        public final Object tracked;
+
+        public IntermediateNode(Object tracked) {
+            this.tracked = tracked;
+        }
+        
+        @OnEvent
+        public boolean notifyChildren(){
+            return true;
+        }
+    }
 
     public static class PassTest {
 
-        public final GreaterThan greaterThan;
+        public final Object greaterThan;
         public int count;
 
-        public PassTest(GreaterThan greaterThan) {
+        public PassTest(Object greaterThan) {
             this.greaterThan = greaterThan;
         }
 
@@ -91,10 +122,10 @@ public class DirtyElseTest extends BaseSepTest {
 
     public static class FailsTest {
 
-        public final GreaterThan greaterThan;
+        public final Object greaterThan;
         public int count;
 
-        public FailsTest(GreaterThan greaterThan) {
+        public FailsTest(Object greaterThan) {
             this.greaterThan = greaterThan;
         }
 
@@ -102,17 +133,6 @@ public class DirtyElseTest extends BaseSepTest {
         public void publishFail() {
             count++;
             //System.out.println("failed");
-        }
-
-    }
-
-    public static class DirtyBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            GreaterThan gt_10 = addNode(new GreaterThan(10));
-            addPublicNode(new PassTest(gt_10), "passCount");
-            addPublicNode(new FailsTest(gt_10), "failCount");
         }
 
     }

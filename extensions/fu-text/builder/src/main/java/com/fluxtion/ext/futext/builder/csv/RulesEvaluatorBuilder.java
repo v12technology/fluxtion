@@ -102,9 +102,8 @@ public class RulesEvaluatorBuilder<T> {
                 }
 
                 evaluator = new RulesEvaluator<>(
-                        filterMatch(monitoredWrapped, and(testList.toArray())),
-                        filter(monitoredWrapped, or(notifier,
-                                and(monitoredWrapped, nand(testList.toArray())))
+                        filter(monitoredWrapped, and(testList.toArray())),
+                        filter(monitoredWrapped, or(notifier, nand(testList.toArray()))
                         )
                 );
             }
@@ -159,8 +158,8 @@ public class RulesEvaluatorBuilder<T> {
                     
                 }
                 evaluator = new RulesEvaluator<>(
-                        filterMatch(monitoredWrapped, and(testList.toArray())),
-                        filterMatch(monitoredWrapped, nand(testList.toArray()))
+                        filter(monitoredWrapped, and(testList.toArray())),
+                        filter(monitoredWrapped, nand(testList.toArray()))
                 );
             }
 
@@ -211,8 +210,8 @@ public class RulesEvaluatorBuilder<T> {
                     );
                 }
                 evaluator = new RulesEvaluator<>(
-                        filterMatch(monitored, and(testList.toArray())),
-                        filterMatch(monitored, nand(testList.toArray()))
+                        filter(monitored, and(testList.toArray())),
+                        filter(monitored, nand(testList.toArray()))
                 );
             }
 

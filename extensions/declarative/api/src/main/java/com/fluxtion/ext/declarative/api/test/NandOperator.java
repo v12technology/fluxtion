@@ -27,12 +27,12 @@ import java.util.Arrays;
  *
  * @author gregp
  */
-public class AndOperator implements Test {
+public class NandOperator implements Test {
 
     private final Object[] tracked;
     private int updateCount;
 
-    public AndOperator(Object[] tracked) {
+    public NandOperator(Object[] tracked) {
         this.tracked = tracked;
     }
 
@@ -41,9 +41,9 @@ public class AndOperator implements Test {
         updateCount++;
     }
 
-    @OnEvent
-    public boolean testAnd() {
-        boolean ret = updateCount == tracked.length;
+    @OnEvent(dirty = false)
+    public boolean testNand() {
+        boolean ret = updateCount < tracked.length;
         updateCount = 0;
         return ret;
     }
@@ -71,7 +71,7 @@ public class AndOperator implements Test {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AndOperator other = (AndOperator) obj;
+        final NandOperator other = (NandOperator) obj;
         if (!Arrays.deepEquals(this.tracked, other.tracked)) {
             return false;
         }

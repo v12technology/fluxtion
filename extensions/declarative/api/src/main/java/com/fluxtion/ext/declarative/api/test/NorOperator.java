@@ -23,16 +23,16 @@ import com.fluxtion.ext.declarative.api.Test;
 import java.util.Arrays;
 
 /**
- * Boolean and operator.
+ * Boolean xor operator.
  *
  * @author gregp
  */
-public class AndOperator implements Test {
+public class NorOperator implements Test {
 
     private final Object[] tracked;
     private int updateCount;
 
-    public AndOperator(Object[] tracked) {
+    public NorOperator(Object[] tracked) {
         this.tracked = tracked;
     }
 
@@ -41,9 +41,9 @@ public class AndOperator implements Test {
         updateCount++;
     }
 
-    @OnEvent
-    public boolean testAnd() {
-        boolean ret = updateCount == tracked.length;
+    @OnEvent(dirty = false)
+    public boolean testNor() {
+        boolean ret = updateCount == 0;
         updateCount = 0;
         return ret;
     }
@@ -55,7 +55,7 @@ public class AndOperator implements Test {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 3;
         hash = 53 * hash + Arrays.deepHashCode(this.tracked);
         return hash;
     }
@@ -71,7 +71,7 @@ public class AndOperator implements Test {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AndOperator other = (AndOperator) obj;
+        final NorOperator other = (NorOperator) obj;
         if (!Arrays.deepEquals(this.tracked, other.tracked)) {
             return false;
         }

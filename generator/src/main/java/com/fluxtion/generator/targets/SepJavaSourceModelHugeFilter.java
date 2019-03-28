@@ -659,7 +659,7 @@ public class SepJavaSourceModelHugeFilter {
                         OnEvent onEvent = method.method.getAnnotation(OnEvent.class);
                         String invert = "";
                         if(onEvent!=null && !onEvent.dirty()){
-                            invert = " !";
+                            invert = " not";
                         }
                         ct.append(s24).append("if(");
                         for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
