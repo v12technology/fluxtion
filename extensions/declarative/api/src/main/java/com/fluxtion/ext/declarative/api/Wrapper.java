@@ -19,6 +19,7 @@ package com.fluxtion.ext.declarative.api;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.api.stream.ElseWrapper;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
@@ -52,6 +53,15 @@ public interface Wrapper<T> {
 
     default <S> Wrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
         return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
+    }
+    
+    /**
+     * provides an else branch to a filter node in this stream.
+     * 
+     * @return A wrapper on the else branch of a filtering operation
+     */
+    default  Wrapper<T> elseFilter(){
+        return SepContext.service().add(new ElseWrapper(this));
     }
 
     /**

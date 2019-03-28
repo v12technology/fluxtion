@@ -24,8 +24,6 @@ import com.fluxtion.ext.declarative.api.Wrapper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An interface defining stream operations on a node in a SEP graph. The
@@ -83,12 +81,11 @@ public interface StreamOperator {
 
     /**
      * Attaches an event notification instance to the current stream node and
-     * merges notifications from stream and the added notifier.When
-     * the notifier updates all the child nodes of this stream node will be on
-     * the execution path and invoked following normal SEP rules.The existing
-     * execution path will be unaltered if either the parent
-     * wrapped
-     * node or the eventNotifier updates then the execution path will progress.
+     * merges notifications from stream and the added notifier.When the notifier
+     * updates all the child nodes of this stream node will be on the execution
+     * path and invoked following normal SEP rules.The existing execution path
+     * will be unaltered if either the parent wrapped node or the eventNotifier
+     * updates then the execution path will progress.
      *
      * @param <T>
      * @param source
@@ -101,9 +98,9 @@ public interface StreamOperator {
 
     /**
      * Attaches an event notification instance to the current stream node,
-     * overriding the execution path of the current stream.Only when
-     * the notifier updates will the child nodes of this stream node be on
-     * the execution path.
+     * overriding the execution path of the current stream.Only when the
+     * notifier updates will the child nodes of this stream node be on the
+     * execution path.
      *
      * @param <T>
      * @param source
@@ -199,8 +196,11 @@ public interface StreamOperator {
                 isWrapper = true;
             }
             try {
-                Object src = isWrapper ? wrapped.event() : source;
-                method = src.getClass().getMethod(methodSupplier);
+                if (isWrapper) {
+                    method = wrapped.eventClass().getMethod(methodSupplier);
+                } else {
+                    method = source.getClass().getMethod(methodSupplier);
+                }
             } catch (Exception e) {
                 method = null;
             }

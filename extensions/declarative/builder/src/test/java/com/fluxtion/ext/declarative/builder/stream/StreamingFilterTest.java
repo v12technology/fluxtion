@@ -19,6 +19,7 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
 import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
@@ -30,6 +31,35 @@ import org.junit.Test;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class StreamingFilterTest extends StreamInprocessTest {
+
+    @Test
+    public void testElse() {
+        sep((c) -> {
+            Wrapper<StreamData> filter = select(StreamData.class).filter(StreamData::getIntValue, gt(10));
+            //if - count
+            filter.map(count()).id("filterCount");
+            //else - count
+            filter.elseFilter().map(count()).id("elseCount");;
+        });
+        Number filterCount = getWrappedField("filterCount");
+        Number elseCount = getWrappedField("elseCount");
+        onEvent(new StreamData(89));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(0));
+        
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(1));
+
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(2));
+
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
+        
+    }
 
     @Test
     public void mapRef2Ref() {
@@ -67,7 +97,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
         //1
         onEvent(new StreamData(1));
         assertThat(count.event().intValue(), is(0));
-        
+
         //2
         onEvent(new StreamData(1));
         assertThat(count.event().intValue(), is(0));
