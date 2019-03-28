@@ -265,7 +265,7 @@ public interface Wrapper<T> {
 
     /**
      * Reset a stateful node after every execution cycle, without the need for a
-     * an external need {@link #resetNotifier(java.lang.Object) }.
+     * an external {@link #resetNotifier(java.lang.Object) }.
      * <ul>
      * <li>true - the stateful node will be reset after every execution cycle
      * <li>false: - the stateful node will only be reset with {@link #resetNotifier(java.lang.Object)
