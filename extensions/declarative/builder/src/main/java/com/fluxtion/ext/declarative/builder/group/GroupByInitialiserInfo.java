@@ -16,11 +16,8 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
 import com.fluxtion.ext.declarative.builder.util.ImportMap;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 
 /**
  * meta data defining how to initialise a value in an aggregated row.
