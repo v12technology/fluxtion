@@ -19,7 +19,6 @@ package com.fluxtion.ext.declarative.api;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.api.stream.ElseWrapper;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
