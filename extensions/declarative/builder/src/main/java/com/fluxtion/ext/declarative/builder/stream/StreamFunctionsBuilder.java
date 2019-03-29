@@ -29,9 +29,9 @@ import com.fluxtion.ext.declarative.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import static com.fluxtion.ext.declarative.builder.event.EventSelect.*;
-import static com.fluxtion.ext.declarative.builder.stream.FunctionBuilder.*;
 import static com.fluxtion.ext.declarative.builder.stream.StreamBuilder.*;
 import static com.fluxtion.ext.declarative.builder.util.FunctionArg.*;
+import com.fluxtion.ext.declarative.builder.util.StreamFunctionGenerator;
 
 /**
  * Utility class providing static helper methods to create mapping operations

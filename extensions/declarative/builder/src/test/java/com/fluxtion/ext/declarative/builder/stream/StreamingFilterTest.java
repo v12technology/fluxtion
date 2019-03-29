@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
@@ -35,11 +36,11 @@ public class StreamingFilterTest extends StreamInprocessTest {
     @Test
     public void testElse() {
         sep((c) -> {
-            Wrapper<StreamData> filter = select(StreamData.class).filter(StreamData::getIntValue, gt(10));
+            FilterWrapper<StreamData> filter = select(StreamData.class).filter(StreamData::getIntValue, gt(10));
             //if - count
             filter.map(count()).id("filterCount");
             //else - count
-            filter.elseFilter().map(count()).id("elseCount");;
+            filter.elseStream().map(count()).id("elseCount");;
         });
         Number filterCount = getWrappedField("filterCount");
         Number elseCount = getWrappedField("elseCount");

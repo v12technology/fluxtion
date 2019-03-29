@@ -20,6 +20,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,14 +35,14 @@ import java.util.ServiceLoader;
  */
 public interface StreamOperator {
 
-    default <S, T> Wrapper<T> filter(SerializableFunction<S, Boolean> filter,
+    default <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter,
             Wrapper<T> source, Method accessor, boolean cast) {
-        return source;
+        return (FilterWrapper<T>) source;
     }
 
-    default <T> Wrapper<T> filter(SerializableFunction<T, Boolean> filter,
+    default <T> FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter,
             Wrapper<T> source, boolean cast) {
-        return source;
+        return (FilterWrapper<T>) source;
     }
 
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {

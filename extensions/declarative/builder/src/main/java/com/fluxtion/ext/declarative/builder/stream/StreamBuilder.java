@@ -20,6 +20,7 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
 import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
@@ -40,7 +41,7 @@ import java.util.function.Predicate;
 public class StreamBuilder implements StreamOperator {
 
     @Override
-    public <S, T> Wrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
+    public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(filterMethod.getModifiers())) {
@@ -48,11 +49,11 @@ public class StreamBuilder implements StreamOperator {
         } else {
             builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source, accessor, cast);
         }
-        return builder.build();
+        return (FilterWrapper<T>) builder.build();
     }
 
     @Override
-    public <T> Wrapper<T> filter(SerializableFunction<T, Boolean> filter, Wrapper<T> source, boolean cast) {
+    public <T> FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter, Wrapper<T> source, boolean cast) {
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(filterMethod.getModifiers())) {
@@ -60,7 +61,7 @@ public class StreamBuilder implements StreamOperator {
         } else {
             builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source);
         }
-        return builder.build();
+        return (FilterWrapper<T>) builder.build();
     }
 
     @Override

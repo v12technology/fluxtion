@@ -47,21 +47,12 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
-    default Wrapper<T> filter(SerializableFunction<T, Boolean> filter) {
-        return (Wrapper<T>) StreamOperator.service().filter(filter, this, true);
+    default FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter) {
+        return StreamOperator.service().filter(filter, this, true);
     }
 
-    default <S> Wrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
-        return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
-    }
-    
-    /**
-     * provides an else branch to a filter node in this stream.
-     * 
-     * @return A wrapper on the else branch of a filtering operation
-     */
-    default  Wrapper<T> elseFilter(){
-        return SepContext.service().add(new ElseWrapper(this));
+    default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
+        return StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
 
     /**
