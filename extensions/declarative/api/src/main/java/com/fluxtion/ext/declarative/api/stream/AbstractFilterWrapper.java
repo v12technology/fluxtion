@@ -1,5 +1,6 @@
 package com.fluxtion.ext.declarative.api.stream;
 
+import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
 
 /**
@@ -8,7 +9,7 @@ import com.fluxtion.ext.declarative.api.Wrapper;
  * @author V12 Technology Ltd.
  * @param <T>
  */
-public abstract class AbstractFilterWrapper<T> implements Wrapper<T> {
+public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
 
     protected boolean notifyOnChangeOnly = false;
     protected boolean resetImmediate = true;

@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.declarative.api.numeric;
 
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.api.Constant;
 
 /**
@@ -34,7 +35,12 @@ public class ConstantNumber extends Number implements Constant{
         this.intValue = (int) doubleValue;
         this.longValue = (long) doubleValue;
     }
-
+    
+    @OnEvent
+    public boolean updated(){
+        return true;
+    }
+    
     @Override
     public float floatValue(){
         return (float)doubleValue();

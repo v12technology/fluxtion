@@ -63,11 +63,11 @@ public class FunctionArg<T> {
         return new FunctionArg(new ConstantNumber(d), s.method(), true);
     }
     
-    public static <T extends Number> FunctionArg<T> arg(Wrapper<T> wrapper){
+    public static <T extends Number> FunctionArg<Double> arg(Wrapper<T> wrapper){
         return arg(wrapper, Number::doubleValue);
     }
     
-    public static <T, S> FunctionArg<T> arg(Wrapper<T> wrapper,SerializableFunction<T, S> supplier){
+    public static <T, S> FunctionArg<S> arg(Wrapper<T> wrapper,SerializableFunction<T, S> supplier){
         return new FunctionArg(wrapper, supplier.method(), true);
     }
     

@@ -46,12 +46,12 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
-    default Wrapper<T> filter(SerializableFunction<T, Boolean> filter) {
-        return (Wrapper<T>) StreamOperator.service().filter(filter, this, true);
+    default FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter) {
+        return StreamOperator.service().filter(filter, this, true);
     }
 
-    default <S> Wrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
-        return (Wrapper<T>) StreamOperator.service().filter(filter, this, supplier.method(), true);
+    default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
+        return StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
 
     /**
