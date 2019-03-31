@@ -18,6 +18,7 @@ package com.fluxtion.ext.declarative.api.stream;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.FilterWrapper;
@@ -50,6 +51,16 @@ public interface StreamOperator {
     }
 
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
+        return null;
+    }
+    
+    default  <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
+            Argument<? extends U> arg1,
+            Argument<? extends S> arg2){
+        return null;
+    }
+    
+    default <F, R> Wrapper<R> map(F mapper, Method mappingMethod, Argument... args){
         return null;
     }
 

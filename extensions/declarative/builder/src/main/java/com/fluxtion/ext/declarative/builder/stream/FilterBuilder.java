@@ -50,6 +50,7 @@ import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
 import com.fluxtion.ext.declarative.api.stream.AbstractFilterWrapper;
+import com.fluxtion.ext.declarative.api.stream.Argument;
 import static com.fluxtion.ext.declarative.builder.factory.FunctionKeys.stateful;
 import com.fluxtion.ext.declarative.builder.util.FunctionArg;
 import com.fluxtion.ext.declarative.builder.util.SourceInfo;
@@ -249,8 +250,8 @@ public class FilterBuilder<T, F> {
      * @return
      */
     public static <R, S, G, H, U> Wrapper<R> map(SerializableBiFunction<G, H, R> mapper,
-            FunctionArg<U> arg1,
-            FunctionArg<S> arg2) {
+            Argument<U> arg1,
+            Argument<S> arg2) {
         Method mappingMethod = mapper.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
@@ -262,7 +263,7 @@ public class FilterBuilder<T, F> {
     }
 
     public static <R, G, U> Wrapper<R> map(SerializableFunction<G, R> mapper,
-            FunctionArg<U> arg1) {
+            Argument<U> arg1) {
         Method mappingMethod = mapper.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
@@ -285,16 +286,16 @@ public class FilterBuilder<T, F> {
      * @param args
      * @return
      */
-    public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, FunctionArg... args) {
-        FunctionArg arg = args[0];
+    public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, Argument... args) {
+        Argument arg = args[0];
         FilterBuilder builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
             builder.key.multiArg = true;
             builder.key.argsList.add(arg);
-            SourceInfo srcInfo = builder.addSource(arg.getSource());
             Object source = arg.getSource();
-            GenerationContext.SINGLETON.addOrUseExistingNode(source);
+            source = GenerationContext.SINGLETON.addOrUseExistingNode(source);
+            SourceInfo srcInfo = builder.addSource(source);
             Method accessor = arg.getAccessor();
             boolean cast = arg.isCast();
             String srcId = srcInfo.getId();

@@ -17,7 +17,7 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.util.FunctionArg;
+import com.fluxtion.ext.declarative.api.stream.Argument;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class FunctionClassKey {
     boolean cast;
     String type;
     boolean multiArg;
-    List<FunctionArg> argsList = new ArrayList<>();
+    List<Argument> argsList = new ArrayList<>();
 
     public FunctionClassKey(Object filter, Method filterMethod, Object source, Method accessor, boolean cast, String type) {
         this.filterClass = getClassForInstance(filter);

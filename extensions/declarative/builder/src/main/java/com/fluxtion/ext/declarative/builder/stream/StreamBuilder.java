@@ -17,12 +17,14 @@
 package com.fluxtion.ext.declarative.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.stream.Argument;
 import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
@@ -88,6 +90,31 @@ public class StreamBuilder implements StreamOperator {
         return builder.build();
     }
 
+    @Override
+    public <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, 
+            Argument<? extends U> arg1, Argument<? extends S> arg2) {
+        Method mappingMethod = mapper.method();
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+        } else {
+            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+        }
+        return builder.build();
+    }
+    
+    @Override
+    public <F, R> Wrapper<R> map(F mapper, Method mappingMethod, Argument... args) {
+        FilterBuilder builder = null;
+        if (Modifier.isStatic(mappingMethod.getModifiers())) {
+            builder = FilterBuilder.map(null, mappingMethod, args);
+        } else {
+            builder = FilterBuilder.map(mapper, mappingMethod, args);
+        }
+        return builder.build();
+    }
+       
+    
     @Override
     public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
 //        final Object sourceInstance = unWrap(source);
