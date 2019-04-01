@@ -17,6 +17,7 @@
 package com.fluxtion.ext.declarative.api.group;
 
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.Stateful;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Map;
  * @param <T> he target type of the group
  * @author greg
  */
-public interface GroupBy<T> extends Wrapper<T> {
+public interface GroupBy<T> extends Wrapper<T>, Stateful {
 
     T value(Object key);
 
@@ -48,6 +49,11 @@ public interface GroupBy<T> extends Wrapper<T> {
 
     default List<T> expireAll() {
         return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    default void reset(){
+        //no-op
     }
 
 }

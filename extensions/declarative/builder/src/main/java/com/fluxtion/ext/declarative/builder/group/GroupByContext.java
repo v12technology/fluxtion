@@ -18,6 +18,7 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
@@ -70,7 +71,7 @@ public class GroupByContext<K, T> {
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
             Map.class, BitSet.class,  GroupBy.class, EventHandler.class,
-            GroupByIniitialiser.class, GroupByTargetMap.class
+            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class
     );
     private String genClassName;
     private String calcStateClass;

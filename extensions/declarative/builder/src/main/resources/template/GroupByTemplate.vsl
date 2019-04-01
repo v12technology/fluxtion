@@ -14,6 +14,7 @@ import $import;
  */
 public final class ${functionClass} implements GroupBy<${targetClass}>{
 
+  @NoEventReference public Object resetNotifier;
 #foreach( $source in $sourceMappingList)
 #if($!{source.eventClass})
 #elseif(${source.wrapped})
@@ -132,5 +133,15 @@ ${functionInfo.updateTarget}
     @Override
     public Class<${targetClass}> eventClass() {
         return ${targetClass}.class;
+    }
+
+    public ${functionClass} resetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier) {
+      init();
     }
 }
