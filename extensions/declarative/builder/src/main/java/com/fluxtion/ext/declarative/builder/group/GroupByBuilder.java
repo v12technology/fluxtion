@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
-import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
 /**
