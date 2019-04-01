@@ -17,8 +17,6 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.Stateful;
 import com.fluxtion.ext.declarative.api.Wrapper;
@@ -42,9 +40,9 @@ public class StreamingFilterTest extends StreamInprocessTest {
     public void testElse() {
         sep((c) -> {
             FilterWrapper<StreamData> filter = select(StreamData.class)
-                    .filter(StreamData::getDoubleValue, gt(10));
-            filter.map(multiply(), StreamData::getDoubleValue, 10.0).id("x10").map(cumSum()).id("cumSum");
-            multiply(arg(filter, StreamData::getDoubleValue), arg(10)).id("x10_2").map(cumSum()).id("cumSum2");
+                    .filter(StreamData::getIntValue, gt(10));
+            filter.map(multiply(), StreamData::getIntValue, 10.0).id("x10").map(cumSum()).id("cumSum");
+            multiply(arg(filter, StreamData::getIntValue), arg(10)).id("x10_2").map(cumSum()).id("cumSum2");
             //if - count
             filter.map(count()).id("filterCount");
             //else - count
@@ -55,25 +53,25 @@ public class StreamingFilterTest extends StreamInprocessTest {
         Number elseCount = getWrappedField("elseCount");
         Number cumSum = getWrappedField("cumSum");
         Number cumSum2 = getWrappedField("cumSum2");
-        onEvent(new StreamData(89.0));
+        onEvent(new StreamData(89));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(0));
         assertThat(cumSum.intValue(), is(890));
         assertThat(cumSum2.intValue(), is(890));
         
-        onEvent(new StreamData(9.0));
+        onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(1));
         assertThat(cumSum.intValue(), is(890));
         assertThat(cumSum2.intValue(), is(890));
 
-        onEvent(new StreamData(9.0));
+        onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(2));
         assertThat(cumSum.intValue(), is(890));
         assertThat(cumSum2.intValue(), is(890));
 
-        onEvent(new StreamData(19.0));
+        onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(2));
         assertThat(elseCount.intValue(), is(2));
         assertThat(cumSum.intValue(), is(1080));

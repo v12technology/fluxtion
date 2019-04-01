@@ -69,7 +69,7 @@ public interface Wrapper<T> {
             SerializableFunction<T, ?> key, 
             SerializableFunction<T, S> supplier, 
             Class<F> functionClass){
-        return StreamOperator.service().group(this, supplier, functionClass);
+        return StreamOperator.service().group(this, key, supplier, functionClass);
     }
 
     /**
@@ -147,7 +147,7 @@ public interface Wrapper<T> {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg, arg(this, supplier));
     }
     
-    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, S, R> mapper, SerializableFunction<T, ? extends U> supplier, double arg) {
+    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, S, R> mapper, SerializableFunction<T, ? extends U> supplier, double arg) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg(arg));
     }
     
