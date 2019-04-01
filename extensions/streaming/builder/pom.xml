@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2018 V12 Technology Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Server Side Public License, version 1,
+as published by MongoDB, Inc.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Server Side Public License for more details.
+
+You should have received a copy of the Server Side Public License
+along with this program.  If not, see 
+<http://www.mongodb.com/licensing/server-side-public-license>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.fluxtion</groupId>
+        <artifactId>root-parent-pom</artifactId>
+        <version>1.7.3</version>
+        <relativePath>../../../poms/parent-root/pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.fluxtion.extension</groupId>
+    <artifactId>fluxtion-streaming-builder</artifactId>
+    <name>fluxtion :: ext :: streaming-builder</name>
+    <packaging>jar</packaging>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>generator</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.vidageek</groupId>
+            <artifactId>mirror</artifactId>
+        </dependency>        
+        <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>compiler</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
+    </dependencies>
+    <properties>
+        <netbeans.hint.license>fluxtion</netbeans.hint.license>
+    </properties>
+</project>

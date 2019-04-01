@@ -19,14 +19,14 @@ package com.fluxtion.ext.futext.example.flightdelay.generated;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.ext.declarative.api.log.LogControlEvent;
-import com.fluxtion.ext.declarative.api.stream.StreamFunctions.Count;
-import com.fluxtion.ext.futext.api.csv.ValidationLogSink;
-import com.fluxtion.ext.futext.api.csv.ValidationLogger;
-import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.futext.api.event.EofEvent;
-import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
-import com.fluxtion.ext.futext.api.util.EventPublsher;
+import com.fluxtion.ext.streaming.api.log.LogControlEvent;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.text.api.csv.ValidationLogSink;
+import com.fluxtion.ext.text.api.csv.ValidationLogger;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.api.event.EofEvent;
+import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.api.util.EventPublsher;
 
 public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycle {
 

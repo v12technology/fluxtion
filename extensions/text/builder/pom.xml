@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2018 V12 Technology Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Server Side Public License, version 1,
+as published by MongoDB, Inc.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Server Side Public License for more details.
+
+You should have received a copy of the Server Side Public License
+along with this program.  If not, see 
+<http://www.mongodb.com/licensing/server-side-public-license>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.fluxtion</groupId>
+        <artifactId>root-parent-pom</artifactId>
+        <version>1.7.3</version>
+        <relativePath>../../../poms/parent-root/pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <netbeans.hint.license>fluxtion</netbeans.hint.license>
+    </properties>
+
+    <groupId>com.fluxtion.extension</groupId>
+    <artifactId>fluxtion-text-builder</artifactId>
+    <name>fluxtion :: ext :: text-builder</name>
+    <packaging>jar</packaging>
+    
+    
+    <profiles>     
+        <profile>
+            <id>build-marshallers</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fluxtion</groupId>
+                        <artifactId>fluxtion-maven-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>dispatch-marshaller</id>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <configClass>com.fluxtion.ext.futext.builder.util.MarshallerSepConfig</configClass>
+                                    <className>DispatchingCsvMarshaller</className>
+                                    <packageName> com.fluxtion.ext.futext.api.util.marshaller</packageName>
+                                    <supportDirtyFiltering>true</supportDirtyFiltering>
+                                    <templateSep>template/dev/funclib/csv/CsvMultiDispatchTemplate.vsl</templateSep>
+                                    <logDebug>true</logDebug>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles> 
+    
+    <dependencies>
+        <!--fluxtion-->
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>fluxtion-builder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-builder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-text-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>generator</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+                
+</project>

@@ -18,16 +18,16 @@ package com.fluxtion.ext.futext.example.flightdelay;
 
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
-import com.fluxtion.ext.declarative.builder.group.Group;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
-import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.futext.builder.csv.CharTokenConfig;
-import com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
+import com.fluxtion.ext.streaming.builder.group.Group;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
+import com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder;
+import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import java.util.function.Function;
 
 /**

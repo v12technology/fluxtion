@@ -19,13 +19,13 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>master-pom</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
     <packaging>pom</packaging>
     <name>fluxtion :: ext</name>
     
     <modules>
-        <module>declarative</module>
-        <module>fu-text</module>
+        <module>streaming</module>
+        <module>text</module>
     </modules>
     
     <properties>

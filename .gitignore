@@ -9,8 +9,10 @@
 /examples/documentation-examples/target/
 /extensions/declarative/api/target/
 /extensions/declarative/builder/target/
-/extensions/fu-text/api/target/
-/extensions/fu-text/builder/target/
+/extensions/text/api/target/
+/extensions/text/builder/target/
 /examples/futext-examples/target/
 /examples/futext-examples/2008_clean.csv
 /target/
+/extensions/streaming/api/target/
+/extensions/streaming/builder/target/

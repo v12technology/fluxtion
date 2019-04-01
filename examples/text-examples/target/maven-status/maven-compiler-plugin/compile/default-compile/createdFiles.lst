@@ -1,0 +1,11 @@
+com\fluxtion\ext\futext\example\flightdelay\generated\FlightDelayAnalyser.class
+com\fluxtion\ext\futext\example\flightdelay\generated\CalculationStateGroupBy_6.class
+com\fluxtion\ext\futext\example\flightdelay\AnalysisBuilder.class
+com\fluxtion\ext\futext\example\flightdelay\FlightDetails.class
+com\fluxtion\ext\futext\example\flightdelay\generated\GroupBy_6$1.class
+com\fluxtion\ext\futext\example\flightdelay\generated\Map_FlightDetails_By_increment_7.class
+com\fluxtion\ext\futext\example\flightdelay\CarrierDelay.class
+com\fluxtion\ext\futext\example\flightdelay\Main.class
+com\fluxtion\ext\futext\example\flightdelay\generated\FlightDetailsCsvDecoder0.class
+com\fluxtion\ext\futext\example\flightdelay\generated\Filter_getDelay_By_positiveInt_1.class
+com\fluxtion\ext\futext\example\flightdelay\generated\GroupBy_6.class

@@ -5,18 +5,18 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.PushReference;
-import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence;
-import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence.CharSequenceView;
-import com.fluxtion.ext.futext.api.csv.RowProcessor;
-import com.fluxtion.ext.futext.api.csv.ValidationLogger;
-import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.futext.api.event.EofEvent;
+import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence;
+import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence.CharSequenceView;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
+import com.fluxtion.ext.text.api.csv.ValidationLogger;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import static com.fluxtion.ext.futext.api.ascii.Conversion.*;
+import static com.fluxtion.ext.text.api.ascii.Conversion.*;
 
 /**
  * Fluxtion generated CSV decoder.
