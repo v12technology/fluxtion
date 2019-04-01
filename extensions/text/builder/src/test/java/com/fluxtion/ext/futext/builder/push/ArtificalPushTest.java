@@ -16,9 +16,9 @@
  */
 package com.fluxtion.ext.futext.builder.push;
 
-import static com.fluxtion.ext.declarative.builder.stream.StreamBuilder.stream;
-import com.fluxtion.ext.futext.builder.ascii.AsciiHelper;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
+import com.fluxtion.ext.text.builder.ascii.AsciiHelper;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;

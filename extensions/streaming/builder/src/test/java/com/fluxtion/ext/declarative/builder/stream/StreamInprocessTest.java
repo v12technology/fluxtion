@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import net.vidageek.mirror.dsl.Mirror;
 

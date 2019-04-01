@@ -16,15 +16,16 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.futext.api.util.StringDriver;
-import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.gt;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.lt;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.positive;
-import static com.fluxtion.ext.futext.builder.csv.NumericValidatorBuilder.withinRange;
+import com.fluxtion.ext.text.api.util.StringDriver;
+import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.gt;
+import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.lt;
+import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.positive;
+import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.withinRange;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;

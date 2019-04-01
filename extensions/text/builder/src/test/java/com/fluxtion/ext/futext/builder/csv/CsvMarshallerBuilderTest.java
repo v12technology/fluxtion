@@ -16,19 +16,20 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.log.LogBuilder;
-import com.fluxtion.ext.futext.api.csv.RowProcessor;
-import static com.fluxtion.ext.futext.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.builder.log.LogBuilder;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
+import static com.fluxtion.ext.text.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.ext.futext.api.csv.RulesEvaluator;
-import com.fluxtion.ext.futext.api.event.RegisterEventHandler;
-import static com.fluxtion.ext.futext.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.futext.builder.csv.RulesEvaluatorBuilder.validator;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
+import com.fluxtion.ext.text.api.csv.RulesEvaluator;
+import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;

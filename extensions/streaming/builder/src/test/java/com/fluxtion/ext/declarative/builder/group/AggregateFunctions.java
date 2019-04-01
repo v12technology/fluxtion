@@ -11,8 +11,8 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
-import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
+import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 
 /**
  *

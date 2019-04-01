@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.helpers;
 
-import com.fluxtion.ext.declarative.api.Test;
+import com.fluxtion.ext.streaming.api.Test;
 
 /**
  *

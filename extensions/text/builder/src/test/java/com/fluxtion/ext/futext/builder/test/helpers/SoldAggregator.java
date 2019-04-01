@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.test.helpers;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -16,10 +16,11 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;

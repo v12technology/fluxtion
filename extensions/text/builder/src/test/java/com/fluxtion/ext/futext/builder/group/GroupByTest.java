@@ -16,23 +16,23 @@
  */
 package com.fluxtion.ext.futext.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
-import com.fluxtion.ext.futext.api.ascii.Ascii2IntTerminator;
-import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.readBytesCsv;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readBytesCsv;
 import com.fluxtion.ext.futext.builder.test.helpers.TradeDetails;
-import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.readInt;
-import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.readIntCsv;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import com.fluxtion.ext.declarative.builder.log.LogBuilder;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import com.fluxtion.ext.streaming.builder.log.LogBuilder;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import com.fluxtion.ext.futext.builder.test.helpers.LeaguePosition;
 import com.fluxtion.ext.futext.builder.test.helpers.MatchResult;
 import java.util.Map;

@@ -16,9 +16,9 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.declarative.api.group.AggregateFunctions;
-import com.fluxtion.ext.declarative.api.group.GroupBy;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import org.junit.Test;
 
 /**

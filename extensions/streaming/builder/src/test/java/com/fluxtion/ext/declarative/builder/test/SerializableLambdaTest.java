@@ -1,7 +1,7 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;

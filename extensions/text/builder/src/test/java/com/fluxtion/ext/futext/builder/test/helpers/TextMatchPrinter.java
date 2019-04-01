@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.test.helpers;
 import com.fluxtion.api.annotations.ConfigVariable;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.futext.api.filter.AsciiMatchFilter;
+import com.fluxtion.ext.text.api.filter.AsciiMatchFilter;
 
 /**
  * Test class that prints to standard out when matched text occurs, and sets 

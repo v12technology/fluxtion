@@ -1,8 +1,8 @@
 package com.fluxtion.ext.declarative.api.util;
 
-import com.fluxtion.ext.declarative.api.MergingWrapper;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
+import com.fluxtion.ext.streaming.api.MergingWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import org.junit.Test;
 
 /**

@@ -17,15 +17,15 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.declarative.api.FilterWrapper;
-import com.fluxtion.ext.declarative.api.Stateful;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.multiply;
-import static com.fluxtion.ext.declarative.builder.util.FunctionArg.arg;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.multiply;
+import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;

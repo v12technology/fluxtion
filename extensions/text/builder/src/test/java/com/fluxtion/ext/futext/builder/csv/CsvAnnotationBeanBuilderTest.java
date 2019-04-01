@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.futext.api.annotation.CsvMarshaller;
+import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.generator.compiler.ClassProcessorDispatcher;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.io.File;

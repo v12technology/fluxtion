@@ -17,17 +17,17 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.group.GroupBy;
-import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
-import static com.fluxtion.ext.futext.builder.ascii.AsciiHelper.wordSplitter;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static com.fluxtion.ext.futext.builder.math.WordFrequency.wordFrequency;
+import static com.fluxtion.ext.text.builder.math.WordFrequency.wordFrequency;
 
 /**
  *

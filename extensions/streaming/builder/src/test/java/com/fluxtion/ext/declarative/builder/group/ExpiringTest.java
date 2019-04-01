@@ -1,10 +1,10 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.group.GroupBy;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
 import com.fluxtion.generator.util.BaseSepTest;

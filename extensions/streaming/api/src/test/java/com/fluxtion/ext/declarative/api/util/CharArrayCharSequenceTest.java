@@ -15,7 +15,8 @@
  */
 package com.fluxtion.ext.declarative.api.util;
 
-import com.fluxtion.ext.declarative.api.util.CharArrayCharSequence.CharSequenceView;
+import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence;
+import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence.CharSequenceView;
 import java.util.HashMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;

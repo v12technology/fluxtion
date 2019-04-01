@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.futext.builder.util.marsahller;
 
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.futext.api.event.CharEvent;
-import com.fluxtion.ext.futext.api.util.marshaller.DispatchingCsvMarshaller;
-import com.fluxtion.ext.futext.builder.util.StringDriver;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.concurrent.atomic.LongAdder;

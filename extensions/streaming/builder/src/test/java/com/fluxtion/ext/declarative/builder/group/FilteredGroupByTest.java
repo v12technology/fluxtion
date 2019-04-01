@@ -11,17 +11,18 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.generator.util.BaseSepTest;
 //import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
 import com.fluxtion.junit.Categories;
 import com.fluxtion.api.lifecycle.EventHandler;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.positive;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import java.util.HashMap;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
@@ -98,7 +99,7 @@ public class FilteredGroupByTest extends BaseSepTest {
     }
     
     
-    public static class GreaterThan implements com.fluxtion.ext.declarative.api.Test {
+    public static class GreaterThan implements com.fluxtion.ext.streaming.api.Test {
 
         public boolean greaterThan(double op1, double op2) {
             return op1 > op2;

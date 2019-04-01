@@ -11,8 +11,8 @@
  */
 package com.fluxtion.ext.declarative.builder.event;
 
-import com.fluxtion.ext.declarative.builder.event.EventSelect;
-import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import com.fluxtion.ext.streaming.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.generator.util.BaseSepTest;

@@ -11,8 +11,8 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
-import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -22,8 +22,8 @@ import org.junit.experimental.categories.Category;
 //import static com.fluxtion.extension.functional.group2.Order.Order;
 import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Optional;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
 import static org.hamcrest.CoreMatchers.is;

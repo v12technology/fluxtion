@@ -11,25 +11,26 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import com.fluxtion.ext.declarative.api.EventWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.negative;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Count;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Sum;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
-import static com.fluxtion.ext.declarative.builder.group.Group.groupBy;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.Log;
-import static com.fluxtion.ext.declarative.builder.log.LogBuilder.LogOnNotify;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.LogOnNotify;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 //import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

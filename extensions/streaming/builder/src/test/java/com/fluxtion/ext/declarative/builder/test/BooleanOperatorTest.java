@@ -1,24 +1,24 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.declarative.api.EventWrapper;
-import com.fluxtion.ext.declarative.api.Test;
-import com.fluxtion.ext.declarative.builder.event.EventSelect;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.not;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.and;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nand;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.or;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.xor;
+import com.fluxtion.ext.streaming.api.EventWrapper;
+import com.fluxtion.ext.streaming.api.Test;
+import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.not;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.and;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nand;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.or;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.xor;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.ext.declarative.api.Wrapper;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import net.vidageek.mirror.dsl.Mirror;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.fluxtion.ext.declarative.builder.test.BooleanBuilder.nor;
+import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nor;
 
 /**
  *

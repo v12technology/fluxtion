@@ -1,12 +1,12 @@
 package com.fluxtion.ext.declarative.builder.function;
 
-import com.fluxtion.ext.declarative.api.MergingWrapper;
-import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.lt;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import com.fluxtion.ext.streaming.api.MergingWrapper;
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.lt;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;

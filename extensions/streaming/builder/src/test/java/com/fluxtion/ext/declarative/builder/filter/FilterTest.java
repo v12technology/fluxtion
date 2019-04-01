@@ -16,11 +16,11 @@
  */
 package com.fluxtion.ext.declarative.builder.filter;
 
-import static com.fluxtion.ext.declarative.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;

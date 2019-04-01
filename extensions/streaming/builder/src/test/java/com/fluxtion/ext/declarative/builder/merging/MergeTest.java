@@ -18,12 +18,12 @@ package com.fluxtion.ext.declarative.builder.merging;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
-import static com.fluxtion.ext.declarative.api.MergingWrapper.merge;
-import com.fluxtion.ext.declarative.builder.event.EventSelect;
-import static com.fluxtion.ext.declarative.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
+import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.declarative.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

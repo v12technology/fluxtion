@@ -14,7 +14,7 @@ package com.fluxtion.ext.declarative.builder.group;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
 import com.fluxtion.generator.util.BaseSepTest;
 
 /**
