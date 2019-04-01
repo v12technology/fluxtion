@@ -23,6 +23,8 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
@@ -44,6 +46,18 @@ public interface StreamOperator {
     default <T> FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter,
             Wrapper<T> source, boolean cast) {
         return (FilterWrapper<T>) source;
+    }
+    
+    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
+            SerializableFunction<T, S> key, Class<F> functionClass){
+        return null;
+    }
+    
+    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
+            SerializableFunction<T, ?> key, 
+            SerializableFunction<T, S> supplier, 
+            Class<F> functionClass){
+        return null;
     }
 
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {

@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
 /**
@@ -101,7 +102,7 @@ public class GroupByBuilder<K, T> {
     }
 
     public <F extends NumericFunctionStateless> void
-            avg(SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            avg(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         function(Avg, sourceFunction, target);
     }
 
@@ -111,22 +112,22 @@ public class GroupByBuilder<K, T> {
     }
 
     public <F extends NumericFunctionStateless> void
-            set(SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            set(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         function(Set, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> void
-            min(SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            min(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         function(Min, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> void
-            max(SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            max(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         function(Max, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> void
-            sum(SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            sum(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         function(Sum, sourceFunction, target);
     }
 
@@ -135,7 +136,7 @@ public class GroupByBuilder<K, T> {
     }
 
     public <F extends NumericFunctionStateless> void
-            function(Class<F> calcFunctionClass, SerializableFunction<K, ? super Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            function(Class<F> calcFunctionClass, SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
         //set function
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());

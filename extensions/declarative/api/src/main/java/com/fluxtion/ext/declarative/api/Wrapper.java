@@ -16,11 +16,12 @@
  */
 package com.fluxtion.ext.declarative.api;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.declarative.api.stream.Argument;
 import static com.fluxtion.ext.declarative.api.stream.Argument.arg;
 import java.util.concurrent.atomic.LongAdder;
@@ -56,6 +57,19 @@ public interface Wrapper<T> {
 
     default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, supplier.method(), true);
+    }
+    
+    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+            SerializableFunction<T, S> supplier, 
+            Class<F> functionClass){
+        return StreamOperator.service().group(this, supplier, functionClass);
+    }
+    
+    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+            SerializableFunction<T, ?> key, 
+            SerializableFunction<T, S> supplier, 
+            Class<F> functionClass){
+        return StreamOperator.service().group(this, supplier, functionClass);
     }
 
     /**

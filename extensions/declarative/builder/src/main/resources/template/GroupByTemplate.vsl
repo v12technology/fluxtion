@@ -50,7 +50,7 @@ public final class ${functionClass} implements GroupBy<${targetClass}>{
 #end
 #if(${source.wrapped})
     public boolean update$id($wrapperType eventWrapped){
-        $type event = eventWrapped.event();
+        $type event = ($type)eventWrapped.event();
 #else
     public boolean update$id($type event){
 #end

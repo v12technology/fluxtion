@@ -24,9 +24,14 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.api.FilterWrapper;
 import com.fluxtion.ext.declarative.api.stream.StreamOperator;
 import com.fluxtion.ext.declarative.api.Wrapper;
+import com.fluxtion.ext.declarative.api.group.GroupBy;
+import com.fluxtion.ext.declarative.api.numeric.MutableNumber;
+import com.fluxtion.ext.declarative.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.declarative.api.stream.Argument;
 import com.fluxtion.ext.declarative.api.stream.NodeWrapper;
 import static com.fluxtion.ext.declarative.builder.factory.PushBuilder.unWrap;
+import com.fluxtion.ext.declarative.builder.group.Group;
+import com.fluxtion.ext.declarative.builder.group.GroupByBuilder;
 import com.fluxtion.ext.declarative.builder.test.BooleanBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
@@ -64,6 +69,25 @@ public class StreamBuilder implements StreamOperator {
             builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source);
         }
         return (FilterWrapper<T>) builder.build();
+    }
+
+    @Override
+    public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
+            SerializableFunction<T, S> key, Class<F> functionClass) {
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
+        wcQuery.function(functionClass, MutableNumber::set);
+        return (GroupBy<R>) wcQuery.build();
+    }
+
+    @Override
+    public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+            Wrapper<T> source, 
+            SerializableFunction<T, ?> key, 
+            SerializableFunction<T, S> supplier, 
+            Class<F> functionClass) {
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
+        wcQuery.function(functionClass, supplier, MutableNumber::set);
+        return (GroupBy<R>) wcQuery.build();
     }
 
     @Override

@@ -103,8 +103,8 @@ public class GroupByTest extends BaseSepTest {
             GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent.class, TradeEvent::getTradeId, TradeSummary.class);
             GroupByBuilder<DealEvent, TradeSummary> deals = trades.join(DealEvent.class, DealEvent::getParentTradeId);
             //vars
-            SerializableFunction<TradeEvent, ? super Number> tradeVol = TradeEvent::getTradeVolume;
-            SerializableFunction<DealEvent, ? super Number> dealVol = DealEvent::getTradeVolume;
+            SerializableFunction<TradeEvent, ? extends Number> tradeVol = TradeEvent::getTradeVolume;
+            SerializableFunction<DealEvent, ? extends Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
             trades.function(Sum, tradeVol, TradeSummary::setTotalVolume);
             trades.function(Avg, tradeVol, TradeSummary::setAveragOrderSize);
