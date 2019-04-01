@@ -41,7 +41,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
         sep((c) -> {
             FilterWrapper<StreamData> filter = select(StreamData.class)
                     .filter(StreamData::getIntValue, gt(10));
-            filter.map(multiply(), StreamData::getIntValue, 10.0).id("x10").map(cumSum()).id("cumSum");
+            filter.map(multiply(), StreamData::getIntValue, 10).id("x10").map(cumSum()).id("cumSum");
             multiply(arg(filter, StreamData::getIntValue), arg(10)).id("x10_2").map(cumSum()).id("cumSum2");
             //if - count
             filter.map(count()).id("filterCount");
