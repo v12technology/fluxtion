@@ -27,49 +27,14 @@ along with this program.  If not, see
     </parent>
 
     <groupId>com.fluxtion.extension</groupId>
-    <artifactId>fluxtion-declarative-builder</artifactId>
-    <name>fluxtion :: ext :: declarative-builder</name>
+    <artifactId>fluxtion-streaming-api</artifactId>
+    <name>fluxtion :: ext :: streaming-api</name>
     <packaging>jar</packaging>
     
     <dependencies>
         <dependency>
             <groupId>com.fluxtion</groupId>
-            <artifactId>generator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>generator</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-declarative-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.vidageek</groupId>
-            <artifactId>mirror</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>compiler</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
+            <artifactId>fluxtion-api</artifactId>
         </dependency>
     </dependencies>
     <properties>

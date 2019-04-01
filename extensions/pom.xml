@@ -24,7 +24,7 @@ along with this program.  If not, see
     <name>fluxtion :: ext</name>
     
     <modules>
-        <module>declarative</module>
+        <module>streaming</module>
         <module>fu-text</module>
     </modules>
     

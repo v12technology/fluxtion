@@ -141,12 +141,12 @@ along with this program.  If not, see
             <!--declarative fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-declarative-api</artifactId>
+                <artifactId>fluxtion-streaming-api</artifactId>
                 <version>1.7.3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-declarative-builder</artifactId>
+                <artifactId>fluxtion-streaming-builder</artifactId>
                 <version>1.7.3-SNAPSHOT</version>
             </dependency>
             <!--declarative-extended fluxtion--> 

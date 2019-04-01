@@ -13,10 +13,10 @@ obtained from V12 Technology Limited.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.extension</groupId>
-    <artifactId>declarative-pom</artifactId>
+    <artifactId>streaming-pom</artifactId>
     <version>1.7.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>fluxtion :: ext :: declarative</name>
+    <name>fluxtion :: ext :: streaming</name>
     <modules>
         <module>api</module>
         <module>builder</module>
