@@ -27,8 +27,8 @@ along with this program.  If not, see
     </parent>
 
     <groupId>com.fluxtion.extension</groupId>
-    <artifactId>fluxtion-fu-text-api</artifactId>
-    <name>fluxtion :: ext :: fu-text-api</name>
+    <artifactId>fluxtion-text-api</artifactId>
+    <name>fluxtion :: ext :: text-api</name>
     <packaging>jar</packaging>
     
     <dependencies>

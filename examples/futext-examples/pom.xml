@@ -10,10 +10,10 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
-    <artifactId>documentation_futext_examples</artifactId>
+    <artifactId>documentation_text_examples</artifactId>
     <version>1.7.3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>fluxtion :: examples :: futtext</name>
+    <name>fluxtion :: examples :: text</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -75,12 +75,12 @@
     <dependencies>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-fu-text-api</artifactId>
+            <artifactId>fluxtion-text-api</artifactId>
             <version>1.7.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-fu-text-builder</artifactId>
+            <artifactId>fluxtion-text-builder</artifactId>
             <scope>provided</scope>
             <version>1.7.3-SNAPSHOT</version>
         </dependency>

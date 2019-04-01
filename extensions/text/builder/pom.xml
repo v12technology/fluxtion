@@ -32,8 +32,8 @@ along with this program.  If not, see
     </properties>
 
     <groupId>com.fluxtion.extension</groupId>
-    <artifactId>fluxtion-fu-text-builder</artifactId>
-    <name>fluxtion :: ext :: fu-text-builder</name>
+    <artifactId>fluxtion-text-builder</artifactId>
+    <name>fluxtion :: ext :: text-builder</name>
     <packaging>jar</packaging>
     
     
@@ -87,7 +87,7 @@ along with this program.  If not, see
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-fu-text-api</artifactId>
+            <artifactId>fluxtion-text-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
