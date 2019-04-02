@@ -23,7 +23,8 @@ import com.fluxtion.generator.targets.JavaGenHelper;
 import com.google.auto.service.AutoService;
 
 /**
- * A Service that implements node naming strategy for EventHandler nodes
+ * A Service that implements node naming strategy for EventHandler nodes, see
+ * {@link NodeNameProducer}
  *
  * @author V12 Technology Ltd.
  */

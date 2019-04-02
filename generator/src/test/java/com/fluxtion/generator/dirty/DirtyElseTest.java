@@ -34,7 +34,7 @@ public class DirtyElseTest extends BaseSepInprocessTest {
     @Test
     public void testAudit() {
 //        com.fluxtion.api.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
-        fixedPkg = true;
+//        fixedPkg = true;
         
         sep((c) -> {
             GreaterThan gt_10 = c.addNode(new GreaterThan(10));

@@ -18,7 +18,6 @@ package com.fluxtion.ext.streaming.builder.util;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.EventWrapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -41,7 +40,7 @@ public class ArraySourceInfo {
         this.id = "sourceUpdated_" + type + "_" + GenerationContext.nextId();
         this.cast = cast;
         getter = getMethod.getName();
-        if (EventWrapper.class.isAssignableFrom(clazz) || Wrapper.class.isAssignableFrom(clazz)) {
+        if ( Wrapper.class.isAssignableFrom(clazz)) {
             getter = "event()." + getMethod.getName();
         }
         sourceInstances = new ArrayList();

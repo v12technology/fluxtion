@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * {@inheritDoc}
  */
-public final class ReusableEventHandler<T extends Event> implements FilteredEventHandler<T>, EventWrapper<T> {
+public final class ReusableEventHandler<T extends Event> implements FilteredEventHandler<T>, Wrapper<T> {
 
     private final int filterId;
     private final Class<T> eventClass;
