@@ -1,7 +1,7 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.streaming.api.EventWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.builder.event.EventSelect;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.not;
@@ -139,7 +139,7 @@ public class BooleanOperatorTest extends BaseSepTest {
     public static class Builder extends SEPConfig {
 
         public Builder() throws Exception {
-            EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
+            Wrapper<MyData> selectMyData = EventSelect.select(MyData.class);
             Wrapper<MyData> test = selectMyData.filter(MyData::getIntVal, gt(200));
             Test not = not(test);
             addPublicNode(new TestResultListener(not), "results");
@@ -150,7 +150,7 @@ public class BooleanOperatorTest extends BaseSepTest {
     public static class BuilderAnd extends SEPConfig {
 
         public BuilderAnd() throws Exception {
-            EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
+            Wrapper<MyData> selectMyData = EventSelect.select(MyData.class);
             Wrapper<MyData> test_200 = selectMyData.filter(MyData::getIntVal, gt(200));
             Wrapper<MyData> test_500 = selectMyData.filter(MyData::getIntVal, gt(500));
             Wrapper<MyData> test_1000 = selectMyData.filter(MyData::getIntVal, gt(1000));

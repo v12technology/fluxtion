@@ -19,7 +19,7 @@ package com.fluxtion.ext.streaming.builder.event;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.EventWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
@@ -41,60 +41,60 @@ public interface EventSelect {
 
     static final String TEMPLATE = Templates.PACKAGE + "/EventSelectTemplate.vsl";
 
-    public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz) {
-        EventWrapper<T> handler = new ReusableEventHandler(eventClazz);
+    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz) {
+        Wrapper<T> handler = new ReusableEventHandler(eventClazz);
         return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
     }
 
-    public static <T extends Event> EventWrapper<T> selectOLD(Class<T> eventClazz) {
+    public static <T extends Event> Wrapper<T> selectOLD(Class<T> eventClazz) {
         return build(eventClazz, null, null);
     }
 
-    public static <T extends Event> EventWrapper<T>[] select(Class<T> eventClazz, int... filterId) {
-        EventWrapper[] result = new EventWrapper[filterId.length];
+    public static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, int... filterId) {
+        Wrapper[] result = new Wrapper[filterId.length];
         for (int i = 0; i < filterId.length; i++) {
             result[i] = select(eventClazz, filterId[i]);
         }
         return result;
     }
 
-    public static <T extends Event> EventWrapper<T>[] select(Class<T> eventClazz, String... filterId) {
-        EventWrapper[] result = new EventWrapper[filterId.length];
+    public static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, String... filterId) {
+        Wrapper[] result = new Wrapper[filterId.length];
         for (int i = 0; i < filterId.length; i++) {
             result[i] = select(eventClazz, filterId[i]);
         }
         return result;
     }
 
-    public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz, String filterId) {
+    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz, String filterId) {
         return build(eventClazz, filterId, "String");
     }
 
-    public static <T extends Event> EventWrapper<T> selectOld(Class<T> eventClazz, int filterId) {
+    public static <T extends Event> Wrapper<T> selectOld(Class<T> eventClazz, int filterId) {
         return build(eventClazz, "" + filterId, "int");
     }
     
     
-    public static <T extends Event> EventWrapper<T> select(Class<T> eventClazz, int filterId) {
-        EventWrapper<T> handler = new ReusableEventHandler(filterId, eventClazz);
+    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz, int filterId) {
+        Wrapper<T> handler = new ReusableEventHandler(filterId, eventClazz);
         return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
     } 
 
-    static <T extends Event> EventWrapper<T> build(Class<T> eventClazz, String filterId, String filteringType) {
+    static <T extends Event> Wrapper<T> build(Class<T> eventClazz, String filterId, String filteringType) {
         String classKey = eventClazz.getSimpleName() + filteringType;
         String instanceKey = classKey + filterId;
 
-        Map<String, EventWrapper<T>> handlerInstanceMap = GenerationContext.SINGLETON.getCache(EventSelect.class);
+        Map<String, Wrapper<T>> handlerInstanceMap = GenerationContext.SINGLETON.getCache(EventSelect.class);
 
-        EventWrapper<T> handler = handlerInstanceMap.computeIfAbsent(instanceKey, (k) -> {
+        Wrapper<T> handler = handlerInstanceMap.computeIfAbsent(instanceKey, (k) -> {
             try {
                 boolean isStringFilter = filteringType != null && filteringType.equalsIgnoreCase("String");
-                Map<String, Class<EventWrapper<T>>> handlerMap = GenerationContext.SINGLETON.getCache(EventSelect.class);
-                Class<EventWrapper<T>> eventHandler = handlerMap.computeIfAbsent(classKey, (t) -> {
+                Map<String, Class<Wrapper<T>>> handlerMap = GenerationContext.SINGLETON.getCache(EventSelect.class);
+                Class<Wrapper<T>> eventHandler = handlerMap.computeIfAbsent(classKey, (t) -> {
                     try {
                         VelocityContext ctx = new VelocityContext();
                         String genClassName = eventClazz.getSimpleName() + "Handler";
-                        ImportMap importMap = ImportMap.newMap(EventHandler.class, EventWrapper.class, eventClazz);
+                        ImportMap importMap = ImportMap.newMap(EventHandler.class, Wrapper.class, eventClazz);
                         if (isStringFilter) {
                             genClassName += "StringFilter";
                             importMap.addImport(FilterId.class);
@@ -108,13 +108,13 @@ public interface EventSelect {
                         ctx.put(filter.name(), (isStringFilter ? "\"" + filterId + "\"" : filterId));
                         ctx.put(filterType.name(), filteringType);
                         ctx.put(imports.name(), importMap.asString());
-                        Class<EventWrapper<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
+                        Class<Wrapper<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
                         return aggClass;
                     } catch (Exception ex) {
                         throw new RuntimeException("Cannot generate event handler class", ex);
                     }
                 });
-                EventWrapper<T> eventHandlerTmp = eventHandler.newInstance();
+                Wrapper<T> eventHandlerTmp = eventHandler.newInstance();
                 //set filter value
                 if (isStringFilter) {
                     eventHandlerTmp.getClass().getField("filter").set(eventHandlerTmp, filterId);

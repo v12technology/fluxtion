@@ -14,9 +14,9 @@ package com.fluxtion.ext.declarative.builder.log;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.streaming.api.EventWrapper;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
@@ -64,7 +64,7 @@ public class ConsoleLogTest extends BaseSepTest{
     public static class LogBuilder1 extends SEPConfig{
 
         public LogBuilder1() {
-            EventWrapper<DataEvent> dataEventSelect = select(DataEvent.class);
+            Wrapper<DataEvent> dataEventSelect = select(DataEvent.class);
             MsgBuilder logger = LogBuilder.Log("DataEvent data:{} received {} ....{}"
                     , dataEventSelect, DataEvent::getValue, DataEvent::getValue, DataEvent::getValue);
             logger.name = "fluxtion.test";

@@ -17,8 +17,6 @@
 package com.fluxtion.ext.streaming.builder.util;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.EventWrapper;
-import com.fluxtion.api.event.Event;
 import java.lang.reflect.Method;
 import javax.lang.model.type.TypeKind;
 
@@ -156,15 +154,15 @@ public class FunctionInfo {
         count++;
     }
 
-    public <S extends Event> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, EventWrapper<S> handler, boolean isCast) {
-        String eventClass = handler.eventClass().getCanonicalName();
-        if (importMap != null) {
-            eventClass = importMap.addImport(handler.eventClass());
-        }
-        paramString += sep + cast(isCast) + "((" + eventClass + ")" + sourceInfo.id + ".event())." + sourceMethod.getName() + "()";
-        sep = ", ";
-        count++;
-    }
+//    public <S extends Event> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, EventWrapper<S> handler, boolean isCast) {
+//        String eventClass = handler.eventClass().getCanonicalName();
+//        if (importMap != null) {
+//            eventClass = importMap.addImport(handler.eventClass());
+//        }
+//        paramString += sep + cast(isCast) + "((" + eventClass + ")" + sourceInfo.id + ".event())." + sourceMethod.getName() + "()";
+//        sep = ", ";
+//        count++;
+//    }
 
     public <S> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, Wrapper<S> handler, boolean isCast) {
         String eventClass = handler.eventClass().getCanonicalName();

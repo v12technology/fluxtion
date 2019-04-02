@@ -13,7 +13,7 @@ package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.streaming.api.EventWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.MergingWrapper;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -83,7 +83,7 @@ public class ConditionalTestTest extends BaseSepTest {
     
     public static class StringEqualsBuilder extends SEPConfig {
         {
-            EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
+            Wrapper<MyData> selectMyData = EventSelect.select(MyData.class);
             addPublicNode(new TestResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURJPY"))), "results_1");
             addPublicNode(new TestResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURUSD"))), "results_2");
             addPublicNode(new FilterResultListener(selectMyData.filter(MyData::getStringVal, StringPredicates.is("EURJPY"))), "filter_1");
@@ -238,7 +238,7 @@ public class ConditionalTestTest extends BaseSepTest {
     }
 
     @org.junit.Test
-    public void testNodeEventWrapperArrayNotifyOnce() throws Exception {
+    public void testNodeWrapperArrayNotifyOnce() throws Exception {
         EventHandler sep = buildAndInitSep(BuilderArray2.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
@@ -263,7 +263,7 @@ public class ConditionalTestTest extends BaseSepTest {
     }
 
     @org.junit.Test
-    public void testNodeEventWrapperArrayNotifyAlways() throws Exception {
+    public void testNodeWrapperArrayNotifyAlways() throws Exception {
         EventHandler sep = buildAndInitSep(BuilderArray3.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
@@ -352,7 +352,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class Builder extends SEPConfig {
 
         public Builder() throws Exception {
-            EventWrapper<MyData> selectMyData = EventSelect.select(MyData.class);
+            Wrapper<MyData> selectMyData = EventSelect.select(MyData.class);
             Object test = selectMyData.filter(MyData::getIntVal, gt(200));
             addPublicNode(new TestResultListener(test), "results");
         }
@@ -361,7 +361,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class Builder2 extends SEPConfig {
 
         public Builder2() throws Exception {
-            EventWrapper<MyData> selectMyData = select(MyData.class);
+            Wrapper<MyData> selectMyData = select(MyData.class);
             Object test = selectMyData.filter(MyData::getIntVal, gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
@@ -428,7 +428,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class BuilderArray2 extends SEPConfig {
 
         public BuilderArray2() throws Exception {
-            EventWrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");
+            Wrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");
             Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(true);  
             addPublicNode(new FilterResultListener(filter), "results");
         }
@@ -437,7 +437,7 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class BuilderArray3 extends SEPConfig {
 
         public BuilderArray3() throws Exception {
-            EventWrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");;
+            Wrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");;
             Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(false); 
             addPublicNode(new FilterResultListener(filter), "results");
         }
