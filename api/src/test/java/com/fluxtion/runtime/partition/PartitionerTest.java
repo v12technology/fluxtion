@@ -39,6 +39,38 @@ public class PartitionerTest {
     }
 
     @Test
+    public void singleKeyFilter() {
+        System.out.println("single filter");
+        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        partitioner.keyPartitioner(PartitionerTest::keyGen);
+        //
+        MyEvent monday = new MyEvent("monday");
+        MyEvent tuesday = new MyEvent("tuesday");
+        MyEvent saturday = new MyEvent("saturday");
+        //
+        partitioner.onEvent(monday);
+        partitioner.onEvent(tuesday);
+        partitioner.onEvent(tuesday);
+        partitioner.onEvent(monday);
+        assertThat(MyHandler.instanceCount, is(1));
+        assertThat(MyHandler.invokeCount, is(4));
+
+        partitioner.onEvent(new DummyEvent());
+        assertThat(MyHandler.instanceCount, is(1));
+        assertThat(MyHandler.invokeCount, is(4));
+
+        partitioner.onEvent(saturday);
+        assertThat(MyHandler.instanceCount, is(2));
+        assertThat(MyHandler.invokeCount, is(5));
+
+        tuesday.setMonth("december");
+        partitioner.onEvent(tuesday);
+        assertThat(MyHandler.instanceCount, is(2));
+        assertThat(MyHandler.invokeCount, is(7));
+
+    }
+
+    @Test
     public void singleFilter() {
         System.out.println("single filter");
         Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
@@ -109,12 +141,11 @@ public class PartitionerTest {
         assertThat(MyHandler.dayMonthCounts.get(monday_march.toString()), is(4));
         //
         assertThat(MyHandler.dayCounts.get(monday.getDay()), is(6));
-        
 
     }
-    
+
     @Test
-    public void testInitialiser(){
+    public void testInitialiser() {
         System.out.println("testInitialiser");
         LongAdder adder = new LongAdder();
         Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new, (e) -> {
@@ -137,7 +168,21 @@ public class PartitionerTest {
         partitioner.onEvent(monday_march);
         //
         assertThat(adder.intValue(), is(5));
-        
+
+    }
+
+    public static CharSequence keyGen(Event event) {
+        if (event instanceof MyEvent) {
+            MyEvent myEvent = (MyEvent) event;
+            if (myEvent.day.equalsIgnoreCase("saturday")) {
+                return "SAT";
+            }
+            if (myEvent.month.equalsIgnoreCase("december")) {
+                return "*";
+            }
+            return "NOT SAT";
+        }
+        return null;
     }
 
     public static class MyHandler implements EventHandler {

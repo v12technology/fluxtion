@@ -21,11 +21,13 @@ import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -39,6 +41,10 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
 
     private HashMap<Class, SerializableFunction> class2Function;
     private HashMap<Class, MultiKeyGenerator> class2MultiFunction;
+    private final ByteBuffer buffer;
+    private final byte[] array;
+    private static final int DEFAULT_SIZE = 64;
+    private List<Function> charKeyedHandlers;
     private HashMap<Object, EventHandler> handlerMap;
     private EventHandler[] handlerArray;
     private BatchHandler[] batchHandArray;
@@ -52,12 +58,18 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
         handlerMap = new HashMap<>();
         handlerArray = new EventHandler[0];
         batchHandArray = new BatchHandler[0];
+        charKeyedHandlers = new ArrayList<>();
+        array = new byte[DEFAULT_SIZE];
+        buffer = ByteBuffer.wrap(array);
         this.initialiser = initialiser;
-
     }
 
     public Partitioner(Supplier<E> factory) {
         this(factory, null);
+    }
+
+    public < K extends CharSequence> void keyPartitioner(Function<Event, K> partitionKeyGen) {
+        charKeyedHandlers.add(partitionKeyGen);
     }
 
     public <s, t> void partition(SerializableFunction<s, t> supplier) {
@@ -75,7 +87,8 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
     public void onEvent(Event e) {
         SerializableFunction f = class2Function.get(e.getClass());
         MultiKeyGenerator multiF = class2MultiFunction.get(e.getClass());
-        boolean filtered = (f != null | multiF != null);
+        boolean keyed = charsequenceKeyProcess(e);
+        boolean filtered = (f != null | multiF != null | keyed);
         if (f != null) {
             EventHandler handler = handlerMap.computeIfAbsent(f.apply(e), (t) -> {
                 return initialise();
@@ -94,7 +107,37 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
                 pushEvent(eventHandler, e);
             }
         }
+    }
 
+    private boolean charsequenceKeyProcess(Event e) {
+        boolean matched = false;
+        for (int i = 0; i < charKeyedHandlers.size(); i++) {
+            Function keyGen = charKeyedHandlers.get(i);
+            CharSequence key = (CharSequence) keyGen.apply(e);
+            if (key != null && key.length() == 1 && key.charAt(0) == '*') {
+                return matched;
+            }
+            matched = true;
+            if (key != null) {
+                buffer.clear();
+                for (int j = 0; j < key.length(); j++) {
+                    buffer.put((byte) key.charAt(j));
+                }
+                buffer.flip();
+                EventHandler ret = handlerMap.get(buffer);
+                if (ret != null) {
+                    //invoke
+                    pushEvent(ret, e);
+                } else {
+                    //initialise, add and invoke
+                    ret = initialise();
+                    handlerMap.put(ByteBuffer.wrap(Arrays.copyOf(array, buffer.limit())), ret);
+                    pushEvent(ret, e);
+                }
+            } else {
+            }
+        }
+        return matched;
     }
 
     private void pushEvent(EventHandler handler, Event e) {
