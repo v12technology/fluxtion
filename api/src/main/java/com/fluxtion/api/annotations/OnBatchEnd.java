@@ -16,13 +16,17 @@
  */
 package com.fluxtion.api.annotations;
 
+import com.fluxtion.api.lifecycle.BatchHandler;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method to be invoked by the SEP when a batch ends.
+ * Marks a method to bind to {@link BatchHandler#batchEnd() } method.
+ * 
+ * @see BatchHandler
+ * 
  * @author V12 Technology Ltd.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -23,10 +23,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a field as providing configuration for an injected instance. The value
- * of the field is read and passed through to the NodeFactory. The variable
- * value is read
- * once at construction time.
+ * Marks a field as providing configuration for an injected instance. The
+ * variable value is read at construction time creating a key/value pair.
+ * Key/value pairs are added to a map which is supplied to a Nodefactory. A
+ * NodeFactory uses the configuration map to build an injected instance.
+ *
+ * @See Inject
  *
  * @author Greg Higgins
  *

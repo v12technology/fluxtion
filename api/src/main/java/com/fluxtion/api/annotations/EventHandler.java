@@ -22,19 +22,34 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as an entry point to an execution path. Fluxtion reads the set
+ * Marks a method as an entry point to an execution path contained with the
+ * execution graph. Fluxtion reads the set
  * of entry points and constructs an execution graph at build time. A valid
  * event handler method accepts a single parameter of type
- * {@link com.fluxtion.api.event.Event} and optionally returns a boolean value.
- * The boolean value indicates if a change has occurred. If conditional
+ * {@link com.fluxtion.api.event.Event} and optionally returns a boolean value
+ * or void.
+ * The boolean value indicates if a change has occurred during the processing of
+ * the event.
+ * <p>
+ *
+ * If conditional
  * processing is enabled for the SEP, the following
  * strategy is employed for interpreting notification and branching
  * execution:
  * <ul>
- * <li>return = true : indicates a change has occurred at this node
- * <li>return = false : indicates a change has NOT occurred at this node
+ * <li>return = true : indicates a change has occurred processing the event
+ * <li>return = false : indicates a change has NOT occurred processing the event
+ * <li>return = void : assumes a change has occurred processing the event
  * </ul>
- * 
+ * <p>
+ * Conditional branching execution behaves as follows:
+ * <ul>
+ * <li>if a change is indicated the execution will propagate along the execution
+ * path.
+ * <li>No change notification will remove this node from the current execution
+ * path.
+ * </ul>
+ * <p>
  * An EventHandler can optionally provide a filter value and match strategy to
  * specialise the events that are accepted for processing, see {@link #value() }
  * .<p>
@@ -52,8 +67,8 @@ public @interface EventHandler {
     /**
      * The match strategy this event handler will employ when filtering incoming
      * events. The default filtering behaviour of the EventHandler is to pass
-     * events through where the filter id matched the filter id of the event
-     * handler..
+     * through events where the filter id matches the filter id of the event
+     * handler.
      *
      * If no filter is supplied then the EventHandler matches against all
      * filters, and will be notified of any incoming event.
@@ -109,7 +124,12 @@ public @interface EventHandler {
 
     /**
      * Determines whether the SEP will invoke dependents as part of the event
-     * call chain.
+     * call chain. This has the effect of overriding the return value from the event handler
+     * method in the user class with the following effect:
+     * <ul>
+     * <li>true - use the boolean return value from event handler to determine event propagation.
+     * <li>false - permanently remove the event handler method from the execution path
+     * </ul>
      *
      * @return invoke dependents on update
      */

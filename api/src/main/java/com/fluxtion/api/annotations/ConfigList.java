@@ -22,7 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A holder for an array of {@link Config} variables.
+ * A holder for an array of {@link Config} variables. The collection of {@link Config}
+ * items populates a map. The configuration map is used by a Nodefactory to build an 
+ * injected instance.
+ * 
+ * @see Config
+ * @see Inject
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)

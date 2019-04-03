@@ -24,10 +24,11 @@ import java.lang.annotation.Target;
 
 /**
  *
- * A String based key value pair supplying static configuration information into an
- * Injected instance. The key/value pair is injected into a map, the populated
- * map is
- * provided into a factory method that builds a class of this type.
+ * A static String based key value pair configuration item. The key/value pair
+ * is added to a map which is supplied to a Nodefactory. A NodeFactory uses the
+ * configuration map to build an injected instance. 
+ *
+ * @see Inject
  *
  * @author Greg Higgins
  *

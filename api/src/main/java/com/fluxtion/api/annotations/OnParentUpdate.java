@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  *
  * Identifying which parent has changed can be useful in applications. The
  * marked method(s) will be invoked before any {@link OnEvent} methods in this
- * node are invoked.
+ * node are invoked.<p>
  *
  * Optionally a {@link #value()} specifies the field name of the
  * parent to monitor. If multiple parents exist within this class of the same
