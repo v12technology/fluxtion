@@ -25,7 +25,7 @@ import com.fluxtion.api.event.Event;
  * <pre>
  * 
  *  {@literal@}EventHandler
- *  public void someMethod(GenericEvent<MyType> event){
+ *  public void someMethod(GenericEvent{@literal<}MyType{@literal>} event){
  *     //...
  *  }
  * </pre>

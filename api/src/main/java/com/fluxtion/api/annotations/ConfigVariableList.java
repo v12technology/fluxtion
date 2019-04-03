@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * A holder of an array of {@link ConfigVariable}'s.
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)

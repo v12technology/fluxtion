@@ -24,16 +24,31 @@ import java.lang.annotation.Target;
 
 /**
  *
- * a simple String based key value pair for configuring an
- * Injected instance.
- * 
+ * A String based key value pair supplying static configuration information into an
+ * Injected instance. The key/value pair is injected into a map, the populated
+ * map is
+ * provided into a factory method that builds a class of this type.
+ *
  * @author Greg Higgins
- * 
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Repeatable(value = ConfigList.class)
 public @interface Config {
-    String  value(); 
-    String  key(); 
+
+    /**
+     * The configuration value.
+     *
+     * @return The configuration value
+     */
+    String value();
+
+    /**
+     * The key the value will be assigned to in the configuration map.
+     *
+     * @return the configuration key
+     */
+    String key();
+
 }

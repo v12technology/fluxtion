@@ -25,11 +25,17 @@ import java.lang.annotation.Target;
  * Marks a method to be called in a class when a parent node has processed an
  * event. This gives more granular notification than OnEvent, by identifying
  * which parents have updated. The marked method has a single argument, the type
- * of the parent. Optionally a value can set which is the field name of the
- * parent monitored. Multiple methods can be marked for each parent.
- * 
+ * of the parent. The type of the argument in the monitoring method is used to
+ * resolve the parent to monitor<p>
+ *
  * Identifying which parent has changed can be useful in applications. The
- * marked method(s) will be invoked before any OnEvent methods in this node.
+ * marked method(s) will be invoked before any {@link OnEvent} methods in this
+ * node are invoked.
+ *
+ * Optionally a {@link #value()} specifies the field name of the
+ * parent to monitor. If multiple parents exist within this class of the same
+ * type, type resolution is non-deterministic, specifying the value predictably
+ * determines which parent is monitored.
  *
  * @author Greg Higgins
  */
@@ -37,11 +43,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface OnParentUpdate {
 
+    /**
+     * The variable name of the parent reference to bind listen notifications
+     * to.
+     *
+     * @return The variable name of the parent to monitor
+     */
     String value() default "";
+
     /**
      * determines whether guards are present on the marked method. Setting
      * the value to false will ensure the callback is always called regardless
-     * of the dirty state of the parent node. 
+     * of the dirty state of the parent node.
      */
     boolean guarded() default true;
 }

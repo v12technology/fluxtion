@@ -17,11 +17,19 @@
 package com.fluxtion.api.annotations;
 
 /**
+ * Filter match strategy for an {@link EventHandler}.
+ *
+ * Available strategies are:
+ * <ul>
+ * <li> {@link FilterType#matched} Only matching filters allow event
+ * propagation
+ * <li> {@link FilterType#unmatched} Invoked when no filter match is found,
+ * acts like a default branch in a case statement.
+ * </ul>
  *
  * @author Greg Higgins
  */
 public enum FilterType {
     matched,
-    unmatched,
-    ;
+    unmatched,;
 }

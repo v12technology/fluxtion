@@ -17,14 +17,15 @@
 package com.fluxtion.api.lifecycle;
 
 /**
- * An invoker inteface used in the generated sep to invoke a call tree. Can be 
- * useful when switch statements become too big and a map dispatcher is used to 
+ * An invoker inteface used in the generated sep to invoke a call tree. Can be
+ * useful when switch statements become too big and a map dispatcher is used to
  * invoke the specific call tree.
- * 
+ *
  * RELOCATE - not required here
- * 
+ *
  * @author Greg Higgins
  */
 public interface FilteredHandlerInvoker {
-		public void invoke( Object event );
+
+    public void invoke(Object event);
 }

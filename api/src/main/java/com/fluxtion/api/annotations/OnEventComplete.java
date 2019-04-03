@@ -20,15 +20,17 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
- * This is the inverse of OnEvent behaviour. Any methods that are marked with
- * this interface will be called in the reverse class order the OnEvent methods
- * are invoked. Only invoked if the node is on the execution path.
- * 
+ * This is the inverse of {@link OnEvent} behaviour. Any methods that are marked
+ * with this interface will be called in the reverse class order the OnEvent
+ * methods are invoked. The OnEventComplete methods are called after all
+ * {@link OnEvent} and {@link EventHandler} have completed processing.
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface OnEventComplete {
-    
+
 }

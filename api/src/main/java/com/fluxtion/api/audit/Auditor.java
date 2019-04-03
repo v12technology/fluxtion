@@ -29,6 +29,7 @@ import com.fluxtion.api.lifecycle.Lifecycle;
  * with, such as:
  * <ul>
  * <li> Generic event logger
+ * <li> State persistence strategy
  * <li> A performance monitor
  * <li> A realtime property tracer
  * <li> Commit/rollback functionality

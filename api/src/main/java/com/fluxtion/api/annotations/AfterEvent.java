@@ -22,15 +22,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method to be called a class when all event processing has completed.
+ * Marks a method to be invoked after all event processing methods
+ * {@link EventHandler} and {@link OnEvnt} have completed.
  * This method will be called after all dependents have finished processing any
  * AfterEvent methods, meaning it is safe to reset any state in this node
- * ready for the next event if required.
- * 
+ * ready for the next event processing cycle.
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AfterEvent {
-    
+
 }

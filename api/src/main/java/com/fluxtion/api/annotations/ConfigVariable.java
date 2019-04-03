@@ -24,7 +24,9 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a field as providing configuration for an injected instance. The value
- * of the field is read and passed through to the NodeFactory.
+ * of the field is read and passed through to the NodeFactory. The variable
+ * value is read
+ * once at construction time.
  *
  * @author Greg Higgins
  *
@@ -34,7 +36,17 @@ import java.lang.annotation.Target;
 @Repeatable(ConfigVariableList.class)
 public @interface ConfigVariable {
 
+    /**
+     * The field to read for a configuration value.
+     *
+     * @return The field to read
+     */
     String field() default "";
 
+    /**
+     * The key the value will be assigned to in the configuration map.
+     *
+     * @return the configuration key
+     */
     String key();
 }

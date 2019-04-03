@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * An initialisation method that is invoked by the SEP before event processing.
- * Allows an instance to set state before any events are processed.
+ * Allows an instance to set state before any events are processed. A valid
+ * initialise method accepts no arguments.
  *
  * @author V12 Technology Ltd.
  */

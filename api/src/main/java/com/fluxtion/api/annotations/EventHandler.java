@@ -21,23 +21,51 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks a method as an entry point to an execution path. Fluxtion reads the set
+ * of entry points and constructs an execution graph at build time. A valid
+ * event handler method accepts a single parameter of type
+ * {@link com.fluxtion.api.event.Event} and optionally returns a boolean value.
+ * The boolean value indicates if a change has occurred. If conditional
+ * processing is enabled for the SEP, the following
+ * strategy is employed for interpreting notification and branching
+ * execution:
+ * <ul>
+ * <li>return = true : indicates a change has occurred at this node
+ * <li>return = false : indicates a change has NOT occurred at this node
+ * </ul>
+ * 
+ * An EventHandler can optionally provide a filter value and match strategy to
+ * specialise the events that are accepted for processing, see {@link #value() }
+ * .<p>
+ *
+ * A node must be in the execution graph to be included in the invocation chain.
+ * The Fluxtion builder api provides methods to register an instance in the
+ * event processor.
+ *
+ * @author V12 Technology Ltd.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
     /**
-     * the type of match against the filter this event handler will perform A
-     * matched will filter will only process events that match the associated
-     * filter Id, this is the default behaviour of the EventHandler.
+     * The match strategy this event handler will employ when filtering incoming
+     * events. The default filtering behaviour of the EventHandler is to pass
+     * events through where the filter id matched the filter id of the event
+     * handler..
      *
      * If no filter is supplied then the EventHandler matches against all
      * filters, and will be notified of any incoming event.
      *
-     * If filterType is set to
-     * {@link com.fluxtion.api.annotations.FilterType#unmatched unmatched} then
-     * the handler will be notified if there are no filters in the system that
-     * match against the event, this is the same behaviour as the default in a
-     * case statement if each matching case calls break.
+     * Available strategies are:
+     * <ul>
+     * <li> {@link FilterType#matched} Only matching filters allow event
+     * propagation
+     * <li> {@link FilterType#unmatched} Invoked when no filter match is found,
+     * acts as a default case.
+     * </ul>
+     *
      *
      * @return FilterType matching strategy
      */

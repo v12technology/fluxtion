@@ -22,7 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a reference that is to point to a node created by a NodeFactory
+ * Marks a reference as an injection point for an instance. An injected instance is created
+ * using a {@link NodeFactory}. If no NodeFactory is implemented for this type then a 
+ * zero argument constructor will be used to inject the reference.<p>
+ * 
+ * Injected references can be configured using {@link ConfigVariable} and {@link COnfig}
+ * annotations.
  * 
  * @author Greg Higgins
  */
