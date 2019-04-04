@@ -34,9 +34,7 @@ package com.fluxtion.api.lifecycle;
  * </ul>
  *
  * The batchPause callback is used to tell the static event processor more
- * messages are expected but have not been received yet. For example we may know
- * the size of a network batchPaquse allows the static event processor to take
- * optional actions if waiting for the batch to be completed.
+ * messages are expected but have not been received yet. 
  *
  * @author Greg Higgins
  */
