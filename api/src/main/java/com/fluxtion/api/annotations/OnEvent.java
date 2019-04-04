@@ -22,10 +22,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a member of an execution path. This method will be invoked
- * invoked in topological order on the execution path, i.e. after all its
- * dependents have processed the event.<p>
+ * Marks a handler method as a member of an execution path on the event in phase.
+ * This method will be invoked invoked in topological order during the event in phase, i.e. after all its
+ * dependencies on the execution path have processed the event.<p>
  *
+ * A SEP processes event handling methods in two phases:
+ * <ul>
+ * <li>Event in phase - processes handler methods in topological order
+ * <li>After event phase - processes handler methods in reverse topological
+ * order
+ * </ul>
+ *
+ * <h2>Condtional processing</h2>
  * A valid OnEvent accepts no arguments and optionally returns a boolean
  * indicating a change
  * has occurred. If conditional processing is enabled for the SEP, the following
@@ -35,8 +43,16 @@ import java.lang.annotation.Target;
  * <li>return = false : indicates a change has NOT occurred at this node
  * </ul>
  *
+ * <h2>Dirty strategy</h2>
  * The {@link #dirty() } method controls the propagation strategy for
- * conditional branching execution
+ * conditional branching execution.
+ * <ul>
+ * <li>dirty = true : invoked if any dependent returns true from their event
+ * handling method
+ * <li>dirty = false : invoked if any dependent returns false from their
+ * event handling method
+ * </ul>
+ * <p>
  *
  * A node must be in the execution graph to be included in the invocation chain.
  * The Fluxtion builder api provides methods to register an instance in the
@@ -61,7 +77,7 @@ public @interface OnEvent {
      * event handling method
      * </ul>
      *
-     * @return
+     * @return dirty monitoring strategy of dependencies
      */
     boolean dirty() default true;
 }

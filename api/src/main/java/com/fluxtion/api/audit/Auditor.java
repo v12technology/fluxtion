@@ -20,11 +20,23 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 
 /**
- * Auditor for a static event processor. User registers an implementation of
- * this interface with SEPConfig.addAuditor(auditor, String). A registered
- * Auditor receives lifecycle callbacks for registration of nodes and processing
- * of events, see javadoc below for details.<br>
+ * Audits operations of a static event processor. Register an implementation of
+ * this interface with SepConfig.addAuditor in the builder module at build time.
+ * A registered Auditor receives audit callbacks as the SEP executes. Auditing
+ * of node registration and processing of events are availble to the Auditor.
+ * The Fluxtion generator creates a SEP with calls to a registered inlined in
+ * the final SEP.
+ * <p>
  *
+ * The {@link #auditInvocations() } controls the granularity of audit
+ * information
+ * published to an Auditor. The boolean return has the following effect:
+ * <ul>
+ * <li>true - auditor receives all lifecycle callbacks
+ * <li>false - auditor receives all lifecycle callbacks except:
+ * {@link #nodeInvoked(Object, String, String, Object) }
+ * </ul>
+ * <p>
  * An Auditor can provide various meta functions for the SEP they are registered
  * with, such as:
  * <ul>

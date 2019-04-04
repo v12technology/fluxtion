@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method to bind to {@link BatchHandler#batchEnd() } method.
+ * Marks a method to bind to {@link BatchHandler#batchEnd() } phase.
  * 
  * @see BatchHandler
  * 

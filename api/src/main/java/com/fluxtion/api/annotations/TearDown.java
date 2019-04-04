@@ -26,7 +26,8 @@ import java.lang.annotation.Target;
  * Marks a method as bound to {@link Lifecycle#tearDown()  } phase. A valid
  * teardown method accepts no arguments.
  *
- * @see Lifecycle.
+ * @see Lifecycle
+ * 
  * @author V12 Technology Ltd.
  */
 @Retention(RetentionPolicy.RUNTIME)

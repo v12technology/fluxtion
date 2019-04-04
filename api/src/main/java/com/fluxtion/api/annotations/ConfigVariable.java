@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * Key/value pairs are added to a map which is supplied to a Nodefactory. A
  * NodeFactory uses the configuration map to build an injected instance.
  *
- * @See Inject
+ * @see  Inject
  *
  * @author Greg Higgins
  *

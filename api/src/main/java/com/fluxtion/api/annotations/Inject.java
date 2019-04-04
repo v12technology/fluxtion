@@ -23,11 +23,21 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a reference as an injection point for an instance. An injected instance is created
- * using a {@link NodeFactory}. If no NodeFactory is implemented for this type then a 
+ * using a NodeFactory, see Fluxion builder module. If no NodeFactory is implemented for this type then a 
  * zero argument constructor will be used to inject the reference.<p>
  * 
- * Injected references can be configured using {@link ConfigVariable} and {@link COnfig}
+ * Once an injected instance has been created it will be added to the SEP execution graph
+ * as if a user had added the node manually. The injected node will be inspected for 
+ * annotations and processed by the Fluxtion Static Event Compiler. New injected instances 
+ * are recursively inspected until no more injected instances are added to the execution
+ * graph. The recursive addition of injected instances allows arbitrarily complex execution
+ * graphs be created with a single {@literal @}Inject annotation.<p>
+ * 
+ * Injected references can be configured using {@link ConfigVariable} and {@link Config}
  * annotations.
+ * 
+ * @see Config
+ * @see ConfigVariable
  * 
  * @author Greg Higgins
  */

@@ -16,6 +16,7 @@
  */
 package com.fluxtion.api.annotations;
 
+import com.fluxtion.api.event.Event;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,15 +24,24 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as an entry point to an execution path contained with the
- * execution graph. Fluxtion reads the set
+ * execution graph. An event handler is invoked on the event in phase of
+ * execution processing. A SEP processes event handling methods in two phases:
+ * <ul>
+ * <li>Event in phase - processes handler methods in topological order
+ * <li>After event phase - processes handler methods in reverse topological
+ * order
+ * </ul>
+ * <p>
+ *
+ * Fluxtion reads the set
  * of entry points and constructs an execution graph at build time. A valid
  * event handler method accepts a single parameter of type
  * {@link com.fluxtion.api.event.Event} and optionally returns a boolean value
  * or void.
  * The boolean value indicates if a change has occurred during the processing of
  * the event.
- * <p>
  *
+ * <h2>Conditional processing</h2>
  * If conditional
  * processing is enabled for the SEP, the following
  * strategy is employed for interpreting notification and branching
@@ -42,6 +52,7 @@ import java.lang.annotation.Target;
  * <li>return = void : assumes a change has occurred processing the event
  * </ul>
  * <p>
+ * 
  * Conditional branching execution behaves as follows:
  * <ul>
  * <li>if a change is indicated the execution will propagate along the execution
@@ -49,9 +60,16 @@ import java.lang.annotation.Target;
  * <li>No change notification will remove this node from the current execution
  * path.
  * </ul>
- * <p>
+ *
+* <h2>Filtering</h2>
  * An EventHandler can optionally provide a filter value and match strategy to
- * specialise the events that are accepted for processing, see {@link #value() }
+ * specialise the events that are accepted for processing, see {@link #value()
+ * }. An
+ * {@link Event} can optionally specify a filter value {@link Event#filterString()
+ * }. The
+ * SEP will compare the filter values in the {@link Event} and the handler and
+ * propagate
+ * the Event conditional upon the {@link FilterType}.
  * .<p>
  *
  * A node must be in the execution graph to be included in the invocation chain.
@@ -124,11 +142,14 @@ public @interface EventHandler {
 
     /**
      * Determines whether the SEP will invoke dependents as part of the event
-     * call chain. This has the effect of overriding the return value from the event handler
+     * call chain. This has the effect of overriding the return value from the
+     * event handler
      * method in the user class with the following effect:
      * <ul>
-     * <li>true - use the boolean return value from event handler to determine event propagation.
-     * <li>false - permanently remove the event handler method from the execution path
+     * <li>true - use the boolean return value from event handler to determine
+     * event propagation.
+     * <li>false - permanently remove the event handler method from the
+     * execution path
      * </ul>
      *
      * @return invoke dependents on update
