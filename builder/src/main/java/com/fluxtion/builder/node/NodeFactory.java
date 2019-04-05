@@ -26,8 +26,8 @@ import java.util.ServiceLoader;
  * A factory for creating instances. The SEP will call this method to create
  * nodes.<p>
  *
- * Instance re-use. To ensure that node instances are re-used there are two
- * approaches:
+ * <h2>Instance re-use</h2>
+ * To ensure that node instances are re-used there are two approaches:
  * <ul>
  * <li>The factory caches the node, and returns the same instance for the same
  * configuration.
@@ -37,6 +37,7 @@ import java.util.ServiceLoader;
  * node if hashcode and equals match.
  * </ul>
  * <p>
+ * <h2>Registering factories</h2>
  * Fluxtion employs the {@link ServiceLoader} pattern to register user
  * implemented NodeFactories. Please read the java documentation describing the
  * meta-data a factory implementor must provide to register a factory using the
