@@ -31,9 +31,29 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * A simple event partitioner based on a single or multiple properties of an
- * event. User register a creation function for an EventHandler and an optional
- * initialiser that
+ * An EventHandler partitioner based upon a received event. A partitioner
+ * creates an instance of an {@link EventHandler} and dispatches events to that
+ * instance. Partitioning allows a separate memory context for an EventHandler,
+ * this can be useful when the structure of processing is repeated but the state
+ * is different for each instance.<p>
+ *
+ * For example monitoring the fuel level on a
+ * fleet of cars is the same processing for each car, but an individual car will
+ * have a unique fuel level. In this case the EventHandler can be
+ * partitioned on vehicle identification number.
+ * <p>
+ *
+ * The EventHandler instance will be re-used or a new one created
+ * when new {@link Event}'s are received. The {@link #partition()}
+ * methods provide functions that map keys from an incoming {@link Event}. the
+ * key is used manage
+ * EventHandler instances in an underlying map. If no key/value mapping is found
+ * then a new EventHandler is created and handles the incoming message.
+ * <p>
+ *
+ * New instances are created with s {@link Supplier} factory. Optionally an
+ * initialiser can be provided that can access the newly created
+ * EventHandler before any messages are processed.
  *
  * @author gregp
  */
@@ -51,6 +71,12 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
     private final Supplier<E> factory;
     private Consumer<E> initialiser;
 
+    /**
+     * Create a partitioner with a factory and initialiser function.
+     *
+     * @param factory factory creating instances of EventHandlers
+     * @param initialiser Initialisation function applied to new EventHandlers
+     */
     public Partitioner(Supplier<E> factory, Consumer<E> initialiser) {
         this.factory = factory;
         class2Function = new HashMap<>();
@@ -64,19 +90,56 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
         this.initialiser = initialiser;
     }
 
+    /**
+     *
+     * Create a partitioner with a factory.
+     *
+     * @param factory factory creating instances of EventHandlers
+     */
     public Partitioner(Supplier<E> factory) {
         this(factory, null);
     }
 
+    /**
+     * Register a partition key generator function that creates a
+     * {@link CharSequence} key from an incoming event. The key values from function
+     * are interpreted with the following logic:
+     * <ul>
+     * <li>null - no match and no dispatch
+     * <li>'*' - will dispatch to all EventHandlers i.e. a broadcast
+     * <li>[CharSrquence] - creates an EventHandler keyed with this CharSequence
+     * </ul>
+     *
+     * @param <K> Generated key
+     * @param partitionKeyGen key mapping function
+     */
     public < K extends CharSequence> void keyPartitioner(Function<Event, K> partitionKeyGen) {
         charKeyedHandlers.add(partitionKeyGen);
     }
 
+    /**
+     * Register a partition key generator function that creates keys from a
+     * property on an incoming event.
+     * an incoming Event
+     *
+     * @param <s> The incoming event
+     * @param <t> The key type
+     * @param supplier Key value supplier
+     */
     public <s, t> void partition(SerializableFunction<s, t> supplier) {
         Class clazz = supplier.getContainingClass();
         class2Function.put(clazz, supplier);
     }
 
+    /**
+     * Register a partition key generator function that creates keys from a
+     * set of properties on an incoming event.
+     * an incoming Event
+     *
+     * @param <s> The incoming event
+     * @param <t> The key type
+     * @param supplier Key value suppliers
+     */
     public <s, t> void partition(SerializableFunction<s, ?>... supplier) {
         Class clazz = supplier[0].getContainingClass();
         List<SerializableFunction> supplierList = Arrays.asList(supplier);
