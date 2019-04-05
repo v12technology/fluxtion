@@ -64,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import java.util.PriorityQueue;
 import org.reflections.ReflectionUtils;
 
@@ -794,6 +795,14 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                         Class<? extends Event> eventTypeClass = (Class<? extends Event>) method.getParameterTypes()[0];
                         exportGraph.addVertex(eventTypeClass);
                         exportGraph.addEdge(eventTypeClass, t);
+                    }
+                }
+                if(t instanceof FilteredEventHandler){
+                    FilteredEventHandler eh = (FilteredEventHandler)t;
+                    Class eventClass = eh.eventClass();
+                    if(eventClass!=null){
+                        exportGraph.addVertex(eventClass);
+                        exportGraph.addEdge(eventClass, t);
                     }
                 }
             });
