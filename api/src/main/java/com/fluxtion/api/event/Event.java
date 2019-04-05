@@ -16,12 +16,20 @@
  */
 package com.fluxtion.api.event;
 
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.FilteredEventHandler;
+
 /**
  * Event class that feeds into a Simple Event Processor(SEP). Users should
- * extend this class to define their own events.
+ * extend this class to define their own events.<p>
  *
- * To dispatch the events Fluxtion uses either a statically defined ID, where
- * the value of ID must be unique for the events in this SEP.
+ * <h2>Dispatch</h2>
+ *
+ * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(com.fluxtion.api.event.Event)
+ * } method.<p>
+ *
+ * To dispatch the events within the SEP Fluxtion uses either a statically
+ * defined ID, where the value of ID must be unique for the events in this SEP.
  * <pre>
  *     public static final int ID = 1;
  * </pre>
@@ -29,16 +37,25 @@ package com.fluxtion.api.event;
  * If no ID is defined then the SEP uses the class name to perform a dispatch,
  * generally this will be less efficient at runtime but is easier for the
  * developer at compile time. When class name is used, uniqueness is guaranteed
- * by the fully qualified class name in this case.
+ * by using the fully qualified class name.<p>
  *
  * The efficiency of dispatch depends upon the target platform, so for some
- * targets class name dispatch may be more efficient.
+ * targets class name dispatch may be more efficient.<p>
+ *
+ * <h2>Filtering</h2>
  *
  * An event can provide a filter field as either an int or a String, this allow
- * eventhandlers to filter the type of events they receive. The eventhandler
- * decides at compile time whether it will filter using Strings or integers.
+ * {@link FilteredEventHandler}'s or annotated event handler methods to filter
+ * the type of events they receive. The SEP will compare the filter values in
+ * the {@link Event} and the handler and propagate the Event conditional upon a
+ * valid match. 
  *
+ * 
+ * @see com.fluxtion.api.annotations.EventHandler
+ * @see EventHandler
+ * 
  * @author Greg Higgins
+ * 
  */
 public abstract class Event {
 
@@ -111,8 +128,8 @@ public abstract class Event {
     public final String filterString() {
         return filterString.toString();
     }
-    
-    public final CharSequence filterCharSequence(){
+
+    public final CharSequence filterCharSequence() {
         return filterString;
     }
 

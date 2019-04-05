@@ -23,11 +23,14 @@ import com.fluxtion.api.event.Event;
  * Processor (SEP), that is the root for processing events in a SEP. Events can
  * only be processed by a SEP if there is an EventHandler registered for that
  * specific type of event.
+ *
+ *
  * @see com.fluxtion.api.event.Event
- * 
+ *
  * @author Greg Higgins
- * 
- * @param <T> The type of {@link com.fluxtion.api.event.Event Event} processed by this handler
+ *
+ * @param <T> The type of {@link com.fluxtion.api.event.Event Event} processed
+ * by this handler
  */
 public interface EventHandler<T extends Event> {
 
@@ -51,17 +54,17 @@ public interface EventHandler<T extends Event> {
     /**
      * called when all nodes that depend upon this EventHadler have successfully
      * completed their processing.
-     * 
+     *
      */
     default void afterEvent() {
     }
-    
+
     /**
      * The class of the Event processed by this handler
-     * 
-     * @return Class of {@link com.fluxtion.api.event.Event Event} to process 
+     *
+     * @return Class of {@link com.fluxtion.api.event.Event Event} to process
      */
-    default Class<? extends Event> eventClass(){
+    default Class<? extends Event> eventClass() {
         return null;
     }
 

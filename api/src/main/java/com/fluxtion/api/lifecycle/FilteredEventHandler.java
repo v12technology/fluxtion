@@ -18,17 +18,23 @@ package com.fluxtion.api.lifecycle;
 
 import com.fluxtion.api.event.Event;
 
-
-
 /**
  * Extends the concept of EventHandler by adding a user defined filter id. Only
- * events that match the filterID and the event type will be processed by an 
+ * events that match the filterID and the event type will be processed by an
  * instance of the FilteredEventHandler.
- * 
+ *
+ * <h2>Filtering</h2>
+ * An EventHandler can optionally provide a filter value and to filter the
+ * events that are accepted for processing. An {@link Event} can optionally
+ * specify a filter value {@link Event#filterId()
+ * }. The SEP will compare the filter values in the {@link Event} and the
+ * handler and propagate the Event conditional upon the a match.
+ * .<p>
+ *
  * @author Greg Higgins
  */
 public interface FilteredEventHandler<T extends Event> extends EventHandler<T> {
-    
+
     int filterId();
-    
+
 }

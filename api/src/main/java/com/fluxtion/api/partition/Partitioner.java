@@ -53,7 +53,9 @@ import java.util.function.Supplier;
  *
  * New instances are created with s {@link Supplier} factory. Optionally an
  * initialiser can be provided that can access the newly created
- * EventHandler before any messages are processed.
+ * EventHandler before any messages are processed. Using the car/fuel analogy
+ * the initialiser function may set a reference to a global fuel monitor from
+ * each newly created car processor.
  *
  * @author gregp
  */

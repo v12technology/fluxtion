@@ -20,33 +20,41 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 
 /**
- * Audits operations of a static event processor. Register an implementation of
- * this interface with SepConfig.addAuditor in the builder module at build time.
- * A registered Auditor receives audit callbacks as the SEP executes. Auditing
- * of node registration and processing of events are availble to the Auditor.
- * The Fluxtion generator creates a SEP with calls to a registered inlined in
- * the final SEP.
+ * Audits runtime operations of a static event processor. An Auditor receives
+ * callback notifications as the user interacts with the SEP. The auditing
+ * notifications are:
+ * <ul>
+ * <li>node registrations during {@link Lifecycle#init() }
+ * <li>receipt of events
+ * <li>individual node invocations on the execution path.
+ * </ul>
  * <p>
  *
  * The {@link #auditInvocations() } controls the granularity of audit
- * information
- * published to an Auditor. The boolean return has the following effect:
+ * information published to an Auditor. The boolean return has the following
+ * effect:
  * <ul>
  * <li>true - auditor receives all lifecycle callbacks
  * <li>false - auditor receives all lifecycle callbacks except:
  * {@link #nodeInvoked(Object, String, String, Object) }
  * </ul>
  * <p>
+ *
  * An Auditor can provide various meta functions for the SEP they are registered
  * with, such as:
  * <ul>
  * <li> Generic event logger
- * <li> State persistence strategy
- * <li> A performance monitor
- * <li> A realtime property tracer
+ * <li> Node state persistence strategy
+ * <li> Bespoke performance monitor
+ * <li> Realtime property tracer
  * <li> Commit/rollback functionality
  * <li> A profiler
  * </ul>
+ * <p>
+ *
+ * Register an implementation of the Auditor interface with SepConfig.addAuditor
+ * in the builder module, registration is a build time only operation. The
+ * Fluxtion compiler automatically integrates the auditor into the generated SEP.
  *
  * @author V12 Technology Limited
  */
@@ -112,9 +120,9 @@ public interface Auditor extends Lifecycle {
     }
 
     /**
-     * Indicates whether an auditor is interested in receiving nodeInvoked
-     * event callback. Some auditors are not interested in granular monitoring
-     * of the execution path and can opt out of node invocation callbacks.
+     * Indicates whether an auditor is interested in receiving nodeInvoked event
+     * callback. Some auditors are not interested in granular monitoring of the
+     * execution path and can opt out of node invocation callbacks.
      * <ul>
      * <li>true - auditor receives all lifecycle callbacks</li>
      * <li>false - auditor receives all lifecycle callbacks except:
