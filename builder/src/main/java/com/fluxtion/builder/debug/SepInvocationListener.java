@@ -19,6 +19,8 @@ package com.fluxtion.builder.debug;
 import com.fluxtion.api.event.Event;
 
 /**
+ * <h1>Experimental feature - do not use</h1>
+ * 
  * A callback interface that receives notifications when nodes and life-cycle
  * methods are being invoked by the SEP on the nodes. For the routing of
  * notifications a debug version of the SEP is required that the SepDebugger can

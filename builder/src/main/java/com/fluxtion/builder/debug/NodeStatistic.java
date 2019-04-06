@@ -20,8 +20,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * <h1>Experimental feature - do not use</h1>
  * Heuristics class holding node meta data referring to call statistics during
  * event processing. 
+ * 
  * 
  * @author Greg Higgins
  */

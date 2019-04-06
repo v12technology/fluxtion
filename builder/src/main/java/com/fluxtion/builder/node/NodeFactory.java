@@ -31,10 +31,10 @@ import java.util.ServiceLoader;
  * <ul>
  * <li>The factory caches the node, and returns the same instance for the same
  * configuration.
- * <li>The factory creates new nodes, but the node overrides hashcode and equals
- * so interchangeable node instances will return true when equality is tested.
- * Will check an internal instance map of nodes and ignore the newly created
- * node if hashcode and equals match.
+ * <li>The factory creates new nodes and the node overrides hashcode and equals.
+ * The {@link NodeRegistry} will consult a map for an equivalent node. If an
+ * equivalent node is found then the newly created node will be discarded and
+ * the existing instance used.
  * </ul>
  * <p>
  * <h2>Registering factories</h2>

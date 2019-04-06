@@ -20,6 +20,12 @@ import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 
+/**
+ * 
+ * <h1>Experimental feature - do not use</h1>
+ * 
+ * @param <T> 
+ */
 public abstract class AbstractSepTestDecorator<T extends EventHandler & BatchHandler & Lifecycle> implements EventHandler, BatchHandler, Lifecycle {
 
     protected T sep;

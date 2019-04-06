@@ -17,31 +17,34 @@
 package com.fluxtion.builder.generation;
 
 import com.fluxtion.api.event.Event;
+import java.util.ServiceLoader;
 
 /**
- * Produces @see com.fluxtion.api.generation.FilterDescription instances,
- * Allowing users to extend the generation of the SEP with human readable comments
- * and variables.
- * 
- * Users implement this interface and register with the SEP generator before
- * generation time. 
- * 
- * @author Greg Higgins 
+ * Produces {@link FilterDescription} instances that act as a extension points
+ * for control of filter comments and variable names in the generated SEP.
+ *
+ * <h2>Registering factories</h2>
+ * Fluxtion employs the {@link ServiceLoader} pattern to register user
+ * implemented FilterDescriptionProducer's. Please read the java documentation
+ * describing the meta-data a factory implementor must provide to register a
+ * factory using the {@link ServiceLoader} pattern.
+ *
+ * @author Greg Higgins
  */
 public interface FilterDescriptionProducer {
-    
-    default FilterDescription getFilterDescription(Class<? extends Event> event, int filterId){
+
+    default FilterDescription getFilterDescription(Class<? extends Event> event, int filterId) {
         FilterDescription filter = new FilterDescription(event, filterId);
         filter.comment = null;
         filter.variableName = null;
         return filter;
     }
-    
-    default FilterDescription getFilterDescription(Class<? extends Event> event, String filterString){
+
+    default FilterDescription getFilterDescription(Class<? extends Event> event, String filterString) {
         FilterDescription filter = new FilterDescription(event, filterString);
         filter.comment = null;
         filter.variableName = null;
         return filter;
     }
-    
+
 }

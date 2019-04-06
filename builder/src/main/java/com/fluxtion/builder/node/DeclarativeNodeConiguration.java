@@ -23,7 +23,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- *
+ * Provides data driven SEP generation. 
+ * 
+ * <h2>Doc to be completed</h2>
  * @author Greg Higgins
  */
 public final class DeclarativeNodeConiguration {

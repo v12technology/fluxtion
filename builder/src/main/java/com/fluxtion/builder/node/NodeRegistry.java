@@ -16,35 +16,74 @@
  */
 package com.fluxtion.builder.node;
 
+import com.fluxtion.builder.generation.NodeNameProducer;
 import java.util.Map;
 
 /**
- * Holds all the currently registered nodes in a graph. If a node cannot be
- * found then a NodeFactory will be used to create a new instance, using the
- * provided map for configuration.
+ * Holds all the currently registered nodes and factories in a graph. If a node
+ * cannot be found then a {@link NodeFactory} will be used to create a new
+ * instance, using the provided map for configuration.<p>
  *
+ * Users interact with the NodeRegistry through callbacks on the
+ * {@link NodeFactory} interface.
+ *
+ * @see NodeFactory
  * @author Greg Higgins
  */
 public interface NodeRegistry {
 
     /**
+     * Find or create a node using a registered {@link NodeFactory}. The
+     * generated node will have private scope and the name will be generated
+     * from a {@link NodeNameProducer} strategy if the supplied name is null.
      *
      * @param <T> The type of the node to be created.
      * @param clazz The class of type T
      * @param config a map used by a NodeFactory to create a node.
-     * @param variableName
+     * @param variableName the variable name in the SEP
      *
      * @return The node that is referenced by the config map.
      */
     <T> T findOrCreateNode(Class<T> clazz, Map config, String variableName);
 
+    /**
+     * Find or create a node using a registered {@link NodeFactory}. The
+     * generated node will have public scope and the name will be generated from
+     * a {@link NodeNameProducer} strategy if the supplied name is null.
+     *
+     * @param <T> The type of the node to be created.
+     * @param clazz The class of type T
+     * @param config a map used by a NodeFactory to create a node.
+     * @param variableName the variable name in the SEP
+     *
+     * @return The node that is referenced by the config map.
+     */
     <T> T findOrCreatePublicNode(Class<T> clazz, Map config, String variableName);
-    //TODO add a register node method for nodes that are created during another 
-    //nodes findOrCreateProcess, perfect for factories to generate nodes on 
-    //the fly with a simple static method and then register the newly created
-    //node
+
+    /**
+     * Register a user created node with Fluxtion generator, no
+     * {@link NodeFactory}'s will be used in this operation. The node will have
+     * private scope and the name will be generated from a
+     * {@link NodeNameProducer} strategy if the supplied name is null.
+     *
+     * @param <T> The type of the node to be created.
+     * @param node The node to add to the SEP
+     * @param variableName the variableName name of the node
+     * @return
+     */
     <T> T registerNode(T node, String variableName);
-    
+
+    /**
+     * Register a user created node with Fluxtion generator, no
+     * {@link NodeFactory}'s will be used in this operation. The node will have
+     * public scope and the name will be generated from a
+     * {@link NodeNameProducer} strategy if the supplied name is null.
+     *
+     * @param <T> The type of the node to be created.
+     * @param node The node to add to the SEP
+     * @param variableName the variableName name of the node
+     * @return
+     */
     <T> T registerPublicNode(T node, String variableName);
 
 }
