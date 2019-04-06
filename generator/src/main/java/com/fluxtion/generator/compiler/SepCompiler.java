@@ -19,9 +19,7 @@ package com.fluxtion.generator.compiler;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
-import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
