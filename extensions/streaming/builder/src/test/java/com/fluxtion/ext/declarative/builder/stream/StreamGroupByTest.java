@@ -19,6 +19,8 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
@@ -32,10 +34,18 @@ public class StreamGroupByTest extends StreamInprocessTest{
         sep((c) ->{
             GroupBy<Number> group = select(StreamData.class)
                     .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions.Sum);
-            group.id("group");
+            group.id("group");//.console("groupBy Map -> ");
         });
+        GroupBy<Number> group = getField("group");
+        sep.onEvent(new StreamData("one", 1000));
+        sep.onEvent(new StreamData("one", 500));
+        sep.onEvent(new StreamData("one", 1200));
+        sep.onEvent(new StreamData("two", 60));
+        sep.onEvent(new StreamData("two", 40));
+        sep.onEvent(new StreamData("two", 100));
         
-        
+        assertThat(group.getMap().get("one").event().intValue(), is(2700));
+        assertThat(group.getMap().get("two").event().intValue(), is(200));
     }
     
 }
