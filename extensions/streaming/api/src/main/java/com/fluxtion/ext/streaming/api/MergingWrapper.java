@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Merges streams into a single node in the SEP execution graph.
+ * Merges streams into a single node in the SEP execution graph. The merge will make available
+ * the last parent that was updated via the {@link #event() } call.
  *
  * @author V12 Technology Ltd.
  */

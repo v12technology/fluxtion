@@ -1,6 +1,8 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.Objects;
 
@@ -13,15 +15,42 @@ import java.util.Objects;
  */
 public class ElseWrapper<T> implements Wrapper<T> {
 
-    private final Wrapper<T> node;
+    private final FilterWrapper<T> node;
+    private boolean notifyOnChangeOnly;
+    private boolean published = false;
 
-    public ElseWrapper(Wrapper<T> node) {
+    public ElseWrapper(FilterWrapper<T> node) {
         this.node = node;
     }
-
+    
     @OnEvent(dirty = false)
     public boolean onEvent() {
-        return true;
+        if(!notifyOnChangeOnly){
+            return true;
+        }
+        boolean filtered = node.filterMatched();
+        if(filtered){
+            published = false;
+        }
+        if(!filtered & !published){
+            published = true;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isNotifyOnChangeOnly() {
+        return notifyOnChangeOnly;
+    }
+
+    public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
+        this.notifyOnChangeOnly = notifyOnChangeOnly;
+    }
+
+    @Override
+    public Wrapper<T> notifyOnChange(boolean notifyOnChange) {
+        setNotifyOnChangeOnly(notifyOnChange);
+        return this;
     }
 
     @Override

@@ -19,4 +19,11 @@ public interface FilterWrapper<T> extends Wrapper<T> {
         return SepContext.service().add(new ElseWrapper(this));
     }
 
+    @Override
+    public FilterWrapper<T> notifyOnChange(boolean notifyOnChange);
+    
+    default boolean filterMatched(){
+        return false;
+    }
+
 }

@@ -30,7 +30,6 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     public Object resetNotifier;
     private boolean parentReset = false;
 #end
-    private boolean result;
 
     @Initialise
     public void init(){

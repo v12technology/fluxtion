@@ -37,6 +37,64 @@ import org.junit.Test;
 public class StreamingFilterTest extends StreamInprocessTest {
 
     @Test
+    public void elseNotifyOnce() {
+//        fixedPkg = true;
+        sep((c) -> {
+            FilterWrapper<StreamData> filter = select(StreamData.class)
+                    .filter(StreamData::getIntValue, gt(10)).notifyOnChange(true);
+            //if - count
+            filter.map(count()).id("filterCount");
+            //else - count
+            filter.elseStream().notifyOnChange(true).map(count()).id("elseCount");
+        });
+        Number filterCount = getWrappedField("filterCount");
+        Number elseCount = getWrappedField("elseCount");
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(0));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(0));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(0));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(1));
+        
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(2));
+        
+        onEvent(new StreamData(9));
+        assertThat(filterCount.intValue(), is(1));
+        assertThat(elseCount.intValue(), is(2));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
+    }
+
+    @Test
     public void testElse() {
         sep((c) -> {
             FilterWrapper<StreamData> filter = select(StreamData.class)
@@ -48,7 +106,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
             //else - count
             filter.elseStream().map(count()).id("elseCount");
         });
-        
+
         Number filterCount = getWrappedField("filterCount");
         Number elseCount = getWrappedField("elseCount");
         Number cumSum = getWrappedField("cumSum");
@@ -58,7 +116,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
         assertThat(elseCount.intValue(), is(0));
         assertThat(cumSum.intValue(), is(890));
         assertThat(cumSum2.intValue(), is(890));
-        
+
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(1));
