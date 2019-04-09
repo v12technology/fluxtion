@@ -27,8 +27,11 @@ import java.lang.annotation.Target;
 /**
  *
  * Mark a method as a SEP builder. The method must accept one argument of type
- * {@link SEPConfig}. The receiving method will use the SEPConfig instance to
- * define the static event processor that Fluxtion will generate.
+ * {@link SEPConfig}. The receiving method will use the provided
+ * {@link SEPConfig} instance to define the static event processor that Fluxtion
+ * will generate.<p>
+ * Individual methods or whole classes can be disabled by adding the {@link Disabled}
+ * annotation to either a method or class respectively.
  *
  * @author V12 Technology Ltd.
  */

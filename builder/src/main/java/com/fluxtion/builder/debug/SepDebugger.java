@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * <h1>Experimental feature - do not use</h1>
  * @author Greg Higgins
  */
 public class SepDebugger {

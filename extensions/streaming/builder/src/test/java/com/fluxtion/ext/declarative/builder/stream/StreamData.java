@@ -30,6 +30,11 @@ public class StreamData extends Event{
     private double doubleValue;
     private boolean booleanValue;
 
+    public StreamData(String stringValue, int intValue) {
+        this.stringValue = stringValue;
+        this.intValue = intValue;
+    }
+
     public StreamData(String name) {
         this.stringValue = name;
     }

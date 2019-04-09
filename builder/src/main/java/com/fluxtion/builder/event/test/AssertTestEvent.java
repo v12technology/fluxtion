@@ -18,7 +18,7 @@ package com.fluxtion.builder.event.test;
 
 
 /**
- *
+ * <h1>Experimental feature - do not use</h1>
  * @author Greg Higgins
  */
 public class AssertTestEvent extends com.fluxtion.api.event.Event {

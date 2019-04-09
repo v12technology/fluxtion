@@ -36,7 +36,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Context for the generated output of the SEP.
+ * Context for the generated output of the SEP. Provides functions to control
+ * generation outputs from Fluxtion, but is not used to describe the graph
+ * processing structure of a SEP.
  *
  * @author Greg Higgins
  */
@@ -132,7 +134,7 @@ public class GenerationContext {
      * public named nodes to be added to the generated SEP
      */
     private final Map<Object, String> publicNodes = new HashMap<>();
-    
+
     private final ClassLoader classLoader;
 
     /**
@@ -189,7 +191,7 @@ public class GenerationContext {
         }
         cacheMap = new HashMap<>();
     }
-     
+
     private void createDirectories() {
         srcPackageDirectory = new File(GenerationContext.SINGLETON.srcRootDirectory, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
@@ -273,8 +275,8 @@ public class GenerationContext {
     public Map<Object, String> getPublicNodes() {
         return publicNodes;
     }
-    
-    public String publicNameForNode(Object node){
+
+    public String publicNameForNode(Object node) {
         return publicNodes.get(node);
     }
 

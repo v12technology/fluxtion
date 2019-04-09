@@ -16,25 +16,34 @@
  */
 package com.fluxtion.builder.node;
 
-import com.fluxtion.builder.generation.FilterDescriptionProducer;
-import com.fluxtion.builder.generation.NodeNameProducer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.builder.generation.NodeNameProducer;
 
 /**
- * Configuration used by Fluxtion event stream compiler at generation time to 
- * control the output of the generated static event processor. The properties 
+ * Configuration used by Fluxtion event stream compiler at generation time to
+ * control the output of the generated static event processor. The properties
  * control the logical configuration of the compilation and not the physical
  * location of input/output resources.
- * 
+ *
  * @author Greg Higgins
  */
 public class SEPConfig {
 
-    //methods to implement, to make this more fluent api
+    /**
+     * Add a node to the SEP. The node will have private final scope, the
+     * variable name of the node will be generated from {@link NodeNameProducer}
+     * strategy.<p>
+     * Fluxtion will check if this node is already in the node set and will
+     * return the previously added node.
+     *
+     * @param <T> The type of the node to add to the SEP
+     * @param node the node instance to add
+     * @return The de-duplicated added node
+     */
     @SuppressWarnings("unchecked")
     public <T> T addNode(T node) {
         if (nodeList == null) {
@@ -46,7 +55,19 @@ public class SEPConfig {
         }
         return (T) nodeList.get(nodeList.indexOf(node));
     }
-    
+
+    /**
+     * Add a node to the SEP. The node will have public final scope, the
+     * variable name of the node will be generated from {@link NodeNameProducer}
+     * strategy if the provided name is null.<p>
+     * Fluxtion will check if this node is already in the node set and will
+     * return the previously added node.
+     *
+     * @param <T> The type of the node to add to the SEP
+     * @param node the node instance to add
+     * @param name the variable name of the node
+     * @return The de-duplicated added node
+     */
     @SuppressWarnings("unchecked")
     public <T> T addNode(T node, String name) {
         addNode(node);
@@ -54,6 +75,18 @@ public class SEPConfig {
         return (T) nodeList.get(nodeList.indexOf(node));
     }
 
+    /**
+     * Add a node to the SEP. The node will have public final scope, the
+     * variable name of the node will be generated from {@link NodeNameProducer}
+     * strategy if the provided name is null.<p>
+     * Fluxtion will check if this node is already in the node set and will
+     * return the previously added node.
+     *
+     * @param <T> The type of the node to add to the SEP
+     * @param node the node instance to add
+     * @param name the variable name of the node
+     * @return The de-duplicated added node
+     */
     public <T> T addPublicNode(T node, String name) {
         if (publicNodes == null) {
             publicNodes = new HashMap<>();
@@ -61,24 +94,41 @@ public class SEPConfig {
         publicNodes.put(node, name);
         return node;
     }
-    
-    public <T extends Auditor> T addAuditor(T listener, String name){
-        if(auditorMap == null){
+
+    /**
+     * Adds an {@link Auditor} to this SEP. The Auditor will have public final
+     * scope and can be accessed via the provided variable name.
+     *
+     * @param <T> The type of the Auditor
+     * @param listener Auditor instance
+     * @param name public name of Auditor
+     * @return the added Auditor
+     */
+    public <T extends Auditor> T addAuditor(T listener, String name) {
+        if (auditorMap == null) {
             auditorMap = new HashMap<>();
         }
         auditorMap.put(name, listener);
         return listener;
     }
-    
-    public void mapClass(String originalFqn, String mappedFqn){
+
+    /**
+     * Maps a class name from one String to another in the generated output.
+     *
+     * @param originalFqn Class name to replace
+     * @param mappedFqn Class name replacement
+     */
+    public void mapClass(String originalFqn, String mappedFqn) {
         class2replace.put(originalFqn, mappedFqn);
     }
-    
+
     /**
-     * 
+     * Users can override this method and add SEP description logic here. The
+     * buildConfig method will be called by the Fluxtion generator at build
+     * time.
      */
-    public void buildConfig(){
-        
+    public void buildConfig() {
+
     }
 
     /**
@@ -107,8 +157,8 @@ public class SEPConfig {
      * addressable from outside the SEP.
      */
     public HashMap<Object, String> publicNodes;
-    
-    public HashMap<String, Auditor> auditorMap; 
+
+    public HashMap<String, Auditor> auditorMap;
 
     /**
      * Node Factory configuration
@@ -145,7 +195,7 @@ public class SEPConfig {
 
     /**
      * Flag controlling generation of meta data description resources.
-     * 
+     *
      * not required, default = true.
      */
     public boolean generateDescription = true;
@@ -153,26 +203,26 @@ public class SEPConfig {
      * Generate a test decorator.
      */
     public boolean generateTestDecorator = false;
-    
+
     /**
      * attempt to assign private member variables, some platforms will support
      * access to non-public scoped members. e.g. reflection utilities in Java.
      */
     public boolean assignPrivateMembers;
-    
+
     public boolean formatSource = true;
-    
+
     /**
      * The maximum number of filter branches inside an event handler before an
      * alternate map-dispatch strategy is employed.
-     * 
+     *
      */
     public int maxFiltersInline = 4;
 
     /**
-     * Map an original fully qualified class name into a new value. Can be useful
-     * if generated code wants to remove all dependencies to Fluxtion classes
-     * and replaced with user classes.
+     * Map an original fully qualified class name into a new value. Can be
+     * useful if generated code wants to remove all dependencies to Fluxtion
+     * classes and replaced with user classes.
      */
     public final Map<String, String> class2replace = new HashMap<>();
 
@@ -180,6 +230,5 @@ public class SEPConfig {
     public String toString() {
         return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", filterMap=" + filterMap + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
     }
-    
-    
+
 }

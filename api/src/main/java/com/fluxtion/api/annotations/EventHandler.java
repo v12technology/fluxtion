@@ -16,28 +16,89 @@
  */
 package com.fluxtion.api.annotations;
 
+import com.fluxtion.api.event.Event;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks a method as an entry point to an execution path contained with the
+ * execution graph. An event handler is invoked on the event in phase of
+ * execution processing. A SEP processes event handling methods in two phases:
+ * <ul>
+ * <li>Event in phase - processes handler methods in topological order
+ * <li>After event phase - processes handler methods in reverse topological
+ * order
+ * </ul>
+ * <p>
+ *
+ * Fluxtion reads the set
+ * of entry points and constructs an execution graph at build time. A valid
+ * event handler method accepts a single parameter of type
+ * {@link com.fluxtion.api.event.Event} and optionally returns a boolean value
+ * or void.
+ * The boolean value indicates if a change has occurred during the processing of
+ * the event.
+ *
+ * <h2>Conditional processing</h2>
+ * If conditional
+ * processing is enabled for the SEP, the following
+ * strategy is employed for interpreting notification and branching
+ * execution:
+ * <ul>
+ * <li>return = true : indicates a change has occurred processing the event
+ * <li>return = false : indicates a change has NOT occurred processing the event
+ * <li>return = void : assumes a change has occurred processing the event
+ * </ul>
+ * <p>
+ * 
+ * Conditional branching execution behaves as follows:
+ * <ul>
+ * <li>if a change is indicated the execution will propagate along the execution
+ * path.
+ * <li>No change notification will remove this node from the current execution
+ * path.
+ * </ul>
+ *
+* <h2>Filtering</h2>
+ * An EventHandler can optionally provide a filter value and match strategy to
+ * specialise the events that are accepted for processing, see {@link #value()
+ * }. An
+ * {@link Event} can optionally specify a filter value {@link Event#filterString()
+ * }. The
+ * SEP will compare the filter values in the {@link Event} and the handler and
+ * propagate
+ * the Event conditional upon the {@link FilterType}.
+ * .<p>
+ *
+ * A node must be in the execution graph to be included in the invocation chain.
+ * The Fluxtion builder api provides methods to register an instance in the
+ * event processor.
+ *
+ * @author V12 Technology Ltd.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
     /**
-     * the type of match against the filter this event handler will perform A
-     * matched will filter will only process events that match the associated
-     * filter Id, this is the default behaviour of the EventHandler.
+     * The match strategy this event handler will employ when filtering incoming
+     * events. The default filtering behaviour of the EventHandler is to pass
+     * through events where the filter id matches the filter id of the event
+     * handler.
      *
      * If no filter is supplied then the EventHandler matches against all
      * filters, and will be notified of any incoming event.
      *
-     * If filterType is set to
-     * {@link com.fluxtion.api.annotations.FilterType#unmatched unmatched} then
-     * the handler will be notified if there are no filters in the system that
-     * match against the event, this is the same behaviour as the default in a
-     * case statement if each matching case calls break.
+     * Available strategies are:
+     * <ul>
+     * <li> {@link FilterType#matched} Only matching filters allow event
+     * propagation
+     * <li> {@link FilterType#unmatched} Invoked when no filter match is found,
+     * acts as a default case.
+     * </ul>
+     *
      *
      * @return FilterType matching strategy
      */
@@ -81,7 +142,15 @@ public @interface EventHandler {
 
     /**
      * Determines whether the SEP will invoke dependents as part of the event
-     * call chain.
+     * call chain. This has the effect of overriding the return value from the
+     * event handler
+     * method in the user class with the following effect:
+     * <ul>
+     * <li>true - use the boolean return value from event handler to determine
+     * event propagation.
+     * <li>false - permanently remove the event handler method from the
+     * execution path
+     * </ul>
      *
      * @return invoke dependents on update
      */

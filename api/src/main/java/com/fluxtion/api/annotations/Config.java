@@ -24,16 +24,32 @@ import java.lang.annotation.Target;
 
 /**
  *
- * a simple String based key value pair for configuring an
- * Injected instance.
- * 
+ * A static String based key value pair configuration item. The key/value pair
+ * is added to a map which is supplied to a Nodefactory. A NodeFactory uses the
+ * configuration map to build an injected instance. 
+ *
+ * @see Inject
+ *
  * @author Greg Higgins
- * 
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Repeatable(value = ConfigList.class)
 public @interface Config {
-    String  value(); 
-    String  key(); 
+
+    /**
+     * The configuration value.
+     *
+     * @return The configuration value
+     */
+    String value();
+
+    /**
+     * The key the value will be assigned to in the configuration map.
+     *
+     * @return the configuration key
+     */
+    String key();
+
 }

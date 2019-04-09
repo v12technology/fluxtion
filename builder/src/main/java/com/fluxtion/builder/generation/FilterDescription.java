@@ -20,34 +20,40 @@ import com.fluxtion.api.event.Event;
 import java.util.Objects;
 
 /**
+ * Customises the generated source files to provide user controlled
+ * {@link FilterDescription}'s. A user can provide logic to control comment and
+ * variable names for filters in the generated code. The intention is to make
+ * the generated SEP easier to understand reducing cost to rectify errors.<p>
+ * 
+ * {@link FilterDescriptionProducer} are registered as producers of descriptions.
  *
  * @author Greg Higgins
  */
 public class FilterDescription {
 
-    public static final FilterDescription NO_FILTER = new FilterDescription( "NO_FILTER");
-    public static final FilterDescription INVERSE_FILTER = new FilterDescription( "INVERSE_FILTER");
-    public static final FilterDescription DEFAULT_FILTER = new FilterDescription( "DEFAULT");
-    
+    public static final FilterDescription NO_FILTER = new FilterDescription("NO_FILTER");
+    public static final FilterDescription INVERSE_FILTER = new FilterDescription("INVERSE_FILTER");
+    public static final FilterDescription DEFAULT_FILTER = new FilterDescription("DEFAULT");
+
     /**
-     * Value used by the SEP to determine which decision branch to navigate.
-     * If integer filtering is used.
+     * Value used by the SEP to determine which decision branch to navigate. If
+     * integer filtering is used.
      */
     public final int value;
 
     /**
-     * Value used by the SEP to determine which decision branch to navigate.
-     * If String filtering is used
+     * Value used by the SEP to determine which decision branch to navigate. If
+     * String filtering is used
      */
     public final String stringValue;
-    
+
     private final String nullId;
 
     /**
      * boolean value indicating String or integer based filtering.
      */
     public final boolean isIntFilter;
-    
+
     /**
      * Indicates presence of filtering, false value means match all values.
      */
@@ -77,10 +83,10 @@ public class FilterDescription {
         this.eventClass = eventClass;
         this.stringValue = "";
         this.isIntFilter = true;
-        this.isFiltered = false;  
+        this.isFiltered = false;
         nullId = "";
     }
-    
+
     public FilterDescription(Class<? extends Event> eventClass, int value) {
         this.value = value;
         this.eventClass = eventClass;
@@ -139,7 +145,7 @@ public class FilterDescription {
         if (this.isIntFilter != other.isIntFilter) {
             return false;
         }
-        if(this.nullId != other.nullId){
+        if (this.nullId != other.nullId) {
             return false;
         }
         if (!Objects.equals(this.eventClass, other.eventClass)) {
@@ -148,9 +154,6 @@ public class FilterDescription {
         return true;
     }
 
-    
-    
-    
     @Override
     public String toString() {
         return "FilterDescription{" + "value=" + value + ", eventClass=" + eventClass + ", comment=" + comment + ", variableName=" + variableName + '}';

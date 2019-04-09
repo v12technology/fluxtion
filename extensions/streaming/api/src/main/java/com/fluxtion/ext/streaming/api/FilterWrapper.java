@@ -3,7 +3,7 @@ package com.fluxtion.ext.streaming.api;
 import com.fluxtion.ext.streaming.api.stream.ElseWrapper;
 
 /**
- * A wrapper around a node that is created as the resiult of a filtering
+ * A wrapper around a node that is created as the result of a filtering
  * operation.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
@@ -17,6 +17,13 @@ public interface FilterWrapper<T> extends Wrapper<T> {
      */
     default Wrapper<T> elseStream() {
         return SepContext.service().add(new ElseWrapper(this));
+    }
+
+    @Override
+    public FilterWrapper<T> notifyOnChange(boolean notifyOnChange);
+    
+    default boolean filterMatched(){
+        return false;
     }
 
 }

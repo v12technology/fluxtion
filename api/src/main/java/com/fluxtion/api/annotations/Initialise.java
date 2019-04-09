@@ -16,15 +16,17 @@
  */
 package com.fluxtion.api.annotations;
 
+import com.fluxtion.api.lifecycle.Lifecycle;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An initialisation method that is invoked by the SEP before event processing.
- * Allows an instance to set state before any events are processed.
+ * Marks a method as bound to {@link Lifecycle#init() } phase. A valid
+ * initialise method accepts no arguments.
  *
+ * @see Lifecycle
  * @author V12 Technology Ltd.
  */
 @Retention(RetentionPolicy.RUNTIME)

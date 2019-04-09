@@ -23,14 +23,14 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a member that is part of the node set in the SEP as a reference only.
- * The child node containing this reference will not be in the call chain
- * when it has no antecedents apart from the parent reference. This allows a
- * child to refer to a parent solely as a data store.
- * 
+ * The node containing a NoEventReference reference will not be on the execution path of the
+ * marked reference. This allows a child to refer to a parent solely as a data
+ * store.
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface NoEventReference {
-    
+
 }

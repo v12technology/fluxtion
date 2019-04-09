@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * Normally the event wave starts at the target of the reference and then
  * notifies the source of the reference. A push reference inverts the event wave
  * so the source of the reference is notified before the target. This allows the
- * source to push data onto the target and the event notification will occur
+ * source to push data onto the target. Event notification of the target will occur
  * after the push.
  *
  * @author Greg Higgins

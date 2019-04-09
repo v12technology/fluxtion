@@ -21,32 +21,41 @@ import java.net.URL;
 import java.util.ServiceLoader;
 
 /**
- * A service that processes application classes. The classes on the supplied
- * {@link URL} are generated from the application source files after
- * compilation. No libraries from Fluxtion or other sources are on this path.
- * This gives the opportunity for {@link ClassProcessor}'s to scan the path
- * and generate Fluxtion artifacts without risk of duplication. For example a
- * service may scan for a specific annotation and generate a tailored solution
- * based on the meta-data discovered during scanning.
+ * A ClassProcessor service can inspect and process application classes after
+ * they are compiled. The callback {@link #process(java.net.URL) } points to the
+ * compiled application classes. No external libraries are on the process URL,
+ * solely the output of compiling application source files.<p>
  *
- * Fluxtion loads services using the java platform provided
- * {@link ServiceLoader} specification. Please read the {@link ServiceLoader}
- * documentation describing service registration using META-INF/services in the
- * service implementation's jar file.
- *
+ * This gives the opportunity for {@link ClassProcessor}'s to scan the path and
+ * generate artifacts without risk of confusing library and application classes.
+ * For example a service may scan for a specific annotation and generate a
+ * tailored solution based on the meta-data discovered during scanning.<p>
+ * 
+ * <h2>Registering ClassProcessor</h2>
+ * Fluxtion employs the {@link ServiceLoader} pattern to register user
+ * implemented NodeFactories. Please read the java documentation describing the
+ * meta-data a factory implementor must provide to register a factory using the
+ * {@link ServiceLoader} pattern.
+ * 
  * @author V12 Technology Ltd.
  */
 public interface ClassProcessor {
-    
+
     /**
      * Directories for the current generation context
+     *
      * @param rootDir - root directory of the project
      * @param output - directory for generated source outputs
      * @param resourceDir - directory for generated resource outputs
      */
-    default void outputDirectories(File rootDir, File output, File resourceDir){
-        
+    default void outputDirectories(File rootDir, File output, File resourceDir) {
+
     }
 
+    /**
+     * The URL of compiled application classes
+     *
+     * @param classPath application classes location
+     */
     void process(URL classPath);
 }

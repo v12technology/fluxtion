@@ -25,7 +25,7 @@ import java.util.Arrays;
 /**
  * A node in a SEP that publishes an {@link Event} to a registered
  * {@link EventHandler}. Listens to {@link RegisterEventHandler} events to 
- * register and de-register {@link EventHandler} sinks.
+ * register and de-register {@link EventHandler} as sinks.
  *
  * @author V12 Technology Ltd.
  */
