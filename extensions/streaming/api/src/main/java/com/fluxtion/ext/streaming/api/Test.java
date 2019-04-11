@@ -17,12 +17,14 @@
 package com.fluxtion.ext.streaming.api;
 
 /**
- * A marker interface for a Test node in a SEP. A Test node must have a method marked with an OnEvent 
- * annotation that returns a boolean. The value of the boolean indicates whether the test passed and the SEP 
- * should continue processing of child nodes.
+ * An interface that applies a predicate operation. The state of the test can be accessed
+ * with the {@link #passed() } method.
  * 
  * @author Greg Higgins (greg.higgins@v12technology.com)
  */
 public interface Test {
     
+    default boolean passed(){
+        return false;
+    }
 }

@@ -25,11 +25,9 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     @NoEventReference
     public ${targetClass} f;
 #end
-#if(${stateful})
     @NoEventReference
     public Object resetNotifier;
     private boolean parentReset = false;
-#end
 
     @Initialise
     public void init(){
@@ -49,13 +47,14 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
         return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
     }
 
-#if(${stateful})
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier) {
         parentReset = true;
         if (isResetImmediate()) {
             result = false;
+#if(${stateful})
             f.reset();
+#end
             parentReset = false;
         }
     }
@@ -64,7 +63,9 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     public void resetAfterEvent() {
         if (parentReset) {
             result = false;
+#if(${stateful})
             f.reset();
+#end
         }
         parentReset = false;
     }
@@ -75,7 +76,6 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
         return this;
     }
 
-#end
     @Override
     public ${filterSubjectClass} event() {
 #if(${wrappedSubject})

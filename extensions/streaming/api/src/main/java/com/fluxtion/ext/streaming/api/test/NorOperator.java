@@ -27,55 +27,18 @@ import java.util.Arrays;
  *
  * @author gregp
  */
-public class NorOperator implements Test {
-
-    private final Object[] tracked;
-    private int updateCount;
+public class NorOperator extends BaseBooleanOperator {
 
     public NorOperator(Object[] tracked) {
-        this.tracked = tracked;
-    }
-
-    @OnParentUpdate("tracked")
-    public void parentUpdated(Object tracked) {
-        updateCount++;
+        super(tracked);
     }
 
     @OnEvent(dirty = false)
     public boolean testNor() {
+        updateCount = (updateCount + testCount());
         boolean ret = updateCount == 0;
         updateCount = 0;
         return ret;
-    }
-
-    @AfterEvent
-    public void reset() {
-        updateCount = 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + Arrays.deepHashCode(this.tracked);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final NorOperator other = (NorOperator) obj;
-        if (!Arrays.deepEquals(this.tracked, other.tracked)) {
-            return false;
-        }
-        return true;
     }
 
 }

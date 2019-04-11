@@ -59,7 +59,7 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
     }
 
     @Override
-    public boolean filterMatched() {
+    public boolean passed() {
         return result;
     }
     

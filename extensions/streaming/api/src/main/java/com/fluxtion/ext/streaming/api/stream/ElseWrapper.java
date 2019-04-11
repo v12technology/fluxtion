@@ -3,6 +3,7 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ public class ElseWrapper<T> implements Wrapper<T> {
     
     @OnParentUpdate(guarded = false)
     public void filterUpdated(FilterWrapper filter){
-        filtered = filter.filterMatched();
+        filtered = filter.passed();
         if(filtered){
             published = false;
         }

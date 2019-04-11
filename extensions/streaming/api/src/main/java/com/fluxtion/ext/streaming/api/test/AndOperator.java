@@ -16,66 +16,28 @@
  */
 package com.fluxtion.ext.streaming.api.test;
 
-import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.Test;
-import java.util.Arrays;
 
 /**
  * Boolean and operator.
  *
  * @author gregp
  */
-public class AndOperator implements Test {
-
-    private final Object[] tracked;
-    private int updateCount;
+public class AndOperator extends BaseBooleanOperator {
 
     public AndOperator(Object[] tracked) {
-        this.tracked = tracked;
-    }
-
-    @OnParentUpdate("tracked")
-    public void parentUpdated(Object tracked) {
-        updateCount++;
+        super(tracked);
     }
 
     @OnEvent
-    public boolean testAnd() {
-        boolean ret = updateCount == tracked.length;
+    @Override
+    public boolean passed() {
+        boolean ret = (updateCount + testCount()) == tracked.length;
         updateCount = 0;
         return ret;
     }
 
-    @AfterEvent
-    public void reset() {
-        updateCount = 0;
-    }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Arrays.deepHashCode(this.tracked);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AndOperator other = (AndOperator) obj;
-        if (!Arrays.deepEquals(this.tracked, other.tracked)) {
-            return false;
-        }
-        return true;
-    }
 
 }

@@ -27,55 +27,18 @@ import java.util.Arrays;
  *
  * @author gregp
  */
-public class XorOperator implements Test {
-
-    private final Object[] tracked;
-    private int updateCount;
+public class XorOperator extends BaseBooleanOperator {
 
     public XorOperator(Object[] tracked) {
-        this.tracked = tracked;
-    }
-
-    @OnParentUpdate("tracked")
-    public void parentUpdated(Object tracked) {
-        updateCount++;
+        super(tracked);
     }
 
     @OnEvent
     public boolean testXor() {
+        updateCount = (updateCount + testCount());
         boolean ret = updateCount < tracked.length & updateCount > 0;
         updateCount = 0;
         return ret;
     }
     
-    @AfterEvent
-    public void reset(){
-        updateCount = 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + Arrays.deepHashCode(this.tracked);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final XorOperator other = (XorOperator) obj;
-        if (!Arrays.deepEquals(this.tracked, other.tracked)) {
-            return false;
-        }
-        return true;
-    }
-
 }

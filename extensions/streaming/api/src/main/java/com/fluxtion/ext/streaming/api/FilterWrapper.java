@@ -7,8 +7,9 @@ import com.fluxtion.ext.streaming.api.stream.ElseWrapper;
  * operation.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
+ * @param <T>
  */
-public interface FilterWrapper<T> extends Wrapper<T> {
+public interface FilterWrapper<T> extends Wrapper<T>, Test {
 
     /**
      * provides an else branch to a filter node in this stream.
@@ -22,8 +23,4 @@ public interface FilterWrapper<T> extends Wrapper<T> {
     @Override
     public FilterWrapper<T> notifyOnChange(boolean notifyOnChange);
     
-    default boolean filterMatched(){
-        return false;
-    }
-
 }
