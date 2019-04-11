@@ -81,10 +81,10 @@ public interface ClassUtils {
     }
 
     public static boolean typeSupported(Class<?> type) {
-        return type.isPrimitive() 
+        return type.isPrimitive()
                 || type == String.class
                 || type == Class.class
-                || type.isEnum() 
+                || type.isEnum()
                 || List.class.isAssignableFrom(type)
                 || type.isArray();
     }
@@ -143,9 +143,9 @@ public interface ClassUtils {
             primitiveSuffix = "\"";
             primitiveVal = StringEscapeUtils.escapeJava(primitiveVal.toString());
         }
-        if (clazz == Class.class){
-            importList.add((Class)primitiveVal);
-            primitiveVal = ((Class)primitiveVal).getSimpleName() + ".class";
+        if (clazz == Class.class) {
+            importList.add((Class) primitiveVal);
+            primitiveVal = ((Class) primitiveVal).getSimpleName() + ".class";
         }
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {
@@ -216,5 +216,19 @@ public interface ClassUtils {
 
     public static <T> T getField(String name, Object instance) {
         return (T) new Mirror().on(instance).get().field(name);
+    }
+
+    public static java.lang.reflect.Field getReflectField(Class clazz, String fieldName)
+            throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class superClass = clazz.getSuperclass();
+            if (superClass == null) {
+                throw e;
+            } else {
+                return getReflectField(superClass, fieldName);
+            }
+        }
     }
 }
