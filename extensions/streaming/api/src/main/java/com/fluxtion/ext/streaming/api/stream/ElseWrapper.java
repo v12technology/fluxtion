@@ -3,6 +3,7 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.Objects;
 
@@ -18,19 +19,24 @@ public class ElseWrapper<T> implements Wrapper<T> {
     private final FilterWrapper<T> node;
     private boolean notifyOnChangeOnly;
     private boolean published = false;
+    private boolean filtered = false;
 
     public ElseWrapper(FilterWrapper<T> node) {
         this.node = node;
+    }
+    
+    @OnParentUpdate(guarded = false)
+    public void filterUpdated(FilterWrapper filter){
+        filtered = filter.passed();
+        if(filtered){
+            published = false;
+        }
     }
     
     @OnEvent(dirty = false)
     public boolean onEvent() {
         if(!notifyOnChangeOnly){
             return true;
-        }
-        boolean filtered = node.filterMatched();
-        if(filtered){
-            published = false;
         }
         if(!filtered & !published){
             published = true;

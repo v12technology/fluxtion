@@ -331,12 +331,13 @@ public class SimpleEventProcessorModel {
 
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(fieldClass, (Predicate<java.lang.reflect.Field>) (java.lang.reflect.Field input) -> {
                 //TODO check is not public
-                if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers())) {
+                if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
-                    LOGGER.debug("ignoring field:{} public:{} final:{} static:{}",
+                    LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
                             input.getName(),
                             Modifier.isPublic(input.getModifiers()),
                             Modifier.isFinal(input.getModifiers()),
+                            Modifier.isTransient(input.getModifiers()),
                             Modifier.isStatic(input.getModifiers())
                     );
                     return false;
@@ -548,14 +549,7 @@ public class SimpleEventProcessorModel {
 
                     if (val != null && val.length() > 0) {
                         java.lang.reflect.Field field = null;
-                        try {
-                            field = object.getClass().getDeclaredField(val);
-                        } catch (Exception e) {
-                            try {
-                                field = object.getClass().getField(val);
-                            } catch (Exception e1) {
-                            }
-                        }
+                        field = ClassUtils.getReflectField(object.getClass(), val);
                         field.setAccessible(true);
                         if (field != null && field.getAnnotation(NoEventReference.class) != null || field.getAnnotation(PushReference.class) != null) {
 //                            System.out.println("IGNORING NoEventReference for parentUpdate");

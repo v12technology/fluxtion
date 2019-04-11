@@ -27,55 +27,18 @@ import java.util.Arrays;
  *
  * @author gregp
  */
-public class NandOperator implements Test {
-
-    private final Object[] tracked;
-    private int updateCount;
+public class NandOperator extends BaseBooleanOperator {
 
     public NandOperator(Object[] tracked) {
-        this.tracked = tracked;
-    }
-
-    @OnParentUpdate("tracked")
-    public void parentUpdated(Object tracked) {
-        updateCount++;
+        super(tracked);
     }
 
     @OnEvent(dirty = false)
     public boolean testNand() {
+        updateCount = (updateCount + testCount());
         boolean ret = updateCount < tracked.length;
         updateCount = 0;
         return ret;
-    }
-
-    @AfterEvent
-    public void reset() {
-        updateCount = 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Arrays.deepHashCode(this.tracked);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final NandOperator other = (NandOperator) obj;
-        if (!Arrays.deepEquals(this.tracked, other.tracked)) {
-            return false;
-        }
-        return true;
     }
 
 }
