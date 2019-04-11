@@ -47,6 +47,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
             //else - count
             filter.elseStream().notifyOnChange(true).map(count()).id("elseCount");
         });
+        
         Number filterCount = getWrappedField("filterCount");
         Number elseCount = getWrappedField("elseCount");
         onEvent(new StreamData(9));
@@ -65,33 +66,33 @@ public class StreamingFilterTest extends StreamInprocessTest {
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(1));
         
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(1));
-        assertThat(elseCount.intValue(), is(1));
-        
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(1));
-        assertThat(elseCount.intValue(), is(1));
-        
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(2));
+
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
+        
+        onEvent(new StreamData(19));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(2));
         
         onEvent(new StreamData(9));
-        assertThat(filterCount.intValue(), is(1));
-        assertThat(elseCount.intValue(), is(2));
+        assertThat(filterCount.intValue(), is(2));
+        assertThat(elseCount.intValue(), is(3));
         
         onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(2));
+        assertThat(filterCount.intValue(), is(3));
+        assertThat(elseCount.intValue(), is(3));
         
         onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(2));
+        assertThat(filterCount.intValue(), is(3));
+        assertThat(elseCount.intValue(), is(3));
         
         onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(2));
+        assertThat(filterCount.intValue(), is(3));
+        assertThat(elseCount.intValue(), is(3));
     }
 
     @Test

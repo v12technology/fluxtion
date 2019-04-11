@@ -18,19 +18,24 @@ public class ElseWrapper<T> implements Wrapper<T> {
     private final FilterWrapper<T> node;
     private boolean notifyOnChangeOnly;
     private boolean published = false;
+    private boolean filtered = false;
 
     public ElseWrapper(FilterWrapper<T> node) {
         this.node = node;
+    }
+    
+    @OnParentUpdate(guarded = false)
+    public void filterUpdated(FilterWrapper filter){
+        filtered = filter.filterMatched();
+        if(filtered){
+            published = false;
+        }
     }
     
     @OnEvent(dirty = false)
     public boolean onEvent() {
         if(!notifyOnChangeOnly){
             return true;
-        }
-        boolean filtered = node.filterMatched();
-        if(filtered){
-            published = false;
         }
         if(!filtered & !published){
             published = true;
