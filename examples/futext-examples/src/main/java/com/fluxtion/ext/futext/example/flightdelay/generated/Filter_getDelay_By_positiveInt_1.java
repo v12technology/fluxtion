@@ -5,13 +5,10 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.streaming.api.Test;
+import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
-import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDetailsCsvDecoder0;
 
 /**
  * generated filter function wrapper.
@@ -28,7 +25,8 @@ public class Filter_getDelay_By_positiveInt_1 extends AbstractFilterWrapper<Flig
   //source operand inputs
   public FlightDetailsCsvDecoder0 filterSubject;
   public FlightDetailsCsvDecoder0 source_0;
-  private boolean result;
+  @NoEventReference public Object resetNotifier;
+  private boolean parentReset = false;
 
   @Initialise
   public void init() {
@@ -42,6 +40,29 @@ public class Filter_getDelay_By_positiveInt_1 extends AbstractFilterWrapper<Flig
     //this is probably right - to be tested
     //return (!notifyOnChangeOnly | !oldValue) & result;
     return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
+  }
+
+  @OnParentUpdate("resetNotifier")
+  public void resetNotification(Object resetNotifier) {
+    parentReset = true;
+    if (isResetImmediate()) {
+      result = false;
+      parentReset = false;
+    }
+  }
+
+  @AfterEvent
+  public void resetAfterEvent() {
+    if (parentReset) {
+      result = false;
+    }
+    parentReset = false;
+  }
+
+  @Override
+  public Wrapper<FlightDetails> resetNotifier(Object resetNotifier) {
+    this.resetNotifier = resetNotifier;
+    return this;
   }
 
   @Override

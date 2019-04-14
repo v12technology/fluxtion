@@ -1,22 +1,10 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
-import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
-import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
-import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt_1;
 import java.util.BitSet;
-import java.util.Map;
 
 /**
  * generated group by calculation state holder. This class holds the state of a group by
@@ -32,10 +20,10 @@ public final class CalculationStateGroupBy_6 implements Wrapper<CarrierDelay> {
   private final BitSet updateMap = new BitSet(SOURCE_COUNT);
 
   public CarrierDelay target;
-  public double aggregateSum5;
   public AggregateAverage aggregateAverage3Function = new AggregateAverage();
   public double aggregateAverage3;
   public int aggregateCount4;
+  public double aggregateSum5;
 
   public CalculationStateGroupBy_6() {
     target = new CarrierDelay();
