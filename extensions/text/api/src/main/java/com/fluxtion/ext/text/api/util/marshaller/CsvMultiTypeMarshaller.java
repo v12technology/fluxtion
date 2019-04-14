@@ -19,11 +19,13 @@ package com.fluxtion.ext.text.api.util.marshaller;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.BufferValue;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,6 +94,12 @@ public class CsvMultiTypeMarshaller {
     public void init() {
         type2Marshaller = new HashMap<>();
         marshaller = null;
+    }
+    
+    @TearDown
+    public void tearDown() {
+        type2Marshaller.forEach((k, v) -> v.onEvent(EofEvent.EOF));
+        sink.onEvent(EofEvent.EOF);
     }
 
 }
