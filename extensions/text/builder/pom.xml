@@ -56,7 +56,7 @@ along with this program.  If not, see
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <configClass>com.fluxtion.ext.futext.builder.util.MarshallerSepConfig</configClass>
+                                    <configClass>com.fluxtion.ext.text.builder.util.MarshallerSepConfig</configClass>
                                     <className>DispatchingCsvMarshaller</className>
                                     <packageName> com.fluxtion.ext.futext.api.util.marshaller</packageName>
                                     <supportDirtyFiltering>true</supportDirtyFiltering>

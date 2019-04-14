@@ -1,13 +1,10 @@
 ## Velocity Template.
 package ${package};
 
-import java.util.HashMap;
-import com.fluxtion.extension.declarative.api.Wrapper;
-import com.fluxtion.runtime.lifecycle.BatchHandler;
-import com.fluxtion.runtime.lifecycle.EventHandler;
-import com.fluxtion.runtime.lifecycle.FilteredHandlerInvoker;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.BatchHandler;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end
@@ -23,18 +20,26 @@ ${MODEL.filterConstantDeclarations}
 
     public ${className} () {
 ${MODEL.nodeMemberAssignments}
+        init();
     }
 
-    public void addMarshaller(Wrapper wrapper, EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, EventHandler handler) {
         dispatcher.addMarshaller(wrapper, handler);
+        return this;
     }
-    
-    public void addSink(EventHandler handler){
-        dispatcher.sink = handler;
+
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, String handlerClass) throws Exception {
+        dispatcher.addMarshaller(wrapper, (EventHandler) Class.forName(handlerClass).newInstance());
+        return this;
+    }
+
+    public DispatchingCsvMarshaller addSink(EventHandler handler) {
+        dispatcher.setSink(handler);
+        return this;
     }
 
     @Override
-    public void onEvent(com.fluxtion.runtime.event.Event event) {
+    public void onEvent(Event event) {
 ${MODEL.eventDispatch}
     }
 
