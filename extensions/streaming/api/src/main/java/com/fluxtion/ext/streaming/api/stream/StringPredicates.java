@@ -27,6 +27,9 @@ public class StringPredicates {
     public static SerializableFunction<String, Boolean> is(String refString) {
         return new StringPredicates(refString)::equal;
     }
+    public static SerializableFunction<CharSequence, Boolean> isEqual(String refString) {
+        return new StringPredicates(refString)::equalCharSeq;
+    }
 
     public String refString;
 
@@ -35,6 +38,10 @@ public class StringPredicates {
 
     public StringPredicates(String refString) {
         this.refString = refString;
+    }
+
+    public boolean equalCharSeq(CharSequence testString) {
+        return refString.contentEquals(testString);
     }
 
     public boolean equal(String testString) {
