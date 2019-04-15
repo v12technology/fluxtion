@@ -101,7 +101,6 @@ public class StreamFunctionsBuilder  {
         return FilterBuilder.map(StreamFunctions::subtract, arg(wrapper1), arg(wrapper2));
     }
 
-
     public static <T extends Double, S extends Double> SerializableBiFunction<T, S, Number> multiply() {
         return StreamFunctions::multiply;
     }

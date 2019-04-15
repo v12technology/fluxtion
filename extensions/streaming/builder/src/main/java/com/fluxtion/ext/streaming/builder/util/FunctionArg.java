@@ -60,7 +60,7 @@ public class FunctionArg<T> extends Argument<T> {
         return new FunctionArg(new ConstantNumber(d), s.method(), true);
     }
 
-    public static <T extends Number> FunctionArg<Double> arg(Wrapper<T> wrapper) {
+    public static <T extends Number> FunctionArg<Number> arg(Wrapper<T> wrapper) {
         return arg(wrapper, Number::doubleValue);
     }
 
