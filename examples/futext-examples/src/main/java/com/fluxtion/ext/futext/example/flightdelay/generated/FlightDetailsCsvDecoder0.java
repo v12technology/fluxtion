@@ -1,6 +1,5 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
-import com.fluxtion.ext.futext.example.flightdelay.generated.*;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
@@ -14,7 +13,6 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import static com.fluxtion.ext.text.api.ascii.Conversion.*;

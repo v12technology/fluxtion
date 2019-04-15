@@ -46,6 +46,7 @@ import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Constant;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -587,6 +588,7 @@ public class FilterBuilder<T, F> {
         importMap.addImport(NoEventReference.class);
         importMap.addImport(OnParentUpdate.class);
         importMap.addImport(Wrapper.class);
+        importMap.addImport(FilterWrapper.class);
         importMap.addImport(Test.class);
         importMap.addImport(AbstractFilterWrapper.class);
         importMap.addImport(AfterEvent.class);

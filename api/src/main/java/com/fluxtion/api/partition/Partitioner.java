@@ -31,11 +31,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * An EventHandler partitioner based upon a received event. A partitioner
- * creates an instance of an {@link EventHandler} and dispatches events to that
- * instance. Partitioning allows a separate memory context for an EventHandler,
- * this can be useful when the structure of processing is repeated but the state
- * is different for each instance.<p>
+ * An EventHandler partitioner based upon a received event.A partitioner
+ creates an instance of an {@link EventHandler} and dispatches events to that
+ instance. Partitioning allows a separate memory context for an EventHandler,
+ this can be useful when the structure of processing is repeated but the state
+ is different for each instance.<p>
  *
  * For example monitoring the fuel level on a
  * fleet of cars is the same processing for each car, but an individual car will
@@ -58,6 +58,7 @@ import java.util.function.Supplier;
  * each newly created car processor.
  *
  * @author gregp
+ * @param <E>
  */
 public class Partitioner<E extends EventHandler> implements EventHandler, Lifecycle, BatchHandler {
 
