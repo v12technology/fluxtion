@@ -90,7 +90,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
     }
   
     @Override
-    public Wrapper<Boolean> resetNotifier(Object resetNotifier) {
+    public FilterWrapper<Boolean> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
     }

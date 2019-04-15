@@ -23,13 +23,13 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
     }
     
     @Override
-    public Wrapper<T> immediateReset(boolean immediateReset) {
+    public FilterWrapper<T> immediateReset(boolean immediateReset) {
         this.resetImmediate = immediateReset;
         return this;
     }
     
     @Override
-    public Wrapper<T> alwaysReset(boolean alwaysReset) {
+    public FilterWrapper<T> alwaysReset(boolean alwaysReset) {
         this.alwaysReset = alwaysReset;
         return this;
     }

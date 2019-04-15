@@ -116,7 +116,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     }
 
     @Override
-    public Wrapper<Number> resetNotifier(Object resetNotifier) {
+    public FilterWrapper<Number> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
     }
