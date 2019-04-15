@@ -51,9 +51,6 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   //Filter constants
 
   public FlightDelayAnalyser() {
-    validationLogSink_7.setPublishLogImmediately(true);
-    validationLogger_6.logSink = validationLogSink_7;
-    eventPublsher_1.publishOnValidate = (boolean) false;
     filter_getDelay_By_positiveInt_1_2.setAlwaysReset(false);
     filter_getDelay_By_positiveInt_1_2.setNotifyOnChangeOnly(false);
     filter_getDelay_By_positiveInt_1_2.setResetImmediate(true);
@@ -66,6 +63,9 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
     totalFlights.setResetImmediate(true);
     totalFlights.filterSubject = flightDetailsCsvDecoder0_0;
     totalFlights.f = count_4;
+    validationLogSink_7.setPublishLogImmediately(true);
+    validationLogger_6.logSink = validationLogSink_7;
+    eventPublsher_1.publishOnValidate = (boolean) false;
   }
 
   @Override
@@ -100,7 +100,7 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
 
   public void handleEvent(LogControlEvent typedEvent) {
     switch (typedEvent.filterString()) {
-        //Event Class:[com.fluxtion.ext.declarative.api.log.LogControlEvent] filterString:[CHANGE_LOG_PROVIDER]
+        //Event Class:[com.fluxtion.ext.streaming.api.log.LogControlEvent] filterString:[CHANGE_LOG_PROVIDER]
       case ("CHANGE_LOG_PROVIDER"):
         isDirty_validationLogSink_7 = true;
         validationLogSink_7.controlLogProvider(typedEvent);
@@ -161,6 +161,7 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   @Override
   public void afterEvent() {
     totalFlights.resetAfterEvent();
+    filter_getDelay_By_positiveInt_1_2.resetAfterEvent();
     isDirty_eventPublsher_1 = false;
     isDirty_filter_getDelay_By_positiveInt_1_2 = false;
     isDirty_flightDetailsCsvDecoder0_0 = false;

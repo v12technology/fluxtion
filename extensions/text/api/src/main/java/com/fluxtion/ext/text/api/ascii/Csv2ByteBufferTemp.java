@@ -21,12 +21,13 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.FilterType;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.ext.streaming.api.numeric.BufferValue;
+import com.fluxtion.ext.streaming.api.util.StringCache;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import java.nio.ByteBuffer;
 
 /**
  * Stores bytes in a StringBuilder.
- * 
+ *
  * @author Greg Higgins
  */
 public class Csv2ByteBufferTemp implements BufferValue {
@@ -54,6 +55,7 @@ public class Csv2ByteBufferTemp implements BufferValue {
     private transient int currentFieldNumber;
     private transient boolean parseComplete;
     private String cachedString = "";
+    private StringCache cache = new StringCache();
 
     public Csv2ByteBufferTemp(int fieldNumber, String terminatorChars, int headerLines) {
         this.fieldNumber = fieldNumber;
@@ -67,7 +69,6 @@ public class Csv2ByteBufferTemp implements BufferValue {
     public Csv2ByteBufferTemp() {
     }
 
-
     @EventHandler(filterId = '\n')
     public boolean onEol(CharEvent e) {
         processDelimiter();
@@ -76,7 +77,6 @@ public class Csv2ByteBufferTemp implements BufferValue {
         headerLines = Math.max(0, headerLines);
         return parseComplete;
     }
-
 
     @EventHandler(filterId = ',')
     public boolean onDelimiter(CharEvent e) {
@@ -113,7 +113,7 @@ public class Csv2ByteBufferTemp implements BufferValue {
 
     @EventHandler(propagate = false, value = FilterType.unmatched)
     public boolean appendToBuffer(CharEvent e) {
-        if (processCharForParse ) {
+        if (processCharForParse) {
             sb.append(e.getCharacter());
         }
         return false;
@@ -140,15 +140,16 @@ public class Csv2ByteBufferTemp implements BufferValue {
     public String toString() {
         return asString();
     }
-    
+
     @Override
     public String asString() {
         if (cachedString == null) {
-            cachedString = sb.toString();
+            cachedString = (String) cache.intern(sb);
         }
         return cachedString;
     }
-   public CharSequence asCharSequence() {
+
+    public CharSequence asCharSequence() {
         return sb;
     }
 

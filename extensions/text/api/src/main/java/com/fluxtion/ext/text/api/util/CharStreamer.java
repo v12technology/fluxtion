@@ -29,7 +29,8 @@ import java.util.logging.Logger;
 
 /**
  * Reads files and streams pushing {@link CharEvent} to an {@link EventHandler}.
- * Can be configured to be a synchronous or an asynchronous reader from the input.
+ * Can be configured to be a synchronous or an asynchronous reader from the
+ * input.
  *
  * @author gregp
  */
@@ -164,7 +165,7 @@ public class CharStreamer {
             }
             fileChannel.close();
         }
-        handler.onEvent(EofEvent.EOF);
+//        handler.onEvent(EofEvent.EOF);
     }
 
     private void streamSyncReader() throws IOException {

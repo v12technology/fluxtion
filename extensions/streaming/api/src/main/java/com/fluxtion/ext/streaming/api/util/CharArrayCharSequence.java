@@ -12,6 +12,7 @@ package com.fluxtion.ext.streaming.api.util;
 public class CharArrayCharSequence implements CharSequence {
 
     private final char[] array;
+    private StringCache cache = new StringCache();
 
     public CharArrayCharSequence(char[] array) {
         this.array = array;
@@ -31,8 +32,8 @@ public class CharArrayCharSequence implements CharSequence {
     public CharSequenceView subSequence(int start, int end) {
         return new CharSequenceView(start, end);
     }
-    
-    public CharSequenceView view(){
+
+    public CharSequenceView view() {
         return subSequence(0, 0);
     }
 
@@ -88,7 +89,8 @@ public class CharArrayCharSequence implements CharSequence {
 
         @Override
         public String toString() {
-            return new String(array, start, end - start);
+            return (String) cache.intern(this);
+//            return new String(array, start, end - start);
         }
 
         @Override

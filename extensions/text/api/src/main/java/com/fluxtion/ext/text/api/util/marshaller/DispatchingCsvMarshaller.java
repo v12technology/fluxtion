@@ -1,5 +1,6 @@
 package com.fluxtion.ext.text.api.util.marshaller;
 
+import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
@@ -13,6 +14,7 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
     public final CsvMultiTypeMarshaller dispatcher = new CsvMultiTypeMarshaller();
     //Dirty flags
     private boolean isDirty_csv2ByteBufferTemp_1 = false;
+    private boolean isDirty_dispatcher = false;
     //Filter constants
 
     public DispatchingCsvMarshaller() {
@@ -33,12 +35,21 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
     }
 
     public DispatchingCsvMarshaller addSink(EventHandler handler) {
+        return addSink(handler, true);
+    }
+
+    public DispatchingCsvMarshaller addSink(EventHandler handler, boolean init) {
         dispatcher.setSink(handler);
+        if(init){
+            if(handler instanceof Lifecycle){
+                ((Lifecycle)handler).init();
+            }
+        }
         return this;
     }
 
     @Override
-    public void onEvent(com.fluxtion.api.event.Event event) {
+    public void onEvent(Event event) {
         switch (event.eventId()) {
             case (CharEvent.ID): {
                 CharEvent typedEvent = (CharEvent) event;
@@ -50,27 +61,30 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
 
     public void handleEvent(CharEvent typedEvent) {
         switch (typedEvent.filterId()) {
-            //Event Class:[com.fluxtion.ext.futext.api.event.CharEvent] filterId:[10]
+            //Event Class:[com.fluxtion.ext.text.api.event.CharEvent] filterId:[10]
             case (10):
                 isDirty_csv2ByteBufferTemp_1 = csv2ByteBufferTemp_1.onEol(typedEvent);
                 if (isDirty_csv2ByteBufferTemp_1) {
                     dispatcher.onTypeUpdated(csv2ByteBufferTemp_1);
                 }
+                isDirty_dispatcher = true;
                 dispatcher.pushCharToMarshaller(typedEvent);
                 afterEvent();
                 return;
-            //Event Class:[com.fluxtion.ext.futext.api.event.CharEvent] filterId:[44]
+            //Event Class:[com.fluxtion.ext.text.api.event.CharEvent] filterId:[44]
             case (44):
                 isDirty_csv2ByteBufferTemp_1 = csv2ByteBufferTemp_1.onDelimiter(typedEvent);
                 if (isDirty_csv2ByteBufferTemp_1) {
                     dispatcher.onTypeUpdated(csv2ByteBufferTemp_1);
                 }
+                isDirty_dispatcher = true;
                 dispatcher.pushCharToMarshaller(typedEvent);
                 afterEvent();
                 return;
         }
         //Default, no filter methods
         isDirty_csv2ByteBufferTemp_1 = csv2ByteBufferTemp_1.appendToBuffer(typedEvent);
+        isDirty_dispatcher = true;
         dispatcher.pushCharToMarshaller(typedEvent);
         //event stack unwind callbacks
         afterEvent();
@@ -80,6 +94,7 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
     public void afterEvent() {
         csv2ByteBufferTemp_1.onEventComplete();
         isDirty_csv2ByteBufferTemp_1 = false;
+        isDirty_dispatcher = false;
     }
 
     @Override
@@ -90,6 +105,7 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
 
     @Override
     public void tearDown() {
+        dispatcher.tearDown();
     }
 
     @Override
