@@ -34,7 +34,7 @@ public class Argument<T> {
         return new Argument(new ConstantNumber(d), s.method(), true);
     }
 
-    public static <T extends Number> Argument<Double> arg(Wrapper<T> wrapper) {
+    public static <T extends Number> Argument<Number> arg(Wrapper<T> wrapper) {
         return arg(wrapper, Number::doubleValue);
     }
 

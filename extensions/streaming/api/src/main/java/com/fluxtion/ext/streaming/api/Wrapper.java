@@ -139,7 +139,13 @@ public interface Wrapper<T> {
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<S> arg1, Argument<U> arg2) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg1, arg2);
     }
-    default <R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, SerializableFunction<T, S> supplier, Argument<U> arg) {
+    
+    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, 
+            SerializableFunction<T, S> supplier1, SerializableFunction<T, U> supplier2) {
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier1), arg(this, supplier2));
+    }
+    
+    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, SerializableFunction<T, S> supplier, Argument<U> arg) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg);
     }
     
