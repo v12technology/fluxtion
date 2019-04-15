@@ -6,7 +6,7 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -73,7 +73,7 @@ public class Map_FlightDetails_By_increment_7 extends AbstractFilterWrapper<Numb
   }
 
   @Override
-  public Wrapper<Number> resetNotifier(Object resetNotifier) {
+  public FilterWrapper<Number> resetNotifier(Object resetNotifier) {
     this.resetNotifier = resetNotifier;
     return this;
   }

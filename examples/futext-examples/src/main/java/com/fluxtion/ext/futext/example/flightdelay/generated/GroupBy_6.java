@@ -1,23 +1,16 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
-import com.fluxtion.ext.futext.example.flightdelay.generated.*;
-import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt_1;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
-import java.util.BitSet;
 import java.util.Map;
 
 /**
@@ -45,13 +38,6 @@ public final class GroupBy_6 implements GroupBy<CarrierDelay> {
         instance.processSource(1, initialiserfilter_getDelay_By_positiveInt_10, event);
     target = instance.target;
     {
-      double value = instance.aggregateAverage3;
-      value =
-          instance.aggregateAverage3Function.calcAverage((double) event.getDelay(), (double) value);
-      target.setAvgDelay((int) value);
-      instance.aggregateAverage3 = value;
-    }
-    {
       int value = instance.aggregateCount4;
       value = AggregateCount.increment((int) 0, (int) value);
       target.setTotalFlights((int) value);
@@ -62,6 +48,13 @@ public final class GroupBy_6 implements GroupBy<CarrierDelay> {
       value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
       target.setTotalDelayMins((int) value);
       instance.aggregateSum5 = value;
+    }
+    {
+      double value = instance.aggregateAverage3;
+      value =
+          instance.aggregateAverage3Function.calcAverage((double) event.getDelay(), (double) value);
+      target.setAvgDelay((int) value);
+      instance.aggregateAverage3 = value;
     }
     return allMatched;
   }
