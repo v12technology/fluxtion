@@ -51,11 +51,11 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
-    default FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter) {
+    default FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, true);
     }
 
-    default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<S, Boolean> filter) {
+    default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<? extends S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
     
@@ -79,7 +79,7 @@ public interface Wrapper<T> {
      * @param mapper the mapping function
      * @return A wrapped value containing the result of the mapping operation
      */
-    default <R> Wrapper<R> map(SerializableFunction<T, R> mapper) {
+    default <R> Wrapper<R> map(SerializableFunction<? extends T, R> mapper) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
     }
     
@@ -122,7 +122,7 @@ public interface Wrapper<T> {
      * @param supplier
      * @return A wrapped value containing the result of the mapping operation
      */
-    default <R, S> Wrapper<R> map(SerializableFunction<S, R> mapper, SerializableFunction<T, S> supplier) {
+    default <R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
     

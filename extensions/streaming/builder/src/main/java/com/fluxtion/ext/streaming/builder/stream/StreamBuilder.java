@@ -60,7 +60,7 @@ public class StreamBuilder implements StreamOperator {
     }
 
     @Override
-    public <T> FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter, Wrapper<T> source, boolean cast) {
+    public <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter, Wrapper<T> source, boolean cast) {
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
         if (Modifier.isStatic(filterMethod.getModifiers())) {

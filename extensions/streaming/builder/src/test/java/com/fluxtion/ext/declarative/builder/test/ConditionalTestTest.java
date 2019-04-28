@@ -408,7 +408,7 @@ public class ConditionalTestTest extends BaseSepTest {
         public Builder7() throws Exception {
             MyDataHandler handler = addNode(new MyDataHandler());
             MyDataChildNode data = addNode(new MyDataChildNode(handler));
-            Object test = stream(data).filter(gt(200)).notifyOnChange(true);
+            Object test = stream((Number)data).filter(gt(200)).notifyOnChange(true);
             addPublicNode(new TestResultListener(test), "results");
         }
     }
@@ -452,7 +452,7 @@ public class ConditionalTestTest extends BaseSepTest {
             MyDataChildNode data2 = addNode(new MyDataChildNode(handler2));
             MyDataChildNode[] dataArr = new MyDataChildNode[]{data1, data2};
 //            Wrapper<MyDataChildNode> filter = buildTest(Greater.class, dataArr).arg(200).notifyOnChange(true).buildFilter();
-            Wrapper<MyDataChildNode> filter = MergingWrapper.merge(dataArr).filter(gt(200)).notifyOnChange(true);
+            Wrapper<MyDataChildNode> filter = MergingWrapper.merge(dataArr).filter(MyDataChildNode::doubleValue, gt(200)).notifyOnChange(true);
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }

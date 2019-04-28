@@ -29,6 +29,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
 import com.fluxtion.ext.streaming.builder.stream.FunctionBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
 import com.fluxtion.generator.targets.JavaGenHelper;
@@ -53,8 +54,8 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 public class StreamFunctionGenerator {
 
     private String templateFile = "/template/FunctionsTemplate.vsl";
-    private String packageName = "com.fluxtion.ext.declarative.builder.stream";
-    private String className = "StreamFunctionsHelper";
+    private String packageName = "com.fluxtion.ext.streaming.builder.stream";
+    private String className = "StreamFunctionsBuilder";
     private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
     private List<FunctionInfo> functionList = new ArrayList<>();
@@ -77,7 +78,7 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(Math::floor, "floor");
         //consumer
         gen.addConsumerFunction(new Count()::increment, "count");
-        gen.addConsumerFunction(new IntCount()::increment, "intCount");
+//        gen.addConsumerFunction(new IntCount()::increment, "intCount");
         gen.generate();
     }
 
@@ -105,6 +106,7 @@ public class StreamFunctionGenerator {
         imports.addImport(SerializableFunction.class);
         imports.addImport(SerializableBiFunction.class);
         imports.addImport(SerializableSupplier.class);
+        imports.addImport(FilterBuilder.class);
         imports.addImport(Wrapper.class);
         imports.addStaticImport(EventSelect.class);
         imports.addStaticImport(FunctionBuilder.class);

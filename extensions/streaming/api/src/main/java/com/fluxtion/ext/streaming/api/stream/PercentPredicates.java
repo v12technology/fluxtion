@@ -29,34 +29,34 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 public class PercentPredicates implements Stateful {
 
     
-    public static SerializableFunction<Number, Boolean> ltPercent(double barrier){
+    public static SerializableFunction<Double, Boolean> ltPercent(double barrier){
         return new PercentPredicates(barrier)::lt;
     }
     
-    public static SerializableFunction<Number, Boolean> gtPercent(double barrier){
+    public static SerializableFunction<Double, Boolean> gtPercent(double barrier){
         return new PercentPredicates(barrier)::gt;
     }
     
     public double previous = Double.NaN;
     private final double changeBarrier;
-    private MutableNumber result = new MutableNumber();
+    private double result = 0;
 
     public PercentPredicates(double changeBarrier) {
         this.changeBarrier = changeBarrier;
     }
 
-    private MutableNumber delta(Number newVal) {
-        result.set(newVal.doubleValue() / previous);
-        previous = newVal.doubleValue();
+    private double delta(double newVal) {
+        result = newVal / previous;
+        previous = newVal;
         return result;
     }
 
-    public boolean lt(Number newVal) {
-        return delta(newVal).doubleValue < changeBarrier;
+    public boolean lt(double newVal) {
+        return delta(newVal) < changeBarrier;
     }
 
-    public boolean gt(Number newVal) {
-        return delta(newVal).doubleValue > changeBarrier;
+    public boolean gt(double newVal) {
+        return delta(newVal) > changeBarrier;
     }
 
     @Override

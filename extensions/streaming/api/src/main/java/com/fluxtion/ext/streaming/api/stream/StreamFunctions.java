@@ -30,104 +30,99 @@ public class StreamFunctions {
     public static <T> LambdaReflection.SerializableFunction<T, String> message(String message) {
         return new Message(message)::publishMessage;
     }
-    
-    public static double add(double a, double b){
+
+    public static double add(double a, double b) {
         return a + b;
     }
-    
-    public static double subtract(double a, double b){
+
+    public static double subtract(double a, double b) {
         return a - b;
     }
-    
-    public static double multiply(double a, double b){
+
+    public static double multiply(double a, double b) {
         return a * b;
     }
-    
-    public static double divide(double a, double b){
+
+    public static double divide(double a, double b) {
         return a / b;
     }
-    
-    public static class IntCount implements Stateful{
+
+    public static class IntCount implements Stateful {
 
         private int count = 0;
-        
+
         @Override
         public void reset() {
             count = 0;
         }
-        
-        public int increment(Object o){
+
+        public int increment(Object o) {
             return ++count;
         }
-        
+
     }
 
     public static class Count implements Stateful {
 
         private int count;
-        private MutableNumber num = new MutableNumber();
 
-        public Number increment(Object o) {
-            num.set(++count);
-            return num;
+        public int increment(Object o) {
+            ++count;
+            return count;
         }
 
         @Override
         public void reset() {
             count = 0;
-            num.set(count);
         }
     }
 
     public static class Sum implements Stateful {
 
         private double sum;
-        private MutableNumber num = new MutableNumber();
 
-        public Number addValue(Number val) {
-            sum += val.doubleValue();
-            num.set(sum);
-            return num;
+        public Number addValue(double val) {
+            sum += val;
+            return sum;
         }
 
         @Override
         public void reset() {
             sum = 0;
-            num.set(sum);
         }
     }
 
     public static class Max implements Stateful {
 
-        private MutableNumber max = new MutableNumber();
+        private double max = 0;
 
-        public Number max(Number val) {
-            if (max.doubleValue() < val.doubleValue()) {
-                max.set(val.doubleValue());
+        public Number max(double val) {
+            if (max < val) {
+                max = val;
             }
             return max;
         }
 
         @Override
         public void reset() {
-            max.set(0);
+            max = 0;
         }
     }
 
     public static class Min implements Stateful {
 
-        private MutableNumber min = new MutableNumber();
+        private double min = 0;
 
-        public Number min(Number val) {
-            if (min.doubleValue() > val.doubleValue()) {
-                min.set(val.doubleValue());
+        public Number min(double val) {
+            if (min > val) {
+                min = val;
             }
             return min;
         }
 
         @Override
         public void reset() {
-            min.set(0);
+            min = 0;
         }
     }
 
@@ -135,12 +130,12 @@ public class StreamFunctions {
 
         private double sum;
         private double count;
-        private MutableNumber average = new MutableNumber();
+        private double average = 0;
 
-        public Number addValue(Number val) {
-            sum += val.doubleValue();
+        public Number addValue(double val) {
+            sum += val;
             count++;
-            average.setDoubleValue(sum / count);
+            average = (sum / count);
             return average;
         }
 
@@ -148,25 +143,25 @@ public class StreamFunctions {
         public void reset() {
             sum = 0;
             count = 0;
-            average.set(0);
+            average = 0;
         }
     }
 
     public static class PercentDelta implements Stateful {
 
         public double previous = Double.NaN;
-        private MutableNumber result = new MutableNumber();
+        private double result = 0;
 
-        public Number value(Number newVal) {
-            result.set(newVal.doubleValue() / previous);
-            previous = newVal.doubleValue();
+        public Number value(double newVal) {
+            result = (newVal / previous);
+            previous = newVal;
             return result;
         }
 
         @Override
         public void reset() {
             previous = 0;
-            result.set(0);
+            result = 0;
         }
     }
 

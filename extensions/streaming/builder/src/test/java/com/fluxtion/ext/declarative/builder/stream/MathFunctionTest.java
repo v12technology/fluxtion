@@ -32,9 +32,9 @@ import static com.fluxtion.ext.streaming.builder.log.LogBuilder.buildLog;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.streaming.builder.stream.FilterBuilder.map;
 import static com.fluxtion.ext.streaming.builder.stream.FunctionBuilder.mapSet;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.divide;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.intCount;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.subtract;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
@@ -148,7 +148,7 @@ public class MathFunctionTest extends StreamInprocessTest {
             Wrapper<Number> sum = intHelper(arg(Data1::getVal), arg(Data1::getVal))
                     .mapDouble(Math::rint).id("random")
                     .map(cumSum()).console("sum:").id("add")
-                    .map(intCount()).id("intCount")
+                    .map(count()).id("intCount")
                     .map(StreamFunctionsBuilder.ceil(), Number::doubleValue)
                     .map(StreamFunctionsBuilder.avg());
             ceil(Data1::getVal).id("celiFromEvent").map(cumSum()).id("cumSum");
