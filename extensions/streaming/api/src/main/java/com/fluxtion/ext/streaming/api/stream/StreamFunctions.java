@@ -81,7 +81,7 @@ public class StreamFunctions {
 
         private double sum;
 
-        public Number addValue(double val) {
+        public double addValue(double val) {
             sum += val;
             return sum;
         }
@@ -96,7 +96,7 @@ public class StreamFunctions {
 
         private double max = 0;
 
-        public Number max(double val) {
+        public double max(double val) {
             if (max < val) {
                 max = val;
             }
@@ -113,7 +113,7 @@ public class StreamFunctions {
 
         private double min = 0;
 
-        public Number min(double val) {
+        public double min(double val) {
             if (min > val) {
                 min = val;
             }
@@ -132,7 +132,7 @@ public class StreamFunctions {
         private double count;
         private double average = 0;
 
-        public Number addValue(double val) {
+        public double addValue(double val) {
             sum += val;
             count++;
             average = (sum / count);
@@ -152,7 +152,7 @@ public class StreamFunctions {
         public double previous = Double.NaN;
         private double result = 0;
 
-        public Number value(double newVal) {
+        public double value(double newVal) {
             result = (newVal / previous);
             previous = newVal;
             return result;
