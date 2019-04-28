@@ -80,7 +80,8 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(combiner_9, "combiner_9", "processConfig", typedEvent);
-    isDirty_combiner_9 = combiner_9.processConfig(typedEvent);
+    isDirty_combiner_9 = true;
+    combiner_9.processConfig(typedEvent);
     if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
       auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
       isDirty_combiner_9 = true;

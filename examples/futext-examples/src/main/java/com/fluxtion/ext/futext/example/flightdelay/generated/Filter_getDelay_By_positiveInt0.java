@@ -24,7 +24,7 @@ import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
  *
  * @author Greg Higgins
  */
-public class Filter_getDelay_By_positiveInt_1 extends AbstractFilterWrapper<FlightDetails> {
+public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<FlightDetails> {
 
   //source operand inputs
   public FlightDetailsCsvDecoder0 filterSubject;
