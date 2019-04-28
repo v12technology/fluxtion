@@ -23,15 +23,15 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions.IntCount;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
+import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.*;
+import static com.fluxtion.ext.streaming.builder.stream.FunctionBuilder.*;
 import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.*;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
-import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 
 /**
  * Utility class providing static helper methods to create mapping operations
@@ -101,6 +101,7 @@ public class StreamFunctionsBuilder  {
         return FilterBuilder.map(StreamFunctions::subtract, arg(wrapper1), arg(wrapper2));
     }
 
+
     public static <T extends Double, S extends Double> SerializableBiFunction<T, S, Number> multiply() {
         return StreamFunctions::multiply;
     }
@@ -167,7 +168,7 @@ public class StreamFunctionsBuilder  {
      * @param <T> input to {@link Sum#addValue }
      * @return {@link SerializableFunction} of {@link Sum#addValue }
      */
-    public static <T extends Number> SerializableFunction<T, Number> cumSum() {
+    public static <T extends Double> SerializableFunction<T, Number> cumSum() {
         return new Sum()::addValue;
     }
 
@@ -221,7 +222,7 @@ public class StreamFunctionsBuilder  {
      * @param <T> input to {@link Average#addValue }
      * @return {@link SerializableFunction} of {@link Average#addValue }
      */
-    public static <T extends Number> SerializableFunction<T, Number> avg() {
+    public static <T extends Double> SerializableFunction<T, Number> avg() {
         return new Average()::addValue;
     }
 
@@ -275,7 +276,7 @@ public class StreamFunctionsBuilder  {
      * @param <T> input to {@link Max#max }
      * @return {@link SerializableFunction} of {@link Max#max }
      */
-    public static <T extends Number> SerializableFunction<T, Number> max() {
+    public static <T extends Double> SerializableFunction<T, Number> max() {
         return new Max()::max;
     }
 
@@ -329,7 +330,7 @@ public class StreamFunctionsBuilder  {
      * @param <T> input to {@link PercentDelta#value }
      * @return {@link SerializableFunction} of {@link PercentDelta#value }
      */
-    public static <T extends Number> SerializableFunction<T, Number> percentChange() {
+    public static <T extends Double> SerializableFunction<T, Number> percentChange() {
         return new PercentDelta()::value;
     }
 
@@ -523,46 +524,6 @@ public class StreamFunctionsBuilder  {
      */
     public static <T> Wrapper<Number> count(T supplier) {
         return stream(supplier).map(new Count()::increment);
-    }
-    /**
-     * Wrap {@link IntCount#increment } function for use as a map operation in an existing
-     * stream. {@link Wrapper#map(SerializableFunction) }
-     * requires a {@link SerializableFunction} to map input values.
-     *
-     * @param <T> input to {@link IntCount#increment }
-     * @return {@link SerializableFunction} of {@link IntCount#increment }
-     */
-    public static <T> SerializableFunction<T, Number> intCount() {
-        return new IntCount()::increment;
-    }
-
-    /**
-     * Performs a {@link IntCount#increment} function as a map operation on a stream.
-     * The stream is automatically created by subscribing to the {@link Event}
-     * and wrapping the supplier function with {@link Wrapper&lt;T&gt;}. 
-     * The wrapper is the input to the mapping function. The mapped value is available as
-     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
-     *
-     * @param <T> The input event stream
-     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link IntCount#increment}
-     */
-    public static <T extends Event> Wrapper<Number> intCount(Class<T> eventClass) {
-        return select(eventClass).map(new IntCount()::increment);
-    }
-
-    /**
-     * Performs a {@link IntCount#increment} function as a map operation on a stream.
-     * The stream is automatically created by wrapping the supplier instance function in a
-     * {@link Wrapper&lt;T&gt;}, the wrapper is the input 
-     * to the mapping function. The mapped value is available as
-     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
-     *
-     * @param <T> The input type required by {@link IntCount#increment}
-     * @param supplier The wrapped instance supplying values to the function {@link IntCount#increment
-     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link IntCount#increment}
-     */
-    public static <T> Wrapper<Number> intCount(T supplier) {
-        return stream(supplier).map(new IntCount()::increment);
     }
 
 

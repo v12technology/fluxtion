@@ -27,6 +27,7 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,15 +48,24 @@ public class CsvMultiTypeMarshaller {
 
     public BufferValue type;
 
-    private Map<String, com.fluxtion.api.lifecycle.EventHandler> type2Marshaller;
+    private Map<ByteBuffer, com.fluxtion.api.lifecycle.EventHandler> type2Marshaller;
     private com.fluxtion.api.lifecycle.EventHandler marshaller;
     public com.fluxtion.api.lifecycle.EventHandler sink;
+    private ByteBuffer buffer;
+    private byte[] array;
+    private static final int DEFAULT_SIZE = 256;
     private int fieldNumber;
 
     @OnParentUpdate("type")
     public boolean onTypeUpdated(BufferValue type) {
-        String key = type.asString();
-        marshaller = type2Marshaller.get(key);
+        CharSequence name = type.asCharSequence();
+        buffer.clear();
+        for (int j = 0; j < name.length(); j++) {
+            array[j] = (byte) name.charAt(j);
+        }
+        buffer.position(0);
+        buffer.limit(name.length());
+        marshaller = type2Marshaller.get(buffer);
         fieldNumber = 0;
         return false;
     }
@@ -84,7 +94,13 @@ public class CsvMultiTypeMarshaller {
         if (handler != null && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
-        type2Marshaller.put(wrapper.getSimpleName(), handler);
+        char[] chars = wrapper.getSimpleName().toCharArray(); 
+        byte[] bytes = new byte[chars.length];
+        for (int i = 0; i < chars.length; i++) {
+            bytes[i] = (byte)chars[i];
+        }
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        type2Marshaller.put(buffer, handler);
         if (sink != null) {
             handler.onEvent(new RegisterEventHandler(sink));
         }
@@ -93,6 +109,8 @@ public class CsvMultiTypeMarshaller {
     @Initialise
     public void init() {
         type2Marshaller = new HashMap<>();
+        array = new byte[DEFAULT_SIZE];
+        buffer = ByteBuffer.wrap(array);
         marshaller = null;
     }
     

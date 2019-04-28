@@ -209,7 +209,8 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             if (mappingRow > 0) {
                 importMap.addImport(ArrayList.class);
             }
-            String genClassName = targetClazz.getSimpleName() + "CsvDecoder" + GenerationContext.nextId();
+            String genClassSuffix = targetClazz.getSimpleName() + "CsvDecoder";
+            String genClassName = genClassSuffix + GenerationContext.SINGLETON.nextId(genClassSuffix);
             ctx.put(functionClass.name(), genClassName);
             ctx.put("imports", importMap.asString());
             ctx.put(targetClass.name(), targetClazz.getSimpleName());

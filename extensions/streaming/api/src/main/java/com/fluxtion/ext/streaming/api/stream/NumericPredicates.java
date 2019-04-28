@@ -26,35 +26,35 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
  */
 public class NumericPredicates {
 
-    public static <T extends Number> SerializableFunction<T, Boolean> gt(double test) {
+    public static <T extends Double> SerializableFunction<T, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
     
-    public static <T extends Number> SerializableFunction<T, Boolean> deltaGt(double test) {
+    public static <T extends Double> SerializableFunction<T, Boolean> deltaGt(double test) {
         return new NumericPredicates(test)::deltaGreaterThan;
     }
 
-    public static <T extends Number> SerializableFunction<T, Boolean> lt(double test) {
+    public static <T extends Double> SerializableFunction<T, Boolean> lt(double test) {
         return new NumericPredicates(test)::lessThan;
     }
     
-    public static <T extends Number> SerializableFunction<T, Boolean> deltaLt(double test) {
+    public static <T extends Double> SerializableFunction<T, Boolean> deltaLt(double test) {
         return new NumericPredicates(test)::deltaLessThan;
     }
 
-    public static <T extends Number> SerializableFunction<T, Boolean> inBand(double lowerLimit, double upperLimit) {
+    public static <T extends Double> SerializableFunction<T, Boolean> inBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::inRange;
     }
 
-    public static <T extends Number> SerializableFunction<T, Boolean> outsideBand(double lowerLimit, double upperLimit) {
+    public static <T extends Double> SerializableFunction<T, Boolean> outsideBand(double lowerLimit, double upperLimit) {
         return new NumericPredicates(lowerLimit, upperLimit)::outsideRange;
     }
 
-    public static <T extends Number> SerializableFunction<T, Boolean> positive() {
+    public static <T extends Double> SerializableFunction<T, Boolean> positive() {
         return NumericPredicates::positiveInt;
     }
 
-    public static <T extends Number> SerializableFunction<T, Boolean> negative() {
+    public static <T extends Double> SerializableFunction<T, Boolean> negative() {
         return NumericPredicates::negativeNum;
     }
 
@@ -75,41 +75,41 @@ public class NumericPredicates {
         this.doubleLimit_1 = limit_1;
     }
 
-    public static boolean positiveInt(Number value) {
-        return value.intValue() > 0;
+    public static boolean positiveInt(double value) {
+        return value > 0;
     }
 
-    public static boolean negativeNum(Number subject) {
-        return subject.intValue() < 0;
+    public static boolean negativeNum(double subject) {
+        return subject < 0;
     }
 
-    public boolean greaterThan(Number subject) {
-        return subject.doubleValue() > doubleLimit_0;
+    public boolean greaterThan(double subject) {
+        return subject > doubleLimit_0;
     }
 
-    public boolean lessThan(Number subject) {
-        return subject.doubleValue() < doubleLimit_0;
+    public boolean lessThan(double subject) {
+        return subject < doubleLimit_0;
     }
 
-    public boolean inRange(Number subject) {
-        return subject.doubleValue() > doubleLimit_0 & doubleLimit_1 >= subject.doubleValue();
+    public boolean inRange(double subject) {
+        return subject > doubleLimit_0 & doubleLimit_1 >= subject;
     }
 
-    public boolean outsideRange(Number subject) {
+    public boolean outsideRange(double subject) {
         return !inRange(subject);
     }
 
-    public boolean deltaGreaterThan(Number newVal) {
+    public boolean deltaGreaterThan(double newVal) {
         return delta(newVal).doubleValue > doubleLimit_0;
     }
 
-    public boolean deltaLessThan(Number newVal) {
+    public boolean deltaLessThan(double newVal) {
         return delta(newVal).doubleValue < doubleLimit_0;
     }
     
-    private MutableNumber delta(Number val){
-        result.setDoubleValue(val.doubleValue() - previous);
-        previous = val.doubleValue();
+    private MutableNumber delta(double val){
+        result.setDoubleValue(val - previous);
+        previous = val;
         return result;
     }
 }

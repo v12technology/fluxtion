@@ -13,6 +13,7 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import static com.fluxtion.ext.text.api.ascii.Conversion.*;

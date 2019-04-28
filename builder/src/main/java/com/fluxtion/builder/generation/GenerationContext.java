@@ -56,6 +56,21 @@ public class GenerationContext {
     public static int nextId() {
         return COUNT.getAndIncrement();
     }
+    
+    private static class X{};
+    
+    public int nextId(String className){
+        Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap() );
+        String key = packageName + "." + className;
+        Integer nextId = classCount.compute(key, (String k, Integer v) ->{
+            int ret  = 0;
+            if(v!=null){
+                ret = v + 1;
+            }
+            return ret;
+        });
+        return nextId;
+    }
 
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
         setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);

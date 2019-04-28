@@ -43,7 +43,7 @@ public interface StreamOperator {
         return (FilterWrapper<T>) source;
     }
 
-    default <T> FilterWrapper<T> filter(SerializableFunction<T, Boolean> filter,
+    default <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter,
             Wrapper<T> source, boolean cast) {
         return (FilterWrapper<T>) source;
     }

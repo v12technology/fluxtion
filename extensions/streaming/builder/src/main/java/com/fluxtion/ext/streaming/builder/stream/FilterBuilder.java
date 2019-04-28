@@ -513,7 +513,7 @@ public class FilterBuilder<T, F> {
     public Wrapper<F> build() {
         try {
             VelocityContext ctx = new VelocityContext();
-            String genClassName = genClassSuffix + "_" + GenerationContext.nextId();
+            String genClassName = genClassSuffix + GenerationContext.SINGLETON.nextId(genClassSuffix);
             ctx.put(functionClass.name(), genClassName);
             ctx.put(outputClass.name(), functionInfo.returnType);
             ctx.put(targetClass.name(), functionInfo.calculateClass);

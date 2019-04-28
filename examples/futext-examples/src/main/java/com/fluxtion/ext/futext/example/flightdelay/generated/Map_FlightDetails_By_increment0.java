@@ -6,7 +6,11 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDetailsCsvDecoder0;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Test;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -22,12 +26,12 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
  *
  * @author Greg Higgins
  */
-public class Map_FlightDetails_By_increment_7 extends AbstractFilterWrapper<Number> {
+public class Map_FlightDetails_By_increment0 extends AbstractFilterWrapper<Number> {
 
   public FlightDetailsCsvDecoder0 filterSubject;
   private boolean filterSubjectUpdated;
   @NoEventReference public Count f;
-  private Number result;
+  private int result;
   @NoEventReference public Object resetNotifier;
   private boolean parentReset = false;
   private MutableNumber value;
