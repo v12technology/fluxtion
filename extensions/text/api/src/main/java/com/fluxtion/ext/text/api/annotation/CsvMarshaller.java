@@ -29,5 +29,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
 public @interface CsvMarshaller {
-    
+    /**
+     * the name of the package the generated artifacts will be written to.
+     *
+     * @return package name
+     */
+    String packageName() default "";
 }

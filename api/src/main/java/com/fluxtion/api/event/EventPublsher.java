@@ -45,10 +45,11 @@ public class EventPublsher<T extends Event> {
         }
     }
 
-    public void addEventSource(T node) {
+    public EventPublsher<T> addEventSource(T node) {
         ArrayList<Event> nodes = new ArrayList<>(Arrays.asList(nodeSource));
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);
+        return this;
     }
 
     @com.fluxtion.api.annotations.EventHandler

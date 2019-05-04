@@ -51,7 +51,7 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
-    default FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter) {
+    default <S extends T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, true);
     }
 
@@ -79,40 +79,10 @@ public interface Wrapper<T> {
      * @param mapper the mapping function
      * @return A wrapped value containing the result of the mapping operation
      */
-    default <R> Wrapper<R> map(SerializableFunction<? extends T, R> mapper) {
+    default <R, S extends T> Wrapper<R> map(SerializableFunction<S, R> mapper) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
     }
     
-    /**
-     * Invokes a mapping function that accepts a {@link Double} as an input
-     * @param <R> The return type of the mapping function
-     * @param mapper the mapping function
-     * @return A wrapped value containing the result of the mapping operation
-     */
-    default <R> Wrapper<R> mapDouble(SerializableFunction<? extends Double, R> mapper) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
-    }
-    
-    /**
-     * Invokes a mapping function that accepts a {@link Integer} as an input
-     * @param <R> The return type of the mapping function
-     * @param mapper the mapping function
-     * @return A wrapped value containing the result of the mapping operation
-     */
-    default <R> Wrapper<R> mapInt(SerializableFunction<? extends Integer, R> mapper) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
-    }
-    
-    /**
-     * Invokes a mapping function that accepts a {@link Long} as an input
-     * @param <R> The return type of the mapping function
-     * @param mapper the mapping function
-     * @return A wrapped value containing the result of the mapping operation
-     */
-    default <R> Wrapper<R> mapLong(SerializableFunction<? extends Long, R> mapper) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
-    }
-
     /**
      * Maps a value using the provided mapping function. The input is the return
      * value of the supplier function invoked on the wrapped instance.
@@ -160,6 +130,26 @@ public interface Wrapper<T> {
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, double arg, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(arg), arg(this, supplier));
     }
+       
+    /**
+     * Maps a binary function using the wrapped instance as the first argument 
+     * to the binary function.
+     * 
+     * @param <R> The result type of the mapping function
+     * @param <S> The type of the supplied argument
+     * @param <U> The input type for first argument to mapping function
+     * @param <V> The input type for second argument to mapping function
+     * @param mapper The mapping function
+     * @param arg1 The second argument of the binary mapping function
+     * @return 
+     */
+    default <R, S, U extends T, V extends S>  Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<V> arg1){
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg1);
+    }
+    
+    default <R extends Number, S, U extends T, V extends S>  Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, double arg1){
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg(arg1));
+    }
 
     /**
      * pushes a data item from the current node in the stream to any node.The
@@ -174,8 +164,13 @@ public interface Wrapper<T> {
      * @param mapper
      * @return the com.fluxtion.ext.declarative.api.Wrapper<T>
      */
-    default <T, R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer< R> mapper) {
+    default <T, R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer<R> mapper) {
         StreamOperator.service().push(this, supplier.method(), mapper);
+        return (Wrapper<T>) this;
+    }
+    
+    default <T, R extends T> Wrapper<T> push(SerializableConsumer<R> mapper) {
+        StreamOperator.service().push(this, null, mapper);
         return (Wrapper<T>) this;
     }
 

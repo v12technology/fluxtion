@@ -146,7 +146,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     public void testAdd() {
         sep((c) -> {
             Wrapper<Number> sum = intHelper(arg(Data1::getVal), arg(Data1::getVal))
-                    .mapDouble(Math::rint).id("random")
+                    .map(Math::rint).id("random")
                     .map(cumSum()).console("sum:").id("add")
                     .map(count()).id("intCount")
                     .map(StreamFunctionsBuilder.ceil(), Number::doubleValue)
