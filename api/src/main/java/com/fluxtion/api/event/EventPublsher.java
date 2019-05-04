@@ -37,7 +37,7 @@ public class EventPublsher<T extends Event> {
     public EventPublsher() {
         init();
     }
-
+    
     @OnParentUpdate("nodeSource")
     public void nodeUpdate(T source) {
         for (int i = 0; i < handlers.length; i++) {

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.generator.Generator;
+import io.github.classgraph.AnnotationParameterValueList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -58,7 +59,10 @@ public class CsvAnnotationBeanBuilder implements ClassProcessor {
                     AnnotationInfo annotationInfo = csvClassInfo.getAnnotationInfo(Disabled.class.getCanonicalName());
                     if (annotationInfo == null) {
                         LOGGER.info("Fluxtion generating CSV marshaller for:" + csvClass.getCanonicalName());
-                        CsvToBeanBuilder beanBuilder = CsvToBeanBuilder.nameSpace(csvClassInfo.getPackageName());
+                        AnnotationParameterValueList params = csvClassInfo.getAnnotationInfo(CsvMarshaller.class.getCanonicalName()).getParameterValues();
+                        Object pkgNameVal =  params.get("packageName");
+                        String pkgName = pkgNameVal==null?csvClassInfo.getPackageName():pkgNameVal.toString();
+                        CsvToBeanBuilder beanBuilder = CsvToBeanBuilder.nameSpace(pkgName);
                         if (generatedDir != null && resourceDir != null) {
                             beanBuilder.setOutputDirs(generatedDir.getCanonicalPath(), resourceDir.getCanonicalPath());
                         }

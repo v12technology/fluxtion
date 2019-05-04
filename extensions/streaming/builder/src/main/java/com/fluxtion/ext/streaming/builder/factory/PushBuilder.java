@@ -30,24 +30,29 @@ public class PushBuilder {
         PushNotifier p = GenerationContext.SINGLETON.addOrUseExistingNode(new PushNotifier(source, target));
         return source;
     }
+        
+    public static<S extends T, T > void pushSource(T source,  SerializableConsumer<S> consumer){
+        final Object targetInstance = consumer.captured()[0];
+        FilterBuilder.push(targetInstance, consumer.method(), source, null, true).build();
+        
+    }
 
     /**
      * Pushes data from the source method to the target method when the source
-     * is
-     * on the executing event path.
+     * is on the executing event path.
      *
      * @param <S>
      * @param <D>
      * @param supplier
      * @param consumer
      */
-    public static <S, D> void push(SerializableSupplier<D> supplier, SerializableConsumer<D> consumer) {
+    public static <D> void push(SerializableSupplier<D> supplier, SerializableConsumer<? extends D> consumer) {
         final Object sourceInstance = supplier.captured()[0];//unWrap(supplier);
         final Object targetInstance = consumer.captured()[0];;//unWrap(consumer);
         FilterBuilder.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
     }
     
-    public static <S, D> Wrapper<S> push(SerializableSupplier<D> supplier, SerializableFunction<D, S>  consumer) {
+    public static <S, D> Wrapper<S> push(SerializableSupplier<D> supplier, SerializableFunction<? extends D, S>  consumer) {
         final Object sourceInstance = supplier.captured()[0];//unWrap(supplier);
         final Object targetInstance = consumer.captured()[0];//unWrap(consumer);
         return FilterBuilder.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
