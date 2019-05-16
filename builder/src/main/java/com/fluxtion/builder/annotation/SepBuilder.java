@@ -30,7 +30,8 @@ import java.lang.annotation.Target;
  * {@link SEPConfig}. The receiving method will use the provided
  * {@link SEPConfig} instance to define the static event processor that Fluxtion
  * will generate.<p>
- * Individual methods or whole classes can be disabled by adding the {@link Disabled}
+ * Individual methods or whole classes can be disabled by adding the
+ * {@link Disabled}
  * annotation to either a method or class respectively.
  *
  * @author V12 Technology Ltd.
@@ -81,4 +82,15 @@ public @interface SepBuilder {
      * @return overridden resource directory
      */
     String resourceDir() default "";
+
+    /**
+     * <b>USE WITH CARE<b><p>
+     * Cleans output directory of all files before generating artefacts. if two
+     * annotations are configured in the same build with the
+     * same output directory, setting this option to true will have
+     * unpredictable results.
+     *
+     * @return
+     */
+    boolean cleanOutputDir() default false;
 }

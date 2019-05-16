@@ -64,7 +64,7 @@ public class AnnotationCompilerTest {
 
     }
 
-    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen")
+    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen", cleanOutputDir = true)
     public void buildSepTest(SEPConfig cfg) {
         cfg.addNode(new MyHandler());
     }
