@@ -20,7 +20,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>1.7.12-SNAPSHOT</version>
+    <version>1.7.12</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
     
