@@ -20,6 +20,7 @@ package com.fluxtion.generator.compiler;
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.annotation.SepBuilder;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationParameterValueList;
@@ -32,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,13 +95,20 @@ public class AnnotationCompiler implements ClassProcessor {
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();
                             String outDir = generatedDir.getCanonicalPath();
                             String resDir = resourceDir.getCanonicalPath();
+                            String pkgName = params.get("packageName").toString();
                             if (params.get("outputDir") != null) {
                                 outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
                             }
                             if (params.get("resourceDir") != null) {
-                                outDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
+                                resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
                             }
-                            InprocessSepCompiler.sepInstance(consumer, params.get("packageName").toString(), params.get("name").toString(), outDir, resDir, false);
+                            if (params.get("cleanOutputDir") != null) {
+                                if((Boolean)params.get("cleanOutputDir")){
+                                    FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
+                                    FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
+                                }
+                            }
+                            InprocessSepCompiler.sepInstance(consumer, pkgName, params.get("name").toString(), outDir, resDir, false);
                         } catch (Exception ex) {
                             LOGGER.error("problem creating class containing SepConfig builder method, should have default constructor", ex);
                         }

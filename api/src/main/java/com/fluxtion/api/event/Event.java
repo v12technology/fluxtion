@@ -20,11 +20,11 @@ import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
 
 /**
+ * <p>
  * Event class that feeds into a Simple Event Processor(SEP). Users should
- * extend this class to define their own events.<p>
- *
+ * extend this class to define their own events.</p>
+ * 
  * <h2>Dispatch</h2>
- *
  * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(com.fluxtion.api.event.Event)
  * } method.<p>
  *
@@ -33,14 +33,17 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  * <pre>
  *     public static final int ID = 1;
  * </pre>
- *
+ * <p>
  * If no ID is defined then the SEP uses the class name to perform a dispatch,
  * generally this will be less efficient at runtime but is easier for the
  * developer at compile time. When class name is used, uniqueness is guaranteed
- * by using the fully qualified class name.<p>
+ * by using the fully qualified class name.
+ * </p>
  *
+ * <p>
  * The efficiency of dispatch depends upon the target platform, so for some
- * targets class name dispatch may be more efficient.<p>
+ * targets class name dispatch may be more efficient.
+ * </p>
  *
  * <h2>Filtering</h2>
  *
