@@ -24,8 +24,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions.IntCount;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.event.EventSelect;
@@ -73,6 +73,7 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(new Sum()::addValue, "cumSum");
         gen.addUnaryFunction(new Average()::addValue, "avg");
         gen.addUnaryFunction(new Max()::max, "max");
+        gen.addUnaryFunction(new Min()::min, "min");
         gen.addUnaryFunction(new PercentDelta()::value, "percentChange");
         gen.addUnaryFunction(Math::ceil, "ceil");
         gen.addUnaryFunction(Math::floor, "floor");

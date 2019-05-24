@@ -60,6 +60,7 @@ public class CharStreamer {
     private final File inputFile;
     private final Reader inputStream;
     private boolean tearDown = true;
+    private boolean eof = true;
 
     private CharStreamer(EventHandler handler, Reader input) {
         this.handler = handler;
@@ -92,6 +93,16 @@ public class CharStreamer {
         this.init = false;
         return this;
     }
+    
+    public CharStreamer eof(){
+        this.eof = true;
+        return this;
+    }
+    
+    public CharStreamer noEof(){
+        this.eof = true;
+        return this;
+    }
 
     public void stream() throws IOException {
         if (init && handler instanceof Lifecycle) {
@@ -120,6 +131,9 @@ public class CharStreamer {
             } else {
                 streamFile();
             }
+        }
+        if(eof){
+           handler.onEvent(EofEvent.EOF);
         }
         if (tearDown && handler instanceof Lifecycle) {
             ((Lifecycle) handler).tearDown();
