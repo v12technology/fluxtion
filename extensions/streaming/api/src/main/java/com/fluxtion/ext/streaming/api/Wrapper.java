@@ -164,12 +164,12 @@ public interface Wrapper<T> {
      * @param mapper
      * @return the com.fluxtion.ext.declarative.api.Wrapper<T>
      */
-    default <T, R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer<R> mapper) {
+    default <R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer<R> mapper) {
         StreamOperator.service().push(this, supplier.method(), mapper);
         return (Wrapper<T>) this;
     }
     
-    default <T, R extends T> Wrapper<T> push(SerializableConsumer<R> mapper) {
+    default <R extends T> Wrapper<T> push(SerializableConsumer<R> mapper) {
         StreamOperator.service().push(this, null, mapper);
         return (Wrapper<T>) this;
     }

@@ -30,7 +30,7 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
     }
 
     @Override
-    default <T, R, S extends R> FilterWrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer< R> mapper) {
+    default <R, S extends R> FilterWrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer< R> mapper) {
         StreamOperator.service().push(this, supplier.method(), mapper);
         return (FilterWrapper<T>) this;
     }
