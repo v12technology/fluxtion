@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.streaming.api.test;
 
-import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.streaming.api.Wrapper;
 

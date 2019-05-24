@@ -17,7 +17,6 @@
 package com.fluxtion.ext.streaming.api.test;
 
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.streaming.api.Test;
 
 /**
  * Boolean and operator.
