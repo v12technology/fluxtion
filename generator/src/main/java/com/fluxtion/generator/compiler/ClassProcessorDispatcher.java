@@ -26,8 +26,11 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.builder.annotation.ClassProcessor;
+import io.github.classgraph.AnnotationParameterValueList;
 import java.io.File;
+import java.io.IOException;
 import java.util.function.BiConsumer;
+import org.apache.commons.io.FileUtils;
 
 /**
  * A utility function that dispatches a {@link URL} for {@link ClassProcessor}
@@ -80,6 +83,39 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
                 }
             }
         });
+    }
+
+    public static DirectoryNames standardParamsHelper(AnnotationParameterValueList params,
+            File rootDir, File generatedDir, File resourceDir) throws IOException {
+        String outDir = generatedDir.getCanonicalPath();
+        String resDir = resourceDir.getCanonicalPath();
+        String pkgName = params.get("packageName").toString();
+        if (params.get("outputDir") != null) {
+            outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
+        }
+        if (params.get("resourceDir") != null) {
+            resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
+        }
+        if (params.get("cleanOutputDir") != null) {
+            if ((Boolean) params.get("cleanOutputDir")) {
+                FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
+                FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
+            }
+        }
+        return new DirectoryNames(outDir, resDir, pkgName);
+    }
+
+    public static class DirectoryNames {
+
+        public DirectoryNames(String outDir, String resDir, String pkgName) {
+            this.outDir = outDir;
+            this.resDir = resDir;
+            this.pkgName = pkgName;
+        }
+
+        final String outDir;
+        final String resDir;
+        final String pkgName;
     }
 
 }
