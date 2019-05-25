@@ -217,7 +217,7 @@ public class SEPConfig {
      * alternate map-dispatch strategy is employed.
      *
      */
-    public int maxFiltersInline = 4;
+    public int maxFiltersInline = 7;
 
     /**
      * Map an original fully qualified class name into a new value. Can be
