@@ -19,6 +19,7 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.SepBuilder;
+import com.fluxtion.builder.annotation.SepInstance;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.ClassProcessorDispatcher;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
@@ -35,7 +36,7 @@ import org.junit.Test;
  *
  * @author gregp
  */
-public class AnnotationCompilerTest {
+public class AnnotatedCompilerTest {
 
     @Test
     public void testAnnotationLoading() {
@@ -47,10 +48,11 @@ public class AnnotationCompilerTest {
 
     @Test
     public void testSepBuilderLoading() throws MalformedURLException, ClassNotFoundException {
-        JavaTestGeneratorHelper.setupDefaultTestContext("com.fluxtion.compiler.gen", "");
+        JavaTestGeneratorHelper.setupDefaultTestContext("com.fluxtion.compiler.gen.methoduilder", "");
         ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
         acp.accept(new File("target/test-classes").toURI().toURL(), new File("."));
-        Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.TestEH_1"));
+        Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.methoduilder.TestEH_1"));
+        Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.classbuilder.TestNode_1"));
     }
 
     public static class MyClassProcessor implements ClassProcessor {
@@ -64,12 +66,27 @@ public class AnnotationCompilerTest {
 
     }
 
-    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen", cleanOutputDir = true)
+    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen.methoduilder", cleanOutputDir = true)
     public void buildSepTest(SEPConfig cfg) {
         cfg.addNode(new MyHandler());
     }
 
     public static class MyHandler {
+
+        int count;
+
+        @com.fluxtion.api.annotations.EventHandler
+        public void onAllTimeEvents(TimeEvent e) {
+            count++;
+        }
+    }
+
+    @SepInstance(
+            name = "TestNode_1",
+            packageName = "com.fluxtion.compiler.gen.classbuilder",
+            cleanOutputDir = true
+    )
+    public static class MyNodeIntsance {
 
         int count;
 

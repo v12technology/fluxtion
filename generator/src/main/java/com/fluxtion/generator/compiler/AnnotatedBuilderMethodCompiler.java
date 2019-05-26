@@ -20,8 +20,8 @@ package com.fluxtion.generator.compiler;
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.annotation.SepBuilder;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
+import static com.fluxtion.generator.compiler.ClassProcessorDispatcher.standardParamsHelper;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationParameterValueList;
 import io.github.classgraph.ClassGraph;
@@ -33,7 +33,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +41,9 @@ import org.slf4j.LoggerFactory;
  * @author gregp
  */
 @AutoService(ClassProcessor.class)
-public class AnnotationCompiler implements ClassProcessor {
+public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AnnotationCompiler.class.getName());
+    private Logger LOGGER = LoggerFactory.getLogger(AnnotatedBuilderMethodCompiler.class.getName());
     private File generatedDir;
     private File resourceDir;
     private File rootDir;
@@ -59,7 +58,7 @@ public class AnnotationCompiler implements ClassProcessor {
     @Override
     public void process(URL classPath) {
         if (classPath == null) {
-            LOGGER.warn("scan classpath is null, exiting AnnotationCompiler");
+            LOGGER.warn("scan classpath is null, exiting AnnotatedBuilderMethodCompiler");
             return;
         }
         try {
@@ -93,22 +92,8 @@ public class AnnotationCompiler implements ClassProcessor {
                                 }
                             };
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();
-                            String outDir = generatedDir.getCanonicalPath();
-                            String resDir = resourceDir.getCanonicalPath();
-                            String pkgName = params.get("packageName").toString();
-                            if (params.get("outputDir") != null) {
-                                outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
-                            }
-                            if (params.get("resourceDir") != null) {
-                                resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
-                            }
-                            if (params.get("cleanOutputDir") != null) {
-                                if((Boolean)params.get("cleanOutputDir")){
-                                    FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
-                                    FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
-                                }
-                            }
-                            InprocessSepCompiler.sepInstance(consumer, pkgName, params.get("name").toString(), outDir, resDir, false);
+                            ClassProcessorDispatcher.DirectoryNames dirNames = standardParamsHelper(params, rootDir, generatedDir, resourceDir);
+                            InprocessSepCompiler.sepInstance(consumer, dirNames.pkgName, params.get("name").toString(), dirNames.outDir, dirNames.resDir, false);
                         } catch (Exception ex) {
                             LOGGER.error("problem creating class containing SepConfig builder method, should have default constructor", ex);
                         }
@@ -121,7 +106,7 @@ public class AnnotationCompiler implements ClassProcessor {
         } catch (URISyntaxException ex) {
             LOGGER.error("problem generating static event processor", ex);
         }
-        LOGGER.info("AnnotationCompiler completed");
+        LOGGER.info("AnnotatedBuilderMethodCompiler completed");
     }
 
 }

@@ -24,6 +24,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
@@ -320,6 +321,60 @@ public class StreamFunctionsBuilder  {
 
     public static <T extends Number> Wrapper<Number> max(Wrapper<T> wrapper) {
         return FilterBuilder.map(new Max()::max,  arg(wrapper));
+    }
+
+    /**
+     * Wrap {@link Min#min } function for use as a map operation in an existing
+     * stream. {@link Wrapper#map(SerializableFunction) }
+     * requires a {@link SerializableFunction} to map input values.
+     *
+     * @param <T> input to {@link Min#min }
+     * @return {@link SerializableFunction} of {@link Min#min }
+     */
+    public static <T extends Double> SerializableFunction<T, Number> min() {
+        return new Min()::min;
+    }
+
+    /**
+     * Performs a {@link Min#min} function as a map operation on a stream.
+     * The stream is automatically created by subscribing to the {@link Event}
+     * and wrapping the supplier function with {@link Wrapper&lt;Number&gt;}. 
+     * The wrapper is the input to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
+     *
+     * @param <T> The input event stream
+     * @param supplier The input value to the function {@link Min#min
+     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Min#min}
+     */
+    public static <T> Wrapper<Number> min(SerializableFunction<T, Number> supplier) {
+        return FilterBuilder.map(new Min()::min, arg(supplier));
+    }
+
+    public static <T extends Number> Wrapper<Number> min(FunctionArg<T> arg) {
+        return FilterBuilder.map(new Min()::min, arg);
+    }
+
+    /**
+     * Performs a {@link Min#min} function as a map operation on a stream.
+     * The stream is automatically created by wrapping the supplier instance function in a
+     * {@link Wrapper&lt;Number&gt;}, the wrapper is the input 
+     * to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
+     *
+     * @param <T> The input type required by {@link Min#min}
+     * @param supplier The wrapped instance supplying values to the function {@link Min#min
+     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Min#min}
+     */
+    public static <T extends Number> Wrapper<Number> min(SerializableSupplier<T> supplier) {
+        return FilterBuilder.map(new Min()::min, arg(supplier));
+    }
+
+    public static <T, S extends Number> Wrapper<Number> min(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return FilterBuilder.map(new Min()::min,  arg(wrapper, supplier));
+    }
+
+    public static <T extends Number> Wrapper<Number> min(Wrapper<T> wrapper) {
+        return FilterBuilder.map(new Min()::min,  arg(wrapper));
     }
 
     /**
