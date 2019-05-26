@@ -57,6 +57,14 @@ public class NumericPredicates {
     public static <T extends Double> SerializableFunction<T, Boolean> negative() {
         return NumericPredicates::negativeNum;
     }
+    
+    public static <T extends Double> SerializableFunction<T, Boolean> trendUp(int minCount) {
+        return new TrendingPredicates(minCount, true)::trending;
+    }
+    
+    public static <T extends Double> SerializableFunction<T, Boolean> trendDown(int minCount) {
+        return new TrendingPredicates(minCount, false)::trending;
+    }
 
     public double doubleLimit_0 = Double.NaN;
     public double doubleLimit_1 = Double.NaN;
@@ -111,5 +119,36 @@ public class NumericPredicates {
         result.setDoubleValue(val - previous);
         previous = val;
         return result;
+    }
+    
+    
+    public static class TrendingPredicates implements Stateful{
+
+        private final int minTrendCount;
+        private final boolean up;
+        private double prev;
+        private int count;
+
+        public TrendingPredicates(int minTrendCount, boolean up) {
+            this.minTrendCount = minTrendCount;
+            this.up = up;
+        }
+        
+        public boolean trending(double val){
+            if((up & val > prev) | (!up & val < prev)){
+                count++;
+            }else{
+                count = 0;
+            }
+            this.prev = val;
+            return count >= minTrendCount;
+        }
+        
+        @Override
+        public void reset() {
+            prev = Double.NaN;
+            count = 0;
+        }
+        
     }
 }
