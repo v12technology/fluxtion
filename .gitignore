@@ -16,3 +16,5 @@
 /target/
 /extensions/streaming/api/target/
 /extensions/streaming/builder/target/
+/extensions/streaming/builder/src/test/resources/lambda.ser/
+/extensions/streaming/api/src/test/resources/lambda.ser/

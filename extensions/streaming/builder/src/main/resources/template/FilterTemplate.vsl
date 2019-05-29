@@ -38,9 +38,9 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     public boolean onEvent(){
         boolean oldValue = result;
 #if(${newFunction})
-        result = ${targetClass}.${targetMethod}(${input});
+        result = (boolean)${targetClass}.${targetMethod}(${input});
 #else
-        result = f.${targetMethod}(${input});
+        result = (boolean)f.${targetMethod}(${input});
 #end
         //this is probably right - to be tested
         //return (!notifyOnChangeOnly | !oldValue) & result;

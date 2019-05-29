@@ -29,6 +29,8 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
+import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
+import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunction;
 import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
@@ -38,7 +40,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -49,30 +54,51 @@ public class StreamBuilder implements StreamOperator {
 
     @Override
     public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
+        LambdaFunction<? extends S, Boolean> addLambda = SerialisedFunctionHelper.addLambda(filter);
         Method filterMethod = filter.method();
         FilterBuilder builder = null;
-        if (Modifier.isStatic(filterMethod.getModifiers())) {
-            builder = FilterBuilder.filter(filterMethod, source, accessor, cast);
-        } else {
-            builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source, accessor, cast);
+        if(addLambda!=null){
+            try {
+                filterMethod = Function.class.getMethod("apply", Object.class);
+                builder = FilterBuilder.filter(addLambda, filterMethod, source, accessor, cast);
+            } catch (NoSuchMethodException | SecurityException ex) {
+                Logger.getLogger(StreamBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            if (Modifier.isStatic(filterMethod.getModifiers())) {
+                builder = FilterBuilder.filter(filterMethod, source, accessor, cast);
+            } else {
+                builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source, accessor, cast);
+            }
         }
         return (FilterWrapper<T>) builder.build();
     }
 
     @Override
     public <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter, Wrapper<T> source, boolean cast) {
-        Method filterMethod = filter.method();
+        LambdaFunction<? extends T, Boolean> addLambda = SerialisedFunctionHelper.addLambda(filter);
+        Method filterMethod = null;
         FilterBuilder builder = null;
-        if (Modifier.isStatic(filterMethod.getModifiers())) {
-            builder = FilterBuilder.filter(filterMethod, source);
-        } else {
-            builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source);
+        if(addLambda!=null){
+            try {
+                filterMethod = Function.class.getMethod("apply", Object.class);
+                builder = FilterBuilder.filter(addLambda, filterMethod, source);
+            } catch (NoSuchMethodException | SecurityException ex) {
+                Logger.getLogger(StreamBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            filterMethod = filter.method();
+            if (Modifier.isStatic(filterMethod.getModifiers())) {
+                builder = FilterBuilder.filter(filterMethod, source);
+            } else {
+                builder = FilterBuilder.filter(filter.captured()[0], filterMethod, source);
+            }
         }
         return (FilterWrapper<T>) builder.build();
     }
 
     @Override
-    public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
+    public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass) {
         GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
         wcQuery.function(functionClass, MutableNumber::set);
@@ -81,9 +107,9 @@ public class StreamBuilder implements StreamOperator {
 
     @Override
     public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
-            Wrapper<T> source, 
-            SerializableFunction<T, ?> key, 
-            SerializableFunction<T, S> supplier, 
+            Wrapper<T> source,
+            SerializableFunction<T, ?> key,
+            SerializableFunction<T, S> supplier,
             Class<F> functionClass) {
         GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
         wcQuery.function(functionClass, supplier, MutableNumber::set);
@@ -115,7 +141,7 @@ public class StreamBuilder implements StreamOperator {
     }
 
     @Override
-    public <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, 
+    public <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             Argument<? extends U> arg1, Argument<? extends S> arg2) {
         Method mappingMethod = mapper.method();
         FilterBuilder builder = null;
@@ -126,7 +152,7 @@ public class StreamBuilder implements StreamOperator {
         }
         return builder.build();
     }
-    
+
     @Override
     public <F, R> Wrapper<R> map(F mapper, Method mappingMethod, Argument... args) {
         FilterBuilder builder = null;
@@ -137,8 +163,7 @@ public class StreamBuilder implements StreamOperator {
         }
         return builder.build();
     }
-       
-    
+
     @Override
     public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
 //        final Object sourceInstance = unWrap(source);
@@ -176,7 +201,7 @@ public class StreamBuilder implements StreamOperator {
         }
         return GenerationContext.SINGLETON.nameNode(node, name);
     }
-    
+
     public static <T> Wrapper<T> stream(T node) {
         if (node instanceof Wrapper) {
             return (Wrapper) node;
@@ -186,19 +211,18 @@ public class StreamBuilder implements StreamOperator {
             public boolean test(Object t) {
                 boolean matched = false;
                 if (t instanceof Wrapper) {
-                    matched = Objects.equals(node,  ((Wrapper) t).event());
+                    matched = Objects.equals(node, ((Wrapper) t).event());
                 }
                 return matched;
             }
         }).findAny();
-        
-        if(findAny.isPresent()){
+
+        if (findAny.isPresent()) {
             return (Wrapper<T>) findAny.get();
         }
         Wrapper ret = new NodeWrapper(GenerationContext.SINGLETON.addOrUseExistingNode(node));
         GenerationContext.SINGLETON.addOrUseExistingNode(ret);
         return ret;
     }
-
 
 }
