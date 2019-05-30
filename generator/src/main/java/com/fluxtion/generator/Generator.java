@@ -95,6 +95,7 @@ public class Generator {
         LOG.debug("start template output");
         final File outFile = templateJavaOutput();
         LOG.debug("completed template output");
+        execSvc.shutdown();
     }
 
     public static void warmupCompiler() {

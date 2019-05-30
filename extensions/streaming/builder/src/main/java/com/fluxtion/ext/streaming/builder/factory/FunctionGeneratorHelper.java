@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.openhft.compiler.CachedCompiler;
@@ -60,9 +59,7 @@ public interface FunctionGeneratorHelper {
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
-        Executors.newCachedThreadPool().submit(() ->{
-            Generator.formatSource(file);
-        });
+        new Thread(() ->  Generator.formatSource(file)).start();
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         return newClass;
     }

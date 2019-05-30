@@ -42,8 +42,7 @@ public class CsvAnnotationBeanBuilder implements ClassProcessor {
     @Override
     public void process(URL classPath) {
         if (warmup) {
-            ExecutorService execSvc = Executors.newCachedThreadPool();
-            execSvc.submit(Generator::warmupCompiler);
+            new Thread(Generator::warmupCompiler).start();
             warmup = false;
         }
         try {

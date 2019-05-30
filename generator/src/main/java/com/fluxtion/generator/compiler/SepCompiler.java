@@ -223,7 +223,7 @@ public class SepCompiler {
         }
         if(compilerConfig.isFormatSource()){
             LOG.debug("start formatting source");
-            Executors.newCachedThreadPool().submit(() -> Generator.formatSource(file));
+            new Thread(() -> Generator.formatSource(file)).start();
             LOG.debug("completed formatting source");
         }
 //        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());
