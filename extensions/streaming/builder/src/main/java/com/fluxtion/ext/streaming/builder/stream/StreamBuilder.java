@@ -54,17 +54,9 @@ public class StreamBuilder implements StreamOperator {
 
     @Override
     public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
-        LambdaFunction<? extends S, Boolean> addLambda = SerialisedFunctionHelper.addLambda(filter);
-        Method filterMethod = filter.method();
-        FilterBuilder builder = null;
-        if(addLambda!=null){
-            try {
-                filterMethod = Function.class.getMethod("apply", Object.class);
-                builder = FilterBuilder.filter(addLambda, filterMethod, source, accessor, cast);
-            } catch (NoSuchMethodException | SecurityException ex) {
-                Logger.getLogger(StreamBuilder.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else{
+        FilterBuilder builder = lambdaBuilder(filter, source, accessor, cast, false);
+        if(builder==null){
+            Method filterMethod = filter.method();
             if (Modifier.isStatic(filterMethod.getModifiers())) {
                 builder = FilterBuilder.filter(filterMethod, source, accessor, cast);
             } else {
@@ -76,18 +68,9 @@ public class StreamBuilder implements StreamOperator {
 
     @Override
     public <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter, Wrapper<T> source, boolean cast) {
-        LambdaFunction<? extends T, Boolean> addLambda = SerialisedFunctionHelper.addLambda(filter);
-        Method filterMethod = null;
-        FilterBuilder builder = null;
-        if(addLambda!=null){
-            try {
-                filterMethod = Function.class.getMethod("apply", Object.class);
-                builder = FilterBuilder.filter(addLambda, filterMethod, source);
-            } catch (NoSuchMethodException | SecurityException ex) {
-                Logger.getLogger(StreamBuilder.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else{
-            filterMethod = filter.method();
+        FilterBuilder builder = lambdaBuilder(filter, source, null, cast, false);
+        if(builder==null){
+            Method filterMethod = filter.method();
             if (Modifier.isStatic(filterMethod.getModifiers())) {
                 builder = FilterBuilder.filter(filterMethod, source);
             } else {
@@ -95,6 +78,24 @@ public class StreamBuilder implements StreamOperator {
             }
         }
         return (FilterWrapper<T>) builder.build();
+    }
+    
+    private <S, T, W>  FilterBuilder lambdaBuilder(SerializableFunction<S, T> filter, Wrapper<W> source, Method accessor, boolean cast, boolean map){
+        LambdaFunction<? extends S, T> addLambda = SerialisedFunctionHelper.addLambda(filter);
+        FilterBuilder builder = null;
+        if(addLambda!=null){
+            try {
+                Method filterMethod = Function.class.getMethod("apply", Object.class);
+                if(map){
+                    builder = FilterBuilder.map(addLambda, filterMethod, source, accessor, cast);
+                }else{
+                    builder = FilterBuilder.filter(addLambda, filterMethod, source, accessor, cast);
+                }
+            } catch (NoSuchMethodException | SecurityException ex) {
+                throw new RuntimeException("unable to map/filter lambda function", ex);
+            }
+        }
+        return builder;
     }
 
     @Override
@@ -118,24 +119,28 @@ public class StreamBuilder implements StreamOperator {
 
     @Override
     public <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
-        Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, source, null, true);
-        } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, source, null, true);
+        FilterBuilder builder = lambdaBuilder(mapper, source, null, cast, true);
+        if(builder==null){
+            Method mappingMethod = mapper.method();
+            if (Modifier.isStatic(mappingMethod.getModifiers())) {
+                builder = FilterBuilder.map(null, mappingMethod, source, null, true);
+            } else {
+                builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, source, null, true);
+            }
         }
         return builder.build();
     }
 
     @Override
     public <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
-        Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, source, accessor, true);
-        } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, source, accessor, true);
+        FilterBuilder builder = lambdaBuilder(mapper, source, accessor, cast, true);
+            if(builder==null){
+                Method mappingMethod = mapper.method();
+            if (Modifier.isStatic(mappingMethod.getModifiers())) {
+                builder = FilterBuilder.map(null, mappingMethod, source, accessor, true);
+            } else {
+                builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, source, accessor, true);
+            }
         }
         return builder.build();
     }
