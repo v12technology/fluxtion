@@ -21,6 +21,7 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
@@ -161,6 +162,34 @@ public class StreamingFilterTest extends StreamInprocessTest {
         assertThat(countStatic.event().intValue(), is(2));
     }
 
+    
+    @Test
+    public void lambdaTest(){
+        SerialisedFunctionHelper.isTest = true;
+        sep(c -> {
+            select(StreamData.class)
+                    .filter( s -> s.getDoubleValue() > 20)
+                    .map(count()).id("intervalCount");
+            select(StreamData.class)
+                    .filter(StreamData::getDoubleValue, s -> s > 2)
+                    .map(count()).id("doubleCount");
+                    ;
+            
+        });
+        Wrapper<Number> count = getField("intervalCount");
+        Wrapper<Number> doubleCount = getField("doubleCount");
+        assertThat(count.event().intValue(), is(0));
+        //1
+        onEvent(new StreamData(1.0));
+        assertThat(count.event().intValue(), is(0)); 
+        assertThat(doubleCount.event().intValue(), is(0)); 
+        onEvent(new StreamData(21.1));
+        onEvent(new StreamData(2.3));
+        onEvent(new StreamData(21.5));
+        assertThat(count.event().intValue(), is(2)); 
+        assertThat(doubleCount.event().intValue(), is(3)); 
+    }
+    
     @Test
     public void countIntervals() {
         sep((c) -> {

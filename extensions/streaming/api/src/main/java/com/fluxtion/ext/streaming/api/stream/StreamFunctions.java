@@ -19,7 +19,6 @@ package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.Stateful;
-import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 
 /**
  *

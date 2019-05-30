@@ -18,6 +18,7 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import javafx.util.Pair;
 import static org.hamcrest.CoreMatchers.is;
@@ -129,6 +130,33 @@ public class StreamingMapTest extends StreamInprocessTest {
         assertThat(val.event(), is(true));
         onEvent(new StreamData("false"));
         assertThat(val.event(), is(false));
+    }
+    
+    @Test
+    public void mapWithLambda() {
+        fixedPkg = true;
+        sep((c) -> {
+            
+            Wrapper<StreamData> in = select(StreamData.class);
+            in.map(s -> "mapped" + s, StreamData::getStringValue).id("str2Mapped");
+            final MutableNumber result = c.addPublicNode(new MutableNumber(), "result");
+            in.map(s -> 10.0 * s.getDoubleValue())
+                    .map(n -> n * 20).id("mult200")
+                    .push(result::setDoubleValue);
+        });
+//        sep(com.fluxtion.ext.declarative.builder.stream.streamingmaptest_mapwithlambda.TestSep_mapWithLambda.class);
+        
+        onEvent(new StreamData("123"));
+        String str2Mapped = getWrappedField("str2Mapped");
+        assertThat(str2Mapped, is("mapped123"));
+        Wrapper<Number> mult200 = getField("mult200");
+        Number result = getField("result");
+        assertThat(mult200.event().intValue(), is(0));
+        assertThat(result.intValue(), is(0));
+        
+        onEvent(new StreamData(2.0));
+        assertThat(mult200.event().intValue(), is(400));
+        assertThat(result.intValue(), is(400));
     }
 
     @Test
