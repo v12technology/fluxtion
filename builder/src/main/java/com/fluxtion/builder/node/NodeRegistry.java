@@ -16,6 +16,7 @@
  */
 package com.fluxtion.builder.node;
 
+import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import java.util.Map;
 
@@ -86,4 +87,14 @@ public interface NodeRegistry {
      */
     <T> T registerPublicNode(T node, String variableName);
 
+    /**
+     * Register an {@link Auditor} with Fluxtion generator. The Auditor will
+     * have public scope registered with the name provided.
+     *
+     * @param <T> The Auditor class
+     * @param node The Auditor to register
+     * @param auditorName the public name of the Auditor
+     * @return The registered Auditor
+     */
+    <T extends Auditor> T registerAuditor(T node, String auditorName);
 }
