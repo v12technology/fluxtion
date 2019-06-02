@@ -175,7 +175,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             publicNodeList.addAll(publicNodes.keySet());
         }
         if (auditorMap == null) {
-            auditorMap = Collections.EMPTY_MAP;
+            auditorMap = new HashMap<>();
         }
         this.registrationListenerMap = auditorMap;
         registrationListenerMap.entrySet().stream().forEach((Map.Entry<String, Auditor> t) -> {
@@ -331,6 +331,12 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     @Override
     public <T> T registerPublicNode(T node, String variableName) {
         return registerNode(node, variableName, true);
+    }
+    
+    public <T extends Auditor> T registerAuditor(T node, String auditorName){
+        T registerNode = registerNode(node, auditorName, true);
+        registrationListenerMap.put(auditorName, registerNode);
+        return registerNode;
     }
 
     public <T> T registerNode(T node, String variableName, boolean isPublic) {
