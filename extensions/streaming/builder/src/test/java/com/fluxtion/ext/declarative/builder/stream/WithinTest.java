@@ -24,6 +24,7 @@ public class WithinTest extends StreamInprocessTest {
         sep((c) -> {
             FilterWrapper<MyTimer> filteredTime = select(MyTimer.class)
                     .filter(MyTimer::getVal, gt(200));
+            
             Within within = within(filteredTime, 1000, MyTimer::getTime);
             BooleanBuilder.filter(select(MyTimer.class), within)
                     .map(count()).id("count");
