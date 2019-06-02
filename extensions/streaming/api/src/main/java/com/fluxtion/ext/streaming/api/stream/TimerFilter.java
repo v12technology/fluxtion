@@ -39,10 +39,6 @@ public class TimerFilter implements Stateful{
         lastPublishTime = -1;
     }
     
-    public boolean timeUpdate(){
-        return false;
-    }
-    
     public boolean alarmNotify(Object o){
         if(lastPublishTime<0){
             lastPublishTime = clock.getWallClockTime();
