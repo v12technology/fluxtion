@@ -3,7 +3,7 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
-    <version>1.7.18-SNAPSHOT</version>
+    <version>1.7.19-SNAPSHOT</version>
     <artifactId>documentation_core_examples</artifactId>
     <packaging>jar</packaging>
     <name>fluxtion :: examples :: docs.core</name>
@@ -29,7 +29,7 @@
                     <plugin>
                         <groupId>com.fluxtion</groupId>
                         <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>1.7.18-SNAPSHOT</version>
+                        <version>1.7.19-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -69,12 +69,12 @@
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
-            <version>1.7.18-SNAPSHOT</version>
+            <version>1.7.19-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
-            <version>1.7.18-SNAPSHOT</version>
+            <version>1.7.19-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
