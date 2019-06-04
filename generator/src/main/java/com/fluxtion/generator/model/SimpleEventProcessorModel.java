@@ -990,22 +990,6 @@ public class SimpleEventProcessorModel {
         return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
     }
 
-//    public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
-//        ArrayList<DirtyFlag> guards = new ArrayList<>();
-//        if (supportDirtyFiltering()) {
-//            List<?> directParents = dependencyGraph.getDirectParents(node);
-//            for (Object parent : directParents) {
-//                DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
-//                if (parentDirtyFlag == null) {
-//                    guards.clear();
-//                    break;
-//                } else {
-//                    guards.add(parentDirtyFlag);
-//                }
-//            }
-//        }
-//        return guards;
-//    }
     public DirtyFlag getDirtyFlagForUpdateCb(CbMethodHandle cbHandle) {
         DirtyFlag flag = null;
         if (supportDirtyFiltering() && cbHandle != null) {
