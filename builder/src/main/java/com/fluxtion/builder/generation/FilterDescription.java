@@ -104,6 +104,22 @@ public class FilterDescription {
         this.value = 0;
         nullId = "";
     }
+    
+    public FilterDescription changeClass(Class<? extends Event> newClass){
+        FilterDescription fd = new FilterDescription(newClass, stringValue);
+        if(!isFiltered){
+            fd = new FilterDescription(newClass);
+        }else if(isIntFilter){
+            fd = new FilterDescription(newClass, value);
+        }else if(this==NO_FILTER){
+            return NO_FILTER;
+        }else if(this==INVERSE_FILTER){
+            return INVERSE_FILTER;
+        }else if(this==DEFAULT_FILTER){
+            return DEFAULT_FILTER;
+        }
+        return fd;
+    }
 
     private FilterDescription(String value) {
         this.stringValue = "";

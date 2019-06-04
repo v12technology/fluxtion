@@ -802,8 +802,55 @@ public class SimpleEventProcessorModel {
             dependencyGraph.sortNodeList(postCallList);
             Collections.reverse(postCallList);
         }
+        buildSubClassHandlers();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(dispatchMapToString());
+        }
+
+    }
+
+    private void buildSubClassHandlers() {
+        Set<Class> eventClassSet = dispatchMap.keySet();
+        for (Class eventClass : eventClassSet) {
+            LOGGER.debug("------- START superclass merge Class:" + eventClass.getSimpleName() + " START -----------");
+            Map<FilterDescription, List<CbMethodHandle>> targetHandlerMap = getHandlerMap(eventClass);
+            LOGGER.debug("targetHandlerMap before merge:{}", targetHandlerMap);
+            dispatchMap.entrySet().stream().filter((Map.Entry<Class, Map<FilterDescription, List<CbMethodHandle>>> e) -> {
+                Class key = e.getKey();
+                final boolean match = key.isAssignableFrom(eventClass) && eventClass != key;
+                if (match) {
+                    LOGGER.debug(key.getSimpleName() + " IS superclass of:" + eventClass.getSimpleName());
+                } else {
+                    LOGGER.debug(key.getSimpleName() + " NOT superclass of:" + eventClass.getSimpleName());
+                }
+                return match;
+            })
+                    .map(Map.Entry::getValue)
+                    .map((Map<FilterDescription, List<CbMethodHandle>> e) -> {
+                        HashMap<FilterDescription, List<CbMethodHandle>> newMap = new HashMap<>();
+                        e.entrySet().stream().forEach(en -> {
+                            newMap.put(en.getKey().changeClass(eventClass), en.getValue());
+                        });
+                        return newMap;
+                    })
+                    .forEach(new Consumer<HashMap<FilterDescription, List<CbMethodHandle>>>() {
+                        @Override
+                        public void accept(HashMap<FilterDescription, List<CbMethodHandle>> fd) {
+                            fd.entrySet().stream().forEach(me -> {
+                                FilterDescription key = me.getKey();
+                                List<CbMethodHandle> callList = me.getValue();
+                                targetHandlerMap.merge(key, callList, (List<CbMethodHandle> t, List<CbMethodHandle> u) -> {
+                                    LOGGER.debug("merging:{}", u);
+                                    t.removeAll(u);
+                                    t.addAll(u);
+                                    dependencyGraph.sortNodeList(t);
+                                    return t;
+                                });
+                            });
+                        }
+                    });
+            LOGGER.debug("targetHandlerMap after merge:{}", targetHandlerMap);
+            LOGGER.debug("------- END superclass merge Class:" + eventClass.getSimpleName() + " END -----------\n");
         }
 
     }
@@ -868,7 +915,7 @@ public class SimpleEventProcessorModel {
                     }
                 }
                 CbMethodHandle cb = node2UpdateMethodMap.get(node);
-                final boolean invertedDirtyHandler = cb!=null && cb.isInvertedDirtyHandler;
+                final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
                 guardSet.stream().forEach(d -> {
                     d.requiresInvert |= invertedDirtyHandler;
                 });
@@ -943,22 +990,6 @@ public class SimpleEventProcessorModel {
         return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
     }
 
-//    public List<DirtyFlag> getNodeGuardConditions_OLD(Object node) {
-//        ArrayList<DirtyFlag> guards = new ArrayList<>();
-//        if (supportDirtyFiltering()) {
-//            List<?> directParents = dependencyGraph.getDirectParents(node);
-//            for (Object parent : directParents) {
-//                DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
-//                if (parentDirtyFlag == null) {
-//                    guards.clear();
-//                    break;
-//                } else {
-//                    guards.add(parentDirtyFlag);
-//                }
-//            }
-//        }
-//        return guards;
-//    }
     public DirtyFlag getDirtyFlagForUpdateCb(CbMethodHandle cbHandle) {
         DirtyFlag flag = null;
         if (supportDirtyFiltering() && cbHandle != null) {
