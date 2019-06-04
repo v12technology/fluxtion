@@ -21,7 +21,7 @@ along with this program.  If not, see
 
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion-bom</artifactId>
-    <version>1.7.19</version>
+    <version>1.7.20-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: bom</name>
     <description>This meta-project is used to generate a bill-of-materials POM 
@@ -117,24 +117,24 @@ along with this program.  If not, see
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-api</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>fluxtion-builder</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <!--generator-->
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>generator</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <!--generator test -->
             <dependency>
                 <groupId>com.fluxtion</groupId>
                 <artifactId>generator</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
@@ -142,23 +142,23 @@ along with this program.  If not, see
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-streaming-api</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-streaming-builder</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <!--declarative-extended fluxtion--> 
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-text-api</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.extension</groupId>
                 <artifactId>fluxtion-text-builder</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.20-SNAPSHOT</version>
             </dependency>
             
             <!--            
