@@ -35,6 +35,38 @@ import org.junit.Test;
 public class CsvToBeanBuilderTest {
 
     @Test
+    public void defaultBeanMap() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        WorldCityOptionalEvent[] worldCity = new WorldCityOptionalEvent[1];
+        DispatchingCsvMarshaller dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2")
+                .dirOption(TEST_DIR_OUTPUT)
+                .mapBean("DefaultMappedBean", WorldCityOptionalEvent.class)
+                .build((e) -> {
+                    if (e instanceof WorldCityOptionalEvent) {
+                        worldCity[0] = (WorldCityOptionalEvent) e;
+                    }
+                });
+//
+        String dataCsh = "WorldCityOptionalEvent,country,city,accent City,region,population,longitude,latitude\n"
+                + "WorldCityOptionalEvent,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
+        StringDriver.streamChars(dataCsh, dispatcher, false);
+        assertThat(worldCity[0].getEventTime(), is(0L));
+
+        DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
+        dispatcher2.addMarshaller(WorldCity.class, (EventHandler) Class.forName(
+                "com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2.fluxCsvDefaultMappedBean.Csv2DefaultMappedBean").newInstance());
+        dispatcher2.addSink((Event e) -> {
+            if (e instanceof WorldCityOptionalEvent) {
+                worldCity[0] = (WorldCityOptionalEvent) e;
+            }
+        });
+
+        dataCsh = "WorldCity,eventTime,country,city,accent City,region,population,longitude,latitude\n"
+                + "WorldCity,200,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
+        StringDriver.streamChars(dataCsh, dispatcher2, false);
+        assertThat(worldCity[0].getEventTime(), is(200L));
+    }
+
+    @Test
     public void inlineCustomiseTest() throws Exception {
         boolean build = true;
         LongAdder count = new LongAdder();

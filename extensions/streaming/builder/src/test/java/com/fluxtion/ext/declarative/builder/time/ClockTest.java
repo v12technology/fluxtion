@@ -27,7 +27,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.time.Clock;
 import com.fluxtion.ext.streaming.api.time.ClockStrategy;
 import com.fluxtion.ext.streaming.api.time.Tick;
-import com.fluxtion.ext.streaming.api.time.TimeEvent;
+import com.fluxtion.api.event.TimeEvent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -47,29 +47,25 @@ public class ClockTest extends StreamInprocessTest {
         onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
         //
         n.set(1);
-        onEvent(new Tick());
-        onEvent(new Tick());
-        onEvent(new Tick());
+        Tick tick = new Tick();
+        tick.setEventTime(50);
+        onEvent(tick);
+        onEvent(tick);
+        onEvent(tick);
         assertThat(proxy.tickCount, is(3));
         assertThat(proxy.clock.getWallClockTime(), is(1L));
         assertThat(proxy.clock.getIngestTime(), is(1L));
-        assertThat(proxy.clock.getEventTime(), is(1L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
         //
         n.set(100);
         assertThat(proxy.clock.getWallClockTime(), is(100L));
         assertThat(proxy.clock.getIngestTime(), is(1L));
-        assertThat(proxy.clock.getEventTime(), is(1L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
         //tick
-        onEvent(new Tick());
+        onEvent(tick);
         assertThat(proxy.clock.getWallClockTime(), is(100L));
         assertThat(proxy.clock.getIngestTime(), is(100L));
-        assertThat(proxy.clock.getEventTime(), is(100L));
-        //send an event
-        n.set(900);
-        onEvent(new NoTimeEvent());
-        assertThat(proxy.clock.getWallClockTime(), is(900L));
-        assertThat(proxy.clock.getIngestTime(), is(900L));
-        assertThat(proxy.clock.getEventTime(), is(900L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
         //send an event
         n.set(1900);
         onEvent(new TestTimeEvent());

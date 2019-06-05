@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.api.time;
 
+import com.fluxtion.api.event.TimeEvent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.audit.Auditor;
@@ -50,11 +51,7 @@ public class Clock implements Auditor {
     @Override
     public void eventReceived(Object event) {
         ingestTime = getWallClockTime();
-        if(!(event instanceof TimeEvent)){
-            eventTime = ingestTime;
-        }else{
-            eventTime = ((TimeEvent)event).getEventTime();
-        }
+        eventTime = ingestTime;
     }
 
     public long getEventTime() {

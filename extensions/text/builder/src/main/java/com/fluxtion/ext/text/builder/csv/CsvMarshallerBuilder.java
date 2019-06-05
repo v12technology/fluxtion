@@ -20,6 +20,7 @@ import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -28,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import net.vidageek.mirror.dsl.Mirror;
 
 /**
  * A utility class for building delimited marshallers. This class is used at
@@ -146,14 +148,28 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         return this;
     }
 
+    public <U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, boolean optional) {
+        if (mapBean) {
+            srcMappingList.clear();
+        }
+        Method targetMethod = targetFunction.method(SINGLETON.getClassLoader());
+        mapNamedFieldToMethod(targetMethod, colName, optional);
+        mapBean = false;
+        return this;
+    }
+
     private CsvMarshallerBuilder<T> map(Class clazz) {
         try {
             for (PropertyDescriptor md : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
                 if (md.getWriteMethod() != null) {
-                    Field field = clazz.getDeclaredField(md.getName());
+                    Mirror m = new Mirror();
+                    Field field;// = clazz.getDeclaredField(md.getName());
+                    field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
+                    boolean optional = field.getAnnotation(OptionalField.class)!=null;
+//                    System.out.printf("%s optional:%s annotations:%s%n", field, optional, Arrays.toString(field.getAnnotations()));
                     if (!Modifier.isTransient(field.getModifiers())) {
-                        mapNamedFieldToMethod(md.getWriteMethod(), md.getName());
+                        mapNamedFieldToMethod(md.getWriteMethod(), md.getName(), md.getName().equals("eventTime") || optional);
                     }
                 }
             }
@@ -185,7 +201,12 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     }
 
     protected void mapNamedFieldToMethod(Method targetMethod, String colName) {
+        mapNamedFieldToMethod(targetMethod, colName, false);
+    }
+    
+    protected void mapNamedFieldToMethod(Method targetMethod, String colName, boolean optional) {
         CsvPushFunctionInfo info = new CsvPushFunctionInfo(importMap);
+        info.setMandatory(!optional);
         info.setTarget(targetClazz, targetMethod, targetId);
         info.setSourceFieldName(colName);
         info.setDuplicateField(srcMappingList.stream().anyMatch(s -> s.getFieldName() != null && s.getFieldName().equals(colName)));

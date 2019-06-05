@@ -23,7 +23,7 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  * <p>
  * Event class that feeds into a Simple Event Processor(SEP). Users should
  * extend this class to define their own events.</p>
- * 
+ *
  * <h2>Dispatch</h2>
  * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(com.fluxtion.api.event.Event)
  * } method.<p>
@@ -51,16 +51,16 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  * {@link FilteredEventHandler}'s or annotated event handler methods to filter
  * the type of events they receive. The SEP will compare the filter values in
  * the {@link Event} and the handler and propagate the Event conditional upon a
- * valid match. 
+ * valid match.
  *
- * 
+ *
  * @see com.fluxtion.api.annotations.EventHandler
  * @see EventHandler
- * 
+ *
  * @author Greg Higgins
- * 
+ *
  */
-public abstract class Event {
+public abstract class Event implements TimeEvent {
 
     /**
      * default ID for an event when the user does not explicitly set an ID. Any
@@ -72,6 +72,7 @@ public abstract class Event {
     protected int filterId;
     protected String filterString;
 //    protected CharSequence filterString;
+    protected long eventTime;
 
     public Event() {
         this(NO_ID);
@@ -93,6 +94,7 @@ public abstract class Event {
         this.id = id;
         this.filterId = filterId;
         this.filterString = filterString;
+        this.eventTime = System.currentTimeMillis();
     }
 
     /**
@@ -134,6 +136,27 @@ public abstract class Event {
 
     public final CharSequence filterCharSequence() {
         return filterString;
+    }
+
+    /**
+     * The time the event was created. By default this is implemented with {@link System#currentTimeMillis()
+     * } during construction.
+     *
+     * @return creation time
+     */
+    @Override
+    public long getEventTime() {
+        return eventTime;
+    }
+
+    /**
+     * Override the default value for event creation time. The default value is
+     * set with {@link System#currentTimeMillis()} during construction.
+     *
+     * @param eventTime
+     */
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
     }
 
 }

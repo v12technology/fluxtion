@@ -31,6 +31,7 @@ public class CsvPushFunctionInfo {
     private String fieldName;
     private boolean duplicateField = false;
     private boolean fixedWidth = false;
+    private boolean mandatory = true;
     private int fixedStart;
     private int fixedLen;
     private int fixedEnd;
@@ -69,6 +70,7 @@ public class CsvPushFunctionInfo {
 
     public void setSourceFieldName(String fieldName) {
         this.fieldName = fieldName;
+        this.fieldIndex = -1;
         indexField = false;
     }
     
@@ -282,6 +284,14 @@ public class CsvPushFunctionInfo {
 
     public int getFixedEnd() {
         return fixedEnd;
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
     }
     
 }

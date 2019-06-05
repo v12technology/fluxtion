@@ -175,9 +175,11 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #* *##if(${sourceInfo.namedField})
         ${sourceInfo.fieldIdentifier} = headers.indexOf("${sourceInfo.fieldName}");
         fieldMap.put(${sourceInfo.fieldIdentifier}, "${sourceInfo.targetCalcMethodName}");
+#*      *##if(${sourceInfo.mandatory})
         if (${sourceInfo.fieldIdentifier} < 0) {
             logHeaderProblem("problem mapping field:'${sourceInfo.fieldName}' missing column header, index row:", true, null);
         }
+#*     *##end
 #* *##end
 #end
     }
@@ -201,16 +203,19 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #*     *##if(${fixedLen})
             ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
 #*     *##else
+            #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
             ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1).trim();
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
             ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
+            #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
             ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1);
 #*     *##end
 #* *##end
             ${sourceInfo.updateTarget2}
+            #if(!${sourceInfo.mandatory}) #if(!${fixedLen})}#end #end
 #* *##if($acceptPartials)
         }
 #* *##end
