@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -36,6 +37,7 @@ public class CsvToBeanBuilderTest {
 
     @Test
     public void defaultBeanMap() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        long currentTime = System.currentTimeMillis();
         WorldCityOptionalEvent[] worldCity = new WorldCityOptionalEvent[1];
         DispatchingCsvMarshaller dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2")
                 .dirOption(TEST_DIR_OUTPUT)
@@ -49,7 +51,7 @@ public class CsvToBeanBuilderTest {
         String dataCsh = "WorldCityOptionalEvent,country,city,accent City,region,population,longitude,latitude\n"
                 + "WorldCityOptionalEvent,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
         StringDriver.streamChars(dataCsh, dispatcher, false);
-        assertThat(worldCity[0].getEventTime(), is(0L));
+        assertTrue(worldCity[0].getEventTime() >= currentTime);
 
         DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
         dispatcher2.addMarshaller(WorldCity.class, (EventHandler) Class.forName(
