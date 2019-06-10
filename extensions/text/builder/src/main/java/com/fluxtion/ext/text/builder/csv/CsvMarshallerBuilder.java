@@ -20,6 +20,7 @@ import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import java.beans.Introspector;
@@ -123,7 +124,12 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
             map(targetClazz);
         }
     }
-
+    
+    public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(int colIndex, SerializableBiConsumer<T, U> targetFunction, SerializableFunction<S, U> converterFunction) {
+        map(colIndex, targetFunction);
+        return converter(colIndex, converterFunction);
+    }
+    
     public <U> CsvMarshallerBuilder<T> map(int colIndex, SerializableBiConsumer<T, U> targetFunction) {
         if (mapBean) {
             srcMappingList.clear();
@@ -138,6 +144,11 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         return this;
     }
 
+    public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, SerializableFunction<S, U> converterFunction) {
+        map(colName, targetFunction);
+        return converter(colName, converterFunction);
+    } 
+    
     public <U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction) {
         if (mapBean) {
             srcMappingList.clear();
@@ -148,6 +159,11 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         return this;
     }
 
+    public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, boolean optional, SerializableFunction<S, U> converterFunction) {
+        map(colName, targetFunction, optional);
+        return converter(colName, converterFunction);
+    }  
+    
     public <U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, boolean optional) {
         if (mapBean) {
             srcMappingList.clear();

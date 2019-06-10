@@ -143,7 +143,8 @@ public class CharStreamer {
     private void streamAsyncFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
             FileChannel fileChannel = new FileInputStream(inputFile).getChannel();
-            long size = inputFile.length();
+                long size = Math.min(inputFile.length(), 500_000_000);
+//                long size = Math.min(inputFile.length(), Integer.MAX_VALUE-1);
             mappedBuffer = fileChannel.map(
                     FileChannel.MapMode.READ_ONLY, 0, size);
 
@@ -168,16 +169,17 @@ public class CharStreamer {
 
     private void streamFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
-            FileChannel fileChannel = new FileInputStream(inputFile).getChannel();
-            long size = inputFile.length();
-            MappedByteBuffer buffer = fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY, 0, size);
-            CharEvent charEvent = new CharEvent(' ');
-            while (buffer.hasRemaining()) {
-                charEvent.setCharacter((char) buffer.get());
-                handler.onEvent(charEvent);
+            try (FileChannel fileChannel = new FileInputStream(inputFile).getChannel()) {
+                long size = Math.min(inputFile.length(), 500_000_000);
+//                long size = Math.min(inputFile.length(), Integer.MAX_VALUE-1);
+                MappedByteBuffer buffer = fileChannel.map(
+                        FileChannel.MapMode.READ_ONLY, 0, size);
+                CharEvent charEvent = new CharEvent(' ');
+                while (buffer.hasRemaining()) {
+                    charEvent.setCharacter((char) buffer.get());
+                    handler.onEvent(charEvent);
+                }
             }
-            fileChannel.close();
         }
 //        handler.onEvent(EofEvent.EOF);
     }
