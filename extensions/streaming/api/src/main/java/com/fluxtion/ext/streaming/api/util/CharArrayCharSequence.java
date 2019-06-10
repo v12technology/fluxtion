@@ -80,10 +80,16 @@ public class CharArrayCharSequence implements CharSequence {
             return end - start;
         }
 
-        @Override
-        public CharSequenceView subSequence(int start, int end) {
+        public CharSequenceView subSequenceNoOffset(int start, int end) {
             this.start = start;
             this.end = end;
+            return this;
+        }
+
+        @Override
+        public CharSequenceView subSequence(int newStart, int newEnd) {
+            this.start = newStart + start;
+            this.end = newEnd + start;
             return this;
         }
 
