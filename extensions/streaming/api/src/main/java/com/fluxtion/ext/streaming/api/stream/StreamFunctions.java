@@ -18,6 +18,7 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Stateful;
 
 /**
@@ -30,8 +31,12 @@ public class StreamFunctions {
         return new Message(message)::publishMessage;
     }
 
-    public static <T extends Double> LambdaReflection.SerializableFunction<T, Number> toDouble() {
+    public static <T extends Double> SerializableFunction<T, Number> toDouble() {
         return StreamFunctions::asDouble;
+    } 
+
+    public static <T> SerializableFunction<T, T> toReference() {
+        return StreamFunctions::asReference;
     } 
     
     public static double add(double a, double b) {
@@ -51,6 +56,10 @@ public class StreamFunctions {
     }
     
     public static double asDouble(double d){
+        return d;
+    } 
+    
+    public static <S>  S asReference(S d){
         return d;
     } 
 

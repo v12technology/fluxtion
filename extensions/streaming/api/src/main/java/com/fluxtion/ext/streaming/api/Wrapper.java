@@ -64,7 +64,9 @@ public interface Wrapper<T> {
         if(supplier.method().getReturnType().isPrimitive()){
             return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toDouble(), supplier);
         }
-        else throw new RuntimeException("only primitive fileds can be mapped as streams");
+        else{
+            return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toReference(), supplier);
+        }
     }
     
     default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(

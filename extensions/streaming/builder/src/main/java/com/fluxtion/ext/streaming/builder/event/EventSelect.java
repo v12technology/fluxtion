@@ -50,7 +50,7 @@ public interface EventSelect {
     public static <T extends Event, S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
         Class<T> eventClazz = supplier.getContainingClass();
         Wrapper<T> handler = new ReusableEventHandler(eventClazz);
-        GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+        handler = GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         return handler.get(supplier);
     }
 
