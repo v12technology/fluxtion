@@ -53,8 +53,7 @@ public interface EventSelect {
         handler = GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         return handler.get(supplier);
     }
-
-    
+ 
     public static <T extends Event> Wrapper<T> selectOLD(Class<T> eventClazz) {
         return build(eventClazz, null, null);
     }
