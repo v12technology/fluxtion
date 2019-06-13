@@ -30,6 +30,10 @@ public class StreamFunctions {
         return new Message(message)::publishMessage;
     }
 
+    public static <T extends Double> LambdaReflection.SerializableFunction<T, Number> toDouble() {
+        return StreamFunctions::asDouble;
+    } 
+    
     public static double add(double a, double b) {
         return a + b;
     }
@@ -45,6 +49,10 @@ public class StreamFunctions {
     public static double divide(double a, double b) {
         return a / b;
     }
+    
+    public static double asDouble(double d){
+        return d;
+    } 
 
     public static class IntCount implements Stateful {
 
