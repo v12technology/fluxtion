@@ -16,14 +16,18 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,13 +97,13 @@ public class CharStreamer {
         this.init = false;
         return this;
     }
-    
-    public CharStreamer eof(){
+
+    public CharStreamer eof() {
         this.eof = true;
         return this;
     }
-    
-    public CharStreamer noEof(){
+
+    public CharStreamer noEof() {
         this.eof = true;
         return this;
     }
@@ -132,8 +136,8 @@ public class CharStreamer {
                 streamFile();
             }
         }
-        if(eof){
-           handler.onEvent(EofEvent.EOF);
+        if (eof) {
+            handler.onEvent(EofEvent.EOF);
         }
         if (tearDown && handler instanceof Lifecycle) {
             ((Lifecycle) handler).tearDown();
@@ -143,7 +147,7 @@ public class CharStreamer {
     private void streamAsyncFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
             FileChannel fileChannel = new FileInputStream(inputFile).getChannel();
-                long size = Math.min(inputFile.length(), 500_000_000);
+            long size = Math.min(inputFile.length(), 500_000_000);
 //                long size = Math.min(inputFile.length(), Integer.MAX_VALUE-1);
             mappedBuffer = fileChannel.map(
                     FileChannel.MapMode.READ_ONLY, 0, size);
@@ -168,6 +172,23 @@ public class CharStreamer {
     }
 
     private void streamFile() throws FileNotFoundException, IOException {
+
+        if (inputFile.exists() && inputFile.isFile()) {
+            BufferedReader rd = Files.newBufferedReader(inputFile.toPath());
+            CharEvent charEvent = new CharEvent(' ');
+            String readLine = "";
+            while ((readLine = rd.readLine()) != null) {
+                for (char c : readLine.toCharArray()) {
+                    charEvent.setCharacter(c);
+                    handler.onEvent(charEvent);
+                }
+                charEvent.setCharacter('\n');
+                handler.onEvent(charEvent);
+            }
+        }
+    }
+
+    private void streamFile_OLD() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
             try (FileChannel fileChannel = new FileInputStream(inputFile).getChannel()) {
                 long size = Math.min(inputFile.length(), 500_000_000);
