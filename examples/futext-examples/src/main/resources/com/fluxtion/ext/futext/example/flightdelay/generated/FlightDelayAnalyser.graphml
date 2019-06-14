@@ -42,7 +42,7 @@
 <data key="vertex_label">
 <jGraph:ShapeNode>
 <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-<jGraph:label text="totalFlights:&#10;Map_FlightDetails_By_increment0"/>
+<jGraph:label text="totalFlights:&#10;Map_FlightDetails_With_increment0"/>
 <jGraph:Style properties="NODE"/>
 </jGraph:ShapeNode>
 </data>
