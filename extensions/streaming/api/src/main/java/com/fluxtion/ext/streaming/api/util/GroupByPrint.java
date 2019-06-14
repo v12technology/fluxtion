@@ -17,6 +17,9 @@
  */
 package com.fluxtion.ext.streaming.api.util;
 
+import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.ext.streaming.api.SepContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import java.util.ArrayList;
@@ -28,22 +31,66 @@ import java.util.Map;
  */
 public class GroupByPrint {
 
-    public static void printFrequencyMap(String title, GroupBy<Number> groupBy) {
-        System.out.println(title);
-        groupBy.getMap().entrySet().stream().forEach(e -> System.out.println(e.getKey().toString() + ":" + e.getValue().event().intValue()));
-        System.out.println("");
+    public static void printFrequencyMap(String title, GroupBy<Number> groupBy, Object trigger) {
+        SepContext.service().add(new PrintFrequencyMap(title, groupBy, trigger));
     }
 
-    public static <K> void printTopN(String title, GroupBy<Number> groupBy, int n) {
-        System.out.println(title);
-        Map<?, Wrapper<Number>> map = groupBy.getMap();
-        ArrayList<Map.Entry<?, Wrapper<Number>>> list = new ArrayList<>(map.entrySet());
-        list.sort((e1, e2) -> e2.getValue().event().intValue() - e1.getValue().event().intValue());
-        int count = Math.min(n, list.size());
-        for (int i = 0; i < count; i++) {
-            Map.Entry<? extends Object, Wrapper<Number>> get = list.get(i);
-            System.out.println(get.getKey() + ":" + get.getValue().event().intValue());
+    public static void printTopN(String title, int n, GroupBy<Number> groupBy, Object trigger) {
+        SepContext.service().add(new PrintTopN(title, n, groupBy, trigger));
+    }
+
+    public static class PrintFrequencyMap {
+
+        private final String title;
+        @NoEventReference
+        private final GroupBy<Number> groupBy;
+        private final Object trigger;
+
+        public PrintFrequencyMap(String title, GroupBy groupBy, Object trigger) {
+            this.title = title;
+            this.groupBy = groupBy;
+            this.trigger = trigger;
         }
-        System.out.println("");
+
+        @OnEvent
+        public boolean printFreqMap() {
+            System.out.println(title);
+            groupBy.getMap().entrySet().stream().forEach(e -> System.out.println(e.getKey().toString() + ":" + e.getValue().event().intValue()));
+            System.out.println("");
+            return false;
+        }
+
+    }
+
+    public static class PrintTopN {
+
+        private final String title;
+        private final int n;
+        @NoEventReference
+        private final GroupBy<Number> groupBy;
+        private final Object trigger;
+
+        public PrintTopN(String title, int n, GroupBy groupBy, Object trigger) {
+            this.title = title;
+            this.n = n;
+            this.groupBy = groupBy;
+            this.trigger = trigger;
+        }
+
+        @OnEvent
+        public boolean printTopN() {
+            System.out.println(title);
+            Map<?, Wrapper<Number>> map = groupBy.getMap();
+            ArrayList<Map.Entry<?, Wrapper<Number>>> list = new ArrayList<>(map.entrySet());
+            list.sort((e1, e2) -> e2.getValue().event().intValue() - e1.getValue().event().intValue());
+            int count = Math.min(n, list.size());
+            for (int i = 0; i < count; i++) {
+                Map.Entry<? extends Object, Wrapper<Number>> get = list.get(i);
+                System.out.println(get.getKey() + ":" + get.getValue().event().intValue());
+            }
+            System.out.println("");
+            return false;
+        }
+
     }
 }
