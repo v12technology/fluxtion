@@ -28,8 +28,17 @@ public class CharSeqFunctions {
     public static <T extends CharSequence> SerializableFunction<T, CharSequence> subSequence(int start, int end) {
         return new SubSeq(start, end)::subSequence;
     }
+    
+    public static <T extends CharSequence> SerializableFunction<T, String> subString(int start, int end) {
+        return new SubSeq(start, end)::subString;
+    }
+    
     public static <T extends CharSequence> SerializableFunction<T, CharSequence> subSeqBefore(char serachChar) {
         return new SubSeqBefore(serachChar)::subSequence;
+    }
+    
+    public static <T extends CharSequence> SerializableFunction<T, String> subStringBefore(char serachChar) {
+        return new SubSeqBefore(serachChar)::subString;
     }
 
     public static class SubSeq {
@@ -44,6 +53,10 @@ public class CharSeqFunctions {
 
         public CharSequence subSequence(CharSequence cs) {
             return cs.subSequence(start, end);
+        }
+
+        public String subString(CharSequence cs) {
+            return subSequence(cs).toString();
         }
     }
 
@@ -64,6 +77,10 @@ public class CharSeqFunctions {
                 }
             }
             return cs.subSequence(0, idx);
+        }
+        
+        public String subString(CharSequence cs){
+            return subSequence(cs).toString();
         }
     }
 
