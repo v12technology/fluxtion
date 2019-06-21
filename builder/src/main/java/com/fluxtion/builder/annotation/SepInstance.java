@@ -25,8 +25,14 @@ import java.lang.annotation.Target;
 
 /**
  *
- * Mark a class as an instance encapsulated by a SEP. Generation for this
- * classes can be disabled by adding the {@link Disabled} annotation the class. 
+ * Mark a class as an instance encapsulated by a SEP, this can be used in place
+ * of a builder method when the SEP contains only one imperatively added node.
+ * The encapsulated instance is scoped as a public final declared variable with
+ * the name "processor"
+ * .<p>
+ *
+ * Generation for this classes can be disabled by adding
+ * the {@link Disabled} annotation the class.
  *
  * @author V12 Technology Ltd.
  */
@@ -86,10 +92,10 @@ public @interface SepInstance {
      * @return flag to control cleaning of output directory
      */
     boolean cleanOutputDir() default false;
-    
-    
+
     /**
      * Configures generated code to support dirty filtering
+     *
      * @return flag to control generation conditional branching
      */
     boolean supportDirtyFiltering() default true;
