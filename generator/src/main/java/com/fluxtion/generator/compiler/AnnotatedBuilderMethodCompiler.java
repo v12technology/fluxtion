@@ -106,7 +106,7 @@ public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
         } catch (URISyntaxException ex) {
             LOGGER.error("problem generating static event processor", ex);
         }
-        LOGGER.info("AnnotatedBuilderMethodCompiler completed");
+        LOGGER.debug("AnnotatedBuilderMethodCompiler completed");
     }
 
 }
