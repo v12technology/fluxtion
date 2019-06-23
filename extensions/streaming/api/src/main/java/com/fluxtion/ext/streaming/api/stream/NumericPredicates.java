@@ -26,6 +26,10 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
  */
 public class NumericPredicates {
 
+    public static <T extends Double> SerializableFunction<T, Boolean> equal(double test) {
+        return new NumericPredicates(test)::eq;
+    }
+
     public static <T extends Double> SerializableFunction<T, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
@@ -83,6 +87,10 @@ public class NumericPredicates {
         this.doubleLimit_1 = limit_1;
     }
 
+    public boolean eq(double value){
+        return value == doubleLimit_0;
+    }
+    
     public static boolean positiveInt(double value) {
         return value > 0;
     }

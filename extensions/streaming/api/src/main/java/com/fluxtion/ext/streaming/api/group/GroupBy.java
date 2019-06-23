@@ -18,6 +18,7 @@ package com.fluxtion.ext.streaming.api.group;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,12 @@ public interface GroupBy<T> extends Wrapper<T>, Stateful {
     }
 
     @Override
-    default void reset(){
+    default GroupBy<T> notifierOverride(Object eventNotifier) {
+        return ( GroupBy<T>)StreamOperator.service().notifierOverride((Wrapper<T>) this, eventNotifier);
+    }
+
+    @Override
+    default void reset() {
         //no-op
     }
 

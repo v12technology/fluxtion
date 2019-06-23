@@ -35,17 +35,23 @@ public class CharArrayCharSequenceTest {
     @Test
     public void testOne() {
         CharArrayCharSequence seq = new CharArrayCharSequence("FreddieHiggins".toCharArray());
-        CharSequence freddie = seq.subSequence(0, 7);
-        CharSequence higgins = seq.subSequence(7, seq.length());
+        CharSequenceView freddie = seq.subSequence(0, 7);
+        CharSequenceView higgins = seq.subSequence(7, seq.length());
 
         assertThat(freddie.toString(), is("Freddie"));
         assertThat(higgins.toString(), is("Higgins"));
         assertFalse(freddie == higgins);
 
-        //convert freddie to higgins
-        CharSequence freedie2Higgins = freddie.subSequence(7, seq.length());
+        //convert freddie to higgins - global position shift
+        CharSequence freedie2Higgins = freddie.subSequenceNoOffset(7, seq.length());
         assertThat(freedie2Higgins.toString(), is("Higgins"));
         assertTrue(freedie2Higgins == freddie);
+        
+        //convert to fred
+        freddie = seq.subSequence(0, 7);
+        CharSequenceView fred = freddie.subSequence(0, 4);
+        assertThat(fred.toString(), is("Fred"));
+        assertTrue(fred == freddie);
     }
 
     @Test
@@ -64,6 +70,8 @@ public class CharArrayCharSequenceTest {
         assertThat(eurusd.charAt(3), is('u'));
         assertThat(price.charAt(1), is('.'));
 
+        price.subSequence(0, 1).toString();
+        
     }
 
     @Test
@@ -106,12 +114,15 @@ public class CharArrayCharSequenceTest {
         assertEquals(usd1, usd2);
         assertEquals(usd1.hashCode(), usd2.hashCode()); 
         
+        assertEquals(eur, "eur");
+        assertEquals(eur.hashCode(), "eur".hashCode()); 
+        
         seq2Int.put(eur, 100);
         seq2Int.put(usd1, 999);
         
         assertNull(seq2Int.get("eur"));
+        assertEquals(100, (int)seq2Int.get(eur));
         assertEquals((long)999, (long)seq2Int.get(usd2));
-        
     }
     
     @Test

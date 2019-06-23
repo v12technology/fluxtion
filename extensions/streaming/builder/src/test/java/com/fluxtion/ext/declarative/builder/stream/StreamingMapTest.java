@@ -60,6 +60,22 @@ public class StreamingMapTest extends StreamInprocessTest {
         onEvent(new StreamData("false"));
         assertThat(val.event(), is(false));
     }
+    
+    @Test
+    public void getField(){
+        sep((c) ->{
+            select(StreamData::getStringValue).id("valueString");
+            select(StreamData::getDoubleValue).id("value");
+        });
+        Wrapper<Number> valNumber = getField("value"); 
+        Wrapper<String> valString = getField("valueString"); 
+        //double
+        onEvent(new StreamData(23.0));
+        assertThat(valNumber.event().doubleValue(), is(23.0));
+        //string
+        onEvent(new StreamData("test1"));
+        assertThat(valString.event(), is("test1"));
+    }
 
     @Test
     public void mapStringFromPrimitive() {

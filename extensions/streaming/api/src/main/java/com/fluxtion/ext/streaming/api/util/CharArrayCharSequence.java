@@ -64,10 +64,13 @@ public class CharArrayCharSequence implements CharSequence {
 
         private int start;
         private int end;
+        private boolean updated = true;
+        private String myString = null;
 
         public CharSequenceView(int start, int end) {
             this.start = start;
             this.end = end;
+            updated = true;
         }
 
         @Override
@@ -80,17 +83,31 @@ public class CharArrayCharSequence implements CharSequence {
             return end - start;
         }
 
-        @Override
-        public CharSequenceView subSequence(int start, int end) {
+        public CharSequenceView subSequenceNoOffset(int start, int end) {
+            updated = true;
             this.start = start;
             this.end = end;
             return this;
         }
 
         @Override
+        public CharSequenceView subSequence(int newStart, int newEnd) {
+            updated = true;
+            this.start = newStart + start;
+            this.end = newEnd + start;
+            return this;
+        }
+
+        @Override
         public String toString() {
+            if(updated){
+                myString = new String(array, start, end - start);
+            }
+            return myString;
+        }
+        
+        public String intern() {
             return (String) cache.intern(this);
-//            return new String(array, start, end - start);
         }
 
         @Override

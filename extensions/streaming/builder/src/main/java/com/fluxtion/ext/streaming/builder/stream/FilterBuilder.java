@@ -363,7 +363,7 @@ public class FilterBuilder<T, F> {
                 filterBuilder.functionInfo.appendParamLocal(accessor, "filterSubject", cast);
             }
         }
-        filterBuilder.genClassSuffix = "Map_" + sourceString + "_By_" + mappingMethod.getName();
+        filterBuilder.genClassSuffix = "Map_" + sourceString + "_With_" + mappingMethod.getName();
         return filterBuilder;
     }
 

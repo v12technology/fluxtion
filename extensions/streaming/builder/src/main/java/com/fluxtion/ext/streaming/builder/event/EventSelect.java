@@ -29,6 +29,7 @@ import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filterType
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.ReusableEventHandler;
 import java.util.Map;
 import org.apache.velocity.VelocityContext;
@@ -46,6 +47,13 @@ public interface EventSelect {
         return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
     }
 
+    public static <T extends Event, S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
+        Class<T> eventClazz = supplier.getContainingClass();
+        Wrapper<T> handler = new ReusableEventHandler(eventClazz);
+        handler = GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+        return handler.get(supplier);
+    }
+ 
     public static <T extends Event> Wrapper<T> selectOLD(Class<T> eventClazz) {
         return build(eventClazz, null, null);
     }

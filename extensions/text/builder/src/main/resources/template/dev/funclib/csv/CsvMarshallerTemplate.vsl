@@ -201,17 +201,17 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             fieldIndex = ${sourceInfo.fieldIdentifier};
 #* *##if($sourceInfo.trim)
 #*     *##if(${fixedLen})
-            ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
+            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
 #*     *##else
             #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
-            ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1).trim();
+            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1).trim();
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
-            ${sourceInfo.targetCalcMethodName}.subSequence(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
+            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
             #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
-            ${sourceInfo.targetCalcMethodName}.subSequence(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1);
+            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1);
 #*     *##end
 #* *##end
             ${sourceInfo.updateTarget2}

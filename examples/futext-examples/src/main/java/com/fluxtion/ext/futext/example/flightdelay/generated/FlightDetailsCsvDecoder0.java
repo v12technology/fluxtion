@@ -102,11 +102,11 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
     try {
       updateFieldIndex();
       fieldIndex = fieldIndex_14;
-      setDelay.subSequence(delimIndex[fieldIndex_14], delimIndex[fieldIndex_14 + 1] - 1);
+      setDelay.subSequenceNoOffset(delimIndex[fieldIndex_14], delimIndex[fieldIndex_14 + 1] - 1);
       target.setDelay(atoi(setDelay));
 
       fieldIndex = fieldIndex_8;
-      setCarrier.subSequence(delimIndex[fieldIndex_8], delimIndex[fieldIndex_8 + 1] - 1);
+      setCarrier.subSequenceNoOffset(delimIndex[fieldIndex_8], delimIndex[fieldIndex_8 + 1] - 1);
       target.setCarrier(setCarrier);
 
     } catch (Exception e) {

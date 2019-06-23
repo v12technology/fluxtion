@@ -40,7 +40,9 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
   @OnEvent
   public boolean onEvent() {
     boolean oldValue = result;
-    result = NumericPredicates.positiveInt((double) ((FlightDetails) source_0.event()).getDelay());
+    result =
+        (boolean)
+            NumericPredicates.positiveInt((double) ((FlightDetails) source_0.event()).getDelay());
     //this is probably right - to be tested
     //return (!notifyOnChangeOnly | !oldValue) & result;
     return (!notifyOnChangeOnly & result) | ((!oldValue) & result);

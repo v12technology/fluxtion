@@ -70,12 +70,43 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
 
     }
 
+    //use charsequence key!!
+    public T getOrCreateInstance(CharSequence key) {
+        String keyString = key.toString();
+        T instance = map.get(keyString);
+        if (instance == null) {
+            try {
+                instance = targetClass.newInstance();
+                map.put(keyString, instance);
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return instance;
+    }
+
     public T getOrCreateInstance(BufferValue key) {
         T instance = map.get(key.asString());
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
                 map.put(key.asString(), instance);
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return instance;
+    }
+
+    public <K> T getOrCreateInstance(CharSequence key, GroupByIniitialiser initialiser, K source) {
+        String keyString = key.toString();
+        T instance = map.get(keyString);
+        if (instance == null) {
+            try {
+                instance = targetClass.newInstance();
+                GroupByIniitialiser<K, U> f = (GroupByIniitialiser<K, U>) initialiser;
+                f.apply(source, instance.event());
+                map.put(keyString, instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }

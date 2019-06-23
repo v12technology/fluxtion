@@ -100,7 +100,12 @@ import java.util.function.Function;
  */
 public class AnalysisBuilder {
 
-    @SepBuilder(name = "FlightDelayAnalyser", packageName = "com.fluxtion.ext.futext.example.flightdelay.generated")
+    @SepBuilder(
+            name = "FlightDelayAnalyser", 
+            packageName = "com.fluxtion.ext.futext.example.flightdelay.generated",
+            outputDir = "src/main/java", 
+            cleanOutputDir = true
+    )
 //    @Disabled
     public void buildFlightProcessor(SEPConfig cfg) {
         Wrapper<FlightDetails> flightDetails = csvMarshaller(FlightDetails.class, 1)
