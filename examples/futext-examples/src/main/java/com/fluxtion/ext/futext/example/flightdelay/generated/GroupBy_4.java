@@ -51,16 +51,16 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
       instance.aggregateAverage1 = value;
     }
     {
-      int value = instance.aggregateCount2;
-      value = AggregateCount.increment((int) 0, (int) value);
-      target.setTotalFlights((int) value);
-      instance.aggregateCount2 = value;
-    }
-    {
       double value = instance.aggregateSum3;
       value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
       target.setTotalDelayMins((int) value);
       instance.aggregateSum3 = value;
+    }
+    {
+      int value = instance.aggregateCount2;
+      value = AggregateCount.increment((int) 0, (int) value);
+      target.setTotalFlights((int) value);
+      instance.aggregateCount2 = value;
     }
     return allMatched;
   }
