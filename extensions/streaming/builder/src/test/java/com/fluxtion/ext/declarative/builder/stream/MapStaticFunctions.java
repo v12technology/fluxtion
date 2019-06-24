@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import javafx.util.Pair;
+import com.fluxtion.ext.streaming.api.util.Pair;
 
 /**
  *
