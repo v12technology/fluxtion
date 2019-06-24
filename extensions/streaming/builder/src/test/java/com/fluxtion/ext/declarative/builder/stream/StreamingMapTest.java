@@ -20,9 +20,10 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import javafx.util.Pair;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import com.fluxtion.ext.streaming.api.util.Pair;
 import org.junit.Test;
 
 /**
