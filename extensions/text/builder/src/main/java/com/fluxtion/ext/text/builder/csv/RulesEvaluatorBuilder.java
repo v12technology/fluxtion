@@ -36,10 +36,10 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import com.fluxtion.ext.text.api.csv.ValidationLogSink.LogNotifier;
 import com.fluxtion.ext.text.api.util.EventPublsher;
+import com.fluxtion.ext.streaming.api.util.Pair;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.util.Pair;
 
 /**
  * A RulesEvaluator aggregates a set of rules and reports success if all rules
