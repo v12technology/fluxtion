@@ -38,7 +38,8 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   private final Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt0_2 =
       new Filter_getDelay_By_positiveInt0();
   public final GroupBy_4 carrierDelayMap = new GroupBy_4();
-  public final Map_FlightDetails_By_increment0 totalFlights = new Map_FlightDetails_By_increment0();
+  public final Map_FlightDetails_With_increment0 totalFlights =
+      new Map_FlightDetails_With_increment0();
   private final ValidationLogger validationLogger_6 = new ValidationLogger("validationLog");
   private final ValidationLogSink validationLogSink_7 = new ValidationLogSink("validationLogSink");
   //Dirty flags

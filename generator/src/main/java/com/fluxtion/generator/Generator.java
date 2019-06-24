@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 import net.openhft.compiler.CachedCompiler;
 import org.apache.velocity.Template;
@@ -115,7 +113,11 @@ public class Generator {
                     + "    \n"
                     + "}");
         } catch (Exception ex) {
-            LOG.error("problem running warmup compile", ex);
+            if(LOG.isDebugEnabled()){
+                LOG.debug("problem running warmup compile", ex);
+            }else{
+                LOG.warn("problem running warmup compile");
+            }
         } finally {
             LOG.debug("completed compiler warmup");
         }

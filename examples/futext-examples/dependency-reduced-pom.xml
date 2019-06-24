@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>root-parent-pom</artifactId>
-    <groupId>com.fluxtion</groupId>
-    <version>1.6.3-SNAPSHOT</version>
-    <relativePath>../../poms/parent-root/pom.xml</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.fluxtion.example</groupId>
-  <artifactId>documentation_futext_examples</artifactId>
-  <name>fluxtion :: examples :: futtext</name>
+  <artifactId>documentation_text_examples</artifactId>
+  <name>fluxtion :: examples :: text</name>
+  <version>1.7.22-SNAPSHOT</version>
   <description>Examples to accompany gitbook reference documentation for futext extenstion</description>
   <build>
     <plugins>
       <plugin>
         <groupId>com.fluxtion</groupId>
         <artifactId>fluxtion-maven-plugin</artifactId>
-        <version>1.6.3-SNAPSHOT</version>
+        <version>1.7.22-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -58,8 +53,8 @@
   <dependencies>
     <dependency>
       <groupId>com.fluxtion.extension</groupId>
-      <artifactId>fluxtion-fu-text-builder</artifactId>
-      <version>1.6.3-SNAPSHOT</version>
+      <artifactId>fluxtion-text-builder</artifactId>
+      <version>1.7.22-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -67,7 +62,7 @@
           <groupId>com.fluxtion</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>fluxtion-declarative-builder</artifactId>
+          <artifactId>fluxtion-streaming-builder</artifactId>
           <groupId>com.fluxtion.extension</groupId>
         </exclusion>
         <exclusion>
@@ -90,18 +85,6 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>1.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.stefanbirkner</groupId>
-      <artifactId>system-rules</artifactId>
-      <version>1.16.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
