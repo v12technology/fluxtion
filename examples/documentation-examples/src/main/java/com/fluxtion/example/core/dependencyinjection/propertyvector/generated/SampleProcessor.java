@@ -33,7 +33,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
           Arrays.asList(1, 2, 3, 4, 5),
           new String[] {"one", "two"});
   //Dirty flags
-  private boolean isDirty_propertyHandler_1 = false;
+
   //Filter constants
 
   public SampleProcessor() {
@@ -69,17 +69,13 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   public void handleEvent(MyEvent typedEvent) {
     //Default, no filter methods
-    isDirty_propertyHandler_1 = true;
     propertyHandler_1.myEvent(typedEvent);
     //event stack unwind callbacks
     afterEvent();
   }
 
   @Override
-  public void afterEvent() {
-
-    isDirty_propertyHandler_1 = false;
-  }
+  public void afterEvent() {}
 
   @Override
   public void init() {

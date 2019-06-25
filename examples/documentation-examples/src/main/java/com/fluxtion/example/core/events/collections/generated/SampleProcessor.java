@@ -42,7 +42,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
           new Object[] {myEventHandler_1, myEventHandler_3, dataEventHandler_5, configHandler_7},
           Arrays.asList(configHandler_9, configHandler_11));
   //Dirty flags
-  private boolean isDirty_aggregator_13 = false;
   private boolean isDirty_configHandler_7 = false;
   private boolean isDirty_configHandler_9 = false;
   private boolean isDirty_configHandler_11 = false;
@@ -100,7 +99,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
         | isDirty_dataEventHandler_5
         | isDirty_myEventHandler_1
         | isDirty_myEventHandler_3) {
-      isDirty_aggregator_13 = true;
       aggregator_13.update();
     }
     //event stack unwind callbacks
@@ -120,7 +118,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
         | isDirty_dataEventHandler_5
         | isDirty_myEventHandler_1
         | isDirty_myEventHandler_3) {
-      isDirty_aggregator_13 = true;
       aggregator_13.update();
     }
     //event stack unwind callbacks
@@ -145,7 +142,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
         | isDirty_dataEventHandler_5
         | isDirty_myEventHandler_1
         | isDirty_myEventHandler_3) {
-      isDirty_aggregator_13 = true;
       aggregator_13.update();
     }
     //event stack unwind callbacks
@@ -155,7 +151,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
 
-    isDirty_aggregator_13 = false;
     isDirty_configHandler_7 = false;
     isDirty_configHandler_9 = false;
     isDirty_configHandler_11 = false;
