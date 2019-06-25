@@ -18,7 +18,9 @@ import $import;
 public class ${functionClass} extends AbstractFilterWrapper<Number>{
 
     public ${sourceClass} filterSubject;
+#if(${multiArgFunc})
     private boolean filterSubjectUpdated;
+#end
 #foreach($sourceInfo in $sourceMappingList)
     public ${sourceInfo.type} ${sourceInfo.id};
 #if(!${sourceInfo.constant})
@@ -52,11 +54,11 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
 #else
 #if(${multiArgFunc})
         if(allSourcesUpdated()){
-#else
-        if(filterSubjectUpdated){
-#end
             result = f.${targetMethod}(${input});
         }
+#else
+            result = f.${targetMethod}(${input});
+#end
 #foreach($functionInfo in $sourceFunctions)
         if(${functionInfo.sourceInfo.id}Updated){
             result =  f.${targetMethod}(${functionInfo.paramString});
@@ -68,6 +70,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     }
 #if(!${newFunction} || ${multiArgFunc} )
 
+#if(${multiArgFunc})
     private boolean allSourcesUpdated(){
         boolean updated = filterSubjectUpdated;
 #foreach($sourceInfo in $sourceMappingList)
@@ -77,7 +80,6 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
 #end
         return updated;
     }
-#if(!${sourceInfo.constant})
 
     @OnParentUpdate("filterSubject")
     public void updated_filterSubject(${sourceClass} updated){
@@ -137,7 +139,9 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
         result = 0;
         value = new MutableNumber();
         oldValue = new MutableNumber();
+#if(${multiArgFunc})
         filterSubjectUpdated = ${sourceConstant};
+#end
     }
 
 }
