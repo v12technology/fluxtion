@@ -32,9 +32,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final DataHandler handler_EQUITIES = new DataHandler("EQUITIES");
   private final DataHandler handler_BONDS = new DataHandler("BONDS");
   //Dirty flags
-  private boolean isDirty_handler_BONDS = false;
-  private boolean isDirty_handler_EQUITIES = false;
-  private boolean isDirty_handler_FX = false;
+
   //Filter constants
 
   public SampleProcessor() {}
@@ -100,29 +98,21 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   private void handle_DataEvent_BONDS(com.fluxtion.example.shared.DataEvent typedEvent) {
     //method body - invoke call tree
-    isDirty_handler_BONDS = true;
     handler_BONDS.processUpdate(typedEvent);
   }
 
   private void handle_DataEvent_EQUITIES(com.fluxtion.example.shared.DataEvent typedEvent) {
     //method body - invoke call tree
-    isDirty_handler_EQUITIES = true;
     handler_EQUITIES.processUpdate(typedEvent);
   }
 
   private void handle_DataEvent_FX(com.fluxtion.example.shared.DataEvent typedEvent) {
     //method body - invoke call tree
-    isDirty_handler_FX = true;
     handler_FX.processUpdate(typedEvent);
   }
 
   @Override
-  public void afterEvent() {
-
-    isDirty_handler_BONDS = false;
-    isDirty_handler_EQUITIES = false;
-    isDirty_handler_FX = false;
-  }
+  public void afterEvent() {}
 
   @Override
   public void init() {}

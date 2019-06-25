@@ -109,6 +109,7 @@ public class AnalysisBuilder {
 //    @Disabled
     public void buildFlightProcessor(SEPConfig cfg) {
         Wrapper<FlightDetails> flightDetails = csvMarshaller(FlightDetails.class, 1)
+                .addEventPublisher(false)
                 .map(14, FlightDetails::setDelay)
                 .map(8, FlightDetails::setCarrier).tokenConfig(CharTokenConfig.WINDOWS).build();
         //filter for positive delays

@@ -33,7 +33,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final Cache cache_3 = new Cache();
   private final CacheReader cacheReader_5 = new CacheReader(cache_3, myEventHandler_1);
   //Dirty flags
-  private boolean isDirty_cacheReader_5 = false;
   private boolean isDirty_cacheWriter_7 = false;
   private boolean isDirty_cache_3 = false;
   private boolean isDirty_myEventHandler_1 = false;
@@ -68,7 +67,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
       cache_3.reconcileCache();
     }
     if (isDirty_cache_3 | isDirty_myEventHandler_1) {
-      isDirty_cacheReader_5 = true;
       cacheReader_5.readFromCache();
     }
     //event stack unwind callbacks
@@ -78,7 +76,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
 
-    isDirty_cacheReader_5 = false;
     isDirty_cacheWriter_7 = false;
     isDirty_cache_3 = false;
     isDirty_myEventHandler_1 = false;

@@ -17,7 +17,9 @@ import $import;
 public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
 
     public ${sourceClass} filterSubject;
+#if(${multiArgFunc})
     private boolean filterSubjectUpdated;
+#end
 #foreach($sourceInfo in $sourceMappingList)
     public ${sourceInfo.type} ${sourceInfo.id};
 #if(!${sourceInfo.constant})
@@ -51,11 +53,11 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
 #else
 #if(${multiArgFunc})
         if(allSourcesUpdated()){
-#else
-        if(filterSubjectUpdated){
-#end
             result = f.${targetMethod}(${input});
         }
+#else
+        result = f.${targetMethod}(${input});
+#end
 #foreach($functionInfo in $sourceFunctions)
         if(${functionInfo.sourceInfo.id}Updated){
             result =  f.${targetMethod}(${functionInfo.paramString});
@@ -66,6 +68,7 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
     }
 #if(!${newFunction} || ${multiArgFunc} )
 
+#if(${multiArgFunc})
     private boolean allSourcesUpdated(){
         boolean updated = filterSubjectUpdated;
 #foreach($sourceInfo in $sourceMappingList)
@@ -75,7 +78,6 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
 #end
         return updated;
     }
-#if(!${sourceInfo.constant})
 
     @OnParentUpdate("filterSubject")
     public void updated_filterSubject(${sourceClass} updated){
@@ -131,7 +133,9 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
     @Initialise
     public void init(){
         result = null;
+#if(${multiArgFunc})
         filterSubjectUpdated = ${sourceConstant};
+#end
     }
 
 }

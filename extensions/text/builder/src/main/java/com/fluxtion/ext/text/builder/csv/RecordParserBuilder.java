@@ -66,6 +66,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected boolean skipCommentLines;
     protected boolean processEscapeSequences;
     protected boolean acceptPartials;
+    protected boolean addEventPublisher;
     protected final ArrayList<CsvPushFunctionInfo> srcMappingList;
     protected int converterCount;
     protected Map<Object, String> converterMap;
@@ -93,6 +94,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         this.converterMap = new HashMap<>();
         this.tokenCfg = CharTokenConfig.UNIX;
         this.reuseTarget = true;
+        this.addEventPublisher = true;
         this.fixedLen = fixedLen;
         this.id = "validationLog";
         //
@@ -185,6 +187,11 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         return (P) this;
     }
 
+    public P addEventPublisher(boolean addEventPublisher) {
+        this.addEventPublisher = addEventPublisher;
+        return (P) this;
+    }
+
     public P reuseTarget(boolean reuseTarget) {
         this.reuseTarget = reuseTarget;
         return (P) this;
@@ -252,10 +259,11 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
                 }
             });
             GenerationContext.SINGLETON.getNodeList().add(result);
-            
-            EventPublsher publisher = new EventPublsher();
-            GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
-            publisher.addEventSource(result);
+            if(addEventPublisher){
+                EventPublsher publisher = new EventPublsher();
+                GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+                publisher.addEventSource(result);
+            }
             return result;
         } catch (Exception e) {
             throw new RuntimeException("could not build function " + e.getMessage(), e);

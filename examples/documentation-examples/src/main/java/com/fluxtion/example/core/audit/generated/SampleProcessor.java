@@ -41,7 +41,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public final NodeAuditor nodeAuditor = new NodeAuditor();
   //Dirty flags
   private boolean isDirty_childNode_3 = false;
-  private boolean isDirty_combiner_9 = false;
   private boolean isDirty_dataEventHandler_5 = false;
   private boolean isDirty_myEventHandler_1 = false;
   private boolean isDirty_pipelineNode_7 = false;
@@ -80,10 +79,9 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     auditEvent(typedEvent);
     //Default, no filter methods
     auditInvocation(combiner_9, "combiner_9", "processConfig", typedEvent);
-    isDirty_combiner_9 = combiner_9.processConfig(typedEvent);
+    combiner_9.processConfig(typedEvent);
     if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
       auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-      isDirty_combiner_9 = true;
       combiner_9.onEvent();
     }
     //event stack unwind callbacks
@@ -103,7 +101,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     }
     if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
       auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-      isDirty_combiner_9 = true;
       combiner_9.onEvent();
     }
     //event stack unwind callbacks
@@ -123,7 +120,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     }
     if (isDirty_childNode_3 | isDirty_pipelineNode_7) {
       auditInvocation(combiner_9, "combiner_9", "onEvent", typedEvent);
-      isDirty_combiner_9 = true;
       combiner_9.onEvent();
     }
     //event stack unwind callbacks
@@ -151,7 +147,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public void afterEvent() {
     nodeAuditor.processingComplete();
     isDirty_childNode_3 = false;
-    isDirty_combiner_9 = false;
     isDirty_dataEventHandler_5 = false;
     isDirty_myEventHandler_1 = false;
     isDirty_pipelineNode_7 = false;

@@ -37,8 +37,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private final PipelineNode pipelineNode_3 = new PipelineNode(dataEventHandler_1);
   private final ChildNode childNode_5 = new ChildNode(pipelineNode_3);
   //Dirty flags
-  private boolean isDirty_childNode_5 = false;
-  private boolean isDirty_combinerNode_9 = false;
   private boolean isDirty_dataEventHandler_1 = false;
   private boolean isDirty_myEventHandler_7 = false;
   private boolean isDirty_pipelineNode_3 = false;
@@ -69,7 +67,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     isDirty_dataEventHandler_1 = true;
     dataEventHandler_1.handleEvent(typedEvent);
     if (isDirty_dataEventHandler_1 | isDirty_myEventHandler_7) {
-      isDirty_combinerNode_9 = true;
       combinerNode_9.update();
     }
     if (isDirty_dataEventHandler_1) {
@@ -77,7 +74,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
       pipelineNode_3.update();
     }
     if (isDirty_pipelineNode_3) {
-      isDirty_childNode_5 = true;
       childNode_5.recalculate();
     }
     //event stack unwind callbacks
@@ -89,7 +85,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     isDirty_myEventHandler_7 = true;
     myEventHandler_7.handleEvent(typedEvent);
     if (isDirty_dataEventHandler_1 | isDirty_myEventHandler_7) {
-      isDirty_combinerNode_9 = true;
       combinerNode_9.update();
     }
     //event stack unwind callbacks
@@ -99,8 +94,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   @Override
   public void afterEvent() {
 
-    isDirty_childNode_5 = false;
-    isDirty_combinerNode_9 = false;
     isDirty_dataEventHandler_1 = false;
     isDirty_myEventHandler_7 = false;
     isDirty_pipelineNode_3 = false;

@@ -37,7 +37,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   private boolean isDirty_dataEventHandler_1 = false;
   private boolean isDirty_dataEventHandler_3 = false;
   private boolean isDirty_myEventHandler_5 = false;
-  private boolean isDirty_parentIdentifier_7 = false;
   //Filter constants
 
   public SampleProcessor() {}
@@ -73,7 +72,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
       parentIdentifier_7.dataHandler_2_changed(dataEventHandler_3);
     }
     if (isDirty_dataEventHandler_1 | isDirty_dataEventHandler_3 | isDirty_myEventHandler_5) {
-      isDirty_parentIdentifier_7 = true;
       parentIdentifier_7.process();
     }
     //event stack unwind callbacks
@@ -88,7 +86,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
       parentIdentifier_7.myEventHandler_changed(myEventHandler_5);
     }
     if (isDirty_dataEventHandler_1 | isDirty_dataEventHandler_3 | isDirty_myEventHandler_5) {
-      isDirty_parentIdentifier_7 = true;
       parentIdentifier_7.process();
     }
     //event stack unwind callbacks
@@ -101,7 +98,6 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
     isDirty_dataEventHandler_1 = false;
     isDirty_dataEventHandler_3 = false;
     isDirty_myEventHandler_5 = false;
-    isDirty_parentIdentifier_7 = false;
   }
 
   @Override
