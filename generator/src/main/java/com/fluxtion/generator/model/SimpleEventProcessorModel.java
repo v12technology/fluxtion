@@ -873,9 +873,23 @@ public class SimpleEventProcessorModel {
         return handlerMap;
     }
 
+    private boolean noDirtyFlagNeeded(Field node) {
+        boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty();
+        Method[] methodList = node.instance.getClass().getDeclaredMethods();
+        for (Method method : methodList) {
+            if (method.getAnnotation(OnEventComplete.class) != null) {
+                notRequired = false;
+            }
+        }
+        return notRequired;
+    }
+
     private void buildDirtySupport() throws Exception {
         if (supportDirtyFiltering()) {
             for (Field node : nodeFields) {
+                if (noDirtyFlagNeeded(node)) {
+                    continue;
+                }
                 CbMethodHandle cbHandle = node2UpdateMethodMap.get(node.instance);
                 if (cbHandle != null && cbHandle.method.getReturnType() == boolean.class) {
                     DirtyFlag flag = new DirtyFlag(node, "isDirty_" + node.name);
@@ -994,7 +1008,7 @@ public class SimpleEventProcessorModel {
         DirtyFlag flag = null;
         if (supportDirtyFiltering() && cbHandle != null) {
             flag = dirtyFieldMap.get(getFieldForInstance(cbHandle.instance));
-            if (cbHandle.method.getReturnType() != boolean.class) {
+            if (cbHandle.method.getReturnType() != boolean.class && flag != null) {
                 //trap the case where evemthandler and onEvent in same class
                 //and onEvent does not return true
                 flag.alwaysDirty = true;

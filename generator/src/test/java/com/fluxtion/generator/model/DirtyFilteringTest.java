@@ -72,14 +72,12 @@ public class DirtyFilteringTest {
 
         System.out.println("flags:" + sep.getDirtyFieldMap().keySet());
         sep.getDirtyFieldMap().keySet().stream().map((Field c) -> c.name).forEach(System.out::println);
-        
         assertThat(sep.getDirtyFieldMap().keySet(), containsInAnyOrder(
                 sep.getFieldForInstance(e1),
                 sep.getFieldForInstance(e2),
                 sep.getFieldForInstance(i1),
                 sep.getFieldForInstance(i2),
                 sep.getFieldForInstance(i3),
-                sep.getFieldForInstance(eRoot),
                 sep.getFieldForInstance(dirty_1),
                 sep.getFieldForInstance(dirty_2),
                 sep.getFieldForInstance(dirty_3)
