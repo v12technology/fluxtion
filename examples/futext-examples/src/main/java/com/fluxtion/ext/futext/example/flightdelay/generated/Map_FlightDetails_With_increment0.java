@@ -29,7 +29,6 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Number> {
 
   public FlightDetailsCsvDecoder0 filterSubject;
-  private boolean filterSubjectUpdated;
   @NoEventReference public Count f;
   private int result;
   @NoEventReference public Object resetNotifier;
@@ -40,21 +39,9 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
   @OnEvent
   public boolean onEvent() {
     oldValue.set(result);
-    if (filterSubjectUpdated) {
-      result = f.increment((Object) ((FlightDetails) filterSubject.event()));
-    }
+    result = f.increment((Object) ((FlightDetails) filterSubject.event()));
     value.set(result);
     return !notifyOnChangeOnly | (!oldValue.equals(value));
-  }
-
-  private boolean allSourcesUpdated() {
-    boolean updated = filterSubjectUpdated;
-    return updated;
-  }
-
-  @OnParentUpdate("filterSubject")
-  public void updated_filterSubject(FlightDetailsCsvDecoder0 updated) {
-    filterSubjectUpdated = true;
   }
 
   @OnParentUpdate("resetNotifier")
@@ -97,6 +84,5 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
     result = 0;
     value = new MutableNumber();
     oldValue = new MutableNumber();
-    filterSubjectUpdated = false;
   }
 }
