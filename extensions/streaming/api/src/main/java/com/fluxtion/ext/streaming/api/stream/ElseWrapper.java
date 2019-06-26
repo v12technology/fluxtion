@@ -3,9 +3,8 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
-import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
 
 /**
  * Wraps a Wrapper and provides an else execution path. This is useful when
@@ -14,6 +13,7 @@ import java.util.Objects;
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
+@EqualsAndHashCode(of = {"node"})
 public class ElseWrapper<T> implements Wrapper<T> {
 
     private final FilterWrapper<T> node;
@@ -67,31 +67,6 @@ public class ElseWrapper<T> implements Wrapper<T> {
     @Override
     public Class<T> eventClass() {
         return (Class<T>) node.eventClass();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + Objects.hashCode(this.node);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ElseWrapper<?> other = (ElseWrapper<?>) obj;
-        if (!Objects.equals(this.node, other.node)) {
-            return false;
-        }
-        return true;
     }
 
 }

@@ -19,11 +19,13 @@ package com.fluxtion.ext.text.builder.csv;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.text.api.ascii.Conversion;
 import java.lang.reflect.Method;
+import lombok.Data;
 
 /**
  *
  * @author Greg Higgins
  */
+@Data
 public class CsvPushFunctionInfo {
 
     //Source
@@ -167,46 +169,6 @@ public class CsvPushFunctionInfo {
         return a;
     }
 
-    public Class getTargetClass() {
-        return targetClass;
-    }
-
-    public Method getTargetMethod() {
-        return targetMethod;
-    }
-
-    public String getTargetArgType() {
-        return targetArgType;
-    }
-
-    public String getTargetClassName() {
-        return targetClassName;
-    }
-
-    public String getTargetCalcMethodName() {
-        return targetCalcMethodName;
-    }
-
-    public String getTargetInstanceId() {
-        return targetInstanceId;
-    }
-
-    public ImportMap getImportMap() {
-        return importMap;
-    }
-
-    public int getFieldIndex() {
-        return fieldIndex;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public boolean isIndexField() {
-        return indexField;
-    }
-
     public boolean isNamedField() {
         return !indexField;
     }
@@ -233,65 +195,4 @@ public class CsvPushFunctionInfo {
             return -1;
         }
     }
-    
-    public boolean isTrim() {
-        return trim;
-    }
-
-    public void setTrim(boolean trim) {
-        this.trim = trim;
-    }
-
-    public boolean isDuplicateField() {
-        return duplicateField;
-    }
-
-    public void setDuplicateField(boolean duplicateField) {
-        this.duplicateField = duplicateField;
-    }
-
-    public String getConverterInstanceId() {
-        return converterInstanceId;
-    }
-
-    public void setConverterInstanceId(String converterInstanceId) {
-        this.converterInstanceId = converterInstanceId;
-    }
-
-    public boolean isConverterInstance(){
-        return getConverterInstanceId()!=null;
-    }
-
-    public Object getConverterInstance() {
-        return converterInstance;
-    }
-
-    public String getConverterClass() {
-        return converterClass;
-    }
-
-    public boolean isFixedWidth() {
-        return fixedWidth;
-    }
-
-    public int getFixedStart() {
-        return fixedStart;
-    }
-
-    public int getFixedLen() {
-        return fixedLen;
-    }
-
-    public int getFixedEnd() {
-        return fixedEnd;
-    }
-
-    public boolean isMandatory() {
-        return mandatory;
-    }
-
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
-    
 }

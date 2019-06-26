@@ -17,26 +17,25 @@
  */
 package com.fluxtion.creator;
 
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 /**
  *
  * @author gregp
  */
+@Slf4j
 public class ConfigParser {
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigParser.class);
-
     public CreatorConfig parse(String s) {
-        LOG.debug("parsing creator yaml document");
+        log.debug("parsing creator yaml document");
         Yaml beanLoader = new Yaml();
         CreatorConfig cfg = beanLoader.loadAs(s, CreatorConfig.class);
-        LOG.debug("parsed creator yaml document, now validating");
+        log.debug("parsed creator yaml document, now validating");
         cfg.validateConfig();
-        LOG.debug("validated successfully");
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(beanLoader.dumpAsMap(cfg));
+        log.debug("validated successfully");
+        if (log.isDebugEnabled()) {
+            log.debug(beanLoader.dumpAsMap(cfg));
         }
         return cfg;
     }

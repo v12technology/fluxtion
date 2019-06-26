@@ -17,20 +17,19 @@
 package com.fluxtion.ext.streaming.api.util;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 /**
  * A wrapper for a CharSequence.
  *
  * @author gregp
  */
+@EqualsAndHashCode
+@AllArgsConstructor
 public class StringWrapper implements Wrapper<String> {
 
     private final String stringVal;
-
-    public StringWrapper(String sequence) {
-        this.stringVal = sequence;
-    }
 
     @Override
     public String event() {
@@ -41,28 +40,4 @@ public class StringWrapper implements Wrapper<String> {
     public Class<String> eventClass() {
         return String.class;
     }
-
-    @Override
-    public int hashCode() {
-        return stringVal.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final StringWrapper other = (StringWrapper) obj;
-        if (!Objects.equals(this.stringVal, other.stringVal)) {
-            return false;
-        }
-        return true;
-    }
-    
 }

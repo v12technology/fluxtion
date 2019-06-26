@@ -18,12 +18,14 @@ package com.fluxtion.ext.streaming.builder.group;
 
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.lang.reflect.Method;
+import lombok.Data;
 
 /**
  * meta data defining how to initialise a value in an aggregated row.
  * 
  * @author Greg Higgins
  */
+@Data
 public class GroupByInitialiserInfo {
    
     //Source
@@ -70,57 +72,4 @@ public class GroupByInitialiserInfo {
                 + "(" + targetArgType + ")" + sourceInstanceId + "." + sourceCalcMethodName + "())";
         return f;
     }
-
-    public Class getSourceClass() {
-        return sourceClass;
-    }
-
-    public Method getSourceMethod() {
-        return sourceMethod;
-    }
-
-    public String getSourceClassName() {
-        return sourceClassName;
-    }
-
-    public String getSourceCalcMethodName() {
-        return sourceCalcMethodName;
-    }
-
-    public String getSourceInstanceId() {
-        return sourceInstanceId;
-    }
-
-    public Class getTargetClass() {
-        return targetClass;
-    }
-
-    public Method getTargetMethod() {
-        return targetMethod;
-    }
-
-    public String getTargetClassName() {
-        return targetClassName;
-    }
-
-    public String getTargetCalcMethodName() {
-        return targetCalcMethodName;
-    }
-
-    public String getTargetInstanceId() {
-        return targetInstanceId;
-    }
-
-    public ImportMap getImportMap() {
-        return importMap;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-    
 }

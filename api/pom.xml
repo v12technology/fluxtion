@@ -21,7 +21,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.7.25</version>
+        <version>1.7.26</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
@@ -53,14 +53,6 @@ along with this program.  If not, see
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.vidageek</groupId>
-            <artifactId>mirror</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
     <properties>

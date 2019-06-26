@@ -20,7 +20,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>1.7.25</version>
+    <version>1.7.26</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
     
@@ -257,6 +257,12 @@ along with this program.  If not, see
     </build>
     
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.8</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>

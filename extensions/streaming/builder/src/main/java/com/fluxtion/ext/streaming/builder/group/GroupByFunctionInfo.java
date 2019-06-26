@@ -20,12 +20,14 @@ import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import lombok.Data;
 
 /**
  * Meta data for a group by aggregate function.
  * 
  * @author Greg Higgins
  */
+@Data
 public class GroupByFunctionInfo {
    
     //Function
@@ -115,93 +117,4 @@ public class GroupByFunctionInfo {
         return a + b + c + d;
     }
 
-    public Class getFunctionClass() {
-        return functionClass;
-    }
-
-    public Method getFunctionCalcMethod() {
-        return functionCalcMethod;
-    }
-
-    public String getFunctionClassName() {
-        return functionClassName;
-    }
-
-    public String getFunctionCalcMethodName() {
-        return functionCalcMethodName;
-    }
-
-    public String getFunctionCalcArgType() {
-        return functionCalcArgType;
-    }
-
-    public String getFunctionInstanceId() {
-        return functionInstanceId;
-    }
-
-    public boolean isStateful() {
-        return stateful;
-    }
-
-    public boolean isStateless() {
-        return !stateful;
-    }
-
-    public boolean isStaticFunction() {
-        return staticFunction;
-    }
-
-    public boolean isInstanceFunction(){
-        return !staticFunction;
-    }
-    
-    public Class getSourceClass() {
-        return sourceClass;
-    }
-
-    public Method getSourceMethod() {
-        return sourceMethod;
-    }
-
-    public String getSourceClassName() {
-        return sourceClassName;
-    }
-
-    public String getSourceCalcMethodName() {
-        return sourceCalcMethodName;
-    }
-
-    public String getSourceInstanceId() {
-        return sourceInstanceId;
-    }
-
-    public Class getTargetClass() {
-        return targetClass;
-    }
-
-    public Method getTargetMethod() {
-        return targetMethod;
-    }
-
-    public String getTargetClassName() {
-        return targetClassName;
-    }
-
-    public String getTargetCalcMethodName() {
-        return targetCalcMethodName;
-    }
-
-    public String getTargetInstanceId() {
-        return targetInstanceId;
-    }
-
-    public ImportMap getImportMap() {
-        return importMap;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupByFunctionInfo{\n " + "functionClass=" + functionClass + ",\n functionCalcMethod=" + functionCalcMethod + ",\n functionCalcArgType=" + functionCalcArgType + ",\n functionClassName=" + functionClassName + ",\n functionCalcMethodName=" + functionCalcMethodName + ",\n functionInstanceId=" + functionInstanceId + ",\n stateful=" + stateful + ",\n sourceClass=" + sourceClass + ",\n sourceMethod=" + sourceMethod + ",\n sourceClassName=" + sourceClassName + ",\n sourceCalcMethodName=" + sourceCalcMethodName + ",\n sourceInstanceId=" + sourceInstanceId + ",\n targetClass=" + targetClass + ",\n targetMethod=" + targetMethod + ",\n targetClassName=" + targetClassName + ",\n targetCalcMethodName=" + targetCalcMethodName + ",\n targetInstanceId=" + targetInstanceId + ",\n importMap=" + importMap + '}';
-    }
-    
 }

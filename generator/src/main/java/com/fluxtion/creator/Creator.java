@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.creator;
@@ -24,7 +24,6 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.compiler.SepCompiler;
 import com.fluxtion.api.event.Event;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -43,6 +42,9 @@ import javax.lang.model.element.Modifier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.openhft.compiler.CachedCompiler;
 import org.apache.commons.lang3.ClassUtils;
 import org.jgrapht.graph.DefaultEdge;
@@ -357,6 +359,8 @@ public class Creator {
         compile(config.getOutputSepConfigClass());
     }
 
+    @Data
+    @EqualsAndHashCode(callSuper = true)
     public class FieldEdge extends DefaultEdge {
 
         public ReferenceDefinition ref;
@@ -382,12 +386,6 @@ public class Creator {
         public String getPackageName() {
             return refNode.getPackageName();
         }
-
-        @Override
-        public String toString() {
-            return "FieldEdge{" + "ref=" + ref + ", refNode=" + refNode + '}';
-        }
-
     }
 
 }

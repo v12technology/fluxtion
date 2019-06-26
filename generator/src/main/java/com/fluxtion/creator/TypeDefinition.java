@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,28 +12,27 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.creator;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Base class for a definition of a type.
- * 
+ *
  * @author gregp
  */
+@Data
+@NoArgsConstructor
 public class TypeDefinition {
-   
     protected String type;
     protected String className;
     protected String packageName;
 
-    public TypeDefinition(){
-        
-    }
-    
     public TypeDefinition(String fqn) {
         this.type = fqn;
         packageName = ClassUtils.getPackageCanonicalName(fqn);
@@ -46,25 +45,7 @@ public class TypeDefinition {
         className = ClassUtils.getShortCanonicalName(type);
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    } 
-    
-    public boolean isFunction(){
+    public boolean isFunction() {
         return false;
     }
-
-    @Override
-    public String toString() {
-        return "TypeDefinition{" + "type=" + type + '}';
-    }
-    
 }

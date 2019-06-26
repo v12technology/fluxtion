@@ -18,11 +18,14 @@ package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * {@inheritDoc}
  */
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = {"filterId", "eventClass"})
 public final class ReusableEventHandler<T extends Event> implements FilteredEventHandler<T>, Wrapper<T> {
 
     private final int filterId;
@@ -31,12 +34,7 @@ public final class ReusableEventHandler<T extends Event> implements FilteredEven
 
     public ReusableEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
-        filterId = Event.NO_ID;
-    }
-
-    public ReusableEventHandler(int filterId, Class<T> eventClass) {
-        this.filterId = filterId;
-        this.eventClass = eventClass;
+        this.filterId = Event.NO_ID;
     }
 
     @Override
@@ -58,34 +56,4 @@ public final class ReusableEventHandler<T extends Event> implements FilteredEven
     public T event() {
         return event;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 13 * hash + this.filterId;
-        hash = 13 * hash + Objects.hashCode(this.eventClass);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ReusableEventHandler<?> other = (ReusableEventHandler<?>) obj;
-        if (this.filterId != other.filterId) {
-            return false;
-        }
-        if (!Objects.equals(this.eventClass, other.eventClass)) {
-            return false;
-        }
-        return true;
-    }
-
 }
