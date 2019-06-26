@@ -16,24 +16,28 @@
  */
 package com.fluxtion.ext.text.builder.ascii;
 
+import static com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper.generateAndCompile;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filter;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
+import static com.fluxtion.ext.text.builder.Templates.CHAR_MATCH_FILTER;
+
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
+import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.filter.AsciiMatchFilter;
-import static com.fluxtion.ext.text.builder.Templates.CHAR_MATCH_FILTER;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.*;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper.*;
-import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.google.auto.service.AutoService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
@@ -106,32 +110,14 @@ public class AsciiMatchFilterFactory implements NodeFactory<AsciiMatchFilter> {
         }
     }
 
+    @Data
+    @EqualsAndHashCode(of = {"expectedValue"})
     public static class SequenceVariable {
 
         public String expectedVariable;
         public String actualVariable;
         public String expectedValue;
         public boolean lastChar = false;
-
-        public String getExpectedVariable() {
-            return expectedVariable;
-        }
-
-        public void setExpectedVariable(String expectedVariable) {
-            this.expectedVariable = expectedVariable;
-        }
-
-        public String getActualVariable() {
-            return actualVariable;
-        }
-
-        public void setActualVariable(String actualVariable) {
-            this.actualVariable = actualVariable;
-        }
-
-        public String getExpectedValue() {
-            return expectedValue;
-        }
 
         public String getExpectedValueValidJava() {
             char c = expectedValue.charAt(0);
@@ -140,40 +126,6 @@ public class AsciiMatchFilterFactory implements NodeFactory<AsciiMatchFilter> {
             }
             return "" + (int) c;
         }
-
-        public boolean isLastChar() {
-            return lastChar;
-        }
-
-        public void setExpectedValue(String expectedValue) {
-            this.expectedValue = expectedValue;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 5;
-            hash = 97 * hash + Objects.hashCode(this.expectedValue);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final SequenceVariable other = (SequenceVariable) obj;
-            if (!Objects.equals(this.expectedValue, other.expectedValue)) {
-                return false;
-            }
-            return true;
-        }
-
     }
 
 }

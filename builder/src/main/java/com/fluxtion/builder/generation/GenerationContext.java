@@ -16,6 +16,8 @@
  */
 package com.fluxtion.builder.generation;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,12 +27,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.Data;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Greg Higgins
  */
+@Data
 public class GenerationContext {
 
     public static GenerationContext SINGLETON;
@@ -160,17 +163,17 @@ public class GenerationContext {
     /**
      * Class name for the generated output file
      */
-    private final String className;
+    private final String sepClassName;
 
     /**
      * the root output directory for the code generation
      */
-    private final File srcRootDirectory;
+    private final File sourceRootDirectory;
 
     /**
      * The package directory = outputDirectory + packageName
      */
-    private File srcPackageDirectory;
+    private File packageDirectory;
 
     /**
      * the output directory for the code generation
@@ -179,24 +182,24 @@ public class GenerationContext {
     public File resourcesOutputDirectory;
     private final CachedCompiler javaCompiler;
 
-    public GenerationContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
-        this(packageName, className, outputDirectory, resourcesRootDirectory, null);
+    public GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory) {
+        this(packageName, sepClassName, outputDirectory, resourcesRootDirectory, null);
     }
 
-    private GenerationContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory) {
+    private GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory) {
         this.packageName = packageName;
-        this.className = className;
-        this.srcRootDirectory = outputDirectory;
+        this.sepClassName = sepClassName;
+        this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = this.getClass().getClassLoader();
         javaCompiler = new CachedCompiler(null, buildOutputDirectory);
         cacheMap = new HashMap<>();
     }
 
-    private GenerationContext(ClassLoader classLoasder, String packageName, String className, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
+    private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
         this.packageName = packageName;
-        this.className = className;
-        this.srcRootDirectory = outputDirectory;
+        this.sepClassName = sepClassName;
+        this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = classLoasder;
         if (cachedCompiler == null) {
@@ -208,45 +211,14 @@ public class GenerationContext {
     }
 
     private void createDirectories() {
-        srcPackageDirectory = new File(GenerationContext.SINGLETON.srcRootDirectory, packageName.replace(".", "/"));
-        srcPackageDirectory.mkdirs();
+        packageDirectory = new File(GenerationContext.SINGLETON.sourceRootDirectory, packageName.replace(".", "/"));
+      packageDirectory.mkdirs();
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
     }
 
     public void createResourceDirectory() {
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
         resourcesOutputDirectory.mkdirs();
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public String getSepClassName() {
-        return className;
-    }
-
-    public File getSourceRootDirectory() {
-        return srcRootDirectory;
-    }
-
-    public Map getProxyClassMap() {
-        return proxyClassMap;
-    }
-
-    public File getPackageDirectory() {
-        return srcPackageDirectory;
-    }
-
-    public File getResourcesRootDirectory() {
-        return resourcesRootDirectory;
-    }
-
-    public File getResourcesOutputDirectory() {
-//        if(resourcesOutputDirectory==null){
-//            createResourceDirectory();
-//        }
-        return resourcesOutputDirectory;
     }
 
     public List getNodeList() {
@@ -259,14 +231,6 @@ public class GenerationContext {
         }
         getNodeList().add(node);
         return node;
-    }
-
-    public CachedCompiler getJavaCompiler() {
-        return javaCompiler;
-    }
-
-    public ClassLoader getClassLoader() {
-        return classLoader;
     }
 
     /**
@@ -285,14 +249,6 @@ public class GenerationContext {
     public <T> T nameNode(T node, String name) {
         publicNodes.put(node, name);
         return node;
-    }
-
-    public Map<Object, String> getPublicNodes() {
-        return publicNodes;
-    }
-
-    public String publicNameForNode(Object node) {
-        return publicNodes.get(node);
     }
 
     /**

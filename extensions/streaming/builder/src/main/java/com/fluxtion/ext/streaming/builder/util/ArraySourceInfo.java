@@ -20,10 +20,12 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import lombok.Data;
 
 /**
  * java bean classes for interaction with velocity
  */
+@Data
 public class ArraySourceInfo {
 
     public String type;
@@ -55,34 +57,4 @@ public class ArraySourceInfo {
             count++;
         }
     }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getTypeFqn() {
-        return typeFqn;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public String getGetter() {
-        return getter;
-    }
-
-    public boolean isCast() {
-        return cast;
-    }
-
-    @Override
-    public String toString() {
-        return "SourceInfo{" + "type=" + type + ", id=" + id + '}';
-    }
-    
 }

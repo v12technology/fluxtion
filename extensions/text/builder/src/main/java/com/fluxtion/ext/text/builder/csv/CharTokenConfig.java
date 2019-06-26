@@ -16,16 +16,16 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
-/**
- *
- * @author gregp
- */
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * Configuration parameters for line endings, separators, ignore characters
  * 
  * @author gregp
  */
+@Data
+@AllArgsConstructor
 public class CharTokenConfig {
     private char lineEnding;
     private char fieldSeparator;
@@ -34,43 +34,7 @@ public class CharTokenConfig {
     public static final CharTokenConfig WINDOWS = new CharTokenConfig('\n',',','\r');
     public static final CharTokenConfig UNIX = new CharTokenConfig('\n',',');
 
-    public CharTokenConfig(char lineEnding, char fieldSeparator, char ignoredChars) {
-        this.lineEnding = lineEnding;
-        this.fieldSeparator = fieldSeparator;
-        this.ignoredChars = ignoredChars;
-    }
-
     public CharTokenConfig(char lineEnding, char fieldSeparator) {
         this(lineEnding, fieldSeparator, '\u0000');
     }
-
-    public CharTokenConfig() {
-    }
-
-    public char getLineEnding() {
-        return lineEnding;
-    }
-
-    public void setLineEnding(char lineEnding) {
-        this.lineEnding = lineEnding;
-    }
-
-    public char getFieldSeparator() {
-        return fieldSeparator;
-    }
-
-    public void setFieldSeparator(char fieldSeparator) {
-        this.fieldSeparator = fieldSeparator;
-    }
-
-    public char getIgnoredChars() {
-        return ignoredChars;
-    }
-
-    public void setIgnoredChars(char ignoredChars) {
-        this.ignoredChars = ignoredChars;
-    }
-    
-    
-    
 }

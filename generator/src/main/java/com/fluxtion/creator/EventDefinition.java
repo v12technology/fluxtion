@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,39 +12,20 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.creator;
 
-import org.apache.commons.lang3.ClassUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author gregp
  */
-public class EventDefinition extends TypeDefinition{
-
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class EventDefinition extends TypeDefinition {
     private String id;
-    
-    public EventDefinition() {
-    }
-
-    public EventDefinition(String fqn) {
-        super(fqn);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "EventDefinition{" + "id=" + id + '}';
-    }
-
 }
