@@ -54,14 +54,6 @@ along with this program.  If not, see
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.vidageek</groupId>
-            <artifactId>mirror</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>ssl1</netbeans.hint.license>
