@@ -21,12 +21,13 @@ import com.fluxtion.ext.streaming.api.stream.Argument;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import lombok.Data;
 
 /**
  *
  * @author gregp
  */
+@Data
 public class FunctionClassKey {
 
     Class filterClass;
@@ -66,66 +67,4 @@ public class FunctionClassKey {
         return null;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + Objects.hashCode(this.filterClass);
-        hash = 37 * hash + Objects.hashCode(this.filterMethod);
-        hash = 37 * hash + Objects.hashCode(this.sourceClass);
-        hash = 37 * hash + Objects.hashCode(this.wrappedSourceClass);
-        hash = 37 * hash + Objects.hashCode(this.accessor);
-        hash = 37 * hash + (this.cast ? 1 : 0);
-        hash = 37 * hash + Objects.hashCode(this.type);
-        hash = 37 * hash + (this.multiArg ? 1 : 0);
-        hash = 37 * hash + Objects.hashCode(this.argsList);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final FunctionClassKey other = (FunctionClassKey) obj;
-        if (this.cast != other.cast) {
-            return false;
-        }
-        if (this.multiArg != other.multiArg) {
-            return false;
-        }
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.filterClass, other.filterClass)) {
-            return false;
-        }
-        if (!Objects.equals(this.filterMethod, other.filterMethod)) {
-            return false;
-        }
-        if (!Objects.equals(this.sourceClass, other.sourceClass)) {
-            return false;
-        }
-        if (!Objects.equals(this.wrappedSourceClass, other.wrappedSourceClass)) {
-            return false;
-        }
-        if (!Objects.equals(this.accessor, other.accessor)) {
-            return false;
-        }
-        if (!Objects.equals(this.argsList, other.argsList)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "FunctionClassKey{" + "filterClass=" + filterClass + ", filterMethod=" + filterMethod + ", sourceClass=" + sourceClass + ", accessor=" + accessor + ", cast=" + cast + ", type=" + type + '}';
-    }
-    
 }

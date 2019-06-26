@@ -17,43 +17,16 @@
  */
 package com.fluxtion.creator;
 
+import lombok.Data;
+
 /**
  *
  * @author gregp
  */
+@Data
 public class EventMethod {
 
     private String eventId;
     private boolean propagate = true;
     private String filter;
-
-    public boolean isPropagate() {
-        return propagate;
-    }
-
-    public void setPropagate(boolean propagate) {
-        this.propagate = propagate;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
-
-    @Override
-    public String toString() {
-        return "EventMethod{" + "eventId=" + eventId + ", propagate=" + propagate + ", filter=" + filter + '}';
-    }
-    
 }

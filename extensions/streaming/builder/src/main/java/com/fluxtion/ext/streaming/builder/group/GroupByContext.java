@@ -16,38 +16,41 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetClass;
+
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetClass;
+import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import org.apache.velocity.VelocityContext;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
-import com.fluxtion.ext.streaming.builder.util.ImportMap;
-import org.apache.commons.lang.StringUtils;
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import java.util.HashSet;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.ToString;
+import org.apache.commons.lang.StringUtils;
+import org.apache.velocity.VelocityContext;
 
 /**
  * Builds a group by set of functions, each function built will push its
@@ -211,6 +214,8 @@ public class GroupByContext<K, T> {
      * @param <K> Source type
      * @param <T> Traget type
      */
+    @Data
+    @ToString(of = "sourceInfo")
     public class SourceContext<K, T> {
 
         final String calcStateClassName;
@@ -261,36 +266,12 @@ public class GroupByContext<K, T> {
             initialiserSet.add(initialiser);
         }
 
-        public String getCalcStateClassName() {
-            return calcStateClassName;
-        }
-
-        public String getCalcStateInstanceId() {
-            return calcStateInstanceId;
-        }
-
-        public Set<GroupByFunctionInfo> getFunctionSet() {
-            return functionSet;
-        }
-
         public boolean isEventClass() {
             return group.isEventClass();
         }
 
         public boolean isWrapped() {
             return group.isWrapped();
-        }
-
-        public Set<GroupByInitialiserInfo> getInitialiserSet() {
-            return initialiserSet;
-        }
-
-        public String getInitialiserId() {
-            return initialiserId;
-        }
-
-        public void setInitialiserId(String initialiserId) {
-            this.initialiserId = initialiserId;
         }
 
         public boolean isInitialiserRequired() {
@@ -301,20 +282,8 @@ public class GroupByContext<K, T> {
             return group.isMultiKey();
         }
 
-        public String getMultiKeyId() {
-            return multiKeyId;
-        }
-
         public String getMultiKeyClassName() {
             return group.getMultiKeyClassName();
-        }
-
-        public void setOptional(boolean optional) {
-            this.optional = optional;
-        }
-
-        public boolean isOptional() {
-            return optional;
         }
 
         Group<K, T> group;
@@ -339,18 +308,8 @@ public class GroupByContext<K, T> {
 
         Set<GroupByInitialiserInfo> initialiserSet;
 
-        public SourceInfo getSourceInfo() {
-            return sourceInfo;
-        }
-
         public String getKeyMethod() {
             return keyMethod.getName();
         }
-
-        @Override
-        public String toString() {
-            return "SourceContext{" + "sourceInfo=" + sourceInfo + '}';
-        }
-
     }
 }

@@ -16,33 +16,34 @@
  */
 package com.fluxtion.ext.streaming.builder.log;
 
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.updateNotifier;
+
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.ext.streaming.api.log.MsgBuilder;
-import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
+import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.event.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
+import com.fluxtion.ext.streaming.builder.util.ImportMap;
+import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Function;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
-import com.fluxtion.ext.streaming.builder.util.SourceInfo;
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import java.util.Map;
 import java.util.Set;
+import lombok.Value;
 import org.apache.velocity.VelocityContext;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.updateNotifier;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
-import com.fluxtion.ext.streaming.builder.util.ImportMap;
-import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 
 /**
  * Builder for a simple console logger. Static helper methods create a LogBuilder
@@ -228,10 +229,11 @@ public class LogBuilder {
     }
 
     //add static helper methods that configure patterns and flush rate and add multiple input sources
+    @Value
     public static class ValueAccessor {
 
-        String message;
-        String value;
+        private final String message;
+        private final String value;
 
         public ValueAccessor(String message, SourceInfo source, Method accessor) {
             this.message = message;
@@ -243,15 +245,6 @@ public class LogBuilder {
             String eventClass = eventWrapper.eventClass().getCanonicalName();
             value = "((" + eventClass + ")" + source.id + ".event())." + accessor.getName() + "()";
         }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
     }
 
 }

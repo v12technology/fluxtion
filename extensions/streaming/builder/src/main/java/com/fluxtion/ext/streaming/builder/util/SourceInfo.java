@@ -16,9 +16,12 @@
  */
 package com.fluxtion.ext.streaming.builder.util;
 
+import lombok.Data;
+
 /**
  * java bean classes for interaction with velocity
  */
+@Data
 public class SourceInfo {
 
     public String wrapperType;
@@ -30,42 +33,4 @@ public class SourceInfo {
         this.type = type;
         this.id = id;
     }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getWrapperType() {
-        return wrapperType;
-    }
-
-    public void setWrapperType(String wrapperType) {
-        this.wrapperType = wrapperType;
-    }
-
-    public boolean isConstant() {
-        return constant;
-    }
-
-    public void setConstant(boolean constant) {
-        this.constant = constant;
-    }
-
-    @Override
-    public String toString() {
-        return "SourceInfo{" + "wrapperType=" + wrapperType + ", type=" + type + ", id=" + id + ", constant=" + constant + '}';
-    }
- 
 }

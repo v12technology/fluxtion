@@ -16,19 +16,18 @@
  */
 package com.fluxtion.ext.streaming.builder.table;
 
-import java.util.Arrays;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author gregp
  */
+@Data
+@NoArgsConstructor
 public class JoinedRow  {
 
     public Object[] tables = new Object[7];
-
-
-    public JoinedRow() {
-    }
 
     public JoinedRow(Object[] tables) {
         System.arraycopy(tables, 0, this.tables, 0, tables.length);
@@ -38,11 +37,4 @@ public class JoinedRow  {
         JoinedRow row = new JoinedRow(this.tables);
         return row;
     }
-
-    @Override
-    public String toString() {
-        return "JoinedRow{" + "tables=" + Arrays.toString(tables) + '}';
-    }
-
-    
 }

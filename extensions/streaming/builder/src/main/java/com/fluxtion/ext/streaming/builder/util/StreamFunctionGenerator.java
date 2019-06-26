@@ -40,6 +40,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -130,6 +131,7 @@ public class StreamFunctionGenerator {
         templateWriter.flush();
     }
 
+    @Data
     public class FunctionInfo {
 
         String methodName;
@@ -152,12 +154,12 @@ public class StreamFunctionGenerator {
             if(returnClass.isPrimitive()){
                 returnClass = Number.class;
             }
-            returnType = imports.addImport(returnClass);            
+            returnType = imports.addImport(returnClass);
             for (Class<?> parameterType : m.getParameterTypes()) {
                 argsList.add(inTypes(parameterType));
             }
         }
-        
+
         public FunctionInfo(SerializableFunction func, String name) {
             final Method m = func.method();
             this.functionName = name;
@@ -172,12 +174,12 @@ public class StreamFunctionGenerator {
             if(returnClass.isPrimitive()){
                 returnClass = Number.class;
             }
-            returnType = imports.addImport(returnClass);            
+            returnType = imports.addImport(returnClass);
             for (Class<?> parameterType : m.getParameterTypes()) {
                 argsList.add(inTypes(parameterType));
             }
         }
-        
+
         private String[] inTypes(Class inType){
             String inputType;
             String inputTypeReal;
@@ -193,40 +195,6 @@ public class StreamFunctionGenerator {
             }
             return new String[]{inputType, inputTypeReal};
         }
-        
-
-        public String getMethodName() {
-            return methodName;
-        }
-
-        public void setMethodName(String methodName) {
-            this.methodName = methodName;
-        }
-
-        public String getFunctionName() {
-            return functionName;
-        }
-
-        public void setFunctionName(String functionName) {
-            this.functionName = functionName;
-        }
-
-        public String getInvoke() {
-            return invoke;
-        }
-
-        public void setInvoke(String invoke) {
-            this.invoke = invoke;
-        }
-
-        public String getReturnType() {
-            return returnType;
-        }
-
-        public void setReturnType(String returnType) {
-            this.returnType = returnType;
-        }
-
         public String getInputType() {
             return argsList.get(0)[0];
         }
@@ -234,7 +202,7 @@ public class StreamFunctionGenerator {
         public String getInputTypeReal() {
             return argsList.get(0)[1];
         }
-        
+
         public String getInput1Type() {
             return argsList.get(1)[0];
         }
@@ -242,6 +210,6 @@ public class StreamFunctionGenerator {
         public String getInput1TypeReal() {
             return argsList.get(1)[1];
         }
-        
+
     }
 }
