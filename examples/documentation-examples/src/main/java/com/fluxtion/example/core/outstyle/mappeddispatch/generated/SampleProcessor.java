@@ -18,10 +18,11 @@ package com.fluxtion.example.core.outstyle.mappeddispatch.generated;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
 import com.fluxtion.example.shared.DataEvent;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.HashMap;
 
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
