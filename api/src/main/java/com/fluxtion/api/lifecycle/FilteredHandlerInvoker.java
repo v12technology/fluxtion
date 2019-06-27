@@ -27,5 +27,5 @@ package com.fluxtion.api.lifecycle;
  */
 public interface FilteredHandlerInvoker {
 
-    public void invoke(Object event);
+    void invoke(Object event);
 }

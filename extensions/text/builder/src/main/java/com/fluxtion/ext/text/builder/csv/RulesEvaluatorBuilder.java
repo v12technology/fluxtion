@@ -16,19 +16,20 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
-import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.and;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.filterMatch;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nand;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.not;
 import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.or;
+
+import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.util.Pair;
 import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
 import com.fluxtion.ext.text.api.csv.ColumnName;
 import com.fluxtion.ext.text.api.csv.RowExceptionNotifier;
@@ -36,7 +37,6 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import com.fluxtion.ext.text.api.csv.ValidationLogSink.LogNotifier;
 import com.fluxtion.ext.text.api.util.EventPublsher;
-import com.fluxtion.ext.streaming.api.util.Pair;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

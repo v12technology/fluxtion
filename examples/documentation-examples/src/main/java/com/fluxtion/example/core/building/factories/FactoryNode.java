@@ -16,7 +16,6 @@
  */
 package com.fluxtion.example.core.building.factories;
 
-import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 
 /**

@@ -17,12 +17,13 @@
 package com.fluxtion.ext.streaming.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
+import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
+
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
-import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -31,7 +32,7 @@ import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunction;
-import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
+import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.streaming.builder.test.BooleanBuilder;
@@ -42,8 +43,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

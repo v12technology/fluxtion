@@ -34,7 +34,7 @@ import com.fluxtion.api.event.Event;
  */
 public interface EventHandler<T extends Event> {
 
-    public static final EventHandler NULL_EVENTHANDLER = new EventHandler() {
+    EventHandler NULL_EVENTHANDLER = new EventHandler() {
         @Override
         public void onEvent(Event e) {
         }

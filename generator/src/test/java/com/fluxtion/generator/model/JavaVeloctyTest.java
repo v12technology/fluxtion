@@ -17,13 +17,12 @@
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.test.event.AnnotatedHandlerNoEventId;
 import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
 import com.fluxtion.test.event.AnnotatedHandlerStringFilter;
-import com.fluxtion.test.event.AnnotatedTimeHandler;
 import com.fluxtion.test.event.DirtyNotifierNode;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
@@ -34,9 +33,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

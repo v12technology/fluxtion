@@ -18,7 +18,6 @@ package com.fluxtion.example.core.audit;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.example.shared.ChildNode;
 import com.fluxtion.example.shared.ConfigEvent;
 
 /**

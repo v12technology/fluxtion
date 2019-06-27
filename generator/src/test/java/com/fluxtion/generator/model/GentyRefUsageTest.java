@@ -17,22 +17,25 @@
  */
 package com.fluxtion.generator.model;
 
-import com.google.common.base.Predicates;
-import com.googlecode.gentyref.GenericTypeReflector;
+import static org.junit.Assert.assertEquals;
+import static org.reflections.ReflectionUtils.withModifier;
+import static org.reflections.ReflectionUtils.withName;
+import static org.reflections.ReflectionUtils.withType;
+
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.event.TimeHandlerExtends;
 import com.fluxtion.test.event.TimeHandlerImpl;
 import com.fluxtion.test.event.TimerHandler2Removed;
+import com.google.common.base.Predicates;
+import com.googlecode.gentyref.GenericTypeReflector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.reflections.ReflectionUtils;
-import static org.reflections.ReflectionUtils.*;
 
 /**
  *
@@ -53,7 +56,7 @@ public class GentyRefUsageTest {
         return (Class) name.getActualTypeArguments()[0];
     }
     
-    public static interface GenIntfMethod {
+    public interface GenIntfMethod {
         <T> T buildInstance();
     }
     

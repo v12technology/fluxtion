@@ -17,7 +17,6 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 
 /**
