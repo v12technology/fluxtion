@@ -42,7 +42,7 @@ public enum JavaGeneratorNames {
     
     public final String name;
 
-    private JavaGeneratorNames(String name) {
+    JavaGeneratorNames(String name) {
         this.name = name;
     }
     

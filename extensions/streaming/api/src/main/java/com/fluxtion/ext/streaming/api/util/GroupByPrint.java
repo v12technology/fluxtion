@@ -26,16 +26,32 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- *
+ * Printing utilities for {@link Number} based {@link GroupBy} maps.
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class GroupByPrint {
 
-    public static void printFrequencyMap(String title, GroupBy<Number> groupBy, Object trigger) {
+    /**
+     * print sorted frequency map, sorted by value largest to smallest
+     * @param <N> value type extends Number
+     * @param title Title to print before printing map contents
+     * @param groupBy The map holding the frequency data
+     * @param trigger Print when this trigger fires
+     */
+    public static <N extends Number> void printFrequencyMap(String title, GroupBy<N> groupBy, Object trigger) {
         SepContext.service().add(new PrintFrequencyMap(title, groupBy, trigger));
     }
 
-    public static void printTopN(String title, int n, GroupBy<Number> groupBy, Object trigger) {
+    /**
+     * print top N of a sorted frequency map, sorted by value largest to smallest
+     * @param <N> value type extends Number
+     * @param title Title to print before printing map contents
+     * @param n the limit to print
+     * @param groupBy The map holding the frequency data
+     * @param trigger Print when this trigger fires
+     */
+    public static <N extends Number> void printTopN(String title, int n, GroupBy<N> groupBy, Object trigger) {
         SepContext.service().add(new PrintTopN(title, n, groupBy, trigger));
     }
 
@@ -55,7 +71,13 @@ public class GroupByPrint {
         @OnEvent
         public boolean printFreqMap() {
             System.out.println(title);
-            groupBy.getMap().entrySet().stream().forEach(e -> System.out.println(e.getKey().toString() + ":" + e.getValue().event().intValue()));
+            Map<?, Wrapper<Number>> map = groupBy.getMap();
+            ArrayList<Map.Entry<?, Wrapper<Number>>> list = new ArrayList<>(map.entrySet());
+            list.sort((e1, e2) -> e2.getValue().event().intValue() - e1.getValue().event().intValue());
+            for (int i = 0; i < list.size(); i++) {
+                Map.Entry<? extends Object, Wrapper<Number>> get = list.get(i);
+                System.out.println(get.getKey() + ":" + get.getValue().event().intValue());
+            }
             System.out.println("");
             return false;
         }

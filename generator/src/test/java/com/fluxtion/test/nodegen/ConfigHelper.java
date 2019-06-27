@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public interface ConfigHelper {
 
-    public static int intFromMap(Map<String, ?> configMap, String key, int defualtValue) {
+    static int intFromMap(Map<String, ?> configMap, String key, int defualtValue) {
         if (configMap.containsKey(key)) {
             try {
                 String val = "" + configMap.get(key);

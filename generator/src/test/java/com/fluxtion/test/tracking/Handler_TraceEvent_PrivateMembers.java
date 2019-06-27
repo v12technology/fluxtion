@@ -97,5 +97,5 @@ public class Handler_TraceEvent_PrivateMembers {
         return arrayRef;
     }
     
-    public enum Currency {EUR, USD, JPY, GBP};
+    public enum Currency {EUR, USD, JPY, GBP}
 }

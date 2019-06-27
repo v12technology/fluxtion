@@ -43,10 +43,10 @@ public interface BatchHandler {
     /**
      * Indicates more events are expected, but there is an unknown pause in the message flow
      */
-    public void batchPause();
+    void batchPause();
 
     /**
      * Indicates all events for a transaction have been received.
      */
-    public void batchEnd();
+    void batchEnd();
 }

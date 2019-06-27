@@ -5,12 +5,8 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDetailsCsvDecoder0;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
-import com.fluxtion.ext.streaming.api.Test;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 

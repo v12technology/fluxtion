@@ -1,7 +1,6 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.ext.streaming.api.FilterWrapper;
-import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
  * A base class for stream functions. 

@@ -16,7 +16,6 @@
  */
 package com.fluxtion.example.core.dependencyinjection.lifecycle;
 
-import com.fluxtion.example.core.events.clean.*;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.TearDown;

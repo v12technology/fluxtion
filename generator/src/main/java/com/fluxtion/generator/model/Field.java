@@ -17,14 +17,12 @@
  */
 package com.fluxtion.generator.model;
 
+import static java.lang.reflect.Modifier.isFinal;
+
 import com.fluxtion.generator.util.ClassUtils;
 import java.lang.reflect.Modifier;
-import static java.lang.reflect.Modifier.isFinal;
-import static java.lang.reflect.Modifier.isPrivate;
-import static java.lang.reflect.Modifier.isProtected;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *

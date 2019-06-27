@@ -28,7 +28,7 @@ public interface TraceEventHolder {
 
     TraceEvent getTraceEvent();
 
-    public static class TraceEventHandler_generic  implements TraceEventHolder {
+    class TraceEventHandler_generic  implements TraceEventHolder {
 
         @FilterId
         private int filter;
@@ -57,7 +57,7 @@ public interface TraceEventHolder {
 
     }
     
-    public static class TraceEventHandler_sub1 extends TraceEventHandler_generic{
+    class TraceEventHandler_sub1 extends TraceEventHandler_generic{
 
         public TraceEventHandler_sub1(String traceId, int filter) {
             super(traceId, filter);
@@ -74,7 +74,7 @@ public interface TraceEventHolder {
         
     }
     
-    public static class TraceEventHandler_sub2 extends TraceEventHandler_generic{
+    class TraceEventHandler_sub2 extends TraceEventHandler_generic{
 
         public TraceEventHandler_sub2(String traceId, int filter) {
             super(traceId, filter);

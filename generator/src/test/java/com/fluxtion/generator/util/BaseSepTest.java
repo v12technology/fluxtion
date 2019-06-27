@@ -17,15 +17,15 @@
  */
 package com.fluxtion.generator.util;
 
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.api.lifecycle.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.Set;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;

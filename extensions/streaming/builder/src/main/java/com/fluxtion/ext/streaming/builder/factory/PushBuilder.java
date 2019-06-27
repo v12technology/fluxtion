@@ -48,7 +48,7 @@ public class PushBuilder {
      */
     public static <D> void push(SerializableSupplier<D> supplier, SerializableConsumer<? extends D> consumer) {
         final Object sourceInstance = supplier.captured()[0];//unWrap(supplier);
-        final Object targetInstance = consumer.captured()[0];;//unWrap(consumer);
+        final Object targetInstance = consumer.captured()[0];//unWrap(consumer);
         FilterBuilder.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
     }
     

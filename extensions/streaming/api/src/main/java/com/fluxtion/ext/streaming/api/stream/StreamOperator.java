@@ -149,7 +149,7 @@ public interface StreamOperator {
         return node;
     }
 
-    public static StreamOperator service() {
+    static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
         if (load.iterator().hasNext()) {
             return load.iterator().next();
@@ -164,11 +164,11 @@ public interface StreamOperator {
         }
     }
 
-    public static <I> void standardOut(I out) {
+    static <I> void standardOut(I out) {
         System.out.println(out);
     }
 
-    public static class ConsoleLog {
+    class ConsoleLog {
 
         private final Object source;
         private Wrapper wrapped;

@@ -23,7 +23,7 @@ package com.fluxtion.ext.text.api.filter;
  */
 public interface AnyCharMatchFilter {
 
-    public static final String KEY_FILTER_ARRAY = "AnyCharMatchFilterFactory.KEY_FILTER_ARRAY";
+    String KEY_FILTER_ARRAY = "AnyCharMatchFilterFactory.KEY_FILTER_ARRAY";
 
     char matchedChar();
 }

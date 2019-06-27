@@ -99,9 +99,9 @@ public class AsciiCharEventFileStreamer {
         }
     }
 
-    public static interface CharSink {
+    public interface CharSink {
 
-        public void handleCharEvent(CharEvent event);
+        void handleCharEvent(CharEvent event);
 
         default void handleEofEvent(EofEvent event) {
 

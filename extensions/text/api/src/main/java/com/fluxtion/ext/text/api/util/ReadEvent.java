@@ -9,7 +9,6 @@ import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.lmax.disruptor.EventFactory;
-import java.nio.CharBuffer;
 
 /**
  *

@@ -41,7 +41,7 @@ public class TemplatingCompiler {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TemplatingCompiler.class);
     
-    public static enum TemplateKeys{
+    public enum TemplateKeys{
         packageName,
         className,
         ;

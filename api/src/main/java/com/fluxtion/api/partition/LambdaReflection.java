@@ -16,10 +16,11 @@
  */
 package com.fluxtion.api.partition;
 
+import static java.util.Arrays.asList;
+
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import static java.util.Arrays.asList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
  */
 public interface LambdaReflection {
 
-    public interface MethodReferenceReflection {
+    interface MethodReferenceReflection {
 
         //inspired by: http://benjiweber.co.uk/blog/2015/08/17/lambda-parameter-names-with-reflection/
         default SerializedLambda serialized() {
@@ -97,33 +98,33 @@ public interface LambdaReflection {
         }
     }
 
-    public interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
+    interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
+    interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableBiConsumer<t, u> extends BiConsumer<t, u>, Serializable, MethodReferenceReflection {
+    interface SerializableBiConsumer<t, u> extends BiConsumer<t, u>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableFunction<t, r> extends Function<t, r>, Serializable, MethodReferenceReflection {
+    interface SerializableFunction<t, r> extends Function<t, r>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {
+    interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableTriFunction<f, t, u, r> extends TriFunction<f, t, u, r>, Serializable, MethodReferenceReflection {
+    interface SerializableTriFunction<f, t, u, r> extends TriFunction<f, t, u, r>, Serializable, MethodReferenceReflection {
     }
 
-    public interface SerializableQuadFunction<f, t, u, v, r> extends QuadFunction<f, t, u, v, r>, Serializable, MethodReferenceReflection {
+    interface SerializableQuadFunction<f, t, u, v, r> extends QuadFunction<f, t, u, v, r>, Serializable, MethodReferenceReflection {
     }
 
     @FunctionalInterface
-    public interface TriFunction<F, T, U, R> {
+    interface TriFunction<F, T, U, R> {
         R apply(F f, T t, U u);
     }
     @FunctionalInterface
-    public interface QuadFunction<F, T, U, V, R> {
+    interface QuadFunction<F, T, U, V, R> {
         R apply(F f, T t, U u, V v);
     }
 

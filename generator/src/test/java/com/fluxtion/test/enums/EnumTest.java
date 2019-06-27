@@ -17,7 +17,6 @@
 package com.fluxtion.test.enums;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Assert;
 import org.junit.Test;

@@ -18,14 +18,13 @@
 package com.fluxtion.generator.targets;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.model.InvokerFilterTarget;
-import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,9 +34,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public interface JavaGenHelper {
 
-    public static final StringBuilder builder = new StringBuilder(1 * 1000 * 1000);
+    StringBuilder builder = new StringBuilder(1 * 1000 * 1000);
 
-    public static String generateMapDisaptch(ArrayList<InvokerFilterTarget> filteredInvokerList, List<Class<?>> importClassList) {
+    static String generateMapDisaptch(ArrayList<InvokerFilterTarget> filteredInvokerList,
+        List<Class<?>> importClassList) {
 //        importClassList.add(Int2ObjectOpenHashMap.class);
         builder.delete(0, builder.length());
         if (filteredInvokerList == null || filteredInvokerList.isEmpty()) {
@@ -130,7 +130,7 @@ public interface JavaGenHelper {
     }
 
 
-    public static String generateFilteredDispatchMethodName(FilterDescription filter) {
+    static String generateFilteredDispatchMethodName(FilterDescription filter) {
         String filterName = filter.variableName;
         if (filterName == null) {
             filterName = (filter.isIntFilter ? filter.value : filter.stringValue) + "";
@@ -143,7 +143,7 @@ public interface JavaGenHelper {
         return getIdentifier("handle_" + filterClass + "_" + filterName);
     }
 
-    public static String generateFilteredDispatchMap(Class clazz, boolean isInt) {
+    static String generateFilteredDispatchMap(Class clazz, boolean isInt) {
         FilterDescription filter = new FilterDescription(clazz, 0);
         if (!isInt) {
             filter = new FilterDescription(clazz, "");
@@ -151,7 +151,7 @@ public interface JavaGenHelper {
         return generateFilteredDispatchMap(filter);
     }
 
-    public static String generateFilteredDispatchMap(FilterDescription filter) {
+    static String generateFilteredDispatchMap(FilterDescription filter) {
         String type = (filter.isIntFilter ? "Int" : "String");
         String filterClass = "noFilterClass";
         if (filter.eventClass != null) {
@@ -160,7 +160,7 @@ public interface JavaGenHelper {
         return getIdentifier("dispatch" + type + "Map" + filterClass);
     }
 
-    public static String getIdentifier(String str) {
+    static String getIdentifier(String str) {
         StringBuilder sb = new StringBuilder();
         str = StringUtils.uncapitalize(str);
         if(!Character.isJavaIdentifierStart(str.charAt(0))) {
@@ -176,7 +176,7 @@ public interface JavaGenHelper {
         return sb.toString();
     }
     
-    public static Class mapWrapperToPrimitive(Class clazz){
+    static Class mapWrapperToPrimitive(Class clazz){
         Class retClass = void.class;
         switch(clazz.getSimpleName()){
             case "Integer":
@@ -204,7 +204,7 @@ public interface JavaGenHelper {
         return retClass;
     }
     
-    public static Class mapPrimitiveToWrapper(Class clazz){
+    static Class mapPrimitiveToWrapper(Class clazz){
         Class retClass = void.class;
         switch(clazz.getSimpleName()){
             case "int":

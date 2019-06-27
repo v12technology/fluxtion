@@ -16,11 +16,9 @@
  */
 package com.fluxtion.example.core.outstyle;
 
-import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
-import com.fluxtion.example.core.outstyle.naming.NamingStrategy;
 
 /**
  *

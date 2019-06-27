@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.text.builder.util;
 
-import com.fluxtion.ext.text.api.event.CharEvent;
-import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.api.event.EofEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -104,9 +104,9 @@ public class AsciiCharEventFileStreamer {
         }
     }
 
-    public static interface CharSink {
+    public interface CharSink {
 
-        public void handleCharEvent(CharEvent event);
+        void handleCharEvent(CharEvent event);
 
         default void handleEofEvent(EofEvent event) {
         }

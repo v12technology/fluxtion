@@ -17,13 +17,13 @@
  */
 package com.fluxtion.generator.generic;
 
-import com.fluxtion.generator.filter.*;
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.event.Event;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Test;
 
 /**
