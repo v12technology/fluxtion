@@ -21,5 +21,5 @@ package com.fluxtion.example.shared;
  * @author V12 Technology Ltd.
  */
 public enum SampleEnum {
-    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 }

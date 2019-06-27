@@ -16,15 +16,16 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
-import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
+import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
@@ -202,7 +203,7 @@ public interface Wrapper<T> {
         return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, consumerId);
     }
 
-    static LongAdder counter = new LongAdder();
+    LongAdder counter = new LongAdder();
 
     /**
      * dump this node to console, prefixed with the supplied message.{@link Object#toString()} will be invoked on the node instance.

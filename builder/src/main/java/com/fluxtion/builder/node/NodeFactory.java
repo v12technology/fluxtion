@@ -78,7 +78,7 @@ public interface NodeFactory<T> {
      *
      * @param targetLanguage target language for generation
      */
-    default public void setTargetLanguage(String targetLanguage) {
+    default void setTargetLanguage(String targetLanguage) {
     }
 
     /**
@@ -88,7 +88,7 @@ public interface NodeFactory<T> {
      *
      * @param context The context the Fluxtion SEC compiler uses
      */
-    default public void preSepGeneration(GenerationContext context) {
+    default void preSepGeneration(GenerationContext context) {
     }
 
 }

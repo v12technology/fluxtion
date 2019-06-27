@@ -23,11 +23,11 @@ package com.fluxtion.ext.text.api.ascii;
  */
 public interface Conversion {
 
-    public static double atod(CharSequence sb) {
+    static double atod(CharSequence sb) {
         return sb.length() == 0 ? 0 : getDouble(sb, 0, sb.length());
     }
 
-    public static long atol(CharSequence s) throws NumberFormatException{
+    static long atol(CharSequence s) throws NumberFormatException{
         if (s.length() == 0) {
             return 0;
         }
@@ -95,8 +95,8 @@ public interface Conversion {
         return Math.pow(10., exp);
     }
 
-    public static double getDouble(final CharSequence csq,
-            final int offset, final int end) throws NumberFormatException {
+    static double getDouble(final CharSequence csq,
+        final int offset, final int end) throws NumberFormatException {
 
         int off = offset;
         int len = end - offset;
@@ -255,7 +255,7 @@ public interface Conversion {
         return (numSign) ? number : -number;
     }
 
-    public static int indexOf(final CharSequence csq, final char c, final int off, final int end) {
+    static int indexOf(final CharSequence csq, final char c, final int off, final int end) {
         for (int i = off; i < end; i++) {
             if (csq.charAt(i) == c) {
                 return i;
@@ -264,7 +264,7 @@ public interface Conversion {
         return -1;
     }
 
-    public static int atoi(CharSequence s)
+    static int atoi(CharSequence s)
             throws NumberFormatException {
         if (s.length() == 0) {
             return 0;
