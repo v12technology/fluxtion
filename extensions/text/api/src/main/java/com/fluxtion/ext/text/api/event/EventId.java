@@ -22,9 +22,9 @@ package com.fluxtion.ext.text.api.event;
  */
 public interface EventId {
 
-    public static final int CHAR_EVENT_ID = 1;
-    public static final int EOF_EVENT_ID = 2;
-    public static final int LOG_CONTROL_ID = 3;
-    public static final int REGISTER_EVENTHANDLER_ID = 4;
+    int CHAR_EVENT_ID = 1;
+    int EOF_EVENT_ID = 2;
+    int LOG_CONTROL_ID = 3;
+    int REGISTER_EVENTHANDLER_ID = 4;
     
 }

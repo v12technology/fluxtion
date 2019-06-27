@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public interface ClassUtils {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(ClassUtils.class);
+    Logger LOGGER = LoggerFactory.getLogger(ClassUtils.class);
 
     /**
      * finds the CbMethodHandle whose parameter most closely matches the class
@@ -54,7 +54,7 @@ public interface ClassUtils {
      * @param cbs collection of callbacks
      * @return The best matched callback handle
      */
-    public static CbMethodHandle findBestParentCB(Object parent, Collection<CbMethodHandle> cbs) {
+    static CbMethodHandle findBestParentCB(Object parent, Collection<CbMethodHandle> cbs) {
         Set<Class<?>> classList = cbs.stream()
                 .filter(cb -> cb.method.getParameterTypes()[0].isAssignableFrom(parent.getClass()))
                 .map(cb -> cb.method.getParameterTypes()[0])
@@ -80,7 +80,7 @@ public interface ClassUtils {
 
     }
 
-    public static boolean typeSupported(Class<?> type) {
+    static boolean typeSupported(Class<?> type) {
         return type.isPrimitive()
                 || type == String.class
                 || type == Class.class
@@ -89,7 +89,7 @@ public interface ClassUtils {
                 || type.isArray();
     }
 
-    public static String mapToJavaSource(Object primitiveVal, List<Field> nodeFields, Set<Class<?>> importList) {
+    static String mapToJavaSource(Object primitiveVal, List<Field> nodeFields, Set<Class<?>> importList) {
         Class clazz = primitiveVal.getClass();
         String primitiveSuffix = "";
         String primitivePrefix = "";
@@ -156,7 +156,8 @@ public interface ClassUtils {
         return primitivePrefix + primitiveVal.toString() + primitiveSuffix;
     }
 
-    public static String mapPropertyToJavaSource(PropertyDescriptor property, Field field, List<Field> nodeFields, Set<Class<?>> importList) {
+    static String mapPropertyToJavaSource(PropertyDescriptor property, Field field, List<Field> nodeFields,
+        Set<Class<?>> importList) {
         String ret = null;
         if (!isPropertyTransient(property, field)) {
             try {
@@ -177,7 +178,7 @@ public interface ClassUtils {
         return ret;
     }
 
-    public static boolean propertySupported(PropertyDescriptor property, Field field, List<Field> nodeFields) {
+    static boolean propertySupported(PropertyDescriptor property, Field field, List<Field> nodeFields) {
         try {
             boolean isTransient = isPropertyTransient(property, field);
             final boolean writeMethod = property.getWriteMethod() != null;
@@ -198,7 +199,7 @@ public interface ClassUtils {
         return false;
     }
 
-    public static boolean isPropertyTransient(PropertyDescriptor property, Field field) throws SecurityException {
+    static boolean isPropertyTransient(PropertyDescriptor property, Field field) throws SecurityException {
         final Class<?> fieldClass = field.instance.getClass();
         final String name = property.getName();
         final java.lang.reflect.Field fieldOfProperty;
@@ -214,11 +215,11 @@ public interface ClassUtils {
         return isTransient;
     }
 
-    public static <T> T getField(String name, Object instance) {
+    static <T> T getField(String name, Object instance) {
         return (T) new Mirror().on(instance).get().field(name);
     }
 
-    public static java.lang.reflect.Field getReflectField(Class clazz, String fieldName)
+    static java.lang.reflect.Field getReflectField(Class clazz, String fieldName)
             throws NoSuchFieldException {
         try {
             return clazz.getDeclaredField(fieldName);

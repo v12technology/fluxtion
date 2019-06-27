@@ -5,15 +5,16 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.thoughtworks.qdox.JavaDocBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.fluxtion.builder.node.SEPConfig;
+import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
+
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.compiler.SepCompiler;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
-import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.model.JavaClass;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ import org.junit.Assert;
  */
 public interface JavaTestGeneratorHelper {
 
-    public static void setupDefaultTestContext(String packageName, String className){
+    static void setupDefaultTestContext(String packageName, String className){
         GenerationContext.setupStaticContext(packageName, className, new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
     }
     
@@ -38,7 +39,7 @@ public interface JavaTestGeneratorHelper {
      * @param className
      * @return 
      */
-    public static SepCompilerConfig getTestSepCompileConfig(String packageName, String className){
+    static SepCompilerConfig getTestSepCompileConfig(String packageName, String className){
         SepCompilerConfig cfg = new SepCompilerConfig();
         cfg.setOutputDirectory("target/generated-test-sources/java/");
         cfg.setResourcesOutputDirectory("target/generated-test-sources/resources/");
@@ -53,18 +54,18 @@ public interface JavaTestGeneratorHelper {
      * @param config
      * @throws Exception
      */
-    public static void generateAndCompile(SepCompilerConfig config) throws Exception{
+    static void generateAndCompile(SepCompilerConfig config) throws Exception{
         SepCompiler compiler = new SepCompiler();
         compiler.compile(config);
     }
     
-    public static EventHandler generateAndInstantiate(SepCompilerConfig config) throws Exception{
+    static EventHandler generateAndInstantiate(SepCompilerConfig config) throws Exception{
         generateAndCompile(config);
         Class<EventHandler> resultProcessorClass = (Class<EventHandler>) Class.forName(config.getFqn());
         return resultProcessorClass.newInstance();
     }
     
-    public static JavaClass generateClass(SEPConfig cfg, GenerationContext context) throws Exception {
+    static JavaClass generateClass(SEPConfig cfg, GenerationContext context) throws Exception {
         cfg.templateFile = "javaTemplate.vsl";
         Generator generator = new Generator();
         generator.templateSep(cfg);
@@ -76,7 +77,7 @@ public interface JavaTestGeneratorHelper {
         return genClass;
     }
     
-    public static JavaClass generateClass(SEPConfig cfg, String packageName, String className) throws Exception {
+    static JavaClass generateClass(SEPConfig cfg, String packageName, String className) throws Exception {
         cfg.templateFile = "javaTemplate.vsl";
         GenerationContext.setupStaticContext(packageName, className, new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
         Generator generator = new Generator();
@@ -89,36 +90,36 @@ public interface JavaTestGeneratorHelper {
         return genClass;
     }
 
-    public static JavaClass generateClass(SEPConfig cfg, String className, boolean inLine, boolean dirtySupport) throws Exception {
+    static JavaClass generateClass(SEPConfig cfg, String className, boolean inLine, boolean dirtySupport) throws Exception {
         cfg.inlineEventHandling = inLine;
         cfg.supportDirtyFiltering = dirtySupport;
         return generateClass(cfg, packageDefault.name, className);
     }
 
-    public static JavaClass generateClass(SEPConfig cfg, JavaGeneratorNames name, boolean dirtySupport) throws Exception {
+    static JavaClass generateClass(SEPConfig cfg, JavaGeneratorNames name, boolean dirtySupport) throws Exception {
         return generateClass(cfg, name.name, false, dirtySupport);
     }
 
-    public static JavaClass generateClass(SEPConfig cfg, JavaGeneratorNames name) throws Exception {
+    static JavaClass generateClass(SEPConfig cfg, JavaGeneratorNames name) throws Exception {
         return generateClass(cfg, name.name, false, false);
     }
 
-    public static JavaClass generateClassInline(SEPConfig cfg, JavaGeneratorNames name) throws Exception {
+    static JavaClass generateClassInline(SEPConfig cfg, JavaGeneratorNames name) throws Exception {
         return generateClass(cfg, name.name  + "_inline", true, false);
     }
     
-    public static JavaClass generateClassInline(SEPConfig cfg, JavaGeneratorNames name, boolean dirtySupport) throws Exception {
+    static JavaClass generateClassInline(SEPConfig cfg, JavaGeneratorNames name, boolean dirtySupport) throws Exception {
         return generateClass(cfg, name.name  + "_inline", true, dirtySupport);
     }
 
-    public static <T> T sepInstance(JavaGeneratorNames name) throws Exception {
+    static <T> T sepInstance(JavaGeneratorNames name) throws Exception {
         String fqn = packageDefault.name + "." + name.name;
         Class<T> clazzTest = (Class<T>) Class.forName(fqn);
         T newInstance = clazzTest.newInstance();
         return newInstance;
     }
 
-    public static <T> T sepInstanceInline(JavaGeneratorNames name) throws Exception {
+    static <T> T sepInstanceInline(JavaGeneratorNames name) throws Exception {
         String fqn = packageDefault.name + "." + name.name + "_inline";
         Class<T> clazzTest = (Class<T>) Class.forName(fqn);
         T newInstance = clazzTest.newInstance();
@@ -132,7 +133,7 @@ public interface JavaTestGeneratorHelper {
      * @param traceList
      * @param expected
      */
-    public static void testClassOrder(List<?> traceList, Class... expected) {
+    static void testClassOrder(List<?> traceList, Class... expected) {
         List<Class> collect = traceList
                 .stream()
                 .map((obj) -> obj.getClass())
@@ -140,20 +141,20 @@ public interface JavaTestGeneratorHelper {
         Assert.assertThat(collect, IsIterableContainingInOrder.contains(expected));
     }
     
-    public static void testClassOrder(List<?> traceList, List<?> traceListInline, Class... expected) {
+    static void testClassOrder(List<?> traceList, List<?> traceListInline, Class... expected) {
         testClassOrder(traceList, expected);
         testClassOrder(traceListInline, expected);
     }
     
-    public static void testTraceIdOrder(List<String> traceList, String... expectedTrace){
+    static void testTraceIdOrder(List<String> traceList, String... expectedTrace){
         Assert.assertThat(traceList, IsIterableContainingInOrder.contains(expectedTrace));
     }
     
-    public static void testTraceIdContains(List<String> traceList, String... expectedTrace){
+    static void testTraceIdContains(List<String> traceList, String... expectedTrace){
         Assert.assertThat(traceList, IsIterableContainingInAnyOrder.containsInAnyOrder(expectedTrace));
     }
     
-    public static void testTraceIdOrder(List<String> traceList, List<String> traceListInline, String... expectedTrace){
+    static void testTraceIdOrder(List<String> traceList, List<String> traceListInline, String... expectedTrace){
         testTraceIdOrder(traceList, expectedTrace);
         testTraceIdOrder(traceListInline, expectedTrace);
     }
@@ -164,10 +165,10 @@ public interface JavaTestGeneratorHelper {
      * @param sep
      * @param fieldName
      */
-    public static void testPublicField(Object sep, String fieldName) {
+    static void testPublicField(Object sep, String fieldName) {
         Assert.assertNotNull(FieldUtils.getDeclaredField(sep.getClass(), fieldName));
     }
-    public static void testPublicField(Object sep, Object sepInline, String fieldName) {
+    static void testPublicField(Object sep, Object sepInline, String fieldName) {
         testPublicField(sep, fieldName);
         testPublicField(sepInline, fieldName);
     }

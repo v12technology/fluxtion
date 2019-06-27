@@ -17,7 +17,6 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.api.annotations.OnEventComplete;
 import java.util.ArrayList;
 
 /**
@@ -47,7 +46,7 @@ public interface TraceEvent {
     ArrayList<String> getTraceEventCompleteIdList();
     
     
-    public static class TraceEvent_sub1 extends TraceEvent_InFilter_0 implements TraceEvent{
+    class TraceEvent_sub1 extends TraceEvent_InFilter_0 implements TraceEvent{
 
         public static final int ID = 2;
         
@@ -57,7 +56,7 @@ public interface TraceEvent {
         
     }
     
-    public static class TraceEvent_sub2 extends TraceEvent_InFilter_0 implements TraceEvent{
+    class TraceEvent_sub2 extends TraceEvent_InFilter_0 implements TraceEvent{
 
         public static final int ID = 3;
         

@@ -1,23 +1,23 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.streaming.api.Stateful;
-import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.lt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
 import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
-import org.junit.Test;
-import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-
+import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.Objects;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  *
@@ -173,7 +173,6 @@ public class StreamTest implements Stateful {
                     .map(new StreamTest()::max, TempF::getFahrenheit).notifyOnChange(true).id("maxTemp")
                     .console("[3.new max temp] ->");
             //convert to log temps
-            ;
 
         }, "com.fluxtion.ext.declarative.builder.filternotify", "FilterNotifyOnChange");
 //        //fire some data in

@@ -41,7 +41,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  */
 public interface FunctionGeneratorHelper {
 
-    public static int intFromMap(Map<String, ?> configMap, String key, int defualtValue) {
+    static int intFromMap(Map<String, ?> configMap, String key, int defualtValue) {
         if (configMap.containsKey(key)) {
             try {
                 String val = "" + configMap.get(key);
@@ -53,7 +53,7 @@ public interface FunctionGeneratorHelper {
         return defualtValue;
     }
 
-    public static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
+    static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
@@ -64,7 +64,7 @@ public interface FunctionGeneratorHelper {
         return newClass;
     }
 
-    public static String writeSourceFile(Object node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException {
+    static String writeSourceFile(Object node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
         initVelocity();
@@ -105,7 +105,7 @@ public interface FunctionGeneratorHelper {
         return generatedClassName;
     }
 
-    public static void deleteGeneratedClass(GenerationContext generationConfig, String generatedClassName) {
+    static void deleteGeneratedClass(GenerationContext generationConfig, String generatedClassName) {
         File outFile = new File(generationConfig.getPackageDirectory(), generatedClassName + ".java");
         if (!outFile.delete()) {
             System.out.println("unable to delete file:" + outFile.getAbsolutePath());
@@ -113,7 +113,7 @@ public interface FunctionGeneratorHelper {
 
     }
 
-    public static void initVelocity() throws RuntimeException {
+    static void initVelocity() throws RuntimeException {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
         Velocity.init();

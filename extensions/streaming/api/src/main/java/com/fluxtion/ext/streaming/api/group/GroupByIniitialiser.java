@@ -25,6 +25,6 @@ package com.fluxtion.ext.streaming.api.group;
  */
 public interface GroupByIniitialiser<S, T> {
     
-    public void apply(S source, T target);
+    void apply(S source, T target);
     
 }
