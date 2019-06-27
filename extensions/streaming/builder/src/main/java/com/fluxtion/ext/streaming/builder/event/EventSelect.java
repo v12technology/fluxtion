@@ -16,21 +16,22 @@
  */
 package com.fluxtion.ext.streaming.builder.event;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.FilterId;
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.builder.Templates;
-import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.eventClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filter;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filterType;
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
-import com.fluxtion.ext.streaming.builder.util.ImportMap;
+
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.ReusableEventHandler;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.builder.Templates;
+import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
+import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.util.Map;
 import org.apache.velocity.VelocityContext;
 
@@ -40,25 +41,25 @@ import org.apache.velocity.VelocityContext;
  */
 public interface EventSelect {
 
-    static final String TEMPLATE = Templates.PACKAGE + "/EventSelectTemplate.vsl";
+    String TEMPLATE = Templates.PACKAGE + "/EventSelectTemplate.vsl";
 
-    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz) {
+    static <T extends Event> Wrapper<T> select(Class<T> eventClazz) {
         Wrapper<T> handler = new ReusableEventHandler(eventClazz);
         return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
     }
 
-    public static <T extends Event, S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
+    static <T extends Event, S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
         Class<T> eventClazz = supplier.getContainingClass();
         Wrapper<T> handler = new ReusableEventHandler(eventClazz);
         handler = GenerationContext.SINGLETON.addOrUseExistingNode(handler);
         return handler.get(supplier);
     }
  
-    public static <T extends Event> Wrapper<T> selectOLD(Class<T> eventClazz) {
+    static <T extends Event> Wrapper<T> selectOLD(Class<T> eventClazz) {
         return build(eventClazz, null, null);
     }
 
-    public static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, int... filterId) {
+    static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, int... filterId) {
         Wrapper[] result = new Wrapper[filterId.length];
         for (int i = 0; i < filterId.length; i++) {
             result[i] = select(eventClazz, filterId[i]);
@@ -66,7 +67,7 @@ public interface EventSelect {
         return result;
     }
 
-    public static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, String... filterId) {
+    static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, String... filterId) {
         Wrapper[] result = new Wrapper[filterId.length];
         for (int i = 0; i < filterId.length; i++) {
             result[i] = select(eventClazz, filterId[i]);
@@ -74,16 +75,16 @@ public interface EventSelect {
         return result;
     }
 
-    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz, String filterId) {
+    static <T extends Event> Wrapper<T> select(Class<T> eventClazz, String filterId) {
         return build(eventClazz, filterId, "String");
     }
 
-    public static <T extends Event> Wrapper<T> selectOld(Class<T> eventClazz, int filterId) {
+    static <T extends Event> Wrapper<T> selectOld(Class<T> eventClazz, int filterId) {
         return build(eventClazz, "" + filterId, "int");
     }
     
     
-    public static <T extends Event> Wrapper<T> select(Class<T> eventClazz, int filterId) {
+    static <T extends Event> Wrapper<T> select(Class<T> eventClazz, int filterId) {
         Wrapper<T> handler = new ReusableEventHandler(filterId, eventClazz);
         return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
     } 
@@ -138,7 +139,7 @@ public interface EventSelect {
         return handler;
     }
 
-    public static String getIdentifier(String str) {
+    static String getIdentifier(String str) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             if (Character.isJavaIdentifierStart(str.charAt(0)) || i > 0 && Character.isJavaIdentifierPart(str.charAt(i))) {

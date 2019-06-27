@@ -60,9 +60,9 @@ public class GenerationContext {
         return COUNT.getAndIncrement();
     }
     
-    private static class X{};
-    
-    public int nextId(String className){
+    private static class X{}
+
+  public int nextId(String className){
         Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap() );
         String key = packageName + "." + className;
         Integer nextId = classCount.compute(key, (String k, Integer v) ->{

@@ -17,11 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.api.FilterWrapper;
-import com.fluxtion.ext.streaming.api.Stateful;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
@@ -29,6 +25,11 @@ import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.m
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import org.junit.Test;
 
 /**
@@ -173,8 +174,7 @@ public class StreamingFilterTest extends StreamInprocessTest {
             select(StreamData.class)
                     .filter(StreamData::getDoubleValue, s -> s > 2)
                     .map(count()).id("doubleCount");
-                    ;
-            
+
         });
         Wrapper<Number> count = getField("intervalCount");
         Wrapper<Number> doubleCount = getField("doubleCount");

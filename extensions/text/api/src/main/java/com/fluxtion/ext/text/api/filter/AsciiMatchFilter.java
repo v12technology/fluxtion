@@ -22,5 +22,5 @@ package com.fluxtion.ext.text.api.filter;
  * @author Greg Higgins
  */
 public interface AsciiMatchFilter {
-        public static final String KEY_FILTER_STRING = "AsciiMatchFilterFactory.KEY_FILTER_STRING";
+        String KEY_FILTER_STRING = "AsciiMatchFilterFactory.KEY_FILTER_STRING";
 }

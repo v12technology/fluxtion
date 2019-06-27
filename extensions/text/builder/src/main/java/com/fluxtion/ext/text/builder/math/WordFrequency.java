@@ -16,25 +16,26 @@
  */
 package com.fluxtion.ext.text.builder.math;
 
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
+
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.text.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.builder.group.Frequency;
+import com.fluxtion.ext.text.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.text.api.event.CharEvent;
-import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
 
 /**
  * Utility class to calculate word frequency in a stream of {@link CharEvent}
- * . 
+ * .
  * @author gregp
  */
 public interface WordFrequency {
 
-    public static GroupBy<MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
+  static GroupBy<MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
         return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
-    
-    public static GroupBy<MutableNumber> wordFrequency() {
+
+  static GroupBy<MutableNumber> wordFrequency() {
         return Frequency.frequency(wordSplitter(), ByteBufferDelimiter::asString);
     }
 

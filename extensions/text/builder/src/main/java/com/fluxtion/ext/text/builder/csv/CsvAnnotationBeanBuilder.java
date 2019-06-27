@@ -1,9 +1,12 @@
 package com.fluxtion.ext.text.builder.csv;
 
+import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
+import com.fluxtion.generator.Generator;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationInfo;
+import io.github.classgraph.AnnotationParameterValueList;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
@@ -13,11 +16,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fluxtion.builder.annotation.ClassProcessor;
-import com.fluxtion.generator.Generator;
-import io.github.classgraph.AnnotationParameterValueList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  *

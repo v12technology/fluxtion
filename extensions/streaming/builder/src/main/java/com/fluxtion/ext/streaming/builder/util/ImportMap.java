@@ -17,7 +17,6 @@
 package com.fluxtion.ext.streaming.builder.util;
 
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.generator.targets.JavaGenHelper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

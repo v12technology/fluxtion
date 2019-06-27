@@ -16,15 +16,15 @@
  */
 package com.fluxtion.ext.futext.builder.util.marsahller;
 
-import com.fluxtion.ext.streaming.api.Wrapper;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.concurrent.atomic.LongAdder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**

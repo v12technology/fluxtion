@@ -11,31 +11,31 @@
  */
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.api.lifecycle.EventHandler;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.MergingWrapper;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import com.fluxtion.ext.streaming.api.stream.StringPredicates;
-import com.fluxtion.ext.streaming.builder.event.EventSelect;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
-import com.fluxtion.ext.declarative.builder.helpers.MyData;
-import com.fluxtion.ext.declarative.builder.helpers.MyDataChildNode;
-import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
-import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
-import com.fluxtion.generator.util.BaseSepTest;
-import net.vidageek.mirror.dsl.Mirror;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
+import com.fluxtion.ext.declarative.builder.helpers.MyData;
+import com.fluxtion.ext.declarative.builder.helpers.MyDataChildNode;
+import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
+import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
+import com.fluxtion.ext.streaming.api.MergingWrapper;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.StringPredicates;
+import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import com.fluxtion.generator.util.BaseSepTest;
+import net.vidageek.mirror.dsl.Mirror;
+import org.junit.Assert;
 
 
 /**
@@ -437,8 +437,8 @@ public class ConditionalTestTest extends BaseSepTest {
     public static class BuilderArray3 extends SEPConfig {
 
         public BuilderArray3() throws Exception {
-            Wrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");;
-            Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(false); 
+            Wrapper<MyData>[] myDataArr = EventSelect.select(MyData.class, "EU", "EC");
+          Wrapper<MyData> filter = MergingWrapper.merge(myDataArr).filter(MyData::getIntVal, gt(200)).notifyOnChange(false);
             addPublicNode(new FilterResultListener(filter), "results");
         }
     }

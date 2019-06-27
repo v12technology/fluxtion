@@ -56,7 +56,7 @@ public interface NodeNameProducer extends Comparable<NodeNameProducer> {
     }
 
     @Override
-    default public int compareTo(NodeNameProducer other) {
+    default int compareTo(NodeNameProducer other) {
         return other.priority() - this.priority();
     }
 }

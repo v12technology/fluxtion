@@ -18,7 +18,6 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
-import org.jetbrains.annotations.NotNull;
 
 /**
  *

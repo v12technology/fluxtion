@@ -13,7 +13,6 @@ package com.fluxtion.ext.declarative.builder.helpers;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.streaming.api.Test;
 
 /**
  *

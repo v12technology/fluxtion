@@ -17,8 +17,12 @@
  */
 package com.fluxtion.generator.model;
 
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.test.event.AnnotatedTimeHandler;
 import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
 import com.fluxtion.test.event.DependencyChild;
@@ -32,11 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
 import org.hamcrest.collection.IsIterableContainingInOrder;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

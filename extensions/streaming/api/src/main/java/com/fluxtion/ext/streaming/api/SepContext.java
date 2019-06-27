@@ -25,15 +25,15 @@ import java.util.ServiceLoader;
  */
 public interface SepContext {
 
-    public <T> T add(T node);
-    public <T> T add(T node, String privateId);
+    <T> T add(T node);
+    <T> T add(T node, String privateId);
 
-    public <T> T addPublic(T node, String publicId);
-    public <T> T addOrReuse(T node);
-    public <T> T addOrReuse(T node, String privateId);
-    public <T> T addPublicOrReuse(T node, String publicId);
+    <T> T addPublic(T node, String publicId);
+    <T> T addOrReuse(T node);
+    <T> T addOrReuse(T node, String privateId);
+    <T> T addPublicOrReuse(T node, String publicId);
 
-    static final SepContext NULL_CONTEXT = new SepContext() {
+    SepContext NULL_CONTEXT = new SepContext() {
         @Override
         public <T> T add(T node) {
             return node;
@@ -66,7 +66,7 @@ public interface SepContext {
 
     };
 
-    public static SepContext service() {
+    static SepContext service() {
         ServiceLoader<SepContext> load = ServiceLoader.load(SepContext.class);
         if (load.iterator().hasNext()) {
             return load.iterator().next();
