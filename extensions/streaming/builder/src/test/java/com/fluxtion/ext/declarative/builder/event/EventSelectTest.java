@@ -11,10 +11,9 @@
  */
 package com.fluxtion.ext.declarative.builder.event;
 
-import com.fluxtion.ext.streaming.builder.event.EventSelect;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.builder.event.EventSelect;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Assert;
 import org.junit.Test;

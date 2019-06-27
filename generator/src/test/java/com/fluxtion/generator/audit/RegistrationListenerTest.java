@@ -17,22 +17,20 @@
  */
 package com.fluxtion.generator.audit;
 
-import com.fluxtion.api.annotations.EventHandler;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
+import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
-import java.util.ArrayList;
-import java.util.HashMap;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
-import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.test.event.TestEvent;
+import java.util.HashMap;
+import org.junit.Test;
 
 /**
  *

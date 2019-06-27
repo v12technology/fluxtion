@@ -16,19 +16,16 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
-import com.fluxtion.ext.streaming.api.group.MultiKey;
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
-import com.fluxtion.ext.streaming.builder.factory.FunctionKeys;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetClass;
 import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetMappingList;
+
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.group.MultiKey;
+import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
-import com.fluxtion.api.event.Event;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.velocity.VelocityContext;

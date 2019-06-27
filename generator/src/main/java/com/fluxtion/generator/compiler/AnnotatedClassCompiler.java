@@ -17,10 +17,11 @@
  */
 package com.fluxtion.generator.compiler;
 
+import static com.fluxtion.generator.compiler.ClassProcessorDispatcher.standardParamsHelper;
+
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.annotation.SepInstance;
-import static com.fluxtion.generator.compiler.ClassProcessorDispatcher.standardParamsHelper;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.AnnotationParameterValueList;
@@ -31,7 +32,6 @@ import io.github.classgraph.ScanResult;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

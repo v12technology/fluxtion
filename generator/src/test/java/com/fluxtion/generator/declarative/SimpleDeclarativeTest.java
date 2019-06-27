@@ -17,14 +17,14 @@
  */
 package com.fluxtion.generator.declarative;
 
-import com.thoughtworks.qdox.JavaDocBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaField;
-import com.thoughtworks.qdox.model.Type;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.Field;
@@ -38,25 +38,24 @@ import com.fluxtion.test.nodes.FailingWindowNodeFactory;
 import com.fluxtion.test.nodes.KeyProcessorHistogram;
 import com.fluxtion.test.nodes.WindowNode;
 import com.fluxtion.test.nodes.WindowNodeFactory;
+import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.Type;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.Test;
 
 /**
  *

@@ -17,8 +17,6 @@
  */
 package com.fluxtion.generator.model;
 
-import java.util.Objects;
-
 /**
  * A filter class for a parent class, a match will occur if both instances are
  * equal or both instances are null and the class types are equal.

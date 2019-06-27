@@ -19,10 +19,8 @@ package com.fluxtion.generator.constructor;
 
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
