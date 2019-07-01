@@ -10,7 +10,7 @@ Thanks for dropping by, hope we can persuade you to donate your time to investig
 
 Fluxtion is an embeddable streaming event processing engine written in Java. 
 Describe the processing in a mixture of declarative and imperative forms and 
-Fluxtion generates a decision engine. The engine is serialised as a set of java source, 
+Fluxtion generates a decision engine. The engine is serialised as a set of java source files, 
 that can be compiled and embedded in any java application. The application delivers 
 events to the Fluxtion generated decision engine or Static Event Processor for stream processing.
 Engine generation can happen inline in the application or as part of the build process with a maven plugin.
