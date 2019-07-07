@@ -67,7 +67,7 @@ public @interface SepBuilder {
      *
      * @return overridden output directory
      */
-    String outputDir() default "";
+    String outputDir() default "src/main/java";
 
     /**
      * Output directory for generated meta-data describing the static event
@@ -92,5 +92,5 @@ public @interface SepBuilder {
      *
      * @return
      */
-    boolean cleanOutputDir() default false;
+    boolean cleanOutputDir() default true;
 }
