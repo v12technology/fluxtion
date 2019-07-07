@@ -60,7 +60,7 @@ public @interface SepBuilder {
      * directory is supplied in the generation process, setting this value
      * overrides the default. Using maven the typical values are:
      * <ul>
-     * <li>target/generated-sources/fluxtion
+     * <li>target/generated-sources/fluxtion 
      * <li>target/generated-test-sources/fluxtion
      * <li>src/main/java
      * </ul>

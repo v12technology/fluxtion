@@ -75,7 +75,7 @@ public class MultiTest extends BaseSepTest {
 
         @Override
         public void buildConfig() {
-            csvMarshaller(CustomerData.class).build();
+            csvMarshaller(CustomerData.class).addEventPublisher().build();
         }
 
     }

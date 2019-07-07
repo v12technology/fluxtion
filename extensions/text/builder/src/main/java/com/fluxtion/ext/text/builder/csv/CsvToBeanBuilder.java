@@ -41,9 +41,11 @@ public class CsvToBeanBuilder {
     private HashMap<Class, EventHandler> clazz2Handler;
     private String resorcesDir;
     private String generatedDir;
+    private boolean addEventPublisher;
 
     public CsvToBeanBuilder(String pckg) {
         this.pckg = pckg;
+        addEventPublisher = true;
         this.resorcesDir = InprocessSepCompiler.RESOURCE_DIR;
         this.generatedDir = InprocessSepCompiler.JAVA_GEN_DIR;
         clazz2Handler = new HashMap<>();
@@ -57,6 +59,20 @@ public class CsvToBeanBuilder {
      */
     public static CsvToBeanBuilder nameSpace(String pkg) {
         return new CsvToBeanBuilder(pkg);
+    }
+
+    /**
+     * Add event publisher
+     * @return 
+     */
+    public CsvToBeanBuilder addEventPublisher() {
+        this.addEventPublisher = true;
+        return this;
+    }
+
+    public CsvToBeanBuilder removeEventPublisher() {
+        this.addEventPublisher = false;
+        return this;
     }
 
     /**
@@ -110,7 +126,11 @@ public class CsvToBeanBuilder {
     public CsvToBeanBuilder mapBean(String marshallerId, Class clazz) {
         try {
             String cap = "Csv2" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1);
-            EventHandler sep = sepInstance((cfg) -> csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS).build(),
+            EventHandler sep = sepInstance((cfg) -> {
+                RecordParserBuilder builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
+                builder.addEventPublisher = addEventPublisher;
+                builder.build();
+            },
                     pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
             clazz2Handler.put(clazz, sep);
             return this;
@@ -131,11 +151,13 @@ public class CsvToBeanBuilder {
      */
     public <T> CsvToBeanBuilder mapBean(String marshallerId, Class<T> clazz, Consumer<RulesEvaluatorBuilder.BuilderRowProcessor<T>> ruleGenerator) {
         try {
-            String cap = "FluxCsv" +marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
+            String cap = "FluxCsv" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
             EventHandler sep = sepInstance(new Consumer<SEPConfig>() {
                 @Override
                 public void accept(SEPConfig cfg) {
-                    RulesEvaluatorBuilder.BuilderRowProcessor<T> validator1 = RulesEvaluatorBuilder.validator(csvMarshaller(clazz).build());
+                    final CsvMarshallerBuilder<T> csvMarshaller = csvMarshaller(clazz);
+                    csvMarshaller.addEventPublisher = addEventPublisher;
+                    RulesEvaluatorBuilder.BuilderRowProcessor<T> validator1 = RulesEvaluatorBuilder.validator(csvMarshaller.build());
                     ruleGenerator.accept(validator1);
                     validator1.build();
                 }
@@ -149,11 +171,12 @@ public class CsvToBeanBuilder {
 
     public <T> CsvToBeanBuilder mapCustomBean(String marshallerId, Class<T> clazz, Consumer<CsvMarshallerBuilder<T>> ruleGenerator) {
         try {
-            String cap = "FluxCsv" +marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
+            String cap = "FluxCsv" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
             EventHandler sep = sepInstance(new Consumer<SEPConfig>() {
                 @Override
                 public void accept(SEPConfig cfg) {
                     CsvMarshallerBuilder<T> builder = csvMarshaller(clazz);
+                    builder.addEventPublisher = addEventPublisher;
                     ruleGenerator.accept(builder);
                     builder.build();
                 }
