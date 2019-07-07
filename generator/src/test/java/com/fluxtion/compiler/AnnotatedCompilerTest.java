@@ -66,7 +66,8 @@ public class AnnotatedCompilerTest {
 
     }
 
-    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen.methoduilder", cleanOutputDir = true)
+    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen.methoduilder", cleanOutputDir = true, 
+            outputDir = "target/generated-test-sources/fluxtion")
     public void buildSepTest(SEPConfig cfg) {
         cfg.addNode(new MyHandler());
     }
@@ -84,6 +85,7 @@ public class AnnotatedCompilerTest {
     @SepInstance(
             name = "TestNode_1",
             packageName = "com.fluxtion.compiler.gen.classbuilder",
+            outputDir = "target/generated-test-sources/fluxtion",
             cleanOutputDir = true
     )
     public static class MyNodeIntsance {

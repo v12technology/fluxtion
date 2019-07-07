@@ -51,7 +51,8 @@ public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
     @Override
     public void outputDirectories(File rootDir, File output, File resourceDir) {
         this.rootDir = rootDir;
-        this.generatedDir = output;
+        //default params do not work, set default here
+        this.generatedDir = new File(rootDir, "src/main/java");
         this.resourceDir = resourceDir;
     }
 

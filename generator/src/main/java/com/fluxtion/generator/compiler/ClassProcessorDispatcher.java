@@ -96,11 +96,10 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
         if (params.get("resourceDir") != null) {
             resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
         }
-        if (params.get("cleanOutputDir") != null) {
-            if ((Boolean) params.get("cleanOutputDir")) {
-                FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
-                FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
-            }
+        //default params do not work - delete if param is missing
+        if (params.get("cleanOutputDir") == null || (Boolean) params.get("cleanOutputDir")) {
+            FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
+            FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
         }
         return new DirectoryNames(outDir, resDir, pkgName);
     }
