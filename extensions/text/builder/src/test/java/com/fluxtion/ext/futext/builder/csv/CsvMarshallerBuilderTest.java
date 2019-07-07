@@ -162,7 +162,8 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithAutoBeanMappingTransientHeaderInline() throws Exception {
-        EventHandler sep  = sepTestInstance((c) -> csvMarshaller(WorldCityBeanTransient.class).build()
+        EventHandler sep  = sepTestInstance((c) -> csvMarshaller(WorldCityBeanTransient.class)
+                .addEventPublisher().build()
                 , pckg, className);
         WorldCityBeanTransient[] city = new WorldCityBeanTransient[1];
         LongAdder count = new LongAdder();

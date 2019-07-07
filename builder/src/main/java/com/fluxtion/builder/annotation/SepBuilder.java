@@ -60,14 +60,14 @@ public @interface SepBuilder {
      * directory is supplied in the generation process, setting this value
      * overrides the default. Using maven the typical values are:
      * <ul>
-     * <li>target/generated-sources/fluxtion
+     * <li>target/generated-sources/fluxtion 
      * <li>target/generated-test-sources/fluxtion
      * <li>src/main/java
      * </ul>
      *
      * @return overridden output directory
      */
-    String outputDir() default "";
+    String outputDir() default "src/main/java";
 
     /**
      * Output directory for generated meta-data describing the static event
@@ -92,5 +92,5 @@ public @interface SepBuilder {
      *
      * @return
      */
-    boolean cleanOutputDir() default false;
+    boolean cleanOutputDir() default true;
 }

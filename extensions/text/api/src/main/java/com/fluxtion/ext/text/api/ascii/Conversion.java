@@ -27,23 +27,23 @@ public interface Conversion {
         return sb.length() == 0 ? 0 : getDouble(sb, 0, sb.length());
     }
 
-    static long atol(CharSequence s) throws NumberFormatException{
+    static long atol(CharSequence s) throws NumberFormatException {
         if (s.length() == 0) {
             return 0;
         }
         int radix = 10;
-        
+
         if (s == null) {
             throw new NumberFormatException("null");
         }
 
         if (radix < Character.MIN_RADIX) {
-            throw new NumberFormatException("radix " + radix +
-                                            " less than Character.MIN_RADIX");
+            throw new NumberFormatException("radix " + radix
+                    + " less than Character.MIN_RADIX");
         }
         if (radix > Character.MAX_RADIX) {
-            throw new NumberFormatException("radix " + radix +
-                                            " greater than Character.MAX_RADIX");
+            throw new NumberFormatException("radix " + radix
+                    + " greater than Character.MAX_RADIX");
         }
 
         long result = 0;
@@ -59,17 +59,20 @@ public interface Conversion {
                 if (firstChar == '-') {
                     negative = true;
                     limit = Long.MIN_VALUE;
-                } else if (firstChar != '+')
+                } else if (firstChar != '+') {
                     throw new NumberFormatException("For input string: \"" + s + "\"");
+                }
 
                 if (len == 1) // Cannot have lone "+" or "-"
+                {
                     throw new NumberFormatException("For input string: \"" + s + "\"");
+                }
                 i++;
             }
             multmin = limit / radix;
             while (i < len) {
                 // Accumulating negatively avoids surprises near MAX_VALUE
-                digit = Character.digit(s.charAt(i++),radix);
+                digit = Character.digit(s.charAt(i++), radix);
                 if (digit < 0) {
                     throw new NumberFormatException("For input string: \"" + s + "\"");
                 }
@@ -86,9 +89,8 @@ public interface Conversion {
             throw new NumberFormatException("For input string: \"" + s + "\"");
         }
         return negative ? result : -result;
-        
-    }
 
+    }
 
     // Calculate the value of the specified exponent - reuse a precalculated value if possible
     static double getPow10(final int exp) {
@@ -96,7 +98,7 @@ public interface Conversion {
     }
 
     static double getDouble(final CharSequence csq,
-        final int offset, final int end) throws NumberFormatException {
+            final int offset, final int end) throws NumberFormatException {
 
         int off = offset;
         int len = end - offset;
@@ -331,6 +333,75 @@ public interface Conversion {
             }
         } else {
             throw new NumberFormatException("For input string: \"" + s + "\"");
+        }
+        return negative ? result : -result;
+    }
+
+    static int atoi(CharSequence s, int defaultVal)
+            throws NumberFormatException {
+        if (s.length() == 0) {
+            return 0;
+        }
+        int radix = 10;
+        /*
+         * WARNING: This method may be invoked early during VM initialization
+         * before IntegerCache is initialized. Care must be taken to not use
+         * the valueOf method.
+         */
+
+        if (s == null) {
+            return defaultVal;
+        }
+
+        if (radix < Character.MIN_RADIX) {
+            return defaultVal;
+        }
+
+        if (radix > Character.MAX_RADIX) {
+            return defaultVal;
+        }
+
+        int result = 0;
+        boolean negative = false;
+        int i = 0, len = s.length();
+        int limit = -Integer.MAX_VALUE;
+        int multmin;
+        int digit;
+
+        if (len > 0) {
+            char firstChar = s.charAt(0);
+            if (firstChar < '0') { // Possible leading "+" or "-"
+                if (firstChar == '-') {
+                    negative = true;
+                    limit = Integer.MIN_VALUE;
+                } else if (firstChar != '+') {
+                    return defaultVal;
+                }
+
+                if (len == 1) // Cannot have lone "+" or "-"
+                {
+                    return defaultVal;
+                }
+                i++;
+            }
+            multmin = limit / radix;
+            while (i < len) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                digit = Character.digit(s.charAt(i++), radix);
+                if (digit < 0) {
+                    return defaultVal;
+                }
+                if (result < multmin) {
+                    return defaultVal;
+                }
+                result *= radix;
+                if (result < limit + digit) {
+                    return defaultVal;
+                }
+                result -= digit;
+            }
+        } else {
+            return defaultVal;
         }
         return negative ? result : -result;
     }

@@ -92,9 +92,9 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
-        this.tokenCfg = CharTokenConfig.UNIX;
+        this.tokenCfg = CharTokenConfig.WINDOWS;
         this.reuseTarget = true;
-        this.addEventPublisher = true;
+        this.addEventPublisher = false;
         this.fixedLen = fixedLen;
         this.id = "validationLog";
         //
@@ -187,8 +187,13 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         return (P) this;
     }
 
-    public P addEventPublisher(boolean addEventPublisher) {
-        this.addEventPublisher = addEventPublisher;
+    public P addEventPublisher() {
+        this.addEventPublisher = true;
+        return (P) this;
+    }
+
+    public P removeEventPublisher() {
+        this.addEventPublisher = true;
         return (P) this;
     }
 

@@ -169,7 +169,7 @@ public class CharStreamer {
 
     }
 
-    private void streamFile() throws FileNotFoundException, IOException {
+    private void streamFileLarge() throws FileNotFoundException, IOException {
 
         if (inputFile.exists() && inputFile.isFile()) {
             BufferedReader rd = Files.newBufferedReader(inputFile.toPath());
@@ -186,21 +186,23 @@ public class CharStreamer {
         }
     }
 
-    private void streamFile_OLD() throws FileNotFoundException, IOException {
+    private void streamFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
-            try (FileChannel fileChannel = new FileInputStream(inputFile).getChannel()) {
-                long size = Math.min(inputFile.length(), 500_000_000);
-//                long size = Math.min(inputFile.length(), Integer.MAX_VALUE-1);
-                MappedByteBuffer buffer = fileChannel.map(
-                        FileChannel.MapMode.READ_ONLY, 0, size);
-                CharEvent charEvent = new CharEvent(' ');
-                while (buffer.hasRemaining()) {
-                    charEvent.setCharacter((char) buffer.get());
-                    handler.onEvent(charEvent);
+            if (inputFile.length() < Integer.MAX_VALUE) {
+                try (FileChannel fileChannel = new FileInputStream(inputFile).getChannel()) {
+                    long size = inputFile.length();
+                    MappedByteBuffer buffer = fileChannel.map(
+                            FileChannel.MapMode.READ_ONLY, 0, size);
+                    CharEvent charEvent = new CharEvent(' ');
+                    while (buffer.hasRemaining()) {
+                        charEvent.setCharacter((char) buffer.get());
+                        handler.onEvent(charEvent);
+                    }
                 }
+            }else{
+                streamFileLarge();
             }
         }
-//        handler.onEvent(EofEvent.EOF);
     }
 
     private void streamSyncReader() throws IOException {

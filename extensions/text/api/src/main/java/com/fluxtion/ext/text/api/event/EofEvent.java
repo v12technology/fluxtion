@@ -18,6 +18,9 @@ package com.fluxtion.ext.text.api.event;
 
 import static com.fluxtion.ext.text.api.event.EventId.EOF_EVENT_ID;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.ext.streaming.api.ReusableEventHandler;
+import com.fluxtion.ext.streaming.api.SepContext;
+import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
  *
@@ -28,9 +31,22 @@ public class EofEvent extends Event {
     public static final int ID = EOF_EVENT_ID;
 
     public static final EofEvent EOF = new EofEvent();
-    
+
     public EofEvent() {
         super(EOF_EVENT_ID);
+    }
+
+    /**
+     * Utility method for creating a node that listens to {@link EofEvent}.
+     * Synonymous with: {@code EventSelect.select(EofEvent.class);}.
+     * 
+     * @see EventSelect
+     *
+     * @return
+     */
+    public static Wrapper<EofEvent> eofTrigger() {
+        Wrapper<EofEvent> handler = new ReusableEventHandler(EofEvent.class);
+        return SepContext.service().addOrReuse(handler);
     }
 
 }

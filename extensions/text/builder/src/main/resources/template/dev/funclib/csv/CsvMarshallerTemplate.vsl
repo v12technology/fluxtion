@@ -252,9 +252,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 
     private void logException(String prefix, boolean fatal, Exception e) {
-        errorLog.getSb().append(prefix)
+        errorLog.getSb().append("${functionClass} ").append(prefix)
                 .append(rowNumber).append(" fieldIndex:")
-                .append(fieldIndex).append(" targetMethod:")
+                .append(fieldIndex-1).append(" targetMethod:")
                 .append(fieldMap.get(fieldIndex));
         if(fatal){
             errorLog.logFatal("");
@@ -265,7 +265,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 
 #if(!${fixedLen})
     private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
-        errorLog.getSb().append(prefix).append(rowNumber);
+        errorLog.getSb().append("${functionClass} ").append(prefix).append(rowNumber);
         if(fatal){
             errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
