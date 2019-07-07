@@ -17,6 +17,7 @@
 package com.fluxtion.ext.text.api.csv;
 
 import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence;
 import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
 
 /**
@@ -26,8 +27,7 @@ import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
 public class Converters {
     
     public static LambdaReflection.SerializableFunction<CharSequence, Number> defaultInt(int val){
-        IntConverter conv = new IntConverter(val);
-        return conv::defaultVal;
+        return new IntConverter(val)::defaultVal;
     }
     
     public static class IntConverter{
@@ -39,10 +39,14 @@ public class Converters {
         
         public int defaultVal(CharSequence seq){
             if(seq.length()<1){
-                return 0;
+                return val;
             }
-            return atoi(seq);
+            return atoi(seq, val);
         }
         
+    }
+    
+    public static String intern(CharSequence seq){
+        return ((CharArrayCharSequence.CharSequenceView)seq).intern();
     }
 }
