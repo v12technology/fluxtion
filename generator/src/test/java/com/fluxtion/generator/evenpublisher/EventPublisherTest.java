@@ -7,7 +7,7 @@ package com.fluxtion.generator.evenpublisher;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.EventPublsher;
+import com.fluxtion.api.event.EventPublisher;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.concurrent.atomic.LongAdder;
@@ -25,7 +25,7 @@ public class EventPublisherTest extends BaseSepInprocessTest {
     public void testAudit() {
         sep((c) -> {
             GreaterThan gt_10 = c.addNode(new GreaterThan(10));
-            EventPublsher publisher = c.addPublicNode(new EventPublsher(), "publisher");
+            EventPublisher publisher = c.addPublicNode(new EventPublisher(), "publisher");
             publisher.addEventSource(gt_10);
             c.formatSource = true;
         });

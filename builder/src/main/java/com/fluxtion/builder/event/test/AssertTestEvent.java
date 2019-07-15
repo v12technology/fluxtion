@@ -25,7 +25,7 @@ public class AssertTestEvent extends com.fluxtion.api.event.Event {
 
     public static final int ID = 1099;
     public final String nodeName;
-    //filter ids for lifecyle events
+    //filter ids for lifecycle events
     public static final int FILTER_ID_INIT = 1;
     public static final int FILTER_ID_BATCH_PAUSE = 2;
     public static final int FILTER_ID_BATCH_END = 3;

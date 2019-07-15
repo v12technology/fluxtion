@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.filter;
 
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.text.builder.ascii.AsciiMatchFilterFactory;
@@ -61,7 +61,7 @@ public class TextMatchTest extends BaseSepTest {
             addPublicNode(new TextMatchPrinter("ccypair=\"eurusd\""), MATCHER_VARIABLE_NAME);
             Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
             factoryList.add(AsciiMatchFilterFactory.class);
-            declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
+            declarativeConfig = new DeclarativeNodeConfiguration(null, factoryList, null);
         }
     }
 

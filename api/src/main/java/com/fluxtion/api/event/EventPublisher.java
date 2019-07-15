@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
+import lombok.EqualsAndHashCode;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered
@@ -29,12 +30,13 @@ import java.util.Arrays;
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T extends Event> {
+@EqualsAndHashCode
+public class EventPublisher<T extends Event> {
 
     public Event[] nodeSource = new Event[0];
-    private EventHandler[] handlers;
+    private EventHandler<T>[] handlers;
 
-    public EventPublsher() {
+    public EventPublisher() {
         init();
     }
     
@@ -45,7 +47,7 @@ public class EventPublsher<T extends Event> {
         }
     }
 
-    public EventPublsher<T> addEventSource(T node) {
+    public EventPublisher<T> addEventSource(T node) {
         ArrayList<Event> nodes = new ArrayList<>(Arrays.asList(nodeSource));
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);
@@ -71,35 +73,6 @@ public class EventPublsher<T extends Event> {
 //        if (nodeSource == null) {
 //            nodeSource = new Event[0];
 //        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + Arrays.deepHashCode(this.nodeSource);
-        hash = 59 * hash + Arrays.deepHashCode(this.handlers);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final EventPublsher<?> other = (EventPublsher<?>) obj;
-        if (!Arrays.deepEquals(this.nodeSource, other.nodeSource)) {
-            return false;
-        }
-        if (!Arrays.deepEquals(this.handlers, other.handlers)) {
-            return false;
-        }
-        return true;
     }
 
 }

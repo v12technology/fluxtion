@@ -143,7 +143,7 @@ public class SepDebugger {
 
     public void eventInvocation(Event event) {
         this.currentEvent = event;
-        //TODO add stats for recording the event cound, both filtered and aggregated by ID
+        //TODO add stats for recording the event count, both filtered and aggregated by ID
     }
 
     public Event getCurrentEvent() {

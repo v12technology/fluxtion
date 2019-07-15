@@ -17,28 +17,28 @@
 package com.fluxtion.builder.event;
 
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.EventPublsher;
+import com.fluxtion.api.event.EventPublisher;
 import com.fluxtion.builder.generation.GenerationContext;
 
 /**
- * Builder used to add a {@link EventPublsher} via static helper functions. The
+ * Builder used to add a {@link EventPublisher} via static helper functions. The
  * generated
- * EventPublsher will be automatically added to the graph context as will any
+ * EventPublisher will be automatically added to the graph context as will any
  * supplied {@link Event} source.
  *
  * @author V12 Technology Ltd.
  */
 public class EventPublisherBuilder {
 
-    public static <T extends Event> EventPublsher eventSource(T source) {
-        EventPublsher publisher = GenerationContext.SINGLETON.addOrUseExistingNode(new EventPublsher());
+    public static <T extends Event> EventPublisher eventSource(T source) {
+        EventPublisher<T> publisher = GenerationContext.SINGLETON.addOrUseExistingNode(new EventPublisher<>());
         publisher.addEventSource(source);
         GenerationContext.SINGLETON.addOrUseExistingNode(source);
         return publisher;
     }
 
-    public static <T extends Event> EventPublsher eventSource(T source, String name) {
-        EventPublsher publisher = GenerationContext.SINGLETON.addOrUseExistingNode(new EventPublsher());
+    public static <T extends Event> EventPublisher eventSource(T source, String name) {
+        EventPublisher<T> publisher = GenerationContext.SINGLETON.addOrUseExistingNode(new EventPublisher<>());
         GenerationContext.SINGLETON.nameNode(publisher, name);
         publisher.addEventSource(source);
         GenerationContext.SINGLETON.addOrUseExistingNode(source);

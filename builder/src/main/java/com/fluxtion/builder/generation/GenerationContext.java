@@ -196,12 +196,12 @@ public class GenerationContext {
         cacheMap = new HashMap<>();
     }
 
-    private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
+    private GenerationContext(ClassLoader classLoader, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
         this.packageName = packageName;
         this.sepClassName = sepClassName;
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
-        this.classLoader = classLoasder;
+        this.classLoader = classLoader;
         if (cachedCompiler == null) {
             javaCompiler = new CachedCompiler(null, buildOutputDirectory);
         } else {

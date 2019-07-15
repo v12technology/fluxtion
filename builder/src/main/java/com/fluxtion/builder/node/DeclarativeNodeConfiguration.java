@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
 
 /**
  * Provides data driven SEP generation. 
@@ -28,7 +29,8 @@ import java.util.Set;
  * <h2>Doc to be completed</h2>
  * @author Greg Higgins
  */
-public final class DeclarativeNodeConiguration {
+@EqualsAndHashCode
+public final class DeclarativeNodeConfiguration {
 
     /**
      * The root nodes to create and the variable names they should be mapped to.
@@ -63,7 +65,7 @@ public final class DeclarativeNodeConiguration {
      */
     public final Map config;
 
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config) {
+    public DeclarativeNodeConfiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config) {
         this(rootNodeMappings, factoryList, config, null);
     }
 
@@ -75,47 +77,11 @@ public final class DeclarativeNodeConiguration {
      * @param factorySet 
      */
     @SuppressWarnings("unchecked")
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
+    public DeclarativeNodeConfiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
         this.rootNodeMappings = rootNodeMappings == null ? Collections.EMPTY_MAP : rootNodeMappings;
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
         this.config = config == null ? Collections.EMPTY_MAP : config;
         //this.proxyClassMap = new HashMap<>();
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.rootNodeMappings);
-        hash = 89 * hash + Objects.hashCode(this.factoryClassSet);
-        hash = 89 * hash + Objects.hashCode(this.factorySet);
-        hash = 89 * hash + Objects.hashCode(this.config);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DeclarativeNodeConiguration other = (DeclarativeNodeConiguration) obj;
-        if (!Objects.equals(this.rootNodeMappings, other.rootNodeMappings)) {
-            return false;
-        }
-        if (!Objects.equals(this.factoryClassSet, other.factoryClassSet)) {
-            return false;
-        }
-        if (!Objects.equals(this.factorySet, other.factorySet)) {
-            return false;
-        }
-        if (!Objects.equals(this.config, other.config)) {
-            return false;
-        }
-        return true;
-    }
-
-    
 }

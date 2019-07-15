@@ -18,7 +18,7 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
@@ -48,7 +48,7 @@ public class InjectedFactoryTest {
         //Factories
         Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
-        cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
+        cfg.declarativeConfig = new DeclarativeNodeConfiguration(null, factoryList, null);
         //generate
         JavaClass generatedClass = JavaTestGeneratorHelper.generateClass(cfg, test_injected_factory);
         assertEquals(3, generatedClass.getFields().length);
@@ -65,7 +65,7 @@ public class InjectedFactoryTest {
         Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
         cfg.maxFiltersInline = 10;
-        cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
+        cfg.declarativeConfig = new DeclarativeNodeConfiguration(null, factoryList, null);
         //generate
         JavaClass generatedClass = JavaTestGeneratorHelper.generateClass(cfg, test_injected_factory_variable_config);
         assertEquals(4, generatedClass.getFields().length);

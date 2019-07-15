@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -79,7 +79,7 @@ public class AveragingNodeFactoryTest extends BaseSepTest {
             Map<Class, String> rootNodeMappings = new HashMap<>();
             rootNodeMappings.put(AveragingNode.class, "averagingNode");
 
-            declarativeConfig = new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config);
+            declarativeConfig = new DeclarativeNodeConfiguration(rootNodeMappings, factoryList, config);
 
         }
     }

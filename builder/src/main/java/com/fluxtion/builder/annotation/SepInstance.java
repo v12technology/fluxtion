@@ -85,7 +85,7 @@ public @interface SepInstance {
 
     /**
      * <b>USE WITH CARE<b><p>
-     * Cleans output directory of all files before generating artefacts. if two
+     * Cleans output directory of all files before generating artifacts. if two
      * annotations are configured in the same build with the same output
      * directory, setting this option to true will have unpredictable results.
      *
