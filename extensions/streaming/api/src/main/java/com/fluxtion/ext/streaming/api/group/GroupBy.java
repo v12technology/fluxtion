@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.api.group;
@@ -30,31 +30,31 @@ import java.util.Map;
  * @param <T> he target type of the group
  * @author greg
  */
-public interface GroupBy<T> extends Wrapper<T>, Stateful {
+public interface GroupBy<K, T> extends Wrapper<T>, Stateful {
 
-    T value(Object key);
+    T value(K key);
 
     default T value(int i) {
         return null;
     }
 
-    <V extends Wrapper<T>> Map<?, V> getMap();
+    <V extends Wrapper<T>> Map<K, V> getMap();
 
     default List<T> expireTime(Long time, int joinNumber) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     default List<T> expireCount(Long time, int joinNumber) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     default List<T> expireAll() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
-    default GroupBy<T> notifierOverride(Object eventNotifier) {
-        return ( GroupBy<T>)StreamOperator.service().notifierOverride((Wrapper<T>) this, eventNotifier);
+    default GroupBy<K, T> notifierOverride(Object eventNotifier) {
+        return (GroupBy<K, T>) StreamOperator.service().notifierOverride(this, eventNotifier);
     }
 
     @Override

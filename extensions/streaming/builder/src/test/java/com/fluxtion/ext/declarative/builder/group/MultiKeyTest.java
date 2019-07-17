@@ -66,7 +66,7 @@ public class MultiKeyTest extends BaseSepTest {
         eu_john.setContraSize(-557_000);
         sep.onEvent(eu_john);
 
-        GroupBy<TraderPosition> traderPositions = getField("traderPositions");
+        GroupBy<Deal, TraderPosition> traderPositions = getField("traderPositions");
         List<TraderPosition> posList = traderPositions.getMap().values().stream().map(wrapper -> wrapper.event()).collect(Collectors.toList());
         assertThat(3, is(posList.size()));
 
@@ -99,7 +99,7 @@ public class MultiKeyTest extends BaseSepTest {
         eu_john.setDealId(909);
 
         sep.onEvent(eu_john);
-        GroupBy<TraderPosition> traderPositions = getField("traderPositions");
+        GroupBy<Deal, TraderPosition> traderPositions = getField("traderPositions");
         
         sep.onEvent(new MaxCcyTraderPosConfig(1, "EURUSD"));
 
@@ -114,7 +114,7 @@ public class MultiKeyTest extends BaseSepTest {
             traderPos.init(Deal::getCcyPair, TraderPosition::setCcyPair);
             traderPos.sum(Deal::getDealtSize, TraderPosition::setDealtVolume);
             traderPos.sum(Deal::getContraSize, TraderPosition::setContraVolume);
-            GroupBy<TraderPosition> traderPositions = traderPos.build();
+            GroupBy<Deal, TraderPosition> traderPositions = traderPos.build();
             //add public node for testing
             addPublicNode(traderPositions, "traderPositions");
             //logging
@@ -147,7 +147,7 @@ public class MultiKeyTest extends BaseSepTest {
             traderPos.init(Deal::getCcyPair, TraderPosition::setCcyPair);
             traderPos.sum(Deal::getDealtSize, TraderPosition::setDealtVolume);
             traderPos.sum(Deal::getContraSize, TraderPosition::setContraVolume);
-            GroupBy<TraderPosition> traderPositions = traderPos.build();
+            GroupBy<Deal, TraderPosition> traderPositions = traderPos.build();
             //add public node for testing
             addPublicNode(traderPositions, "traderPositions");
             //logging
