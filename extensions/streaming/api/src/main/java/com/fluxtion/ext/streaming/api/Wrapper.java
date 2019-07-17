@@ -70,14 +70,14 @@ public interface Wrapper<T> {
         }
     }
     
-    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
             SerializableFunction<T, S> supplier, 
             Class<F> functionClass){
         return StreamOperator.service().group(this, supplier, functionClass);
     }
     
-    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
-            SerializableFunction<T, ?> key, 
+    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
+            SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier, 
             Class<F> functionClass){
         return StreamOperator.service().group(this, key, supplier, functionClass);
@@ -168,7 +168,6 @@ public interface Wrapper<T> {
      * source.<p>
      * The returned node is the current node in the stream.
      *
-     * @param <T>
      * @param <R>
      * @param <S>
      * @param supplier

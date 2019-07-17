@@ -51,7 +51,7 @@ public class GroupByBuilder<K, T> {
         this.sourceContext = sourceContext;
     }
 
-    public <K> GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
+    public GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
         return groupBy.join(k, f);
     }
 
@@ -167,11 +167,11 @@ public class GroupByBuilder<K, T> {
         sourceContext.addGroupByFunctionInfo(info);
     }
 
-    public GroupBy<T> build() {
+    public GroupBy<K, T> build() {
         return groupBy.build();
     }
 
-    public GroupBy<T> build(String publicName) {
+    public GroupBy<K, T> build(String publicName) {
         return groupBy.build();
     }
 

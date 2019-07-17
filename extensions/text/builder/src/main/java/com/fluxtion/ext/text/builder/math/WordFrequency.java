@@ -31,11 +31,11 @@ import com.fluxtion.ext.text.api.event.CharEvent;
  */
 public interface WordFrequency {
 
-  static GroupBy<MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
+  static GroupBy<ByteBufferDelimiter, MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
         return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
 
-  static GroupBy<MutableNumber> wordFrequency() {
+  static GroupBy<ByteBufferDelimiter, MutableNumber> wordFrequency() {
         return Frequency.frequency(wordSplitter(), ByteBufferDelimiter::asString);
     }
 

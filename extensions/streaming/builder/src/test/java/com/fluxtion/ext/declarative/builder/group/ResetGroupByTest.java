@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.declarative.builder.group;
@@ -34,7 +34,7 @@ import org.junit.Test;
  * @author V12 Technology Ltd.
  */
 public class ResetGroupByTest extends StreamInprocessTest{
-   
+
     @Test
     public void resetGroup(){
         sep((c) ->{
@@ -44,13 +44,13 @@ public class ResetGroupByTest extends StreamInprocessTest{
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count( OrderSummary::setDealCount);
             largeOrdersByCcy.sum(Order::getSize, OrderSummary::setOrderSize);
-            GroupBy<OrderSummary> orderSummary = c.addPublicNode(largeOrdersByCcy.build(), "orderSummary");
+            GroupBy<Order, OrderSummary> orderSummary = c.addPublicNode(largeOrdersByCcy.build(), "orderSummary");
             //add reset
             orderSummary.resetNotifier(select(Deal.class));
         });
-        
-        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
-        
+
+        GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
+
         sep.onEvent(new Order(1, "EURUSD", 100));
         sep.onEvent(new Order(2, "EURJPY", 250));
         sep.onEvent(new Order(3, "EURJPY", 56));
@@ -58,14 +58,14 @@ public class ResetGroupByTest extends StreamInprocessTest{
         sep.onEvent(new Order(5, "EURUSD", 250));
         sep.onEvent(new Order(6, "GBPUSD", 150));
 
-        
+
         assertThat(summaryMap.getMap().size(), is(2));
         HashMap<String, OrderSummary> orderMap = new HashMap<>();
         summaryMap.getMap().values().stream()
                 .map(wrapper -> wrapper.event())
                 .forEach(os -> orderMap.put(os.getCcyPair(), os));
-        
-        
+
+
         assertThat(2, is(orderMap.get("EURJPY").getDealCount()));
         assertThat(600, is(orderMap.get("EURJPY").getOrderSize()));
         assertThat(1, is(orderMap.get("EURUSD").getDealCount()));
@@ -73,12 +73,10 @@ public class ResetGroupByTest extends StreamInprocessTest{
         assertThat(true, is(orderMap.get("EURUSD").isEvent()));
         assertThat(true, is(orderMap.get("EURUSD").isEventComplete()));
         assertNull(orderMap.get("GBPUSD"));
-        
+
         //reset
         sep.onEvent(new Deal());
         assertThat(summaryMap.getMap().size(), is(0));
-        
+
     }
-    
-    
 }
