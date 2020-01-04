@@ -69,7 +69,7 @@ import org.apache.velocity.VelocityContext;
  * a predicate that tests a node for a valid match. The outcome of the match has
  * the following effect:
  * <ul>
- * <li>Successful match allows the event wave to continue.
+ * <li>Successful match allows the event wave to propagate.
  * <li>Failed match the event wave stops at the node under test.
  * </ul>
  *
@@ -94,19 +94,27 @@ import org.apache.velocity.VelocityContext;
  * Below is an example creating a filter on a primitive double property. The
  * filter is an int parameter, Fluxtion manages all casts.
  * <p>
- * <
- * pre><code>
- * {@code @SepBuilder(name = "FilterTest", packageName = "com.fluxtion.testfilter")}
- * public void buildFilter(SEPConfig cfg) { MyDataHandler dh1 = cfg.addNode(new
- * MyDataHandler("dh1")); filter(lt(34), dh1::getDoubleVal).build();
- * filter(positive(), dh1::getIntVal).build(); } ... public class
- * NumericValidator {
+ * <pre><code>
+ *{@code @SepBuilder(name="FilterTest", packageName="com.fluxtion.testfilter")}
+ * public void buildFilter(SEPConfig cfg) { 
+ *     MyDataHandler dh1 = cfg.addNode(new MyDataHandler("dh1")); 
+ *     filter(lt(34), dh1::getDoubleVal).build();
+ *     filter(positive(), dh1::getIntVal).build(); 
+ * } 
+ * ... 
+ * 
+ * public class NumericValidator {
  *
- *     //method reference wraps instance test public static SerializableFunction
- * lt(int test) { return (SerializableFunction<Integer, Boolean>) new
- * NumericValidator(test)::lessThan; } //method reference wraps static test
- * public static SerializableFunction positive() { return
- * (SerializableFunction<Integer, Boolean>) NumericValidator::positiveInt; }
+ * //method reference wraps instance test 
+ * public static SerializableFunction lt(int test) { 
+ *     return (SerializableFunction<Integer, Boolean>)new NumericValidator(test)::lessThan; 
+ * } 
+ * 
+ * //method reference wraps static test
+ * public static SerializableFunction positive() { 
+ *     return (SerializableFunction<Integer, Boolean>) NumericValidator::positiveInt; 
+ * }
+ * 
  * public int limit;
  *
  * public NumericValidator(int limit) { this.limit = limit; }
@@ -115,7 +123,8 @@ import org.apache.velocity.VelocityContext;
  *
  * public boolean greaterThan(int d) { return d > limit; }
  *
- * public boolean lessThan(int d) { return d < limit; } } </code></pre>
+ * public boolean lessThan(int d) { return d < limit; } } 
+ * </code></pre>
  *
  *
  * @author V12 Technology Ltd.
