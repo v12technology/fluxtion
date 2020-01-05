@@ -24,5 +24,5 @@ package com.fluxtion.api.audit;
  */
 public interface LogRecordListener {
 
-    void processCalculationRecord(LogRecord logRecord);
+    void processLogRecord(LogRecord logRecord);
 }

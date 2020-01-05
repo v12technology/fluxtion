@@ -129,7 +129,7 @@ public class EventLogManager implements Auditor {
     @Override
     public void processingComplete() {
         if (trace | logRecord.terminateRecord()) {
-            sink.processCalculationRecord(logRecord);
+            sink.processLogRecord(logRecord);
         }
         if (clearAfterPublish) {
             logRecord.clear();

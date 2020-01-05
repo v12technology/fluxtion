@@ -59,7 +59,7 @@ public class JULLogRecordListener implements LogRecordListener {
     }
 
     @Override
-    public void processCalculationRecord(LogRecord logRecord) {
+    public void processLogRecord(LogRecord logRecord) {
         logger.log(level, logRecord.toString() + "\n---\n");
     }
 
