@@ -40,89 +40,13 @@ public final class NullEventLogger extends EventLogger {
     @Override
     public void log(String key, double value, EventLogControlEvent.LogLevel logLevel) {
     }
-
-    @Override
-    public void trace(String key, double value) {
-    }
-
-    @Override
-    public void debug(String key, double value) {
-    }
-
-    @Override
-    public void info(String key, double value) {
-    }
-
-    @Override
-    public void warn(String key, double value) {
-    }
-
-    @Override
-    public void error(String key, double value) {
-    }
     
     @Override
-    public void error(String key, char value) {
+    public void logNodeInvoation(EventLogControlEvent.LogLevel logLevel) {
     }
 
     @Override
-    public void warn(String key, char value) {
-    }
-
-    @Override
-    public void info(String key, char value) {
-    }
-
-    @Override
-    public void debug(String key, char value) {
-    }
-
-    @Override
-    public void trace(String key, char value) {
-    }
-    
-    @Override
-    public void trace(String key, boolean value) {
-    }
-
-    @Override
-    public void debug(String key, boolean value) {
-    }
-
-    @Override
-    public void info(String key, boolean value) {
-    }
-
-    @Override
-    public void warn(String key, boolean value) {
-    }
-
-    @Override
-    public void error(String key, boolean value) {
-    }
-
-    @Override
-    public void trace(String key, String value) {
-    }
-
-    @Override
-    public void debug(String key, String value) {
-    }
-
-    @Override
-    public void info(String key, String value) {
-    }
-
-    @Override
-    public void warn(String key, String value) {
-    }
-
-    @Override
-    public void error(String key, String value) {
-    }
-
-    @Override
-    public void setLevel(EventLogControlEvent.LogLevel level) {
+    public void log(String key, char value, EventLogControlEvent.LogLevel logLevel) {
     }
 
 }

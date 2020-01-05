@@ -48,7 +48,8 @@ public class EventLogManager implements Auditor {
     private Map<String, EventLogger> node2Logger;
     private boolean clearAfterPublish;
     private static Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
-    public boolean trace = true;
+    public boolean trace = false;
+    public EventLogControlEvent.LogLevel traceLevel;
 
     public EventLogManager() {
         this(new JULLogRecordListener());
@@ -62,6 +63,18 @@ public class EventLogManager implements Auditor {
         }
     }
 
+    public EventLogManager tracingOff() {
+        trace = false;
+        this.traceLevel = EventLogControlEvent.LogLevel.NONE;
+        return this;
+    }
+
+    public EventLogManager tracingOn(EventLogControlEvent.LogLevel level) {
+        trace = true;
+        this.traceLevel = level;
+        return this;
+    }
+
     @Override
     public void nodeRegistered(Object node, String nodeName) {
         EventLogger logger = new EventLogger(logRecord, nodeName);
@@ -70,6 +83,16 @@ public class EventLogManager implements Auditor {
             calcSource.setLogger(logger);
         }
         node2Logger.put(nodeName, logger);
+    }
+
+    @Override
+    public boolean auditInvocations() {
+        return trace;
+    }
+
+    @Override
+    public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
+        node2Logger.getOrDefault(nodeName, NullEventLogger.INSTANCE).logNodeInvoation(traceLevel);
     }
 
     @EventHandler(propagate = false)

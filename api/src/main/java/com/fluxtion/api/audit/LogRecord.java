@@ -100,6 +100,10 @@ public class LogRecord {
         addSourceId(sourceId, propertyKey);
         sb.append(value);
     }
+    
+    public void addTrace(String sourceId){
+        addSourceId(sourceId, null);
+    }
 
     private void addSourceId(String sourceId, String propertyKey) {
         if (this.sourceId == null) {
@@ -113,8 +117,10 @@ public class LogRecord {
         if (!firstProp) {
             sb.append(",");
         }
-        firstProp = false;
-        sb.append(" ").append(propertyKey).append(": ");
+        if(propertyKey!=null){
+            firstProp = false;
+            sb.append(" ").append(propertyKey).append(": ");
+        }
     }
 
     public void clear() {
@@ -163,8 +169,6 @@ public class LogRecord {
         if (this.sourceId != null) {
             sb.append("}");
         }
-//        sb.append("\n    ]");
-//        sb.append("\n}");
         firstProp = true;
         sourceId = null;
         return logged;

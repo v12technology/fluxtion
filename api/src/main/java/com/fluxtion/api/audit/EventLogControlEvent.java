@@ -89,7 +89,7 @@ public class EventLogControlEvent extends Event {
     }
 
     public enum LogLevel {
-        NONE(0), ERROR(1), WARN(2), INFO(3), DEBUG(4), TRACE(5);
+        NONE(Integer.MAX_VALUE), ERROR(1), WARN(2), INFO(3), DEBUG(4), TRACE(5);
 
         private LogLevel(int level) {
             this.level = level;
