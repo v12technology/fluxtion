@@ -24,6 +24,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Delta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
@@ -76,6 +77,7 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(new Max()::max, "max");
         gen.addUnaryFunction(new Min()::min, "min");
         gen.addUnaryFunction(new PercentDelta()::value, "percentChange");
+        gen.addUnaryFunction(new Delta()::value, "delta");
         gen.addUnaryFunction(Math::ceil, "ceil");
         gen.addUnaryFunction(Math::floor, "floor");
         //consumer
@@ -115,6 +117,7 @@ public class StreamFunctionGenerator {
         imports.addImport(FunctionArg.class);
         imports.addStaticImport(FunctionArg.class);
         imports.addStaticImport(StreamBuilder.class);
+        imports.addImport(this.getClass());
         //setup context
         ctx.put("imports", imports.asString());
         ctx.put("functions", functionList);
