@@ -18,8 +18,11 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
+import static com.fluxtion.ext.streaming.api.stream.StreamFunctions.toDouble;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.stream.FunctionBuilder.map;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,13 +38,13 @@ public class NumericPredicateTest extends StreamInprocessTest {
     public void elseNotifyOnce() {
 //        fixedPkg = true;
         sep((c) -> {
-            FilterWrapper<StreamData> filter = select(StreamData.class)
-                    .filter(StreamData::getIntValue, num(10,"gt")::greaterThan)
+            FilterWrapper<Number> filter = map(toDouble(), StreamData::getIntValue)
+                    .filter( num(10,"gt")::greaterThan)
                     .notifyOnChange(true);
             //if - count
             filter.map(count()).id("filterCount");
             //else - count
-            filter.elseStream().notifyOnChange(true).map(count()).id("elseCount");
+            filter.elseStream().notifyOnChange(true).map(count()).id("elseCount"); 
         });
         
         Number filterCount = getWrappedField("filterCount");
@@ -58,37 +61,16 @@ public class NumericPredicateTest extends StreamInprocessTest {
         assertThat(filterCount.intValue(), is(0));
         assertThat(elseCount.intValue(), is(1));
         
-        onEvent(new StreamData(19));
+        onEvent(new NumericPredicates.FilterConfig("gt", 5));
+        
+        onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(1));
         
-        onEvent(new StreamData(9));
+        onEvent(new StreamData(4));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(2));
 
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(2));
-        
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(2));
-        
-        onEvent(new StreamData(9));
-        assertThat(filterCount.intValue(), is(2));
-        assertThat(elseCount.intValue(), is(3));
-        
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(3));
-        assertThat(elseCount.intValue(), is(3));
-        
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(3));
-        assertThat(elseCount.intValue(), is(3));
-        
-        onEvent(new StreamData(19));
-        assertThat(filterCount.intValue(), is(3));
-        assertThat(elseCount.intValue(), is(3));
     }
     
 }

@@ -28,9 +28,11 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
+import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.*;
+import static com.fluxtion.ext.streaming.builder.stream.FunctionBuilder.*;
 import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.*;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
 
@@ -483,6 +485,60 @@ public class StreamFunctionsBuilder  {
 
     public static <T extends Number> Wrapper<Number> delta(Wrapper<T> wrapper) {
         return FilterBuilder.map(new Delta()::value,  arg(wrapper));
+    }
+
+    /**
+     * Wrap {@link StreamFunctions#asDouble } function for use as a map operation in an existing
+     * stream. {@link Wrapper#map(SerializableFunction) }
+     * requires a {@link SerializableFunction} to map input values.
+     *
+     * @param <T> input to {@link StreamFunctions#asDouble }
+     * @return {@link SerializableFunction} of {@link StreamFunctions#asDouble }
+     */
+    public static <T extends Double> SerializableFunction<T, Number> toDouble() {
+        return StreamFunctions::asDouble;
+    }
+
+    /**
+     * Performs a {@link StreamFunctions#asDouble} function as a map operation on a stream.
+     * The stream is automatically created by subscribing to the {@link Event}
+     * and wrapping the supplier function with {@link Wrapper&lt;Number&gt;}. 
+     * The wrapper is the input to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
+     *
+     * @param <T> The input event stream
+     * @param supplier The input value to the function {@link StreamFunctions#asDouble
+     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
+     */
+    public static <T> Wrapper<Number> toDouble(SerializableFunction<T, Number> supplier) {
+        return FilterBuilder.map(StreamFunctions::asDouble, arg(supplier));
+    }
+
+    public static <T extends Number> Wrapper<Number> toDouble(FunctionArg<T> arg) {
+        return FilterBuilder.map(StreamFunctions::asDouble, arg);
+    }
+
+    /**
+     * Performs a {@link StreamFunctions#asDouble} function as a map operation on a stream.
+     * The stream is automatically created by wrapping the supplier instance function in a
+     * {@link Wrapper&lt;Number&gt;}, the wrapper is the input 
+     * to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
+     *
+     * @param <T> The input type required by {@link StreamFunctions#asDouble}
+     * @param supplier The wrapped instance supplying values to the function {@link StreamFunctions#asDouble
+     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
+     */
+    public static <T extends Number> Wrapper<Number> toDouble(SerializableSupplier<T> supplier) {
+        return FilterBuilder.map(StreamFunctions::asDouble, arg(supplier));
+    }
+
+    public static <T, S extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return FilterBuilder.map(StreamFunctions::asDouble,  arg(wrapper, supplier));
+    }
+
+    public static <T extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper) {
+        return FilterBuilder.map(StreamFunctions::asDouble,  arg(wrapper));
     }
 
     /**

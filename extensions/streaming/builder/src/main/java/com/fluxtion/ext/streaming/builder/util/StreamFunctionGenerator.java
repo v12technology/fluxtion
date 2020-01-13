@@ -78,6 +78,7 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(new Min()::min, "min");
         gen.addUnaryFunction(new PercentDelta()::value, "percentChange");
         gen.addUnaryFunction(new Delta()::value, "delta");
+        gen.addUnaryFunction(StreamFunctions::asDouble, "toDouble");
         gen.addUnaryFunction(Math::ceil, "ceil");
         gen.addUnaryFunction(Math::floor, "floor");
         //consumer

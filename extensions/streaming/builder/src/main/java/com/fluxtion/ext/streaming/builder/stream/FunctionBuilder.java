@@ -65,7 +65,7 @@ public class FunctionBuilder {
         return builder.build();
     }
 
-    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
+    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper,
             SerializableFunction<T, S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
     }
