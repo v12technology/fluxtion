@@ -20,10 +20,8 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
-import static com.fluxtion.ext.streaming.api.stream.StreamFunctions.toDouble;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.FunctionBuilder.map;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.toDouble;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -38,7 +36,7 @@ public class NumericPredicateTest extends StreamInprocessTest {
     public void elseNotifyOnce() {
 //        fixedPkg = true;
         sep((c) -> {
-            FilterWrapper<Number> filter = map(toDouble(), StreamData::getIntValue)
+            FilterWrapper<Number> filter = toDouble(StreamData::getIntValue)
                     .filter( num(10,"gt")::greaterThan)
                     .notifyOnChange(true);
             //if - count
