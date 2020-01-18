@@ -20,9 +20,12 @@ import com.fluxtion.api.lifecycle.EventHandler;
 
 /**
  * An event that registers an {@link EventHandler} as a sink in another SEP. The
- * receiving SEP must listen for Can be useful if a SEP wants to forward events
- * it produces to another SEP, this event can be used to register the target
- * SEP.
+ * receiving SEP must listen for this event. Can be useful if a SEP wants to
+ * forward events it produces to another SEP, this event is used to register the
+ * target SEP.<br>
+ *
+ * {@link EventPublsher} is a node that forwards events to registered
+ * EventHandlers.
  *
  * @author V12 Technology Ltd.
  */
