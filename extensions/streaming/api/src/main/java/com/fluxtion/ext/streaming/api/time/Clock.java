@@ -59,7 +59,7 @@ public class Clock implements Auditor {
     }
 
     public long getWallClockTime() {
-        return wallClock.getWallClockTIme();
+        return wallClock.getWallClockTime();
     }
 
     public long getIngestTime() {

@@ -21,5 +21,5 @@ package com.fluxtion.ext.streaming.api.time;
  * @author V12 Technology Ltd.
  */
 public interface ClockStrategy {
-    long getWallClockTIme();
+    long getWallClockTime();
 }
