@@ -21,7 +21,7 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.ReusableEventHandler;
-import com.fluxtion.ext.streaming.api.SepContext;
+import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 

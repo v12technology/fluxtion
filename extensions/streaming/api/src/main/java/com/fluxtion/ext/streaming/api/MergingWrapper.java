@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import java.util.ArrayList;

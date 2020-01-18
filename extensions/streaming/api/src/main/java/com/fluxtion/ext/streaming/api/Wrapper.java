@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.api.SepContext;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
