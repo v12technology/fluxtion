@@ -25,7 +25,6 @@ import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.audit.EventLogNode;
-import com.fluxtion.api.audit.JULLogRecordListener;
 import com.fluxtion.api.audit.StructuredLogRecord;
 import com.fluxtion.generator.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
