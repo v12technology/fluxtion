@@ -25,6 +25,7 @@ import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.audit.EventLogNode;
+import com.fluxtion.api.audit.JULLogRecordListener;
 import com.fluxtion.api.audit.StructuredLogRecord;
 import com.fluxtion.generator.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
@@ -84,14 +85,14 @@ public class TraceLogTest extends BaseSepInprocessTest {
         assertThat("EventLogControlEvent", is(eventList.get(0).getEventType()));
         assertThat("CharEvent", is(eventList.get(1).getEventType()));
         final List<StructuredLogRecord.AuditRecord> auditLogs = eventList.get(1).getAuditLogs();
-        assertThat(4, is(auditLogs.size()));
+        assertThat(5, is(auditLogs.size()));
         //check first is parent then child
-        assertThat("parent", is(auditLogs.get(0).getNodeId()));
-        assertThat("child", is(auditLogs.get(1).getNodeId()));
-        assertThat("grandChild", is(auditLogs.get(2).getNodeId()));
-        assertThat("greatGrandChild", is(auditLogs.get(3).getNodeId()));
+        assertThat("parent", is(auditLogs.get(1).getNodeId()));
+        assertThat("child", is(auditLogs.get(2).getNodeId()));
+        assertThat("grandChild", is(auditLogs.get(3).getNodeId()));
+        assertThat("greatGrandChild", is(auditLogs.get(4).getNodeId()));
         //check parent has right char
-        assertThat("b", is(auditLogs.get(0).getPropertyMap().get("char")));
+        assertThat("b", is(auditLogs.get(1).getPropertyMap().get("char")));
 
     }
 
@@ -126,14 +127,14 @@ public class TraceLogTest extends BaseSepInprocessTest {
         assertThat("EventLogControlEvent", is(eventList.get(2).getEventType()));
         //now should be on trace
         auditLogs = eventList.get(3).getAuditLogs();
-        assertThat(4, is(auditLogs.size()));
+        assertThat(5, is(auditLogs.size()));
         //check first is parent then child
-        assertThat("parent", is(auditLogs.get(0).getNodeId()));
-        assertThat("child", is(auditLogs.get(1).getNodeId()));
-        assertThat("grandChild", is(auditLogs.get(2).getNodeId()));
-        assertThat("greatGrandChild", is(auditLogs.get(3).getNodeId()));
+        assertThat("parent", is(auditLogs.get(1).getNodeId()));
+        assertThat("child", is(auditLogs.get(2).getNodeId()));
+        assertThat("grandChild", is(auditLogs.get(3).getNodeId()));
+        assertThat("greatGrandChild", is(auditLogs.get(4).getNodeId()));
         //check parent has right char
-        assertThat("d", is(auditLogs.get(0).getPropertyMap().get("char")));
+        assertThat("d", is(auditLogs.get(1).getPropertyMap().get("char")));
     }
 
     public static class ParentNode extends EventLogNode {

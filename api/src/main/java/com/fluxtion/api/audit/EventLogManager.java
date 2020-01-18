@@ -17,7 +17,9 @@
 package com.fluxtion.api.audit;
 
 import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -50,6 +52,9 @@ public class EventLogManager implements Auditor {
     private static Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
     public boolean trace = false;
     public EventLogControlEvent.LogLevel traceLevel;
+    @Inject
+    public Clock clock;
+    
 
     public EventLogManager() {
         this(new JULLogRecordListener());

@@ -14,27 +14,25 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder.time;
+package com.fluxtion.builder.time;
 
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.ext.streaming.api.time.Clock;
-import com.google.auto.service.AutoService;
+import com.fluxtion.api.time.Clock;
 import java.util.Map;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-@AutoService(NodeFactory.class)
-public class ClockFactory implements NodeFactory<Clock>{
+//@AutoService(NodeFactory.class)
+public class ClockFactory implements NodeFactory<Clock> {
 
-    private static Clock SINGLETON = new  Clock();
-    
+    public static final Clock SINGLETON = new Clock();
+
     @Override
     public Clock createNode(Map config, NodeRegistry registry) {
-        registry.registerAuditor(SINGLETON, "clock");
         return SINGLETON;
     }
-    
+
 }
