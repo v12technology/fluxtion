@@ -17,6 +17,7 @@
 package com.fluxtion.api.audit;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.time.Clock;
 
 /**
  * A structured log record that can be easily converted to a long term store,
@@ -29,15 +30,19 @@ import com.fluxtion.api.event.Event;
  *
  * <pre>
  * eventLogRecord:
- * logTime: 1578236915413
+ *   eventTime: 1578236915413
+ *   logTime: 1578236915413
  *   groupingId: null
  *   event: CharEvent
  *   nodeLogs:
  *     - parentNode_1: { char: a, prop: 32}
  *     - childNode_3: { child: true}
+ *   endTime: 1578236915413
  * <pre>
  * <ul>
- * <li>logTIme: the time the log record is created
+ * <li>eventTime: the time the event was created
+ * <li>logTime: the time the log record is created i.e. when the event processing began
+ * <li>endTime: the time the log record is complete i.e. when the event processing completed
  * <li>groupingId: a set of nodes can have a groupId and their configuration is controlled as a group
  * <li>event: The simple class name of the event that created the execution
  * <li>nodeLogs: are recorded in the order the event wave passes through the graph.
@@ -55,26 +60,16 @@ public class LogRecord {
      *
      */
     public String groupingId;
-
     public long eventId;
-    /**
-     * The time the event was received
-     */
-    public long eventTime;
-    /**
-     * The time the log was processed.
-     */
-    public long logTime;
-
     private final StringBuilder sb;
-
     private String sourceId;
-
     private boolean firstProp;
+    private Clock clock;
 
-    public LogRecord() {
+    public LogRecord(Clock clock) {
         sb = new StringBuilder();
         firstProp = true;
+        this.clock = clock;
     }
 
     public void addRecord(String sourceId, String propertyKey, double value) {
@@ -136,7 +131,8 @@ public class LogRecord {
     public void triggerEvent(Event event) {
         Class<? extends Event> aClass = event.getClass();
         sb.append("eventLogRecord: ");
-        sb.append("\n    logTime: ").append(System.currentTimeMillis());
+        sb.append("\n    eventTime: ").append(clock.getEventTime());
+        sb.append("\n    logTime: ").append(clock.getWallClockTime());
         sb.append("\n    groupingId: ").append(groupingId);
         sb.append("\n    event: ").append(aClass.getSimpleName());
         if (event.filterString() != null && !event.filterString().isEmpty()) {
@@ -151,7 +147,8 @@ public class LogRecord {
         } else {
             Class<?> aClass = event.getClass();
             sb.append("eventLogRecord: ");
-            sb.append("\n    logTime: ").append(System.currentTimeMillis());
+            sb.append("\n    eventTime: ").append(clock.getEventTime());
+            sb.append("\n    logTime: ").append(clock.getWallClockTime());
             sb.append("\n    groupingId: ").append(groupingId);
             sb.append("\n    event: ").append(aClass.getSimpleName());
             sb.append("\n    nodeLogs: ");
@@ -169,6 +166,7 @@ public class LogRecord {
         if (this.sourceId != null) {
             sb.append("}");
         }
+        sb.append("\n    endTime: ").append(clock.getWallClockTime());
         firstProp = true;
         sourceId = null;
         return logged;

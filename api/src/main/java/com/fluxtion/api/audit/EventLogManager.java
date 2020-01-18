@@ -143,7 +143,7 @@ public class EventLogManager implements Auditor {
 
     @Override
     public void init() {
-        logRecord = new LogRecord();
+        logRecord = new LogRecord(clock);
         node2Logger = new HashMap<>();
         clearAfterPublish = true;
     }

@@ -47,6 +47,14 @@ public class StructuredLogRecord {
         return ((Number) map.get("logTime")).longValue();
     }
 
+    public long getEventTime() {
+        return ((Number) map.get("eventTime")).longValue();
+    }
+
+    public long getEndTime() {
+        return ((Number) map.get("eventTime")).longValue();
+    }
+
     public String getGroupingId() {
         return (String) map.get("groupingId");
     }
