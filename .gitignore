@@ -1,3 +1,6 @@
 **/target/
 **/lambda.ser/
 /examples/futext-examples/2008_clean.csv
+# IntelliJ generated files
+**/*.iml
+.idea/
