@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.api.group;
@@ -24,34 +24,34 @@ import java.util.Map;
 
 /**
  * A map holding the instances in the group by
- * 
- * @author Greg Higgins
- * @param <U> The underlying instance type of the group by 
+ *
+ * @param <U> The underlying instance type of the group by
+ * @param <K> The underlying instance type of the key of the group by
  * @param <T> The wrapper for elements in the map
+ * @author Greg Higgins
  */
-public class GroupByTargetMap< U, T extends Wrapper<U>> {
+public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
 
     private final Class<T> targetClass;
-    private final HashMap<? super Object, T> map = new HashMap<>();
-    private final Map<? super Object, T> immutableMap = Collections.unmodifiableMap(map);
+    private final HashMap<K, T> map = new HashMap<>();
+    private final Map<K, T> immutableMap = Collections.unmodifiableMap(map);
 
     public GroupByTargetMap(Class<T> targetClass) {
         this.targetClass = targetClass;
     }
 
     //TODO add methods for Numeric value, and primitive types
-    public <K> T getOrCreateInstance(Object key, GroupByIniitialiser initialiser, K source) {
+    public T getOrCreateInstance(Object key, GroupByIniitialiser<K, U> initialiser, K source) {
         T instance = map.get(key);
         if (instance == null) {
             try {
                 instance = targetClass.getDeclaredConstructor().newInstance();
-                GroupByIniitialiser<K, U> f = (GroupByIniitialiser<K, U>) initialiser;
-                f.apply(source, instance.event());
-                map.put(key, instance);
+                initialiser.apply(source, instance.event());
+                map.put((K) key, instance);
 
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
-            } 
+            }
         }
         return instance;
     }
@@ -61,10 +61,11 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                map.put(key, instance);
+                map.put((K) key, instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
+            return instance;
         }
         return instance;
 
@@ -77,7 +78,7 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                map.put(keyString, instance);
+                map.put((K) keyString, instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -90,7 +91,7 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                map.put(key.asString(), instance);
+                map.put((K) key.asString(), instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -98,15 +99,14 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public <K> T getOrCreateInstance(CharSequence key, GroupByIniitialiser initialiser, K source) {
+    public T getOrCreateInstance(CharSequence key, GroupByIniitialiser<K, U> initialiser, K source) {
         String keyString = key.toString();
         T instance = map.get(keyString);
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                GroupByIniitialiser<K, U> f = (GroupByIniitialiser<K, U>) initialiser;
-                f.apply(source, instance.event());
-                map.put(keyString, instance);
+                initialiser.apply(source, instance.event());
+                map.put((K) keyString, instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -114,14 +114,13 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public <K> T getOrCreateInstance(BufferValue key, GroupByIniitialiser initialiser, K source) {
+    public T getOrCreateInstance(BufferValue key, GroupByIniitialiser<K, U> initialiser, K source) {
         T instance = map.get(key.asString());
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                GroupByIniitialiser<K, U> f = (GroupByIniitialiser<K, U>) initialiser;
-                f.apply(source, instance.event());
-                map.put(key.asString(), instance);
+                initialiser.apply(source, instance.event());
+                map.put((K) key.asString(), instance);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -129,13 +128,12 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public <K> T getOrCreateInstance(MultiKey key, GroupByIniitialiser initialiser, K source) {
+    public T getOrCreateInstance(MultiKey<K> key, GroupByIniitialiser<K, U> initialiser, K source) {
         T instance = map.get(key);
         if (instance == null) {
             try {
                 instance = targetClass.newInstance();
-                GroupByIniitialiser<K, U> f = (GroupByIniitialiser<K, U>) initialiser;
-                f.apply(source, instance.event());
+                initialiser.apply(source, instance.event());
                 map.put(key.copyKey(), instance);
 
             } catch (InstantiationException | IllegalAccessException ex) {
@@ -145,7 +143,7 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public T getOrCreateInstance(MultiKey key) {
+    public T getOrCreateInstance(MultiKey<K> key) {
         T instance = map.get(key);
         if (instance == null) {
             try {
@@ -158,11 +156,11 @@ public class GroupByTargetMap< U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public T getInstance(Object key) {
+    public T getInstance(K key) {
         return map.get(key);
     }
 
-    public Map<? super Object, T> getInstanceMap() {
+    public Map<K, T> getInstanceMap() {
         return immutableMap;
     }
 

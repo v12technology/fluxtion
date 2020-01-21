@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,15 +11,10 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.builder.group;
-
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetClass;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
@@ -52,28 +47,31 @@ import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 
+import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.*;
+
 /**
  * Builds a group by set of functions, each function built will push its
  * calculated value into a target type, using a mutator method on the target
  * type to accept the value.
  *
- * @author Greg Higgins
  * @param <K> key provider
  * @param <T> the target class for the result of aggregate operations
+ * @author Greg Higgins
  */
 public class GroupByContext<K, T> {
 
     private final List<SourceContext> contexts;
+    private final Class<K> keyClazz;
     private final Class<T> targetClazz;
     private final Group<?, T> primaryGroup;
     private boolean initialiserRequired = false;
     private int count;
-    private static final String TEMPLATE =  Templates.PACKAGE + "/GroupByTemplate.vsl";
-    private static final String TEMPLATE_CALC_STATE =  Templates.PACKAGE + "/GroupByCalculationState.vsl";
+    private static final String TEMPLATE = Templates.PACKAGE + "/GroupByTemplate.vsl";
+    private static final String TEMPLATE_CALC_STATE = Templates.PACKAGE + "/GroupByCalculationState.vsl";
     private final SourceContext<K, T> primaryContext;
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
-            Map.class, BitSet.class,  GroupBy.class, EventHandler.class,
+            Map.class, BitSet.class, GroupBy.class, EventHandler.class,
             GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class
     );
     private String genClassName;
@@ -123,8 +121,9 @@ public class GroupByContext<K, T> {
         return importMap;
     }
 
-    <K> GroupByContext(Group<K, T> group) {
+    GroupByContext(Group<K, T> group) {
         this.primaryGroup = group;
+        this.keyClazz = group.getKeyClass();
         this.targetClazz = group.getTargetClass();
         Method[] methods = this.targetClazz.getMethods();
         for (Method method : methods) {
@@ -141,12 +140,13 @@ public class GroupByContext<K, T> {
         contexts.add(primaryContext);
     }
 
-    public GroupBy<T> build() {
+    public GroupBy<K, T> build() {
         try {
             genClassName = "GroupBy_" + GenerationContext.nextId();
             buildCalculationState();
             VelocityContext ctx = new VelocityContext();
             ctx.put(functionClass.name(), genClassName);
+            ctx.put(keyClass.name(), importMap.addImport(keyClazz));
             ctx.put(targetClass.name(), importMap.addImport(targetClazz));
             ctx.put("primaryContext", primaryContext);
             ctx.put("calcStateClass", calcStateClass);
@@ -161,8 +161,8 @@ public class GroupByContext<K, T> {
             }
             ctx.put(imports.name(), importMap.asString());
             ctx.put(sourceMappingList.name(), contexts);
-            Class<GroupBy<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
-            GroupBy<T> result = aggClass.newInstance();
+            Class<GroupBy<K, T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
+            GroupBy<K, T> result = aggClass.newInstance();
 
             for (SourceContext context : contexts) {
 

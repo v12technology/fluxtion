@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.api.stream;
@@ -47,15 +47,15 @@ public interface StreamOperator {
             Wrapper<T> source, boolean cast) {
         return (FilterWrapper<T>) source;
     }
-    
-    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
+
+    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass){
         return null;
     }
-    
-    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source, 
-            SerializableFunction<T, ?> key, 
-            SerializableFunction<T, S> supplier, 
+
+    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
+            SerializableFunction<T, K> key,
+            SerializableFunction<T, S> supplier,
             Class<F> functionClass){
         return null;
     }
@@ -67,13 +67,13 @@ public interface StreamOperator {
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
         return null;
     }
-    
+
     default  <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             Argument<? extends U> arg1,
             Argument<? extends S> arg2){
         return null;
     }
-    
+
     default <F, R> Wrapper<R> map(F mapper, Method mappingMethod, Argument... args){
         return null;
     }
