@@ -16,7 +16,6 @@
  */
 package com.fluxtion.generator;
 
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.google.auto.service.AutoService;
