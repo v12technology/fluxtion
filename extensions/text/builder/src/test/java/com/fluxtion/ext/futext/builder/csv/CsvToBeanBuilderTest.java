@@ -19,6 +19,7 @@ package com.fluxtion.ext.futext.builder.csv;
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
@@ -47,14 +48,13 @@ public class CsvToBeanBuilderTest {
                         worldCity[0] = (WorldCityOptionalEvent) e;
                     }
                 });
-//
         String dataCsh = "WorldCityOptionalEvent,country,city,accent City,region,population,longitude,latitude\n"
                 + "WorldCityOptionalEvent,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
         StringDriver.streamChars(dataCsh, dispatcher, false);
         assertTrue(worldCity[0].getEventTime() >= currentTime);
 
         DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
-        dispatcher2.addMarshaller(WorldCity.class, (EventHandler) Class.forName(
+        dispatcher2.addMarshaller(WorldCity.class, (EventHandler) GenerationContext.SINGLETON.forName(
                 "com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2.fluxCsvDefaultMappedBean.Csv2DefaultMappedBean").newInstance());
         dispatcher2.addSink((Event e) -> {
             if (e instanceof WorldCityOptionalEvent) {

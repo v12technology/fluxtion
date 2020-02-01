@@ -130,8 +130,7 @@ public class CsvToBeanBuilder {
                 RecordParserBuilder builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
                 builder.addEventPublisher = addEventPublisher;
                 builder.build();
-            },
-                    pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
+            },pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
             clazz2Handler.put(clazz, sep);
             return this;
         } catch (Exception ex) {
