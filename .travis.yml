@@ -1,6 +1,8 @@
 language: java
 jdk: 
   - openjdk8
+  - openjdk11
+  - openjdk13
 script: mvn clean install
 cache:
   directories:
