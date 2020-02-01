@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.openhft.compiler;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.tools.*;
 import javax.tools.JavaFileObject.Kind;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
 
@@ -35,6 +36,14 @@ class MyJavaFileManager implements JavaFileManager {
 
     MyJavaFileManager(StandardJavaFileManager fileManager) {
         this.fileManager = fileManager;
+    }
+
+    public Iterable<Set<Location>> listLocationsForModules(final Location location) {
+        return invokeNamedMethodIfAvailable(location, "listLocationsForModules");
+    }
+
+    public String inferModuleName(final Location location) {
+        return invokeNamedMethodIfAvailable(location, "inferModuleName");
     }
 
     @Override
@@ -144,4 +153,20 @@ class MyJavaFileManager implements JavaFileManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> T invokeNamedMethodIfAvailable(final Location location, final String name) {
+        final Method[] methods = fileManager.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getName().equals(name) && method.getParameterTypes().length == 1
+                    && method.getParameterTypes()[0] == Location.class) {
+                try {
+//                    unsafe.putBoolean(method, OVERRIDE_OFFSET, true);
+                    return (T) method.invoke(fileManager, location);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new UnsupportedOperationException("Unable to invoke method " + name);
+                }
+            }
+        }
+        throw new UnsupportedOperationException("Unable to find method " + name);
+    }
 }
