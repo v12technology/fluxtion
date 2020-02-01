@@ -158,10 +158,6 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>compiler</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.googlejavaformat</groupId>
             <artifactId>google-java-format</artifactId>
         </dependency>
@@ -183,9 +179,13 @@
             <artifactId>javapoet</artifactId>
             <version>1.11.0</version>
         </dependency>
-            <dependency>
-              <groupId>com.google.auto.service</groupId>
-              <artifactId>auto-service</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
     </dependencies>
 </project>

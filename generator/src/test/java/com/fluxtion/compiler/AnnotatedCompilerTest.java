@@ -17,11 +17,13 @@
  */
 package com.fluxtion.compiler;
 
+import com.fluxtion.api.annotations.Initialise;
 import static org.hamcrest.CoreMatchers.is;
 
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.annotation.SepInstance;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.ClassProcessorDispatcher;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
@@ -48,11 +50,15 @@ public class AnnotatedCompilerTest {
 
     @Test
     public void testSepBuilderLoading() throws MalformedURLException, ClassNotFoundException {
+        Assert.assertThat(MyNodeIntsance.initCount, is(0));
+        Assert.assertThat(MyHandler.initCount, is(0));
         JavaTestGeneratorHelper.setupDefaultTestContext("com.fluxtion.compiler.gen.methoduilder", "");
         ClassProcessorDispatcher acp = new ClassProcessorDispatcher();
         acp.accept(new File("target/test-classes").toURI().toURL(), new File("."));
-        Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.methoduilder.TestEH_1"));
-        Assert.assertNotNull(Class.forName("com.fluxtion.compiler.gen.classbuilder.TestNode_1"));
+        Assert.assertThat(MyNodeIntsance.initCount, is(1));
+        Assert.assertThat(MyHandler.initCount, is(1));
+//        Assert.assertNotNull(GenerationContext.SINGLETON.forName("com.fluxtion.compiler.gen.methoduilder.TestEH_1"));
+//        Assert.assertNotNull(GenerationContext.SINGLETON.forName("com.fluxtion.compiler.gen.classbuilder.TestNode_1"));
     }
 
     public static class MyClassProcessor implements ClassProcessor {
@@ -66,7 +72,7 @@ public class AnnotatedCompilerTest {
 
     }
 
-    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen.methoduilder", cleanOutputDir = true, 
+    @SepBuilder(name = "TestEH_1", packageName = "com.fluxtion.compiler.gen.methoduilder", cleanOutputDir = true,
             outputDir = "target/generated-test-sources/fluxtion")
     public void buildSepTest(SEPConfig cfg) {
         cfg.addNode(new MyHandler());
@@ -75,10 +81,16 @@ public class AnnotatedCompilerTest {
     public static class MyHandler {
 
         int count;
+        public static int initCount;
 
         @com.fluxtion.api.annotations.EventHandler
         public void onAllTimeEvents(TimeEvent e) {
             count++;
+        }
+
+        @Initialise
+        public void init() {
+            initCount++;
         }
     }
 
@@ -91,10 +103,16 @@ public class AnnotatedCompilerTest {
     public static class MyNodeIntsance {
 
         int count;
+        public static int initCount;
 
         @com.fluxtion.api.annotations.EventHandler
         public void onAllTimeEvents(TimeEvent e) {
             count++;
+        }
+
+        @Initialise
+        public void init() {
+            initCount++;
         }
     }
 }

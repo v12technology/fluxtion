@@ -77,6 +77,7 @@ public class AnnotatedClassCompiler implements ClassProcessor {
                     if (annotationInfo == null) {
                         LOGGER.info("Adding instance to Sep class:" + csvClass.getCanonicalName());
                         AnnotationParameterValueList params = csvClassInfo.getAnnotationInfo(SepInstance.class.getCanonicalName()).getParameterValues();
+                        boolean init = (params.get("initialise") == null || (Boolean) params.get("initialise"));
                         ClassProcessorDispatcher.DirectoryNames dirNames = standardParamsHelper(params, rootDir, generatedDir, resourceDir);
                         InprocessSepCompiler.sepInstance((cfg) -> {
                             cfg.addPublicNode(newInstance, "processor");
@@ -85,7 +86,7 @@ public class AnnotatedClassCompiler implements ClassProcessor {
                                 supportDirtyFiltering = (Boolean) params.get("supportDirtyFiltering");
                             } 
                             cfg.supportDirtyFiltering = supportDirtyFiltering;
-                        }, dirNames.pkgName, params.get("name").toString(), dirNames.outDir, dirNames.resDir, false);
+                        }, dirNames.pkgName, params.get("name").toString(), dirNames.outDir, dirNames.resDir, init);
 
                     } else {
                         LOGGER.info("disabled Fluxtion SEP node generation for:" + csvClass.getCanonicalName());
