@@ -35,10 +35,8 @@ along with this program.  If not, see
             <artifactId>fluxtion-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>compiler</artifactId>
-            <optional>true</optional>
-            <scope>provided</scope>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
     </dependencies>
     <properties>
