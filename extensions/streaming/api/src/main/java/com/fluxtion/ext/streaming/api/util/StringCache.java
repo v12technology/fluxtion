@@ -1,5 +1,6 @@
 package com.fluxtion.ext.streaming.api.util;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class StringCache {
     }
 
     public CharSequence intern(CharSequence cs) {
-        buffer.clear();
+        ((Buffer)buffer).clear();
         for (int i = 0; i < cs.length(); i++) {
             buffer.put((byte) cs.charAt(i));
         }
