@@ -14,11 +14,13 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder.event;
+package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.generation.NodeNameProducer;
+import com.fluxtion.ext.streaming.api.GenericEventHandler;
+import com.fluxtion.ext.streaming.api.GenericWrapper;
 import com.fluxtion.generator.targets.JavaGenHelper;
 import com.google.auto.service.AutoService;
 
@@ -34,15 +36,24 @@ public class EventHandlerNamer implements NodeNameProducer {
     @Override
     public String mappedNodeName(Object nodeToMap) {
         String name = null;
-        if (nodeToMap instanceof EventHandler) {
+        if (nodeToMap instanceof GenericEventHandler) {
+            GenericEventHandler g = (GenericEventHandler) nodeToMap;
+            String filterString = g.filterString();
+            name = "handlerClass_" + filterString.substring(filterString.lastIndexOf("."));
+        } else if (nodeToMap instanceof EventHandler) {
             name = "handler" + ((EventHandler) nodeToMap).eventClass().getSimpleName();
             if (nodeToMap instanceof FilteredEventHandler
                     && ((FilteredEventHandler) nodeToMap).filterId() != Integer.MAX_VALUE) {
                 name += "_" + ((FilteredEventHandler) nodeToMap).filterId();
-            }else if(nodeToMap instanceof FilteredEventHandler
+            } else if (nodeToMap instanceof FilteredEventHandler
                     && ((FilteredEventHandler) nodeToMap).filterString() != null) {
                 name += "_" + ((FilteredEventHandler) nodeToMap).filterString();
             }
+        }else if(nodeToMap instanceof GenericWrapper) {
+            GenericWrapper g = (GenericWrapper) nodeToMap;
+            name = "genericWrapper_" +  g.getWrappedClass().getSimpleName();
+        }
+        if (name != null) {
             name = JavaGenHelper.getIdentifier(name);
         }
         return name;

@@ -7,7 +7,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.PushNotifier;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 
 /**
  * Factory for building {@link PushNotifier} instances.
@@ -33,7 +33,7 @@ public class PushBuilder {
         
     public static<S extends T, T > void pushSource(T source,  SerializableConsumer<S> consumer){
         final Object targetInstance = consumer.captured()[0];
-        FilterBuilder.push(targetInstance, consumer.method(), source, null, true).build();
+        StreamFunctionCompiler.push(targetInstance, consumer.method(), source, null, true).build();
         
     }
 
@@ -49,13 +49,13 @@ public class PushBuilder {
     public static <D> void push(SerializableSupplier<D> supplier, SerializableConsumer<? extends D> consumer) {
         final Object sourceInstance = supplier.captured()[0];//unWrap(supplier);
         final Object targetInstance = consumer.captured()[0];//unWrap(consumer);
-        FilterBuilder.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
+        StreamFunctionCompiler.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
     }
     
     public static <S, D> Wrapper<S> push(SerializableSupplier<D> supplier, SerializableFunction<? extends D, S>  consumer) {
         final Object sourceInstance = supplier.captured()[0];//unWrap(supplier);
         final Object targetInstance = consumer.captured()[0];//unWrap(consumer);
-        return FilterBuilder.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
+        return StreamFunctionCompiler.push(targetInstance, consumer.method(), sourceInstance, supplier.method(), true).build();
     }
 
     public static Object unWrap(MethodReferenceReflection supplier) {

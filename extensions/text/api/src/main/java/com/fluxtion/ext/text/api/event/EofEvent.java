@@ -18,7 +18,7 @@ package com.fluxtion.ext.text.api.event;
 
 import static com.fluxtion.ext.text.api.event.EventId.EOF_EVENT_ID;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.ext.streaming.api.ReusableEventHandler;
+import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
@@ -45,7 +45,7 @@ public class EofEvent extends Event {
      * @return
      */
     public static Wrapper<EofEvent> eofTrigger() {
-        Wrapper<EofEvent> handler = new ReusableEventHandler(EofEvent.class);
+        Wrapper<EofEvent> handler = new IntFilterEventHandler(EofEvent.class);
         return SepContext.service().addOrReuse(handler);
     }
 

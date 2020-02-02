@@ -5,7 +5,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.lt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
 import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 
 import com.fluxtion.api.event.Event;
@@ -15,9 +15,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import java.util.Objects;
 import org.junit.Ignore;
 import org.junit.Test;

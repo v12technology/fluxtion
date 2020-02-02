@@ -29,10 +29,10 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import com.fluxtion.ext.streaming.builder.event.EventSelect;
-import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
-import com.fluxtion.ext.streaming.builder.stream.FunctionBuilder;
-import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
+import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.generator.targets.JavaGenHelper;
 import java.io.File;
 import java.io.FileWriter;
@@ -55,9 +55,9 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  */
 public class StreamFunctionGenerator {
 
-    private String templateFile = "/template/FunctionsTemplate.vsl";
-    private String packageName = "com.fluxtion.ext.streaming.builder.stream";
-    private String className = "StreamFunctionsBuilder";
+    private final String templateFile = "/template/FunctionsTemplate.vsl";
+    private final String packageName = "com.fluxtion.ext.streaming.builder.factory";
+    private final String className = "LibraryFunctionsBuilder";
     private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
     private List<FunctionInfo> functionList = new ArrayList<>();
@@ -111,13 +111,13 @@ public class StreamFunctionGenerator {
         imports.addImport(SerializableFunction.class);
         imports.addImport(SerializableBiFunction.class);
         imports.addImport(SerializableSupplier.class);
-        imports.addImport(FilterBuilder.class);
+        imports.addImport(StreamFunctionCompiler.class);
         imports.addImport(Wrapper.class);
         imports.addStaticImport(EventSelect.class);
-        imports.addStaticImport(FunctionBuilder.class);
+        imports.addStaticImport(MappingBuilder.class);
         imports.addImport(FunctionArg.class);
         imports.addStaticImport(FunctionArg.class);
-        imports.addStaticImport(StreamBuilder.class);
+        imports.addStaticImport(StreamOperatorService.class);
         imports.addImport(this.getClass());
         //setup context
         ctx.put("imports", imports.asString());
@@ -130,6 +130,7 @@ public class StreamFunctionGenerator {
         File srcPackageDirectory = new File(SRC_DIR, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
         File outFile = new File(srcPackageDirectory, className + ".java");
+        System.out.println("writing file:" + outFile.getAbsolutePath());
         FileWriter templateWriter = new FileWriter(outFile);
         template.merge(ctx, templateWriter);
         templateWriter.flush();

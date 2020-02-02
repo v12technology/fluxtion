@@ -18,7 +18,7 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;

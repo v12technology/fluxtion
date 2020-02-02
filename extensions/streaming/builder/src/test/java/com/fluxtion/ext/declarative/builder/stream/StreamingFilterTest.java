@@ -18,10 +18,6 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,6 +26,10 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import org.junit.Test;
 
 /**

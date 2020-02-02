@@ -37,27 +37,27 @@ public class ${className}  {
     }
 
     public static <T, S> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier1, SerializableFunction<S, ${FunctionInfo.input1Type}> supplier2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
     }
 
     public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(supplier1), arg(supplier2));
     }
 
     public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg1, arg2);
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg1, arg2);
     }
 
     public static <T, S extends ${FunctionInfo.inputType}, R extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends ${FunctionInfo.inputType}, R extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(wrapper1), arg(wrapper2));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(wrapper1), arg(wrapper2));
     }
 
 #end
@@ -87,11 +87,11 @@ public class ${className}  {
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
     public static <T> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(supplier));
     }
 
     public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg);
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg);
     }
 
     /**
@@ -106,15 +106,15 @@ public class ${className}  {
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
     public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableSupplier<T> supplier) {
-        return FilterBuilder.map(${FunctionInfo.invoke}, arg(supplier));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke}, arg(supplier));
     }
 
     public static <T, S extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return FilterBuilder.map(${FunctionInfo.invoke},  arg(wrapper, supplier));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke},  arg(wrapper, supplier));
     }
 
     public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Wrapper<T> wrapper) {
-        return FilterBuilder.map(${FunctionInfo.invoke},  arg(wrapper));
+        return StreamFunctionCompiler.map(${FunctionInfo.invoke},  arg(wrapper));
     }
 
 #end

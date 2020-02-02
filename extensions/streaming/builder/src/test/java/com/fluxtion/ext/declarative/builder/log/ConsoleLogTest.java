@@ -21,7 +21,7 @@ import org.junit.Test;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepTest;
 
 /**

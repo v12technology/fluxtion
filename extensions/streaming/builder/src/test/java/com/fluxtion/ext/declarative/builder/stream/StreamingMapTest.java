@@ -19,11 +19,12 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import com.fluxtion.ext.streaming.api.util.Pair;
+import lombok.Data;
 import org.junit.Test;
 
 /**
@@ -61,21 +62,44 @@ public class StreamingMapTest extends StreamInprocessTest {
         onEvent(new StreamData("false"));
         assertThat(val.event(), is(false));
     }
-    
+
     @Test
-    public void getField(){
-        sep((c) ->{
+    public void getFieldFromEvent() {
+        sep((c) -> {
             select(StreamData::getStringValue).id("valueString");
             select(StreamData::getDoubleValue).id("value");
         });
-        Wrapper<Number> valNumber = getField("value"); 
-        Wrapper<String> valString = getField("valueString"); 
+        Wrapper<Number> valNumber = getField("value");
+        Wrapper<String> valString = getField("valueString");
         //double
         onEvent(new StreamData(23.0));
         assertThat(valNumber.event().doubleValue(), is(23.0));
         //string
         onEvent(new StreamData("test1"));
         assertThat(valString.event(), is("test1"));
+    }
+
+    @Test
+    public void getFieldFromNonFluxtionEvent() {
+        sep((c) -> {
+            select(StreamDataNonFluxtion::getStringValue).id("valueString");
+            select(StreamDataNonFluxtion::getDoubleValue).id("value");
+        });
+        Wrapper<Number> valNumber = getField("value");
+        Wrapper<String> valString = getField("valueString");
+        //double
+        onGenericEvent(new StreamDataNonFluxtion("", 23.0));
+        assertThat(valNumber.event().doubleValue(), is(23.0));
+        //string
+        onGenericEvent(new StreamDataNonFluxtion("test1", 0.0));
+        assertThat(valString.event(), is("test1"));
+    }
+
+    @Data
+    public static class StreamDataNonFluxtion {
+
+        private final String stringValue;
+        private final double doubleValue;
     }
 
     @Test
@@ -119,14 +143,14 @@ public class StreamingMapTest extends StreamInprocessTest {
         });
         onEvent(new StreamData(89));
         Wrapper<Pair<String, Integer>> valInstance = getField("pair");
-        Wrapper<Pair<String, Integer>> valStatic= getField("pairStatic");
+        Wrapper<Pair<String, Integer>> valStatic = getField("pairStatic");
         assertThat(valInstance.event().getKey(), is("89"));
         assertThat(valInstance.event().getValue(), is(89));
         assertThat(valStatic.event().getKey(), is("89"));
         assertThat(valStatic.event().getValue(), is(89));
 
     }
-    
+
     @Test
     public void mapStaticPrimitiveFromString() {
 //        fixedPkg = true;
@@ -148,12 +172,12 @@ public class StreamingMapTest extends StreamInprocessTest {
         onEvent(new StreamData("false"));
         assertThat(val.event(), is(false));
     }
-    
+
     @Test
     public void mapWithLambda() {
         fixedPkg = true;
         sep((c) -> {
-            
+
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(s -> "mapped" + s, StreamData::getStringValue).id("str2Mapped");
             final MutableNumber result = c.addPublicNode(new MutableNumber(), "result");
@@ -162,7 +186,7 @@ public class StreamingMapTest extends StreamInprocessTest {
                     .push(result::setDoubleValue);
         });
 //        sep(com.fluxtion.ext.declarative.builder.stream.streamingmaptest_mapwithlambda.TestSep_mapWithLambda.class);
-        
+
         onEvent(new StreamData("123"));
         String str2Mapped = getWrappedField("str2Mapped");
         assertThat(str2Mapped, is("mapped123"));
@@ -170,7 +194,7 @@ public class StreamingMapTest extends StreamInprocessTest {
         Number result = getField("result");
         assertThat(mult200.event().intValue(), is(0));
         assertThat(result.intValue(), is(0));
-        
+
         onEvent(new StreamData(2.0));
         assertThat(mult200.event().intValue(), is(400));
         assertThat(result.intValue(), is(400));

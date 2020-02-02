@@ -28,19 +28,19 @@ import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filter;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filterSubjectClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.input;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.newFunction;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.outputClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.sourceMappingList;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.targetMethod;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.wrappedSubject;
+import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filterSubjectClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.input;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.newFunction;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.outputClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetMethod;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.wrappedSubject;
 import com.fluxtion.ext.streaming.builder.util.FunctionInfo;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -52,7 +52,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.Argument;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.stateful;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.stateful;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;
@@ -131,7 +131,7 @@ import org.apache.velocity.VelocityContext;
  * @param <T> The test function applied to the filter subject
  * @param <F> The filter subject under test
  */
-public class FilterBuilder<T, F> {
+public class StreamFunctionCompiler<T, F> {
 
     private static final String TEMPLATE = "template/FilterTemplate.vsl";
     private static final String MAPPER_TEMPLATE = "template/MapperTemplate.vsl";
@@ -157,7 +157,7 @@ public class FilterBuilder<T, F> {
     private final ImportMap importMap = ImportMap.newMap();
     private T testFunction;
 
-    private FilterBuilder(Class<T> testFunctionClass) {
+    private StreamFunctionCompiler(Class<T> testFunctionClass) {
         this.testFunctionClass = testFunctionClass;
         Method[] methods = testFunctionClass.getDeclaredMethods();
         functionInfo = new FunctionInfo(methods[0], importMap);
@@ -165,7 +165,7 @@ public class FilterBuilder<T, F> {
         standardImports();
     }
 
-    private FilterBuilder(T testInstance) {
+    private StreamFunctionCompiler(T testInstance) {
         this.testFunctionClass = (Class<T>) testInstance.getClass();
         this.testFunction = GenerationContext.SINGLETON.addOrUseExistingNode(testInstance);
         sourceFunctions = new ArrayList<>();
@@ -185,8 +185,8 @@ public class FilterBuilder<T, F> {
      * @param cast
      * @return
      */
-    public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source, Method accessor, boolean cast) {
-        FilterBuilder filterBuilder = new FilterBuilder(filterMethod.getDeclaringClass());
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(Method filterMethod, S source, Method accessor, boolean cast) {
+        StreamFunctionCompiler filterBuilder = new StreamFunctionCompiler(filterMethod.getDeclaringClass());
         String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
@@ -211,12 +211,12 @@ public class FilterBuilder<T, F> {
         return filterBuilder;
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder mapSet(F mapper, Method mappingMethod, FunctionArg... args) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler mapSet(F mapper, Method mappingMethod, FunctionArg... args) {
         //call map then add sources
         //update the key
         //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         FunctionArg arg = args[0];
-        FilterBuilder builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
+        StreamFunctionCompiler builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
             builder.key.multiArg = false;
@@ -263,11 +263,11 @@ public class FilterBuilder<T, F> {
             Argument<U> arg1,
             Argument<S> arg2) {
         Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
+        StreamFunctionCompiler builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1, arg2);
         } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1, arg2);
         }
         return builder.build();
     }
@@ -275,11 +275,11 @@ public class FilterBuilder<T, F> {
     public static <R, G, U> Wrapper<R> map(SerializableFunction<G, R> mapper,
             Argument<U> arg1) {
         Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
+        StreamFunctionCompiler builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, arg1);
+            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1);
         } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1);
+            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1);
         }
         return builder.build();
     }
@@ -296,9 +296,9 @@ public class FilterBuilder<T, F> {
      * @param args
      * @return
      */
-    public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, Argument... args) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler map(F mapper, Method mappingMethod, Argument... args) {
         Argument arg = args[0];
-        FilterBuilder builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
+        StreamFunctionCompiler builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
             builder.key.multiArg = true;
@@ -327,21 +327,21 @@ public class FilterBuilder<T, F> {
         return builder;
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
-        FilterBuilder filterBuilder;
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler map(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
+        StreamFunctionCompiler filterBuilder;
         boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
         GenerationContext.SINGLETON.addOrUseExistingNode(source);
         if (mapper == null && staticMeth) {
-            filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+            filterBuilder = new StreamFunctionCompiler(mappingMethod.getDeclaringClass());
         } else if (mapper == null && !staticMeth) {
             try {
                 mapper = (F) mappingMethod.getDeclaringClass().newInstance();
             } catch (IllegalAccessException | InstantiationException ex) {
                 throw new RuntimeException("unable to create mapper instance must have public default consturctor", ex);
             }
-            filterBuilder = new FilterBuilder(mapper);
+            filterBuilder = new StreamFunctionCompiler(mapper);
         } else {
-            filterBuilder = new FilterBuilder(mapper);
+            filterBuilder = new StreamFunctionCompiler(mapper);
         }
         String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
         filterBuilder.currentTemplate = MAPPER_TEMPLATE;
@@ -376,20 +376,20 @@ public class FilterBuilder<T, F> {
         return filterBuilder;
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder push(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
-        FilterBuilder filterBuilder;
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler push(F mapper, Method mappingMethod, S source, Method accessor, boolean cast) {
+        StreamFunctionCompiler filterBuilder;
         boolean staticMeth = Modifier.isStatic(mappingMethod.getModifiers());
         if (mapper == null && staticMeth) {
-            filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+            filterBuilder = new StreamFunctionCompiler(mappingMethod.getDeclaringClass());
         } else if (mapper == null && !staticMeth) {
             try {
                 mapper = (F) mappingMethod.getDeclaringClass().newInstance();
             } catch (IllegalAccessException | InstantiationException ex) {
                 throw new RuntimeException("unable to create mapper instance must have public default consturctor", ex);
             }
-            filterBuilder = new FilterBuilder(mapper);
+            filterBuilder = new StreamFunctionCompiler(mapper);
         } else {
-            filterBuilder = new FilterBuilder(mapper);
+            filterBuilder = new StreamFunctionCompiler(mapper);
         }
         String sourceString = (accessor == null ? source.getClass().getSimpleName() : accessor.getName());
         filterBuilder.currentTemplate = PUSH_TEMPLATE;
@@ -416,16 +416,16 @@ public class FilterBuilder<T, F> {
         return filterBuilder;
     }
 
-    public static <S, C> FilterBuilder consume(C consumer, Method mappingMethod, S source) {
+    public static <S, C> StreamFunctionCompiler consume(C consumer, Method mappingMethod, S source) {
         if (consumer == System.out) {
             consumer = null;
             mappingMethod = ((SerializableConsumer) StreamOperator::standardOut).method();
         }
-        FilterBuilder filterBuilder;
+        StreamFunctionCompiler filterBuilder;
         if (consumer == null) {
-            filterBuilder = new FilterBuilder(mappingMethod.getDeclaringClass());
+            filterBuilder = new StreamFunctionCompiler(mappingMethod.getDeclaringClass());
         } else {
-            filterBuilder = new FilterBuilder(consumer);
+            filterBuilder = new StreamFunctionCompiler(consumer);
         }
         String sourceString = source.getClass().getSimpleName();
         filterBuilder.currentTemplate = CONSUMER_TEMPLATE;
@@ -459,9 +459,9 @@ public class FilterBuilder<T, F> {
      * @param cast
      * @return
      */
-    public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
-        FilterBuilder filterBuilder = new FilterBuilder(filter);
+        StreamFunctionCompiler filterBuilder = new StreamFunctionCompiler(filter);
         String sourceString = accessor == null ? source.getClass().getSimpleName() : accessor.getName();
         filterBuilder.functionInfo = new FunctionInfo(filterMethod, filterBuilder.importMap);
         filterBuilder.filterSubject = source;
@@ -486,33 +486,33 @@ public class FilterBuilder<T, F> {
         return filterBuilder;
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source, Method accessor) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(F filter, Method filterMethod, S source, Method accessor) {
         return filter(filter, filterMethod, source, accessor, true);
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder filter(F filter, Method filterMethod, S source) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(F filter, Method filterMethod, S source) {
         return filter(filter, filterMethod, source, null, true);
     }
 
-    public static <T, R extends Boolean, S, F> FilterBuilder filter(Method filterMethod, S source) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(Method filterMethod, S source) {
         return filter(filterMethod, source, null, true);
     }
 
-    public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source, Method accessor) {
+    public static <T, R extends Boolean, S> StreamFunctionCompiler filter(SerializableFunction<T, R> filter, S source, Method accessor) {
         if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
             return filter(filter.method(SINGLETON.getClassLoader()), source, accessor, true);
         }
         return filter(filter.captured()[0], filter.method(SINGLETON.getClassLoader()), source, accessor);
     }
 
-    public static <T, R extends Boolean, S> FilterBuilder filter(SerializableFunction<T, R> filter, S source) {
+    public static <T, R extends Boolean, S> StreamFunctionCompiler filter(SerializableFunction<T, R> filter, S source) {
         if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
             return filter(filter.method(SINGLETON.getClassLoader()), source, null, true);
         }
         return filter(filter.captured()[0], filter.method(SINGLETON.getClassLoader()), source, null);
     }
 
-    public static <T, R extends Boolean> FilterBuilder filter(SerializableFunction<T, R> filter, SerializableSupplier<T> supplier) {
+    public static <T, R extends Boolean> StreamFunctionCompiler filter(SerializableFunction<T, R> filter, SerializableSupplier<T> supplier) {
         if (Modifier.isStatic(filter.method(SINGLETON.getClassLoader()).getModifiers())) {
             return filter(filter.method(SINGLETON.getClassLoader()), supplier.captured()[0], supplier.method(SINGLETON.getClassLoader()), true);
         }
@@ -573,7 +573,7 @@ public class FilterBuilder<T, F> {
     }
 
     private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception {
-        Map<FunctionClassKey, Class<Wrapper<F>>> cache = GenerationContext.SINGLETON.getCache(FilterBuilder.class);
+        Map<FunctionClassKey, Class<Wrapper<F>>> cache = GenerationContext.SINGLETON.getCache(StreamFunctionCompiler.class);
         Class<Wrapper<F>> clazz = cache.get(key);
         if (clazz == null) {
             clazz = FunctionGeneratorHelper.generateAndCompile(null, currentTemplate, GenerationContext.SINGLETON, ctx);
