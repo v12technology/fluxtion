@@ -23,9 +23,8 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.PushBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
-import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;
@@ -80,7 +79,7 @@ public class MappingBuilder {
             captured = mapper.captured()[0];
         }
         StreamFunctionCompiler builder = StreamFunctionCompiler.map(captured, m,
-                StreamBuilder.stream(supplier.captured()[0]), supplier.method(), true);
+                StreamOperatorService.stream(supplier.captured()[0]), supplier.method(), true);
         return builder.build();
     }
 
@@ -117,7 +116,7 @@ public class MappingBuilder {
             SerializableSupplier<S>... suppliers) {
         //create instance of function and wrap
         final Object targetInstance = mapper.captured()[0];
-        Wrapper<R> stream = (Wrapper<R>) StreamBuilder.stream(targetInstance);
+        Wrapper<R> stream = (Wrapper<R>) StreamOperatorService.stream(targetInstance);
         for (SerializableSupplier<S> supplier : suppliers) {
             PushBuilder.push(supplier, mapper);
         }

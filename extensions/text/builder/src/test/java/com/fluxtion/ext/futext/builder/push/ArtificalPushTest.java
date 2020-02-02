@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.futext.builder.push;
 
-import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.builder.ascii.AsciiHelper;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;

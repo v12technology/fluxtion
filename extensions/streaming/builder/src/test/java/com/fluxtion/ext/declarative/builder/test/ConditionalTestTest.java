@@ -14,7 +14,7 @@ package com.fluxtion.ext.declarative.builder.test;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

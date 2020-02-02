@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;
@@ -18,7 +18,7 @@ public class WrappInstanceTest extends BaseSepTest{
     
     @Test
     public void createStresm(){
-        StreamBuilder sb = new StreamBuilder();
+        StreamOperatorService sb = new StreamOperatorService();
         String t1 = "T1";
         String t2 = "T2";
         Wrapper<String> stream1 = sb.stream(t1);

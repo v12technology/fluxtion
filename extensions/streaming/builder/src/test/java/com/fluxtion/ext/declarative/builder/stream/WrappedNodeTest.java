@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,7 +17,7 @@ public class WrappedNodeTest extends StreamInprocessTest {
     public void mapPrimitiveFromString() {
         sep((c) -> {
             StreamDataHandler handler = c.addNode(new StreamDataHandler());
-            Wrapper<StreamDataHandler> in = StreamBuilder.stream(handler);
+            Wrapper<StreamDataHandler> in = StreamOperatorService.stream(handler);
             in.map(new MapFunctions()::String2Number, StreamDataHandler::stringValue).id("str2Number");
         });
         

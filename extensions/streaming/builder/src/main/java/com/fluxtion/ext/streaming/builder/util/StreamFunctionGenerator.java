@@ -32,7 +32,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.event.EventSelect;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
-import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.generator.targets.JavaGenHelper;
 import java.io.File;
 import java.io.FileWriter;
@@ -117,7 +117,7 @@ public class StreamFunctionGenerator {
         imports.addStaticImport(MappingBuilder.class);
         imports.addImport(FunctionArg.class);
         imports.addStaticImport(FunctionArg.class);
-        imports.addStaticImport(StreamBuilder.class);
+        imports.addStaticImport(StreamOperatorService.class);
         imports.addImport(this.getClass());
         //setup context
         ctx.put("imports", imports.asString());

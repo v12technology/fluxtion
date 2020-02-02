@@ -49,7 +49,7 @@ import java.util.function.Predicate;
  * @author V12 Technology Ltd.
  */
 @AutoService(StreamOperator.class)
-public class StreamBuilder implements StreamOperator {
+public class StreamOperatorService implements StreamOperator {
 
     @Override
     public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {

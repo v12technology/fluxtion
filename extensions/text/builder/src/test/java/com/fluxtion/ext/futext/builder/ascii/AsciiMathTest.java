@@ -1,7 +1,7 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import com.fluxtion.ext.text.api.ascii.Ascii2DoubleFixedLength;
