@@ -55,9 +55,9 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  */
 public class StreamFunctionGenerator {
 
-    private String templateFile = "/template/FunctionsTemplate.vsl";
-    private String packageName = "com.fluxtion.ext.streaming.builder.stream";
-    private String className = "StreamFunctionsBuilder";
+    private final String templateFile = "/template/FunctionsTemplate.vsl";
+    private final String packageName = "com.fluxtion.ext.streaming.builder.factory";
+    private final String className = "LibraryFunctionsBuilder";
     private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
     private List<FunctionInfo> functionList = new ArrayList<>();
@@ -130,6 +130,7 @@ public class StreamFunctionGenerator {
         File srcPackageDirectory = new File(SRC_DIR, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
         File outFile = new File(srcPackageDirectory, className + ".java");
+        System.out.println("writing file:" + outFile.getAbsolutePath());
         FileWriter templateWriter = new FileWriter(outFile);
         template.merge(ctx, templateWriter);
         templateWriter.flush();
