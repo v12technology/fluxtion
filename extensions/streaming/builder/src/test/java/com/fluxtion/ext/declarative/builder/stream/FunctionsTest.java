@@ -16,9 +16,10 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.ceil;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import org.junit.Test;
 
 /**
@@ -32,7 +33,7 @@ public class FunctionsTest extends StreamInprocessTest {
 //        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
-            in.map(StreamFunctionsBuilder.cumSum(), StreamData::getIntValue);
+            in.map(cumSum(), StreamData::getIntValue);
 
             in.filter(StreamData::getIntValue, FilterFunctions::posStatic)
                     .map(new MapFunctions()::count).id("countStatic");
@@ -56,15 +57,15 @@ public class FunctionsTest extends StreamInprocessTest {
     @Test
     public void testReflection() {
         sep((c) -> {
-            StreamFunctionsBuilder.cumSum(StreamData::getDoubleValue);
-            StreamFunctionsBuilder.cumSum(new StreamData()::getIntValue);
+            cumSum(StreamData::getDoubleValue);
+            cumSum(new StreamData()::getIntValue);
         });
     }
 
     @Test
     public void testReflectionStatic() {
         sep((c) -> {
-            StreamFunctionsBuilder.ceil(new StreamData()::getDoubleValue);
+            ceil(new StreamData()::getDoubleValue);
         });
     }
 }

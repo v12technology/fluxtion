@@ -30,7 +30,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.util.Pair;
-import com.fluxtion.ext.streaming.builder.stream.FilterBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.text.api.csv.ColumnName;
 import com.fluxtion.ext.text.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
@@ -96,8 +96,7 @@ public class RulesEvaluatorBuilder<T> {
                 for (Pair<SerializableConsumer, SerializableFunction<T, ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
                     SerializableFunction<T, R> supplier = (SerializableFunction<T, R>) pair.getValue();
-                    testList.add(
-                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
+                    testList.add(StreamFunctionCompiler.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
                     );
                 }
 
@@ -152,8 +151,7 @@ public class RulesEvaluatorBuilder<T> {
                 for (Pair<SerializableConsumer, SerializableFunction<T, ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
                     SerializableFunction<T, R> supplier = (SerializableFunction<T, R>) pair.getValue();
-                    testList.add(
-                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
+                    testList.add(StreamFunctionCompiler.filter(rule.captured()[0], rule.method(), monitoredWrapped, supplier.method()).build()
                     );
                     
                 }
@@ -205,8 +203,7 @@ public class RulesEvaluatorBuilder<T> {
                 for (Pair<SerializableConsumer, SerializableSupplier< ?>> pair : ruleList) {
                     SerializableConsumer<? extends R> rule = pair.getKey();
                     SerializableSupplier< R> supplier = (SerializableSupplier< R>) pair.getValue();
-                    testList.add(
-                        FilterBuilder.filter(rule.captured()[0], rule.method(), monitored, supplier.method()).build()
+                    testList.add(StreamFunctionCompiler.filter(rule.captured()[0], rule.method(), monitored, supplier.method()).build()
                     );
                 }
                 evaluator = new RulesEvaluator<>(

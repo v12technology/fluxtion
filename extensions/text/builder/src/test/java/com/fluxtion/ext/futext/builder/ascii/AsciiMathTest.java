@@ -2,8 +2,8 @@ package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.stream.StreamBuilder.stream;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.multiply;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import com.fluxtion.ext.text.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntFixedLength;
 import com.fluxtion.ext.text.api.ascii.EolNotifier;

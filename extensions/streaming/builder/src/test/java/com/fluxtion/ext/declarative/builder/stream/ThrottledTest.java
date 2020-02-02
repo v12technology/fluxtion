@@ -24,7 +24,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.TimerFilter.throttle;
 import com.fluxtion.api.time.ClockStrategy;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;

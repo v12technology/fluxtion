@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder.stream;
+package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
@@ -24,6 +24,8 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.factory.PushBuilder;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
+import com.fluxtion.ext.streaming.builder.stream.StreamBuilder;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;
@@ -34,17 +36,17 @@ import java.lang.reflect.Modifier;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class FunctionBuilder {
+public class MappingBuilder {
 
     public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             FunctionArg<U> arg1,
             FunctionArg<S> arg2) {
         Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
+        StreamFunctionCompiler builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1, arg2);
         } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1, arg2);
         }
         return builder.build();
     }
@@ -56,11 +58,11 @@ public class FunctionBuilder {
         FunctionArg arg1 = arg(supplier1);
         FunctionArg arg2 = arg(supplier2);
         Method mappingMethod = mapper.method();
-        FilterBuilder builder = null;
+        StreamFunctionCompiler builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = FilterBuilder.map(null, mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1, arg2);
         } else {
-            builder = FilterBuilder.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1, arg2);
         }
         return builder.build();
     }
@@ -77,7 +79,7 @@ public class FunctionBuilder {
         if (!Modifier.isStatic(m.getModifiers())) {
             captured = mapper.captured()[0];
         }
-        FilterBuilder builder = FilterBuilder.map(captured, m,
+        StreamFunctionCompiler builder = StreamFunctionCompiler.map(captured, m,
                 StreamBuilder.stream(supplier.captured()[0]), supplier.method(), true);
         return builder.build();
     }
@@ -95,7 +97,7 @@ public class FunctionBuilder {
      */
     public static <R, S> Wrapper<R> mapSet(SerializableFunction<S, R> mapper,
             FunctionArg... suppliers) {
-        FilterBuilder builder = FilterBuilder.mapSet(mapper.captured()[0], mapper.method(), suppliers);
+        StreamFunctionCompiler builder = StreamFunctionCompiler.mapSet(mapper.captured()[0], mapper.method(), suppliers);
         final Wrapper wrapper = builder.build();
         wrapper.alwaysReset(true);
         return wrapper;
