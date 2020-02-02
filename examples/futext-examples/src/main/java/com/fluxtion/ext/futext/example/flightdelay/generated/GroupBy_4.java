@@ -1,16 +1,22 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
+import java.util.BitSet;
 import java.util.Map;
 
 /**
@@ -38,17 +44,17 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
         instance.processSource(1, initialiserfilter_getDelay_By_positiveInt00, event);
     target = instance.target;
     {
+      int value = instance.aggregateCount2;
+      value = AggregateCount.increment((int) 0, (int) value);
+      target.setTotalFlights((int) value);
+      instance.aggregateCount2 = value;
+    }
+    {
       double value = instance.aggregateAverage1;
       value =
           instance.aggregateAverage1Function.calcAverage((double) event.getDelay(), (double) value);
       target.setAvgDelay((int) value);
       instance.aggregateAverage1 = value;
-    }
-    {
-      int value = instance.aggregateCount2;
-      value = AggregateCount.increment((int) 0, (int) value);
-      target.setTotalFlights((int) value);
-      instance.aggregateCount2 = value;
     }
     {
       double value = instance.aggregateSum3;
