@@ -15,6 +15,9 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import java.util.Objects;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,14 +27,16 @@ import org.junit.Test;
  * @author gregp
  */
 public class StreamTest implements Stateful {
-
+    
     @Test
     public void tempMonitorTest() throws IllegalAccessException, Exception {
         EventHandler handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<Number> tempC = select(TempF.class)
-                    .filter(TempF::getSensorId, is("outside"))
+//                    .filter(TempF::getSensorId, is("outside"))
+                    .filter(TempF::getSensorId, "outside"::equals)
                     .filter(TempF::getFahrenheit, StreamTest::gt10)
+                    .filter(TempF::getFahrenheit, num(20, "lt_id1")::lessThan)
                     .map(StreamTest::fahrToCentigrade);
             //convert to log temps
 //            StreamTest instance = c.addNode(new StreamTest());
