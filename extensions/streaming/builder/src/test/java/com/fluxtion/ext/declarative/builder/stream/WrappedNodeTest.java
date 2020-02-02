@@ -16,9 +16,7 @@ public class WrappedNodeTest extends StreamInprocessTest {
     @Test
     public void mapPrimitiveFromString() {
         sep((c) -> {
-            
             StreamDataHandler handler = c.addNode(new StreamDataHandler());
-            
             Wrapper<StreamDataHandler> in = StreamBuilder.stream(handler);
             in.map(new MapFunctions()::String2Number, StreamDataHandler::stringValue).id("str2Number");
         });

@@ -18,6 +18,7 @@
 package com.fluxtion.generator.util;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.node.SEPConfig;
@@ -85,6 +86,10 @@ public class BaseSepInprocessTest {
 
     protected void onEvent(Event e) {
         sep.onEvent(e);
+    }
+    
+    protected void onGenericEvent(Object e){
+         onEvent(new GenericEvent<>( e));
     }
 
 }
