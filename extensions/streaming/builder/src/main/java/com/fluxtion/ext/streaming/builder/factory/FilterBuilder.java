@@ -20,7 +20,6 @@ package com.fluxtion.ext.streaming.builder.factory;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 
 /**
@@ -37,5 +36,9 @@ public class FilterBuilder {
     public static <T, S> Wrapper<T> filter(T instance, SerializableFunction<T, S> supplier, SerializableFunction<? extends S, Boolean> filter){
         return  stream(instance).filter(supplier, filter);
     }
+    
+    public static <T> Wrapper<T> filter(Class<T> clazz, SerializableFunction<? extends T, Boolean> filter) {
+        return select(clazz).filter(filter);
+    }   
     
 }
