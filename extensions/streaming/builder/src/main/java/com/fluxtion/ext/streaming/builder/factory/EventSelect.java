@@ -26,7 +26,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
  * Utility functions for selecting and creating a stream from incoming
- * {@link Event}
+ * {@link Event}'s
  *
  * @author Greg Higgins
  */

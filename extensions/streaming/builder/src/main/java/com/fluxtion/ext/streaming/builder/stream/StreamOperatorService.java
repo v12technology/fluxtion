@@ -35,7 +35,8 @@ import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunc
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import com.fluxtion.ext.streaming.builder.factory.BooleanBuilder;
+import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterEither;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -190,12 +191,12 @@ public class StreamOperatorService implements StreamOperator {
 
     @Override
     public <T> Wrapper<T> notiferMerge(Wrapper<T> source, Object notifier) {
-        return BooleanBuilder.filterEither(source, notifier);
+        return filterEither(source, notifier);
     }
 
     @Override
     public <T> Wrapper<T> notifierOverride(Wrapper<T> source, Object notifier) {
-        return BooleanBuilder.filter(source, notifier);
+        return FilterByNotificationBuilder.filter(source, notifier);
     }
 
     @Override

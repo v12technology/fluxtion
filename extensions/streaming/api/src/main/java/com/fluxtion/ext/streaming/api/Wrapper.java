@@ -61,7 +61,7 @@ public interface Wrapper<T> {
     default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<? extends S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
-    
+
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
         if(supplier.method().getReturnType().isPrimitive()){
             return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toDouble(), supplier);
