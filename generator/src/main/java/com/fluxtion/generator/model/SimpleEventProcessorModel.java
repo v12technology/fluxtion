@@ -1199,11 +1199,11 @@ public class SimpleEventProcessorModel {
                     }
                 }
             }
-            filterString = null;
-//            isIntFilter = true;
+            filterString = eh.filterString();
+            boolean isStrFilter = filterString!=null && !filterString.isEmpty();
             isIntFilter = filterId != Event.NO_ID;
 //            isFiltered = true;
-            isFiltered = filterId != Event.NO_ID;
+            isFiltered = filterId != Event.NO_ID || isStrFilter;
             isInverseFiltered = false;
         }
 

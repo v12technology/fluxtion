@@ -39,6 +39,9 @@ public class EventHandlerNamer implements NodeNameProducer {
             if (nodeToMap instanceof FilteredEventHandler
                     && ((FilteredEventHandler) nodeToMap).filterId() != Integer.MAX_VALUE) {
                 name += "_" + ((FilteredEventHandler) nodeToMap).filterId();
+            }else if(nodeToMap instanceof FilteredEventHandler
+                    && ((FilteredEventHandler) nodeToMap).filterString() != null) {
+                name += "_" + ((FilteredEventHandler) nodeToMap).filterString();
             }
             name = JavaGenHelper.getIdentifier(name);
         }
