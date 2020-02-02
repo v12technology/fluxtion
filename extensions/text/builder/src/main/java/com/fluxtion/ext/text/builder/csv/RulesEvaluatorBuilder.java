@@ -18,7 +18,7 @@ package com.fluxtion.ext.text.builder.csv;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
-import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.filter;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
