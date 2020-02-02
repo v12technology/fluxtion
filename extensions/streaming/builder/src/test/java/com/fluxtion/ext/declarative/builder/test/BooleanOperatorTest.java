@@ -1,12 +1,12 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.and;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nand;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nor;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.not;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.or;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.xor;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nor;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.xor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -16,7 +16,7 @@ import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
 

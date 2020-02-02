@@ -25,7 +25,7 @@ import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.outsideBand;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.add;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;

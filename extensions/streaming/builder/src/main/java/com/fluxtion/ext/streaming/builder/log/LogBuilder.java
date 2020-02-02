@@ -33,7 +33,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import com.fluxtion.ext.streaming.builder.Templates;
-import com.fluxtion.ext.streaming.builder.event.EventSelect;
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;

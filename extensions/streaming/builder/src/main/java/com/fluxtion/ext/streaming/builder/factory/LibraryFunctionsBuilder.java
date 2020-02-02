@@ -31,7 +31,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.*;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
 

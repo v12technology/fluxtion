@@ -17,11 +17,11 @@
 package com.fluxtion.ext.text.builder.csv;
 
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.and;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.nand;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.not;
-import static com.fluxtion.ext.streaming.builder.test.BooleanBuilder.or;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.filter;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;

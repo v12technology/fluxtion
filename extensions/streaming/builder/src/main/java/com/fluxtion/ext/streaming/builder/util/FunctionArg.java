@@ -22,7 +22,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.ConstantNumber;
 import com.fluxtion.ext.streaming.api.stream.Argument;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import java.lang.reflect.Method;
 
 /**

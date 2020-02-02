@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder.event;
+package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
