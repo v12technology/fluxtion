@@ -84,8 +84,8 @@ public class SepCompiler {
      * @throws IllegalAccessException exception during compile
      * @throws Exception exception during compile
      */
-    public void compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
-        compile(SepCompilerConfig.initFromSystemProperties());
+    public Class compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+        return compile(SepCompilerConfig.initFromSystemProperties());
     }
 
     /**
@@ -97,28 +97,20 @@ public class SepCompiler {
      * @throws IllegalAccessException exception during compile
      * @throws Exception exception during compile
      */
-    public void compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
-//        LOG.debug("starting SEP compiler");
-//        this.compilerConfig = compilerConfig;
-//        initialiseGenerator();
-//        initialiseNamingStrategy();
-//        locateFactories();
-//        processYamlConfig();
-//        processRootFactoryConfig();
-//        generateSep();
-//        LOG.debug("finished SEP compiler");
-        compile(compilerConfig, null);
+    public Class compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+        return compile(compilerConfig, null);
     }
 
-    public void compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
         locateFactories();
         processYamlConfig();
         processRootFactoryConfig();
-        generateSep();
+        Class returnClass = generateSep();
         LOG.debug("finished SEP compiler");
+        return returnClass;
     }
 
     private void initialiseGenerator(SEPConfig configOverride) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -135,7 +127,13 @@ public class SepCompiler {
                 compilerConfig.getCachedCompiler());
         //compiler
         if (configOverride == null) {
-            Class rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
+            Class rootClazz = null;
+            try{
+                rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
+            }catch(Exception e){
+                LOG.info("loading class from cached compiler");
+                rootClazz = compilerConfig.getCachedCompiler().forName(compilerConfig.getConfigClass(), compilerConfig.getClassLoader());
+            }
             builderConfig = (SEPConfig) rootClazz.newInstance();
         } else {
             builderConfig = configOverride;
@@ -206,8 +204,9 @@ public class SepCompiler {
 //        builderConfig.declarativeConfig = cfgActual;
     }
 
-    private void generateSep() throws Exception {
+    private Class generateSep() throws Exception {
         LOG.debug("generateSep");
+        Class returnClass = null;
         Generator generator = new Generator();
         builderConfig.formatSource = compilerConfig.isFormatSource();
         generator.templateSep(builderConfig);
@@ -218,7 +217,7 @@ public class SepCompiler {
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
-            javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
+            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
             LOG.debug("completed compiling source");
         }
         if(compilerConfig.isFormatSource()){
@@ -226,6 +225,7 @@ public class SepCompiler {
             new Thread(() -> Generator.formatSource(file)).start();
             LOG.debug("completed formatting source");
         }
+        return returnClass;
 //        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());
     }
 

@@ -27,6 +27,19 @@ public class StringPredicates {
     public static SerializableFunction<String, Boolean> is(String refString) {
         return new StringPredicates(refString)::equal;
     }
+
+    public static SerializableFunction<String, Boolean> startsWith(String refString) {
+        return new StringPredicates(refString)::startsWithString;
+    }
+
+    public static SerializableFunction<String, Boolean> contains(String refString) {
+        return new StringPredicates(refString)::containsString;
+    }
+
+    public static SerializableFunction<String, Boolean> matches(String refString) {
+        return new StringPredicates(refString)::matchesString;
+    }
+    
     public static SerializableFunction<CharSequence, Boolean> isEqual(String refString) {
         return new StringPredicates(refString)::equalCharSeq;
     }
@@ -48,7 +61,15 @@ public class StringPredicates {
         return refString.equals(testString);
     }
 
-    public boolean startsWith(String testString) {
+    public boolean startsWithString(String testString) {
         return refString.startsWith(testString);
+    }
+
+    public boolean containsString(String testString) {
+        return refString.contains(testString);
+    }
+
+    public boolean matchesString(String regex) {
+        return refString.matches(regex);
     }
 }

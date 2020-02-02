@@ -14,10 +14,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder;
+package com.fluxtion.generator;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.SepContext;
 import com.google.auto.service.AutoService;
 
 /**

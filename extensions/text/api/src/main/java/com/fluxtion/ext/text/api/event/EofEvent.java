@@ -19,7 +19,7 @@ package com.fluxtion.ext.text.api.event;
 import static com.fluxtion.ext.text.api.event.EventId.EOF_EVENT_ID;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.ReusableEventHandler;
-import com.fluxtion.ext.streaming.api.SepContext;
+import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**

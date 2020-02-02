@@ -1,5 +1,5 @@
 
-Lists of 67 third-party dependencies.
+Lists of 66 third-party dependencies.
      (Public Domain) AOP alliance (aopalliance:aopalliance:1.0 - http://aopalliance.sourceforge.net)
      (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Classic Module (ch.qos.logback:logback-classic:1.1.2 - http://logback.qos.ch)
      (Eclipse Public License - v 1.0) (GNU Lesser General Public License) Logback Core Module (ch.qos.logback:logback-core:1.1.2 - http://logback.qos.ch)
@@ -29,7 +29,6 @@ Lists of 67 third-party dependencies.
      (The Apache Software License, Version 2.0) javax.inject (javax.inject:javax.inject:1 - http://code.google.com/p/atinject/)
      (Eclipse Public License - v 1.0) JUnit (junit:junit:4.12 - http://junit.org)
      (The Apache Software License, Version 2.0) TypeTools (net.jodah:typetools:0.4.0 - http://github.com/jhalterman/typetools/)
-     (The Apache Software License, Version 2.0) OpenHFT/Java-Runtime-Compiler (net.openhft:compiler:2.3.4 - http://chronicle.software/java-parent-pom/compiler)
      (GNU Lesser General Public License Version 2.1, February 1999) JGraphT (net.sf.jgrapht:jgrapht:0.8.3 - http://www.jgrapht.org)
      (The Apache Software License, Version 2.0) Mirror (net.vidageek:mirror:1.6.1 - http://projetos.vidageek.net/mirror)
      (The Apache Software License, Version 2.0) Apache Commons Lang (org.apache.commons:commons-lang3:3.4 - http://commons.apache.org/proper/commons-lang/)

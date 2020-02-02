@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2020, V12 Technology Ltd.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,29 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.api.time;
-
-import com.fluxtion.api.event.Event;
+package net.openhft.compiler;
 
 /**
- * A tick event notifies a clock to update its wall clock time. Any nodes that
- * depend upon clock will check their state and fire events as necessary.
- *
+ * A ClassLoader that exposes the defineClass method from ClassLoader base class
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class Tick extends Event {
+public class MyClassLoader extends ClassLoader{
+
+    private static int count;
+    private String myName;
+
+    public MyClassLoader(ClassLoader parent) {
+        super(parent);
+        myName = "Fluxtion-classloader" + count;
+    }
+  
+    Class<?> defineClassOverride(String className, byte[] b, int off, int len) throws ClassFormatError
+    {
+        return defineClass(className, b, off, len, null);
+    }
+
+    public String getName() {
+        return myName;
+    }
 
 }

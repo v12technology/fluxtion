@@ -30,4 +30,8 @@ public class CharEvent extends Event{
     public CharEvent(char id) {
         super(ID, id);
     }
+    
+    public char getChar(){
+        return (char) filterId();
+    }
 }

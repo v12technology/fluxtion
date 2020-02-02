@@ -14,22 +14,22 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.api.time;
+package com.fluxtion.api.time;
 
 import com.fluxtion.api.event.TimeEvent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.GenericEvent;
 
 /**
+ * A clock instance in a static event processor, use the @Inject annotation to
+ * ensure the same of instance of the clock is used for all nodes.
  *
  * @author V12 Technology Ltd.
  */
-public class Clock implements Auditor {
+public class Clock {
 
     private long eventTime;
-    private long ingestTime;
     private ClockStrategy wallClock;
 
     @EventHandler
@@ -37,7 +37,7 @@ public class Clock implements Auditor {
         return true;
     }
 
-    @EventHandler
+    @EventHandler(propagate = false)
     public boolean timeUpdate(TimeEvent time) {
         eventTime = time.getEventTime();
         return true;
@@ -48,30 +48,16 @@ public class Clock implements Auditor {
         this.wallClock = event.value;
     }
 
-    @Override
-    public void eventReceived(Object event) {
-        ingestTime = getWallClockTime();
-        eventTime = ingestTime;
-    }
-
     public long getEventTime() {
         return eventTime;
     }
 
     public long getWallClockTime() {
-        return wallClock.getWallClockTIme();
+        return wallClock.getWallClockTime();
     }
 
-    public long getIngestTime() {
-        return ingestTime;
-    }
-
-    @Override
-    public void nodeRegistered(Object node, String nodeName) {
-    }
-    
     @Initialise
-    public void init(){
+    public void init() {
         wallClock = System::currentTimeMillis;
     }
 

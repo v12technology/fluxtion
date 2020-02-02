@@ -1,3 +1,4 @@
+
 /* 
  * Copyright (C) 2018 V12 Technology Ltd.
  *
@@ -16,6 +17,8 @@
  */
 package com.fluxtion.ext.streaming.api.stream;
 
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -26,6 +29,57 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
  */
 public class NumericPredicates {
 
+    
+    public static NumericPredicates num(double val){
+        return new NumericPredicates(val);
+    }
+    
+    public static NumericPredicates num(double val, double val2){
+        return new NumericPredicates(val, val2);
+    }
+    
+    public static NumericPredicates num(double val1, double val2, String cfgKey){
+        NumericPredicatesDynamic dp = new NumericPredicatesDynamic();
+        dp.doubleLimit_0 = val1;
+        dp.doubleLimit_1 = val2;
+        dp.key = cfgKey;
+        return dp;
+    }
+    
+    public static NumericPredicates num(double val, String cfgKey){
+        NumericPredicatesDynamic dp = new NumericPredicatesDynamic();
+        dp.doubleLimit_0 = val;
+        dp.key = cfgKey;
+        return dp;
+    }
+
+    public static NumericPredicates num(String cfgKey){
+        NumericPredicatesDynamic dp = new NumericPredicatesDynamic();
+        dp.key = cfgKey;
+        return dp;
+    }
+    
+    public static class FilterConfig extends Event{
+        private double val;
+
+        public FilterConfig(String key, double val) {
+            this.val = val;
+            this.filterString = key;
+        }
+        
+    }
+    
+    public static class NumericPredicatesDynamic extends NumericPredicates{
+        
+        private transient String key;
+
+        @EventHandler(filterVariable = "key", propagate = false)
+        public void configure(FilterConfig cfg){
+            this.doubleLimit_0 = cfg.val;
+        }
+        
+    }
+    
     public static <T extends Double> SerializableFunction<T, Boolean> equal(double test) {
         return new NumericPredicates(test)::eq;
     }

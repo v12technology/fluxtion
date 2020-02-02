@@ -75,12 +75,12 @@ public class Creator {
     private Map<String, EventDefinition> id2EventMap;
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Creator.class);
 
-    public void createModel(CreatorConfig config) throws Exception {
+    public Class createModel(CreatorConfig config) throws Exception {
         this.config = config;
         buildGraph();
         generateAndCompileEvents();
         generateAndCompileNodes();
-        generateAndCompileSepConfig();
+        return generateAndCompileSepConfig();
     }
 
     private void buildGraph() {
@@ -104,7 +104,7 @@ public class Creator {
     }
 
     private void generateAndCompileNodes() {
-
+        LOG.debug("generating nodes");
         graph.vertexSet().stream().filter(this::isNotCompiled).forEach((node) -> {
             try {
                 LOG.debug("building node {}", node);
@@ -274,18 +274,19 @@ public class Creator {
         return clazz;
     }
 
-    private void compile(String fqn) {
+    private Class compile(String fqn) {
         try {
             File file = new File(GenerationContext.SINGLETON.getPackageDirectory(), ClassUtils.getShortClassName(fqn) + ".java");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
             String javaCode = GenerationContext.readText(file.getCanonicalPath());
-            javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
+            return javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Creator.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("cannot generate creator class", ex);
         }
     }
 
-    private void generateAndCompileSepConfig() throws Exception {
+    private Class generateAndCompileSepConfig() throws Exception {
         LOG.debug("generate and compile SEPConfig");
         final String className = config.getSepCfgShortClassName();
         final String packageName = config.getSepCfgPackageName();
@@ -356,7 +357,7 @@ public class Creator {
                 //                .
                 .build();
         javaFile.writeTo(GenerationContext.SINGLETON.getSourceRootDirectory());
-        compile(config.getOutputSepConfigClass());
+        return compile(config.getOutputSepConfigClass());
     }
 
     @Data

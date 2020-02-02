@@ -17,6 +17,7 @@
  */
 package com.fluxtion.creator;
 
+import com.fluxtion.builder.generation.GenerationContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,13 @@ public class Node extends TypeDefinition {
     }
 
     public <T> Class<T> getNodeClass() throws ClassNotFoundException {
-        return (Class<T>) Class.forName(getType());
+       Class<T> forName = null;
+        try{
+            forName = (Class<T>) Class.forName(getType());
+       } catch(Exception e){
+          forName = GenerationContext.SINGLETON.forName(getType());
+       }
+       return forName;
     }
 
     public void setRef(String nodeId, String fieldName) {

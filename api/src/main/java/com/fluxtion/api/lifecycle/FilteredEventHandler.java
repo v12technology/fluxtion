@@ -36,5 +36,9 @@ import com.fluxtion.api.event.Event;
 public interface FilteredEventHandler<T extends Event> extends EventHandler<T> {
 
     int filterId();
+    
+    default String filterString(){
+        return null;
+    }
 
 }

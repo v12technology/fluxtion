@@ -99,4 +99,10 @@ public @interface SepInstance {
      * @return flag to control generation conditional branching
      */
     boolean supportDirtyFiltering() default true;
+    
+    /**
+     * call the lifecycle initialise method on the generated SEP
+     * @return 
+     */
+    boolean initialise() default true;
 }

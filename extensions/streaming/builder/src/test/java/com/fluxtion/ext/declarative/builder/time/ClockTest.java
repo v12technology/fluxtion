@@ -24,11 +24,12 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
-import com.fluxtion.ext.streaming.api.time.Clock;
-import com.fluxtion.ext.streaming.api.time.ClockStrategy;
-import com.fluxtion.ext.streaming.api.time.Tick;
+import com.fluxtion.api.time.Clock;
+import com.fluxtion.api.time.ClockStrategy;
+import com.fluxtion.api.time.Tick;
 import com.fluxtion.api.event.TimeEvent;
 import static org.hamcrest.CoreMatchers.is;
+import org.junit.Assert;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
@@ -43,6 +44,7 @@ public class ClockTest extends StreamInprocessTest {
         sep(c -> c.addPublicNode(new MyClockProxy(), "proxy"));
 //        sep(com.fluxtion.ext.declarative.builder.time.clocktest_testclock_1559501154128.TestSep_testClock.class);
         MyClockProxy proxy = getField("proxy");
+        Assert.assertEquals(proxy.clock, proxy.clock2);
         MutableNumber n = new MutableNumber();
         onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
         //
@@ -54,23 +56,19 @@ public class ClockTest extends StreamInprocessTest {
         onEvent(tick);
         assertThat(proxy.tickCount, is(3));
         assertThat(proxy.clock.getWallClockTime(), is(1L));
-        assertThat(proxy.clock.getIngestTime(), is(1L));
         assertThat(proxy.clock.getEventTime(), is(50L));
         //
         n.set(100);
         assertThat(proxy.clock.getWallClockTime(), is(100L));
-        assertThat(proxy.clock.getIngestTime(), is(1L));
         assertThat(proxy.clock.getEventTime(), is(50L));
         //tick
         onEvent(tick);
         assertThat(proxy.clock.getWallClockTime(), is(100L));
-        assertThat(proxy.clock.getIngestTime(), is(100L));
         assertThat(proxy.clock.getEventTime(), is(50L));
         //send an event
         n.set(1900);
         onEvent(new TestTimeEvent());
         assertThat(proxy.clock.getWallClockTime(), is(1900L));
-        assertThat(proxy.clock.getIngestTime(), is(1900L));
         assertThat(proxy.clock.getEventTime(), is(200L));
 
     }
@@ -90,6 +88,8 @@ public class ClockTest extends StreamInprocessTest {
 
         @Inject
         public Clock clock;
+        @Inject
+        public Clock clock2;
         public int tickCount;
 
         @OnEvent
