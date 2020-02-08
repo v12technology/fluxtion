@@ -208,7 +208,6 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
 
     private void pushEvent(EventHandler handler, Event e) {
         handler.onEvent(e);
-        handler.afterEvent();
     }
 
     private E initialise() {
