@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 ${MODEL.imports}
 #end
 
+@SuppressWarnings({"deprecation","unchecked"})
 public class ${debugClassName} implements EventHandler, BatchHandler, Lifecycle {
 
 //Node declarations
