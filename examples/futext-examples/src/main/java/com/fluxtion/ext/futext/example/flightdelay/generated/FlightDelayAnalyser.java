@@ -26,6 +26,15 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 
+/*
+ * <pre>
+ * generation time   : 2020-02-08T13:13:51.758885400
+ * generator version : 1.8.3-SNAPSHOT
+ * api version       : 1.8.3-SNAPSHOT
+ * </pre>
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations
