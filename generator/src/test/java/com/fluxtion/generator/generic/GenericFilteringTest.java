@@ -22,19 +22,20 @@ import static org.junit.Assert.assertThat;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class GenericFIlteringTest extends BaseSepTest {
+public class GenericFilteringTest extends BaseSepInprocessTest {
 
     @Test
     public void testClassFilter() {
-        buildAndInitSep(FilterBuilder.class);
+        sep(cfg ->{
+            cfg.addPublicNode(new TestHandler(), "handler");
+        });
         TestHandler testHandler = getField("handler");
         onEvent(new ClassFilterEvent(String.class));
         onEvent(new ClassFilterEvent(Double.class));
@@ -92,13 +93,6 @@ public class GenericFIlteringTest extends BaseSepTest {
         }
         
 
-    }
-
-    public static class FilterBuilder extends SEPConfig {
-
-        {
-            addPublicNode(new TestHandler(), "handler");
-        }
     }
 
 }

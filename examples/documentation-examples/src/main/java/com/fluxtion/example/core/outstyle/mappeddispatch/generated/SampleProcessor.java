@@ -27,9 +27,9 @@ import java.util.HashMap;
 
 /*
  * <pre>
- * generation time   : 2020-02-08T13:13:46.136607
- * generator version : 1.8.3-SNAPSHOT
- * api version       : 1.8.3-SNAPSHOT
+ * generation time   : 2020-02-08T21:08:10.765
+ * generator version : ${generator_version_information}
+ * api version       : ${api_version_information}
  * </pre>
  * @author Greg Higgins
  */
