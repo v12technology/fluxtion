@@ -15,19 +15,18 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.declarative.builder.time;
+package com.fluxtion.generator.time;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.api.time.Tick;
 import com.fluxtion.api.event.TimeEvent;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import static org.junit.Assert.assertThat;
@@ -37,7 +36,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ClockTest extends StreamInprocessTest {
+public class ClockTest extends BaseSepInprocessTest {
 
     @Test
     public void testClock() {
@@ -94,6 +93,10 @@ public class ClockTest extends StreamInprocessTest {
 
         @OnEvent
         public void update() {
+        }
+        
+        @EventHandler
+        public void tickHandler(Tick e){
             tickCount++;
         }
         

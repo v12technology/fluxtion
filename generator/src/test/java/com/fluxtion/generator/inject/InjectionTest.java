@@ -26,10 +26,13 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.time.Clock;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.Map;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -38,11 +41,13 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class InjectionTest extends BaseSepTest {
+public class InjectionTest extends BaseSepInprocessTest {
 
     @Test
     public void testInjectionTree() {
-        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSep.class);
+        sep(cfg -> {
+            cfg.addPublicNode(new WordProcessor(), "wordProcessor");
+        });
         WordProcessor processor = getField("wordProcessor");
         sep.onEvent(new CharEvent('c'));
         assertTrue(processor.testAndClear(0, 'c'));
@@ -58,7 +63,9 @@ public class InjectionTest extends BaseSepTest {
 
     @Test
     public void testInjectionNoFactoryTree() {
-        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactory.class);
+        sep(cfg -> {
+            cfg.addPublicNode(new WordProcessorNoFactory(), "wordProcessor");
+        });
         WordProcessorNoFactory processor = getField("wordProcessor");
         Assert.assertEquals(34, processor.handler.intVal);
         Assert.assertEquals("someName", processor.handler.stringVal);
@@ -66,78 +73,74 @@ public class InjectionTest extends BaseSepTest {
 
     @Test
     public void testInjectionNoFactoryVariablConfigTree() {
-        com.fluxtion.api.lifecycle.EventHandler sep = buildAndInitSep(WordProcessorSepNoFactoryConfigVariable.class);
+        sep(cfg -> {
+            cfg.addPublicNode(new WordProcessorNoFactoryVariableConfig(), "wordProcessor");
+        });
         WordProcessorNoFactoryVariableConfig processor = getField("wordProcessor");
         Assert.assertEquals(10, processor.handler.intVal);
         Assert.assertEquals("variable val", processor.handler.stringVal);
     }
     
-    public static class WordProcessorSep extends SEPConfig {
-
-        {
-            addPublicNode(new WordProcessor(), "wordProcessor");
-        }
+    @Test
+    public void injectFinalField(){
+        sep(cfg -> {
+            cfg.addPublicNode(new InjectClockWithSetter(), "injectedClock");
+        });
+        InjectClockWithSetter inj = getField("injectedClock");
+        Assert.assertNotNull(inj.getClock());
     }
 
-    public static class WordProcessorSepNoFactory extends SEPConfig {
-
-        {
-            addPublicNode(new WordProcessorNoFactory(), "wordProcessor");
-        }
+    @Getter
+    @Setter
+    public static class InjectClockWithSetter {
+        
+        @Inject
+        private Clock clock;
+                
     }
-
-    public static class WordProcessorSepNoFactoryConfigVariable extends SEPConfig {
-
-        {
-            addPublicNode(new WordProcessorNoFactoryVariableConfig(), "wordProcessor");
-        }
-    }
-    
-    
 
     public static class NoFactoryCharHandler {
 
         private char receivedChar;
-        
+
         public String stringVal;
         public int intVal;
 
         @EventHandler
         public void onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
-//            //System.out.println("received char:"+ charEvent.filterId());
         }
     }
-    
-    
+
     public static class WordProcessorNoFactoryVariableConfig {
-        
+
         public int parentIntVal = 10;
         public String parentStringVal = "variable val";
-        
+
         @Inject
         @ConfigVariable(key = "intVal", field = "parentIntVal")
         @ConfigVariable(key = "stringVal", field = "parentStringVal")
         public NoFactoryCharHandler handler;
-        
+
         @OnEvent
-        public void update(){
-            
+        public void update() {
+
         }
     }
-    
+
     public static class WordProcessorNoFactory {
+
         @Inject
         @Config(key = "intVal", value = "34")
         @Config(key = "stringVal", value = "someName")
         public NoFactoryCharHandler handler;
-        
+
         @OnEvent
-        public void update(){
-            
+        public void update() {
+
         }
     }
-    
+
     public static class WordProcessor {
 
         @Inject

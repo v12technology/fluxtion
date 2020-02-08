@@ -32,6 +32,7 @@ public class ClockFactory implements NodeFactory<Clock> {
 
     @Override
     public Clock createNode(Map config, NodeRegistry registry) {
+        registry.registerAuditor(SINGLETON, "clock");
         return SINGLETON;
     }
 

@@ -16,9 +16,10 @@
  */
 package com.fluxtion.api.time;
 
-import com.fluxtion.api.event.TimeEvent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
 
 /**
@@ -27,21 +28,27 @@ import com.fluxtion.api.event.GenericEvent;
  *
  * @author V12 Technology Ltd.
  */
-public class Clock {
+public class Clock implements Auditor{
 
     private long eventTime;
     private ClockStrategy wallClock;
 
-    @EventHandler
-    public boolean tick(Tick tock) {
-        return true;
+    @Override
+    public void eventReceived(Event event) {
+        eventTime = event.getEventTime();
     }
 
-    @EventHandler(propagate = false)
-    public boolean timeUpdate(TimeEvent time) {
-        eventTime = time.getEventTime();
-        return true;
+    @Override
+    public void eventReceived(Object event) {
+        if(Event.class.isAssignableFrom(event.getClass())){
+            eventReceived((Event)event);
+        }else{
+            eventTime = getWallClockTime();
+        }
     }
+
+    @Override
+    public void nodeRegistered(Object node, String nodeName) {/*NoOp*/}
 
     @EventHandler(propagate = false)
     public void setClockStrategy(GenericEvent<ClockStrategy> event) {
@@ -57,6 +64,7 @@ public class Clock {
     }
 
     @Initialise
+    @Override
     public void init() {
         wallClock = System::currentTimeMillis;
     }
