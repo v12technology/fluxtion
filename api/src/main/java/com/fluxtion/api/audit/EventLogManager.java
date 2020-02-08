@@ -22,6 +22,7 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,7 +50,7 @@ public class EventLogManager implements Auditor {
     private LogRecord logRecord;
     private Map<String, EventLogger> node2Logger;
     private boolean clearAfterPublish;
-    private static Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
     public boolean trace = false;
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
@@ -108,7 +109,7 @@ public class EventLogManager implements Auditor {
         final EventLogControlEvent.LogLevel level = newConfig.getLevel();
         if (level != null
                 && (logRecord.groupingId == null || logRecord.groupingId.equals(newConfig.getGroupId()))) {
-            LOGGER.info("updating event log config:" + newConfig);
+            LOGGER.log(Level.INFO, "updating event log config:{0}", newConfig);
             node2Logger.computeIfPresent(newConfig.getSourceId(), (t, u) -> {
                 u.setLevel(level);
                 return u;
