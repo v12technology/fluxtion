@@ -47,6 +47,7 @@ import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 import org.reflections.ReflectionUtils;
 import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
@@ -401,10 +402,16 @@ public class SepJavaSourceModelHugeFilter {
             } else {
                 String args = "";
                 List<Field.MappedField> constructorArgs = model.constructorArgs(field.instance);
-                args = constructorArgs.stream().map(f -> f.value()).collect(Collectors.joining(", "));
-//                args = constructorArgs.stream().map(f -> f.value()).collect(Collectors.joining(", "));
-                declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
-                        .append(" = new ").append(fqnBuilder).append("(" + args + ");");
+                if(String.class.isAssignableFrom(field.instance.getClass())){
+                    declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
+                            .append(" = ").append("\"")
+                            .append(escapeJava((String) field.instance))
+                            .append("\";");
+                }else{
+                    args = constructorArgs.stream().map(f -> f.value()).collect(Collectors.joining(", "));
+                    declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
+                            .append(" = new ").append(fqnBuilder).append("(" + args + ");");
+                }
             }
 
             final String declaration = declarationBuilder.toString();

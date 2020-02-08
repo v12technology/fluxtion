@@ -18,18 +18,21 @@
 package com.fluxtion.generator.constructor;
 
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
  *
  * @author gregp
  */
-public class EscapeStringTest extends BaseSepTest {
+public class EscapeStringTest extends BaseSepInprocessTest {
 
     private static String c1 = "\"t\t";
     private static String pubString = "''t\t\n\"\\";
@@ -40,21 +43,40 @@ public class EscapeStringTest extends BaseSepTest {
 
     @Test
     public void escapeTest() {
-        buildAndInitSep(StringBuilderSep.class);
+        sep(cfg -> {
+            final SampleData data = new SampleData(c1);
+            final SampleData data2 = new SampleData("hhh", STRING_LIST, arrVals);
+            data.pubString = pubString;
+            data.setPropString(propString);
+            data.setStringListProp(stringListProp);
+            cfg.addPublicNode(data, "data");
+            cfg.addPublicNode(data2, "data2");
+            cfg.addPublicNode(new CharData(('\n')), "charData");
+        });
         SampleData data1 = getField("data");
         SampleData data2 = getField("data2");
         CharData charData = getField("charData");
-        Assert.assertEquals(c1, data1.c1);
-        Assert.assertEquals(pubString, data1.pubString);
-        Assert.assertEquals(propString, data1.getPropString());
-        Assert.assertEquals(stringListProp, data1.getStringListProp());
-        Assert.assertEquals(STRING_LIST, data2.stringList);
-        Assert.assertArrayEquals(arrVals, data2.arrVals);
-        Assert.assertEquals('\n', charData.getC());
+        assertEquals(c1, data1.c1);
+        assertEquals(pubString, data1.pubString);
+        assertEquals(propString, data1.getPropString());
+        assertEquals(stringListProp, data1.getStringListProp());
+        assertEquals(STRING_LIST, data2.stringList);
+        assertArrayEquals(arrVals, data2.arrVals);
+        assertEquals('\n', charData.getC());
     }
 
-    
-    public static class CharData{
+    @Test
+    public void stringAsNode() {
+        sep(cfg -> {
+            cfg.addNode("TEST", "str");
+            cfg.addNode("\\u001%t", "str2");
+        });
+        assertEquals("TEST", getField("str"));
+        assertEquals("\\u001%t", getField("str2"));
+    }
+
+    public static class CharData {
+
         private final char c;
 
         public CharData(char c) {
@@ -64,9 +86,9 @@ public class EscapeStringTest extends BaseSepTest {
         public char getC() {
             return c;
         }
-        
+
     }
-    
+
     public static class SampleData {
 
         private final String c1;
@@ -106,22 +128,6 @@ public class EscapeStringTest extends BaseSepTest {
 
         public void setStringListProp(List<String> stringListProp) {
             this.stringListProp = stringListProp;
-        }
-
-    }
-
-    public static class StringBuilderSep extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            final SampleData data = new SampleData(c1);
-            final SampleData data2 = new SampleData("hhh", STRING_LIST, arrVals);
-            data.pubString = pubString;
-            data.setPropString(propString);
-            data.setStringListProp(stringListProp);
-            addPublicNode(data, "data");
-            addPublicNode(data2, "data2");
-            addPublicNode(new CharData(('\n')), "charData");
         }
 
     }
