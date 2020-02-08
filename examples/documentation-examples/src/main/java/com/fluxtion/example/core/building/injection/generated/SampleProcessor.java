@@ -23,6 +23,15 @@ import com.fluxtion.example.core.building.injection.FilteredDataHandler;
 import com.fluxtion.example.core.building.injection.InjectingDataProcessor;
 import com.fluxtion.example.shared.DataEvent;
 
+/*
+ * <pre>
+ * generation time   : 2020-02-08T13:13:38.497678400
+ * generator version : 1.8.3-SNAPSHOT
+ * api version       : 1.8.3-SNAPSHOT
+ * </pre>
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations

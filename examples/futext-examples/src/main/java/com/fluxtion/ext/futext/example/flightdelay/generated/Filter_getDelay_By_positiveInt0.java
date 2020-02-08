@@ -37,6 +37,7 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
   }
 
   @OnEvent
+  @SuppressWarnings("unchecked")
   public boolean onEvent() {
     boolean oldValue = result;
     result =

@@ -24,6 +24,15 @@ import com.fluxtion.example.core.building.imperative.SubNode;
 import com.fluxtion.example.shared.MyEvent;
 import com.fluxtion.example.shared.MyEventHandler;
 
+/*
+ * <pre>
+ * generation time   : 2020-02-08T13:13:39.396735600
+ * generator version : 1.8.3-SNAPSHOT
+ * api version       : 1.8.3-SNAPSHOT
+ * </pre>
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations

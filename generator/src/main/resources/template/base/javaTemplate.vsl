@@ -24,6 +24,14 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 ${MODEL.imports}
 #end
 
+/*
+* <pre>
+* generation time   : ${build_time}
+* generator version : ${generator_version_information}
+* api version       : ${api_version_information}
+* </pre>
+* @author Greg Higgins 
+*/
 @SuppressWarnings({"deprecation","unchecked"})
 public class ${className} implements EventHandler, BatchHandler, Lifecycle {
 

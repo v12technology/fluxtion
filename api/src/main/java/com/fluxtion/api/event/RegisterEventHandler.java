@@ -17,6 +17,8 @@
 package com.fluxtion.api.event;
 
 import com.fluxtion.api.lifecycle.EventHandler;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * An event that registers an {@link EventHandler} as a sink in another SEP. The
@@ -29,6 +31,8 @@ import com.fluxtion.api.lifecycle.EventHandler;
  *
  * @author V12 Technology Ltd.
  */
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class RegisterEventHandler extends Event {
 
     private final EventHandler handler;
