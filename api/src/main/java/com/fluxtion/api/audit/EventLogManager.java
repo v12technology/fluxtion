@@ -98,7 +98,9 @@ public class EventLogManager implements Auditor {
 
     @Override
     public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
-        node2Logger.getOrDefault(nodeName, NullEventLogger.INSTANCE).logNodeInvoation(traceLevel);
+        EventLogger logger = node2Logger.getOrDefault(nodeName, NullEventLogger.INSTANCE);
+        logger.logNodeInvoation(traceLevel);
+        logger.log("method", methodName, traceLevel);
     }
 
     @EventHandler(propagate = false)
