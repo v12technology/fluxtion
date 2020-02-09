@@ -21,7 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.audit.EventLogControlEvent;
+import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.api.audit.EventLogManager;
+import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.generation.NodeNameProducer;
+import com.fluxtion.builder.time.ClockFactory;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
@@ -120,6 +125,25 @@ public class SEPConfig {
      */
     public void mapClass(String originalFqn, String mappedFqn) {
         class2replace.put(originalFqn, mappedFqn);
+    }
+    
+    /**
+     * adds a clock to the generated SEP.
+     * @return the clock in generated SEP
+     */
+    public Clock clock(){
+        addNode(clock, "clock");
+        addAuditor(clock, "clock");
+        return clock;
+    }
+    
+    /**
+     * Add an {@link EventLogManager} auditor to the generated SEP. Specify 
+     * the level at which method tracing will take place.
+     * @param tracingLogLevel 
+     */
+    public void addEventAudit(LogLevel tracingLogLevel){
+        addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
     /**
@@ -225,6 +249,8 @@ public class SEPConfig {
      * classes and replaced with user classes.
      */
     public final Map<String, String> class2replace = new HashMap<>();
+    
+    private final Clock clock = ClockFactory.SINGLETON;
 
     @Override
     public String toString() {
