@@ -22,7 +22,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.8.7-SNAPSHOT</version>
+        <version>1.8.8-SNAPSHOT</version>
         <relativePath>../../../poms/parent-root/pom.xml</relativePath>
     </parent>
 
