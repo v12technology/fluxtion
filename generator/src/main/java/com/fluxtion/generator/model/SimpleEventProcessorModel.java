@@ -291,7 +291,15 @@ public class SimpleEventProcessorModel {
             registrationListenerFields.add(new Field(instance.getClass().getCanonicalName(), name, instance, true));
         });
         Collections.sort(nodeFields, (Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
-        Collections.sort(registrationListenerFields, (Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
+        //sort by topological order
+        Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
+            int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
+            int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
+            if(idx1>-1 && idx2>-1){
+                return idx2 - idx1;
+            }
+            return comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name));
+        });
     }
 
     private void generatePropertyAssignments() {
