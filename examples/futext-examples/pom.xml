@@ -29,8 +29,8 @@
         <profile>
             <id>fluxtion</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
-                <!--<activeByDefault>false</activeByDefault>-->
+                <activeByDefault>false</activeByDefault>
+                <!--<activeByDefault>true</activeByDefault>-->
             </activation>
             <build>
                 <plugins>
