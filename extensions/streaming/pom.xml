@@ -14,7 +14,7 @@ obtained from V12 Technology Limited.
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>streaming-pom</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.9.0</version>
     <packaging>pom</packaging>
     <name>fluxtion :: ext :: streaming</name>
     <modules>
