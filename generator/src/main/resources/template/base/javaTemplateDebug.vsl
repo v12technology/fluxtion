@@ -46,7 +46,7 @@ ${MODEL.filterConstantDeclarations}
 ${MODEL.nodeMemberAssignments}
     }
     @Override
-    public void onEvent(com.fluxtion.runtime.event.Event event) {
+    public void onEvent(Object event) {
 ${MODEL.debugEventDispatch}
     }
 

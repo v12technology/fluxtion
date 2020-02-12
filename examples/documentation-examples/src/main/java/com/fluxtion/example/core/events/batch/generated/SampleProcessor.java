@@ -26,9 +26,9 @@ import com.fluxtion.example.shared.DataEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-08T21:08:08.738
- * generator version : ${generator_version_information}
- * api version       : ${api_version_information}
+ * generation time   : 2020-02-12T21:49:15.806943900
+ * generator version : 1.8.7-SNAPSHOT
+ * api version       : 1.8.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -46,7 +46,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public SampleProcessor() {}
 
   @Override
-  public void onEvent(com.fluxtion.api.event.Event event) {
+  public void onEvent(Object event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.DataEvent"):
         {

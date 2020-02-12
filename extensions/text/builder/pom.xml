@@ -43,6 +43,9 @@ along with this program.  If not, see
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

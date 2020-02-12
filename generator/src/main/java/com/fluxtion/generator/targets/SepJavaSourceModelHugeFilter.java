@@ -494,7 +494,6 @@ public class SepJavaSourceModelHugeFilter {
      * @param isDebug
      */
     private void generateClassBasedDipsatcher(boolean isDebug) {
-        String dispatchString = "        switch (event.eventId()) {\n";
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
         boolean idDispatch = false;
         boolean noIdDispatch = false;
@@ -509,65 +508,33 @@ public class SepJavaSourceModelHugeFilter {
 
         for (Class eventId : clazzList) {
             String className = getClassName(eventId.getCanonicalName());
-            if (hasIdField(eventId)) {
-                dispatchString += String.format("%12scase (%s.ID):{%n", "", className);
-                dispatchString += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
-                if (isDebug) {
-                    dispatchString += String.format("%16sdebugger.eventInvocation(event);%n", "");
-                }
-                Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
-                Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
-                dispatchString += buildFiteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
-                dispatchString += String.format("%16sbreak;%n", "");
-                dispatchString += String.format("%12s}%n", "");
-                idDispatch = true;
-            } else {
-                dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
-                dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
-                if (isDebug) {
-                    dispatchStringNoId += String.format("%16sdebugger.eventInvocation(event);%n", "");
-                }
-                Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
-                Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
-                dispatchStringNoId += buildFiteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
-                dispatchStringNoId += String.format("%16sbreak;%n", "");
-                dispatchStringNoId += String.format("%12s}%n", "");
-                noIdDispatch = true;
+            dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
+            dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
+            if (isDebug) {
+                dispatchStringNoId += String.format("%16sdebugger.eventInvocation(event);%n", "");
             }
+            Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
+            Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
+            dispatchStringNoId += buildFiteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
+            dispatchStringNoId += String.format("%16sbreak;%n", "");
+            dispatchStringNoId += String.format("%12s}%n", "");
+            noIdDispatch = true;
         }
-        dispatchString += String.format("%8s}%n", "");
         dispatchStringNoId += String.format("%8s}%n", "");
         if (isInlineEventHandling) {
-            dispatchString += String.format("%8safterEvent();%n", "");
             dispatchStringNoId += String.format("%8safterEvent();%n", "");
         }
-
-        if (!idDispatch) {
-            dispatchString = "";
-        }
-        if (!noIdDispatch) {
-            dispatchStringNoId = "";
-        }
-
-        dispatchString += dispatchStringNoId;
         //build a noIddispatchString - just copy method above and only
         //process <Event>.ID free events.
         if (isDebug) {
-            debugEventDispatch = "//DEBUG\n" + dispatchString;
+            debugEventDispatch = "//DEBUG\n" + dispatchStringNoId;
         } else {
-            eventDispatch = dispatchString + "\n";
+            eventDispatch = dispatchStringNoId + "\n";
         }
     }
 
     private static boolean hasIdField(Class e) {
-        Set<java.lang.reflect.Field> allFields = ReflectionUtils.getFields(e, Predicates.and(
-                withName("ID"),
-                withType(int.class),
-                withModifier(Modifier.PUBLIC),
-                withModifier(Modifier.STATIC),
-                withModifier(Modifier.FINAL)
-        ));
-        return allFields.size() > 0;
+        return false;
     }
 
     private static final String s4 = "    ";

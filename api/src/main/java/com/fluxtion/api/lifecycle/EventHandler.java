@@ -32,11 +32,11 @@ import com.fluxtion.api.event.Event;
  * @param <T> The type of {@link com.fluxtion.api.event.Event Event} processed
  * by this handler
  */
-public interface EventHandler<T extends Event> {
+public interface EventHandler<T> {
 
     EventHandler NULL_EVENTHANDLER = new EventHandler() {
         @Override
-        public void onEvent(Event e) {
+        public void onEvent(Object e) {
         }
 
         @Override
@@ -64,7 +64,7 @@ public interface EventHandler<T extends Event> {
      *
      * @return Class of {@link com.fluxtion.api.event.Event Event} to process
      */
-    default Class<? extends Event> eventClass() {
+    default Class eventClass() {
         return null;
     }
 

@@ -33,7 +33,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public interface FilteredEventHandler<T extends Event> extends EventHandler<T> {
+public interface FilteredEventHandler<T> extends EventHandler<T> {
 
     int filterId();
     

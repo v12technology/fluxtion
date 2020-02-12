@@ -64,7 +64,7 @@ public class EventSelectTest extends StreamInprocessTest {
         Wrapper<Data2NonFluxtion> data_2 = EventSelect.select(Data2NonFluxtion.class);
         Assert.assertEquals(data_1, data_1_copy);
         Assert.assertNotEquals(data_1, data_2);
-//       DataNonFluxtion data = new DataNonFluxtion(10);
+       DataNonFluxtion data = new DataNonFluxtion(10);
     }
 
     @Test
@@ -86,9 +86,9 @@ public class EventSelectTest extends StreamInprocessTest {
         assertEquals(0, cumSum1_copy.intValue());
         assertEquals(0, cumSum2.intValue());
 
-        onGenericEvent(new Data2NonFluxtion(2));
-        onGenericEvent(new Data2NonFluxtion(12));
-        onGenericEvent(new Data2NonFluxtion(6));
+        onEvent(new Data2NonFluxtion(2));
+        onEvent(new Data2NonFluxtion(12));
+        onEvent(new Data2NonFluxtion(6));
 
         assertEquals(0, cumSum1.intValue());
         assertEquals(0, cumSum1_copy.intValue());

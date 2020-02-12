@@ -204,7 +204,7 @@ public class PartitionerTest {
         }
 
         @Override
-        public void onEvent(Event e) {
+        public void onEvent(Object e) {
             dayMonthCounts.compute(e.toString(), (t, u) -> u == null ? 1 : u + 1);
             if (e instanceof MyEvent) {
 //                System.out.println("processing :" + e);
