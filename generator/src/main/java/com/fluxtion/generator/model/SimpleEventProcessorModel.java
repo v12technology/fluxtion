@@ -1184,8 +1184,7 @@ public class SimpleEventProcessorModel {
                     Predicates.and(
                             withModifier(Modifier.PUBLIC),
                             withName("onEvent"),
-                            withParametersCount(1)),
-                    withParameters(searchClass)
+                            withParametersCount(1))
             );
             Method onEventMethod = ehMethodList.iterator().next();
 

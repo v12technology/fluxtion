@@ -37,7 +37,7 @@ public class Ascii2IntTest {
         System.out.println("applyFilter");
         Ascii2IntFixedLength instance = new Ascii2IntFixedLength(notifier, (byte) 4, filter);
         instance.applyFilter(null);
-        StringDriver.streamChars("test number=200", (Event event) -> {
+        StringDriver.streamChars("test number=200", (event) -> {
             if (event instanceof CharEvent) {
                 instance.on_2((CharEvent) event);
                 instance.afterEvent();
@@ -51,7 +51,7 @@ public class Ascii2IntTest {
         System.out.println("matched");
         Ascii2IntFixedLength instance = new Ascii2IntFixedLength(notifier, (byte) 4, filter);
         instance.filterMatched(null);
-        StringDriver.streamChars("test number=200", (Event event) -> {
+        StringDriver.streamChars("test number=200", (event) -> {
             if (event instanceof CharEvent) {
                 instance.on_2((CharEvent) event);
                 instance.afterEvent();
@@ -95,7 +95,7 @@ public class Ascii2IntTest {
         instance.applyFilter(null);
         instance.filterMatched(null);
         instance.afterEvent();
-        StringDriver.streamChars(input, (Event event) -> {
+        StringDriver.streamChars(input, (event) -> {
             if (event instanceof CharEvent) {
                 CharEvent charEvent = (CharEvent) event;
                 switch (charEvent.getCharacter()) {

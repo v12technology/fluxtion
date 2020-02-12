@@ -28,9 +28,9 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-08T21:08:58.886754800
- * generator version : 1.8.4-SNAPSHOT
- * api version       : 1.8.4-SNAPSHOT
+ * generation time   : 2020-02-12T21:49:32.814942400
+ * generator version : 1.8.7-SNAPSHOT
+ * api version       : 1.8.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -71,21 +71,21 @@ public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycl
   }
 
   @Override
-  public void onEvent(com.fluxtion.api.event.Event event) {
-    switch (event.eventId()) {
-      case (LogControlEvent.ID):
+  public void onEvent(Object event) {
+    switch (event.getClass().getName()) {
+      case ("com.fluxtion.ext.streaming.api.log.LogControlEvent"):
         {
           LogControlEvent typedEvent = (LogControlEvent) event;
           handleEvent(typedEvent);
           break;
         }
-      case (CharEvent.ID):
+      case ("com.fluxtion.ext.text.api.event.CharEvent"):
         {
           CharEvent typedEvent = (CharEvent) event;
           handleEvent(typedEvent);
           break;
         }
-      case (EofEvent.ID):
+      case ("com.fluxtion.ext.text.api.event.EofEvent"):
         {
           EofEvent typedEvent = (EofEvent) event;
           handleEvent(typedEvent);
