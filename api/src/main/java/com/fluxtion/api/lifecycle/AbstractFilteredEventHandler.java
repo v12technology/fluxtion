@@ -16,13 +16,12 @@
  */
 package com.fluxtion.api.lifecycle;
 
-import com.fluxtion.api.event.Event;
-
 
 /**
  * @author Greg Higgins
+ * @param <T> The type of event processed by this handler
  */
-public abstract class AbstractFilteredEventHandler<T extends Event> implements FilteredEventHandler<T>{
+public abstract class AbstractFilteredEventHandler<T> implements FilteredEventHandler<T>{
 
     protected int filterId;
     

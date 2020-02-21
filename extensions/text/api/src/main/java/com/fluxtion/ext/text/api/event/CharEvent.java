@@ -27,11 +27,10 @@ import static com.fluxtion.ext.text.api.event.EventId.*;
  */
 public class CharEvent extends Event{
     
-    public static final int ID = CHAR_EVENT_ID;
     private char character;
     
     public CharEvent(char id) {
-        super(ID, id);
+        super(id);
         filterId = id;
         character = (char)filterId;
     }

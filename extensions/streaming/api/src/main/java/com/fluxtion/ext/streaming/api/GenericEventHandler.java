@@ -24,13 +24,12 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * <pre>
- * EventHandler for {@link GenericEvent}'s. GeneriEvents can wrap any type of 
+ * EventHandler for {@link GenericEvent}'s. GeneriEvents can wrap any type of
  * Object, thus allowing non-fluxtion {@link Event}'s to be handled as an entry
  * point in a SEP.
- * 
- * 
- * </pre>
- * {@inheritDoc}
+ *
+ *
+ * </pre> {@inheritDoc}
  */
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = {"filterString"})
@@ -42,10 +41,9 @@ public final class GenericEventHandler<T extends GenericEvent<W>, W> implements 
 //    public GenericEventHandler(Class<W> eventClass) {
 //        this.filterString = eventClass.getCanonicalName();
 //    }
-
     @Override
     public int filterId() {
-        return Event.NO_ID;
+        return Event.NO_INT_FILTER;
     }
 
     @Override
@@ -59,13 +57,12 @@ public final class GenericEventHandler<T extends GenericEvent<W>, W> implements 
     }
 
     @Override
-    public Class<GenericEvent> eventClass() {
-        return GenericEvent.class;
+    public Class<T> eventClass() {
+        return (Class<T>) event.getClass();
     }
 
     public W event() {
         return event.value;
     }
-
 
 }

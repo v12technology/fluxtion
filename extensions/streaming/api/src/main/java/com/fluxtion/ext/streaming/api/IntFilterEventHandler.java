@@ -34,7 +34,7 @@ public final class IntFilterEventHandler<T> implements FilteredEventHandler<T>, 
 
     public IntFilterEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
-        this.filterId = Event.NO_ID;
+        this.filterId = Event.NO_INT_FILTER;
     }
 
     @Override

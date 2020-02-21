@@ -24,9 +24,9 @@ import com.fluxtion.example.shared.DataEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-12T21:49:23.126942400
- * generator version : 1.8.7-SNAPSHOT
- * api version       : 1.8.7-SNAPSHOT
+ * generation time   : 2020-02-21T11:40:10.907186100
+ * generator version : 1.9.1-SNAPSHOT
+ * api version       : 1.9.1-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
