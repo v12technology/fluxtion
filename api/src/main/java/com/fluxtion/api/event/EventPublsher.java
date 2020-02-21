@@ -29,9 +29,9 @@ import java.util.Arrays;
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T> {
+public class EventPublsher<T extends Event> {
 
-    public T[] nodeSource = (T[]) new Object[0];
+    public Event[] nodeSource = new Event[0];
     private EventHandler[] handlers;
 
     public EventPublsher() {
@@ -46,7 +46,7 @@ public class EventPublsher<T> {
     }
 
     public EventPublsher<T> addEventSource(T node) {
-        ArrayList<T> nodes = new ArrayList<>(Arrays.asList(nodeSource));
+        ArrayList<Event> nodes = new ArrayList<>(Arrays.asList(nodeSource));
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);
         return this;

@@ -213,7 +213,7 @@ public class InjectionTest extends BaseSepInprocessTest {
     public static class CharHandler {
 
         @FilterId
-        public int filterChar = Event.NO_INT_FILTER;
+        public int filterChar = Event.NO_ID;
 
         public char receivedChar;
 

@@ -25,12 +25,24 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  * extend this class to define their own events.</p>
  *
  * <h2>Dispatch</h2>
- * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(java.lang.Object)
+ * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(com.fluxtion.api.event.Event)
  * } method.<p>
  *
- * To dispatch the events within the SEP Fluxtion uses the class name to perform
- * a dispatch. When class name is used, uniqueness is guaranteed by using the
- * fully qualified class name.
+ * To dispatch the events within the SEP Fluxtion uses either a statically
+ * defined ID, where the value of ID must be unique for the events in this SEP.
+ * <pre>
+ *     public static final int ID = 1;
+ * </pre>
+ * <p>
+ * If no ID is defined then the SEP uses the class name to perform a dispatch,
+ * generally this will be less efficient at runtime but is easier for the
+ * developer at compile time. When class name is used, uniqueness is guaranteed
+ * by using the fully qualified class name.
+ * </p>
+ *
+ * <p>
+ * The efficiency of dispatch depends upon the target platform, so for some
+ * targets class name dispatch may be more efficient.
  * </p>
  *
  * <h2>Filtering</h2>
@@ -50,29 +62,48 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  */
 public abstract class Event implements TimeEvent {
 
-    public static final int NO_INT_FILTER = Integer.MAX_VALUE;
-    public static final String NO_STRING_FILTER = "";
-    
+    /**
+     * default ID for an event when the user does not explicitly set an ID. Any
+     * Event using this value for an ID will dispatch based on class name and
+     * not on ID. User defined events should not use the value Integer.MAX_VALUE
+     */
+    public static final int NO_ID = Integer.MAX_VALUE;
+    private final int id;
     protected int filterId;
     protected String filterString;
+//    protected CharSequence filterString;
     protected long eventTime;
 
     public Event() {
-        this(NO_STRING_FILTER);
+        this(NO_ID);
     }
 
-    public Event(String filterId) {
-        this(NO_INT_FILTER, filterId);
+    public Event(int id) {
+        this(id, NO_ID);
     }
 
-    public Event(int filterId) {
-        this(filterId, NO_STRING_FILTER);
+    public Event(int id, int filterId) {
+        this(id, filterId, "");
     }
 
-    public Event(int filterId, String filterString) {
+    public Event(int id, String filterString) {
+        this(id, NO_ID, filterString);
+    }
+
+    public Event(int id, int filterId, String filterString) {
+        this.id = id;
         this.filterId = filterId;
         this.filterString = filterString;
         this.eventTime = System.currentTimeMillis();
+    }
+
+    /**
+     * The unique int identifier for this event.
+     *
+     * @return id for this event as an integer
+     */
+    public final int eventId() {
+        return id;
     }
 
     /**

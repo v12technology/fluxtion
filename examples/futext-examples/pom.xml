@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
     <artifactId>documentation_text_examples</artifactId>
-    <version>1.9.1-SNAPSHOT</version>
+    <version>1.9.0</version>
     <packaging>jar</packaging>
     <name>fluxtion :: examples :: text</name>
     <properties>
@@ -29,15 +29,15 @@
         <profile>
             <id>fluxtion</id>
             <activation>
-                <!--<activeByDefault>false</activeByDefault>-->
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
+                <!--<activeByDefault>true</activeByDefault>-->
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>com.fluxtion</groupId>
                         <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>1.9.1-SNAPSHOT</version>
+                        <version>1.9.0</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -84,13 +84,13 @@
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-text-api</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-text-builder</artifactId>
             <scope>provided</scope>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

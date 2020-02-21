@@ -26,8 +26,11 @@ import java.util.ArrayList;
  */
 public class TraceEvent_InFilter_1 extends Event{
     
+    
+    public static final int ID = 1;
+
     public TraceEvent_InFilter_1(int filterId) {
-        super( filterId);
+        super(ID, filterId);
     }
     
     public int intValue;

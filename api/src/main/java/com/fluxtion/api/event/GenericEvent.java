@@ -16,6 +16,7 @@
  */
 package com.fluxtion.api.event;
 
+import com.fluxtion.api.event.Event;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -44,13 +45,13 @@ public class GenericEvent<T> extends Event {
     public final T value;
 
     public GenericEvent(T value) {
-        super(value.getClass().getCanonicalName());
+        super(Event.NO_ID, value.getClass().getCanonicalName());
         this.value = value;
 
     }
 
     public <V extends T> GenericEvent(Class<T> valueClass, V value) {
-        super(valueClass.getCanonicalName());
+        super(Event.NO_ID, valueClass.getCanonicalName());
         this.value = value;
     }
 

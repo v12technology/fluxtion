@@ -5,15 +5,6 @@
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
 
-## Fork status
-This is an experimental fork of https://github.com/v12technology/fluxtion.
-
-Features:
-- @GroupKey is now type-safe
-
-Fixes:
-- CI build
-
 ## Overview
 Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further. 
 

@@ -29,9 +29,9 @@ import com.fluxtion.example.shared.PipelineNode;
 
 /*
  * <pre>
- * generation time   : 2020-02-21T13:34:33.557718
- * generator version : 1.9.1-SNAPSHOT
- * api version       : 1.9.1-SNAPSHOT
+ * generation time   : 2020-02-12T21:49:18.591943100
+ * generator version : 1.8.7-SNAPSHOT
+ * api version       : 1.8.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */

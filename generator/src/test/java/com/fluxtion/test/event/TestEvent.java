@@ -28,11 +28,11 @@ public class TestEvent extends Event{
     public static final int ID = 1;
     
     public TestEvent() {
-        super();
+        super(ID);
     }
     
     public TestEvent(int filterId){
-        super(filterId);
+        super(ID, filterId);
     }
     
 }
