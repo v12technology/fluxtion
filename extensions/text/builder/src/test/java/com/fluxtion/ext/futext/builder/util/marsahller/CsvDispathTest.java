@@ -42,13 +42,13 @@ public class CsvDispathTest {
         //set up idispatch
         DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
         dispatcher.init();
-        dispatcher.addMarshaller(String.class, (EventHandler) (Event e) -> {
+        dispatcher.addMarshaller(String.class, (EventHandler) (e) -> {
             stringCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());
             }
         });
-        dispatcher.addMarshaller(Integer.class, (EventHandler) (Event e) -> {
+        dispatcher.addMarshaller(Integer.class, (EventHandler) (e) -> {
             intCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());

@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.api.SepContext;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
@@ -60,7 +61,7 @@ public interface Wrapper<T> {
     default <S> FilterWrapper<T> filter(SerializableFunction<T, S> supplier, SerializableFunction<? extends S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, supplier.method(), true);
     }
-    
+
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
         if(supplier.method().getReturnType().isPrimitive()){
             return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toDouble(), supplier);

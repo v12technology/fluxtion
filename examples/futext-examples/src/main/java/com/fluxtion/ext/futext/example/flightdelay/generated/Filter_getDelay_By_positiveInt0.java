@@ -6,7 +6,10 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
+import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDetailsCsvDecoder0;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Test;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 
@@ -34,6 +37,7 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
   }
 
   @OnEvent
+  @SuppressWarnings("unchecked")
   public boolean onEvent() {
     boolean oldValue = result;
     result =

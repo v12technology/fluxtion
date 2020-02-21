@@ -16,6 +16,12 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.keyClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
+
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
@@ -30,7 +36,7 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.builder.Templates;
-import com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper;
+import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;
@@ -46,8 +52,6 @@ import lombok.Data;
 import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
-
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.*;
 
 /**
  * Builds a group by set of functions, each function built will push its

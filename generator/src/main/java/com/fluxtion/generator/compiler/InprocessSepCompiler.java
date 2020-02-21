@@ -155,8 +155,7 @@ public class InprocessSepCompiler {
     private static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
         final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
-        compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
-        return (Class<EventHandler>) Class.forName(compilerCfg.getFqn());
+        return (Class<EventHandler>) compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
     }
 
     private static class InProcessSepConfig extends SEPConfig {

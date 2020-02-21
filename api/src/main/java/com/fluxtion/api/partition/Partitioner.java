@@ -60,7 +60,7 @@ import java.util.function.Supplier;
  * @author gregp
  * @param <E>
  */
-public class Partitioner<E extends EventHandler> implements EventHandler, Lifecycle, BatchHandler {
+public class Partitioner< E extends EventHandler> implements EventHandler, Lifecycle, BatchHandler {
 
     private HashMap<Class, SerializableFunction> class2Function;
     private HashMap<Class, MultiKeyGenerator> class2MultiFunction;
@@ -150,7 +150,7 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(Object e) {
         SerializableFunction f = class2Function.get(e.getClass());
         MultiKeyGenerator multiF = class2MultiFunction.get(e.getClass());
         boolean keyed = charsequenceKeyProcess(e);
@@ -175,7 +175,7 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
         }
     }
 
-    private boolean charsequenceKeyProcess(Event e) {
+    private boolean charsequenceKeyProcess(Object e) {
         boolean matched = false;
         for (int i = 0; i < charKeyedHandlers.size(); i++) {
             Function keyGen = charKeyedHandlers.get(i);
@@ -206,9 +206,8 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
         return matched;
     }
 
-    private void pushEvent(EventHandler handler, Event e) {
+    private void pushEvent(EventHandler handler, Object e) {
         handler.onEvent(e);
-        handler.afterEvent();
     }
 
     private E initialise() {
@@ -266,7 +265,7 @@ public class Partitioner<E extends EventHandler> implements EventHandler, Lifecy
             values = new ArrayList();
         }
 
-        List generateKey(Event e) {
+        List generateKey(Object e) {
             values.clear();
             for (int i = 0; i < mapper.size(); i++) {
                 SerializableFunction f = mapper.get(i);

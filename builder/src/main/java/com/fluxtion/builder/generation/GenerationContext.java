@@ -234,6 +234,17 @@ public class GenerationContext {
     }
 
     /**
+     * Performs a class.forName operation on the cached classes that have been 
+     * compiled into this GenerationContext
+     * @param <T>
+     * @param name
+     * @return 
+     */
+    public <T> Class<T> forName(String name){
+        return javaCompiler.forName(name, classLoader);
+    } 
+    
+    /**
      * a cache that is tied to this generation context instance. A new Map will
      * be created for each unique cache key.
      *

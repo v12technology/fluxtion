@@ -223,6 +223,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         return Collections.unmodifiableList(topologicalHandlers);
     }
 
+    //TODO this should be a list that is sorted topologically and then
+    // with natural order
     public Map<String, Auditor> getRegistrationListenerMap() {
         if (registrationListenerMap == null) {
             registrationListenerMap = new HashMap<>();
@@ -468,6 +470,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (handle != null) {
                 NodeFactory factory = (NodeFactory) handle.instance;
                 if (isPublic) {
+                    
                     publicNodeList.add(newNode);
                 }
                 factory.postInstanceRegistration(config, this, newNode);

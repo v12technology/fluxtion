@@ -16,7 +16,8 @@
  */
 package com.fluxtion.api.event;
 
-import com.fluxtion.api.event.Event;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * A generic event, where the filter is determined by the class type. An event
@@ -36,18 +37,20 @@ import com.fluxtion.api.event.Event;
  * @author Greg Higgins (greg.higgins@V12technology.com)
  * @param <T> The listener to register
  */
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class GenericEvent<T> extends Event {
 
     public final T value;
 
     public GenericEvent(T value) {
-        super(Event.NO_ID, value.getClass().getCanonicalName());
+        super(value.getClass().getCanonicalName());
         this.value = value;
 
     }
 
     public <V extends T> GenericEvent(Class<T> valueClass, V value) {
-        super(Event.NO_ID, valueClass.getCanonicalName());
+        super(valueClass.getCanonicalName());
         this.value = value;
     }
 

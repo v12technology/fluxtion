@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.text.builder.ascii;
 
-import static com.fluxtion.ext.streaming.builder.factory.FunctionGeneratorHelper.generateAndCompile;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.filter;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.factory.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper.generateAndCompile;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
 import static com.fluxtion.ext.text.builder.Templates.CHAR_MATCH_FILTER;
 
 import com.fluxtion.api.annotations.EventHandler;

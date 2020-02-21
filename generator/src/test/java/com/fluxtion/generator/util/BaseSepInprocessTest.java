@@ -18,6 +18,7 @@
 package com.fluxtion.generator.util;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.node.SEPConfig;
@@ -83,8 +84,12 @@ public class BaseSepInprocessTest {
         return (T) new Mirror().on(sep).get().field(name);
     }
 
-    protected void onEvent(Event e) {
+    protected void onEvent(Object e) {
         sep.onEvent(e);
+    }
+    
+    protected void onGenericEvent(Object e){
+         onEvent(e);
     }
 
 }

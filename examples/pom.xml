@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
     <artifactId>core.master</artifactId>
-    <version>1.7.29</version>
+    <version>1.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion :: examples</name>
     
@@ -31,8 +31,8 @@ along with this program.  If not, see
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>12</maven.compiler.source>
+        <maven.compiler.target>12</maven.compiler.target>
     </properties>
     
 </project>

@@ -22,6 +22,15 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
 import com.fluxtion.example.shared.DataEvent;
 
+/*
+ * <pre>
+ * generation time   : 2020-02-21T13:34:34.182347
+ * generator version : 1.9.1-SNAPSHOT
+ * api version       : 1.9.1-SNAPSHOT
+ * </pre>
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
 
   //Node declarations
@@ -35,7 +44,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public SampleProcessor() {}
 
   @Override
-  public void onEvent(com.fluxtion.api.event.Event event) {
+  public void onEvent(Object event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.DataEvent"):
         {

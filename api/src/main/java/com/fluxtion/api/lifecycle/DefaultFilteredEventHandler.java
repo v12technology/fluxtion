@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * {@inheritDoc} 
  */
-public final class DefaultFilteredEventHandler<T extends Event> implements FilteredEventHandler<T> {
+public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T> {
 
     private int filterId;
     private Class<T> eventClass;
@@ -30,7 +30,7 @@ public final class DefaultFilteredEventHandler<T extends Event> implements Filte
 
     public DefaultFilteredEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
-        filterId = Event.NO_ID;
+        filterId = Event.NO_INT_FILTER;
     }
     
 
@@ -53,7 +53,7 @@ public final class DefaultFilteredEventHandler<T extends Event> implements Filte
     }
 
     @Override
-    public Class<? extends Event> eventClass() {
+    public Class<T> eventClass() {
         return eventClass;
     }
 

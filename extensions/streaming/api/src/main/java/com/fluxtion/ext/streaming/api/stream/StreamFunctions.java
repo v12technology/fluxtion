@@ -181,6 +181,24 @@ public class StreamFunctions {
         }
     }
 
+    public static class Delta implements Stateful {
+
+        public double previous = 0;
+        private double result = 0;
+
+        public double value(double newVal) {
+            result = (newVal - previous);
+            previous = newVal;
+            return Double.isNaN(result)?0:result;
+        }
+
+        @Override
+        public void reset() {
+            previous = 0;
+            result = 0;
+        }
+    }
+
     public static class Message {
 
         private final String outputMessage;

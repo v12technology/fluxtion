@@ -24,7 +24,7 @@ public class MyData extends Event {
     private final String stringVal;
 
     public MyData(int intVal, double doubleVal, String stringVal) {
-        super(Integer.MAX_VALUE, intVal, stringVal);
+        super(intVal, stringVal);
         this.intVal = intVal;
         this.doubleVal = doubleVal;
         this.stringVal = stringVal;

@@ -22,7 +22,7 @@ import com.fluxtion.junit.Categories;
 import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import java.util.HashMap;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;

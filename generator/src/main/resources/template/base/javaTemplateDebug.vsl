@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 ${MODEL.imports}
 #end
 
+@SuppressWarnings({"deprecation","unchecked"})
 public class ${debugClassName} implements EventHandler, BatchHandler, Lifecycle {
 
 //Node declarations
@@ -45,7 +46,7 @@ ${MODEL.filterConstantDeclarations}
 ${MODEL.nodeMemberAssignments}
     }
     @Override
-    public void onEvent(com.fluxtion.runtime.event.Event event) {
+    public void onEvent(Object event) {
 ${MODEL.debugEventDispatch}
     }
 

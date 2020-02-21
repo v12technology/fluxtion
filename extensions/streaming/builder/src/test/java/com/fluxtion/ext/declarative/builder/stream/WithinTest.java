@@ -5,9 +5,9 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.test.Within;
 import static com.fluxtion.ext.streaming.api.test.Within.within;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
-import com.fluxtion.ext.streaming.builder.test.BooleanBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class WithinTest extends StreamInprocessTest {
                     .filter(MyTimer::getVal, gt(200));
             
             Within within = within(filteredTime, 1000, MyTimer::getTime);
-            BooleanBuilder.filter(select(MyTimer.class), within)
+            FilterByNotificationBuilder.filter(select(MyTimer.class), within)
                     .map(count()).id("count");
 
         });

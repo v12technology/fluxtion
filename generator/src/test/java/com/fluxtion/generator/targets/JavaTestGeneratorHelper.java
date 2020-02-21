@@ -54,14 +54,13 @@ public interface JavaTestGeneratorHelper {
      * @param config
      * @throws Exception
      */
-    static void generateAndCompile(SepCompilerConfig config) throws Exception{
+    static Class generateAndCompile(SepCompilerConfig config) throws Exception{
         SepCompiler compiler = new SepCompiler();
-        compiler.compile(config);
+        return compiler.compile(config);
     }
     
     static EventHandler generateAndInstantiate(SepCompilerConfig config) throws Exception{
-        generateAndCompile(config);
-        Class<EventHandler> resultProcessorClass = (Class<EventHandler>) Class.forName(config.getFqn());
+        Class<EventHandler> resultProcessorClass = generateAndCompile(config);
         return resultProcessorClass.newInstance();
     }
     

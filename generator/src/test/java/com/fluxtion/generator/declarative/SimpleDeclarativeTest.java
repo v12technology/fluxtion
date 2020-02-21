@@ -30,7 +30,7 @@ import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.Field;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
-import com.fluxtion.generator.targets.SepJavaSourceModel;
+import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.test.nodes.Calculator;
 import com.fluxtion.test.nodes.CalculatorRegisteringAccumulatorFactory;
 import com.fluxtion.test.nodes.DynamicallyGeneratedWindowNode;
@@ -213,7 +213,7 @@ public class SimpleDeclarativeTest {
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
         Velocity.init();
         //Build java source model
-        SepJavaSourceModel srcModel = new SepJavaSourceModel(model, false);
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(model, false);
         srcModel.buildSourceModel();
         //Generate java SEP 
         Template template = Velocity.getTemplate(templateFile);

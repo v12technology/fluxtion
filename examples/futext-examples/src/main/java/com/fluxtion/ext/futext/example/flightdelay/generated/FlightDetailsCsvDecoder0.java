@@ -1,7 +1,5 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
-import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
-
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
@@ -15,8 +13,10 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import static com.fluxtion.ext.text.api.ascii.Conversion.*;
 
 /**
  * Fluxtion generated CSV decoder.
@@ -127,10 +127,11 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   private void logException(String prefix, boolean fatal, Exception e) {
     errorLog
         .getSb()
+        .append("FlightDetailsCsvDecoder0 ")
         .append(prefix)
         .append(rowNumber)
         .append(" fieldIndex:")
-        .append(fieldIndex)
+        .append(fieldIndex - 1)
         .append(" targetMethod:")
         .append(fieldMap.get(fieldIndex));
     if (fatal) {
@@ -141,7 +142,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   }
 
   private void logHeaderProblem(String prefix, boolean fatal, Exception e) {
-    errorLog.getSb().append(prefix).append(rowNumber);
+    errorLog.getSb().append("FlightDetailsCsvDecoder0 ").append(prefix).append(rowNumber);
     if (fatal) {
       errorLog.logFatal("");
       throw new RuntimeException(errorLog.getSb().toString(), e);

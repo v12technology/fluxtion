@@ -18,6 +18,7 @@
 package com.fluxtion.creator;
 
 import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.annotation.SepInstance;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.creator.MathFactory.FunctionCfg;
@@ -25,6 +26,7 @@ import com.fluxtion.generator.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -54,6 +56,7 @@ public class CreatorTest extends BaseSepTest {
     }
 
     @Test
+//     @Ignore
     public void parserTest() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();
@@ -83,17 +86,15 @@ public class CreatorTest extends BaseSepTest {
                 + "";
         CreatorConfig cfg = parser.parse(configDoc);
         Creator instance = new Creator();
-        instance.createModel(cfg);
-        //
-//        compileCfg.setCachedCompiler(GenerationContext.SINGLETON.getJavaCompiler());
-        buildAndInitSep((Class<? extends SEPConfig>) Class.forName(cfg.getOutputSepConfigClass()));
+        Class<? extends SEPConfig> modelClass = instance.createModel(cfg);
+        buildAndInitSep(modelClass);
         //
         TestAuditor auditor = getField("auditor");
         auditor.matchRegisteredNodes("dataHandler", "calculator");
         Assert.assertFalse(auditor.isProcessingComplete());
         //
-        Event charEvent = (Event) Class.forName(outPkg + ".CharEvent").newInstance();
-        Event pnl = (Event) Class.forName(outPkg + ".PnlEvent").newInstance();
+        Event charEvent = (Event) GenerationContext.SINGLETON.forName(outPkg + ".CharEvent").newInstance();
+        Event pnl = (Event) GenerationContext.SINGLETON.forName(outPkg + ".PnlEvent").newInstance();
         onEvent(charEvent);
         onEvent(pnl);
         onEvent(charEvent);
@@ -106,6 +107,7 @@ public class CreatorTest extends BaseSepTest {
     }
 
     @Test
+//    @Ignore
     public void predefinedEvent() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();
@@ -132,10 +134,8 @@ public class CreatorTest extends BaseSepTest {
                 + "";
         CreatorConfig cfg = parser.parse(configDoc);
         Creator instance = new Creator();
-        instance.createModel(cfg);
-        //
-//        compileCfg.setCachedCompiler(GenerationContext.SINGLETON.getJavaCompiler());
-        buildAndInitSep((Class<? extends SEPConfig>) Class.forName(cfg.getOutputSepConfigClass()));
+        Class<? extends SEPConfig> modelClass = instance.createModel(cfg);
+        buildAndInitSep(modelClass);
         TestAuditor auditor = getField("auditor");
         auditor.matchRegisteredNodes("dataHandler", "myProcessor");
         Assert.assertFalse(auditor.isProcessingComplete());
@@ -151,6 +151,7 @@ public class CreatorTest extends BaseSepTest {
     }
 
     @Test
+//    @Ignore
     public void factoryMethod() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();
@@ -184,10 +185,8 @@ public class CreatorTest extends BaseSepTest {
                 + "";
         CreatorConfig cfg = parser.parse(configDoc);
         Creator instance = new Creator();
-        instance.createModel(cfg);
-        //
-//        compileCfg.setCachedCompiler(GenerationContext.SINGLETON.getJavaCompiler());
-        buildAndInitSep((Class<? extends SEPConfig>) Class.forName(cfg.getOutputSepConfigClass()));
+        Class<? extends SEPConfig> modelClass = instance.createModel(cfg);
+        buildAndInitSep(modelClass);
         TestAuditor auditor = getField("auditor");
         auditor.matchRegisteredNodes("dataHandler", "myProcessor", "max");
         Assert.assertFalse(auditor.isProcessingComplete());

@@ -20,8 +20,8 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.streaming.api.ReusableEventHandler;
-import com.fluxtion.ext.streaming.api.SepContext;
+import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
+import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
@@ -73,7 +73,7 @@ public class Within implements Test {
     public static <T, S extends Integer, E extends Event> Within within(Wrapper<T> t, int millis, SerializableFunction<E, S> supplier) {
         SepContext cfg = SepContext.service();
         Within within = cfg.add(new Within(millis, t));
-        Wrapper<E> handler = new ReusableEventHandler(supplier.getContainingClass());
+        Wrapper<E> handler = new IntFilterEventHandler(supplier.getContainingClass());
         cfg.addOrReuse(handler).push(supplier, within::setTime);
         return within;
     }

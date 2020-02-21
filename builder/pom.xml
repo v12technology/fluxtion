@@ -21,7 +21,7 @@ along with this program.  If not, see
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>1.7.29</version>
+        <version>1.9.1-SNAPSHOT</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
@@ -35,10 +35,8 @@ along with this program.  If not, see
             <artifactId>fluxtion-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>compiler</artifactId>
-            <optional>true</optional>
-            <scope>provided</scope>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
     </dependencies>
     <properties>

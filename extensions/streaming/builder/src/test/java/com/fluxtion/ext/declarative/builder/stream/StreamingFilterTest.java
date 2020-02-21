@@ -18,10 +18,6 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,6 +26,11 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import org.junit.Test;
 
 /**
@@ -49,25 +50,25 @@ public class StreamingFilterTest extends StreamInprocessTest {
             //else - count
             filter.elseStream().notifyOnChange(true).map(count()).id("elseCount");
         });
-        
+
         Number filterCount = getWrappedField("filterCount");
         Number elseCount = getWrappedField("elseCount");
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(0));
         assertThat(elseCount.intValue(), is(1));
-        
+
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(0));
         assertThat(elseCount.intValue(), is(1));
-        
+
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(0));
         assertThat(elseCount.intValue(), is(1));
-        
+
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(1));
-        
+
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(1));
         assertThat(elseCount.intValue(), is(2));
@@ -75,23 +76,23 @@ public class StreamingFilterTest extends StreamInprocessTest {
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(2));
         assertThat(elseCount.intValue(), is(2));
-        
+
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(2));
         assertThat(elseCount.intValue(), is(2));
-        
+
         onEvent(new StreamData(9));
         assertThat(filterCount.intValue(), is(2));
         assertThat(elseCount.intValue(), is(3));
-        
+
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(3));
         assertThat(elseCount.intValue(), is(3));
-        
+
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(3));
         assertThat(elseCount.intValue(), is(3));
-        
+
         onEvent(new StreamData(19));
         assertThat(filterCount.intValue(), is(3));
         assertThat(elseCount.intValue(), is(3));
@@ -163,13 +164,12 @@ public class StreamingFilterTest extends StreamInprocessTest {
         assertThat(countStatic.event().intValue(), is(2));
     }
 
-    
     @Test
-    public void lambdaTest(){
+    public void lambdaTest() {
         SerialisedFunctionHelper.isTest = true;
         sep(c -> {
             select(StreamData.class)
-                    .filter( s -> s.getDoubleValue() > 20)
+                    .filter(s -> s.getDoubleValue() > 20)
                     .map(count()).id("intervalCount");
             select(StreamData.class)
                     .filter(StreamData::getDoubleValue, s -> s > 2)
@@ -181,15 +181,39 @@ public class StreamingFilterTest extends StreamInprocessTest {
         assertThat(count.event().intValue(), is(0));
         //1
         onEvent(new StreamData(1.0));
-        assertThat(count.event().intValue(), is(0)); 
-        assertThat(doubleCount.event().intValue(), is(0)); 
+        assertThat(count.event().intValue(), is(0));
+        assertThat(doubleCount.event().intValue(), is(0));
         onEvent(new StreamData(21.1));
         onEvent(new StreamData(2.3));
         onEvent(new StreamData(21.5));
-        assertThat(count.event().intValue(), is(2)); 
-        assertThat(doubleCount.event().intValue(), is(3)); 
+        assertThat(count.event().intValue(), is(2));
+        assertThat(doubleCount.event().intValue(), is(3));
     }
-    
+
+    @Test
+    public void lambdaTestWithFilterBuilder() {
+        SerialisedFunctionHelper.isTest = true;
+        sep(c -> {
+            filter(StreamData.class, s -> s.getDoubleValue() > 20)
+                    .map(count()).id("intervalCount");
+            filter(StreamData::getDoubleValue, s -> s > 2)
+                    .map(count()).id("doubleCount");
+
+        });
+        Wrapper<Number> count = getField("intervalCount");
+        Wrapper<Number> doubleCount = getField("doubleCount");
+        assertThat(count.event().intValue(), is(0));
+        //1
+        onEvent(new StreamData(1.0));
+        assertThat(count.event().intValue(), is(0));
+        assertThat(doubleCount.event().intValue(), is(0));
+        onEvent(new StreamData(21.1));
+        onEvent(new StreamData(2.3));
+        onEvent(new StreamData(21.5));
+        assertThat(count.event().intValue(), is(2));
+        assertThat(doubleCount.event().intValue(), is(3));
+    }
+
     @Test
     public void countIntervals() {
         sep((c) -> {

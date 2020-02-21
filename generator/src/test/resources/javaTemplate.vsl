@@ -24,6 +24,7 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 ${MODEL.imports}
 #end
 
+//${version_information}
 public class ${className} implements EventHandler, BatchHandler, Lifecycle {
 
 //Node declarations
@@ -38,7 +39,7 @@ ${MODEL.nodeMemberAssignments}
     }
 
     @Override
-    public void onEvent(com.fluxtion.api.event.Event event) {
+    public void onEvent(Object event) {
 ${MODEL.eventDispatch}
     }
 

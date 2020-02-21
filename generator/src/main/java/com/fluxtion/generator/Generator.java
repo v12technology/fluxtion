@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator;
 
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.xml.transform.TransformerConfigurationException;
@@ -171,6 +173,7 @@ public class Generator {
         }
 
         Context ctx = new VelocityContext();
+        addVersionInformation(ctx);
         ctx.put("MODEL", srcModel);
         ctx.put("MODEL_EXTENSION", config.templateContextExtension);
         ctx.put("package", GenerationContext.SINGLETON.getPackageName());
@@ -228,6 +231,12 @@ public class Generator {
         return outFile;
     }
 
+    private void addVersionInformation(Context ctx){
+        ctx.put("generator_version_information", this.getClass().getPackage().getImplementationVersion());
+        ctx.put("api_version_information",  EventHandler.class.getPackage().getImplementationVersion());   
+        ctx.put("build_time", LocalDateTime.now());
+    }
+    
     public static void formatSource(File outFile) {
 
         try {

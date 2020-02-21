@@ -23,8 +23,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.LongAdder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <h1>Experimental feature - do not use</h1>
@@ -36,7 +34,6 @@ public class SepDebugger {
     private final AtomicBoolean stepping;
     private final AtomicBoolean recordStatistics;
     private final LongAdder adder;
-    private static final Logger LOG = LoggerFactory.getLogger(SepDebugger.class);
     public final Map<String, NodeStatistic> node2Statistics;
     private final CopyOnWriteArraySet<SepInvocationListener> listenerList;
     private Event currentEvent;
@@ -128,7 +125,6 @@ public class SepDebugger {
             heuristic = new NodeStatistic(name);
             node2Statistics.put(name, heuristic);
         }
-        LOG.debug("node invocation node:{} count:{}", name, adder.intValue());
         heuristic.incrementCallCount();
         adder.increment();
     }

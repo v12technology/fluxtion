@@ -32,7 +32,7 @@ public class ${functionClass} implements Wrapper<${functionClass}>{
 
     @Override
     public Class<${functionClass}> eventClass() {
-        return (Class<${functionClass}>)getClass();
+        return ${functionClass}.class;
     }
 
 }

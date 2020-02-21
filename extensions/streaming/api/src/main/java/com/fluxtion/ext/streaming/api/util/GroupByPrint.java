@@ -19,7 +19,7 @@ package com.fluxtion.ext.streaming.api.util;
 
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.ext.streaming.api.SepContext;
+import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import lombok.AllArgsConstructor;

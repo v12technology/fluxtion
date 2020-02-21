@@ -291,7 +291,15 @@ public class SimpleEventProcessorModel {
             registrationListenerFields.add(new Field(instance.getClass().getCanonicalName(), name, instance, true));
         });
         Collections.sort(nodeFields, (Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
-        Collections.sort(registrationListenerFields, (Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
+        //sort by topological order
+        Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
+            int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
+            int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
+            if(idx1>-1 && idx2>-1){
+                return idx2 - idx1;
+            }
+            return comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name));
+        });
     }
 
     private void generatePropertyAssignments() {
@@ -1176,8 +1184,7 @@ public class SimpleEventProcessorModel {
                     Predicates.and(
                             withModifier(Modifier.PUBLIC),
                             withName("onEvent"),
-                            withParametersCount(1)),
-                    withParameters(searchClass)
+                            withParametersCount(1))
             );
             Method onEventMethod = ehMethodList.iterator().next();
 
@@ -1199,11 +1206,11 @@ public class SimpleEventProcessorModel {
                     }
                 }
             }
-            filterString = null;
-//            isIntFilter = true;
-            isIntFilter = filterId != Event.NO_ID;
+            filterString = eh.filterString();
+            boolean isStrFilter = filterString!=null && !filterString.isEmpty();
+            isIntFilter = filterId != Event.NO_INT_FILTER;
 //            isFiltered = true;
-            isFiltered = filterId != Event.NO_ID;
+            isFiltered = filterId != Event.NO_INT_FILTER || isStrFilter;
             isInverseFiltered = false;
         }
 
@@ -1270,7 +1277,7 @@ public class SimpleEventProcessorModel {
                 Class type = field.getType();
                 if (type == int.class) {
                     tmpFilterId = field.getInt(instance);
-                    tmpIsFiltered = tmpFilterId != Event.NO_ID;
+                    tmpIsFiltered = tmpFilterId != Event.NO_INT_FILTER;
                 } else if (type == String.class) {
                     tmpFilterString = (String) field.get(instance);
                     tmpIsIntFilter = false;

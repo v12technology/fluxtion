@@ -1,7 +1,7 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

@@ -23,7 +23,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
 import com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder;

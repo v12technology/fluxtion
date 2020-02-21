@@ -93,4 +93,10 @@ public @interface SepBuilder {
      * @return
      */
     boolean cleanOutputDir() default true;
+    
+    /**
+     * call the lifecycle initialise method on the generated SEP
+     * @return 
+     */
+    boolean initialise() default true;
 }

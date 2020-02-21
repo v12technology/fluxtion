@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2019 V12 Technology Ltd.
  *
@@ -18,9 +19,9 @@ package com.fluxtion.ext.declarative.builder.filter;
 
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;

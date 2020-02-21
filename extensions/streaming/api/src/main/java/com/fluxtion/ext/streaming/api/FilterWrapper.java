@@ -1,5 +1,6 @@
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.stream.ElseWrapper;

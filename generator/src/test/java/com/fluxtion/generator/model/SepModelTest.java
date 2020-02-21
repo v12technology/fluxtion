@@ -30,7 +30,7 @@ import static org.reflections.ReflectionUtils.withName;
 import static org.reflections.ReflectionUtils.withParametersCount;
 
 import com.fluxtion.builder.generation.FilterDescription;
-import com.fluxtion.generator.targets.SepJavaSourceModel;
+import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.test.event.AnnotatedEventHandlerWithOverrideFilter;
 import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
@@ -141,7 +141,7 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
-        SepJavaSourceModel srcModel = new SepJavaSourceModel(sep, true);
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
         srcModel.buildSourceModel();
 
         Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
@@ -185,7 +185,7 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap);
         sep.generateMetaModel();
-        SepJavaSourceModel srcModel = new SepJavaSourceModel(sep, true);
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
         srcModel.buildSourceModel();
 
         Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();

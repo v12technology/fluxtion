@@ -35,6 +35,7 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     }
 
     @OnEvent
+    @SuppressWarnings("unchecked")
     public boolean onEvent(){
         boolean oldValue = result;
 #if(${newFunction})

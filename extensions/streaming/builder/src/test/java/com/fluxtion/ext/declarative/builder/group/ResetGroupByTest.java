@@ -20,7 +20,7 @@ import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.event.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import java.util.HashMap;
