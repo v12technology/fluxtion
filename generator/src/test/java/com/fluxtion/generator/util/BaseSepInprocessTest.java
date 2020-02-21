@@ -84,12 +84,12 @@ public class BaseSepInprocessTest {
         return (T) new Mirror().on(sep).get().field(name);
     }
 
-    protected void onEvent(Event e) {
+    protected void onEvent(Object e) {
         sep.onEvent(e);
     }
     
     protected void onGenericEvent(Object e){
-         onEvent(new GenericEvent<>( e));
+         onEvent(e);
     }
 
 }

@@ -1,7 +1,6 @@
 ## Velocity Template.
 package ${package};
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
@@ -34,12 +33,21 @@ ${MODEL.nodeMemberAssignments}
     }
 
     public DispatchingCsvMarshaller addSink(EventHandler handler) {
+        return addSink(handler, true);
+    }
+
+    public DispatchingCsvMarshaller addSink(EventHandler handler, boolean init) {
         dispatcher.setSink(handler);
+        if(init){
+            if(handler instanceof Lifecycle){
+                ((Lifecycle)handler).init();
+            }
+        }
         return this;
     }
 
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(Object event) {
 ${MODEL.eventDispatch}
     }
 

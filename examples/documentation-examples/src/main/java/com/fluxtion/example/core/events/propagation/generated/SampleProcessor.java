@@ -41,7 +41,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   public SampleProcessor() {}
 
   @Override
-  public void onEvent(com.fluxtion.api.event.Event event) {
+  public void onEvent(Object event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.ConfigEvent"):
         {

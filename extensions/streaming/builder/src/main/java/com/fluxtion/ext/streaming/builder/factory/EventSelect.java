@@ -33,14 +33,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 public interface EventSelect {
 
     static <T> Wrapper<T> select(Class<T> eventClazz) {
-        if (Event.class.isAssignableFrom(eventClazz)) {
             Wrapper<T> handler = new IntFilterEventHandler(eventClazz);
             return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
-        } else {
-            final GenericWrapper wrapper = GenerationContext.SINGLETON.addOrUseExistingNode(new GenericWrapper(eventClazz));
-            GenerationContext.SINGLETON.addOrUseExistingNode(wrapper.getHandler());
-            return wrapper;
-        }
     }
 
     static <T , S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {

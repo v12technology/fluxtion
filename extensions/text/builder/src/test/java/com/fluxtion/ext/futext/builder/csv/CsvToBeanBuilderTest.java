@@ -56,7 +56,7 @@ public class CsvToBeanBuilderTest {
         DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
         dispatcher2.addMarshaller(WorldCity.class, (EventHandler) GenerationContext.SINGLETON.forName(
                 "com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2.fluxCsvDefaultMappedBean.Csv2DefaultMappedBean").newInstance());
-        dispatcher2.addSink((Event e) -> {
+        dispatcher2.addSink((e) -> {
             if (e instanceof WorldCityOptionalEvent) {
                 worldCity[0] = (WorldCityOptionalEvent) e;
             }
@@ -92,7 +92,7 @@ public class CsvToBeanBuilderTest {
                                 .map("population", WorldCity::setPopulation)
                                 .converter("population", functions::always_100)
                                 .headerLines(1);
-                    }).build((Event e) -> {
+                    }).build((e) -> {
                 if (e instanceof WorldCity) {
                     worldCity[0] = (WorldCity) e;
                     count.increment();
@@ -101,7 +101,7 @@ public class CsvToBeanBuilderTest {
         } else {
             dispatcher = new DispatchingCsvMarshaller();
             dispatcher.addMarshaller(WorldCity.class, (EventHandler) Class.forName("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest.WorldCityCsvBean").newInstance());
-            dispatcher.addSink((Event e) -> {
+            dispatcher.addSink((e) -> {
                 if (e instanceof WorldCity) {
                     worldCity[0] = (WorldCity) e;
                     count.increment();

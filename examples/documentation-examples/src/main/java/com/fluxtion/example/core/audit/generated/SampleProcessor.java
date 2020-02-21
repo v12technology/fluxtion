@@ -32,9 +32,9 @@ import com.fluxtion.example.shared.PipelineNode;
 
 /*
  * <pre>
- * generation time   : 2020-02-08T21:08:06.604
- * generator version : ${generator_version_information}
- * api version       : ${api_version_information}
+ * generation time   : 2020-02-12T21:49:10.217947900
+ * generator version : 1.8.7-SNAPSHOT
+ * api version       : 1.8.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -61,7 +61,7 @@ public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
   }
 
   @Override
-  public void onEvent(com.fluxtion.api.event.Event event) {
+  public void onEvent(Object event) {
     switch (event.getClass().getName()) {
       case ("com.fluxtion.example.shared.ConfigEvent"):
         {
