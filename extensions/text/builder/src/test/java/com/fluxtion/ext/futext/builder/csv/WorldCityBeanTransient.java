@@ -17,13 +17,13 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author gregp
  */
-public class WorldCityBeanTransient extends Event{
+public class WorldCityBeanTransient extends DefaultEvent{
     private CharSequence country;
     private CharSequence city;
     private transient CharSequence accentCity;//derived - not in csv

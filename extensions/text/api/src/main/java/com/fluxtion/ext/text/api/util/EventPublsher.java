@@ -18,7 +18,6 @@ package com.fluxtion.ext.text.api.util;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.EventHandler;
@@ -31,7 +30,7 @@ import java.util.Arrays;
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T extends Event> {
+public class EventPublsher<T> {
 
     private Wrapper<T>[] wrapperSource;
     private Wrapper<T>[] validatedSource;
@@ -70,10 +69,13 @@ public class EventPublsher<T extends Event> {
         }
     }
 
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public void addEventSource(T node) {
         ArrayList<T> nodes = new ArrayList<>();
         if (nodeSource != null) {
             new ArrayList<>(Arrays.asList(nodeSource));
+        }else{
+            nodeSource = (T[]) new Object[0];
         }
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);

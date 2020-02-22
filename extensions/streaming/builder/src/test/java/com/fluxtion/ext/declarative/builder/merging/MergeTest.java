@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.merging;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
@@ -77,7 +76,7 @@ public class MergeTest extends StreamInprocessTest {
         assertThat(nonMerged.intValue(), is(2));
     }
     
-    public static class Events extends Event {
+    public static class Events  {
     }
 
     public static class EventA extends Events {

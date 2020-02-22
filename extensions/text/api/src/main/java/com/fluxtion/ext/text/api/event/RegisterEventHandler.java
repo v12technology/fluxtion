@@ -16,9 +16,7 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
-import static com.fluxtion.ext.text.api.event.EventId.REGISTER_EVENTHANDLER_ID;
 
 /**
  * An event that registers an {@link EventHandler} as a sink in another SEP. The
@@ -28,9 +26,8 @@ import static com.fluxtion.ext.text.api.event.EventId.REGISTER_EVENTHANDLER_ID;
  *
  * @author V12 Technology Ltd.
  */
-public class RegisterEventHandler extends Event {
+public class RegisterEventHandler {
 
-    public static final int ID = REGISTER_EVENTHANDLER_ID;
     private final EventHandler handler;
     private boolean register;
 
@@ -45,7 +42,6 @@ public class RegisterEventHandler extends Event {
      * @param register register/unregister
      */
     public RegisterEventHandler(EventHandler handler, boolean register) {
-        super(ID);
         this.handler = handler;
         this.register = register;
     }

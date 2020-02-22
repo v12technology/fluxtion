@@ -16,20 +16,12 @@
  */
 package com.fluxtion.ext.futext.builder.test.helpers;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author Greg Higgins
  */
-public class DataEvent_2 extends Event{
+public class DataEvent_2 {
 
-    public static final int ID = 2;
-    
-    public DataEvent_2() {
-        super(ID);
-    }
-    
     public int value;
 
     public int getValue() {

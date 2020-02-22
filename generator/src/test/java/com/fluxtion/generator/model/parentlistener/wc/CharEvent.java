@@ -17,13 +17,13 @@
  */
 package com.fluxtion.generator.model.parentlistener.wc;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  * 
  * @author Greg Higgins
  */
-public class CharEvent extends Event {
+public class CharEvent extends DefaultEvent {
 
 	/** mutable char easy to re-use memory for demo **/
 	private char character;

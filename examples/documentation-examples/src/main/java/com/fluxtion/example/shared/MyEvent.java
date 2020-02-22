@@ -16,12 +16,10 @@
  */
 package com.fluxtion.example.shared;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class MyEvent extends Event{
-    
+public class MyEvent {
+
 }

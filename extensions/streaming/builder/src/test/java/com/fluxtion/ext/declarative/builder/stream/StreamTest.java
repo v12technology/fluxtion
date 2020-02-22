@@ -8,7 +8,6 @@ import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -190,7 +189,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(40, "outside"));
     }
 
-    public static class TempF extends Event {
+    public static class TempF {
 
         double fahrenheit;
         String sensorId;
@@ -252,7 +251,7 @@ public class StreamTest implements Stateful {
 
     }
 
-    public static class TempC extends Event {
+    public static class TempC {
 
         double centigrade;
         String sensorId;

@@ -18,7 +18,6 @@ package com.fluxtion.ext.streaming.api.test;
 
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.api.SepContext;
@@ -70,7 +69,7 @@ public class Within implements Test {
         return (lastTs - lastMonitoredTs) < expireMillis;
     }
 
-    public static <T, S extends Integer, E extends Event> Within within(Wrapper<T> t, int millis, SerializableFunction<E, S> supplier) {
+    public static <T, S extends Integer, E> Within within(Wrapper<T> t, int millis, SerializableFunction<E, S> supplier) {
         SepContext cfg = SepContext.service();
         Within within = cfg.add(new Within(millis, t));
         Wrapper<E> handler = new IntFilterEventHandler(supplier.getContainingClass());

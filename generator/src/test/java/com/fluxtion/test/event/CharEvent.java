@@ -17,13 +17,13 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author Greg Higgins
  */
-public class CharEvent extends Event{
+public class CharEvent extends DefaultEvent{
     
     public CharEvent(char id) {
         super(id);

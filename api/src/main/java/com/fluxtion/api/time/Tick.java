@@ -18,6 +18,7 @@
 package com.fluxtion.api.time;
 
 import com.fluxtion.api.event.Event;
+import lombok.Data;
 
 /**
  * A tick event notifies a clock to update its wall clock time. Any nodes that
@@ -25,6 +26,8 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class Tick extends Event {
+@Data
+public class Tick implements Event {
 
+    private long eventTime;
 }

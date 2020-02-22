@@ -154,16 +154,6 @@ public class FunctionInfo {
         count++;
     }
 
-//    public <S extends Event> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, EventWrapper<S> handler, boolean isCast) {
-//        String eventClass = handler.eventClass().getCanonicalName();
-//        if (importMap != null) {
-//            eventClass = importMap.addImport(handler.eventClass());
-//        }
-//        paramString += sep + cast(isCast) + "((" + eventClass + ")" + sourceInfo.id + ".event())." + sourceMethod.getName() + "()";
-//        sep = ", ";
-//        count++;
-//    }
-
     public <S> void appendParamSource(Method sourceMethod, SourceInfo sourceInfo, Wrapper<S> handler, boolean isCast) {
         String eventClass = handler.eventClass().getCanonicalName();
         if (importMap != null) {

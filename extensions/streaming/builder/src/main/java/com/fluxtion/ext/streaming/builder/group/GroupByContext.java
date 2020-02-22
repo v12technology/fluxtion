@@ -28,7 +28,6 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -97,7 +96,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
+    public <K> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);
         contexts.add(secondaryContext);
@@ -105,7 +104,7 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
+    public <K> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);
         contexts.add(secondaryContext);

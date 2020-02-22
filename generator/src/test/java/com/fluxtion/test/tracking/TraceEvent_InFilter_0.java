@@ -17,14 +17,14 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import java.util.ArrayList;
 
 /**
  *
  * @author Greg Higgins
  */
-public class TraceEvent_InFilter_0 extends Event implements TraceEvent{
+public class TraceEvent_InFilter_0 extends DefaultEvent implements TraceEvent{
     
     
     public static final int ID = 1;

@@ -38,7 +38,7 @@ public class EventPublisherTest extends BaseSepInprocessTest {
         assertThat(adder.intValue(), is(1));
     }
 
-    public static class NumberEvent extends Event {
+    public static class NumberEvent implements Event {
 
         public final int value;
 
@@ -48,7 +48,7 @@ public class EventPublisherTest extends BaseSepInprocessTest {
 
     }
 
-    public static class GreaterThan extends Event{
+    public static class GreaterThan implements Event{
 
         public int barrier;
 

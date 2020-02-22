@@ -1,13 +1,13 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.test.Within;
 import static com.fluxtion.ext.streaming.api.test.Within.within;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -46,8 +46,8 @@ public class WithinTest extends StreamInprocessTest {
         assertThat(counter.intValue(), is(3));
         
     }
-
-    public static class MyTimer extends Event {
+    
+    public static class MyTimer {
 
         public final int time;
         private final int val;

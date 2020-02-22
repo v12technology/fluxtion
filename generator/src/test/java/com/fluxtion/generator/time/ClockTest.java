@@ -25,7 +25,6 @@ import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.api.time.Tick;
-import com.fluxtion.api.event.TimeEvent;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -72,7 +71,7 @@ public class ClockTest extends BaseSepInprocessTest {
 
     }
 
-    public static class TestTimeEvent extends Event implements TimeEvent {
+    public static class TestTimeEvent implements Event  {
 
         @Override
         public long getEventTime() {
@@ -81,7 +80,7 @@ public class ClockTest extends BaseSepInprocessTest {
 
     }
     
-    public static class NoTimeEvent extends Event{}
+    public static class NoTimeEvent implements Event{}
 
     public static class MyClockProxy {
 

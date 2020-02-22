@@ -18,7 +18,7 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -59,7 +59,7 @@ public class NumericPredicates {
         return dp;
     }
     
-    public static class FilterConfig extends Event{
+    public static class FilterConfig extends DefaultEvent{
         private double val;
 
         public FilterConfig(String key, double val) {

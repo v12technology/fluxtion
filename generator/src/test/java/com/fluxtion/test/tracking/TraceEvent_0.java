@@ -24,14 +24,7 @@ import java.util.ArrayList;
  *
  * @author Greg Higgins
  */
-public class TraceEvent_0 extends Event{
-    
-    
-    public static final int ID = 1;
-
-    public TraceEvent_0() {
-        super(ID);
-    }
+public class TraceEvent_0 implements Event{
     
     public int intValue;
     public String strValue;

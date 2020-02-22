@@ -31,7 +31,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins (greg.higgins@v12technology.com)
  */
-public class EventLogControlEvent extends Event {
+public class EventLogControlEvent implements Event {
 
     private LogLevel level;
     /**

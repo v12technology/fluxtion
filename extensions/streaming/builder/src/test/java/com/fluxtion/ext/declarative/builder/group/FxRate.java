@@ -11,13 +11,13 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author greg
  */
-public class FxRate extends Event{
+public class FxRate extends DefaultEvent{
     
     private final String ccyPair;
     private final double rate;

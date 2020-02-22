@@ -20,6 +20,7 @@ package com.fluxtion.generator.parent;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.event.Event;
@@ -99,14 +100,14 @@ public class ParentUpdateListenerTest extends BaseSepTest {
 
     }
 
-    public static class ClassFilterEvent extends Event {
+    public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {
             filterString = clazz.getCanonicalName();
         }
     }
 
-    public static class NoUpdateEvent extends Event {
+    public static class NoUpdateEvent implements Event {
 
     }
 
@@ -196,10 +197,10 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         }
     }
 
-    public static final class ConfigEvent extends Event {
+    public static final class ConfigEvent implements Event {
     }
 
-    public static final class NewOrderEvent extends Event {
+    public static final class NewOrderEvent implements Event {
     }
 
     public static class OrderCache {
@@ -298,10 +299,10 @@ public class ParentUpdateListenerTest extends BaseSepTest {
 
     }
 
-    public static class MarketTickEvent extends Event {
+    public static class MarketTickEvent implements Event {
     }
 
-    public static class PositionEvent extends Event {
+    public static class PositionEvent implements Event {
     }
 
     public static class MarketHandler {

@@ -17,7 +17,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class Deal extends Event{
+public class Deal implements Event{
 
     public static final Class<Deal> DEAL = Deal.class;
     

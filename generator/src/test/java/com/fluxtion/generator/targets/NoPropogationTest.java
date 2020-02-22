@@ -21,6 +21,7 @@ package com.fluxtion.generator.targets;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.api.event.Event;
@@ -128,7 +129,7 @@ public class NoPropogationTest {
         }
     }
 
-    public static class LogControlEvent extends Event {
+    public static class LogControlEvent extends DefaultEvent {
 
         public LogControlEvent(String filter) {
             super();
@@ -137,7 +138,7 @@ public class NoPropogationTest {
 
     }
 
-    public static class LogToConsole extends Event {
+    public static class LogToConsole implements Event {
     }
 
     public static class TimeProcessr {

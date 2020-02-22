@@ -16,6 +16,7 @@
  */
 package com.fluxtion.runtime.partition;
 
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.partition.Partitioner;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
@@ -215,10 +216,10 @@ public class PartitionerTest {
 
     }
 
-    public static class DummyEvent extends Event {
+    public static class DummyEvent extends DefaultEvent {
     }
 
-    public static class MyEvent extends Event {
+    public static class MyEvent extends DefaultEvent {
 
         private String day;
         private String month = "january";

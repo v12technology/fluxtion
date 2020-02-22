@@ -57,7 +57,7 @@ public class GenerationOrderTest extends BaseSepTest {
 
     }
 
-    public static class OrderEvent extends Event {
+    public static class OrderEvent implements Event {
 
         public List<String> list = new ArrayList<>();
     }

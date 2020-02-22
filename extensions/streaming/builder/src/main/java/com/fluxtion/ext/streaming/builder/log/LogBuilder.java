@@ -25,7 +25,6 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.updateNotifie
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -106,11 +105,11 @@ public class LogBuilder {
         return this;
     }
 
-    public static <E extends Event> MsgBuilder Log(String message, Class<E> source) {
+    public static <E> MsgBuilder Log(String message, Class<E> source) {
         return Log(message, EventSelect.select(source));
     }
     
-    public static <E extends Event> MsgBuilder Log(String message, Class<E> source, SerializableFunction<E, ?>... data) {
+    public static <E> MsgBuilder Log(String message, Class<E> source, SerializableFunction<E, ?>... data) {
         return Log(message, EventSelect.select(source), data);
     }
     
@@ -128,7 +127,7 @@ public class LogBuilder {
         return logger.build();
     }
     
-    public static <E extends Event> MsgBuilder Log(Class<E> source) {
+    public static <E> MsgBuilder Log(Class<E> source) {
         return Log(EventSelect.select(source));
     }
     
@@ -158,7 +157,6 @@ public class LogBuilder {
     }
 
     @SafeVarargs
-//    public static <N, E extends Event, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, Function<E, ?>... data) {
     public static <N, E, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, SerializableFunction<E, ?>... data) {
         LogBuilder logger = new LogBuilder(message, notifier);
         logger.input(source, data);

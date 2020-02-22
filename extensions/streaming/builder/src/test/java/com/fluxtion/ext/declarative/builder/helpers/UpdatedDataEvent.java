@@ -11,24 +11,16 @@
  */
 package com.fluxtion.ext.declarative.builder.helpers;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author Greg Higgins
  */
-public class UpdatedDataEvent extends Event{
+public class UpdatedDataEvent {
 
-    public static final int ID = 2;
-    
-    public UpdatedDataEvent() {
-        super(ID);
-    }
-    
     public int value;
 
     public int getUPdatedValue() {
         return value;
     }
-    
+
 }

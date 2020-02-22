@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.streaming.builder.util;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -34,15 +33,7 @@ public class FunctionArg<T> extends Argument<T> {
 
     public static <T, S> FunctionArg<S> arg(SerializableFunction<T, S> supplier) {
         final Class containingClass = supplier.getContainingClass();
-        if (Event.class.isAssignableFrom(containingClass)) {
-            return new FunctionArg(select(containingClass), supplier.method(), true);
-        } else {
-            try {
-                return new FunctionArg(containingClass.newInstance(), supplier.method(), true);
-            } catch (InstantiationException | IllegalAccessException ex) {
-                throw new RuntimeException("default constructor missing for class:'" + containingClass + "'");
-            }
-        }
+        return new FunctionArg(select(containingClass), supplier.method(), true);
     }
 
     public static <T extends Number> FunctionArg<T> arg(Double d) {

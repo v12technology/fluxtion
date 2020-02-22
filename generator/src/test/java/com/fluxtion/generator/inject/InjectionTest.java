@@ -24,13 +24,13 @@ import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.Map;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
@@ -203,7 +203,7 @@ public class InjectionTest extends BaseSepInprocessTest {
         }
     }
 
-    public static class CharEvent extends Event {
+    public static class CharEvent extends DefaultEvent {
 
         public CharEvent(char filterChar) {
             filterId = filterChar;

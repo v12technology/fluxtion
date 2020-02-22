@@ -23,7 +23,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class TestEventNoId extends Event{
+public class TestEventNoId implements Event{
 
     public int value;
     

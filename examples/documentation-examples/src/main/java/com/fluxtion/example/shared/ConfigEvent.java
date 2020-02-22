@@ -16,12 +16,12 @@
  */
 package com.fluxtion.example.shared;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class ConfigEvent extends Event{
-    
+public class ConfigEvent extends DefaultEvent{
+
 }

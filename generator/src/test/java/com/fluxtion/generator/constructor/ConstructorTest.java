@@ -56,10 +56,10 @@ public class ConstructorTest extends BaseSepTest {
         buildAndInitSep(PrimitiveCollectionsBuilder.class);
     }
 
-    public static final class ConfigEvent extends Event {
+    public static final class ConfigEvent implements Event {
     }
 
-    public static final class NewOrderEvent extends Event {
+    public static final class NewOrderEvent implements Event {
     }
 
     public static final class ConfigHandler {

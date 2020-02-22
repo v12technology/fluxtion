@@ -23,14 +23,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class TimeEvent extends Event{
+public class TimeEvent implements Event{
 
-    public static final int ID = 2;
-    
     public long time;
-    
-    public TimeEvent() {
-        super(ID);
-    }
-    
 }

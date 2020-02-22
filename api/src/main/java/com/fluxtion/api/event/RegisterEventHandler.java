@@ -33,7 +33,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class RegisterEventHandler extends Event {
+public class RegisterEventHandler implements Event {
 
     private final EventHandler handler;
     private boolean register;

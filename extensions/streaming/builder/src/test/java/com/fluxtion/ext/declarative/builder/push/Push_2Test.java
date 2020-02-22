@@ -1,7 +1,6 @@
 package com.fluxtion.ext.declarative.builder.push;
 
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -122,7 +121,7 @@ public class Push_2Test extends StreamInprocessTest {
         Assert.assertThat(date_2.getTime(), is(3L));
     }
 
-    public static class LongNumber extends Event{
+    public static class LongNumber {
 
         long val;
 

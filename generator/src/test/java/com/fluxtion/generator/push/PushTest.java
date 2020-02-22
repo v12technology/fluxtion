@@ -61,7 +61,7 @@ public class PushTest extends BaseSepTest {
 
     }
 
-    public static class MarketTickEvent extends Event {
+    public static class MarketTickEvent implements Event {
 
         public String ccyPair;
 

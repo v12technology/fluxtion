@@ -19,7 +19,6 @@ package com.fluxtion.ext.futext.builder.util.marsahller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;

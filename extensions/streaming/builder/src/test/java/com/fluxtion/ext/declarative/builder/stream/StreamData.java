@@ -17,13 +17,11 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamData extends Event{
+public class StreamData {
 
     private String stringValue;
     private int intValue;

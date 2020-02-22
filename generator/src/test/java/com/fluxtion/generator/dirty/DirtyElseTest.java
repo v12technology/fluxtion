@@ -65,7 +65,7 @@ public class DirtyElseTest extends BaseSepInprocessTest {
         assertThat(failInt.count, is(0));
     }
 
-    public static class NumberEvent extends Event {
+    public static class NumberEvent implements Event {
 
         public final int value;
 

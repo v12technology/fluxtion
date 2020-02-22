@@ -22,6 +22,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.TearDown;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.api.event.Event;
@@ -234,7 +235,7 @@ public class Creator {
                 System.out.println("building event:" + className + " fqn:" + fqn);
                 final TypeSpec.Builder nodeBuilder = TypeSpec.classBuilder(className)
                         .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
-                        .superclass(ClassName.get(Event.class));
+                        .superclass(ClassName.get(DefaultEvent.class));
                 TypeSpec nodeClass = nodeBuilder.build();
 //                JavaFile javaFile = 
 //                        JavaFile.builder(GenerationContext.SINGLETON.getPackageName(), nodeClass)

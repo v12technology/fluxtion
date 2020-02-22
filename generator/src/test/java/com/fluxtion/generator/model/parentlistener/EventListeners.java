@@ -55,10 +55,10 @@ public class EventListeners {
         }
     }
 
-    public static class TestEvent extends Event {
+    public static class TestEvent implements Event {
     }
 
-    public static class ConfigEvent extends Event {
+    public static class ConfigEvent implements Event {
     }
 
     public static class ChildConfigEvent extends ConfigEvent {

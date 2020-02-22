@@ -19,7 +19,6 @@ package com.fluxtion.ext.streaming.builder.factory;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.GenericWrapper;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.ext.streaming.api.StringFilterEventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;

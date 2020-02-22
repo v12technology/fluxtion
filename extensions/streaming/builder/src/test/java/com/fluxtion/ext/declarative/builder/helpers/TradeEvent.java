@@ -11,14 +11,12 @@
  */
 package com.fluxtion.ext.declarative.builder.helpers;
 
-import com.fluxtion.api.event.Event;
-
 /**
  * Testing event for aggregate functions.
  * 
  * @author Greg Higgins
  */
-public class TradeEvent extends Event{
+public class TradeEvent {
     public int tradeId;
     public int tradeVolume;
 

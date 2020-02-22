@@ -94,7 +94,7 @@ public class EventSubclassTest extends BaseSepInprocessTest {
         assertThat(implListener.eventCount, is(1));
     }
 
-    public static class TimeEvent extends Event {
+    public static class TimeEvent implements Event {
     }
 
     public static class ImplEvent extends TimeEvent {
@@ -105,7 +105,7 @@ public class EventSubclassTest extends BaseSepInprocessTest {
 
     }
 
-    public static class BaseEvent extends Event {
+    public static class BaseEvent implements Event {
 
     }
 

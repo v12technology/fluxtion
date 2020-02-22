@@ -30,7 +30,6 @@ import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
@@ -55,11 +54,11 @@ public class GroupByBuilder<K, T> {
         return groupBy.join(k, f);
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
+    public <K> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?> f) {
         return groupBy.join(k, f);
     }
 
-    public <K extends Event> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
+    public <K> GroupByBuilder<K, T> join(Class<K> k, SerializableFunction<K, ?>... f) {
         return groupBy.join(k, f);
     }
 
