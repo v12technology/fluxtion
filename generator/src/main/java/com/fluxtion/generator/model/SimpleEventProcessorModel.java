@@ -32,7 +32,6 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.FilterDescriptionProducer;
@@ -60,7 +59,6 @@ import org.reflections.ReflectionUtils;
 import static org.reflections.ReflectionUtils.withAnnotation;
 import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withParameters;
 import static org.reflections.ReflectionUtils.withParametersCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1174,7 +1172,7 @@ public class SimpleEventProcessorModel {
             postDispatchMethods = new ArrayList<>();
             Class searchClass = Event.class;
             if (eh.eventClass() == null) {
-                eventTypeClass = (TypeResolver.resolveRawArguments(EventHandler.class, eh.getClass()))[0];
+                eventTypeClass = (TypeResolver.resolveRawArguments(FilteredEventHandler.class, eh.getClass()))[0];
                 searchClass = eventTypeClass;
             } else {
                 eventTypeClass = eh.eventClass();

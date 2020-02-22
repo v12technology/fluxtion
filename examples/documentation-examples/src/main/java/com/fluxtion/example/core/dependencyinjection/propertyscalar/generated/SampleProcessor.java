@@ -25,7 +25,7 @@ import com.fluxtion.example.shared.SampleEnum;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T15:45:40.993276800
+ * generation time   : 2020-02-22T17:58:10.059184700
  * generator version : 1.9.3-SNAPSHOT
  * api version       : 1.9.3-SNAPSHOT
  * </pre>

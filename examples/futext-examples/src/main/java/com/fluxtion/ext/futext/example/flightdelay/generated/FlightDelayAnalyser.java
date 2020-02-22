@@ -28,7 +28,7 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T15:45:49.981612700
+ * generation time   : 2020-02-22T17:58:18.498908400
  * generator version : 1.9.3-SNAPSHOT
  * api version       : 1.9.3-SNAPSHOT
  * </pre>

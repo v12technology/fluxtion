@@ -23,10 +23,8 @@ package com.fluxtion.api.lifecycle;
  * specific type of event.
  *
  * @author Greg Higgins
- *
- * @param <T> The type of event processed by this handler
  */
-public interface EventHandler<T> {
+public interface EventHandler {
 
     EventHandler NULL_EVENTHANDLER = new EventHandler() {
         @Override
@@ -43,7 +41,7 @@ public interface EventHandler<T> {
      *
      * @param e the {@link com.fluxtion.api.event.Event Event} to process.
      */
-    void onEvent(T e);
+    void onEvent(Object e);
 
     /**
      * called when all nodes that depend upon this EventHadler have successfully
@@ -53,13 +51,5 @@ public interface EventHandler<T> {
     default void afterEvent() {
     }
 
-    /**
-     * The class of the Event processed by this handler
-     *
-     * @return Class of {@link com.fluxtion.api.event.Event Event} to process
-     */
-    default Class<T> eventClass() {
-        return null;
-    }
 
 }
