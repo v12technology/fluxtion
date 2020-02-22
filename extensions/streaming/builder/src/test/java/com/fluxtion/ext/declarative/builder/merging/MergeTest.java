@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.merging;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -27,6 +26,7 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -36,7 +36,7 @@ public class MergeTest extends StreamInprocessTest {
 
     @Test
     public void multipleSelect() {
-        EventHandler handler = sep((c) -> {
+        StaticEventProcessor handler = sep((c) -> {
             select(DataEvent.class).console("dataEvent").id("nonMergedCount")
                     .map(count())
                     .resetNotifier(select(StreamTest.TempF.class).console("[reset event] ->"));

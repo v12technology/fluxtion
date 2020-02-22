@@ -51,17 +51,17 @@ public final class GroupBy_4 implements GroupBy<Filter_getDelay_By_positiveInt0,
       instance.aggregateCount2 = value;
     }
     {
-      double value = instance.aggregateSum3;
-      value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
-      target.setTotalDelayMins((int) value);
-      instance.aggregateSum3 = value;
-    }
-    {
       double value = instance.aggregateAverage1;
       value =
           instance.aggregateAverage1Function.calcAverage((double) event.getDelay(), (double) value);
       target.setAvgDelay((int) value);
       instance.aggregateAverage1 = value;
+    }
+    {
+      double value = instance.aggregateSum3;
+      value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
+      target.setTotalDelayMins((int) value);
+      instance.aggregateSum3 = value;
     }
     return allMatched;
   }

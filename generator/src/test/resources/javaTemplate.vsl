@@ -17,7 +17,7 @@
  */
 package ${package};
 
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 #if(${MODEL.imports})
@@ -25,7 +25,7 @@ ${MODEL.imports}
 #end
 
 //${version_information}
-public class ${className} implements EventHandler, BatchHandler, Lifecycle {
+public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle {
 
 //Node declarations
 ${MODEL.nodeDeclarations}

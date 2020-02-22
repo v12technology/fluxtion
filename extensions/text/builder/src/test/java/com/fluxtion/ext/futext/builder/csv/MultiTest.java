@@ -17,7 +17,6 @@
 package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
@@ -31,6 +30,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -40,9 +40,9 @@ public class MultiTest extends BaseSepTest {
 
     @Test
     public void multiTest() {
-        EventHandler customerParser = buildAndInitSep(CsvCustomerData.class);
+        StaticEventProcessor customerParser = buildAndInitSep(CsvCustomerData.class);
         beforeTest();
-        EventHandler trackParser = buildAndInitSep(CsvTrackPlay.class);
+        StaticEventProcessor trackParser = buildAndInitSep(CsvTrackPlay.class);
         //
         DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
         dispatcher.init();

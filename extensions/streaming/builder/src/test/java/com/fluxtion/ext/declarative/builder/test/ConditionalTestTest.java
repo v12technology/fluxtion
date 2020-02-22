@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
@@ -36,6 +35,7 @@ import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Assert;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 
 /**
@@ -144,7 +144,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testEventClassAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder4.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder4.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -161,7 +161,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void filterNodeAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder5.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder5.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -183,7 +183,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void filterEventClassAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder6.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder6.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -205,7 +205,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testNumberNodeAndNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder7.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder7.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -222,7 +222,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testNodeArray() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderArray1.class);
+        StaticEventProcessor sep = buildAndInitSep(BuilderArray1.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -239,7 +239,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testNodeWrapperArrayNotifyOnce() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderArray2.class);
+        StaticEventProcessor sep = buildAndInitSep(BuilderArray2.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -264,7 +264,7 @@ public class ConditionalTestTest extends BaseSepTest {
 
     @org.junit.Test
     public void testNodeWrapperArrayNotifyAlways() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderArray3.class);
+        StaticEventProcessor sep = buildAndInitSep(BuilderArray3.class);
         FilterResultListener results = (FilterResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);

@@ -16,17 +16,17 @@
  */
 package com.fluxtion.api.lifecycle;
 
+import com.fluxtion.api.annotations.EventHandler;
+
 /**
- * processes all events of type T. An EventHandler is a node in a Simple Event
- * Processor (SEP), that is the root for processing events in a SEP. Events can
- * only be processed by a SEP if there is an EventHandler registered for that
- * specific type of event.
+ * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
+ * and methods annotated with {@link EventHandler}
  *
  * @author Greg Higgins
  */
-public interface EventHandler {
+public interface StaticEventProcessor {
 
-    EventHandler NULL_EVENTHANDLER = new EventHandler() {
+    StaticEventProcessor NULL_EVENTHANDLER = new StaticEventProcessor() {
         @Override
         public void onEvent(Object e) {
         }

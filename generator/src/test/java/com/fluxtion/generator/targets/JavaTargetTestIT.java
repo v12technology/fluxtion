@@ -21,7 +21,6 @@ import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_subclass_t
 import static org.junit.Assert.assertEquals;
 
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.test.event.TestEventNoId;
 import com.fluxtion.test.event.TestEventNoIdHandler;
@@ -40,6 +39,7 @@ import com.fluxtion.test.tracking.TraceEvent_InFilter_0;
 import java.lang.reflect.Field;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -50,7 +50,7 @@ public class JavaTargetTestIT {
     @Test
     public void test_1NoFilter() throws Exception {
         //System.out.println("test_1NoFilter");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(Test1NoFilter);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(Test1NoFilter);
         ((Lifecycle) handler).init();
         TestEventNoId event = new TestEventNoId();
         assertEquals(0, event.value);
@@ -74,8 +74,8 @@ public class JavaTargetTestIT {
     @Test
     public void trace_int_0_test1() throws Exception {
         //System.out.println("trace_int_0_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test1);
-        EventHandler handlerInline = JavaTestGeneratorHelper.sepInstanceInline(trace_int_0_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test1);
+        StaticEventProcessor handlerInline = JavaTestGeneratorHelper.sepInstanceInline(trace_int_0_test1);
         //filter matches on 10, check trace
         TraceEvent_InFilter_0 event = new TraceEvent_InFilter_0(10);
         handler.onEvent(event);
@@ -96,7 +96,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_int_0_test2() throws Exception {
         //System.out.println("trace_int_0_test2");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test2);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test2);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace
@@ -126,7 +126,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_int_0_test3() throws Exception {
         //System.out.println("trace_int_0_test3");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test3);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test3);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace
@@ -162,7 +162,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_int_0_test4() throws Exception {
         //System.out.println("trace_int_0_test4");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test4);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test4);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace
@@ -198,7 +198,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_int_0_test5() throws Exception {
         //System.out.println("trace_int_0_test5");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test5);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_int_0_test5);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace
@@ -215,7 +215,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_subclass_test1() throws Exception {
         //System.out.println("trace_subclass_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_subclass_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_subclass_test1);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace
@@ -267,7 +267,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_diamond_test1() throws Exception {
         //System.out.println("trace_diamond_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_diamond_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_diamond_test1);
         Event te = new TraceEvent.TraceEvent_sub1(222);
         handler.onEvent(te);
 //        JavaTestGeneratorHelper.testTraceIdOrder(((TraceEvent.TraceEvent_sub1)te).getTraceIdList(), "sub1", "sub1.1");
@@ -280,7 +280,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_dirty_test1() throws Exception {
         //System.out.println("trace_dirty_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_dirty_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_dirty_test1);
         //
         TraceEvent.TraceEvent_sub1 te = new TraceEvent.TraceEvent_sub1(1);
         te.strValue = "A1";
@@ -309,7 +309,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_dirty_test3() throws Exception {
         //System.out.println(trace_dirty_test2);
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_dirty_test2);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_dirty_test2);
         //
         TraceEvent.TraceEvent_sub1 te = new TraceEvent.TraceEvent_sub1(1);
         te.strValue = "no match";
@@ -339,7 +339,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_eventlifecycle_test1() throws Exception {
         //System.out.println("trace_eventlifecycle_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_eventlifecycle_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_eventlifecycle_test1);
         //
         TraceEvent.TraceEvent_sub1 te = new TraceEvent.TraceEvent_sub1(1);
         handler.onEvent(te);
@@ -357,7 +357,7 @@ public class JavaTargetTestIT {
     @Test
     public void trace_0_test1() throws Exception {
         //System.out.println("trace_0_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_0_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_0_test1);
         //ensure root field exists
         JavaTestGeneratorHelper.testPublicField(handler, "aggregator");
         //filter matches on 10, check trace

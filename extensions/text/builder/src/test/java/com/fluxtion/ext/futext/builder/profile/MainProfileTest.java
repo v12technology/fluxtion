@@ -18,9 +18,9 @@ package com.fluxtion.ext.futext.builder.profile;
 
 //import com.fluxtion.extension.fucntional.test.aggregated.generated.test3.MatchResultCsvProcessor;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -38,7 +38,7 @@ public class MainProfileTest {
     public static void main(String[] args) throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchFieldException, InterruptedException {
         System.out.println("Integration test::testTradeDetailsProcessor");
         Class<?> clazz = Class.forName("com.fluxtion.extension.fucntional.test.aggregated.generated.test3.MatchResultCsvProcessor");
-        final EventHandler sep = (EventHandler) clazz.newInstance();
+        final StaticEventProcessor sep = (StaticEventProcessor) clazz.newInstance();
 //        AggregateInstance< LeaguePosition> leaguPos = (AggregateInstance< LeaguePosition>) clazz.getField(AggregateTest.VAR_AGG_LEAGUEPOSITION).get(sep);
 
         StringDriver.initSep(sep);

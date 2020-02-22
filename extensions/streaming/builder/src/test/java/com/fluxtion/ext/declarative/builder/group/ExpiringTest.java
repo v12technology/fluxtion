@@ -5,7 +5,6 @@ import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
@@ -13,6 +12,7 @@ import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.junit.Categories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * @author gregp
@@ -27,7 +27,7 @@ public class ExpiringTest extends BaseSepTest {
     @Test
     @Category(Categories.FilterTest.class)
     public void test() {
-        EventHandler sep = buildAndInitSep(Builder1.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
 //        
 

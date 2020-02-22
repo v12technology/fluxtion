@@ -19,7 +19,6 @@ package com.fluxtion.runtime.partition;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.partition.Partitioner;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.LongAdder;
@@ -27,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -186,7 +186,7 @@ public class PartitionerTest {
         return null;
     }
 
-    public static class MyHandler implements EventHandler {
+    public static class MyHandler implements StaticEventProcessor {
 
         static int instanceCount;
         static int invokeCount;

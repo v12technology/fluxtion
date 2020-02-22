@@ -5,7 +5,6 @@
  */
 package com.fluxtion.ext.text.api.util;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
@@ -28,9 +27,10 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
- * Reads files and streams pushing {@link CharEvent} to an {@link EventHandler}.
+ * Reads files and streams pushing {@link CharEvent} to an {@link StaticEventProcessor}.
  * Can be configured to be a synchronous or an asynchronous reader from the
  * input.
  *
@@ -38,39 +38,39 @@ import java.util.logging.Logger;
  */
 public class CharStreamer {
 
-    public static CharStreamer stream(File inputFile, EventHandler handler) {
+    public static CharStreamer stream(File inputFile, StaticEventProcessor handler) {
         return new CharStreamer(handler, inputFile);
     }
 
-    public static CharStreamer stream(Reader input, EventHandler handler) {
+    public static CharStreamer stream(Reader input, StaticEventProcessor handler) {
         return new CharStreamer(handler, input);
     }
 
-    public static CharStreamer stream(Reader input, Class<EventHandler> handler) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return new CharStreamer((EventHandler) handler.getConstructors()[0].newInstance(), input);
+    public static CharStreamer stream(Reader input, Class<StaticEventProcessor> handler) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return new CharStreamer((StaticEventProcessor) handler.getConstructors()[0].newInstance(), input);
     }
 
-    public static CharStreamer stream(File inputFile, Class<EventHandler> handler) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return new CharStreamer((EventHandler) handler.getConstructors()[0].newInstance(), inputFile);
+    public static CharStreamer stream(File inputFile, Class<StaticEventProcessor> handler) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return new CharStreamer((StaticEventProcessor) handler.getConstructors()[0].newInstance(), inputFile);
     }
 
     private boolean asynch = true;
     private MappedByteBuffer mappedBuffer;
     private Disruptor<ReadEvent> disruptor;
-    private final EventHandler handler;
+    private final StaticEventProcessor handler;
     private boolean init = true;
     private final File inputFile;
     private final Reader inputStream;
     private boolean tearDown = true;
     private boolean eof = true;
 
-    private CharStreamer(EventHandler handler, Reader input) {
+    private CharStreamer(StaticEventProcessor handler, Reader input) {
         this.handler = handler;
         this.inputStream = input;
         this.inputFile = null;
     }
 
-    public CharStreamer(EventHandler handler, File inputFile) {
+    public CharStreamer(StaticEventProcessor handler, File inputFile) {
         this.handler = handler;
         this.inputStream = null;
         this.inputFile = inputFile;

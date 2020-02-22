@@ -19,7 +19,6 @@ import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
@@ -30,6 +29,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 //import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -42,7 +42,7 @@ public class GroupByTest extends BaseSepTest {
      */
     @org.junit.Test
     public void testGroupByNonEvent() {
-        EventHandler sep = buildAndInitSep(BuilderEnriched.class);
+        StaticEventProcessor sep = buildAndInitSep(BuilderEnriched.class);
         sep.onEvent(new FxRate("GBPUSD", 1.5));
         sep.onEvent(new FxRate("EURUSD", 1.2));
         sep.onEvent(new DeliveryItem("EU-xxxx-01", "9900787", 1000.0));
@@ -74,7 +74,7 @@ public class GroupByTest extends BaseSepTest {
     @org.junit.Test
 //    @Ignore
     public void testGroupBy() {
-        EventHandler sep = buildAndInitSep(Builder1.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         
         sep.onEvent(new TradeEvent(14, 1000));
         sep.onEvent(new TradeEvent(2, 300));

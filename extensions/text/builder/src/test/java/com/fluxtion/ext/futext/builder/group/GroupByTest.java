@@ -30,7 +30,6 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.ext.text.builder.util.StringDriver;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import com.fluxtion.ext.futext.builder.test.helpers.LeaguePosition;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import static org.junit.Assert.assertThat;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -56,7 +56,7 @@ public class GroupByTest extends BaseSepTest {
 
     @org.junit.Test
     public void testGroupByNonEvent() {
-        EventHandler sep = buildAndInitSep(TradeTextBuilder.class);
+        StaticEventProcessor sep = buildAndInitSep(TradeTextBuilder.class);
         StringDriver.streamChars(
                 "trader_id=1 trade size=120\n"
                 + "trader_id=2 trade size=50\n"
@@ -74,7 +74,7 @@ public class GroupByTest extends BaseSepTest {
 
     @org.junit.Test
     public void testGroupByMultipleOutputs() {
-        EventHandler sep = buildAndInitSep(MatchResultCsvBuilder.class);
+        StaticEventProcessor sep = buildAndInitSep(MatchResultCsvBuilder.class);
         StringDriver.streamChars(
                 "liverpool,2,3,everton\n"
                 + "arsenal,1,3,everton\n"
@@ -94,7 +94,7 @@ public class GroupByTest extends BaseSepTest {
 
     @org.junit.Test
     public void testGroupByJoinToClassTarget() {
-        EventHandler sep = buildAndInitSep(LeagueTableFromMatchCsv.class);
+        StaticEventProcessor sep = buildAndInitSep(LeagueTableFromMatchCsv.class);
         StringDriver.streamChars(
                 "wba,1,3,arsenal\n"
                 + "wba,2,3,liverpool\n"

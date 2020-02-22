@@ -1,7 +1,6 @@
 package com.fluxtion.ext.text.api.util;
 
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
@@ -18,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -38,11 +38,11 @@ public class CharEventStreamer {
         this.chunkSize = chunkSize;
     }
 
-    public void streamFromReader(final Reader reader, EventHandler eventHandler) throws FileNotFoundException, IOException, InterruptedException {
+    public void streamFromReader(final Reader reader, StaticEventProcessor eventHandler) throws FileNotFoundException, IOException, InterruptedException {
         CharEventStreamer.this.streamFromReader(reader, eventHandler, true);
     }
 
-    public void streamFromReader(final Reader reader, EventHandler eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException, InterruptedException {
+    public void streamFromReader(final Reader reader, StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException, InterruptedException {
         boolean isCharSink = eventHandler instanceof AsciiCharEventFileStreamer.CharSink;
         CharSink charSink = null;
         if (isCharSink) {
@@ -78,11 +78,11 @@ public class CharEventStreamer {
 
     }
 
-    public void streamFromFile(final File file, EventHandler eventHandler) throws FileNotFoundException, IOException, InterruptedException {
+    public void streamFromFile(final File file, StaticEventProcessor eventHandler) throws FileNotFoundException, IOException, InterruptedException {
         streamFromFile(file, eventHandler, true);
     }
 
-    public void streamFromFile(final File file, EventHandler eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException, InterruptedException {
+    public void streamFromFile(final File file, StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException, InterruptedException {
         boolean isCharSink = eventHandler instanceof AsciiCharEventFileStreamer.CharSink;
         CharSink charSink = null;
         if (isCharSink) {
@@ -131,7 +131,7 @@ public class CharEventStreamer {
         threadPool.shutdown();
     }
 
-    private void pushCharChunkToHandler(EventHandler eventHandler, boolean callLifeCycleMethods) throws InterruptedException {
+    private void pushCharChunkToHandler(StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws InterruptedException {
         if (callLifeCycleMethods) {
             initSep(eventHandler);
         }
@@ -152,7 +152,7 @@ public class CharEventStreamer {
 
     private void pushCharChunkToHandler(CharSink charSink, boolean callLifeCycleMethods) throws InterruptedException {
         if (callLifeCycleMethods) {
-            initSep((EventHandler) charSink);
+            initSep((StaticEventProcessor) charSink);
         }
         CharChunk readChunk = new CharChunk(chunkSize);
         CharEvent charEvent = new CharEvent(' ');
@@ -165,11 +165,11 @@ public class CharEventStreamer {
         }
         charSink.handleEofEvent(new EofEvent());
         if (callLifeCycleMethods) {
-            tearDownSep((EventHandler) charSink);
+            tearDownSep((StaticEventProcessor) charSink);
         }
     }
 
-    private void pushToHandler(EventHandler eventHandler, boolean callLifeCycleMethods) throws InterruptedException {
+    private void pushToHandler(StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws InterruptedException {
         if (callLifeCycleMethods) {
             initSep(eventHandler);
         }
@@ -190,7 +190,7 @@ public class CharEventStreamer {
 
     private void pushToHandler(CharSink charSink, boolean callLifeCycleMethods) throws InterruptedException {
         if (callLifeCycleMethods) {
-            initSep((EventHandler) charSink);
+            initSep((StaticEventProcessor) charSink);
         }
         ByteChunk readChunk = new ByteChunk(chunkSize);
         CharEvent charEvent = new CharEvent(' ');
@@ -202,19 +202,19 @@ public class CharEventStreamer {
             }
         }
         
-        ((EventHandler)charSink).onEvent(new EofEvent());
+        ((StaticEventProcessor)charSink).onEvent(new EofEvent());
         if (callLifeCycleMethods) {
-            tearDownSep((EventHandler) charSink);
+            tearDownSep((StaticEventProcessor) charSink);
         }
     }
 
-    private static void initSep(EventHandler sep) {
+    private static void initSep(StaticEventProcessor sep) {
         if (sep instanceof Lifecycle) {
             ((Lifecycle) sep).init();
         }
     }
 
-    private static void tearDownSep(EventHandler sep) {
+    private static void tearDownSep(StaticEventProcessor sep) {
         if (sep instanceof Lifecycle) {
             ((Lifecycle) sep).tearDown();
         }

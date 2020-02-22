@@ -17,7 +17,7 @@
 package com.fluxtion.example.core.events.multihandler.generated;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.events.multihandler.MyEventProcessor;
 import com.fluxtion.example.shared.ConfigEvent;
@@ -25,14 +25,14 @@ import com.fluxtion.example.shared.MyEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T17:58:12.438127700
+ * generation time   : 2020-02-22T18:17:58.584751200
  * generator version : 1.9.3-SNAPSHOT
  * api version       : 1.9.3-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
+public class SampleProcessor implements StaticEventProcessor, BatchHandler, Lifecycle {
 
   //Node declarations
   private final MyEventProcessor myEventProcessor_1 = new MyEventProcessor();

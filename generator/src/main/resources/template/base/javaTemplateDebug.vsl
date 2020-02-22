@@ -20,7 +20,7 @@ package ${package};
 import java.util.HashMap;
 import com.fluxtion.builder.debug.SepDebugger;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -29,7 +29,7 @@ ${MODEL.imports}
 #end
 
 @SuppressWarnings({"deprecation","unchecked"})
-public class ${debugClassName} implements EventHandler, BatchHandler, Lifecycle {
+public class ${debugClassName} implements StaticEventProcessor, BatchHandler, Lifecycle {
 
 //Node declarations
 ${MODEL.nodeDeclarations}

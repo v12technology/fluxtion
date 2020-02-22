@@ -18,7 +18,6 @@ package com.fluxtion.api.partition;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.nio.ByteBuffer;
@@ -29,38 +28,39 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
- * An EventHandler partitioner based upon a received event.A partitioner
- creates an instance of an {@link EventHandler} and dispatches events to that
+ * An StaticEventProcessor partitioner based upon a received event.A partitioner
+ creates an instance of an {@link StaticEventProcessor} and dispatches events to that
  instance. Partitioning allows a separate memory context for an EventHandler,
  this can be useful when the structure of processing is repeated but the state
  is different for each instance.<p>
- *
- * For example monitoring the fuel level on a
- * fleet of cars is the same processing for each car, but an individual car will
- * have a unique fuel level. In this case the EventHandler can be
- * partitioned on vehicle identification number.
- * <p>
- *
- * The EventHandler instance will be re-used or a new one created
- * when new {@link Event}'s are received. The {@link #partition()}
+
+ For example monitoring the fuel level on a
+ fleet of cars is the same processing for each car, but an individual car will
+ have a unique fuel level. In this case the StaticEventProcessor can be
+ partitioned on vehicle identification number.
+ <p>
+
+ The StaticEventProcessor instance will be re-used or a new one created
+ when new {@link Event}'s are received. The {@link #partition()}
  * methods provide functions that map keys from an incoming {@link Event}. the
- * key is used manage
- * EventHandler instances in an underlying map. If no key/value mapping is found
- * then a new EventHandler is created and handles the incoming message.
- * <p>
+ key is used manage
+ StaticEventProcessor instances in an underlying map. If no key/value mapping is found
+ then a new StaticEventProcessor is created and handles the incoming message.
+ <p>
  *
  * New instances are created with s {@link Supplier} factory. Optionally an
- * initialiser can be provided that can access the newly created
- * EventHandler before any messages are processed. Using the car/fuel analogy
- * the initialiser function may set a reference to a global fuel monitor from
- * each newly created car processor.
+ initialiser can be provided that can access the newly created
+ StaticEventProcessor before any messages are processed. Using the car/fuel analogy
+ the initialiser function may set a reference to a global fuel monitor from
+ each newly created car processor.
  *
  * @author gregp
  * @param <E>
  */
-public class Partitioner< E extends EventHandler> implements EventHandler, Lifecycle, BatchHandler {
+public class Partitioner< E extends StaticEventProcessor> implements StaticEventProcessor, Lifecycle, BatchHandler {
 
     private HashMap<Class, SerializableFunction> class2Function;
     private HashMap<Class, MultiKeyGenerator> class2MultiFunction;
@@ -68,8 +68,8 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
     private final byte[] array;
     private static final int DEFAULT_SIZE = 64;
     private List<Function> charKeyedHandlers;
-    private HashMap<Object, EventHandler> handlerMap;
-    private EventHandler[] handlerArray;
+    private HashMap<Object, StaticEventProcessor> handlerMap;
+    private StaticEventProcessor[] handlerArray;
     private BatchHandler[] batchHandArray;
     private final Supplier<E> factory;
     private Consumer<E> initialiser;
@@ -85,7 +85,7 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
         class2Function = new HashMap<>();
         class2MultiFunction = new HashMap<>();
         handlerMap = new HashMap<>();
-        handlerArray = new EventHandler[0];
+        handlerArray = new StaticEventProcessor[0];
         batchHandArray = new BatchHandler[0];
         charKeyedHandlers = new ArrayList<>();
         array = new byte[DEFAULT_SIZE];
@@ -110,8 +110,8 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
      * <ul>
      * <li>null - no match and no dispatch
      * <li>'*' - will dispatch to all EventHandlers i.e. a broadcast
-     * <li>[CharSrquence] - creates an EventHandler keyed with this CharSequence
-     * </ul>
+     * <li>[CharSrquence] - creates an StaticEventProcessor keyed with this CharSequence
+ </ul>
      *
      * @param <K> Generated key
      * @param partitionKeyGen key mapping function
@@ -156,20 +156,20 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
         boolean keyed = charsequenceKeyProcess(e);
         boolean filtered = (f != null | multiF != null | keyed);
         if (f != null) {
-            EventHandler handler = handlerMap.computeIfAbsent(f.apply(e), (t) -> {
+            StaticEventProcessor handler = handlerMap.computeIfAbsent(f.apply(e), (t) -> {
                 return initialise();
             });
             pushEvent(handler, e);
         }
         if (multiF != null) {
-            EventHandler handler = handlerMap.computeIfAbsent(multiF.generateKey(e), (t) -> {
+            StaticEventProcessor handler = handlerMap.computeIfAbsent(multiF.generateKey(e), (t) -> {
                 multiF.newValueList();
                 return initialise();
             });
             pushEvent(handler, e);
         }
         if (!filtered) {
-            for (EventHandler eventHandler : handlerArray) {
+            for (StaticEventProcessor eventHandler : handlerArray) {
                 pushEvent(eventHandler, e);
             }
         }
@@ -190,7 +190,7 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
                     buffer.put((byte) key.charAt(j));
                 }
                 buffer.flip();
-                EventHandler ret = handlerMap.get(buffer);
+                StaticEventProcessor ret = handlerMap.get(buffer);
                 if (ret != null) {
                     //invoke
                     pushEvent(ret, e);
@@ -206,7 +206,7 @@ public class Partitioner< E extends EventHandler> implements EventHandler, Lifec
         return matched;
     }
 
-    private void pushEvent(EventHandler handler, Object e) {
+    private void pushEvent(StaticEventProcessor handler, Object e) {
         handler.onEvent(e);
     }
 

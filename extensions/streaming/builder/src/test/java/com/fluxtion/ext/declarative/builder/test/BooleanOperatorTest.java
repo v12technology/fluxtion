@@ -10,7 +10,6 @@ import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.xor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
@@ -19,6 +18,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -28,7 +28,7 @@ public class BooleanOperatorTest extends BaseSepTest {
  
     @org.junit.Test
     public void testNot() throws Exception {
-        EventHandler sep = buildAndInitSep(Builder.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder.class);
         TestResultListener results = (TestResultListener) new Mirror().on(sep).get().field("results");
         //results
         assertFalse(results.receivedNotification);
@@ -53,7 +53,7 @@ public class BooleanOperatorTest extends BaseSepTest {
 
     @org.junit.Test
     public void testAnd() throws Exception {
-        EventHandler sep = buildAndInitSep(BuilderAnd.class);
+        StaticEventProcessor sep = buildAndInitSep(BuilderAnd.class);
         TestResultListener resultsAnd = (TestResultListener) new Mirror().on(sep).get().field("results");
         TestResultListener resultsNand = (TestResultListener) new Mirror().on(sep).get().field("resultsNand");
         TestResultListener resultsOr = (TestResultListener) new Mirror().on(sep).get().field("resultsOr");

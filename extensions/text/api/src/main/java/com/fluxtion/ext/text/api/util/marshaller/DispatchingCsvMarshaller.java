@@ -1,12 +1,12 @@
 package com.fluxtion.ext.text.api.util.marshaller;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.ascii.Csv2ByteBufferTemp;
 import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
-public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lifecycle {
+public class DispatchingCsvMarshaller implements StaticEventProcessor, BatchHandler, Lifecycle {
 
     //Node declarations
     private final Csv2ByteBufferTemp csv2ByteBufferTemp_1 = new Csv2ByteBufferTemp();
@@ -22,22 +22,22 @@ public class DispatchingCsvMarshaller implements EventHandler, BatchHandler, Lif
         init();
     }
 
-    public DispatchingCsvMarshaller addMarshaller(Class wrapper, EventHandler handler) {
+    public DispatchingCsvMarshaller addMarshaller(Class wrapper, StaticEventProcessor handler) {
         dispatcher.addMarshaller(wrapper, handler);
         return this;
     }
 
     public DispatchingCsvMarshaller addMarshaller(Class wrapper, String handlerClass)
             throws Exception {
-        dispatcher.addMarshaller(wrapper, (EventHandler) Class.forName(handlerClass).newInstance());
+        dispatcher.addMarshaller(wrapper, (StaticEventProcessor) Class.forName(handlerClass).newInstance());
         return this;
     }
 
-    public DispatchingCsvMarshaller addSink(EventHandler handler) {
+    public DispatchingCsvMarshaller addSink(StaticEventProcessor handler) {
         return addSink(handler, true);
     }
 
-    public DispatchingCsvMarshaller addSink(EventHandler handler, boolean init) {
+    public DispatchingCsvMarshaller addSink(StaticEventProcessor handler, boolean init) {
         dispatcher.setSink(handler);
         if (init) {
             if (handler instanceof Lifecycle) {

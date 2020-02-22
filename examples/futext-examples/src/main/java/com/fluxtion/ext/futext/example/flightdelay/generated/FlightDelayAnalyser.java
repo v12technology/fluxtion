@@ -17,7 +17,7 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -28,14 +28,14 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T17:58:18.498908400
+ * generation time   : 2020-02-22T18:18:05.035113600
  * generator version : 1.9.3-SNAPSHOT
  * api version       : 1.9.3-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-public class FlightDelayAnalyser implements EventHandler, BatchHandler, Lifecycle {
+public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, Lifecycle {
 
   //Node declarations
   private final Count count_3 = new Count();

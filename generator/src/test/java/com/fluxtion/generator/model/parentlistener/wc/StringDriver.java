@@ -17,8 +17,8 @@
  */
 package com.fluxtion.generator.model.parentlistener.wc;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * 
@@ -26,7 +26,7 @@ import com.fluxtion.api.lifecycle.Lifecycle;
  */
 public class StringDriver {
 
-	public static void streamChars(String testString, EventHandler sep) {
+	public static void streamChars(String testString, StaticEventProcessor sep) {
 		// init
 		if (sep instanceof Lifecycle) {
 			((Lifecycle) sep).init();

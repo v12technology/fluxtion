@@ -17,7 +17,6 @@
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import org.junit.Test;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
@@ -25,6 +24,7 @@ import static com.fluxtion.generator.util.ClassUtils.getField;
 import com.fluxtion.test.event.TimeEvent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -34,7 +34,7 @@ public class InprocessSepCompilerTest {
 
     @Test
     public void inProcessTestSimple() throws InstantiationException, IllegalAccessException, Exception {
-        EventHandler sep = sepTestInstance(this::buildSepSingle, "com.gh.test", "GenNode_" + System.currentTimeMillis());
+        StaticEventProcessor sep = sepTestInstance(this::buildSepSingle, "com.gh.test", "GenNode_" + System.currentTimeMillis());
         MyHandler handler = getField("handler", sep);
         assertThat(handler.count, is(0));
         sep.onEvent(new TimeEvent());

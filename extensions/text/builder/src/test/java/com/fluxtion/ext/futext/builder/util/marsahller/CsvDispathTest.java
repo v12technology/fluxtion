@@ -19,12 +19,12 @@ package com.fluxtion.ext.futext.builder.util.marsahller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import java.util.concurrent.atomic.LongAdder;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -41,13 +41,13 @@ public class CsvDispathTest {
         //set up idispatch
         DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
         dispatcher.init();
-        dispatcher.addMarshaller(String.class, (EventHandler) (e) -> {
+        dispatcher.addMarshaller(String.class, (StaticEventProcessor) (e) -> {
             stringCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());
             }
         });
-        dispatcher.addMarshaller(Integer.class, (EventHandler) (e) -> {
+        dispatcher.addMarshaller(Integer.class, (StaticEventProcessor) (e) -> {
             intCount.increment();
             if (e instanceof CharEvent) {
                 input.append(((CharEvent)e).getCharacter());

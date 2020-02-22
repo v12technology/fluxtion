@@ -18,7 +18,6 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
@@ -29,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -54,7 +54,7 @@ public class CsvToBeanBuilderTest {
         assertTrue(worldCity[0].getEventTime() >= currentTime);
 
         DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
-        dispatcher2.addMarshaller(WorldCity.class, (EventHandler) GenerationContext.SINGLETON.forName(
+        dispatcher2.addMarshaller(WorldCity.class, (StaticEventProcessor) GenerationContext.SINGLETON.forName(
                 "com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2.fluxCsvDefaultMappedBean.Csv2DefaultMappedBean").newInstance());
         dispatcher2.addSink((e) -> {
             if (e instanceof WorldCityOptionalEvent) {
@@ -100,7 +100,7 @@ public class CsvToBeanBuilderTest {
             });
         } else {
             dispatcher = new DispatchingCsvMarshaller();
-            dispatcher.addMarshaller(WorldCity.class, (EventHandler) Class.forName("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest.WorldCityCsvBean").newInstance());
+            dispatcher.addMarshaller(WorldCity.class, (StaticEventProcessor) Class.forName("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest.WorldCityCsvBean").newInstance());
             dispatcher.addSink((e) -> {
                 if (e instanceof WorldCity) {
                     worldCity[0] = (WorldCity) e;

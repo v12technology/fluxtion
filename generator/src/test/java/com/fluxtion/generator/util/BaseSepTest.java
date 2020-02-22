@@ -18,7 +18,6 @@
 package com.fluxtion.generator.util;
 
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
@@ -36,6 +35,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * A base class a test can extend to aid SEP generation testing. A test class
@@ -48,7 +48,7 @@ public class BaseSepTest {
 
 //    protected static long count = System.currentTimeMillis();
     protected SepCompilerConfig compileCfg;
-    protected EventHandler sep;
+    protected StaticEventProcessor sep;
     @Rule
     public TestName testName = new TestName();
     protected String pckg;
@@ -75,7 +75,7 @@ public class BaseSepTest {
         return "" + System.currentTimeMillis();
     }
 
-    protected EventHandler buildAndInitSep(Class<? extends SEPConfig> builderClass) {
+    protected StaticEventProcessor buildAndInitSep(Class<? extends SEPConfig> builderClass) {
         try {
             compileCfg.setCachedCompiler(GenerationContext.SINGLETON.getJavaCompiler());
             compileCfg.setConfigClass(builderClass.getName());

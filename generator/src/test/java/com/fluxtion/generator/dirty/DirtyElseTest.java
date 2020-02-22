@@ -33,7 +33,7 @@ public class DirtyElseTest extends BaseSepInprocessTest {
 
     @Test
     public void testAudit() {
-//        com.fluxtion.api.lifecycle.EventHandler handler = buildAndInitSep(DirtyBuilder.class);
+//        com.fluxtion.api.lifecycle.StaticEventProcessor handler = buildAndInitSep(DirtyBuilder.class);
 //        fixedPkg = true;
         
         sep((c) -> {

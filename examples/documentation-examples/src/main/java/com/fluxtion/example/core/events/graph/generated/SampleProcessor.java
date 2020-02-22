@@ -17,7 +17,7 @@
 package com.fluxtion.example.core.events.graph.generated;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.events.graph.CombinerNode;
 import com.fluxtion.example.shared.ChildNode;
@@ -29,14 +29,14 @@ import com.fluxtion.example.shared.PipelineNode;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T17:58:12.192008800
+ * generation time   : 2020-02-22T18:17:58.249620200
  * generator version : 1.9.3-SNAPSHOT
  * api version       : 1.9.3-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
+public class SampleProcessor implements StaticEventProcessor, BatchHandler, Lifecycle {
 
   //Node declarations
   private final DataEventHandler dataEventHandler_1 = new DataEventHandler();

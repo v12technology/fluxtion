@@ -18,21 +18,21 @@ package com.fluxtion.api.event;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered
- * {@link EventHandler}. Listens to {@link RegisterEventHandler} events to 
- * register and de-register {@link EventHandler} as sinks.
+ * {@link StaticEventProcessor}. Listens to {@link RegisterEventHandler} events to 
+ * register and de-register {@link StaticEventProcessor} as sinks.
  *
  * @author V12 Technology Ltd.
  */
 public class EventPublsher<T> {
 
     public T[] nodeSource = (T[]) new Object[0];
-    private EventHandler[] handlers;
+    private StaticEventProcessor[] handlers;
 
     public EventPublsher() {
         init();
@@ -54,7 +54,7 @@ public class EventPublsher<T> {
 
     @com.fluxtion.api.annotations.EventHandler
     public void registerEventHandler(RegisterEventHandler registration) {
-        ArrayList<EventHandler> nodes = new ArrayList<>(Arrays.asList(handlers));
+        ArrayList<StaticEventProcessor> nodes = new ArrayList<>(Arrays.asList(handlers));
         if (registration.isRegister()) {
             nodes.add(registration.getHandler());
         } else {
@@ -66,7 +66,7 @@ public class EventPublsher<T> {
     @Initialise
     public final void init() {
         if (handlers == null) {
-            handlers = new EventHandler[0];
+            handlers = new StaticEventProcessor[0];
         }
 //        if (nodeSource == null) {
 //            nodeSource = new Event[0];
