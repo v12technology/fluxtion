@@ -65,7 +65,7 @@ public class GroupByTest extends BaseSepTest {
                 + "trader_id=1 trade size=80\n",
                 sep, false);
 
-        GroupBy<MutableNumber> summary = getField(VAR_TRADE_SUMMARY);
+        GroupBy<?, MutableNumber> summary = getField(VAR_TRADE_SUMMARY);
         Wrapper<MutableNumber> trader1 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 1).map(entry -> entry.getValue()).findAny().get();
         Wrapper<MutableNumber> trader2 = summary.getMap().entrySet().stream().filter(entry -> ((Number) entry.getKey()).intValue() == 2).map(entry -> entry.getValue()).findAny().get();
         Assert.assertThat(300, is(trader1.event().intValue));
@@ -87,7 +87,7 @@ public class GroupByTest extends BaseSepTest {
                 + "yefiuregi,1114,6,arsenal\n"
                 + "everton,6,1,arsenal\n",
                 sep, false);
-        GroupBy<MutableNumber> homeGoals = getField(VAR_SUM_HOMEGOALS);
+        GroupBy<?, MutableNumber> homeGoals = getField(VAR_SUM_HOMEGOALS);
         Wrapper<MutableNumber> liverpoolHome = homeGoals.getMap().entrySet().stream().filter(entry -> ((String) entry.getKey()).equals("liverpool")).map(entry -> entry.getValue()).findAny().get();
         Assert.assertThat(8, is(liverpoolHome.event().intValue));
     }
@@ -103,7 +103,7 @@ public class GroupByTest extends BaseSepTest {
                 + "liverpool,1,1,wba\n"
                 + "liverpool,0,1,arsenal\n",
                  sep, false);
-        GroupBy<LeaguePosition> league = getField(VAR_AGG_LEAGUEPOSITION);
+        GroupBy<?, LeaguePosition> league = getField(VAR_AGG_LEAGUEPOSITION);
         league.getMap().values().stream().map(w -> w.event())
                 .sorted((l1, l2) -> {
                     if ((l2.totalPoints() - l1.totalPoints()) != 0) {
@@ -143,7 +143,7 @@ public class GroupByTest extends BaseSepTest {
             //groupby
             GroupByBuilder<TradeDetails, MutableNumber> trades = groupBy(tradeDetails, TradeDetails::getTraderId, MutableNumber.class);
             trades.sum(TradeDetails::getTradeSize, MutableNumber::set);
-            GroupBy<MutableNumber> tradesSummary = addPublicNode(trades.build(), VAR_TRADE_SUMMARY);
+            GroupBy<?, MutableNumber> tradesSummary = addPublicNode(trades.build(), VAR_TRADE_SUMMARY);
             //logging
 //            Log(tradesSummary);
 //            Log(tradeDetails);
@@ -162,8 +162,8 @@ public class GroupByTest extends BaseSepTest {
             homeGoals.sum(MatchResult::getHomeGoals, MutableNumber::set);
             awayGoals.sum(MatchResult::getAwayGoals, MutableNumber::set);
             //build
-            final GroupBy<MutableNumber> homeGoalsGroup = homeGoals.build();
-            final GroupBy<MutableNumber> awayGoalsGroup = awayGoals.build();
+            final GroupBy<MatchResult, MutableNumber> homeGoalsGroup = homeGoals.build();
+            final GroupBy<MatchResult, MutableNumber> awayGoalsGroup = awayGoals.build();
             //debugging - make public
             addPublicNode(homeGoalsGroup, VAR_SUM_HOMEGOALS);
             addPublicNode(awayGoalsGroup, VAR_SUM_AWAYGOALS);
@@ -204,7 +204,7 @@ public class GroupByTest extends BaseSepTest {
             home.sum(MatchResult::getDraw, LeaguePosition::setHomeDraws);
             home.sum(MatchResult::getAwayGoals, LeaguePosition::setHomeGoalsAgainst);
             //
-            GroupBy<LeaguePosition> league = home.build();
+            GroupBy<MatchResult, LeaguePosition> league = home.build();
             addPublicNode(league, VAR_AGG_LEAGUEPOSITION);
         }
     }

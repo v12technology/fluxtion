@@ -233,7 +233,11 @@ public class Group <K, T> {
     public Class<T> getTargetClass() {
         return target;
     }
-    
+
+    public Class<K> getKeyClass() {
+        return (Class<K>) inputSource.getClass();
+    }
+
     public K getInputSource() {
         return inputSource;
     }

@@ -26,12 +26,12 @@ import java.util.Map;
  *
  * @author Greg Higgins
  */
-public final class GroupBy_4 implements GroupBy<CarrierDelay> {
+public final class GroupBy_4 implements GroupBy<FlightDetails, CarrierDelay> {
 
   @NoEventReference public Object resetNotifier;
   public Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt00;
   private CarrierDelay target;
-  private GroupByTargetMap<CarrierDelay, CalculationStateGroupBy_4> calcState;
+  private GroupByTargetMap<FlightDetails, CarrierDelay, CalculationStateGroupBy_4> calcState;
   private GroupByIniitialiser<FlightDetails, CarrierDelay>
       initialiserfilter_getDelay_By_positiveInt00;
 
@@ -79,13 +79,13 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   }
 
   @Override
-  public CarrierDelay value(Object key) {
+  public CarrierDelay value(FlightDetails key) {
     return calcState.getInstance(key).target;
   }
 
   @Override
-  public <V extends Wrapper<CarrierDelay>> Map<?, V> getMap() {
-    return (Map<?, V>) calcState.getInstanceMap();
+  public <V extends Wrapper<CarrierDelay>> Map<FlightDetails, V> getMap() {
+    return (Map<FlightDetails, V>) calcState.getInstanceMap();
   }
 
   @Override

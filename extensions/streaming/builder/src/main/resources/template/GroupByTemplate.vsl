@@ -12,7 +12,7 @@ import $import;
  * 
  * @author Greg Higgins
  */
-public final class ${functionClass} implements GroupBy<${targetClass}>{
+public final class ${functionClass} implements GroupBy<${keyClass}, ${targetClass}>{
 
   @NoEventReference public Object resetNotifier;
 #foreach( $source in $sourceMappingList)
@@ -24,7 +24,7 @@ public final class ${functionClass} implements GroupBy<${targetClass}>{
 #end
 #end
     private ${targetClass} target;
-    private GroupByTargetMap<${targetClass}, ${calcStateClass}> calcState;
+    private GroupByTargetMap<${keyClass}, ${targetClass}, ${calcStateClass}> calcState;
 #if(${isMultiKey})
     private ${multiKeyClassName} multiKey;
 #end
@@ -116,13 +116,13 @@ ${functionInfo.updateTarget}
     }
 
     @Override
-    public ${targetClass} value(Object key) {
+    public ${targetClass} value(${keyClass} key) {
         return calcState.getInstance(key).target;
     }
 
     @Override
-    public <V extends Wrapper<${targetClass}>> Map<?, V> getMap() {
-        return (Map<?, V>) calcState.getInstanceMap();
+    public <V extends Wrapper<${targetClass}>> Map<${keyClass}, V> getMap() {
+        return (Map<${keyClass}, V>) calcState.getInstanceMap();
     }
 
     @Override
