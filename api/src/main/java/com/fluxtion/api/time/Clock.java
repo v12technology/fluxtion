@@ -24,41 +24,71 @@ import com.fluxtion.api.event.GenericEvent;
 
 /**
  * A clock instance in a static event processor, use the @Inject annotation to
- * ensure the same of instance of the clock is used for all nodes.
+ * ensure the same of instance of the clock is used for all nodes. Clock
+ * provides time query functionality for the processor as follows:
+ *
+ * <ul>
+ * <li>WallClock - current time UTC milliseconds</li>
+ * <li>ProcessTime - the time the event was received for processing</li>
+ * <li>EventTime - the time the event was created</li>
+ * </ul>
  *
  * @author V12 Technology Ltd.
  */
-public class Clock implements Auditor{
+public class Clock implements Auditor {
 
     private long eventTime;
+    private long processTime;
     private ClockStrategy wallClock;
 
     @Override
     public void eventReceived(Event event) {
         eventTime = event.getEventTime();
+        processTime = getWallClockTime();
     }
 
     @Override
     public void eventReceived(Object event) {
-        if(Event.class.isAssignableFrom(event.getClass())){
-            eventReceived((Event)event);
-        }else{
-            eventTime = getWallClockTime();
+        processTime = getWallClockTime();
+        if (Event.class.isAssignableFrom(event.getClass())) {
+            eventTime = ((Event) event).getEventTime();
+        } else {
+            eventTime = processTime;
         }
     }
 
     @Override
-    public void nodeRegistered(Object node, String nodeName) {/*NoOp*/}
+    public void nodeRegistered(Object node, String nodeName) {/*NoOp*/
+    }
 
     @EventHandler(propagate = false)
     public void setClockStrategy(GenericEvent<ClockStrategy> event) {
         this.wallClock = event.value;
     }
 
+    /**
+     * The time the last event was received by the processor
+     *
+     * @return time the last event was received for processing
+     */
+    public long getProcessTime() {
+        return processTime;
+    }
+
+    /**
+     * The time the latest event was created
+     *
+     * @return time the latest event was created
+     */
     public long getEventTime() {
         return eventTime;
     }
 
+    /**
+     * Current wallclock time in milliseconds UTC
+     *
+     * @return time in milliseconds UTC
+     */
     public long getWallClockTime() {
         return wallClock.getWallClockTime();
     }
