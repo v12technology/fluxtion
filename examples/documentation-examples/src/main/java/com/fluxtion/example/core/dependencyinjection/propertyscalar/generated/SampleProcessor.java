@@ -25,9 +25,9 @@ import com.fluxtion.example.shared.SampleEnum;
 
 /*
  * <pre>
- * generation time   : 2020-02-12T21:49:13.858946700
- * generator version : 1.8.7-SNAPSHOT
- * api version       : 1.8.7-SNAPSHOT
+ * generation time   : 2020-02-22T09:01:04.877
+ * generator version : ${generator_version_information}
+ * api version       : ${api_version_information}
  * </pre>
  * @author Greg Higgins
  */

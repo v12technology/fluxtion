@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = {"eventClass", "filterString"})
-public final class StringFilterEventHandler<T extends Event> implements FilteredEventHandler<T>, Wrapper<T> {
+public final class StringFilterEventHandler<T> implements FilteredEventHandler<T>, Wrapper<T> {
 
     private final String filterString;
     private final Class<T> eventClass;
@@ -39,7 +39,7 @@ public final class StringFilterEventHandler<T extends Event> implements Filtered
 
     @Override
     public int filterId() {
-        return Event.NO_ID;
+        return Event.NO_INT_FILTER;
     }
 
     @Override

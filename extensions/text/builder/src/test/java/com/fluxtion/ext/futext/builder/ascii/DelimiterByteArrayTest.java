@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.futext.builder.ascii;
@@ -21,6 +21,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
+import com.fluxtion.ext.text.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.api.lifecycle.EventHandler;
@@ -40,7 +41,7 @@ public class DelimiterByteArrayTest extends BaseSepTest {
     @Test
     public void testByteBufferDelimiter() throws Exception {
         final EventHandler sep = buildAndInitSep(CsvBuilderTest.class);
-        GroupBy<MutableNumber> aggSales = getField(VAR_BUFFER);
+        GroupBy<ByteBufferDelimiter, MutableNumber> aggSales = getField(VAR_BUFFER);
         StringDriver.streamChars(".greg, fred... greg. greg?\nfred \"greg\" E\nbob ", sep, true);
         final Map<?, Wrapper<MutableNumber>> wordMap = aggSales.getMap();
         assertEquals(4, wordMap.get("greg").event().intValue());

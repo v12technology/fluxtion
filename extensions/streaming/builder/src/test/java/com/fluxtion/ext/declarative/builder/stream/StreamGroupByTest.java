@@ -32,11 +32,11 @@ public class StreamGroupByTest extends StreamInprocessTest{
     @Test
     public void groupByStream(){
         sep((c) ->{
-            GroupBy<Number> group = select(StreamData.class)
+            GroupBy<String, Number> group = select(StreamData.class)
                     .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions.Sum);
             group.id("group");//.console("groupBy Map -> ");
         });
-        GroupBy<Number> group = getField("group");
+        GroupBy<String, Number> group = getField("group");
         sep.onEvent(new StreamData("one", 1000));
         sep.onEvent(new StreamData("one", 500));
         sep.onEvent(new StreamData("one", 1200));

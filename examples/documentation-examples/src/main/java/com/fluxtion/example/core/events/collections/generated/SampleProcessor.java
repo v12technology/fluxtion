@@ -30,9 +30,9 @@ import java.util.Arrays;
 
 /*
  * <pre>
- * generation time   : 2020-02-12T21:49:16.832944500
- * generator version : 1.8.7-SNAPSHOT
- * api version       : 1.8.7-SNAPSHOT
+ * generation time   : 2020-02-22T09:01:06.010
+ * generator version : ${generator_version_information}
+ * api version       : ${api_version_information}
  * </pre>
  * @author Greg Higgins
  */

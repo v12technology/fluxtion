@@ -1208,9 +1208,9 @@ public class SimpleEventProcessorModel {
             }
             filterString = eh.filterString();
             boolean isStrFilter = filterString!=null && !filterString.isEmpty();
-            isIntFilter = filterId != Event.NO_ID;
+            isIntFilter = filterId != Event.NO_INT_FILTER;
 //            isFiltered = true;
-            isFiltered = filterId != Event.NO_ID || isStrFilter;
+            isFiltered = filterId != Event.NO_INT_FILTER || isStrFilter;
             isInverseFiltered = false;
         }
 
@@ -1277,7 +1277,7 @@ public class SimpleEventProcessorModel {
                 Class type = field.getType();
                 if (type == int.class) {
                     tmpFilterId = field.getInt(instance);
-                    tmpIsFiltered = tmpFilterId != Event.NO_ID;
+                    tmpIsFiltered = tmpFilterId != Event.NO_INT_FILTER;
                 } else if (type == String.class) {
                     tmpFilterString = (String) field.get(instance);
                     tmpIsIntFilter = false;

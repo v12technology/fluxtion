@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
- *
  * @author gregp
  */
 public class ExpiringTest extends BaseSepTest {
@@ -29,7 +28,7 @@ public class ExpiringTest extends BaseSepTest {
     @Category(Categories.FilterTest.class)
     public void test() {
         EventHandler sep = buildAndInitSep(Builder1.class);
-        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
+        GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
 //        
 
 //        sep.onEvent(new Order(2, "EURJPY", 100_000_000));
@@ -71,7 +70,7 @@ public class ExpiringTest extends BaseSepTest {
             deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);
             deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);
             deals.sum(Deal::getDealtSize, OrderSummary::setVolumeDealt);
-            GroupBy<OrderSummary> orderSummary = orders.build();
+            GroupBy<Order, OrderSummary> orderSummary = orders.build();
             //add public node for testing
             addPublicNode(orderSummary, "orderSummary");
             //logging

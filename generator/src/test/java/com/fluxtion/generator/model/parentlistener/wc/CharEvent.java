@@ -29,7 +29,7 @@ public class CharEvent extends Event {
 	private char character;
 
 	public CharEvent(char id) {
-		super(Event.NO_ID, id);
+		super(id);
 		this.character = id;
 		filterId = id;
 	}

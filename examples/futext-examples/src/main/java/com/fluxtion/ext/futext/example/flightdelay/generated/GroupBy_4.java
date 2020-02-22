@@ -26,12 +26,13 @@ import java.util.Map;
  *
  * @author Greg Higgins
  */
-public final class GroupBy_4 implements GroupBy<CarrierDelay> {
+public final class GroupBy_4 implements GroupBy<Filter_getDelay_By_positiveInt0, CarrierDelay> {
 
   @NoEventReference public Object resetNotifier;
   public Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt00;
   private CarrierDelay target;
-  private GroupByTargetMap<CarrierDelay, CalculationStateGroupBy_4> calcState;
+  private GroupByTargetMap<Filter_getDelay_By_positiveInt0, CarrierDelay, CalculationStateGroupBy_4>
+      calcState;
   private GroupByIniitialiser<FlightDetails, CarrierDelay>
       initialiserfilter_getDelay_By_positiveInt00;
 
@@ -44,12 +45,6 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
         instance.processSource(1, initialiserfilter_getDelay_By_positiveInt00, event);
     target = instance.target;
     {
-      int value = instance.aggregateCount2;
-      value = AggregateCount.increment((int) 0, (int) value);
-      target.setTotalFlights((int) value);
-      instance.aggregateCount2 = value;
-    }
-    {
       double value = instance.aggregateAverage1;
       value =
           instance.aggregateAverage1Function.calcAverage((double) event.getDelay(), (double) value);
@@ -61,6 +56,12 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
       value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
       target.setTotalDelayMins((int) value);
       instance.aggregateSum3 = value;
+    }
+    {
+      int value = instance.aggregateCount2;
+      value = AggregateCount.increment((int) 0, (int) value);
+      target.setTotalFlights((int) value);
+      instance.aggregateCount2 = value;
     }
     return allMatched;
   }
@@ -79,13 +80,13 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   }
 
   @Override
-  public CarrierDelay value(Object key) {
+  public CarrierDelay value(Filter_getDelay_By_positiveInt0 key) {
     return calcState.getInstance(key).target;
   }
 
   @Override
-  public <V extends Wrapper<CarrierDelay>> Map<?, V> getMap() {
-    return (Map<?, V>) calcState.getInstanceMap();
+  public <V extends Wrapper<CarrierDelay>> Map<Filter_getDelay_By_positiveInt0, V> getMap() {
+    return (Map<Filter_getDelay_By_positiveInt0, V>) calcState.getInstanceMap();
   }
 
   @Override

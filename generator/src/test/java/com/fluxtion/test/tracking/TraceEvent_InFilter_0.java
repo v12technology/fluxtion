@@ -30,11 +30,11 @@ public class TraceEvent_InFilter_0 extends Event implements TraceEvent{
     public static final int ID = 1;
 
     public TraceEvent_InFilter_0(int filterId) {
-        super(ID, filterId);
+        super( filterId);
     }
 
     protected TraceEvent_InFilter_0(int id, int filterId) {
-        super(id, filterId);
+        super( filterId);
     }
     
     

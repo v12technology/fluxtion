@@ -25,10 +25,8 @@ import com.fluxtion.api.event.Event;
  */
 public class CharEvent extends Event{
     
-    public static final int ID = 1;  
-
     public CharEvent(char id) {
-        super(ID, id);
+        super(id);
     }
     
     public char getChar(){
