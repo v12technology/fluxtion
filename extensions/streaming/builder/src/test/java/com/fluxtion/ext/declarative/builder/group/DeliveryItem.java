@@ -11,13 +11,11 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author greg
  */
-public class DeliveryItem extends Event{
+public class DeliveryItem {
     
     private final String customerId;
     private final String productId;

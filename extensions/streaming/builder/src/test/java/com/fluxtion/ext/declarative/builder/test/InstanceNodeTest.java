@@ -5,19 +5,19 @@ import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 public class InstanceNodeTest extends BaseSepTest {
 
     @Test
     public void testSelectValidator() {
-        EventHandler sep = buildAndInitSep(ValidatorBuilder_1.class);
+        StaticEventProcessor sep = buildAndInitSep(ValidatorBuilder_1.class);
         TestResultListener results = getField("results");
         DataEvent de = new DataEvent();
         sep.onEvent(de);

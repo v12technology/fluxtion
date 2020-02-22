@@ -16,8 +16,6 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import static com.fluxtion.ext.text.api.event.EventId.EOF_EVENT_ID;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -26,15 +24,9 @@ import com.fluxtion.ext.streaming.api.Wrapper;
  *
  * @author gregp
  */
-public class EofEvent extends Event {
-
-    public static final int ID = EOF_EVENT_ID;
+public class EofEvent {
 
     public static final EofEvent EOF = new EofEvent();
-
-    public EofEvent() {
-        super(EOF_EVENT_ID);
-    }
 
     /**
      * Utility method for creating a node that listens to {@link EofEvent}.

@@ -8,8 +8,6 @@ import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
@@ -19,6 +17,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
 import java.util.Objects;
 import org.junit.Ignore;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -28,7 +27,7 @@ public class StreamTest implements Stateful {
     
     @Test
     public void tempMonitorTest() throws IllegalAccessException, Exception {
-        EventHandler handler = sepTestInstance((c) -> {
+        StaticEventProcessor handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<Number> tempC = select(TempF.class)
 //                    .filter(TempF::getSensorId, is("outside"))
@@ -73,7 +72,7 @@ public class StreamTest implements Stateful {
 
     @Test
     public void testMapToClass() throws Exception {
-        EventHandler handler = sepTestInstance((c) -> {
+        StaticEventProcessor handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<TempC> tempC = select(TempF.class).id("tempIn")
                     .console("[f] ->")
@@ -92,7 +91,7 @@ public class StreamTest implements Stateful {
 
     @Test
     public void consumeTest() throws IllegalAccessException, Exception {
-        EventHandler handler = sepTestInstance((c) -> {
+        StaticEventProcessor handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<Double> tempC = select(TempF.class)
                     .console("\n[1.TempF] ->")
@@ -119,7 +118,7 @@ public class StreamTest implements Stateful {
     @Ignore
     public void testCumSum() throws Exception {
         String className = "com.fluxtion.ext.declarative.builder.filterstaeful.StatefulFilter";
-        EventHandler handler = (EventHandler) Class.forName(className).newInstance();
+        StaticEventProcessor handler = (StaticEventProcessor) Class.forName(className).newInstance();
         ((Lifecycle) handler).init();
         handler.onEvent(new DataEvent(10));
         handler.onEvent(new DataEvent(50));
@@ -135,7 +134,7 @@ public class StreamTest implements Stateful {
 
     @Test
     public void graphOfStreamsTest() throws Exception {
-        EventHandler handler = sepTestInstance((c) -> {
+        StaticEventProcessor handler = sepTestInstance((c) -> {
             Wrapper<DataEvent> f = select(DataEvent.class)
                     .console("[data in] ->")
                     .filter(DataEvent::getValue, positive()).id("temp_AboveZero")
@@ -166,7 +165,7 @@ public class StreamTest implements Stateful {
 
     @Test
     public void notifyOnChangeFilter() throws Exception {
-        EventHandler handler = sepTestInstance((c) -> {
+        StaticEventProcessor handler = sepTestInstance((c) -> {
             //notify when > 20 on breach only
             Wrapper tempC = select(TempF.class).id("tempIn")
                     .console("\n[1.TempF] ->")
@@ -190,7 +189,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(40, "outside"));
     }
 
-    public static class TempF extends Event {
+    public static class TempF {
 
         double fahrenheit;
         String sensorId;
@@ -252,7 +251,7 @@ public class StreamTest implements Stateful {
 
     }
 
-    public static class TempC extends Event {
+    public static class TempC {
 
         double centigrade;
         String sensorId;

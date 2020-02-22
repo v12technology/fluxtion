@@ -23,9 +23,9 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.numeric.BufferValue;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import org.junit.Assert;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -39,7 +39,7 @@ public class Csv2ByteArrayTest extends BaseSepTest {
     @Test
     public void testSalesCsvProcessor() throws Exception {
         System.out.println("test::testSalesCsvProcessor");
-        final EventHandler sep =  buildAndInitSep(CsvBuilderTest.class);
+        final StaticEventProcessor sep =  buildAndInitSep(CsvBuilderTest.class);
         BufferValue aggSales = getField(VAR_BUFFER);
         BufferValue charSeq = getField(CHARSEQ_BUFFER);
         StringDriver.streamChars(  "fred,1234,trader: greg H,EURUSD\n", sep, false);

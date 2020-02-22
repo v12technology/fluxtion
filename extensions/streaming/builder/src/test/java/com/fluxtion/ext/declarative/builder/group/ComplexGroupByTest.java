@@ -20,13 +20,13 @@ import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.junit.Categories;
 import org.junit.experimental.categories.Category;
 //import static com.fluxtion.extension.functional.group2.Order.Order;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Optional;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
 import static org.hamcrest.CoreMatchers.is;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -42,7 +42,7 @@ public class ComplexGroupByTest extends BaseSepTest {
     @Test
     @Category(Categories.FilterTest.class)
     public void test() {
-        EventHandler sep = buildAndInitSep(Builder1.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         
         GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
         

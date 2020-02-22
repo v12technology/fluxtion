@@ -16,25 +16,22 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
-import static com.fluxtion.ext.text.api.event.EventId.REGISTER_EVENTHANDLER_ID;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
- * An event that registers an {@link EventHandler} as a sink in another SEP. The
+ * An event that registers an {@link StaticEventProcessor} as a sink in another SEP. The
  * receiving SEP must listen for Can be useful if a SEP wants to forward events
  * it produces to another SEP, this event can be used to register the target
  * SEP.
  *
  * @author V12 Technology Ltd.
  */
-public class RegisterEventHandler extends Event {
+public class RegisterEventHandler {
 
-    public static final int ID = REGISTER_EVENTHANDLER_ID;
-    private final EventHandler handler;
+    private final StaticEventProcessor handler;
     private boolean register;
 
-    public RegisterEventHandler(EventHandler handler) {
+    public RegisterEventHandler(StaticEventProcessor handler) {
         this(handler, true);
     }
 
@@ -44,13 +41,12 @@ public class RegisterEventHandler extends Event {
      * @param handler the target
      * @param register register/unregister
      */
-    public RegisterEventHandler(EventHandler handler, boolean register) {
-        super(ID);
+    public RegisterEventHandler(StaticEventProcessor handler, boolean register) {
         this.handler = handler;
         this.register = register;
     }
 
-    public EventHandler getHandler() {
+    public StaticEventProcessor getHandler() {
         return handler;
     }
 

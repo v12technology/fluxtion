@@ -16,14 +16,14 @@
  */
 package com.fluxtion.example.shared;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  * Simple Event that holds data item of type T.
  * 
  * @author V12 Technology Ltd.
  */
-public class DataEvent<T> extends Event{
+public class DataEvent<T> extends DefaultEvent{
     
     private final T data;
 

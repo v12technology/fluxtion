@@ -24,11 +24,11 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
 import com.fluxtion.ext.text.api.ascii.ByteBufferDelimiter;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static com.fluxtion.ext.text.builder.math.WordFrequency.wordFrequency;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -40,7 +40,7 @@ public class DelimiterByteArrayTest extends BaseSepTest {
 
     @Test
     public void testByteBufferDelimiter() throws Exception {
-        final EventHandler sep = buildAndInitSep(CsvBuilderTest.class);
+        final StaticEventProcessor sep = buildAndInitSep(CsvBuilderTest.class);
         GroupBy<ByteBufferDelimiter, MutableNumber> aggSales = getField(VAR_BUFFER);
         StringDriver.streamChars(".greg, fred... greg. greg?\nfred \"greg\" E\nbob ", sep, true);
         final Map<?, Wrapper<MutableNumber>> wordMap = aggSales.getMap();

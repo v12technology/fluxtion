@@ -18,7 +18,7 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
@@ -27,7 +27,6 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.outsideBand;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.add;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
@@ -341,7 +340,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         assertThat(sum.event().doubleValue(), is(17.5));
     }
     
-    public static class DataEvent extends Event {
+    public static class DataEvent extends DefaultEvent {
 
         public static final int ID = 1;
 
@@ -417,7 +416,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         }
     }
 
-    public static class Data1 extends Event {
+    public static class Data1  {
 
         public int val;
 
@@ -436,7 +435,7 @@ public class MathFunctionTest extends StreamInprocessTest {
 
     }
 
-    public static class Data2 extends Event {
+    public static class Data2 {
 
         public int val;
 

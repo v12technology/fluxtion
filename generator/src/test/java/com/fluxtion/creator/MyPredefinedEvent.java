@@ -23,6 +23,6 @@ import com.fluxtion.api.event.Event;
  *
  * @author gregp
  */
-public class MyPredefinedEvent extends Event{
+public class MyPredefinedEvent implements Event{
     
 }

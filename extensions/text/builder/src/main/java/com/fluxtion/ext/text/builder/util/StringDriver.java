@@ -18,8 +18,8 @@ package com.fluxtion.ext.text.builder.util;
 
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Utility to publish a String as a set of CharEvent's into a SEP.
@@ -28,23 +28,23 @@ import com.fluxtion.api.lifecycle.Lifecycle;
  */
 public class StringDriver {
 
-    public static void streamChars(String testString, EventHandler sep) {
+    public static void streamChars(String testString, StaticEventProcessor sep) {
         streamChars(testString, sep, true);
     }
     
-    public static void initSep(EventHandler sep){
+    public static void initSep(StaticEventProcessor sep){
         if ( sep instanceof Lifecycle) {
             ((Lifecycle) sep).init();
         }
     }
     
-    public static void tearDownSep(EventHandler sep){
+    public static void tearDownSep(StaticEventProcessor sep){
         if (sep instanceof Lifecycle) {
             ((Lifecycle) sep).tearDown();
         }
     }
     
-    public static void streamChars(String testString, EventHandler sep, boolean callLifecycle) {
+    public static void streamChars(String testString, StaticEventProcessor sep, boolean callLifecycle) {
         if (callLifecycle) {
             initSep(sep);
         }

@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.builder.factory;
-import com.fluxtion.api.event.Event;
+//import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -32,7 +32,6 @@ import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.*;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
 
@@ -672,7 +671,7 @@ public class LibraryFunctionsBuilder  {
      * @param <T> The input event stream
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Count#increment}
      */
-    public static <T extends Event> Wrapper<Number> count(Class<T> eventClass) {
+    public static <T> Wrapper<Number> count(Class<T> eventClass) {
         return select(eventClass).map(new Count()::increment);
     }
 

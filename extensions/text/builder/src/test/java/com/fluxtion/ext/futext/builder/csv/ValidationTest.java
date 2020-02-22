@@ -22,7 +22,6 @@ import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshall
 import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.withinRange;
 import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
@@ -32,6 +31,7 @@ import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Assert;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 public class ValidationTest extends BaseSepTest {
 
@@ -55,7 +55,7 @@ public class ValidationTest extends BaseSepTest {
     @Test
 //    @Ignore
     public void testCsvWithHeaderAndError() {
-        final EventHandler sep = buildAndInitSep(CsvMarshallerBuilderTest.WorldCitiesCsv_Header_1_Cfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(CsvMarshallerBuilderTest.WorldCitiesCsv_Header_1_Cfg.class);
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,16*90,1.5\n";
@@ -68,8 +68,8 @@ public class ValidationTest extends BaseSepTest {
     //are caught and the failed notifer path executed for the Evaluator
     public void testCsvWithHeaderAndRowFailedRead() {
 //        compileCfg.setGenerateDescription(false);
-//        final EventHandler sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsvWithFailNotifier.class);
+//        final StaticEventProcessor sep = new TestSep_testCsvWithHeaderAndRowCBFailedValidation();
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsvWithFailNotifier.class);
         Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
         Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
@@ -87,7 +87,7 @@ public class ValidationTest extends BaseSepTest {
     public void testValueValidation() {
         compileCfg.setGenerateDescription(true);
 //        compileCfg.setFormatSource(true);
-        final EventHandler sep = buildAndInitSep(WorldCityBeanValidating.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityBeanValidating.class);
         Number countPassed = ((Wrapper<Number>) getField("countPassed")).event();
         Number countFailed = ((Wrapper<Number>) getField("countFailed")).event();
 

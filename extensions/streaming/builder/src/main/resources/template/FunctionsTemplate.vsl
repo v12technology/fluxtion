@@ -142,7 +142,7 @@ public class ${className}  {
      * @param <T> The input event stream
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
-    public static <T extends Event> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Class<T> eventClass) {
+    public static <T> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Class<T> eventClass) {
         return select(eventClass).map(${FunctionInfo.invoke});
     }
 

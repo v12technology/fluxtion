@@ -16,12 +16,10 @@
  */
 package com.fluxtion.ext.streaming.builder.table;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author gregp
  */
-public class LoadCompleteEvent extends Event{
+public class LoadCompleteEvent {
 
 }

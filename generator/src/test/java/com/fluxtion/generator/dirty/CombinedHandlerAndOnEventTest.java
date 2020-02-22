@@ -62,10 +62,10 @@ public class CombinedHandlerAndOnEventTest extends BaseSepInprocessTest {
         }
     }
 
-    public static class EventA extends Event {
+    public static class EventA implements Event {
     }
 
-    public static class EventB extends Event {
+    public static class EventB implements Event {
     }
 
 }

@@ -46,6 +46,7 @@ public class RegistrationListenerTest extends BaseSepTest {
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(2));
     }
+    
     @Test
     public void testAuditInline() {
         buildAndInitSep(ParentListProcessorSepInline.class);

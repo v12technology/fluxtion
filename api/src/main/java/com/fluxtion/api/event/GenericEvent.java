@@ -39,7 +39,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class GenericEvent<T> extends Event {
+public class GenericEvent<T> extends DefaultEvent {
 
     public final T value;
 

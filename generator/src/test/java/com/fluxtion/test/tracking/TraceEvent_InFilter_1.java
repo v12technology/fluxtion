@@ -17,26 +17,26 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import java.util.ArrayList;
 
 /**
  *
  * @author Greg Higgins
  */
-public class TraceEvent_InFilter_1 extends Event{
-    
+public class TraceEvent_InFilter_1 extends DefaultEvent {
+
     public TraceEvent_InFilter_1(int filterId) {
-        super( filterId);
+        super(filterId);
     }
-    
+
     public int intValue;
     public String strValue;
     public Object objValue;
     ArrayList traceList = new ArrayList();
     ArrayList cacheList = new ArrayList();
-    
-    public void reset(){
+
+    public void reset() {
         intValue = 0;
         strValue = null;
         objValue = null;

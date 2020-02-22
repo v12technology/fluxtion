@@ -22,13 +22,13 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.text.builder.ascii.AsciiMatchFilterFactory;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.futext.builder.test.helpers.TextMatchPrinter;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -42,7 +42,7 @@ public class TextMatchTest extends BaseSepTest {
     @Test
     public void countTest1() {
         System.out.println("testSelectAndAlwaysNotify");
-        EventHandler sep = buildAndInitSep(Builder.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder.class);
         TextMatchPrinter textPrinter = getField(MATCHER_VARIABLE_NAME);
 
         String testString = "no matches";

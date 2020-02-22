@@ -20,13 +20,13 @@ package com.fluxtion.generator.targets;
 
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.nodes.KeyTracker;
 import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -37,7 +37,7 @@ public class InjectedFactoryTestIT {
     
     @Test
     public void validateReferences() throws Exception{
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory);
         KeyTracker tracker = (KeyTracker) handler.getClass().getField("keyTracker1").get(handler);
         Assert.assertEquals('1', tracker.keyProcessor_1.myChar);
         Assert.assertEquals(false, tracker.keyProcessor_1.notifyAccumulator);
@@ -47,7 +47,7 @@ public class InjectedFactoryTestIT {
     
     @Test
     public void validateReferencesOverride() throws Exception{
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory_variable_config);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory_variable_config);
         KeyTrackerWithVariableConfig tracker = (KeyTrackerWithVariableConfig) handler.getClass().getField("keyTracker1").get(handler);
         Assert.assertEquals('1', tracker.keyProcessor_1.myChar);
         Assert.assertEquals(false, tracker.keyProcessor_1.notifyAccumulator);
@@ -59,7 +59,7 @@ public class InjectedFactoryTestIT {
     
     @Test
     public void validateEventHandling() throws Exception{
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory);
         KeyTracker tracker = (KeyTracker) handler.getClass().getField("keyTracker1").get(handler);
         CharEvent event_a = new CharEvent('a');
         CharEvent event_1 = new CharEvent('1');
@@ -91,7 +91,7 @@ public class InjectedFactoryTestIT {
     
     @Test
     public void validateEventHandlingOverride() throws Exception{
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory_variable_config);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_injected_factory_variable_config);
         KeyTrackerWithVariableConfig tracker = (KeyTrackerWithVariableConfig) handler.getClass().getField("keyTracker1").get(handler);
         CharEvent event_a = new CharEvent('a');
         CharEvent event_1 = new CharEvent('1');

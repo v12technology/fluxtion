@@ -23,12 +23,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class ConfigEvent extends Event{
+public class ConfigEvent implements Event{
 
-    public static final int ID = 1;
-    
-    public ConfigEvent() {
-        super(ID);
-    }
     
 }

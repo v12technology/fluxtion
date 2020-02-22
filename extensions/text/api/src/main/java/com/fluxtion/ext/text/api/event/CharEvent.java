@@ -16,8 +16,7 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import com.fluxtion.api.event.Event;
-import static com.fluxtion.ext.text.api.event.EventId.*;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  * A Fluxtion Event encapsulating a char. CharEvent is mutable allowing updating
@@ -25,7 +24,7 @@ import static com.fluxtion.ext.text.api.event.EventId.*;
  * 
  * @author Greg Higgins
  */
-public class CharEvent extends Event{
+public class CharEvent extends DefaultEvent{
     
     private char character;
     

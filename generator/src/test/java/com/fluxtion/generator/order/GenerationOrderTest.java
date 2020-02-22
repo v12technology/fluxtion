@@ -37,7 +37,7 @@ public class GenerationOrderTest extends BaseSepTest {
 
     @Test
     public void testOrder() {
-        com.fluxtion.api.lifecycle.EventHandler handler1 = buildAndInitSep(NodeBuilder.class);
+        com.fluxtion.api.lifecycle.StaticEventProcessor handler1 = buildAndInitSep(NodeBuilder.class);
         OrderEvent oe = new OrderEvent();
         handler1.onEvent(oe);
         List<String> expected = Arrays.asList("root", "A1", "A2", "X", "Y");
@@ -57,7 +57,7 @@ public class GenerationOrderTest extends BaseSepTest {
 
     }
 
-    public static class OrderEvent extends Event {
+    public static class OrderEvent implements Event {
 
         public List<String> list = new ArrayList<>();
     }

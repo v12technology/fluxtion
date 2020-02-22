@@ -19,7 +19,6 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.generator.util.BaseSepTest;
 //import static com.fluxtion.ext.declarative.builder.test.FilterHelper.filter;
 import com.fluxtion.junit.Categories;
-import com.fluxtion.api.lifecycle.EventHandler;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -30,6 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -40,7 +40,7 @@ public class FilteredGroupByTest extends BaseSepTest {
     @Test
     @Category(Categories.FilterTest.class)
     public void testFilteredGroupBy() {
-        EventHandler sep = buildAndInitSep(Builder.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder.class);
         GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
         
         sep.onEvent(new Order(1, "EURUSD", 100));
@@ -70,7 +70,7 @@ public class FilteredGroupByTest extends BaseSepTest {
     @Test
     @Category(Categories.FilterTest.class)
     public void test() {
-        EventHandler sep = buildAndInitSep(Builder1.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         
         GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
         

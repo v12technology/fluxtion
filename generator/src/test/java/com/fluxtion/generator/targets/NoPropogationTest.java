@@ -21,10 +21,10 @@ package com.fluxtion.generator.targets;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
 import com.fluxtion.test.event.RootCB;
@@ -32,6 +32,7 @@ import com.fluxtion.test.event.TestEvent;
 import com.fluxtion.test.event.TimeEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -46,7 +47,7 @@ public class NoPropogationTest {
                 "com.fluxtion.generator.test.generated.complexnopropogation", "NoPropogationComplexProcessor");
         compileCfg.setConfigClass(EventFilteringLogBuilder.class.getName());
         compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
+        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
         ConsolePrinter root = (ConsolePrinter) sep.getClass().getField("root").get(sep);
         MsgBuilder msgBuilder = (MsgBuilder) sep.getClass().getField("msgBuilder").get(sep);
         ((Lifecycle) sep).init();
@@ -70,7 +71,7 @@ public class NoPropogationTest {
                 "com.fluxtion.generator.test.generated.complexnopropogation2", "NoPropogationComplexProcessor");
         compileCfg.setConfigClass(EventFilteringLogBuilder.class.getName());
         compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
+        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
         ConsolePrinter root = (ConsolePrinter) sep.getClass().getField("root").get(sep);
         MsgBuilder msgBuilder = (MsgBuilder) sep.getClass().getField("msgBuilder").get(sep);
         NoEventFilterMsg msgBuilder2 = (NoEventFilterMsg) sep.getClass().getField("msgBuilder2").get(sep);
@@ -97,7 +98,7 @@ public class NoPropogationTest {
                 "com.fluxtion.generator.test.generated.nopropogation", "NoPropogationProcessor");
         compileCfg.setConfigClass(LogBuilder1.class.getName());
         compileCfg.setSupportDirtyFiltering(true);
-        EventHandler sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
+        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
         RootCB root = (RootCB) sep.getClass().getField("root").get(sep);
         ((Lifecycle) sep).init();
         assertFalse(root.onEventCalled);
@@ -128,7 +129,7 @@ public class NoPropogationTest {
         }
     }
 
-    public static class LogControlEvent extends Event {
+    public static class LogControlEvent extends DefaultEvent {
 
         public LogControlEvent(String filter) {
             super();
@@ -137,7 +138,7 @@ public class NoPropogationTest {
 
     }
 
-    public static class LogToConsole extends Event {
+    public static class LogToConsole implements Event {
     }
 
     public static class TimeProcessr {

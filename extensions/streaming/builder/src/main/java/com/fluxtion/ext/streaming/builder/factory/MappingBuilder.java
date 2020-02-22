@@ -17,7 +17,6 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -50,7 +49,7 @@ public class MappingBuilder {
         return builder.build();
     }
 
-    public static <E1 extends Event, E2 extends Event, R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper,
+    public static <E1, E2, R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper,
             SerializableFunction<E1, U> supplier1,
             SerializableFunction<E2, S> supplier2) {
 
@@ -66,7 +65,7 @@ public class MappingBuilder {
         return builder.build();
     }
 
-    public static <T extends Event, R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper,
+    public static <T, R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper,
             SerializableFunction<T, S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
     }

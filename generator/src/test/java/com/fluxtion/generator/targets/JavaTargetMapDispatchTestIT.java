@@ -5,10 +5,10 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.test.tracking.TraceEvent;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -24,7 +24,7 @@ public class JavaTargetMapDispatchTestIT {
     @Test
     public void trace_mapdispatch_test1() throws Exception {
         //System.out.println("trace_mapdispatch_test1");
-        EventHandler handler = JavaTestGeneratorHelper.sepInstance(trace_mapdispatch_test1);
+        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(trace_mapdispatch_test1);
         int id = 10;
         TraceEvent.TraceEvent_sub1 te = new TraceEvent.TraceEvent_sub1(id);
         handler.onEvent(te);

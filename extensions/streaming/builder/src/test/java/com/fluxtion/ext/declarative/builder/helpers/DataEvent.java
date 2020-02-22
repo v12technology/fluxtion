@@ -11,22 +11,19 @@
  */
 package com.fluxtion.ext.declarative.builder.helpers;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author Greg Higgins
  */
-public class DataEvent extends Event{
+public class DataEvent extends DefaultEvent{
 
-    public static final int ID = 1;
     
     public DataEvent() {
-        super(ID);
     }
 
     public DataEvent(int value) {
-        super(ID);
         this.value = value;
     }
     

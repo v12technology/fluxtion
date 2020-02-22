@@ -7,7 +7,6 @@ package com.fluxtion.generator.targets;
 
 import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
@@ -22,6 +21,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -59,8 +59,8 @@ public interface JavaTestGeneratorHelper {
         return compiler.compile(config);
     }
     
-    static EventHandler generateAndInstantiate(SepCompilerConfig config) throws Exception{
-        Class<EventHandler> resultProcessorClass = generateAndCompile(config);
+    static StaticEventProcessor generateAndInstantiate(SepCompilerConfig config) throws Exception{
+        Class<StaticEventProcessor> resultProcessorClass = generateAndCompile(config);
         return resultProcessorClass.newInstance();
     }
     

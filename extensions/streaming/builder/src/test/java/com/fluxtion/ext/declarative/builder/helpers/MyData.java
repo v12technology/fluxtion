@@ -11,13 +11,13 @@
  */
 package com.fluxtion.ext.declarative.builder.helpers;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author Greg Higgins
  */
-public class MyData extends Event {
+public class MyData extends DefaultEvent {
     public static final Class<MyData> MyDataEvent = MyData.class;    
     private final int intVal;
     private final double doubleVal;

@@ -11,14 +11,12 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.event.Event;
-
 /**
  * Represents a simple FX order
  *
  * @author Greg Higgins
  */
-public class Order extends Event {
+public class Order {
 
     public static final Class<Order> ORDER = Order.class;
     

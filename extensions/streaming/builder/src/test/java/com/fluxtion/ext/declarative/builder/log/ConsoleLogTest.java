@@ -15,7 +15,6 @@ import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
@@ -23,6 +22,7 @@ import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFilt
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ConsoleLogTest extends BaseSepTest{
     @Test
     public void testBuildLogger() throws Exception{
         System.out.println("testBuildLogger"); 
-        EventHandler sep = buildAndInitSep(LogBuilder1.class);
+        StaticEventProcessor sep = buildAndInitSep(LogBuilder1.class);
         //fire some events
         DataEvent de1 = new DataEvent();
         de1.value = 2;

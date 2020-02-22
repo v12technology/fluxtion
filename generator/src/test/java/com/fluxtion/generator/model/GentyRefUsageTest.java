@@ -22,7 +22,7 @@ import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
 import static org.reflections.ReflectionUtils.withType;
 
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.FilteredEventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.event.TimeHandlerExtends;
@@ -36,6 +36,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -51,8 +52,8 @@ public class GentyRefUsageTest {
         assertEquals(TimeEvent.class , getEventType(new TimerHandler2Removed(2)));
     }
 
-    private Class getEventType(EventHandler eh) {
-        final ParameterizedType name = (ParameterizedType) GenericTypeReflector.getExactSuperType(eh.getClass(), EventHandler.class);
+    private Class getEventType(FilteredEventHandler eh) {
+        final ParameterizedType name = (ParameterizedType) GenericTypeReflector.getExactSuperType(eh.getClass(), FilteredEventHandler.class);
         return (Class) name.getActualTypeArguments()[0];
     }
     

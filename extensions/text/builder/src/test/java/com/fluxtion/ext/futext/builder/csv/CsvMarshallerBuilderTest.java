@@ -24,7 +24,6 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
@@ -36,6 +35,7 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -50,7 +50,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvNoHeader() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsvCfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
@@ -73,7 +73,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvNoHeader_Trim() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesTrimCsvCfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesTrimCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
@@ -91,7 +91,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvNoHeader_Trim_skipEmtyLines() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesTrimSkipEmptyCsvCfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesTrimSkipEmptyCsvCfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "mexico,aixas,Aixàs,06,,42,1.4666667\n"
@@ -110,7 +110,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithHeaderManualMapping() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -127,7 +127,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithAutoBeanMapping() {
-        final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityBean_Header.class);
         WorldCityBean city = ((Wrapper<WorldCityBean>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
@@ -144,7 +144,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test(expected = RuntimeException.class)
     public void testCsvWithAutoBeanMappingBadHeader() {
-        final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityBean_Header.class);
         String dataCsh = "Country,City,Latitude,Longitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n";
@@ -153,7 +153,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithAutoBeanMappingTransientHeader() {
-        final EventHandler sep = buildAndInitSep(WorldCityBeanTransient_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityBeanTransient_Header.class);
         String dataCsh = "Country,City,population\n"
                 + "mexico,aixirivali,5000\n"
                 + "brazil,santiago,20000\n";
@@ -162,7 +162,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithAutoBeanMappingTransientHeaderInline() throws Exception {
-        EventHandler sep  = sepTestInstance((c) -> csvMarshaller(WorldCityBeanTransient.class)
+        StaticEventProcessor sep  = sepTestInstance((c) -> csvMarshaller(WorldCityBeanTransient.class)
                 .addEventPublisher().build()
                 , pckg, className);
         WorldCityBeanTransient[] city = new WorldCityBeanTransient[1];
@@ -182,7 +182,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithAutoBeanMapping_UseEof() {
-        final EventHandler sep = buildAndInitSep(WorldCityBean_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityBean_Header.class);
         WorldCityBean city = ((Wrapper<WorldCityBean>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "Country,City,AccentCity,Region,Population,Latitude,Longitude\n"
@@ -199,7 +199,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithMappingHeader() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeader.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeader.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -216,7 +216,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWindowsWithMappingHeader() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeaderWindows.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_MappingNameHeaderWindows.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\r\n"
@@ -233,7 +233,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithHeaderSkipCommentSkipEmpty() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_SkipEmpty_SkipComments.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_Header_SkipEmpty_SkipComments.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -254,7 +254,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testCsvWithHeaderAndConverter() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_and_Converter_Cfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_Header_and_Converter_Cfg.class);
         WorldCity city = ((Wrapper<WorldCity>) getField("city")).event();
         Number count = ((Wrapper<Number>)getField("count")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -273,7 +273,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     //errors ar eno longer thrown on row level problems - caught and sent to the 
     //logger and marked as failed validation
     public void testCsvWithHeaderAndError() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_Header_1_Cfg.class);
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,16*90,1.5\n";
@@ -297,7 +297,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     //To be replaced with external validator test. Validation has moved from
     //the OnEvent callback method
     public void testCsvWithHeaderAndRowCBFailedValidation() {
-        final EventHandler sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCitiesCsv_Header_OnEventCB_Validator.class);
         Number count = ((Wrapper<Number>)getField("count")).event();
         Number failedValidationcount = ((Wrapper<Number>)getField("failedValidationCount")).event();
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
@@ -318,7 +318,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
     //the OnEvent callback method
 //    @Ignore
     public void testFixedLen() {
-        final EventHandler sep = buildAndInitSep(WorldCityFixedLen.class);
+        final StaticEventProcessor sep = buildAndInitSep(WorldCityFixedLen.class);
         String dataCsh
                 = "country   city      long    lat     \n"
                 + "mexico    aixirival    25.25 1.5     \n"
@@ -338,7 +338,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testEscapedCsvCarAd() {
-        final EventHandler sep = buildAndInitSep(CarAd_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(CarAd_Header.class);
         CarAd carAd = ((Wrapper<CarAd>) getField("carAd")).event();
         String dataCsh = "Year,Make,Model,Description,Price\n"
                 + "1997,Ford,E350,\"ac, abs, moon\",3000.00\n";
@@ -378,7 +378,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testEscapedCsvCarAdPartials() {
-        final EventHandler sep = buildAndInitSep(CarAd_Header_Partial.class);
+        final StaticEventProcessor sep = buildAndInitSep(CarAd_Header_Partial.class);
         CarAd carAd = ((Wrapper<CarAd>) getField("carAd")).event();
         String dataCsh = "Year,Make,Model,Description,Price\n"
                 + "1997,Ford,E350,\"ac, abs, moon\",3000.00\n";
@@ -419,7 +419,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
 
     @Test
     public void testEscapedCsvCarAdBean() {
-        final EventHandler sep = buildAndInitSep(CarAdBean_Header.class);
+        final StaticEventProcessor sep = buildAndInitSep(CarAdBean_Header.class);
         CarAd carAd = ((Wrapper<CarAd>) getField("carAd")).event();
         String dataCsh = "year,make,model,description,price\n"
                 + "1997,Ford,E350,\"ac, abs, moon\",3000.00\n";

@@ -18,7 +18,7 @@
 package com.fluxtion.generator.filter;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,7 +51,7 @@ public class FIlteringTest extends BaseSepInprocessTest {
         assertThat(testHandler.wordBCount, is(2));
     }
 
-    public static class ClassFilterEvent extends Event {
+    public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {
             filterString = clazz.getCanonicalName(); 
@@ -59,7 +59,7 @@ public class FIlteringTest extends BaseSepInprocessTest {
     }
     
 
-    public static class WordEvent extends Event{
+    public static class WordEvent extends DefaultEvent{
         public WordEvent(String word){
             super();
             filterString = word;

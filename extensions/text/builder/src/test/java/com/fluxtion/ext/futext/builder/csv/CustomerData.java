@@ -16,13 +16,11 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.api.event.Event;
-
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class CustomerData extends Event{
+public class CustomerData {
     
     private String name;
 

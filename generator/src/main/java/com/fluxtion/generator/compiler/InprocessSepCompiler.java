@@ -17,7 +17,6 @@
  */
 package com.fluxtion.generator.compiler;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
@@ -25,6 +24,7 @@ import com.fluxtion.builder.node.SEPConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Generates and compiles a SEP for use by a caller in the same process. The
@@ -38,9 +38,9 @@ import java.util.function.Consumer;
  *
  * {@code  sepTestInstance((c) -> c.addNode(new MyHandler(), "handler"), "com.fluxtion.examples.inprocess", "GenNode_1");}
  * <br><br>
- *
- * Optionally creates an instance of the compiled EventHandler with or without
- * calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
+
+ Optionally creates an instance of the compiled StaticEventProcessor with or without
+ calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
  * }.<br><br>
  *
  * <h2>>This is an experimental feature that needs to tested carefully. The
@@ -69,7 +69,7 @@ public class InprocessSepCompiler {
         NO_INIT
     }
 
-    public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, DirOptions dirOptions, InitOptions initOptions) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, DirOptions dirOptions, InitOptions initOptions) throws InstantiationException, IllegalAccessException, Exception {
         String genDir = JAVA_GEN_DIR;
         String resDir = RESOURCE_DIR;
         switch (dirOptions) {
@@ -85,19 +85,19 @@ public class InprocessSepCompiler {
         return sepInstance(cfgBuilder, pckg, sepName, genDir, resDir, init);
     }
 
-    public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, true);
     }
 
-    public static EventHandler sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, true);
     }
 
-    public static EventHandler sepInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, false);
     }
 
-    public static EventHandler sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
     }
 
@@ -117,9 +117,9 @@ public class InprocessSepCompiler {
      * @throws IllegalAccessException
      * @throws Exception
      */
-    public static EventHandler sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
-        Class<EventHandler> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
-        EventHandler sep = sepClass.newInstance();
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
+        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
+        StaticEventProcessor sep = sepClass.newInstance();
         if (initialise) {
             if (sep instanceof Lifecycle) {
                 ((Lifecycle) sep).init();
@@ -128,11 +128,11 @@ public class InprocessSepCompiler {
         return sep;
     }
 
-    public static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
         return compileSep(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR);
     }
 
-    public static Class<EventHandler> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
         return compileSep(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR);
     }
 
@@ -152,10 +152,10 @@ public class InprocessSepCompiler {
      * @throws IllegalAccessException
      * @throws Exception
      */
-    private static Class<EventHandler> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
         final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
-        return (Class<EventHandler>) compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
+        return (Class<StaticEventProcessor>) compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
     }
 
     private static class InProcessSepConfig extends SEPConfig {

@@ -18,25 +18,24 @@ package com.fluxtion.ext.text.api.util;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered
- * {@link EventHandler}.
+ * {@link StaticEventProcessor}.
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T extends Event> {
+public class EventPublsher<T> {
 
     private Wrapper<T>[] wrapperSource;
     private Wrapper<T>[] validatedSource;
     private T[] nodeSource;
-    private EventHandler[] handlers;
+    private StaticEventProcessor[] handlers;
     public boolean publishOnValidate = false;
 
     public EventPublsher() {
@@ -70,10 +69,13 @@ public class EventPublsher<T extends Event> {
         }
     }
 
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public void addEventSource(T node) {
         ArrayList<T> nodes = new ArrayList<>();
         if (nodeSource != null) {
             new ArrayList<>(Arrays.asList(nodeSource));
+        }else{
+            nodeSource = (T[]) new Object[0];
         }
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);
@@ -94,7 +96,7 @@ public class EventPublsher<T extends Event> {
 
     @com.fluxtion.api.annotations.EventHandler
     public void registerEventHandler(RegisterEventHandler registration) {
-        ArrayList<EventHandler> nodes = new ArrayList<>(Arrays.asList(handlers));
+        ArrayList<StaticEventProcessor> nodes = new ArrayList<>(Arrays.asList(handlers));
         if (registration.isRegister()) {
             nodes.add(registration.getHandler());
         } else {
@@ -112,7 +114,7 @@ public class EventPublsher<T extends Event> {
             validatedSource = new Wrapper[0];
         }
         if (handlers == null) {
-            handlers = new EventHandler[0];
+            handlers = new StaticEventProcessor[0];
         }
     }
 

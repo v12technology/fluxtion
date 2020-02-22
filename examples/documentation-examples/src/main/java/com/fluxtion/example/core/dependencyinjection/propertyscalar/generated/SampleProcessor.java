@@ -17,7 +17,7 @@
 package com.fluxtion.example.core.dependencyinjection.propertyscalar.generated;
 
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.dependencyinjection.propertyscalar.PropertyHandler;
 import com.fluxtion.example.shared.MyEvent;
@@ -25,14 +25,14 @@ import com.fluxtion.example.shared.SampleEnum;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T09:01:04.877
- * generator version : ${generator_version_information}
- * api version       : ${api_version_information}
+ * generation time   : 2020-02-22T18:17:55.310001200
+ * generator version : 1.9.3-SNAPSHOT
+ * api version       : 1.9.3-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-public class SampleProcessor implements EventHandler, BatchHandler, Lifecycle {
+public class SampleProcessor implements StaticEventProcessor, BatchHandler, Lifecycle {
 
   //Node declarations
   private final PropertyHandler propertyHandler_1 =

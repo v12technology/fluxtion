@@ -20,7 +20,6 @@ import com.fluxtion.ext.streaming.api.group.MultiKey;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class Group <K, T> {
         return GroupByContext.builder(group);
     }
       
-    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, SerializableFunction<K, ?> f, Class<T> target){
+    public static <K, T> GroupByBuilder<K, T> groupBy(Class<K> k, SerializableFunction<K, ?> f, Class<T> target){
         try {
             final Group group = new Group(k.newInstance(), f, target);
             group.eventClass = true;
@@ -81,7 +80,7 @@ public class Group <K, T> {
         }
     }
     
-    public static <K extends Event, T> GroupByBuilder<K, T> groupBy(Class<K> k, Class<T> target, SerializableFunction<K, ?>... f){
+    public static <K, T> GroupByBuilder<K, T> groupBy(Class<K> k, Class<T> target, SerializableFunction<K, ?>... f){
         try {
             ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
             ImportMap importMap = ImportMap.newMap();
@@ -184,7 +183,7 @@ public class Group <K, T> {
         return g;
     }
     
-    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?> keyFunction){
+    public <K1> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?> keyFunction){
         try {
             Group g = new Group(secondInput.newInstance(), keyFunction, getTargetClass());
             g.eventClass = true;
@@ -195,7 +194,7 @@ public class Group <K, T> {
         }
     }
     
-    public <K1 extends Event> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?>... keyFunction){
+    public <K1> Group<K1, T> join(Class<K1> secondInput, SerializableFunction<K1, ?>... keyFunction){
         try {
             ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
             int i = 0;

@@ -17,7 +17,6 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.ext.declarative.builder.stream.ThrottledTest.MyEvent;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -58,7 +57,7 @@ public class ThrottledTest extends StreamInprocessTest {
 
     }
 
-    public static class MyEvent extends Event {
+    public static class MyEvent {
     }
 
 }

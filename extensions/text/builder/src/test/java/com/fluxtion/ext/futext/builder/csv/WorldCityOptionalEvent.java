@@ -16,14 +16,14 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class WorldCityOptionalEvent extends Event {
+public class WorldCityOptionalEvent extends DefaultEvent {
 
     private CharSequence country;//col 0
     private CharSequence city;//col 1

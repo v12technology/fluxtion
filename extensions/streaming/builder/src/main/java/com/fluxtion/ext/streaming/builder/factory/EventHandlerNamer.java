@@ -17,7 +17,6 @@
 package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.ext.streaming.api.GenericEventHandler;
 import com.fluxtion.ext.streaming.api.GenericWrapper;
@@ -40,8 +39,8 @@ public class EventHandlerNamer implements NodeNameProducer {
             GenericEventHandler g = (GenericEventHandler) nodeToMap;
             String filterString = g.filterString();
             name = "handlerClass_" + filterString.substring(filterString.lastIndexOf("."));
-        } else if (nodeToMap instanceof EventHandler) {
-            name = "handler" + ((EventHandler) nodeToMap).eventClass().getSimpleName();
+        } else if (nodeToMap instanceof FilteredEventHandler) {
+            name = "handler" + ((FilteredEventHandler) nodeToMap).eventClass().getSimpleName();
             if (nodeToMap instanceof FilteredEventHandler
                     && ((FilteredEventHandler) nodeToMap).filterId() != Integer.MAX_VALUE) {
                 name += "_" + ((FilteredEventHandler) nodeToMap).filterId();

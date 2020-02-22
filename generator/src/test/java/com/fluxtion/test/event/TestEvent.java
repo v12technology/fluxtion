@@ -17,15 +17,14 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  *
  * @author Greg Higgins
  */
-public class TestEvent extends Event{
+public class TestEvent extends DefaultEvent{
 
-    public static final int ID = 1;
     
     public TestEvent() {
         super();

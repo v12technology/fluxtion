@@ -19,7 +19,6 @@ package com.fluxtion.generator.util;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
@@ -28,6 +27,7 @@ import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Test class utility for building a SEP in process
@@ -36,7 +36,7 @@ import org.junit.rules.TestName;
  */
 public class BaseSepInprocessTest {
 
-    protected EventHandler sep;
+    protected StaticEventProcessor sep;
     protected boolean fixedPkg = false;
     @Rule
     public TestName testName = new TestName();
@@ -46,7 +46,7 @@ public class BaseSepInprocessTest {
         fixedPkg = false;
     }
 
-    protected EventHandler sep(Class<? extends EventHandler> handlerClass) {
+    protected StaticEventProcessor sep(Class<? extends StaticEventProcessor> handlerClass) {
         try {
             sep = handlerClass.newInstance();
             if (sep instanceof Lifecycle) {
@@ -58,7 +58,7 @@ public class BaseSepInprocessTest {
         }
     }
 
-    protected EventHandler sep(Consumer<SEPConfig> cfgBuilder) {
+    protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
         try {
             sep = sepTestInstance(cfgBuilder, pckName(), sepClassName());
             return sep;

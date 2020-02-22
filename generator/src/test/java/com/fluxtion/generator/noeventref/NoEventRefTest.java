@@ -57,10 +57,10 @@ public class NoEventRefTest extends BaseSepTest {
 
     }
 
-    public static class Config extends Event {
+    public static class Config implements Event {
     }
 
-    public static class Price extends Event {
+    public static class Price implements Event {
     }
 
     public static class ConfigCache {

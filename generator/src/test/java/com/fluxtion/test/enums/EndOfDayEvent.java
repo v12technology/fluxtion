@@ -23,6 +23,6 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class EndOfDayEvent extends Event{
+public class EndOfDayEvent implements Event{
     
 }

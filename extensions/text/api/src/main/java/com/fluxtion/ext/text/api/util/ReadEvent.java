@@ -5,10 +5,10 @@
  */
 package com.fluxtion.ext.text.api.util;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.lmax.disruptor.EventFactory;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ReadEvent {
         eof = limit < 0;
     }
     
-    public void pushToHandler(EventHandler handler) {
+    public void pushToHandler(StaticEventProcessor handler) {
         if (isEof()) {
             handler.onEvent(EofEvent.EOF);
         } else {

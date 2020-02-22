@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.text.builder.util;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
@@ -26,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Synchronous char streamer, reads bytes from a file and pushes CharEvent for
@@ -61,17 +61,17 @@ public class AsciiCharEventFileStreamer {
         }
     }
 
-    public static <E extends EventHandler> E streamFromFile(File file, Class<E> eventHandler) throws FileNotFoundException, IOException, InstantiationException, IllegalAccessException {
+    public static <E extends StaticEventProcessor> E streamFromFile(File file, Class<E> eventHandler) throws FileNotFoundException, IOException, InstantiationException, IllegalAccessException {
         final E handler = eventHandler.newInstance();
         streamFromFile(file, handler, true);
         return handler;
     }
 
-    public static void streamFromFile(File file, EventHandler eventHandler) throws FileNotFoundException, IOException {
+    public static void streamFromFile(File file, StaticEventProcessor eventHandler) throws FileNotFoundException, IOException {
         streamFromFile(file, eventHandler, false);
     }
 
-    public static void streamFromFile(File file, EventHandler eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException {
+    public static void streamFromFile(File file, StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException {
         if (callLifeCycleMethods) {
             initSep(eventHandler);
         }

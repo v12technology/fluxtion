@@ -6,7 +6,7 @@ import com.fluxtion.api.event.Event;
  *
  * @author gregp
  */
-public class MaxCcyTraderPosConfig extends Event {
+public class MaxCcyTraderPosConfig implements Event{
 
     public static final Class<MaxCcyTraderPosConfig> TRADER_POS_CFG = MaxCcyTraderPosConfig.class;
     public int traderId;

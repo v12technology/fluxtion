@@ -17,7 +17,6 @@ import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.EventHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.MaxCcyTraderPosConfig.TRADER_POS_CFG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *
@@ -35,7 +35,7 @@ public class MultiKeyTest extends BaseSepTest {
 
     @Test
     public void testMultiKey() {
-        EventHandler sep = buildAndInitSep(Builder1.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         Deal eu_john = new Deal();
         eu_john.traderId = 1;
         eu_john.traderName = "John Smith";
@@ -86,7 +86,7 @@ public class MultiKeyTest extends BaseSepTest {
 
     @Test
     public void multiKeyJoin() {
-        EventHandler sep = buildAndInitSep(Builder_MultiKeyJoin.class);
+        StaticEventProcessor sep = buildAndInitSep(Builder_MultiKeyJoin.class);
 
 
         Deal eu_john = new Deal();

@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -70,7 +69,7 @@ public class StreamingBooleanTest extends StreamInprocessTest{
         
     }
     
-    public static class ResetEvent extends Event{}
-    public static class CalcEvent extends Event{}
+    public static class ResetEvent {}
+    public static class CalcEvent {}
     
 }

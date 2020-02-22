@@ -16,14 +16,14 @@
  */
 package com.fluxtion.ext.streaming.api.log;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.event.DefaultEvent;
 
 /**
  * Control message for simple logger.
  * 
  * @author Greg Higgins
  */
-public final class LogControlEvent extends Event {
+public final class LogControlEvent extends DefaultEvent {
     public static final int LOG_CONTROL_ID = 3;
     public static final int ID = LOG_CONTROL_ID;
     public static final String FILTER = "CHANGE_FILTER";

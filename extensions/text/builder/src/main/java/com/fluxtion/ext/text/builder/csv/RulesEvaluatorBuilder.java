@@ -23,7 +23,6 @@ import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
 
-import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -211,15 +210,10 @@ public class RulesEvaluatorBuilder<T> {
                         filter(monitored, nand(testList.toArray()))
                 );
             }
-
-            if (monitored instanceof Event) {
-                Event e = (Event) monitored;
-                EventPublsher publisher = new EventPublsher();
-                publisher.addEventSource(e);
-                publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
-                publisher.addValidatedSource(evaluator.passedNotifier());
-            }
-
+            EventPublsher publisher = new EventPublsher();
+            publisher.addEventSource(monitored);
+            publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
+            publisher.addValidatedSource(evaluator.passedNotifier());
             SINGLETON.addOrUseExistingNode(new LogNotifier(evaluator.failedNotifier()));
             return evaluator;
         }

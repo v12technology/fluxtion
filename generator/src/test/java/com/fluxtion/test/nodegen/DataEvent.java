@@ -23,14 +23,8 @@ import com.fluxtion.api.event.Event;
  *
  * @author Greg Higgins
  */
-public class DataEvent extends Event{
+public class DataEvent implements Event{
 
-    public static final int ID = 1;
-    
-    public DataEvent() {
-        super(ID);
-    }
-    
     public int value;
     
 }

@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (C) 2019 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -8,7 +8,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side Public License for more details.
+ * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
  * along with this program.  If not, see 
@@ -16,14 +16,18 @@
  */
 package com.fluxtion.api.event;
 
-import com.fluxtion.api.lifecycle.EventHandler;
 import com.fluxtion.api.lifecycle.FilteredEventHandler;
 
 /**
  * <p>
- * Event class that feeds into a Simple Event Processor(SEP). Users should
- * extend this class to define their own events.</p>
+ * Event class that feeds into a Simple Event Processor(SEP) providing additional 
+ * meta-data about the incoming event. The additional data provided is:</p>
  *
+ * <ul>
+ * <li>Filtering</li>
+ * <li>Event creation time</li>
+ * </ul>
+ * 
  * <h2>Dispatch</h2>
  * A user creates an Event and publishes it to a SEP for handling via the {@link EventHandler#onEvent(java.lang.Object)
  * } method.<p>
@@ -43,38 +47,12 @@ import com.fluxtion.api.lifecycle.FilteredEventHandler;
  *
  *
  * @see com.fluxtion.api.annotations.EventHandler
- * @see EventHandler
- *
- * @author Greg Higgins
- *
+ * @see FilteredEventHandler
+ * @author V12 Technology Ltd.
  */
-public abstract class Event implements TimeEvent {
-
+public interface Event {
     public static final int NO_INT_FILTER = Integer.MAX_VALUE;
     public static final String NO_STRING_FILTER = "";
-    
-    protected int filterId;
-    protected String filterString;
-    protected long eventTime;
-
-    public Event() {
-        this(NO_STRING_FILTER);
-    }
-
-    public Event(String filterId) {
-        this(NO_INT_FILTER, filterId);
-    }
-
-    public Event(int filterId) {
-        this(filterId, NO_STRING_FILTER);
-    }
-
-    public Event(int filterId, String filterString) {
-        this.filterId = filterId;
-        this.filterString = filterString;
-        this.eventTime = System.currentTimeMillis();
-    }
-
     /**
      * The integer id of a filter for this event, can be used interchangeably
      * with filterString. The event handler decides whether it will filter using
@@ -85,8 +63,8 @@ public abstract class Event implements TimeEvent {
      *
      * @return optional event filter id as integer
      */
-    public final int filterId() {
-        return filterId;
+    default int filterId(){
+        return NO_INT_FILTER;
     }
 
     /**
@@ -99,33 +77,17 @@ public abstract class Event implements TimeEvent {
      *
      * @return optional event filter id as String
      */
-    public final String filterString() {
-        return filterString.toString();
+    default String filterString(){
+        return NO_STRING_FILTER;
     }
-
-    public final CharSequence filterCharSequence() {
-        return filterString;
-    }
-
+        
     /**
      * The time the event was created. By default this is implemented with {@link System#currentTimeMillis()
      * } during construction.
      *
-     * @return creation time
+     * @return creation time, if less than 0 no time of creation is recorded
      */
-    @Override
-    public long getEventTime() {
-        return eventTime;
+    default long getEventTime(){
+        return -1;
     }
-
-    /**
-     * Override the default value for event creation time. The default value is
-     * set with {@link System#currentTimeMillis()} during construction.
-     *
-     * @param eventTime
-     */
-    public void setEventTime(long eventTime) {
-        this.eventTime = eventTime;
-    }
-
 }
