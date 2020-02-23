@@ -17,14 +17,14 @@
  */
 package com.fluxtion.compiler;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
-import org.junit.Test;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import static com.fluxtion.generator.util.ClassUtils.getField;
 import com.fluxtion.test.event.TimeEvent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import com.fluxtion.api.StaticEventProcessor;
+import org.junit.Test;
 
 /**
  *

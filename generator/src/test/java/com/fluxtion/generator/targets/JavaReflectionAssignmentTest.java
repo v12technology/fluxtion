@@ -5,7 +5,6 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.thoughtworks.qdox.model.JavaClass;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateAssignment;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateDispatch;
@@ -13,6 +12,7 @@ import static com.fluxtion.generator.targets.JavaTestGeneratorHelper.generateCla
 import com.fluxtion.test.nodes.privatemembers.TimeHandler;
 import com.fluxtion.test.nodes.privatemembers.TimeRecorder;
 import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers;
+import com.thoughtworks.qdox.model.JavaClass;
 import org.junit.Test;
 
 /**

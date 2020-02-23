@@ -16,17 +16,17 @@
  */
 package com.fluxtion.ext.declarative.builder.merging;
 
-import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
-import com.fluxtion.ext.streaming.builder.factory.EventSelect;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.declarative.builder.stream.StreamTest;
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

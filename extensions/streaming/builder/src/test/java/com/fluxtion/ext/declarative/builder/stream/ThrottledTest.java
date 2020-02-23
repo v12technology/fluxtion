@@ -17,12 +17,10 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.event.GenericEvent;
+import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import com.fluxtion.ext.declarative.builder.stream.ThrottledTest.MyEvent;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.TimerFilter.throttle;
-import com.fluxtion.api.time.ClockStrategy;
-import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;

@@ -1,23 +1,22 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.lt;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
-import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
-
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.lt;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
+import static com.fluxtion.ext.streaming.api.stream.StringPredicates.is;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import java.util.Objects;
 import org.junit.Ignore;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

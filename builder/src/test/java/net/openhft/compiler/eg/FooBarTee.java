@@ -1,8 +1,8 @@
 package net.openhft.compiler.eg;
 
 import net.openhft.compiler.eg.components.BarImpl;
-import net.openhft.compiler.eg.components.TeeImpl;
 import net.openhft.compiler.eg.components.Foo;
+import net.openhft.compiler.eg.components.TeeImpl;
 
 public class FooBarTee{
     public final String name;

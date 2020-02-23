@@ -11,25 +11,24 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
-import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
-import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Count;
 import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Sum;
+import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
+import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
+import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
+import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-//import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.generator.util.BaseSepTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

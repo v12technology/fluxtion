@@ -16,16 +16,16 @@
  */
 package com.fluxtion.ext.futext.builder.ascii;
 
-import com.fluxtion.ext.text.builder.ascii.AsciiMatchFilterFactory;
-import com.fluxtion.ext.text.builder.ascii.AnyCharMatchFilterFactory;
-import com.fluxtion.ext.text.builder.ascii.AsciiHelper;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.numeric.BufferValue;
+import com.fluxtion.ext.text.builder.ascii.AnyCharMatchFilterFactory;
+import com.fluxtion.ext.text.builder.ascii.AsciiHelper;
+import com.fluxtion.ext.text.builder.ascii.AsciiMatchFilterFactory;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Assert;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

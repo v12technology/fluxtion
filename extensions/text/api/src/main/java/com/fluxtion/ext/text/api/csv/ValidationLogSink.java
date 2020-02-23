@@ -21,9 +21,9 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.ext.streaming.api.log.ConsoleLogProvider;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
-import com.fluxtion.ext.streaming.api.log.ConsoleLogProvider;
 import com.fluxtion.ext.streaming.api.util.Named;
 
 /**

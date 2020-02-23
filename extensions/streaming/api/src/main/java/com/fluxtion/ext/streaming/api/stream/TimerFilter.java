@@ -9,8 +9,8 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.api.time.Clock;
+import com.fluxtion.ext.streaming.api.Stateful;
 
 /**
  *

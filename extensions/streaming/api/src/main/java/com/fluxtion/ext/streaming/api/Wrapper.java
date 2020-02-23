@@ -17,14 +17,13 @@
 package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.SepContext;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
-
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.concurrent.atomic.LongAdder;

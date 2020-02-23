@@ -16,26 +16,26 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
-import static com.fluxtion.ext.text.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
-import com.fluxtion.ext.text.builder.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
 import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import com.fluxtion.generator.util.BaseSepTest;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

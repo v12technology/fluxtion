@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
@@ -24,7 +25,6 @@ import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepInstance;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Creates multiple SEP processors marshalling CSV to bean instances of multiple

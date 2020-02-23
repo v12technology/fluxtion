@@ -16,10 +16,9 @@
  */
 package com.fluxtion.ext.streaming.api.group;
 
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

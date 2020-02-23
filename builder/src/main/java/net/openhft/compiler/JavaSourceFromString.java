@@ -18,10 +18,9 @@
 
 package net.openhft.compiler;
 
-import org.jetbrains.annotations.NotNull;
-
-import javax.tools.SimpleJavaFileObject;
 import java.net.URI;
+import javax.tools.SimpleJavaFileObject;
+import org.jetbrains.annotations.NotNull;
 
 /* A file object used to represent source coming from a string.
  */

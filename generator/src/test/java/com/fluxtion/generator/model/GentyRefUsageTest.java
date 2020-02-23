@@ -17,11 +17,6 @@
  */
 package com.fluxtion.generator.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withType;
-
 import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.event.TimeEvent;
@@ -34,9 +29,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.reflections.ReflectionUtils;
-import com.fluxtion.api.StaticEventProcessor;
+import static org.reflections.ReflectionUtils.withModifier;
+import static org.reflections.ReflectionUtils.withName;
+import static org.reflections.ReflectionUtils.withType;
 
 /**
  *

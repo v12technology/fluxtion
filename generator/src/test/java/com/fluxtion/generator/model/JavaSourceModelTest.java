@@ -18,9 +18,9 @@
 package com.fluxtion.generator.model;
 
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
-import com.fluxtion.test.event.RootCB;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
+import com.fluxtion.test.event.RootCB;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;

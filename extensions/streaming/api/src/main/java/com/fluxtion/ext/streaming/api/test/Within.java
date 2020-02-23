@@ -16,11 +16,11 @@
  */
 package com.fluxtion.ext.streaming.api.test;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
-import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 

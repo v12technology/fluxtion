@@ -18,21 +18,21 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.DefaultEvent;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.generator.compiler.SepCompilerConfig;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
 import com.fluxtion.test.event.RootCB;
 import com.fluxtion.test.event.TestEvent;
 import com.fluxtion.test.event.TimeEvent;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import com.fluxtion.api.StaticEventProcessor;
+import org.junit.Test;
 
 /**
  *

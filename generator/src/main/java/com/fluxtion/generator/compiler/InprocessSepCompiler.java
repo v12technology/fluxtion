@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator.compiler;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
@@ -24,7 +25,6 @@ import com.fluxtion.builder.node.SEPConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Generates and compiles a SEP for use by a caller in the same process. The

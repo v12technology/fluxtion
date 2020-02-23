@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.futext.example.flightdelay;
 
+import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.util.CharStreamer;
-import com.fluxtion.ext.futext.example.flightdelay.generated.FlightDelayAnalyser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

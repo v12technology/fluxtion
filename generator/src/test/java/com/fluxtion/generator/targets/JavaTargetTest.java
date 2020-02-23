@@ -5,7 +5,6 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.thoughtworks.qdox.model.JavaClass;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
 import static com.fluxtion.generator.targets.JavaTestGeneratorHelper.generateClass;
@@ -21,16 +20,17 @@ import com.fluxtion.test.tracking.Handler_TraceEvent_InFilter_0;
 import com.fluxtion.test.tracking.Handler_UnMatchedFilter_TraceEvent_InFilter_0;
 import com.fluxtion.test.tracking.Node_DirtyFilter_TraceEvent;
 import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator;
+import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator_NoFiltering;
 import com.fluxtion.test.tracking.Node_TraceEvent_0;
 import com.fluxtion.test.tracking.Node_TraceEvent_Aggregator;
 import com.fluxtion.test.tracking.Node_TraceEvent_IntFilter_0;
 import com.fluxtion.test.tracking.TraceEventHolder;
 import com.fluxtion.test.tracking.TraceEventHolder.TraceEventHandler_sub1;
 import com.fluxtion.test.tracking.TraceEventHolderChild;
+import com.thoughtworks.qdox.model.JavaClass;
 import java.util.Arrays;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator_NoFiltering;
+import org.junit.Test;
 
 /**
  *

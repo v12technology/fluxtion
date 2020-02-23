@@ -17,12 +17,11 @@
  */
 package com.fluxtion.generator.util;
 
-import com.fluxtion.generator.util.ClassUtils;
 import com.fluxtion.generator.model.CbMethodHandle;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

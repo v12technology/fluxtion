@@ -16,24 +16,23 @@
  */
 package com.fluxtion.ext.streaming.builder.log;
 
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.updateNotifier;
-
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.updateNotifier;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;

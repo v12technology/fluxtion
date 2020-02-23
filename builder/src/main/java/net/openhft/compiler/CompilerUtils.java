@@ -18,14 +18,6 @@
 
 package net.openhft.compiler;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
@@ -33,6 +25,11 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class support loading and debugging Java Classes dynamically.

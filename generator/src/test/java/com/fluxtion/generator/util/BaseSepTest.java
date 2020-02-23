@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator.util;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -35,7 +36,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * A base class a test can extend to aid SEP generation testing. A test class

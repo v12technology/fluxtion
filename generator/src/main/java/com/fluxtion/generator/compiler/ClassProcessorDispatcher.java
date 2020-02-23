@@ -17,20 +17,20 @@
  */
 package com.fluxtion.generator.compiler;
 
+import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.generation.GenerationContext;
+import io.github.classgraph.AnnotationParameterValueList;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fluxtion.builder.annotation.ClassProcessor;
-import io.github.classgraph.AnnotationParameterValueList;
-import java.io.File;
-import java.io.IOException;
-import java.util.function.BiConsumer;
-import org.apache.commons.io.FileUtils;
 
 /**
  * A utility function that dispatches a {@link URL} for {@link ClassProcessor}

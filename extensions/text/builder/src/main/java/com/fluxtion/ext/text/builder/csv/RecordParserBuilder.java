@@ -23,6 +23,7 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence;
@@ -32,7 +33,6 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;

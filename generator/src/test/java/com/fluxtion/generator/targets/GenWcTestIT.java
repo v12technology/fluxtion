@@ -5,6 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.generator.model.parentlistener.wc.StringDriver;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounter;
 import com.fluxtion.generator.model.parentlistener.wc.WordCounterGeneric;
@@ -16,7 +17,6 @@ import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_generic_
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_inline_event_handling;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

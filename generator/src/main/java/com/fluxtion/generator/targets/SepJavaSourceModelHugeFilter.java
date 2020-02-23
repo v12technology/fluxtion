@@ -20,7 +20,8 @@ package com.fluxtion.generator.targets;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.google.common.base.Predicates;
+import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.model.CbMethodHandle;
@@ -30,8 +31,6 @@ import com.fluxtion.generator.model.InvokerFilterTarget;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import com.fluxtion.api.audit.Auditor;
-import com.fluxtion.api.event.Event;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -49,10 +48,6 @@ import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
-import org.reflections.ReflectionUtils;
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withType;
 
 /**
  *

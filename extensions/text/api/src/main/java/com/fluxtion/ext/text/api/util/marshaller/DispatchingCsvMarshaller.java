@@ -1,10 +1,10 @@
 package com.fluxtion.ext.text.api.util.marshaller;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.ascii.Csv2ByteBufferTemp;
 import com.fluxtion.ext.text.api.event.CharEvent;
-import com.fluxtion.api.StaticEventProcessor;
 
 public class DispatchingCsvMarshaller implements StaticEventProcessor, BatchHandler, Lifecycle {
 

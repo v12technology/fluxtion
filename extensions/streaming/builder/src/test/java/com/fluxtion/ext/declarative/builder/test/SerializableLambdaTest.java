@@ -1,11 +1,11 @@
 package com.fluxtion.ext.declarative.builder.test;
 
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.declarative.builder.helpers.StaticFunctions;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.lang.reflect.Modifier;
 import java.util.function.Consumer;

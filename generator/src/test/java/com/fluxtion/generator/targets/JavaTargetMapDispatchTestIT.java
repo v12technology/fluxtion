@@ -5,10 +5,10 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.test.tracking.TraceEvent;
-import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
-import org.junit.Test;
 import com.fluxtion.api.StaticEventProcessor;
+import static com.fluxtion.generator.targets.JavaGeneratorNames.*;
+import com.fluxtion.test.tracking.TraceEvent;
+import org.junit.Test;
 
 /**
  *

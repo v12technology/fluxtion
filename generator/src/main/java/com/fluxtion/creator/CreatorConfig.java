@@ -18,11 +18,10 @@
 package com.fluxtion.creator;
 
 import com.fluxtion.builder.generation.GenerationContext;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
-
-import java.util.List;
 
 /**
  *

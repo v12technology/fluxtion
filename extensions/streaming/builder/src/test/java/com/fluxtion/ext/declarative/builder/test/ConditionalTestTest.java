@@ -11,17 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.test;
 
-import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
@@ -29,13 +19,22 @@ import com.fluxtion.ext.declarative.builder.helpers.MyDataChildNode;
 import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.ext.streaming.api.MergingWrapper;
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.stream.StringPredicates;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
-import com.fluxtion.api.StaticEventProcessor;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 /**

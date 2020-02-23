@@ -17,10 +17,9 @@
  */
 package com.fluxtion.generator.model;
 
-import static java.lang.reflect.Modifier.isFinal;
-
 import com.fluxtion.generator.util.ClassUtils;
 import java.lang.reflect.Modifier;
+import static java.lang.reflect.Modifier.isFinal;
 import java.util.ArrayList;
 import java.util.List;
 

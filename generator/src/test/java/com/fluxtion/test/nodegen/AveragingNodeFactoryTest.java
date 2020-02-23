@@ -17,10 +17,10 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,8 +29,8 @@ import java.util.Set;
 import org.hamcrest.generator.qdox.JavaDocBuilder;
 import org.hamcrest.generator.qdox.model.JavaClass;
 import org.hamcrest.generator.qdox.model.JavaField;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

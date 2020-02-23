@@ -5,6 +5,7 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateAssignment;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_privateDispatch;
 import com.fluxtion.test.event.TimeEvent;
@@ -13,7 +14,6 @@ import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers;
 import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers.Currency;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Test assignment of private variables by reflection

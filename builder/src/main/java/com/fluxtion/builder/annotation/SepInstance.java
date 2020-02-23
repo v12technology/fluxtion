@@ -21,7 +21,6 @@ import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 import java.lang.annotation.Target;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

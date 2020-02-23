@@ -16,8 +16,8 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.api.SepContext;
+import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**

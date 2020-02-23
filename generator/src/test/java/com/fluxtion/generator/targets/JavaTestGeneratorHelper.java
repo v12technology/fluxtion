@@ -5,13 +5,13 @@
  */
 package com.fluxtion.generator.targets;
 
-import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
-
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.compiler.SepCompiler;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
+import static com.fluxtion.generator.targets.JavaGeneratorNames.packageDefault;
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import java.io.File;
@@ -21,7 +21,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

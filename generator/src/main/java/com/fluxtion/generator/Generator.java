@@ -18,8 +18,8 @@
 package com.fluxtion.generator;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_INTROSPECTOR_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;

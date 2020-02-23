@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.text.builder.util;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
@@ -25,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Synchronous char streamer, reads bytes from a file and pushes CharEvent for

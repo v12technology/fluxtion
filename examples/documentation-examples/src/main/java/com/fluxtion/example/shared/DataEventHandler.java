@@ -17,7 +17,6 @@
 package com.fluxtion.example.shared;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.example.shared.DataEvent;
 
 /**
  *

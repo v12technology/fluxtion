@@ -18,10 +18,10 @@
 package com.fluxtion.generator.order;
 
 import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.event.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
