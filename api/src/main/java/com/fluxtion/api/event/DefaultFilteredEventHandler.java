@@ -17,7 +17,6 @@
 package com.fluxtion.api.event;
 
 import com.fluxtion.api.FilteredEventHandler;
-import com.fluxtion.api.event.Event;
 import java.util.Objects;
 
 /**

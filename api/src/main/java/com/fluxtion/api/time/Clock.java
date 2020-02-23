@@ -20,7 +20,6 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 
 /**
