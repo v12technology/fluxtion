@@ -63,6 +63,7 @@ import static org.reflections.ReflectionUtils.withParametersCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.time.Clock;
 import com.google.common.base.Predicate;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -293,7 +294,13 @@ public class SimpleEventProcessorModel {
         Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
             int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
             int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
-            if(idx1>-1 && idx2>-1){
+            if(o1.instance instanceof Clock){
+                idx1 = Integer.MAX_VALUE;
+            }
+            if(o2.instance instanceof Clock){
+                idx1 = Integer.MAX_VALUE;
+            }
+            if(idx1>-1 || idx2>-1){
                 return idx2 - idx1;
             }
             return comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name));

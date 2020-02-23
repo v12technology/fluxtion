@@ -31,6 +31,7 @@ import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
 import com.fluxtion.generator.util.NaturalOrderComparator;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -1225,8 +1226,10 @@ public class SepJavaSourceModelHugeFilter {
         }
         this.auditingEvent = true;
         this.auditingInvocations = false;
+        importList.add(Event.class.getCanonicalName());
         auditMethodString = "";
-        String auditEvent = "private void auditEvent(Object typedEvent){\n";
+        String auditObjet = "private void auditEvent(Object typedEvent){\n";
+        String auditEvent = "private void auditEvent(Event typedEvent){\n";
         String auditInvocation = "private void auditInvocation(Object node, String nodeName, String methodName, Object typedEvent){\n";
         String initialiseAuditor = "private void initialiseAuditor(" + getClassName(Auditor.class.getName()) + " auditor){\n"
                 + "\tauditor.init();\n";
@@ -1257,11 +1260,13 @@ public class SepJavaSourceModelHugeFilter {
             }
         }
         auditEvent += eventAuditDispatch + "}\n";
+        auditObjet += eventAuditDispatch + "}\n";
         if(auditingInvocations){
             auditEvent += auditInvocation + "}\n";
         }
         initialiseAuditor += "}\n";
         eventAuditDispatch = "auditEvent(typedEvent);\n";
+        auditMethodString += auditObjet;
         auditMethodString += auditEvent;
         auditMethodString += initialiseAuditor;
     }

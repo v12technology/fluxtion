@@ -20,6 +20,7 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.example.core.audit.Combiner;
 import com.fluxtion.example.core.audit.NodeAuditor;
 import com.fluxtion.example.shared.ChildNode;
@@ -32,7 +33,7 @@ import com.fluxtion.example.shared.PipelineNode;
 
 /*
  * <pre>
- * generation time   : 2020-02-23T08:06:46.289750400
+ * generation time   : 2020-02-23T10:26:06.488217200
  * generator version : 1.9.4-SNAPSHOT
  * api version       : 1.9.4-SNAPSHOT
  * </pre>
@@ -136,6 +137,10 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
   }
 
   private void auditEvent(Object typedEvent) {
+    nodeAuditor.eventReceived(typedEvent);
+  }
+
+  private void auditEvent(Event typedEvent) {
     nodeAuditor.eventReceived(typedEvent);
   }
 

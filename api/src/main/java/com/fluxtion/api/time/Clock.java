@@ -43,18 +43,14 @@ public class Clock implements Auditor {
 
     @Override
     public void eventReceived(Event event) {
-        eventTime = event.getEventTime();
         processTime = getWallClockTime();
+        eventTime = event.getEventTime();
     }
 
     @Override
     public void eventReceived(Object event) {
         processTime = getWallClockTime();
-        if (Event.class.isAssignableFrom(event.getClass())) {
-            eventTime = ((Event) event).getEventTime();
-        } else {
-            eventTime = processTime;
-        }
+        eventTime = processTime;
     }
 
     @Override
