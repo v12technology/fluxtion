@@ -19,9 +19,19 @@ package com.fluxtion.ext.declarative.builder.filter;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import com.fluxtion.ext.streaming.api.test.BooleanFilter;
+import com.fluxtion.ext.streaming.builder.factory.BooleanBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import com.fluxtion.ext.streaming.builder.factory.FilterBuilder;
+import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
+import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
+import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,5 +63,28 @@ public class FilterTest extends StreamInprocessTest {
         sep.onEvent(de1);
         Assert.assertThat(sum.intValue(), is (14));
         Assert.assertThat(count.intValue(), is (1));
+    }
+    
+    @Test
+    public void complexNaryTest(){
+        sep((c) -> {
+            Wrapper<Boolean> map = map(FilterTest::withinRange, arg(DataEvent::getValue), arg(MinAge::getMin), arg(MaxAge::getMax));
+            FilterByNotificationBuilder.filter(select(DataEvent.class), BooleanBuilder.and(map)).console("receivedEvent age:", DataEvent::getValue);
+            //TODO build a test template from 
+        }); 
+    }
+    
+    public static boolean withinRange(int test, int min, int max){
+        return min < test && test > max;
+    }
+    
+    @Data
+    public static class MinAge{
+        final int min;
+    }
+    
+    @Data
+    public static class MaxAge{
+        final int max;
     }
 }

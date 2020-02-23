@@ -20,6 +20,7 @@ package com.fluxtion.ext.streaming.builder.factory;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
@@ -96,6 +97,16 @@ public class MappingBuilder {
     public static <R, S> Wrapper<R> mapSet(SerializableFunction<S, R> mapper,
             FunctionArg... suppliers) {
         StreamFunctionCompiler builder = StreamFunctionCompiler.mapSet(mapper.captured()[0], mapper.method(), suppliers);
+        final Wrapper wrapper = builder.build();
+        wrapper.alwaysReset(true);
+        return wrapper;
+    }
+    
+    //TODO this is a sample method for multi-arg mapping method, also needs to made to work for TEST
+    public static <X, T, R, S> Wrapper<R> map(SerializableTriFunction<X, T, S, R> mapper,
+            FunctionArg... suppliers) {
+        final Object mapperInstance = mapper.captured().length==0?null:mapper.captured()[0];
+        StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, mapper.method(), suppliers);
         final Wrapper wrapper = builder.build();
         wrapper.alwaysReset(true);
         return wrapper;
