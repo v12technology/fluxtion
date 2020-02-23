@@ -14,9 +14,9 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.lifecycle;
+package com.fluxtion.api.event;
 
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.FilteredEventHandler;
 import java.util.Objects;
 
 /**

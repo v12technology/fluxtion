@@ -16,11 +16,10 @@
  */
 package com.fluxtion.api.partition;
 
-import static java.util.Arrays.asList;
-
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import static java.util.Arrays.asList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;

@@ -16,8 +16,8 @@
  */
 package com.fluxtion.example.core.dependencyinjection.lifecycle.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.dependencyinjection.lifecycle.CleanListener;
 import com.fluxtion.example.core.dependencyinjection.lifecycle.ConditioningHandler;
@@ -27,9 +27,9 @@ import com.fluxtion.example.shared.MyEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:17:54.826764300
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T15:48:41.098916200
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -80,8 +80,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     afterEvent();
   }
 
-  @Override
-  public void afterEvent() {
+  private void afterEvent() {
 
     isDirty_cleanListener_3 = false;
     isDirty_conditioningHandler_1 = false;

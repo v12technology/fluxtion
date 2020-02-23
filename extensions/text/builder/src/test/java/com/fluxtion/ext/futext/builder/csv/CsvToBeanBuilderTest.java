@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import com.fluxtion.api.event.Event;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
+import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
 import java.util.concurrent.atomic.LongAdder;
@@ -28,7 +28,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *

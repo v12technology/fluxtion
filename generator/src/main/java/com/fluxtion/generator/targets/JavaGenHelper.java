@@ -18,7 +18,7 @@
 package com.fluxtion.generator.targets;
 
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.api.event.FilteredHandlerInvoker;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.model.InvokerFilterTarget;
 import java.util.ArrayList;

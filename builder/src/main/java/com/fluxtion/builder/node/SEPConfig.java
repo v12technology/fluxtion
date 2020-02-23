@@ -16,17 +16,16 @@
  */
 package com.fluxtion.builder.node;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.fluxtion.api.audit.Auditor;
-import com.fluxtion.api.audit.EventLogControlEvent;
 import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.time.ClockFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to

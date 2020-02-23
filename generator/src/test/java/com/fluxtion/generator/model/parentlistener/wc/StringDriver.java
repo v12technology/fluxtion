@@ -17,8 +17,8 @@
  */
 package com.fluxtion.generator.model.parentlistener.wc;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * 

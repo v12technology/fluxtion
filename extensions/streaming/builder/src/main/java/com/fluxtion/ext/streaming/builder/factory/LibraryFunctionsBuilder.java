@@ -28,12 +28,12 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
-import com.fluxtion.ext.streaming.builder.util.FunctionArg;
-import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
+import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
+import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 
 /**
  * Utility class providing static helper methods to create mapping operations

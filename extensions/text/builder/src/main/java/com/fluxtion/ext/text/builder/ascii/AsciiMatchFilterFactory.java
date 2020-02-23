@@ -16,20 +16,19 @@
  */
 package com.fluxtion.ext.text.builder.ascii;
 
-import static com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper.generateAndCompile;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
-import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
-import static com.fluxtion.ext.text.builder.Templates.CHAR_MATCH_FILTER;
-
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
+import static com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper.generateAndCompile;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.filter.AsciiMatchFilter;
+import static com.fluxtion.ext.text.builder.Templates.CHAR_MATCH_FILTER;
 import com.google.auto.service.AutoService;
 import java.io.IOException;
 import java.util.ArrayList;

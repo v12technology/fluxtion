@@ -17,23 +17,25 @@
  */
 package com.fluxtion.generator.model;
 
+import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.ConfigVariable;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.PushReference;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.googlecode.gentyref.GenericTypeReflector;
+import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.generator.exporter.JgraphGraphMLExporter;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import com.fluxtion.api.event.Event;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.googlecode.gentyref.GenericTypeReflector;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -48,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
@@ -60,13 +63,10 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import com.fluxtion.api.audit.Auditor;
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
-import java.util.PriorityQueue;
-import org.reflections.ReflectionUtils;
 
 /**
  * Creates a sorted set of dependencies from a supplied set of instances.

@@ -16,8 +16,8 @@
  */
 package com.fluxtion.example.core.events.postevent.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.events.postevent.ResetAfterEvent;
 import com.fluxtion.example.core.events.postevent.ResetDataEvent;
@@ -28,9 +28,9 @@ import com.fluxtion.example.shared.DataEventHandler;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:17:59.222517700
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T15:48:44.559918100
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -105,8 +105,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     afterEvent();
   }
 
-  @Override
-  public void afterEvent() {
+  private void afterEvent() {
     resetAfterEvent_7.afterEvent();
     resetGlobal_5.afterEvent();
     isDirty_dataEventHandler_1 = false;

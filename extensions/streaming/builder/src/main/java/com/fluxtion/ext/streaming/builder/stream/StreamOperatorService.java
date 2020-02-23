@@ -17,8 +17,6 @@
 package com.fluxtion.ext.streaming.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
-import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
-
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -33,10 +31,11 @@ import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunction;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import com.fluxtion.ext.streaming.builder.group.Group;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterEither;
+import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
+import com.fluxtion.ext.streaming.builder.group.Group;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

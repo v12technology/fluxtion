@@ -16,22 +16,21 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
-import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
-import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.withinRange;
-import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
-
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
+import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.withinRange;
+import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Assert;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 public class ValidationTest extends BaseSepTest {
 

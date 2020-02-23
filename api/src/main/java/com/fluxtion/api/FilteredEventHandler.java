@@ -14,36 +14,50 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.lifecycle;
+package com.fluxtion.api;
 
 import com.fluxtion.api.event.Event;
 
 /**
- * Extends the concept of EventHandler by adding a user defined filter id.Only
- * events that match the filterID and the event type will be processed by an
- * instance of the FilteredEventHandler.
+ * Acts as the root of an execution path in a {@link StaticEventProcessor}. A
+ * user implements this class and registers it with the static event compiler,
+ * to generate a StaticEventProcessor. Events will be routed to an instance of
+ * this class by the generated StaticEventProcessor at runtime.
  *
  * <pre>
  * <h2>Filtering</h2>
- * An EventHandler can optionally provide a filter value and to filter the
- * events that are accepted for processing. An {@link Event} can optionally
- * specify a filter value {@link Event#filterId()
- * }. The SEP will compare the filter values in the {@link Event} and the
- * handler and propagate the Event conditional upon the a match.
+ * An EventHandler can optionally provide a filter value to filter the
+ * events that are accepted for processing. Usually the match is based solely
+ * on event type to determine if instance of a FilteredEventHandler is on the
+ * execution path for an event, filtering can further refine the match.
+ * <p>
+ *
+ * An {@link Event} can optionally specify a filter value as an int {@link Event#filterId()
+ * } or as a String {@link Event#filterString() . The SEP will compare the filter
+ * values in the {@link Event} and the handler and propagate the Event conditional upon the a match.
  * .<p>
+ * 
+ * Default values for filters indicate only match on type, no filters are applied:
+ * <ul>
+ * <li>int filter : Integer.MAX_VALUE = no filtering</li>
+ * <li>String filter : null or "" = no filtering</li>
+ * </ul>
  * </pre>
  *
  * @author Greg Higgins
+ *
  * @param <T> The type of event processed by this handler
  */
 public interface FilteredEventHandler<T> {
 
-    int filterId();
+    default int filterId(){
+        return Event.NO_INT_FILTER;
+    }
 
     default String filterString() {
-        return null;
+        return Event.NO_STRING_FILTER;
     }
-    
+
     /**
      * Called when a new event e is ready to be processed.
      *
@@ -64,7 +78,5 @@ public interface FilteredEventHandler<T> {
      *
      * @return Class of {@link com.fluxtion.api.event.Event Event} to process
      */
-    default Class<T> eventClass() {
-        return null;
-    }
+    Class<T> eventClass();
 }

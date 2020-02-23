@@ -17,9 +17,8 @@
  */
 package com.fluxtion.creator;
 
-import static org.junit.Assert.assertThat;
-
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -49,6 +49,12 @@ public class TestAuditor implements Auditor {
         eventStore.add(event.getClass());
         processingComplete = false;
 //        System.out.printf("eventReceived:%s%n", event);
+    }
+
+    @Override
+    public void eventReceived(Event event) {
+        eventStore.add(event.getClass());
+        processingComplete = false;
     }
 
     @Override

@@ -16,10 +16,10 @@
  */
 package com.fluxtion.example.core.outstyle.mappeddispatch.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.api.event.FilteredHandlerInvoker;
 import com.fluxtion.example.core.outstyle.naming.DataHandler;
 import com.fluxtion.example.shared.DataEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -27,9 +27,9 @@ import java.util.HashMap;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:17:59.973512900
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T15:48:45.414918
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -120,8 +120,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     handler_FX.processUpdate(typedEvent);
   }
 
-  @Override
-  public void afterEvent() {}
+  private void afterEvent() {}
 
   @Override
   public void init() {}

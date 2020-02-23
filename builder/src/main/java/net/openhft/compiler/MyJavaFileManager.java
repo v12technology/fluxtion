@@ -17,15 +17,14 @@
  */
 package net.openhft.compiler;
 
-import org.jetbrains.annotations.NotNull;
-
-import javax.tools.*;
-import javax.tools.JavaFileObject.Kind;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
+import javax.tools.*;
+import javax.tools.JavaFileObject.Kind;
+import org.jetbrains.annotations.NotNull;
 
 class MyJavaFileManager implements JavaFileManager {
 

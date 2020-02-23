@@ -16,7 +16,8 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
-import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Avg;
@@ -25,13 +26,12 @@ import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Max;
 import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Min;
 import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Set;
 import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Sum;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
-import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 
 /**
  * The main instance a user interacts with while building a group by function. 

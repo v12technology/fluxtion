@@ -17,8 +17,6 @@
  */
 package com.fluxtion.generator.compiler;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -38,6 +36,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

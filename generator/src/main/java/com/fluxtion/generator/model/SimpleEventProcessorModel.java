@@ -17,9 +17,7 @@
  */
 package com.fluxtion.generator.model;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.FilterId;
 import com.fluxtion.api.annotations.FilterType;
@@ -32,18 +30,30 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.generator.model.Field.MappedField;
 import com.fluxtion.generator.util.ClassUtils;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import com.fluxtion.api.event.Event;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import static java.util.Arrays.stream;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,27 +63,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.jodah.typetools.TypeResolver;
 import org.reflections.ReflectionUtils;
+import static org.reflections.ReflectionUtils.getConstructors;
 import static org.reflections.ReflectionUtils.withAnnotation;
 import static org.reflections.ReflectionUtils.withModifier;
 import static org.reflections.ReflectionUtils.withName;
 import static org.reflections.ReflectionUtils.withParametersCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fluxtion.api.audit.Auditor;
-import com.google.common.base.Predicate;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import static org.reflections.ReflectionUtils.getConstructors;
 
 /**
  * A class defining the meta-data for the SEP.This class can be introspected
@@ -293,7 +294,13 @@ public class SimpleEventProcessorModel {
         Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
             int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
             int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
-            if(idx1>-1 && idx2>-1){
+            if(o1.instance instanceof Clock){
+                idx1 = Integer.MAX_VALUE;
+            }
+            if(o2.instance instanceof Clock){
+                idx1 = Integer.MAX_VALUE;
+            }
+            if(idx1>-1 || idx2>-1){
                 return idx2 - idx1;
             }
             return comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name));

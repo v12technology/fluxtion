@@ -74,7 +74,7 @@ public class FlightDelayTest {
     @Test
     @Ignore
     public void removeNA() throws IllegalAccessException, Exception {
-        com.fluxtion.api.lifecycle.StaticEventProcessor sep = InprocessSepCompiler.sepTestInstance((c) -> {
+        com.fluxtion.api.StaticEventProcessor sep = InprocessSepCompiler.sepTestInstance((c) -> {
             RemoveNA na = c.addNode(new RemoveNA(), "remover");
             c.maxFiltersInline = 15;
         }, "com.gh.removeNa", "RemoveNaSep");

@@ -5,6 +5,9 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.event.Event;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.Test1Filtered;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.Test1NoFilter;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_0_test1;
@@ -18,10 +21,6 @@ import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_int_0_test
 import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_int_0_test4;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_int_0_test5;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.trace_subclass_test1;
-import static org.junit.Assert.assertEquals;
-
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.test.event.TestEventNoId;
 import com.fluxtion.test.event.TestEventNoIdHandler;
 import com.fluxtion.test.tracking.Extends_Handler_TraceEvent_InFilter_0;
@@ -38,8 +37,8 @@ import com.fluxtion.test.tracking.TraceEvent_0;
 import com.fluxtion.test.tracking.TraceEvent_InFilter_0;
 import java.lang.reflect.Field;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *

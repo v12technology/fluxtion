@@ -16,8 +16,6 @@
  */
 package com.fluxtion.builder.generation;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

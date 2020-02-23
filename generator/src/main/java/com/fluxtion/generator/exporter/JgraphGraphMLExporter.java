@@ -17,9 +17,10 @@
  */
 package com.fluxtion.generator.exporter;
 
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.FilteredEventHandler;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -34,8 +35,6 @@ import org.jgrapht.ext.IntegerNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-
-import java.lang.reflect.Method;
 
 
 /**

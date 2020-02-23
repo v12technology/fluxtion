@@ -5,10 +5,9 @@
  */
 package com.fluxtion.generator.targets;
 
-import com.fluxtion.generator.targets.JavaGenHelper;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.model.InvokerFilterTarget;
 import com.fluxtion.test.event.AnnotatedTestEventHandler;
@@ -22,9 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  *

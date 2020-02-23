@@ -16,15 +16,14 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
+import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.group.MultiKey;
+import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceClass;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetMappingList;
-
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.group.MultiKey;
-import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.util.HashMap;
 import java.util.List;

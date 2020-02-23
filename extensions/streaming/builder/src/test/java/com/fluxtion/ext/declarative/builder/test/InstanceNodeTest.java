@@ -1,17 +1,16 @@
 package com.fluxtion.ext.declarative.builder.test;
 
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepTest;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 public class InstanceNodeTest extends BaseSepTest {
 

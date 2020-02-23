@@ -16,6 +16,7 @@
  */
 package com.fluxtion.api.partition;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * An StaticEventProcessor partitioner based upon a received event.A partitioner

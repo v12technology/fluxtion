@@ -16,19 +16,18 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
-import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
-import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
-
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.util.Pair;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
+import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filter;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.text.api.csv.ColumnName;
 import com.fluxtion.ext.text.api.csv.RowExceptionNotifier;

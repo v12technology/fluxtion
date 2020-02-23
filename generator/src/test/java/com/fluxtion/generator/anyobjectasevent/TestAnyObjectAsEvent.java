@@ -18,7 +18,6 @@ package com.fluxtion.generator.anyobjectasevent;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import org.junit.Test;
 
 /**
  *

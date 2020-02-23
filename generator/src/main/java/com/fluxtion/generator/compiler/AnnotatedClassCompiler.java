@@ -17,11 +17,10 @@
  */
 package com.fluxtion.generator.compiler;
 
-import static com.fluxtion.generator.compiler.ClassProcessorDispatcher.standardParamsHelper;
-
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.annotation.SepInstance;
+import static com.fluxtion.generator.compiler.ClassProcessorDispatcher.standardParamsHelper;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.AnnotationParameterValueList;

@@ -17,8 +17,6 @@
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
-import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.test.event.AnnotatedEventHandlerDirtyNotifier;
 import com.fluxtion.test.event.DirtyNotifierNode;
 import com.fluxtion.test.event.EventHandlerCb;
@@ -27,8 +25,8 @@ import com.fluxtion.test.event.RootCB;
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

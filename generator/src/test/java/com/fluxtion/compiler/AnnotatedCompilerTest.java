@@ -18,12 +18,9 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.api.annotations.Initialise;
-import static org.hamcrest.CoreMatchers.is;
-
 import com.fluxtion.builder.annotation.ClassProcessor;
 import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.annotation.SepInstance;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.ClassProcessorDispatcher;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
@@ -31,6 +28,7 @@ import com.fluxtion.test.event.TimeEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
 

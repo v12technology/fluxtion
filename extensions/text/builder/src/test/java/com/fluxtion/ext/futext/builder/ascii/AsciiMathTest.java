@@ -1,9 +1,10 @@
 package com.fluxtion.ext.futext.builder.ascii;
 
+import com.fluxtion.ext.futext.builder.test.helpers.SoldAggregator;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntFixedLength;
 import com.fluxtion.ext.text.api.ascii.EolNotifier;
@@ -14,7 +15,6 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntDelimited;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntFixedLength;
-import com.fluxtion.ext.futext.builder.test.helpers.SoldAggregator;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.junit.Assert.assertEquals;

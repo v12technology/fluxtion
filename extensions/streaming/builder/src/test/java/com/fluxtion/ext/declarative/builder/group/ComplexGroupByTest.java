@@ -11,22 +11,21 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.junit.Categories;
-import org.junit.experimental.categories.Category;
-//import static com.fluxtion.extension.functional.group2.Order.Order;
-import java.util.Optional;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
+import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.junit.Categories;
+import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  *

@@ -18,10 +18,6 @@
 
 package net.openhft.compiler;
 
-import net.openhft.compiler.eg.components.Foo;
-import junit.framework.TestCase;
-import org.junit.Test;
-
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import junit.framework.TestCase;
+import net.openhft.compiler.eg.components.Foo;
+import org.junit.Test;
 
 public class CompilerTest extends TestCase {
     static final File parent;

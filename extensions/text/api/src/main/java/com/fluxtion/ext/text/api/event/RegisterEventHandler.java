@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.text.api.event;
 
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * An event that registers an {@link StaticEventProcessor} as a sink in another SEP. The

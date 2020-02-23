@@ -16,11 +16,11 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import java.beans.Introspector;

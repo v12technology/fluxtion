@@ -24,7 +24,7 @@ import com.fluxtion.example.shared.ConfigEvent;
 import com.fluxtion.example.shared.DataEvent;
 import com.fluxtion.example.shared.DataEventHandler;
 import com.fluxtion.example.shared.MyEvent;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 public class SampleProcessor implements StaticEventProcessor, BatchHandler, Lifecycle {
 
@@ -86,7 +86,6 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     afterEvent();
   }
 
-  @Override
   public void afterEvent() {}
 
   @Override

@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.GenericEvent;
+import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 
 /**
  * A clock instance in a static event processor, use the @Inject annotation to
@@ -43,18 +43,14 @@ public class Clock implements Auditor {
 
     @Override
     public void eventReceived(Event event) {
-        eventTime = event.getEventTime();
         processTime = getWallClockTime();
+        eventTime = event.getEventTime();
     }
 
     @Override
     public void eventReceived(Object event) {
         processTime = getWallClockTime();
-        if (Event.class.isAssignableFrom(event.getClass())) {
-            eventTime = ((Event) event).getEventTime();
-        } else {
-            eventTime = processTime;
-        }
+        eventTime = processTime;
     }
 
     @Override
@@ -62,10 +58,10 @@ public class Clock implements Auditor {
     }
 
     @EventHandler(propagate = false)
-    public void setClockStrategy(GenericEvent<ClockStrategy> event) {
-        this.wallClock = event.value;
+    public void setClockStrategy(ClockStrategyEvent event) {
+        this.wallClock = event.getStrategy();
     }
-
+    
     /**
      * The time the last event was received by the processor
      *

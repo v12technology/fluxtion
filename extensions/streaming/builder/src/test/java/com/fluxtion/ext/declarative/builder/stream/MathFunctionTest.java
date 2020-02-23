@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -33,10 +32,11 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.divide;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.subtract;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.buildLog;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler.map;
+import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.buildLog;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler.map;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
 import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
 import java.lang.reflect.Method;

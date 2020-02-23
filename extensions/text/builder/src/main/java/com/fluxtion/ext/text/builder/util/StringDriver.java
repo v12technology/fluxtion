@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.text.builder.util;
 
+import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
-import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Utility to publish a String as a set of CharEvent's into a SEP.

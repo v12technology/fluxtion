@@ -17,13 +17,10 @@
  */
 package com.fluxtion.generator.constructor;
 
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import com.fluxtion.generator.util.BaseSepTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Assert;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

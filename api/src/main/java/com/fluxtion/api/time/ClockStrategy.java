@@ -16,10 +16,20 @@
  */
 package com.fluxtion.api.time;
 
+import lombok.Data;
+
 /**
  *
  * @author V12 Technology Ltd.
  */
 public interface ClockStrategy {
+
     long getWallClockTime();
+
+    @Data
+    public static class ClockStrategyEvent {
+
+        private final ClockStrategy strategy;
+    }
+
 }

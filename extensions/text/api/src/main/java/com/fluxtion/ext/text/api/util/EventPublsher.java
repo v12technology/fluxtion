@@ -16,13 +16,13 @@
  */
 package com.fluxtion.ext.text.api.util;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered

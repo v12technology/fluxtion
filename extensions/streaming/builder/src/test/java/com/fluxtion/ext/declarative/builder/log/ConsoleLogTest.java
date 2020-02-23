@@ -11,18 +11,18 @@
  */
 package com.fluxtion.ext.declarative.builder.log;
 
-import com.fluxtion.ext.streaming.builder.log.LogBuilder;
-import com.fluxtion.ext.streaming.api.log.MsgBuilder;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import org.junit.Test;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
+import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import org.junit.Test;
 
 /**
  *

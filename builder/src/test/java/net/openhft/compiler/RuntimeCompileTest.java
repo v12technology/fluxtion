@@ -1,12 +1,9 @@
 package net.openhft.compiler;
 
-import net.openhft.compiler.CompilerUtils;
-import org.junit.Test;
-
 import java.net.URL;
 import java.net.URLClassLoader;
-
 import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class RuntimeCompileTest {
     static String code = "package net.openhft.compiler;\n" +

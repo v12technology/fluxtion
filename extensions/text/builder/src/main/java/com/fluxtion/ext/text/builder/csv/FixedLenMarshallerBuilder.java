@@ -16,8 +16,8 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import java.lang.reflect.Method;
 
 /**

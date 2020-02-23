@@ -18,6 +18,7 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
 import com.fluxtion.test.event.CharEvent;
@@ -26,7 +27,6 @@ import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  *

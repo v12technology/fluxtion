@@ -16,9 +16,9 @@
  */
 package com.fluxtion.builder.time;
 
+import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.api.time.Clock;
 import java.util.Map;
 
 /**

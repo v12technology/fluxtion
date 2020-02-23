@@ -17,11 +17,7 @@
  */
 package com.fluxtion.ext.streaming.api;
 
-import com.fluxtion.api.annotations.ConfigVariable;
-import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.time.Clock;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;

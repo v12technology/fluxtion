@@ -1,6 +1,5 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.test.Within;

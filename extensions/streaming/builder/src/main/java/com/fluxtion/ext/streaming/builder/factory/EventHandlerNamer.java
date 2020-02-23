@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.ext.streaming.api.GenericEventHandler;
 import com.fluxtion.ext.streaming.api.GenericWrapper;

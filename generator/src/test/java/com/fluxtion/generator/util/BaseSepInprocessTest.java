@@ -17,8 +17,7 @@
  */
 package com.fluxtion.generator.util;
 
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.GenericEvent;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
@@ -27,7 +26,6 @@ import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 
 /**
  * Test class utility for building a SEP in process

@@ -18,10 +18,10 @@
 package com.fluxtion.generator.order;
 
 import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.event.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +37,7 @@ public class GenerationOrderTest extends BaseSepTest {
 
     @Test
     public void testOrder() {
-        com.fluxtion.api.lifecycle.StaticEventProcessor handler1 = buildAndInitSep(NodeBuilder.class);
+        com.fluxtion.api.StaticEventProcessor handler1 = buildAndInitSep(NodeBuilder.class);
         OrderEvent oe = new OrderEvent();
         handler1.onEvent(oe);
         List<String> expected = Arrays.asList("root", "A1", "A2", "X", "Y");

@@ -46,9 +46,9 @@ public class CsvMultiTypeMarshaller {
 
     public BufferValue type;
 
-    private Map<ByteBuffer, com.fluxtion.api.lifecycle.StaticEventProcessor> type2Marshaller;
-    private com.fluxtion.api.lifecycle.StaticEventProcessor marshaller;
-    public com.fluxtion.api.lifecycle.StaticEventProcessor sink;
+    private Map<ByteBuffer, com.fluxtion.api.StaticEventProcessor> type2Marshaller;
+    private com.fluxtion.api.StaticEventProcessor marshaller;
+    public com.fluxtion.api.StaticEventProcessor sink;
     private ByteBuffer buffer;
     private byte[] array;
     private static final int DEFAULT_SIZE = 256;
@@ -81,14 +81,14 @@ public class CsvMultiTypeMarshaller {
         }
     }
 
-    public void setSink(com.fluxtion.api.lifecycle.StaticEventProcessor sink) {
+    public void setSink(com.fluxtion.api.StaticEventProcessor sink) {
         this.sink = sink;
         if (sink != null) {
             type2Marshaller.values().forEach(h -> h.onEvent(new RegisterEventHandler(sink)));
         }
     }
 
-    public void addMarshaller(Class wrapper, com.fluxtion.api.lifecycle.StaticEventProcessor handler) {
+    public void addMarshaller(Class wrapper, com.fluxtion.api.StaticEventProcessor handler) {
         if (handler != null && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
