@@ -22,6 +22,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
  *   <li>output class : {@link Number}
  *   <li>input class : {@link FlightDetails}
  *   <li>map function : {@link Count#increment}
+ *   <li>multiArg : false
  * </ul>
  *
  * @author Greg Higgins
