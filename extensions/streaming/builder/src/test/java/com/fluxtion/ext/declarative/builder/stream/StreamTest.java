@@ -17,7 +17,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
 import java.util.Objects;
 import org.junit.Ignore;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

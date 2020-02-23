@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

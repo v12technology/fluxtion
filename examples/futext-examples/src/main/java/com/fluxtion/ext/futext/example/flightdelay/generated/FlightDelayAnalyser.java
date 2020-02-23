@@ -16,8 +16,8 @@
  */
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -28,9 +28,9 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:18:05.035113600
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T08:06:57.343417700
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -137,8 +137,7 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
     afterEvent();
   }
 
-  @Override
-  public void afterEvent() {
+  private void afterEvent() {
     totalFlights.resetAfterEvent();
     filter_getDelay_By_positiveInt0_1.resetAfterEvent();
     isDirty_filter_getDelay_By_positiveInt0_1 = false;

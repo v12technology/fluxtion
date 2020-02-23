@@ -12,7 +12,7 @@ import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.junit.Categories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * @author gregp

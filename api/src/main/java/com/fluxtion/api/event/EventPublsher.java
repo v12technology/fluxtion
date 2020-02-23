@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered

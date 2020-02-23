@@ -16,8 +16,8 @@
  */
 package com.fluxtion.example.core.audit.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.example.core.audit.Combiner;
@@ -32,9 +32,9 @@ import com.fluxtion.example.shared.PipelineNode;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:17:53.651855800
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T08:06:46.289750400
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -152,8 +152,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     auditor.nodeRegistered(pipelineNode_7, "pipelineNode_7");
   }
 
-  @Override
-  public void afterEvent() {
+  private void afterEvent() {
     nodeAuditor.processingComplete();
     isDirty_childNode_3 = false;
     isDirty_dataEventHandler_5 = false;

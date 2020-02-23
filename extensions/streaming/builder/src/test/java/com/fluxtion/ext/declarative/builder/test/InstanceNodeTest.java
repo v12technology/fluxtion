@@ -11,7 +11,7 @@ import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 public class InstanceNodeTest extends BaseSepTest {
 

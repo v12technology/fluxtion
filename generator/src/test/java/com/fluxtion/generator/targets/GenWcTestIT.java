@@ -16,7 +16,7 @@ import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_generic_
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_inline_event_handling;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

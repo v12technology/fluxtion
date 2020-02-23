@@ -26,7 +26,7 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

@@ -16,8 +16,8 @@
  */
 package com.fluxtion.example.core.building.factories.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.building.factories.FactoryNode;
 import com.fluxtion.example.core.building.factories.FilteredDataHandler;
@@ -25,9 +25,9 @@ import com.fluxtion.example.shared.DataEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:18:01.348183300
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T08:06:53.947416800
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -72,8 +72,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     afterEvent();
   }
 
-  @Override
-  public void afterEvent() {
+  private void afterEvent() {
 
     isDirty_handler = false;
   }

@@ -19,7 +19,7 @@ package com.fluxtion.test.event;
 
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.api.lifecycle.AbstractFilteredEventHandler;
+import com.fluxtion.api.event.AbstractFilteredEventHandler;
 
 /**
  *
@@ -36,8 +36,12 @@ public class EventHandlerCb extends AbstractFilteredEventHandler<TestEvent>{
 
     public EventHandlerCb() {
     }
-    
-        
+
+    @Override
+    public Class<TestEvent> eventClass() {
+        return TestEvent.class;
+    }
+      
     @TearDown
     public void tearDown(){
         

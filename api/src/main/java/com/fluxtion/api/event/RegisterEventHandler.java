@@ -18,7 +18,7 @@ package com.fluxtion.api.event;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * An event that registers an {@link StaticEventProcessor} as a sink in another SEP. The

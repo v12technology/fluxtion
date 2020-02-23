@@ -28,7 +28,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static com.fluxtion.ext.text.builder.math.WordFrequency.wordFrequency;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

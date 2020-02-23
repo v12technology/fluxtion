@@ -26,7 +26,7 @@ import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

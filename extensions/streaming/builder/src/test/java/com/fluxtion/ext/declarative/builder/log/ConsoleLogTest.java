@@ -22,7 +22,7 @@ import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFilt
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepTest;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

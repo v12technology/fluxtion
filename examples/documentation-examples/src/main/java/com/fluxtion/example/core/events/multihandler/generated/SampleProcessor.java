@@ -16,8 +16,8 @@
  */
 package com.fluxtion.example.core.events.multihandler.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.example.core.events.multihandler.MyEventProcessor;
 import com.fluxtion.example.shared.ConfigEvent;
@@ -25,9 +25,9 @@ import com.fluxtion.example.shared.MyEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-22T18:17:58.584751200
- * generator version : 1.9.3-SNAPSHOT
- * api version       : 1.9.3-SNAPSHOT
+ * generation time   : 2020-02-23T08:06:51.052749800
+ * generator version : 1.9.4-SNAPSHOT
+ * api version       : 1.9.4-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -74,8 +74,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     afterEvent();
   }
 
-  @Override
-  public void afterEvent() {}
+  private void afterEvent() {}
 
   @Override
   public void init() {}

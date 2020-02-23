@@ -14,37 +14,18 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.lifecycle;
-
+package com.fluxtion.api.event;
 
 /**
+ * An invoker inteface used in the generated sep to invoke a call tree. Can be
+ * useful when switch statements become too big and a map dispatcher is used to
+ * invoke the specific call tree.
+ *
+ * RELOCATE - not required here
+ *
  * @author Greg Higgins
- * @param <T> The type of event processed by this handler
  */
-public abstract class AbstractFilteredEventHandler<T> implements FilteredEventHandler<T>{
+public interface FilteredHandlerInvoker {
 
-    protected int filterId;
-    
-    public AbstractFilteredEventHandler(int filterId) {
-        this.filterId = filterId;
-    }
-
-    public AbstractFilteredEventHandler() {
-        this(0);
-    }
-    
-    @Override
-    public final int filterId(){
-        return filterId;
-    }
-
-    public void setFilterId(int filterId) {
-        this.filterId = filterId;
-    }
-    
-    @Override
-    public abstract void onEvent(T e) ;
-
-
-    
+    void invoke(Object event);
 }

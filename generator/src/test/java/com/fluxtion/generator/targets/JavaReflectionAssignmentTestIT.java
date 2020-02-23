@@ -13,7 +13,7 @@ import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers;
 import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers.Currency;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Test assignment of private variables by reflection

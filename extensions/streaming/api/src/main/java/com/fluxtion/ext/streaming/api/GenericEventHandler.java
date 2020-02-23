@@ -18,7 +18,7 @@ package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.FilteredEventHandler;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 

@@ -32,7 +32,7 @@ import com.fluxtion.test.event.TestEvent;
 import com.fluxtion.test.event.TimeEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

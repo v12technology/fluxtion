@@ -32,7 +32,7 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.generator.model.Field.MappedField;

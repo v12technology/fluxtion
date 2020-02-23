@@ -27,7 +27,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Reads files and streams pushing {@link CharEvent} to an {@link StaticEventProcessor}.

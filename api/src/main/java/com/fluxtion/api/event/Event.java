@@ -16,7 +16,7 @@
  */
 package com.fluxtion.api.event;
 
-import com.fluxtion.api.lifecycle.FilteredEventHandler;
+import com.fluxtion.api.FilteredEventHandler;
 
 /**
  * <p>

@@ -29,7 +29,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 //import static com.fluxtion.ext.declarative.builder.test.TestBuilder.buildTest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

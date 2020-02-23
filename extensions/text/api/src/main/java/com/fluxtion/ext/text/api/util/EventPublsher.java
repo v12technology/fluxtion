@@ -22,7 +22,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * A node in a SEP that publishes an {@link Event} to a registered

@@ -24,7 +24,7 @@ import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import java.util.concurrent.atomic.LongAdder;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

@@ -17,21 +17,24 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.lifecycle.AbstractFilteredEventHandler;
+import com.fluxtion.api.event.AbstractFilteredEventHandler;
 
 /**
  *
  * @author Greg Higgins
  */
-public class TimeHandlerExtends extends AbstractFilteredEventHandler<TimeEvent>{
+public class TimeHandlerExtends extends AbstractFilteredEventHandler<TimeEvent> {
 
     public TimeHandlerExtends(int filterId) {
         super(filterId);
     }
 
-    
     @Override
     public void onEvent(TimeEvent e) {
     }
-    
+
+    @Override
+    public Class<TimeEvent> eventClass() {
+        return TimeEvent.class;
+    }
 }

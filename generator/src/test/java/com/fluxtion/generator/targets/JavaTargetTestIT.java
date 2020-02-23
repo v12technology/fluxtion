@@ -39,7 +39,7 @@ import com.fluxtion.test.tracking.TraceEvent_InFilter_0;
 import java.lang.reflect.Field;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *

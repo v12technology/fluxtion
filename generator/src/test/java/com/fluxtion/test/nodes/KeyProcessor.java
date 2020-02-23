@@ -19,7 +19,7 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.api.lifecycle.AbstractFilteredEventHandler;
+import com.fluxtion.api.event.AbstractFilteredEventHandler;
 import com.fluxtion.test.event.CharEvent;
 
 /**
@@ -32,6 +32,11 @@ public class KeyProcessor extends AbstractFilteredEventHandler<CharEvent>{
     public char myChar;
     public Accumulator accumulator;
     public boolean notifyAccumulator;
+
+    @Override
+    public Class<CharEvent> eventClass() {
+        return CharEvent.class;
+    }
     
     @Override
     public void onEvent(CharEvent e) {

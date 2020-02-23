@@ -24,7 +24,7 @@ import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepInstance;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  * Creates multiple SEP processors marshalling CSV to bean instances of multiple

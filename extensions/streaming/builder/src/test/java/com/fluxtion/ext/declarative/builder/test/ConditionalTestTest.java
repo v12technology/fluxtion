@@ -35,7 +35,7 @@ import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.generator.util.BaseSepTest;
 import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Assert;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 
 /**

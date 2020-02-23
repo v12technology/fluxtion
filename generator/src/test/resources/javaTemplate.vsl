@@ -17,7 +17,7 @@
  */
 package ${package};
 
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 #if(${MODEL.imports})
@@ -45,8 +45,7 @@ ${MODEL.eventDispatch}
 
 ${MODEL.eventHandlers}
 
-    @Override
-    public void afterEvent() {
+    private void afterEvent() {
 ${MODEL.eventEndMethods}
 ${MODEL.resetDirtyFlags}
     }

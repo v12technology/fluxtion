@@ -24,7 +24,7 @@ import static com.fluxtion.generator.util.ClassUtils.getField;
 import com.fluxtion.test.event.TimeEvent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import com.fluxtion.api.lifecycle.StaticEventProcessor;
+import com.fluxtion.api.StaticEventProcessor;
 
 /**
  *
