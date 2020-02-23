@@ -11,6 +11,7 @@ import $import;
  * <li>output class : {@link Number}
  * <li>input class  : {@link ${filterSubjectClass}}
  * <li>map function : {@link ${targetClass}#${targetMethod}}
+ * <li>multiArg     : ${multiArgFunc}
  *</ul>
  * 
  * @author Greg Higgins
