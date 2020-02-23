@@ -24,6 +24,7 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.GenericEvent;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy;
+import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import com.fluxtion.api.time.Tick;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,8 @@ public class ClockTest extends BaseSepInprocessTest {
         MyClockProxy proxy = getField("proxy");
         Assert.assertEquals(proxy.clock, proxy.clock2);
         MutableNumber n = new MutableNumber();
-        onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
+//        onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
+        onEvent(new ClockStrategyEvent(n::longValue));
         //
         n.set(1);
         Tick tick = new Tick();

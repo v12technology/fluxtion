@@ -25,7 +25,7 @@ import com.fluxtion.example.shared.MyEvent;
 
 /*
  * <pre>
- * generation time   : 2020-02-23T10:26:10.955892
+ * generation time   : 2020-02-23T10:51:25.658455
  * generator version : 1.9.4-SNAPSHOT
  * api version       : 1.9.4-SNAPSHOT
  * </pre>

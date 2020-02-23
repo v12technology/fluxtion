@@ -22,6 +22,7 @@ import com.fluxtion.ext.declarative.builder.stream.ThrottledTest.MyEvent;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.TimerFilter.throttle;
 import com.fluxtion.api.time.ClockStrategy;
+import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public class ThrottledTest extends StreamInprocessTest {
 
         MutableNumber n = new MutableNumber();
         n.set(1);
-        onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
+        onEvent(new ClockStrategyEvent( n::longValue));
         Number count = getWrappedField("count");
         for (int i = 0; i < 100; i++) {
             onEvent(new MyEvent());
