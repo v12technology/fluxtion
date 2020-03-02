@@ -18,6 +18,7 @@
 package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.test.BooleanEitherFilter;
 import com.fluxtion.ext.streaming.api.test.BooleanFilter;
@@ -31,25 +32,25 @@ import com.fluxtion.ext.streaming.api.test.BooleanMatchFilter;
  */
 public class FilterByNotificationBuilder {
 
-    public static <T> Wrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> FilterWrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(trackedWrapped, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
 
-    public static <T> Wrapper<T> filter(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filter(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
 
-    public static <T> Wrapper<T> filterEither(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> FilterWrapper<T> filterEither(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(trackedWrapped, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
     }
 
-    public static <T> Wrapper<T> filterEither(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filterEither(T tracked, Object notifier) {
         BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;
@@ -61,7 +62,7 @@ public class FilterByNotificationBuilder {
         return filter;
     }
 
-    public static <T> Wrapper<T> filterMatch(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filterMatch(T tracked, Object notifier) {
         BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(tracked, notifier);
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         return filter;

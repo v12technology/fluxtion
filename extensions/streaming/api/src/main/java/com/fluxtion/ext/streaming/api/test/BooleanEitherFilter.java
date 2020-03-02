@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.api.test;
 
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
@@ -27,7 +28,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
  * @author V12 Technology Ltd.
  * @param <T> The filtered type
  */
-public class BooleanEitherFilter<T> implements Wrapper<T> {
+public class BooleanEitherFilter<T> implements FilterWrapper<T> {
 
     private final Object notifier;
     private final T tracked;
