@@ -16,39 +16,42 @@
  */
 package com.fluxtion.ext.streaming.api.test;
 
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
- * A filtering wrapper that propagates the event wave when a notifier object or
- * the tracked object indicates a positive change.
+ * A filtering wrapper that propagates the event wave when a referenced is in the
+ * passed state, validated with {@link Test#passed() }
  *
  *
  * @author V12 Technology Ltd.
  * @param <T> The filtered type
  */
-public class BooleanEitherFilter<T> implements FilterWrapper<T> {
+public class TestFilter<T> implements FilterWrapper<T> {
 
-    private final Object notifier;
+    @NoEventReference
+    private final Test test;
     private final T tracked;
     private final Wrapper<T> trackedWrapper;
 
-    public BooleanEitherFilter(Wrapper<T> trackedWrapper, Object notifier) {
-        this.notifier = notifier;
+    public TestFilter(Wrapper<T> trackedWrapper, Test test) {
+        this.test = test;
         this.tracked = null;
         this.trackedWrapper = trackedWrapper;
     }
 
-    public BooleanEitherFilter(T tracked, Object notifier) {
-        this.notifier = notifier;
+    public TestFilter(T tracked, Test notifier) {
+        this.test = notifier;
         this.tracked = tracked;
         this.trackedWrapper = null;
     }
-
+    
     @OnEvent
-    public boolean updated() {
-        return true;
+    public boolean updated(){
+        return test.passed();
     }
 
     public boolean filteredUpdate() {

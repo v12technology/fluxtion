@@ -10,6 +10,9 @@ import $import;
  *<ul>
  * <li>output class : {@link Boolean}
  * <li>input class  : {@link ${filterSubjectClass}}
+#foreach($sourceInfo in $sourceMappingList)
+ * <li>input class  : {@link ${sourceInfo.type}}
+#end
  * <li>map function : {@link ${targetClass}#${targetMethod}}
  * <li>multiArg     : ${multiArgFunc}
  *</ul>
@@ -32,7 +35,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
     @NoEventReference
     public ${targetClass} f;
 #end
-    private ${outputClass} result;
+    //private ${outputClass} result;
 #if(${stateful})
     @NoEventReference
     public Object resetNotifier;
