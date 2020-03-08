@@ -19,27 +19,22 @@ package com.fluxtion.ext.declarative.builder.filter;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
-import com.fluxtion.ext.streaming.api.test.BooleanFilter;
-import com.fluxtion.ext.streaming.builder.factory.BooleanBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.FilterBuilder;
-import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
+import static com.fluxtion.ext.streaming.builder.factory.TestBuilder.test;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
+@Slf4j
 public class FilterTest extends StreamInprocessTest {
 
     @Test
@@ -56,35 +51,110 @@ public class FilterTest extends StreamInprocessTest {
         de1.value = 2;
         sep.onEvent(de1);
         sep.onEvent(de1);
-        Assert.assertThat(sum.intValue(), is (4));
-        Assert.assertThat(count.intValue(), is (0));
-        
+        assertThat(sum.intValue(), is(4));
+        assertThat(count.intValue(), is(0));
+
         de1.value = 10;
         sep.onEvent(de1);
-        Assert.assertThat(sum.intValue(), is (14));
-        Assert.assertThat(count.intValue(), is (1));
+        assertThat(sum.intValue(), is(14));
+        assertThat(count.intValue(), is(1));
     }
-    
+
     @Test
-    public void complexNaryTest(){
+    public void testFilterByProp() {
         sep((c) -> {
-            Wrapper<Boolean> map = map(FilterTest::withinRange, arg(DataEvent::getValue), arg(MinAge::getMin), arg(MaxAge::getMax));
-            FilterByNotificationBuilder.filter(select(DataEvent.class), BooleanBuilder.and(map)).console("receivedEvent age:", DataEvent::getValue);
-            //TODO build a test template from 
-        }); 
+            filter(DataEvent::getValue, gt(10)).map(count()).id("count");
+        });
+        Number count = getWrappedField("count");
+        onEvent(new DataEvent(10));
+        assertThat(count.intValue(), is(0));
+        onEvent(new DataEvent(12));
+        assertThat(count.intValue(), is(1));
     }
-    
-    public static boolean withinRange(int test, int min, int max){
-        return min < test && test > max;
+
+    @Test
+    public void complexNaryTest() {
+        sep((c) -> {
+            filter(DataEvent.class,
+                    test(FilterTest::withinRange, DataEvent::getValue, MinAge::getMin, MaxAge::getMax))
+                    .map(count()).id("count");
+        });
+
+        Number count = getWrappedField("count");
+        onEvent(new DataEvent(10));
+        assertThat(count.intValue(), is(0));
+
+        onEvent(new MinAge(7));
+        onEvent(new DataEvent(10));
+        assertThat(count.intValue(), is(0));
+
+        onEvent(new MaxAge(17));
+        onEvent(new DataEvent(10));
+        assertThat(count.intValue(), is(1));
+
+        onEvent(new DataEvent(20));
+        onEvent(new DataEvent(2));
+        assertThat(count.intValue(), is(1));
+
+        onEvent(new MaxAge(37));
+        onEvent(new DataEvent(20));
+        assertThat(count.intValue(), is(2));
+
     }
-    
+
+    @Test
+    public void testNaryTest() {
+        sep((c) -> {
+            filter(DataEvent.class,
+                    test(FilterTest::withinRange, Timenow::getNow, MinAge::getMin, MaxAge::getMax))
+                    .map(count()).id("count");
+        });
+
+        Number count = getWrappedField("count");
+        onEvent(new DataEvent(11));
+        onEvent(new MinAge(7));
+        onEvent(new DataEvent(12));
+        onEvent(new MaxAge(17));
+        onEvent(new DataEvent(13));
+        onEvent(new Timenow(10));
+        assertThat(count.intValue(), is(0));
+
+        onEvent(new DataEvent(14));
+        assertThat(count.intValue(), is(1));
+
+        onEvent(new DataEvent(20));
+        assertThat(count.intValue(), is(2));
+
+        onEvent(new Timenow(25));
+        onEvent(new DataEvent(2));
+        assertThat(count.intValue(), is(2));
+
+        onEvent(new MaxAge(37));
+        onEvent(new DataEvent(22));
+        assertThat(count.intValue(), is(3));
+
+    }
+
+    public static boolean withinRange(int test, int min, int max) {
+        return min < test && test < max;
+    }
+
     @Data
-    public static class MinAge{
+    public static class MinAge {
+
         final int min;
     }
-    
+
     @Data
-    public static class MaxAge{
+    public static class MaxAge {
+
         final int max;
     }
+
+    @Data
+    public static class Timenow {
+
+        final int now;
+    }
+
 }
