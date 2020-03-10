@@ -53,9 +53,14 @@ public class MappingBuilder {
         return wrapper;
     }
 
-    public static <T, R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper,
+    public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
             SerializableFunction<T, S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
+    }
+
+    public static <R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
+            FunctionArg<S> arg1) {
+        return map((MethodReferenceReflection)mapper, arg1);
     }
 
     public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
@@ -69,7 +74,7 @@ public class MappingBuilder {
         return map((MethodReferenceReflection) mapper, arg1, arg2);
     }
 
-    public static <E1, E2, R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper,
+    public static <E1, E2, R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             SerializableFunction<E1, U> supplier1,
             SerializableFunction<E2, S> supplier2) {
         return map((MethodReferenceReflection) mapper, arg(supplier1), arg(supplier2));

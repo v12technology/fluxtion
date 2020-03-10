@@ -17,7 +17,6 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -43,26 +42,26 @@ public class TestBuilder {
      */
     public static Test test(MethodReferenceReflection test, FunctionArg... args){
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
-        StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, test.method(), args);
+        StreamFunctionCompiler builder = StreamFunctionCompiler.test(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
         wrapper.alwaysReset(true);
         return (Test) wrapper;
     }
     
     public static <R extends Boolean, S> Test test(SerializableFunction<S, R> test,
-            FunctionArg arg1
+            FunctionArg<S> arg1
     ) {
         return test((MethodReferenceReflection)test, arg1);
     }
 
     public static <A, R extends Boolean, S> Test test(SerializableFunction<S, R> test,
-            SerializableFunction<A, R> arg1
+            SerializableFunction<A, S> arg1
     ) {
         return test(test, arg(arg1) );
     }
     
     public static <T, R extends Boolean, S> Test test(SerializableBiFunction<T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2
+            FunctionArg<T> arg1, FunctionArg<S> arg2
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2);
     }
@@ -75,8 +74,8 @@ public class TestBuilder {
     }
     
     
-    public static <X, T, R extends Boolean, S> Test test(LambdaReflection.SerializableTriFunction<X, T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2, FunctionArg arg3
+    public static <X, T, R extends Boolean, S> Test test(SerializableTriFunction<X, T, S, R> test,
+            FunctionArg<X> arg1, FunctionArg<T> arg2, FunctionArg<S> arg3
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2, arg3);
     }
@@ -90,7 +89,7 @@ public class TestBuilder {
     }
 
     public static <Z, X, T, R, S> Test test(SerializableQuadFunction<Z, X, T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2, FunctionArg arg3, FunctionArg arg4
+            FunctionArg<Z> arg1, FunctionArg<X> arg2, FunctionArg<T> arg3, FunctionArg<S> arg4
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2, arg3, arg4);
     }
