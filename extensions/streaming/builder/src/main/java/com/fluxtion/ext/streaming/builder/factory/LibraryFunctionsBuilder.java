@@ -15,6 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.builder.factory;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -27,13 +28,12 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
-import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.*;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
+import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
 
 /**
  * Utility class providing static helper methods to create mapping operations
@@ -59,19 +59,19 @@ public class LibraryFunctionsBuilder  {
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> add(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return MappingBuilder.map(add(), arg1, arg2);
+        return map(add(), arg1, arg2);
     }
 
     public static <T, S extends Number, R extends Number> Wrapper<Number> add(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return MappingBuilder.map(add(), arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return map(add(), arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends Number, R extends Number> Wrapper<Number> add(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return MappingBuilder.map(add(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return map(add(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> add(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return MappingBuilder.map(add(), arg(wrapper1), arg(wrapper2));
+        return map(add(), arg(wrapper1), arg(wrapper2));
     }
 
 
@@ -80,27 +80,27 @@ public class LibraryFunctionsBuilder  {
     }
 
     public static <T, S> Wrapper<Number> subtract(SerializableFunction<T, Number> supplier1, SerializableFunction<S, Number> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg(supplier1), arg(supplier2));
+        return map(subtract(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> subtract(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg(supplier1), arg(supplier2));
+        return map(subtract(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> subtract(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg1, arg2);
+        return map(subtract(), arg1, arg2);
     }
 
     public static <T, S extends Number, R extends Number> Wrapper<Number> subtract(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return map(subtract(), arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends Number, R extends Number> Wrapper<Number> subtract(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return map(subtract(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> subtract(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return StreamFunctionCompiler.map(StreamFunctions::subtract, arg(wrapper1), arg(wrapper2));
+        return map(subtract(), arg(wrapper1), arg(wrapper2));
     }
 
 
@@ -109,27 +109,27 @@ public class LibraryFunctionsBuilder  {
     }
 
     public static <T, S> Wrapper<Number> multiply(SerializableFunction<T, Number> supplier1, SerializableFunction<S, Number> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg(supplier1), arg(supplier2));
+        return map(multiply(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> multiply(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg(supplier1), arg(supplier2));
+        return map(multiply(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> multiply(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg1, arg2);
+        return map(multiply(), arg1, arg2);
     }
 
     public static <T, S extends Number, R extends Number> Wrapper<Number> multiply(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return map(multiply(), arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends Number, R extends Number> Wrapper<Number> multiply(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return map(multiply(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> multiply(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return StreamFunctionCompiler.map(StreamFunctions::multiply, arg(wrapper1), arg(wrapper2));
+        return map(multiply(), arg(wrapper1), arg(wrapper2));
     }
 
 
@@ -138,27 +138,27 @@ public class LibraryFunctionsBuilder  {
     }
 
     public static <T, S> Wrapper<Number> divide(SerializableFunction<T, Number> supplier1, SerializableFunction<S, Number> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg(supplier1), arg(supplier2));
+        return map(divide(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> divide(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg(supplier1), arg(supplier2));
+        return map(divide(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> divide(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg1, arg2);
+        return map(divide(), arg1, arg2);
     }
 
     public static <T, S extends Number, R extends Number> Wrapper<Number> divide(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return map(divide(), arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends Number, R extends Number> Wrapper<Number> divide(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return map(divide(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> divide(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return StreamFunctionCompiler.map(StreamFunctions::divide, arg(wrapper1), arg(wrapper2));
+        return map(divide(), arg(wrapper1), arg(wrapper2));
     }
 
 
@@ -186,11 +186,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Sum#addValue}
      */
     public static <T> Wrapper<Number> cumSum(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new Sum()::addValue, arg(supplier));
+        return map(cumSum(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> cumSum(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new Sum()::addValue, arg);
+        return map(cumSum(), arg);
     }
 
     /**
@@ -205,15 +205,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Sum#addValue}
      */
     public static <T extends Number> Wrapper<Number> cumSum(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new Sum()::addValue, arg(supplier));
+        return map(cumSum(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> cumSum(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new Sum()::addValue,  arg(wrapper, supplier));
+        return map(cumSum(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> cumSum(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new Sum()::addValue,  arg(wrapper));
+        return map(cumSum(),  arg(wrapper));
     }
 
     /**
@@ -240,11 +240,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Average#addValue}
      */
     public static <T> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new Average()::addValue, arg(supplier));
+        return map(avg(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> avg(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new Average()::addValue, arg);
+        return map(avg(), arg);
     }
 
     /**
@@ -259,15 +259,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Average#addValue}
      */
     public static <T extends Number> Wrapper<Number> avg(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new Average()::addValue, arg(supplier));
+        return map(avg(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> avg(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new Average()::addValue,  arg(wrapper, supplier));
+        return map(avg(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> avg(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new Average()::addValue,  arg(wrapper));
+        return map(avg(),  arg(wrapper));
     }
 
     /**
@@ -294,11 +294,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Max#max}
      */
     public static <T> Wrapper<Number> max(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new Max()::max, arg(supplier));
+        return map(max(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> max(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new Max()::max, arg);
+        return map(max(), arg);
     }
 
     /**
@@ -313,15 +313,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Max#max}
      */
     public static <T extends Number> Wrapper<Number> max(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new Max()::max, arg(supplier));
+        return map(max(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> max(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new Max()::max,  arg(wrapper, supplier));
+        return map(max(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> max(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new Max()::max,  arg(wrapper));
+        return map(max(),  arg(wrapper));
     }
 
     /**
@@ -348,11 +348,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Min#min}
      */
     public static <T> Wrapper<Number> min(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new Min()::min, arg(supplier));
+        return map(min(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> min(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new Min()::min, arg);
+        return map(min(), arg);
     }
 
     /**
@@ -367,15 +367,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Min#min}
      */
     public static <T extends Number> Wrapper<Number> min(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new Min()::min, arg(supplier));
+        return map(min(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> min(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new Min()::min,  arg(wrapper, supplier));
+        return map(min(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> min(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new Min()::min,  arg(wrapper));
+        return map(min(),  arg(wrapper));
     }
 
     /**
@@ -402,11 +402,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link PercentDelta#value}
      */
     public static <T> Wrapper<Number> percentChange(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new PercentDelta()::value, arg(supplier));
+        return map(percentChange(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> percentChange(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new PercentDelta()::value, arg);
+        return map(percentChange(), arg);
     }
 
     /**
@@ -421,15 +421,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link PercentDelta#value}
      */
     public static <T extends Number> Wrapper<Number> percentChange(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new PercentDelta()::value, arg(supplier));
+        return map(percentChange(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> percentChange(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new PercentDelta()::value,  arg(wrapper, supplier));
+        return map(percentChange(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> percentChange(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new PercentDelta()::value,  arg(wrapper));
+        return map(percentChange(),  arg(wrapper));
     }
 
     /**
@@ -456,11 +456,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Delta#value}
      */
     public static <T> Wrapper<Number> delta(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(new Delta()::value, arg(supplier));
+        return map(delta(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> delta(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(new Delta()::value, arg);
+        return map(delta(), arg);
     }
 
     /**
@@ -475,15 +475,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Delta#value}
      */
     public static <T extends Number> Wrapper<Number> delta(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(new Delta()::value, arg(supplier));
+        return map(delta(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> delta(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(new Delta()::value,  arg(wrapper, supplier));
+        return map(delta(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> delta(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(new Delta()::value,  arg(wrapper));
+        return map(delta(),  arg(wrapper));
     }
 
     /**
@@ -510,11 +510,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
      */
     public static <T> Wrapper<Number> toDouble(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(StreamFunctions::asDouble, arg(supplier));
+        return map(toDouble(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> toDouble(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(StreamFunctions::asDouble, arg);
+        return map(toDouble(), arg);
     }
 
     /**
@@ -529,15 +529,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
      */
     public static <T extends Number> Wrapper<Number> toDouble(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(StreamFunctions::asDouble, arg(supplier));
+        return map(toDouble(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(StreamFunctions::asDouble,  arg(wrapper, supplier));
+        return map(toDouble(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(StreamFunctions::asDouble,  arg(wrapper));
+        return map(toDouble(),  arg(wrapper));
     }
 
     /**
@@ -564,11 +564,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#ceil}
      */
     public static <T> Wrapper<Number> ceil(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(Math::ceil, arg(supplier));
+        return map(ceil(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> ceil(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(Math::ceil, arg);
+        return map(ceil(), arg);
     }
 
     /**
@@ -583,15 +583,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#ceil}
      */
     public static <T extends Number> Wrapper<Number> ceil(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(Math::ceil, arg(supplier));
+        return map(ceil(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> ceil(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(Math::ceil,  arg(wrapper, supplier));
+        return map(ceil(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> ceil(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(Math::ceil,  arg(wrapper));
+        return map(ceil(),  arg(wrapper));
     }
 
     /**
@@ -618,11 +618,11 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#floor}
      */
     public static <T> Wrapper<Number> floor(SerializableFunction<T, Number> supplier) {
-        return StreamFunctionCompiler.map(Math::floor, arg(supplier));
+        return map(floor(), arg(supplier));
     }
 
     public static <T extends Number> Wrapper<Number> floor(FunctionArg<T> arg) {
-        return StreamFunctionCompiler.map(Math::floor, arg);
+        return map(floor(), arg);
     }
 
     /**
@@ -637,15 +637,15 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#floor}
      */
     public static <T extends Number> Wrapper<Number> floor(SerializableSupplier<T> supplier) {
-        return StreamFunctionCompiler.map(Math::floor, arg(supplier));
+        return map(floor(), arg(supplier));
     }
 
     public static <T, S extends Number> Wrapper<Number> floor(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return StreamFunctionCompiler.map(Math::floor,  arg(wrapper, supplier));
+        return map(floor(),  arg(wrapper, supplier));
     }
 
     public static <T extends Number> Wrapper<Number> floor(Wrapper<T> wrapper) {
-        return StreamFunctionCompiler.map(Math::floor,  arg(wrapper));
+        return map(floor(),  arg(wrapper));
     }
 
 
@@ -672,7 +672,7 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Count#increment}
      */
     public static <T> Wrapper<Number> count(Class<T> eventClass) {
-        return select(eventClass).map(new Count()::increment);
+        return select(eventClass).map(count());
     }
 
     /**
@@ -687,7 +687,7 @@ public class LibraryFunctionsBuilder  {
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Count#increment}
      */
     public static <T> Wrapper<Number> count(T supplier) {
-        return stream(supplier).map(new Count()::increment);
+        return stream(supplier).map(count());
     }
 
 

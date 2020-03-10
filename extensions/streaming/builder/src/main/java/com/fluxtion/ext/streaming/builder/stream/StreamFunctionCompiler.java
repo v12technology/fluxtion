@@ -22,7 +22,6 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
-import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -246,44 +245,6 @@ public class StreamFunctionCompiler<T, F> {
             builder.sourceFunctions.add(srcFuncInfo);
         }
         return builder;
-    }
-
-    /**
-     * Maps a binary function without type checking the generic parameters
-     *
-     * @param <R>
-     * @param <S>
-     * @param <G>
-     * @param <H>
-     * @param <U>
-     * @param mapper
-     * @param arg1
-     * @param arg2
-     * @return
-     */
-    public static <R, S, G, H, U> Wrapper<R> map(SerializableBiFunction<G, H, R> mapper,
-            Argument<U> arg1,
-            Argument<S> arg2) {
-        Method mappingMethod = mapper.method();
-        StreamFunctionCompiler builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1, arg2);
-        } else {
-            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1, arg2);
-        }
-        return builder.build();
-    }
-
-    public static <R, G, U> Wrapper<R> map(SerializableFunction<G, R> mapper,
-            Argument<U> arg1) {
-        Method mappingMethod = mapper.method();
-        StreamFunctionCompiler builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1);
-        } else {
-            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1);
-        }
-        return builder.build();
     }
 
     /**

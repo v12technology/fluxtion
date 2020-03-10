@@ -49,68 +49,68 @@ public class MappingBuilder {
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
         StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
-        wrapper.alwaysReset(true);
+        wrapper.alwaysReset(false);
         return wrapper;
     }
 
-    public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
-            SerializableFunction<T, S> supplier) {
+    public static <T, R, S> Wrapper<R> map(SerializableFunction<? super S, R> mapper,
+            SerializableFunction<T, ? extends S> supplier) {
         return select(supplier.getContainingClass()).map(mapper, supplier);
     }
 
-    public static <R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
-            FunctionArg<S> arg1) {
+    public static <R, S> Wrapper<R> map(SerializableFunction<? super S, R> mapper,
+            FunctionArg<? extends S> arg1) {
         return map((MethodReferenceReflection)mapper, arg1);
     }
 
-    public static <T, R, S> Wrapper<R> map(SerializableFunction<S, R> mapper,
-            SerializableSupplier<S> supplier) {
+    public static <T, R, S> Wrapper<R> map(SerializableFunction<? super S, R> mapper,
+            SerializableSupplier<? extends S> supplier) {
         return map((MethodReferenceReflection) mapper, arg(supplier));
     }
     
-    public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
-            FunctionArg<U> arg1,
-            FunctionArg<S> arg2) {
+    public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, ? super S, R> mapper,
+            FunctionArg<? extends U> arg1,
+            FunctionArg<? extends S> arg2) {
         return map((MethodReferenceReflection) mapper, arg1, arg2);
     }
 
-    public static <E1, E2, R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
-            SerializableFunction<E1, U> supplier1,
-            SerializableFunction<E2, S> supplier2) {
+    public static <E1, E2, R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, ? super S, R> mapper,
+            SerializableFunction<E1, ? extends U> supplier1,
+            SerializableFunction<E2, ? extends S> supplier2) {
         return map((MethodReferenceReflection) mapper, arg(supplier1), arg(supplier2));
     }
 
     
-    public static <R, S, U, T> Wrapper<R> map(SerializableTriFunction<? extends U, ? extends S,? extends T, R> mapper,
-            FunctionArg<U> arg1,
-            FunctionArg<S> arg2,
-            FunctionArg<T> arg3
+    public static <R, S, U, T> Wrapper<R> map(SerializableTriFunction<? super U, ? super S,? super T, R> mapper,
+            FunctionArg<? extends U> arg1,
+            FunctionArg<? extends S> arg2,
+            FunctionArg<? extends T> arg3
             ) {
         return map((MethodReferenceReflection) mapper, arg1, arg2, arg3);
     } 
     
-    public static <E1, E2, E3, R, S, U, T> Wrapper<R> map(SerializableTriFunction<U, S, T, R> mapper,
-            SerializableFunction<E1, U> supplier1,
-            SerializableFunction<E2, S> supplier2,
-            SerializableFunction<E3, T> supplier3
+    public static <E1, E2, E3, R, S, U, T> Wrapper<R> map(SerializableTriFunction<? super U, ? super S,? super T, R> mapper,
+            SerializableFunction<E1, ? extends U> supplier1,
+            SerializableFunction<E2, ? extends S> supplier2,
+            SerializableFunction<E3, ? extends T> supplier3
     ) {
         return map((MethodReferenceReflection) mapper, arg(supplier1), arg(supplier2), arg(supplier3));
     }
     
-    public static <R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? extends U, ? extends S,? extends T, ? extends V, R> mapper,
-            FunctionArg<U> arg1,
-            FunctionArg<S> arg2,
-            FunctionArg<S> arg3,
-            FunctionArg<T> arg4
+    public static <R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? super U, ? super S,? super T, ? super V, R> mapper,
+            FunctionArg<? extends U> arg1,
+            FunctionArg<? extends S> arg2,
+            FunctionArg<? extends S> arg3,
+            FunctionArg<? extends T> arg4
             ) {
         return map((MethodReferenceReflection) mapper, arg1, arg2, arg3, arg4);
     } 
     
-    public static <E1, E2, E3, E4, R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<U, S, T, V, R> mapper,
-            SerializableFunction<E1, U> supplier1,
-            SerializableFunction<E2, S> supplier2,
-            SerializableFunction<E3, T> supplier3,
-            SerializableFunction<E4, V> supplier4
+    public static <E1, E2, E3, E4, R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? super U, ? super S,? super T, ? super V, R> mapper,
+            SerializableFunction<E1, ? extends U> supplier1,
+            SerializableFunction<E2, ? extends S> supplier2,
+            SerializableFunction<E3, ? extends T> supplier3,
+            SerializableFunction<E4, ? extends V> supplier4
     ) {
         return map((MethodReferenceReflection) mapper, arg(supplier1), arg(supplier2), arg(supplier3), arg(supplier4));
     }
