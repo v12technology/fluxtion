@@ -17,7 +17,6 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -43,63 +42,69 @@ public class TestBuilder {
      */
     public static Test test(MethodReferenceReflection test, FunctionArg... args){
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
-        StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, test.method(), args);
+        StreamFunctionCompiler builder = StreamFunctionCompiler.test(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
-        wrapper.alwaysReset(true);
+        wrapper.alwaysReset(false);
         return (Test) wrapper;
     }
     
-    public static <R extends Boolean, S> Test test(SerializableFunction<S, R> test,
-            FunctionArg arg1
+    public static <R extends Boolean, S> Test test(SerializableFunction<? super S, R> test,
+            FunctionArg<? extends S> arg1
     ) {
         return test((MethodReferenceReflection)test, arg1);
     }
 
-    public static <A, R extends Boolean, S> Test test(SerializableFunction<S, R> test,
-            SerializableFunction<A, R> arg1
+    public static <A, R extends Boolean, S> Test test(SerializableFunction<? super S, R> test,
+            SerializableFunction<A, ? extends S> arg1
     ) {
         return test(test, arg(arg1) );
     }
     
-    public static <T, R extends Boolean, S> Test test(SerializableBiFunction<T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2
+    public static <T, R extends Boolean, S> Test test(SerializableBiFunction<? super T, ? super S, R> test,
+            FunctionArg<? extends T> arg1, 
+            FunctionArg<? extends S> arg2
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2);
     }
 
-    public static <A, B, T, R extends Boolean, S> Test test(SerializableBiFunction<T, S, R> test,
-            SerializableFunction<A, T> arg1, 
-            SerializableFunction<B, S> arg2 
+    public static <A, B, T, R extends Boolean, S> Test test(SerializableBiFunction<? super T, ? super S, R> test,
+            SerializableFunction<A, ? extends T> arg1, 
+            SerializableFunction<B, ? extends S> arg2 
     ) {
         return test(test, arg(arg1), arg(arg2));
     }
     
     
-    public static <X, T, R extends Boolean, S> Test test(LambdaReflection.SerializableTriFunction<X, T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2, FunctionArg arg3
+    public static <X, T, R extends Boolean, S> Test test(SerializableTriFunction<? super X, ? super T, ? super S, R> test,
+            FunctionArg<? extends X> arg1, 
+            FunctionArg<? extends T> arg2, 
+            FunctionArg<? extends S> arg3
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2, arg3);
     }
 
-    public static <A, B, C, X, T, R extends Boolean, S> Test test(SerializableTriFunction<X, T, S, R> test,
-            SerializableFunction<A, X> arg1, 
-            SerializableFunction<B, T> arg2, 
-            SerializableFunction<C, S> arg3
+    public static <A, B, C, X, T, R extends Boolean, S> Test test(SerializableTriFunction<? super X, ? super T, ? super S, R> test,
+            SerializableFunction<A, ? extends X> arg1, 
+            SerializableFunction<B, ? extends T> arg2, 
+            SerializableFunction<C, ? extends S> arg3
     ) {
         return test(test, arg(arg1), arg(arg2), arg(arg3));
     }
 
-    public static <Z, X, T, R, S> Test test(SerializableQuadFunction<Z, X, T, S, R> test,
-            FunctionArg arg1, FunctionArg arg2, FunctionArg arg3, FunctionArg arg4
+    public static <Z, X, T, R, S> Test test(SerializableQuadFunction<? super Z, ? super X, ? super T, ? super S, R> test,
+            FunctionArg<? extends Z> arg1, 
+            FunctionArg<? extends X> arg2, 
+            FunctionArg<? extends T> arg3, 
+            FunctionArg<? extends S> arg4
     ) {
         return test((MethodReferenceReflection)test, arg1, arg2, arg3, arg4);
     }
     
-    public static <A, B, C, D, Z, X, T, R extends Boolean, S> Test test(SerializableQuadFunction<Z, X, T, S, R> test,
-            SerializableFunction<A, X> arg1, 
-            SerializableFunction<B, T> arg2, 
-            SerializableFunction<C, S> arg3,
-            SerializableFunction<D, Z> arg4
+    public static <A, B, C, D, Z, X, T, R extends Boolean, S> Test test(SerializableQuadFunction<? super Z, ? super X, ? super T, ? super S, R> test,
+            SerializableFunction<A, ? extends X> arg1, 
+            SerializableFunction<B, ? extends T> arg2, 
+            SerializableFunction<C, ? extends S> arg3,
+            SerializableFunction<D, ? extends Z> arg4
     ) {
         return test((MethodReferenceReflection)test, arg(arg1), arg(arg2), arg(arg3), arg(arg4));
     }

@@ -62,6 +62,11 @@ public class FunctionArg<T> extends Argument<T> {
     public static <T> FunctionArg<T> arg(SerializableSupplier<T> supplier) {
         return new FunctionArg(supplier.captured()[0], supplier.method(), true);
     }
+    
+    public static <T> FunctionArg<T> arg(Class<T> clazz){
+        Wrapper<T> select = select(clazz);
+        return arg(select);
+    }
 
     public static FunctionArg arg(Object supplier) {
         return new FunctionArg(supplier, null, true);

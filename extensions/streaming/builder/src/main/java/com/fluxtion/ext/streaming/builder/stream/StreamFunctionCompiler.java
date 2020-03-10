@@ -22,7 +22,6 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
-import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -138,6 +137,7 @@ public class StreamFunctionCompiler<T, F> {
     private static final String PUSH_TEMPLATE = "template/PushTemplate.vsl";
     private static final String MAPPER_PRIMITIVE_TEMPLATE = "template/MapperPrimitiveTemplate.vsl";
     private static final String MAPPER_BOOLEAN_TEMPLATE = "template/MapperBooleanTemplate.vsl";
+    private static final String MAPPER_TEST_TEMPLATE = "template/TestTemplate.vsl";
     private static final String CONSUMER_TEMPLATE = "template/ConsumerTemplate.vsl";
     private FunctionClassKey key;
     private String currentTemplate = TEMPLATE;
@@ -153,6 +153,7 @@ public class StreamFunctionCompiler<T, F> {
     //for sources id's
     private int sourceCount;
     private boolean multiArgFunc = false;
+    private static boolean buildTest = false;
     //To be used for rationalising imports
     private final ImportMap importMap = ImportMap.newMap();
     private T testFunction;
@@ -247,45 +248,29 @@ public class StreamFunctionCompiler<T, F> {
     }
 
     /**
-     * Maps a binary function without type checking the generic parameters
-     *
+     * Build a {@link Test} from n-ary arguments
+     * 
+     * @param <T>
      * @param <R>
      * @param <S>
-     * @param <G>
-     * @param <H>
-     * @param <U>
+     * @param <F>
      * @param mapper
-     * @param arg1
-     * @param arg2
-     * @return
+     * @param mappingMethod
+     * @param args
+     * @return 
      */
-    public static <R, S, G, H, U> Wrapper<R> map(SerializableBiFunction<G, H, R> mapper,
-            Argument<U> arg1,
-            Argument<S> arg2) {
-        Method mappingMethod = mapper.method();
-        StreamFunctionCompiler builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1, arg2);
-        } else {
-            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1, arg2);
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler test(F mapper, Method mappingMethod, Argument... args) {
+        try {
+            buildTest = true;
+            return map(mapper, mappingMethod, args);
+        } finally {
+            buildTest = false;
         }
-        return builder.build();
-    }
-
-    public static <R, G, U> Wrapper<R> map(SerializableFunction<G, R> mapper,
-            Argument<U> arg1) {
-        Method mappingMethod = mapper.method();
-        StreamFunctionCompiler builder = null;
-        if (Modifier.isStatic(mappingMethod.getModifiers())) {
-            builder = StreamFunctionCompiler.map(null, mappingMethod, arg1);
-        } else {
-            builder = StreamFunctionCompiler.map(mapper.captured()[0], mappingMethod, arg1);
-        }
-        return builder.build();
-    }
-
+    } 
+    
+    
     /**
-     * Map an n-ary function
+     * Build a mapping function from n-ary arguments
      *
      * @param <T>
      * @param <R>
@@ -353,7 +338,11 @@ public class StreamFunctionCompiler<T, F> {
             filterBuilder.importMap.addImport(Number.class);
             filterBuilder.importMap.addImport(MutableNumber.class);
         } else if (returnType == boolean.class) {
-            filterBuilder.currentTemplate = MAPPER_BOOLEAN_TEMPLATE;
+            if(buildTest){
+                filterBuilder.currentTemplate = MAPPER_TEST_TEMPLATE;
+            }else{
+                filterBuilder.currentTemplate = MAPPER_BOOLEAN_TEMPLATE;
+            }
             filterBuilder.importMap.addImport(Boolean.class);
         }
         filterBuilder.filterSubject = source;
@@ -372,7 +361,11 @@ public class StreamFunctionCompiler<T, F> {
                 filterBuilder.functionInfo.appendParamLocal(accessor, "filterSubject", cast);
             }
         }
-        filterBuilder.genClassSuffix = "Map_" + sourceString + "_With_" + mappingMethod.getName();
+            if(buildTest){
+                filterBuilder.genClassSuffix = "Test_" + sourceString + "_With_" + mappingMethod.getName();
+            }else{
+                filterBuilder.genClassSuffix = "Map_" + sourceString + "_With_" + mappingMethod.getName();
+            }
         return filterBuilder;
     }
 

@@ -83,7 +83,6 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(Math::floor, "floor");
         //consumer
         gen.addConsumerFunction(new Count()::increment, "count");
-//        gen.addConsumerFunction(new IntCount()::increment, "intCount");
         gen.generate();
     }
 
@@ -111,7 +110,7 @@ public class StreamFunctionGenerator {
         imports.addImport(SerializableFunction.class);
         imports.addImport(SerializableBiFunction.class);
         imports.addImport(SerializableSupplier.class);
-        imports.addImport(StreamFunctionCompiler.class);
+//        imports.addImport(StreamFunctionCompiler.class);
         imports.addImport(Wrapper.class);
         imports.addStaticImport(EventSelect.class);
         imports.addStaticImport(MappingBuilder.class);
