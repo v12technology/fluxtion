@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.builder.factory;
-//import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
@@ -29,6 +28,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
 import com.fluxtion.ext.streaming.builder.util.FunctionArg;
@@ -51,27 +51,27 @@ public class LibraryFunctionsBuilder  {
     }
 
     public static <T, S> Wrapper<Number> add(SerializableFunction<T, Number> supplier1, SerializableFunction<S, Number> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg(supplier1), arg(supplier2));
+        return map(add(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> add(SerializableSupplier<T> supplier1, SerializableSupplier<T> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg(supplier1), arg(supplier2));
+        return map(add(), arg(supplier1), arg(supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> add(FunctionArg<T> arg1, FunctionArg<S> arg2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg1, arg2);
+        return MappingBuilder.map(add(), arg1, arg2);
     }
 
     public static <T, S extends Number, R extends Number> Wrapper<Number> add(Wrapper<T> wrapper, SerializableFunction<T, S> supplier1, SerializableFunction<T, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg(wrapper, supplier1), arg(wrapper, supplier2));
+        return MappingBuilder.map(add(), arg(wrapper, supplier1), arg(wrapper, supplier2));
     }
 
     public static <T, U, S extends Number, R extends Number> Wrapper<Number> add(Wrapper<T> wrapper1, SerializableFunction<T, S> supplier1, Wrapper<U> wrapper2, SerializableFunction<U, R> supplier2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg(wrapper1, supplier1), arg(wrapper2, supplier2));
+        return MappingBuilder.map(add(), arg(wrapper1, supplier1), arg(wrapper2, supplier2));
     }
 
     public static <T extends Number, S extends Number> Wrapper<Number> add(Wrapper<T> wrapper1, Wrapper<S> wrapper2) {
-        return StreamFunctionCompiler.map(StreamFunctions::add, arg(wrapper1), arg(wrapper2));
+        return MappingBuilder.map(add(), arg(wrapper1), arg(wrapper2));
     }
 
 
