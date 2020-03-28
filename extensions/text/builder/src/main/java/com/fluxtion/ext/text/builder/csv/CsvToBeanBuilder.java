@@ -17,21 +17,29 @@
 package com.fluxtion.ext.text.builder.csv;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
+import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepInstance;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * Creates multiple SEP processors marshalling CSV to bean instances of multiple
- * types. The bean classes configured will all push their marshalled instances
- * to a single {@link DispatchingCsvMarshaller} for multiplexed dispatch. A
- * single instance of this class can be used to generate multiple SEP
- * processors, compared to using multiple {@link SEPConfig} classes.
+ * types. Generates all marshallers and supporting classes, can be used inline
+ * or as part of the build process via the {@link CsvAnnotationBeanBuilder} The
+ * bean classes configured will all push their marshalled instances to a single
+ * {@link DispatchingCsvMarshaller} for multiplexed dispatch. A single instance
+ * of this class can be used to generate multiple SEP processors, compared to
+ * using multiple {@link SEPConfig} classes.
  *
  * @author V12 Technology Ltd.
  */
@@ -39,6 +47,7 @@ public class CsvToBeanBuilder {
 
     private final String pckg;
     private HashMap<Class, StaticEventProcessor> clazz2Handler;
+    private List<RowProcessor> processors;
     private String resorcesDir;
     private String generatedDir;
     private boolean addEventPublisher;
@@ -49,6 +58,7 @@ public class CsvToBeanBuilder {
         this.resorcesDir = InprocessSepCompiler.RESOURCE_DIR;
         this.generatedDir = InprocessSepCompiler.JAVA_GEN_DIR;
         clazz2Handler = new HashMap<>();
+        processors = new ArrayList<>();
     }
 
     /**
@@ -63,7 +73,8 @@ public class CsvToBeanBuilder {
 
     /**
      * Add event publisher
-     * @return 
+     *
+     * @return
      */
     public CsvToBeanBuilder addEventPublisher() {
         this.addEventPublisher = true;
@@ -123,19 +134,19 @@ public class CsvToBeanBuilder {
      * @param clazz
      * @return
      */
-    public CsvToBeanBuilder mapBean(String marshallerId, Class clazz) {
-        try {
-            String cap = "Csv2" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1);
-            StaticEventProcessor sep = sepInstance((cfg) -> {
-                RecordParserBuilder builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
-                builder.addEventPublisher = addEventPublisher;
-                builder.build();
-            },pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
-            clazz2Handler.put(clazz, sep);
-            return this;
-        } catch (Exception ex) {
-            throw new RuntimeException("failed to map bean class:" + clazz, ex);
-        }
+    public <T> CsvToBeanBuilder mapBean(String marshallerId, Class<T> clazz) {
+        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        CsvMarshallerBuilder<T> builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
+        builder.addEventPublisher = addEventPublisher;
+        processors.add(builder.build());
+        return this;
+    }
+    
+    
+     public <T> CsvMarshallerBuilder<T> builder( Class<T> clazz, int headerLines) {
+        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        CsvMarshallerBuilder<T> builder = csvMarshaller(clazz, headerLines).tokenConfig(CharTokenConfig.WINDOWS);
+        return builder;
     }
 
     /**
@@ -169,34 +180,32 @@ public class CsvToBeanBuilder {
     }
 
     public <T> CsvToBeanBuilder mapCustomBean(String marshallerId, Class<T> clazz, Consumer<CsvMarshallerBuilder<T>> ruleGenerator) {
-        try {
-            String cap = "FluxCsv" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
-            StaticEventProcessor sep = sepInstance(new Consumer<SEPConfig>() {
-                @Override
-                public void accept(SEPConfig cfg) {
-                    CsvMarshallerBuilder<T> builder = csvMarshaller(clazz);
-                    builder.addEventPublisher = addEventPublisher;
-                    ruleGenerator.accept(builder);
-                    builder.build();
-                }
-            }, pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
-            clazz2Handler.put(clazz, sep);
-            return this;
-        } catch (Exception ex) {
-            throw new RuntimeException("failed to map bean class:" + clazz, ex);
-        }
+        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        CsvMarshallerBuilder<T> builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
+        builder.addEventPublisher = addEventPublisher;
+        ruleGenerator.accept(builder);
+        processors.add(builder.build());
+        return this;
+//
+//        try {
+//            String cap = "FluxCsv" + marshallerId.substring(0, 1).toUpperCase() + marshallerId.substring(1) + "Mediator";
+//            StaticEventProcessor sep = sepInstance(new Consumer<SEPConfig>() {
+//                @Override
+//                public void accept(SEPConfig cfg) {
+//                    CsvMarshallerBuilder<T> builder = csvMarshaller(clazz);
+//                    builder.addEventPublisher = addEventPublisher;
+//                    ruleGenerator.accept(builder);
+//                    builder.build();
+//                }
+//            }, pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
+//            clazz2Handler.put(clazz, sep);
+//            return this;
+//        } catch (Exception ex) {
+//            throw new RuntimeException("failed to map bean class:" + clazz, ex);
+//        }
     }
 
-    public DispatchingCsvMarshaller build() {
-        DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
-        clazz2Handler.forEach(dispatcher::addMarshaller);
-        return dispatcher;
-    }
-
-    public DispatchingCsvMarshaller build(StaticEventProcessor sink) {
-        DispatchingCsvMarshaller dispatcher = new DispatchingCsvMarshaller();
-        clazz2Handler.forEach(dispatcher::addMarshaller);
-        dispatcher.addSink(sink);
-        return dispatcher;
+    public CsvRecordStream build() {
+        return CsvRecordStream.decoders(processors.toArray(new RowProcessor[0]));
     }
 }

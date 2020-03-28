@@ -152,6 +152,12 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         return (P) this;
     }
 
+    <S extends CharSequence, U> P converterMethod(String colName, Method method) {
+        importMap.addStaticImport(method.getDeclaringClass());
+        colInfo(colName).setConverter(method);
+        return (P) this;
+    }
+
     public P headerLines(int lines) {
         this.headerLines = lines;
         return (P) this;
@@ -184,6 +190,11 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     public P acceptPartials(boolean acceptParials) {
         this.acceptPartials = acceptParials;
+        return (P) this;
+    }
+
+    public P includeEventPublisher(boolean eventPublisher) {
+        this.addEventPublisher = eventPublisher;
         return (P) this;
     }
 
@@ -251,6 +262,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             if (eventCompleteMethod != null) {
                 ctx.put("eventCompleteMethod", eventCompleteMethod);
             }
+            updateContext(ctx);
             final Class<RowProcessor> aggClass = FunctionGeneratorHelper.generateAndCompile(null, CSV_MARSHALLER, GenerationContext.SINGLETON, ctx);
             final RowProcessor result = aggClass.newInstance();
 
@@ -264,7 +276,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
                 }
             });
             GenerationContext.SINGLETON.getNodeList().add(result);
-            if(addEventPublisher){
+            if (addEventPublisher) {
                 EventPublsher publisher = new EventPublsher();
                 GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
                 publisher.addEventSource(result);
@@ -286,6 +298,14 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     protected CsvPushFunctionInfo colInfo(Method accessor) {
         return srcMappingList.stream().filter(c -> c.getTargetMethod().equals(accessor)).findFirst().get();
+    }
+
+    public Class<T> getTargetClazz() {
+        return targetClazz;
+    }
+
+    protected void updateContext(VelocityContext ctx) {
+
     }
 
 }

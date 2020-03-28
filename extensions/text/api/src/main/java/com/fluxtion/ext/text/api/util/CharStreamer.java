@@ -202,6 +202,8 @@ public class CharStreamer {
             }else{
                 streamFileLarge();
             }
+        }else{
+            throw new FileNotFoundException("cannot locate file:" + inputFile.getAbsolutePath());
         }
     }
 

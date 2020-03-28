@@ -16,12 +16,11 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
+import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import com.fluxtion.ext.text.builder.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -36,86 +35,70 @@ import org.junit.Test;
 public class CsvToBeanBuilderTest {
 
     @Test
-    public void defaultBeanMap() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public void mapBeanAndStream() {
         long currentTime = System.currentTimeMillis();
-        WorldCityOptionalEvent[] worldCity = new WorldCityOptionalEvent[1];
-        DispatchingCsvMarshaller dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2")
+        List cities = new ArrayList<>();
+        CsvRecordStream dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest3")
                 .dirOption(TEST_DIR_OUTPUT)
                 .mapBean("DefaultMappedBean", WorldCityOptionalEvent.class)
-                .build((e) -> {
-                    if (e instanceof WorldCityOptionalEvent) {
-                        worldCity[0] = (WorldCityOptionalEvent) e;
-                    }
-                });
-        String dataCsh = "WorldCityOptionalEvent,country,city,accent City,region,population,longitude,latitude\n"
-                + "WorldCityOptionalEvent,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
-        StringDriver.streamChars(dataCsh, dispatcher, false);
-        assertTrue(worldCity[0].getEventTime() >= currentTime);
+                .build();
+        dispatcher.sinks(cities::add)
+                .stream(
+                        "WorldCityOptionalEvent,country,city,accent City,region,population,longitude,latitude\n"
+                        + "WorldCityOptionalEvent,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
+                );
+        assertTrue(((WorldCityOptionalEvent) cities.get(0)).getEventTime() >= currentTime);
+        dispatcher.stream("WorldCityOptionalEvent,UK,LONDON,Aixirivali,06,,25.19,1.5\n");
+        assertThat(((WorldCityOptionalEvent) cities.get(1)).getCity().toString(), is("LONDON"));
+    }
 
-        DispatchingCsvMarshaller dispatcher2 = new DispatchingCsvMarshaller();
-        dispatcher2.addMarshaller(WorldCity.class, (StaticEventProcessor) GenerationContext.SINGLETON.forName(
-                "com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest2.fluxCsvDefaultMappedBean.Csv2DefaultMappedBean").newInstance());
-        dispatcher2.addSink((e) -> {
-            if (e instanceof WorldCityOptionalEvent) {
-                worldCity[0] = (WorldCityOptionalEvent) e;
-            }
-        });
+    @Test
+    public void mapBeanAndStreamEventTIme() {
+        long currentTime = System.currentTimeMillis();
+        List cities = new ArrayList<>();
+        CsvRecordStream dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest4")
+                .dirOption(TEST_DIR_OUTPUT)
+                .mapBean("DefaultMappedBean", WorldCityOptionalEvent.class)
+                .build();
+        dispatcher.sinks(cities::add)
+                .stream(
+                        "WorldCityOptionalEvent,eventTime,country,city,accent City,region,population,longitude,latitude\n"
+                        + "WorldCityOptionalEvent,-1,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
+                );
 
-        dataCsh = "WorldCity,eventTime,country,city,accent City,region,population,longitude,latitude\n"
-                + "WorldCity,200,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n";
-        StringDriver.streamChars(dataCsh, dispatcher2, false);
-        assertThat(worldCity[0].getEventTime(), is(200L));
+        assertTrue(((WorldCityOptionalEvent) cities.get(0)).getEventTime() >= currentTime);
+        dispatcher.stream("WorldCityOptionalEvent,400,UK,LONDON,Aixirivali,06,,25.19,1.5\n");
+        assertTrue(((WorldCityOptionalEvent) cities.get(1)).getEventTime() == 400);
     }
 
     @Test
     public void inlineCustomiseTest() throws Exception {
-        boolean build = true;
         LongAdder count = new LongAdder();
         WorldCity[] worldCity = new WorldCity[1];
-
-        DispatchingCsvMarshaller dispatcher = null;
-        if (build) {
-            //build
-            MyFunctions functions = new MyFunctions();
-            dispatcher = CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest")
-                    .dirOption(TEST_DIR_OUTPUT)
-                    .mapCustomBean("WorldCity", WorldCity.class, (c) -> {
-                        c
-                                .map(0, WorldCity::setCountry)
-                                .map(1, WorldCity::setCity)
-                                .map(5, WorldCity::setLongitude)
-                                .converter(5, CsvMarshallerBuilderTest::always_1)
-                                .map(6, WorldCity::setLatitude)
-                                .map(6, WorldCity::setLatitudeCharSequence)
-                                .converter(6, functions::always_Zero)
-                                .map("population", WorldCity::setPopulation)
-                                .converter("population", functions::always_100)
-                                .headerLines(1);
-                    }).build((e) -> {
-                if (e instanceof WorldCity) {
-                    worldCity[0] = (WorldCity) e;
-                    count.increment();
-                }
-            });
-        } else {
-            dispatcher = new DispatchingCsvMarshaller();
-            dispatcher.addMarshaller(WorldCity.class, (StaticEventProcessor) Class.forName("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest.WorldCityCsvBean").newInstance());
-            dispatcher.addSink((e) -> {
-                if (e instanceof WorldCity) {
-                    worldCity[0] = (WorldCity) e;
-                    count.increment();
-                }
-            });
-        }
-
-        //dispatch
-        String dataCsh = "WorldCity,country,city,accent city,region,population,longitude,latitude\n"
+        MyFunctions functions = new MyFunctions();
+        CsvToBeanBuilder.nameSpace("com.fluxtion.ext.futext.builder.csv.csvToBeanBuilderTest")
+                .dirOption(TEST_DIR_OUTPUT)
+                .mapCustomBean("WorldCity", WorldCity.class, (c) -> {
+                    c.map(0, WorldCity::setCountry)
+                            .map(1, WorldCity::setCity)
+                            .map(5, WorldCity::setLongitude)
+                            .converter(5, CsvMarshallerBuilderTest::always_1)
+                            .map(6, WorldCity::setLatitude)
+                            .map(6, WorldCity::setLatitudeCharSequence)
+                            .converter(6, functions::always_Zero)
+                            .map("population", WorldCity::setPopulation)
+                            .converter("population", functions::always_100)
+                            .headerLines(1);
+                }).build().sinks((e) -> {
+            if (e instanceof WorldCity) {
+                worldCity[0] = (WorldCity) e;
+                count.increment();
+            }
+        }).stream("WorldCity,country,city,accent city,region,population,longitude,latitude\n"
                 + "WorldCity,mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
-                + "WorldCity,brazil,santiago,Aixirivall,06,,130,1.5\n";
-        StringDriver.streamChars(dataCsh, dispatcher, false);
+                + "WorldCity,brazil,santiago,Aixirivall,06,,130,1.5\n");
 
         WorldCity city = worldCity[0];
-
         assertEquals(2, count.intValue());
         assertThat(city.getCountry(), is("brazil"));
         assertThat(city.getCity().toString(), is("santiago"));

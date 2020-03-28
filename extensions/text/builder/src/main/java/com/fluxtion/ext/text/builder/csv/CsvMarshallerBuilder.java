@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.text.builder.csv;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -23,6 +24,9 @@ import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
+import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -31,6 +35,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import net.vidageek.mirror.dsl.Mirror;
+import org.apache.velocity.VelocityContext;
 
 /**
  * A utility class for building delimited marshallers. This class is used at
@@ -183,7 +188,6 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                     field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
                     boolean optional = field.getAnnotation(OptionalField.class)!=null;
-//                    System.out.printf("%s optional:%s annotations:%s%n", field, optional, Arrays.toString(field.getAnnotations()));
                     if (!Modifier.isTransient(field.getModifiers())) {
                         mapNamedFieldToMethod(md.getWriteMethod(), md.getName(), md.getName().equals("eventTime") || optional);
                     }
@@ -200,6 +204,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         if (mapBean) {
 //            map(targetClazz);
         }
+        importMap.addImport(CsvRecordMarshaller.class);
+        importMap.addImport(RegisterEventHandler.class);
+        importMap.addImport(StringDriver.class);
+        importMap.addImport(StaticEventProcessor.class);
         final RowProcessor<T> rowProcessor = super.build();
         return rowProcessor;
     }
@@ -234,4 +242,11 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
             headerLines(1);
         }
     }
+
+    @Override
+    protected void updateContext(VelocityContext ctx) {
+        ctx.put("csv", true);
+    }
+    
+    
 }

@@ -115,7 +115,19 @@ public class WorldCityOptionalEvent extends DefaultEvent {
 
     @Override
     public String toString() {
-        return "WorldCity{" + "country=" + country + ", city=" + city + ", AccentCity=" + accentCity + ", region=" + region + ", population=" + population + ", longitude=" + longitude + ", longitudeCharSequence=" + longitudeCharSequence + ", latitude=" + latitude + ", latitudeCharSequence=" + latitudeCharSequence + '}';
+        return "WorldCity{" 
+                + "eventTime=" + eventTime 
+                + ", country=" + country 
+                + ", city=" + city 
+                + ", AccentCity=" + accentCity 
+                + ", region=" + region 
+                + ", population=" + population 
+                + ", longitude=" + longitude 
+                + ", longitudeCharSequence=" + longitudeCharSequence 
+                + ", latitude=" + latitude 
+                + ", latitudeCharSequence=" + latitudeCharSequence 
+                + '}';
     }
 
+    
 }

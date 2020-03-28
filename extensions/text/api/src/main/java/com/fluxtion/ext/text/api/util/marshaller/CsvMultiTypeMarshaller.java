@@ -48,11 +48,22 @@ public class CsvMultiTypeMarshaller {
 
     private Map<ByteBuffer, com.fluxtion.api.StaticEventProcessor> type2Marshaller;
     private com.fluxtion.api.StaticEventProcessor marshaller;
+    private Map<String, Object> id2Instance;
     public com.fluxtion.api.StaticEventProcessor sink;
     private ByteBuffer buffer;
     private byte[] array;
     private static final int DEFAULT_SIZE = 256;
     private int fieldNumber;
+
+    void addNoMarshaller(Class clazz) {
+        try {
+            Object newInstance = clazz.getDeclaredConstructor().newInstance();
+            id2Instance.put(clazz.getCanonicalName(), newInstance);
+            id2Instance.put(clazz.getSimpleName(), newInstance);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } 
+    }
 
     @OnParentUpdate("type")
     public boolean onTypeUpdated(BufferValue type) {
@@ -64,6 +75,9 @@ public class CsvMultiTypeMarshaller {
         buffer.position(0);
         buffer.limit(name.length());
         marshaller = type2Marshaller.get(buffer);
+        if(marshaller == null && id2Instance.containsKey(name.toString())){
+            sink.onEvent( id2Instance.get(name.toString()));
+        }
         fieldNumber = 0;
         return false;
     }
@@ -107,6 +121,7 @@ public class CsvMultiTypeMarshaller {
     @Initialise
     public void init() {
         type2Marshaller = new HashMap<>();
+        id2Instance = new HashMap<>();
         array = new byte[DEFAULT_SIZE];
         buffer = ByteBuffer.wrap(array);
         marshaller = null;
