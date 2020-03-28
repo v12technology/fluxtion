@@ -19,7 +19,7 @@ package com.fluxtion.api.event;
 /**
  * Default implementation of {@link Event} that can be extended to provide
  * meta-data to user events.
- * 
+ *
  * @author Greg Higgins
  *
  */
@@ -27,7 +27,7 @@ public abstract class DefaultEvent implements Event {
 
     public static final int NO_INT_FILTER = Integer.MAX_VALUE;
     public static final String NO_STRING_FILTER = "";
-    
+
     protected int filterId;
     protected String filterString;
     protected long eventTime;
@@ -80,12 +80,15 @@ public abstract class DefaultEvent implements Event {
 
     /**
      * Override the default value for event creation time. The default value is
-     * set with {@link System#currentTimeMillis()} during construction.
+     * set with {@link System#currentTimeMillis()} during construction. The
+     * value must be greater than 0, otherwise the value is ignored
      *
      * @param eventTime
      */
     public void setEventTime(long eventTime) {
-        this.eventTime = eventTime;
+        if (eventTime > 0) {
+            this.eventTime = eventTime;
+        }
     }
 
 }
