@@ -27,9 +27,9 @@ import com.fluxtion.example.shared.MyEvent;
 
 /*
  * <pre>
- * generation time   : 2020-03-10T23:46:56.230518600
- * generator version : 1.9.6-SNAPSHOT
- * api version       : 1.9.6-SNAPSHOT
+ * generation time   : 2020-03-28T17:52:30.167580800
+ * generator version : 1.9.7-SNAPSHOT
+ * api version       : 1.9.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
