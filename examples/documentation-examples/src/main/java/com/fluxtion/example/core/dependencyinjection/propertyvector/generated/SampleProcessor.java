@@ -26,9 +26,9 @@ import java.util.Arrays;
 
 /*
  * <pre>
- * generation time   : 2020-03-10T23:46:56.940517100
- * generator version : 1.9.6-SNAPSHOT
- * api version       : 1.9.6-SNAPSHOT
+ * generation time   : 2020-03-28T17:52:31.369125
+ * generator version : 1.9.7-SNAPSHOT
+ * api version       : 1.9.7-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */

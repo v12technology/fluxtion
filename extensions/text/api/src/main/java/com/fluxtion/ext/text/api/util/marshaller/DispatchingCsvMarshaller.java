@@ -4,6 +4,7 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.ascii.Csv2ByteBufferTemp;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.event.CharEvent;
 
 public class DispatchingCsvMarshaller implements StaticEventProcessor, BatchHandler, Lifecycle {
@@ -21,6 +22,11 @@ public class DispatchingCsvMarshaller implements StaticEventProcessor, BatchHand
         dispatcher.type = csv2ByteBufferTemp_1;
         init();
     }
+    
+    public DispatchingCsvMarshaller addMarshaller(RowProcessor rowProcessor){
+        dispatcher.addMarshaller(rowProcessor.eventClass(), new  CsvRecordMarshaller(rowProcessor));
+        return this;
+    }
 
     public DispatchingCsvMarshaller addMarshaller(Class wrapper, StaticEventProcessor handler) {
         dispatcher.addMarshaller(wrapper, handler);
@@ -33,6 +39,11 @@ public class DispatchingCsvMarshaller implements StaticEventProcessor, BatchHand
         return this;
     }
 
+    public DispatchingCsvMarshaller addNoMarshaller(Class clazz){
+        dispatcher.addNoMarshaller(clazz);
+        return this;
+    }
+    
     public DispatchingCsvMarshaller addSink(StaticEventProcessor handler) {
         return addSink(handler, true);
     }

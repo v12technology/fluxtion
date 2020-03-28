@@ -61,6 +61,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     private boolean passedValidation;
 
     @EventHandler
+    @Override
     public boolean charEvent(CharEvent event) {
         final char character = event.getCharacter();
         passedValidation = true;
@@ -91,6 +92,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 
     @EventHandler
+    @Override
     public boolean eof(EofEvent eof){
         return writeIndex==0?false:processRow();
     }
@@ -166,7 +168,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         String header = new String(chars).trim();
         header = header.replace("\"", "");
         List<String> headers = new ArrayList();
-        for (String colName : header.split(",")) {
+        for (String colName : header.split("[${delimiter}]")) {
             char c[] = colName.trim().replace(" ", "").toCharArray();
             c[0] = Character.toLowerCase(c[0]);
             headers.add(new String(c));
@@ -285,6 +287,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 
     @Initialise
+    @Override
     public void init(){
         target = new ${targetClass}();
 #foreach($sourceInfo in $sourceMappingList)
@@ -302,6 +305,22 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         return rowNumber;
     }
 
+    @Override
+    public void setErrorLog(ValidationLogger errorLog) {
+        this.errorLog = errorLog;
+    }
+
+#if(${csv})
+  public static CsvRecordMarshaller marshaller(){
+      return new CsvRecordMarshaller(new ${functionClass}());
+  }
+
+  public static void stream(StaticEventProcessor target, String input){
+      CsvRecordMarshaller marshaller = marshaller();
+      marshaller.handleEvent(new RegisterEventHandler(target));
+      StringDriver.streamChars(input, marshaller);
+  }
+#end
 }
 
 

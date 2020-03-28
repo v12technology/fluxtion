@@ -17,6 +17,8 @@
 package com.fluxtion.ext.text.api.csv;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.text.api.event.CharEvent;
+import com.fluxtion.ext.text.api.event.EofEvent;
 
 /**
  * Interface implemented by nodes processing delimited or fixed length records
@@ -43,5 +45,13 @@ public interface RowProcessor<T> extends Wrapper<T> {
     default int getRowNumber() {
         return -1;
     }
+    
+    boolean charEvent(CharEvent event);
+    
+    boolean eof(EofEvent eof);
+    
+    void init();
+    
+    void setErrorLog(ValidationLogger errorLog);
 
 }

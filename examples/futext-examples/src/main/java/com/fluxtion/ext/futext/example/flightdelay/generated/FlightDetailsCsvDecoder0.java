@@ -1,5 +1,6 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
@@ -12,6 +13,9 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
+import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
+import com.fluxtion.ext.text.builder.util.StringDriver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,6 +57,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   private boolean passedValidation;
 
   @EventHandler
+  @Override
   public boolean charEvent(CharEvent event) {
     final char character = event.getCharacter();
     passedValidation = true;
@@ -70,6 +75,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   }
 
   @EventHandler
+  @Override
   public boolean eof(EofEvent eof) {
     return writeIndex == 0 ? false : processRow();
   }
@@ -91,7 +97,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
     String header = new String(chars).trim();
     header = header.replace("\"", "");
     List<String> headers = new ArrayList();
-    for (String colName : header.split(",")) {
+    for (String colName : header.split("[,]")) {
       char c[] = colName.trim().replace(" ", "").toCharArray();
       c[0] = Character.toLowerCase(c[0]);
       headers.add(new String(c));
@@ -161,6 +167,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   }
 
   @Initialise
+  @Override
   public void init() {
     target = new FlightDetails();
     fieldMap.put(fieldIndex_14, "setDelay");
@@ -175,5 +182,20 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
   @Override
   public int getRowNumber() {
     return rowNumber;
+  }
+
+  @Override
+  public void setErrorLog(ValidationLogger errorLog) {
+    this.errorLog = errorLog;
+  }
+
+  public static CsvRecordMarshaller marshaller() {
+    return new CsvRecordMarshaller(new FlightDetailsCsvDecoder0());
+  }
+
+  public static void stream(StaticEventProcessor target, String input) {
+    CsvRecordMarshaller marshaller = marshaller();
+    marshaller.handleEvent(new RegisterEventHandler(target));
+    StringDriver.streamChars(input, marshaller);
   }
 }
