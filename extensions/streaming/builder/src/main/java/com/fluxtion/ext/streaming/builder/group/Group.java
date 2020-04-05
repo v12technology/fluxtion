@@ -256,5 +256,9 @@ public class Group <K, T> {
     public boolean isMultiKey(){
         return multiKey!=null;
     }
+
+    public HashMap<String, List<MultiKeyInfo>> getMultiKeySourceMap() {
+        return multiKeySourceMap;
+    }
      
 }

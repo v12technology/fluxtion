@@ -37,6 +37,7 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMapping
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
+import static com.fluxtion.generator.targets.JavaGenHelper.mapPrimitiveToWrapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,13 +149,25 @@ public class GroupByContext<K, T> {
             buildCalculationState();
             VelocityContext ctx = new VelocityContext();
             ctx.put(functionClass.name(), genClassName);
-            ctx.put(keyClass.name(), importMap.addImport(keyClazz));
+            if(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())==void.class){
+                if(primaryContext.isMultiKey()){
+                    ctx.put(keyClass.name(), primaryContext.getMultiKeyClassName());
+                }else{
+                    ctx.put(keyClass.name(), importMap.addImport(primaryContext.keyMethod.getReturnType()));
+                }
+//                ctx.put(keyClass.name(), importMap.addImport(keyClazz));
+            }else{
+                ctx.put(keyClass.name(), importMap.addImport(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())));
+            }
             ctx.put(targetClass.name(), importMap.addImport(targetClazz));
             ctx.put("primaryContext", primaryContext);
             ctx.put("calcStateClass", calcStateClass);
             ctx.put("initialiserRequired", initialiserRequired);
             ctx.put("isMultiKey", primaryContext.isMultiKey());
-            ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
+            if(primaryContext.isMultiKey()){
+                ctx.put("multiKeyFunctionSet", primaryGroup.getMultiKeySourceMap());
+                ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
+            }
             if (eventCompleteMethod != null) {
                 ctx.put("eventCompleteMethod", eventCompleteMethod);
             }

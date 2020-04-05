@@ -115,6 +115,26 @@ ${functionInfo.updateTarget}
 #end
     }
 
+#if(${isMultiKey})
+    //multikey finder
+    @Override
+    public ${targetClass} valueForMultiKey(Object o){
+#foreach( $srcInfo in $multiKeyFunctionSet.entrySet() )
+        if(o instanceof ${srcInfo.key}){
+            return value((${srcInfo.key}) o);
+        }
+#end
+        return null;
+    }
+
+#foreach( $srcInfo in $multiKeyFunctionSet.entrySet() )
+    public ${targetClass} value(${srcInfo.key} source){
+      multiKey.setKey(source);
+      return value(multiKey);
+    }
+#end
+#end
+
     @Override
     public ${targetClass} value(${keyClass} key) {
         return calcState.getInstance(key).target;

@@ -32,6 +32,10 @@ import java.util.Map;
 public interface GroupBy<K, T> extends Wrapper<T>, Stateful {
 
     T value(K key);
+    
+    default T valueForMultiKey(Object o){
+        return null;
+    }
 
     default T value(int i) {
         return null;
