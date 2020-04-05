@@ -27,8 +27,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
-import com.fluxtion.ext.streaming.builder.util.FunctionArg;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
+import com.fluxtion.ext.streaming.api.stream.Argument;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 
 /**
  * Provides helper methods to build mapping functions from nodes and Events.
@@ -45,7 +45,7 @@ public class MappingBuilder {
      * @param args the input arguments for the mapping function
      * @return the output of the function as {@link Wrapper} stream
      */
-    public static <R> Wrapper<R> map(MethodReferenceReflection test, FunctionArg... args) {
+    public static <R> Wrapper<R> map(MethodReferenceReflection test, Argument... args) {
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
         StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
@@ -59,7 +59,7 @@ public class MappingBuilder {
     }
 
     public static <R, S> Wrapper<R> map(SerializableFunction<? super S, R> mapper,
-            FunctionArg<? extends S> arg1) {
+            Argument<? extends S> arg1) {
         return map((MethodReferenceReflection)mapper, arg1);
     }
 
@@ -69,8 +69,8 @@ public class MappingBuilder {
     }
     
     public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, ? super S, R> mapper,
-            FunctionArg<? extends U> arg1,
-            FunctionArg<? extends S> arg2) {
+            Argument<? extends U> arg1,
+            Argument<? extends S> arg2) {
         return map((MethodReferenceReflection) mapper, arg1, arg2);
     }
 
@@ -82,9 +82,9 @@ public class MappingBuilder {
 
     
     public static <R, S, U, T> Wrapper<R> map(SerializableTriFunction<? super U, ? super S,? super T, R> mapper,
-            FunctionArg<? extends U> arg1,
-            FunctionArg<? extends S> arg2,
-            FunctionArg<? extends T> arg3
+            Argument<? extends U> arg1,
+            Argument<? extends S> arg2,
+            Argument<? extends T> arg3
             ) {
         return map((MethodReferenceReflection) mapper, arg1, arg2, arg3);
     } 
@@ -98,10 +98,10 @@ public class MappingBuilder {
     }
     
     public static <R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? super U, ? super S,? super T, ? super V, R> mapper,
-            FunctionArg<? extends U> arg1,
-            FunctionArg<? extends S> arg2,
-            FunctionArg<? extends S> arg3,
-            FunctionArg<? extends T> arg4
+            Argument<? extends U> arg1,
+            Argument<? extends S> arg2,
+            Argument<? extends S> arg3,
+            Argument<? extends T> arg4
             ) {
         return map((MethodReferenceReflection) mapper, arg1, arg2, arg3, arg4);
     } 
@@ -116,8 +116,7 @@ public class MappingBuilder {
     }
     
     /**
-     * Maps a set of nodes with a single mapping function. Only nodes that
-     * notify a change are processed by the mapping function. The function will
+     * Maps a set of nodes with a single mapping function. The function will
      * consult each node on every update.
      *
      * @param <R>
@@ -127,7 +126,7 @@ public class MappingBuilder {
      * @return
      */
     public static <R, S> Wrapper<R> mapSet(SerializableFunction<S, R> mapper,
-            FunctionArg... suppliers) {
+            Argument... suppliers) {
         StreamFunctionCompiler builder = StreamFunctionCompiler.mapSet(mapper.captured()[0], mapper.method(), suppliers);
         final Wrapper wrapper = builder.build();
         wrapper.alwaysReset(true);

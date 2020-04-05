@@ -28,6 +28,7 @@ public class SourceInfo {
     public String type;
     public String id;
     public boolean constant;
+    public boolean wrapper;
 
     public SourceInfo(String type, String id) {
         this.type = type;

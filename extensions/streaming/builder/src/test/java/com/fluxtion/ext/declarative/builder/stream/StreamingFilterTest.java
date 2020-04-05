@@ -27,7 +27,7 @@ import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;

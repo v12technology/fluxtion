@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.builder.util;
 
+import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -114,8 +115,8 @@ public class StreamFunctionGenerator {
         imports.addImport(Wrapper.class);
         imports.addStaticImport(EventSelect.class);
         imports.addStaticImport(MappingBuilder.class);
-        imports.addImport(FunctionArg.class);
-        imports.addStaticImport(FunctionArg.class);
+        imports.addImport(Argument.class);
+        imports.addStaticImport(Argument.class);
         imports.addStaticImport(StreamOperatorService.class);
         imports.addImport(this.getClass());
         //setup context

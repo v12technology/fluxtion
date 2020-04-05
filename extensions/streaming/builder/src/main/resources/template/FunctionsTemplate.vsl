@@ -44,7 +44,7 @@ public class ${className}  {
         return map(${FunctionInfo.functionName}(), arg(supplier1), arg(supplier2));
     }
 
-    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Argument<T> arg1, Argument<S> arg2) {
         return map(${FunctionInfo.functionName}(), arg1, arg2);
     }
 
@@ -90,7 +90,7 @@ public class ${className}  {
         return map(${FunctionInfo.functionName}(), arg(supplier));
     }
 
-    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(FunctionArg<T> arg) {
+    public static <T extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(Argument<T> arg) {
         return map(${FunctionInfo.functionName}(), arg);
     }
 

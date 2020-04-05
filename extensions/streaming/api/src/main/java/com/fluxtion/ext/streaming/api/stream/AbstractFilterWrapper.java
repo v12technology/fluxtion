@@ -13,6 +13,7 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
     protected boolean notifyOnChangeOnly = false;
     protected boolean resetImmediate = true;
     protected boolean alwaysReset = false;
+    protected boolean validOnStart = false;
     protected boolean result;
     
     @Override
@@ -30,6 +31,12 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
     @Override
     public FilterWrapper<T> alwaysReset(boolean alwaysReset) {
         this.alwaysReset = alwaysReset;
+        return this;
+    }
+    
+    @Override
+    public FilterWrapper<T> validOnStart(boolean validOnStart) {
+        this.validOnStart = validOnStart;
         return this;
     }
 
@@ -55,6 +62,14 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
 
     public void setAlwaysReset(boolean alwaysReset) {
         this.alwaysReset = alwaysReset;
+    }
+
+    public boolean isValidOnStart() {
+        return validOnStart;
+    }
+
+    public void setValidOnStart(boolean validOnStart) {
+        this.validOnStart = validOnStart;
     }
 
     @Override

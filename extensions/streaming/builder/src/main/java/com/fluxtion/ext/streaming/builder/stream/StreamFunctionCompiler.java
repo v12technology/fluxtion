@@ -36,7 +36,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import com.fluxtion.ext.streaming.builder.util.FunctionArg;
+import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.FunctionInfo;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
@@ -212,11 +212,11 @@ public class StreamFunctionCompiler<T, F> {
         return filterBuilder;
     }
 
-    public static <T, R extends Boolean, S, F> StreamFunctionCompiler mapSet(F mapper, Method mappingMethod, FunctionArg... args) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler mapSet(F mapper, Method mappingMethod, Argument... args) {
         //call map then add sources
         //update the key
         //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
-        FunctionArg arg = args[0];
+        Argument arg = args[0];
         StreamFunctionCompiler builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
@@ -602,6 +602,7 @@ public class StreamFunctionCompiler<T, F> {
             final SourceInfo srcInfo = new SourceInfo(
                     importMap.addImport(input.getClass()),
                     "source_" + sourceCount++);
+            srcInfo.setWrapper(Wrapper.class.isAssignableFrom(input.getClass()));
             srcInfo.setConstant(Constant.class.isAssignableFrom(input.getClass()));
             return srcInfo;
         });

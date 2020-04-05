@@ -77,6 +77,11 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
     }
     
     @Override
+    default FilterWrapper<T> validOnStart(boolean alwaysReset) {
+        return this;
+    }
+    
+    @Override
     default FilterWrapper<T> id(String id) {
         return StreamOperator.service().nodeId(this, id);
     }

@@ -37,6 +37,10 @@ import java.util.ServiceLoader;
  * @author V12 Technology Ltd.
  */
 public interface StreamOperator {
+    
+    default <T> Wrapper<T> select(Class<T> eventClazz){
+        return null;
+    }
 
     default <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter,
             Wrapper<T> source, Method accessor, boolean cast) {

@@ -62,30 +62,30 @@ public interface Wrapper<T> {
     }
 
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
-        if(supplier.method().getReturnType().isPrimitive()){
-            return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toDouble(), supplier);
-        }
-        else{
-            return (Wrapper<S>) map((SerializableFunction)StreamFunctions.toReference(), supplier);
+        if (supplier.method().getReturnType().isPrimitive()) {
+            return (Wrapper<S>) map((SerializableFunction) StreamFunctions.toDouble(), supplier);
+        } else {
+            return (Wrapper<S>) map((SerializableFunction) StreamFunctions.toReference(), supplier);
         }
     }
-    
+
     default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
-            SerializableFunction<T, S> supplier, 
-            Class<F> functionClass){
+            SerializableFunction<T, S> supplier,
+            Class<F> functionClass) {
         return StreamOperator.service().group(this, supplier, functionClass);
     }
-    
+
     default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
             SerializableFunction<T, K> key,
-            SerializableFunction<T, S> supplier, 
-            Class<F> functionClass){
+            SerializableFunction<T, S> supplier,
+            Class<F> functionClass) {
         return StreamOperator.service().group(this, key, supplier, functionClass);
     }
 
     /**
-     * Maps a value using the provided mapping function. The input is the wrapped 
-     * instance inside this {@link Wrapper}.
+     * Maps a value using the provided mapping function. The input is the
+     * wrapped instance inside this {@link Wrapper}.
+     *
      * @param <R> The return type of the mapping function
      * @param mapper the mapping function
      * @return A wrapped value containing the result of the mapping operation
@@ -93,10 +93,11 @@ public interface Wrapper<T> {
     default <R, S extends T> Wrapper<R> map(SerializableFunction<S, R> mapper) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, true);
     }
-    
+
     /**
      * Maps a value using the provided mapping function. The input is the return
      * value of the supplier function invoked on the wrapped instance.
+     *
      * @param <R> The return type of the mapping function
      * @param <S> The input type required by the mapping function
      * @param mapper the mapping function
@@ -106,59 +107,60 @@ public interface Wrapper<T> {
     default <R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
-    
+
     /**
      * maps a two arguments using a binary function.
+     *
      * @param <R>
      * @param <S>
      * @param <U>
      * @param mapper
      * @param arg1
      * @param arg2
-     * @return 
+     * @return
      */
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<S> arg1, Argument<U> arg2) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg1, arg2);
     }
-    
-    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, 
+
+    default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             SerializableFunction<T, S> supplier1, SerializableFunction<T, U> supplier2) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier1), arg(this, supplier2));
     }
-    
+
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, SerializableFunction<T, S> supplier, Argument<U> arg) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg);
     }
-    
+
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, Argument<U> arg, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg, arg(this, supplier));
     }
-    
+
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, S, R> mapper, SerializableFunction<T, ? extends U> supplier, double arg) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg(arg));
     }
-    
+
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, double arg, SerializableFunction<T, S> supplier) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(arg), arg(this, supplier));
     }
-       
+
     /**
-     * Maps a binary function using the wrapped instance as the first argument 
+     * Maps a binary function using the wrapped instance as the first argument
      * to the binary function.
-     * 
+     *
      * @param <R> The result type of the mapping function
      * @param <S> The type of the supplied argument
      * @param <U> The input type for first argument to mapping function
      * @param <V> The input type for second argument to mapping function
      * @param mapper The mapping function
      * @param arg1 The second argument of the binary mapping function
-     * @return 
+     * @return
      */
-    default <R, S, U extends T, V extends S>  Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<V> arg1){
+    default <R, S, U extends T, V extends S> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<V> arg1) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg1);
     }
-    
-    default <R extends Number, S, U extends T, V extends S>  Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, double arg1){
+
+    default <R extends Number, S, U extends T, V extends S> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, double arg1) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg(arg1));
     }
 
@@ -178,7 +180,7 @@ public interface Wrapper<T> {
         StreamOperator.service().push(this, supplier.method(), mapper);
         return (Wrapper<T>) this;
     }
-    
+
     default <R extends T> Wrapper<T> push(SerializableConsumer<R> mapper) {
         StreamOperator.service().push(this, null, mapper);
         return (Wrapper<T>) this;
@@ -205,7 +207,8 @@ public interface Wrapper<T> {
     LongAdder counter = new LongAdder();
 
     /**
-     * dump this node to console, prefixed with the supplied message.{@link Object#toString()} will be invoked on the node instance.
+     * dump this node to console, prefixed with the supplied
+     * message.{@link Object#toString()} will be invoked on the node instance.
      *
      * @param <S>
      * @param prefix String prefix for the console message
@@ -215,12 +218,12 @@ public interface Wrapper<T> {
     default <S> Wrapper<T> console(String prefix, SerializableFunction<T, S>... supplier) {
         StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
         counter.increment();
-        if(supplier.length == 0 && Number.class.isAssignableFrom(eventClass())){
+        if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
             consoleLog.suppliers(Number::doubleValue);
-        }else{
+        } else {
             consoleLog.suppliers(supplier);
         }
-        String consoleId =  "consoleMsg_" + counter.intValue();
+        String consoleId = "consoleMsg_" + counter.intValue();
         SepContext.service().add(consoleLog, consoleId);
         return this;
     }
@@ -244,8 +247,8 @@ public interface Wrapper<T> {
      * the execution path and invoked following normal SEP rules.
      *
      * The existing execution path will be unaltered if either the parent
-     * wrapped
-     * node or the eventNotifier updates then the execution path will progress.
+     * wrapped node or the eventNotifier updates then the execution path will
+     * progress.
      *
      * @param eventNotifier external event notifier
      * @return
@@ -256,9 +259,9 @@ public interface Wrapper<T> {
 
     /**
      * Attaches an event notification instance to the current stream node,
-     * overriding the execution path of the current stream. Only when
-     * the notifier updates will the child nodes of this stream node be on
-     * the execution path.
+     * overriding the execution path of the current stream. Only when the
+     * notifier updates will the child nodes of this stream node be on the
+     * execution path.
      *
      * @param eventNotifier external event notifier
      * @return
@@ -269,8 +272,7 @@ public interface Wrapper<T> {
 
     /**
      * resets the stateful node and publishes the current value. The reset is
-     * after
-     * the last child on the execution path is executed, equivalent to {@link #immediateReset(boolean)
+     * after the last child on the execution path is executed, equivalent to {@link #immediateReset(boolean)
      * }
      * with value of false.
      *
@@ -280,7 +282,21 @@ public interface Wrapper<T> {
     default Wrapper<T> publishAndReset(Object notifier) {
         resetNotifier(notifier);
         immediateReset(false);
-        return notifierOverride(notifier);
+        return resetNotifier(notifier);
+    }
+
+    /**
+     * resets the stateful node and publishes the current value. The reset is
+     * before the publish to children on the execution path equivalent to
+     * {@link #immediateReset(boolean)} with value of true.
+     *
+     * @param notifier
+     * @return
+     */
+    default Wrapper<T> resetAndPublish(Object notifier) {
+        resetNotifier(notifier);
+        immediateReset(true);
+        return resetNotifier(notifier);
     }
 
     /**
@@ -303,8 +319,8 @@ public interface Wrapper<T> {
     }
 
     /**
-     * Controls reset timing policy for stateful nodes. Stateful nodes are
-     * reset with {@link #resetNotifier(java.lang.Object)
+     * Controls reset timing policy for stateful nodes. Stateful nodes are reset
+     * with {@link #resetNotifier(java.lang.Object)
      * } or {@link #alwaysReset(boolean) }. The timing policy has the following
      * behaviour:
      * <ul>
@@ -335,6 +351,14 @@ public interface Wrapper<T> {
      */
     default Wrapper<T> alwaysReset(boolean alwaysReset) {
         return this;
+    }
+
+    default Wrapper<T> validOnStart(boolean alwaysReset) {
+        return this;
+    }
+
+    default boolean isValidOnStart() {
+        return false;
     }
 
     /**

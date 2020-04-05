@@ -31,6 +31,7 @@ import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunction;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterEither;
 import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
@@ -50,7 +51,12 @@ import java.util.function.Predicate;
  */
 @AutoService(StreamOperator.class)
 public class StreamOperatorService implements StreamOperator {
-
+    
+    @Override
+    public <T> Wrapper<T> select(Class<T> eventClazz){
+        return EventSelect.select(eventClazz);
+    }
+    
     @Override
     public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
         StreamFunctionCompiler builder = lambdaBuilder(filter, source, accessor, cast, false);

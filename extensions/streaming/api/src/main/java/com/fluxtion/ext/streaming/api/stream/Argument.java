@@ -1,7 +1,7 @@
 package com.fluxtion.ext.streaming.api.stream;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.ConstantNumber;
 import java.lang.reflect.Method;
@@ -19,19 +19,24 @@ public class Argument<T> {
     public Object source;
     public Method accessor;
     public boolean cast;
+    
+    public static <T, S> Argument<S> arg(SerializableFunction<T, S> supplier) {
+        final Class containingClass = supplier.getContainingClass();
+        return new Argument(StreamOperator.service().select(containingClass), supplier.method(), true);
+    }    
 
     public static <T extends Number> Argument<T> arg(Double d) {
-        LambdaReflection.SerializableFunction<Number, Double> s = Number::doubleValue;
+        SerializableFunction<Number, Double> s = Number::doubleValue;
         return new Argument<>(new ConstantNumber(d), s.method(), true);
     }
 
     public static <T extends Number> Argument<T> arg(int d) {
-        LambdaReflection.SerializableFunction<Number, Integer> s = Number::intValue;
+        SerializableFunction<Number, Integer> s = Number::intValue;
         return new Argument<>(new ConstantNumber(d), s.method(), true);
     }
 
     public static <T extends Number> Argument<T> arg(long d) {
-        LambdaReflection.SerializableFunction<Number, Long> s = Number::longValue;
+        SerializableFunction<Number, Long> s = Number::longValue;
         return new Argument<>(new ConstantNumber(d), s.method(), true);
     }
 
@@ -43,10 +48,15 @@ public class Argument<T> {
         return new Argument<>(wrapper, supplier.method(), true);
     }
 
-    public static <T> Argument<T> arg(LambdaReflection.SerializableSupplier<T> supplier) {
+    public static <T> Argument<T> arg(SerializableSupplier<T> supplier) {
         return new Argument<>(supplier.captured()[0], supplier.method(), true);
     }
 
+    public static <T> Argument<T> arg(Class<T> clazz){
+        Wrapper<T> select = StreamOperator.service().select(clazz);
+        return arg(select);
+    }
+    
     public static Argument arg(Object supplier) {
         return new Argument(supplier, null, true);
     }

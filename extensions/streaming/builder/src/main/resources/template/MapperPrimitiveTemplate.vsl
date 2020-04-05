@@ -76,7 +76,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
         boolean updated = filterSubjectUpdated;
 #foreach($sourceInfo in $sourceMappingList)
 #if(!${sourceInfo.constant})
-        updated &= ${sourceInfo.id}Updated;
+        updated &= ${sourceInfo.id}Updated #if(${sourceInfo.wrapper}) | ${sourceInfo.id}.isValidOnStart()#end;
 #end
 #end
         return updated;
