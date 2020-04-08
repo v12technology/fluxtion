@@ -53,6 +53,14 @@ public interface Wrapper<T> {
      */
     Class<T> eventClass();
 
+    default <S> Argument<S> arg(SerializableFunction<T, S> supplier){
+        return Argument.arg(this, supplier);
+    }
+
+    default <S> Argument<S> arg(){
+        return Argument.arg(this);
+    }
+    
     default <S extends T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, true);
     }
@@ -125,23 +133,23 @@ public interface Wrapper<T> {
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
             SerializableFunction<T, S> supplier1, SerializableFunction<T, U> supplier2) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier1), arg(this, supplier2));
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this, supplier1), Argument.arg(this, supplier2));
     }
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, SerializableFunction<T, S> supplier, Argument<U> arg) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg);
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this, supplier), arg);
     }
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, Argument<U> arg, SerializableFunction<T, S> supplier) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg, arg(this, supplier));
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg, Argument.arg(this, supplier));
     }
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, S, R> mapper, SerializableFunction<T, ? extends U> supplier, double arg) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this, supplier), arg(arg));
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this, supplier), Argument.arg(arg));
     }
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper, double arg, SerializableFunction<T, S> supplier) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(arg), arg(this, supplier));
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(arg), Argument.arg(this, supplier));
     }
 
     /**
@@ -157,11 +165,11 @@ public interface Wrapper<T> {
      * @return
      */
     default <R, S, U extends T, V extends S> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<V> arg1) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg1);
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this), arg1);
     }
 
     default <R extends Number, S, U extends T, V extends S> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, double arg1) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg(this), arg(arg1));
+        return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this), Argument.arg(arg1));
     }
 
     /**

@@ -100,14 +100,14 @@ public class StreamingFilterTest extends StreamInprocessTest {
     @Test
     public void testElse() {
         sep((c) -> {
-            FilterWrapper<StreamData> filter = select(StreamData.class)
+            FilterWrapper<StreamData> gt_10 = select(StreamData.class)
                     .filter(StreamData::getIntValue, gt(10));
-            filter.map(multiply(), StreamData::getIntValue, 10).id("x10").map(cumSum()).id("cumSum");
-            multiply(arg(filter, StreamData::getIntValue), arg(10)).id("x10_2").map(cumSum()).id("cumSum2");
+            gt_10.map(multiply(), StreamData::getIntValue, 10).id("x10").map(cumSum()).id("cumSum");
+            multiply(gt_10.arg(StreamData::getIntValue), arg(10)).id("x10_2").map(cumSum()).id("cumSum2");
             //if - count
-            filter.map(count()).id("filterCount");
+            gt_10.map(count()).id("filterCount");
             //else - count
-            filter.elseStream().map(count()).id("elseCount");
+            gt_10.elseStream().map(count()).id("elseCount");
         });
 
         Number filterCount = getWrappedField("filterCount");
