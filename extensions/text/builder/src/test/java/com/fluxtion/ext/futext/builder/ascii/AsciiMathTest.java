@@ -185,7 +185,8 @@ public class AsciiMathTest extends BaseSepInprocessTest {
 //        sep(com.fluxtion.ext.futext.builder.ascii.asciimathtest_testsaleslogprocessor.TestSep_testSalesLogProcessor.class);
         
         SoldAggregator aggSales = getField(VAR_AGGREGATED_SALES);
-        StringDriver.streamChars("     eod day_id=-01 \n"
+        StringDriver.streamChars(
+                  "     eod day_id=-01 \n"
                 + "     sold volume=250\n"
                 + "     sold volume=1500\n"
                 + "     sold volume=1500\n"
