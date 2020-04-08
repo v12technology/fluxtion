@@ -627,6 +627,7 @@ public class SepJavaSourceModelHugeFilter {
                     }
                     //protect with guards
                     Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
+                    //HERE TO JOIN THINGS
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
                         //callTree += String.format("%24sif(", "");
