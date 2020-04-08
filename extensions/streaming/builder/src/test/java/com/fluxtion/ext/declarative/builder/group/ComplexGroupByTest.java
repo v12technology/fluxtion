@@ -43,7 +43,7 @@ public class ComplexGroupByTest extends BaseSepTest {
     public void test() {
         StaticEventProcessor sep = buildAndInitSep(Builder1.class);
         
-        GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
+        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
         
         sep.onEvent(new Order(2, "EURJPY", 100_000_000));
         sep.onEvent(new Deal(1001, 2, 4_000_000));
@@ -84,7 +84,7 @@ public class ComplexGroupByTest extends BaseSepTest {
             deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);
             deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);
             deals.sum(Deal::getDealtSize, OrderSummary::setVolumeDealt);
-            GroupBy<Order, OrderSummary> orderSummary = orders.build();
+            GroupBy<OrderSummary> orderSummary = orders.build();
             //add public node for testing
             addPublicNode(orderSummary, "orderSummary");
             //logging

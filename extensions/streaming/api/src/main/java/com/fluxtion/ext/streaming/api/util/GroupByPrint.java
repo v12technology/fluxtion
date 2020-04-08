@@ -43,7 +43,7 @@ public class GroupByPrint {
      * @param groupBy The map holding the frequency data
      * @param trigger Print when this trigger fires
      */
-    public static <K, N extends Number> void printFrequencyMap(String title, GroupBy<K, N> groupBy, Object trigger) {
+    public static <N extends Number> void printFrequencyMap(String title, GroupBy<N> groupBy, Object trigger) {
         SepContext.service().add(new PrintFrequencyMap<>(title, groupBy, trigger));
     }
 
@@ -58,11 +58,11 @@ public class GroupByPrint {
      * @param groupBy The map holding the frequency data
      * @param trigger Print when this trigger fires
      */
-    public static <K, N extends Number> void printTopN(String title, int n, GroupBy<K, N> groupBy, Object trigger) {
+    public static <N extends Number> void printTopN(String title, int n, GroupBy<N> groupBy, Object trigger) {
         SepContext.service().add(new PrintTopN(title, n, groupBy, trigger));
     }
 
-    public static <K, N> void printValues(String title, GroupBy<K, N> groupBy, Object trigger) {
+    public static <N> void printValues(String title, GroupBy<N> groupBy, Object trigger) {
         SepContext.service().add(new PrintGroupByValues(title, groupBy, trigger));
 
     }
@@ -102,7 +102,7 @@ public class GroupByPrint {
 
         private final String title;
         @NoEventReference
-        private final GroupBy<?, N> groupBy;
+        private final GroupBy<N> groupBy;
         private final Object trigger;
 
         @OnEvent
@@ -127,7 +127,7 @@ public class GroupByPrint {
         private final String title;
         private final int n;
         @NoEventReference
-        private final GroupBy<?, N> groupBy;
+        private final GroupBy<N> groupBy;
         private final Object trigger;
 
 

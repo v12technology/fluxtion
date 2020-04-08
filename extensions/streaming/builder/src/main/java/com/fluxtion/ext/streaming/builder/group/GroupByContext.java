@@ -126,7 +126,7 @@ public class GroupByContext<K, T> {
 
     GroupByContext(Group<K, T> group) {
         this.primaryGroup = group;
-        this.keyClazz = group.getKeyClass();
+        this.keyClazz = group.getInputClass();
         this.targetClazz = group.getTargetClass();
         Method[] methods = this.targetClazz.getMethods();
         for (Method method : methods) {
@@ -143,7 +143,7 @@ public class GroupByContext<K, T> {
         contexts.add(primaryContext);
     }
 
-    public GroupBy<K, T> build() {
+    public GroupBy<T> build() {
         try {
             genClassName = "GroupBy_" + GenerationContext.nextId();
             buildCalculationState();
@@ -176,8 +176,8 @@ public class GroupByContext<K, T> {
             }
             ctx.put(imports.name(), importMap.asString());
             ctx.put(sourceMappingList.name(), contexts);
-            Class<GroupBy<K, T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
-            GroupBy<K, T> result = aggClass.newInstance();
+            Class<GroupBy<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
+            GroupBy<T> result = aggClass.newInstance();
 
             for (SourceContext context : contexts) {
 

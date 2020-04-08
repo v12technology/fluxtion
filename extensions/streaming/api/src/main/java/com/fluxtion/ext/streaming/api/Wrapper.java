@@ -23,7 +23,6 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.concurrent.atomic.LongAdder;
@@ -77,13 +76,13 @@ public interface Wrapper<T> {
         }
     }
 
-    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
+    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
             SerializableFunction<T, S> supplier,
             Class<F> functionClass) {
         return StreamOperator.service().group(this, supplier, functionClass);
     }
 
-    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(
+    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
             Class<F> functionClass) {

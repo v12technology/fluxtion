@@ -52,12 +52,12 @@ public interface StreamOperator {
         return (FilterWrapper<T>) source;
     }
 
-    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
+    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass){
         return null;
     }
 
-    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
+    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
             Class<F> functionClass){

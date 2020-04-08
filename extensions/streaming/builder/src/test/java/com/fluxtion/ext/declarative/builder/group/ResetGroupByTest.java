@@ -44,12 +44,12 @@ public class ResetGroupByTest extends StreamInprocessTest{
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count( OrderSummary::setDealCount);
             largeOrdersByCcy.sum(Order::getSize, OrderSummary::setOrderSize);
-            GroupBy<Order, OrderSummary> orderSummary = c.addPublicNode(largeOrdersByCcy.build(), "orderSummary");
+            GroupBy<OrderSummary> orderSummary = c.addPublicNode(largeOrdersByCcy.build(), "orderSummary");
             //add reset
             orderSummary.resetNotifier(select(Deal.class));
         });
 
-        GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
+        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
 
         sep.onEvent(new Order(1, "EURUSD", 100));
         sep.onEvent(new Order(2, "EURJPY", 250));

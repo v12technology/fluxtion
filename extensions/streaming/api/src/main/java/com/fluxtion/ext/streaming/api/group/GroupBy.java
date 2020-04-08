@@ -29,19 +29,15 @@ import java.util.Map;
  * @param <T> he target type of the group
  * @author greg
  */
-public interface GroupBy<K, T> extends Wrapper<T>, Stateful {
+public interface GroupBy<T> extends Wrapper<T>, Stateful {
 
-    T value(K key);
-    
-    default T valueForMultiKey(Object o){
-        return null;
-    }
+    <K> T value(K key);
 
     default T value(int i) {
         return null;
     }
 
-    <V extends Wrapper<T>> Map<K, V> getMap();
+    <V extends Wrapper<T>> Map<?, V> getMap();
 
     default List<T> expireTime(Long time, int joinNumber) {
         return Collections.emptyList();
@@ -56,8 +52,8 @@ public interface GroupBy<K, T> extends Wrapper<T>, Stateful {
     }
 
     @Override
-    default GroupBy<K, T> notifierOverride(Object eventNotifier) {
-        return (GroupBy<K, T>) StreamOperator.service().notifierOverride(this, eventNotifier);
+    default GroupBy<T> notifierOverride(Object eventNotifier) {
+        return (GroupBy<T>) StreamOperator.service().notifierOverride(this, eventNotifier);
     }
 
     @Override

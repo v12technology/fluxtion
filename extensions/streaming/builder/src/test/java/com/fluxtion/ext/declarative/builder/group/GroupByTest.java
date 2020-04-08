@@ -52,7 +52,7 @@ public class GroupByTest extends BaseSepTest {
         sep.onEvent(new DeliveryItem("GB-ddf-45", "9900", 750.0));
         sep.onEvent(new DeliveryItem("EU-xxxx-01", "9900787", 6000.0));
         //
-        GroupBy<EnrichedDeliveryItem, DeliverySummary> summary = getField("deliverySummary");
+        GroupBy<DeliverySummary> summary = getField("deliverySummary");
         DeliverySummary euCustomer = summary.getMap().values().stream()
                 .map(wrapper -> wrapper.event())
                 .filter(sum -> sum.getCustomerId().equals("EU-xxxx-01"))
@@ -131,7 +131,7 @@ public class GroupByTest extends BaseSepTest {
             //calc
             deliverySummary.sum(EnrichedDeliveryItem::getValueInDollars, DeliverySummary::setValueInDollars);
             deliverySummary.sum(EnrichedDeliveryItem::getValueInLocalCcy, DeliverySummary::setValueInLocalCcy);
-            GroupBy<EnrichedDeliveryItem, DeliverySummary> summary = deliverySummary.build();
+            GroupBy<DeliverySummary> summary = deliverySummary.build();
             addPublicNode(summary, "deliverySummary");
 //            Log(summary);
             //logging, ordered by using logNotify referring to parent

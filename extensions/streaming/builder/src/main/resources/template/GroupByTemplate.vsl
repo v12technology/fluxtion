@@ -12,7 +12,7 @@ import $import;
  * 
  * @author Greg Higgins
  */
-public final class ${functionClass} implements GroupBy<${keyClass}, ${targetClass}>{
+public final class ${functionClass} implements GroupBy<${targetClass}>{
 
   @NoEventReference public Object resetNotifier;
 #foreach( $source in $sourceMappingList)
@@ -118,7 +118,10 @@ ${functionInfo.updateTarget}
 #if(${isMultiKey})
     //multikey finder
     @Override
-    public ${targetClass} valueForMultiKey(Object o){
+    public ${targetClass} value(Object o){
+        if(o instanceof ${keyClass}){
+            return calcState.getInstance((${keyClass})o).target;
+        }
 #foreach( $srcInfo in $multiKeyFunctionSet.entrySet() )
         if(o instanceof ${srcInfo.key}){
             return value((${srcInfo.key}) o);
@@ -133,12 +136,15 @@ ${functionInfo.updateTarget}
       return value(multiKey);
     }
 #end
+
+#else
+    @Override
+    public ${targetClass} value(Object key) {
+        return calcState.getInstance((${keyClass})key).target;
+    }
 #end
 
-    @Override
-    public ${targetClass} value(${keyClass} key) {
-        return calcState.getInstance(key).target;
-    }
+
 
     @Override
     public <V extends Wrapper<${targetClass}>> Map<${keyClass}, V> getMap() {

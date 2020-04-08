@@ -170,14 +170,14 @@ public class GroupByBuilder<K, T> {
         return this;
     }
 
-    public GroupBy<K, T> build() {
+    public GroupBy<T> build() {
         return groupBy.build();
     }
 
-    public GroupBy<K, T> build(String publicName) {
+    public GroupBy<T> build(String publicName) {
         return groupBy.build();
     }
-
+    
     private <F extends NumericFunctionStateless> Method checkFunction(Class<F> calcFunctionClass) {
         Method[] methods = calcFunctionClass.getDeclaredMethods();
         Method calcMethod = null;
