@@ -103,6 +103,14 @@ public class StreamOperatorService implements StreamOperator {
         return builder;
     }
 
+//      @Override
+    public <K, T, S> GroupByBuilder<S, T> groupBy(Wrapper<S> source,
+            SerializableFunction<S, K> key, Class<T> targetClass) {
+        GroupByBuilder<S, T> wcQuery = Group.groupBy(source, key, targetClass);
+        return  wcQuery;
+    }  
+    
+    
     @Override
     public <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass) {

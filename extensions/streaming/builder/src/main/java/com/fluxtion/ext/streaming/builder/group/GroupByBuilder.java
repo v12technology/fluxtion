@@ -50,7 +50,7 @@ public class GroupByBuilder<K, T> {
         this.sourceContext = sourceContext;
     }
 
-    public GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
+    public <K> GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
         return groupBy.join(k, f);
     }
 
