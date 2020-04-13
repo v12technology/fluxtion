@@ -34,7 +34,6 @@ import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
-import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
@@ -267,7 +266,6 @@ public class StreamFunctionCompiler<T, F> {
             buildTest = false;
         }
     } 
-    
     
     /**
      * Build a mapping function from n-ary arguments
@@ -561,7 +559,7 @@ public class StreamFunctionCompiler<T, F> {
             GenerationContext.SINGLETON.getNodeList().add(result);
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("could not buuld function " + toString(), e);
+            throw new RuntimeException("could not build function " + toString(), e);
         }
     }
 
