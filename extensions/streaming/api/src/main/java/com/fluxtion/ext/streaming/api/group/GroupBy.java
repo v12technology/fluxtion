@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.api.group;
 
 import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.Collections;
@@ -38,6 +39,8 @@ public interface GroupBy<T> extends Wrapper<T>, Stateful {
     }
 
     <V extends Wrapper<T>> Map<?, V> getMap();
+    
+    WrappedCollection<T> wrappedCollection();
 
     default List<T> expireTime(Long time, int joinNumber) {
         return Collections.emptyList();

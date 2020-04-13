@@ -27,6 +27,7 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.ServiceLoader;
 
 /**
@@ -152,6 +153,15 @@ public interface StreamOperator {
     default <T> T nodeId(T node, String name) {
         return node;
     }
+
+    
+     default <T, I extends Integer> Comparator<T> comparing(SerializableBiFunction<T, T, I> func){
+         return null;
+     }
+            
+//    default <T, S extends T, R extends T, I extends Integer> Comparator<T> comparing(Class<T> clazz, SerializableBiFunction<S, R, I> func){
+//        return null;
+//    }
 
     static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
