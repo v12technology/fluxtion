@@ -28,7 +28,7 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-04-08T18:49:30.526070100
+ * generation time   : 2020-04-13T14:20:05.230429200
  * generator version : 2.0.1-SNAPSHOT
  * api version       : 2.0.1-SNAPSHOT
  * </pre>
@@ -148,6 +148,7 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
 
   @Override
   public void init() {
+    count_3.reset();
     flightDetailsCsvDecoder0_0.init();
     filter_getDelay_By_positiveInt0_1.init();
     carrierDelayMap.init();

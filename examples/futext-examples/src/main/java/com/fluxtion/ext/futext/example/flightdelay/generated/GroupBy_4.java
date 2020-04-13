@@ -9,6 +9,7 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
 import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
@@ -29,6 +30,7 @@ import java.util.Map;
 public final class GroupBy_4 implements GroupBy<CarrierDelay> {
 
   @NoEventReference public Object resetNotifier;
+  private WrappedCollection<CarrierDelay> wrappedList;
   public Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt00;
   private CarrierDelay target;
   private GroupByTargetMap<String, CarrierDelay, CalculationStateGroupBy_4> calcState;
@@ -68,6 +70,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   @Initialise
   public void init() {
     calcState = new GroupByTargetMap<>(CalculationStateGroupBy_4.class);
+    wrappedList = new WrappedCollection<>();
     initialiserfilter_getDelay_By_positiveInt00 =
         new GroupByIniitialiser<FlightDetails, CarrierDelay>() {
 
@@ -81,6 +84,11 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   @Override
   public CarrierDelay value(Object key) {
     return calcState.getInstance((String) key).target;
+  }
+
+  @Override
+  public WrappedCollection<CarrierDelay> wrappedCollection() {
+    return wrappedList;
   }
 
   @Override

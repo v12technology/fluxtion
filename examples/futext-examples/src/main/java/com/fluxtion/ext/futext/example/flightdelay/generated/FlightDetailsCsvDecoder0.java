@@ -14,13 +14,17 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import static com.fluxtion.ext.text.api.ascii.Conversion.*;
+import static com.fluxtion.ext.text.api.csv.Converters.*;
 
 /**
  * Fluxtion generated CSV decoder.
@@ -98,9 +102,7 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
     header = header.replace("\"", "");
     List<String> headers = new ArrayList();
     for (String colName : header.split("[,]")) {
-      char c[] = colName.trim().replace(" ", "").toCharArray();
-      c[0] = Character.toLowerCase(c[0]);
-      headers.add(new String(c));
+      headers.add(getIdentifier(colName));
     }
   }
 
@@ -197,5 +199,13 @@ public class FlightDetailsCsvDecoder0 implements RowProcessor<FlightDetails> {
     CsvRecordMarshaller marshaller = marshaller();
     marshaller.handleEvent(new RegisterEventHandler(target));
     StringDriver.streamChars(input, marshaller);
+    target.onEvent(EofEvent.EOF);
+  }
+
+  public static void stream(StaticEventProcessor target, File input) throws IOException {
+    CsvRecordMarshaller marshaller = marshaller();
+    marshaller.handleEvent(new RegisterEventHandler(target));
+    CharStreamer.stream(input, marshaller).sync().stream();
+    target.onEvent(EofEvent.EOF);
   }
 }
