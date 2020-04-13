@@ -16,6 +16,8 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.api.annotations.Initialise;
+
 /**
  * Functions maybe stateless or stateful in Fluxtion. A stateful function can
  * implement this interface to receive reset notifications from Fluxtion. 
@@ -23,5 +25,6 @@ package com.fluxtion.ext.streaming.api;
  * @author greg higgins
  */
 public interface Stateful {
+    @Initialise
     void reset();
 }
