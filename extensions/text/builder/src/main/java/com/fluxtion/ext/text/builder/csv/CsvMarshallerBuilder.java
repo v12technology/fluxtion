@@ -22,19 +22,31 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.text.api.annotation.CheckSum;
+import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
+import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
+import com.fluxtion.ext.text.api.annotation.TrimField;
+import com.fluxtion.ext.text.api.csv.Converters;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
+import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.Checksum;
 import net.vidageek.mirror.dsl.Mirror;
+import net.vidageek.mirror.reflect.dsl.MethodReflector;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -113,6 +125,8 @@ import org.apache.velocity.VelocityContext;
 public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBuilder<T>, T> {
 
     private boolean mapBean = true;
+    private String checkSumField;
+    private boolean trimWhitespace = false;
 
     public static <S> CsvMarshallerBuilder<S> csvMarshaller(Class<S> target) {
         return csvMarshaller(target, 1);
@@ -180,6 +194,19 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     }
 
     private CsvMarshallerBuilder<T> map(Class clazz) {
+        CsvMarshaller annotation = (CsvMarshaller) clazz.getAnnotation(CsvMarshaller.class);
+        if (annotation != null) {
+            trimWhitespace = annotation.trim();
+            headerLines(annotation.headerLines());
+            includeEventPublisher(annotation.addEventPublisher());
+            mappingRow(annotation.mappingRow());
+            processEscapeSequences(annotation.processEscapeSequences());
+            skipCommentLines(annotation.skipCommentLines());
+            skipEmptyLines(annotation.skipEmptyLines());
+            reuseTarget(!annotation.newBeanPerRecord());
+            tokenConfig( new CharTokenConfig(annotation.lineEnding(), annotation.fieldSeparator(), annotation.ignoredChars()));
+        }
+        
         try {
             for (PropertyDescriptor md : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
                 if (md.getWriteMethod() != null) {
@@ -187,9 +214,30 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                     Field field;// = clazz.getDeclaredField(md.getName());
                     field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
+                    String fieldName = md.getName();
                     boolean optional = field.getAnnotation(OptionalField.class)!=null;
-                    if (!Modifier.isTransient(field.getModifiers())) {
-                        mapNamedFieldToMethod(md.getWriteMethod(), md.getName(), md.getName().equals("eventTime") || optional);
+                    boolean checkSum = field.getAnnotation(CheckSum.class)!=null;
+                    if(checkSum){
+                        checkSumField = md.getWriteMethod().getName();
+                    }else if (!Modifier.isTransient(field.getModifiers()) ) {
+                        mapNamedFieldToMethod(md.getWriteMethod(), fieldName, fieldName.equals("eventTime") || optional);
+                    }
+                    if(trimWhitespace){
+                        trim(fieldName);
+                    }
+                    final TrimField trim = field.getAnnotation(TrimField.class);
+                    if (trim!=null) {
+                        colInfo(fieldName).setTrim(trim.value());
+                    }
+                    final ConvertField converter = field.getAnnotation(ConvertField.class);
+                    if(converter!=null){
+                        String[] converterString = converter.value().split("#");
+                        MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
+                        converterMethod(fieldName, method.withAnyArgs());
+                    }
+                    final DefaultFieldValue defaultValue = field.getAnnotation(DefaultFieldValue.class);
+                    if(defaultValue!=null){
+                        defaultValue(fieldName,  defaultValue.value());
                     }
                 }
             }
@@ -207,7 +255,11 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         importMap.addImport(CsvRecordMarshaller.class);
         importMap.addImport(RegisterEventHandler.class);
         importMap.addImport(StringDriver.class);
+        importMap.addImport(CharStreamer.class);
+        importMap.addImport(File.class);
+        importMap.addImport(IOException.class);
         importMap.addImport(StaticEventProcessor.class);
+        importMap.addStaticImport(Converters.class);
         final RowProcessor<T> rowProcessor = super.build();
         return rowProcessor;
     }
@@ -246,7 +298,12 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     @Override
     protected void updateContext(VelocityContext ctx) {
         ctx.put("csv", true);
+        if(checkSumField!=null){
+            ctx.put("checksum", true);
+            ctx.put("checksumField", checkSumField);
+            importMap.addImport(java.util.zip.CRC32.class);
+            importMap.addImport(Checksum.class);
+        }
     }
-    
     
 }

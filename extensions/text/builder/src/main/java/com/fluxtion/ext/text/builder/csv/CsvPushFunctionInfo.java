@@ -58,6 +58,11 @@ public class CsvPushFunctionInfo {
     private String converterInstanceId;
     private Object converterInstance;
     private String converterClass;
+    //default value
+    private String defaultMethod;
+    private String defaultInstanceId;
+    private Object defaultInstance;
+    private String defaultClass;
     //validator
     private String validatorMethod;
     
@@ -110,6 +115,14 @@ public class CsvPushFunctionInfo {
         converterMethod = converterInstanceId + "." + method.getName();
     }
     
+    
+    public void setDefaultValue(String instanceId, Method method, Object converterInstance){
+        this.defaultInstanceId = instanceId;
+        this.defaultInstance = converterInstance;
+        this.defaultClass = importMap.addImport(converterInstance.getClass());
+        defaultMethod = defaultInstanceId + "." + method.getName();
+    }
+    
     public String getValidate(){
         return validatorMethod + ".validate(" + targetInstanceId + "." + targetGetMethod + "(), validationBuffer)";
     }
@@ -119,13 +132,16 @@ public class CsvPushFunctionInfo {
     }
 
     public String getUpdateTarget2() {
-
-        String conversion = targetCalcMethodName;
+        String defaultMethodCalc = targetCalcMethodName;
+        if(defaultMethod !=null){
+            defaultMethodCalc = defaultMethod + "(" + targetCalcMethodName + ")";
+        }
+        String conversion = defaultMethodCalc;
         boolean addConversion = true;
 
         if (converterMethod != null) {
             addConversion = false;
-            conversion = converterMethod + "(" + targetCalcMethodName + ")";
+            conversion = converterMethod + "(" + defaultMethodCalc + ")";
         } else {
             switch (targetArgType) {
                 case "String":
@@ -137,25 +153,25 @@ public class CsvPushFunctionInfo {
                     addConversion = false;
                     break;
                 case "double":
-                    conversion = "atod(" + targetCalcMethodName + ")";
+                    conversion = "atod(" + defaultMethodCalc + ")";
                     break;
                 case "float":
-                    conversion = "(float)atod(" + targetCalcMethodName + ")";
+                    conversion = "(float)atod(" + defaultMethodCalc + ")";
                     break;
                 case "int":
-                    conversion = "atoi(" + targetCalcMethodName + ")";
+                    conversion = "atoi(" + defaultMethodCalc + ")";
                     break;
                 case "byte":
-                    conversion = "(byte)atoi(" + targetCalcMethodName + ")";
+                    conversion = "(byte)atoi(" + defaultMethodCalc + ")";
                     break;
                 case "short":
-                    conversion = "(short)atoi(" + targetCalcMethodName + ")";
+                    conversion = "(short)atoi(" + defaultMethodCalc + ")";
                     break;
                 case "char":
-                    conversion = "(char)atoi(" + targetCalcMethodName + ")";
+                    conversion = "(char)atoi(" + defaultMethodCalc + ")";
                     break;
                 case "long":
-                    conversion = "atol(" + targetCalcMethodName + ")";
+                    conversion = "atol(" + defaultMethodCalc + ")";
                     break;
             }
             if (addConversion) {
