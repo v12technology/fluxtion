@@ -57,7 +57,7 @@ public class Argument<T> {
         return arg(select);
     }
     
-    public static Argument arg(Object supplier) {
+    public static <T> Argument<T> arg(Object supplier) {
         return new Argument(supplier, null, true);
     }
 
