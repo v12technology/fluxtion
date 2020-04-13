@@ -10,6 +10,7 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.util.ReadEvent.ReadEventFactory;
+import com.fluxtion.ext.text.api.util.marshaller.CharProcessor;
 import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.EventTranslator;
 import com.lmax.disruptor.RingBuffer;
@@ -30,9 +31,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Reads files and streams pushing {@link CharEvent} to an {@link StaticEventProcessor}.
- * Can be configured to be a synchronous or an asynchronous reader from the
- * input.
+ * Reads files and streams pushing {@link CharEvent} to an
+ * {@link StaticEventProcessor}. Can be configured to be a synchronous or an
+ * asynchronous reader from the input.
  *
  * @author gregp
  */
@@ -175,13 +176,25 @@ public class CharStreamer {
             BufferedReader rd = Files.newBufferedReader(inputFile.toPath());
             CharEvent charEvent = new CharEvent(' ');
             String readLine = "";
-            while ((readLine = rd.readLine()) != null) {
-                for (char c : readLine.toCharArray()) {
-                    charEvent.setCharacter(c);
+            if (handler instanceof CharProcessor) {
+                CharProcessor charHandler = (CharProcessor) handler;
+                while ((readLine = rd.readLine()) != null) {
+                    for (char c : readLine.toCharArray()) {
+                        charEvent.setCharacter(c);
+                        charHandler.handleEvent(charEvent);
+                    }
+                    charEvent.setCharacter('\n');
+                    charHandler.handleEvent(charEvent);
+                }
+            } else {
+                while ((readLine = rd.readLine()) != null) {
+                    for (char c : readLine.toCharArray()) {
+                        charEvent.setCharacter(c);
+                        handler.onEvent(charEvent);
+                    }
+                    charEvent.setCharacter('\n');
                     handler.onEvent(charEvent);
                 }
-                charEvent.setCharacter('\n');
-                handler.onEvent(charEvent);
             }
         }
     }
@@ -194,15 +207,23 @@ public class CharStreamer {
                     MappedByteBuffer buffer = fileChannel.map(
                             FileChannel.MapMode.READ_ONLY, 0, size);
                     CharEvent charEvent = new CharEvent(' ');
-                    while (buffer.hasRemaining()) {
-                        charEvent.setCharacter((char) buffer.get());
-                        handler.onEvent(charEvent);
+                    if (handler instanceof CharProcessor) {
+                        CharProcessor charHandler = (CharProcessor) handler;
+                        while (buffer.hasRemaining()) {
+                            charEvent.setCharacter((char) buffer.get());
+                            charHandler.handleEvent(charEvent);
+                        }
+                    } else {
+                        while (buffer.hasRemaining()) {
+                            charEvent.setCharacter((char) buffer.get());
+                            handler.onEvent(charEvent);
+                        }
                     }
                 }
-            }else{
+            } else {
                 streamFileLarge();
             }
-        }else{
+        } else {
             throw new FileNotFoundException("cannot locate file:" + inputFile.getAbsolutePath());
         }
     }
