@@ -116,5 +116,12 @@ public @interface CsvMarshaller {
      * @return validate a record with missing field
      */
     boolean acceptPartials() default false;
+    
+    /**
+     * trim white space from start and end of the record
+     * 
+     * @return trim white space flag
+     */
+    boolean trim() default false;
 
 }
