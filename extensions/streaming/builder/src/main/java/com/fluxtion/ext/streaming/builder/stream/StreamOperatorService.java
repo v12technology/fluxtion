@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -40,10 +41,12 @@ import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.apache.velocity.VelocityContext;
 
 /**
  *
@@ -51,16 +54,16 @@ import java.util.function.Predicate;
  */
 @AutoService(StreamOperator.class)
 public class StreamOperatorService implements StreamOperator {
-    
+
     @Override
-    public <T> Wrapper<T> select(Class<T> eventClazz){
+    public <T> Wrapper<T> select(Class<T> eventClazz) {
         return EventSelect.select(eventClazz);
     }
-    
+
     @Override
     public <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter, Wrapper<T> source, Method accessor, boolean cast) {
         StreamFunctionCompiler builder = lambdaBuilder(filter, source, accessor, cast, false);
-        if(builder==null){
+        if (builder == null) {
             Method filterMethod = filter.method();
             if (Modifier.isStatic(filterMethod.getModifiers())) {
                 builder = StreamFunctionCompiler.filter(filterMethod, source, accessor, cast);
@@ -74,7 +77,7 @@ public class StreamOperatorService implements StreamOperator {
     @Override
     public <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter, Wrapper<T> source, boolean cast) {
         StreamFunctionCompiler builder = lambdaBuilder(filter, source, null, cast, false);
-        if(builder==null){
+        if (builder == null) {
             Method filterMethod = filter.method();
             if (Modifier.isStatic(filterMethod.getModifiers())) {
                 builder = StreamFunctionCompiler.filter(filterMethod, source);
@@ -84,16 +87,16 @@ public class StreamOperatorService implements StreamOperator {
         }
         return (FilterWrapper<T>) builder.build();
     }
-    
-    private <S, T, W>  StreamFunctionCompiler lambdaBuilder(SerializableFunction<S, T> filter, Wrapper<W> source, Method accessor, boolean cast, boolean map){
+
+    private <S, T, W> StreamFunctionCompiler lambdaBuilder(SerializableFunction<S, T> filter, Wrapper<W> source, Method accessor, boolean cast, boolean map) {
         LambdaFunction<? extends S, T> addLambda = SerialisedFunctionHelper.addLambda(filter);
         StreamFunctionCompiler builder = null;
-        if(addLambda!=null){
+        if (addLambda != null) {
             try {
                 Method filterMethod = Function.class.getMethod("apply", Object.class);
-                if(map){
+                if (map) {
                     builder = StreamFunctionCompiler.map(addLambda, filterMethod, source, accessor, cast);
-                }else{
+                } else {
                     builder = StreamFunctionCompiler.filter(addLambda, filterMethod, source, accessor, cast);
                 }
             } catch (NoSuchMethodException | SecurityException ex) {
@@ -107,10 +110,9 @@ public class StreamOperatorService implements StreamOperator {
     public <K, T, S> GroupByBuilder<S, T> groupBy(Wrapper<S> source,
             SerializableFunction<S, K> key, Class<T> targetClass) {
         GroupByBuilder<S, T> wcQuery = Group.groupBy(source, key, targetClass);
-        return  wcQuery;
-    }  
-    
-    
+        return wcQuery;
+    }
+
     @Override
     public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass) {
@@ -133,7 +135,7 @@ public class StreamOperatorService implements StreamOperator {
     @Override
     public <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
         StreamFunctionCompiler builder = lambdaBuilder(mapper, source, null, cast, true);
-        if(builder==null){
+        if (builder == null) {
             Method mappingMethod = mapper.method();
             if (Modifier.isStatic(mappingMethod.getModifiers())) {
                 builder = StreamFunctionCompiler.map(null, mappingMethod, source, null, true);
@@ -147,8 +149,8 @@ public class StreamOperatorService implements StreamOperator {
     @Override
     public <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, Method accessor, boolean cast) {
         StreamFunctionCompiler builder = lambdaBuilder(mapper, source, accessor, cast, true);
-            if(builder==null){
-                Method mappingMethod = mapper.method();
+        if (builder == null) {
+            Method mappingMethod = mapper.method();
             if (Modifier.isStatic(mappingMethod.getModifiers())) {
                 builder = StreamFunctionCompiler.map(null, mappingMethod, source, accessor, true);
             } else {
@@ -180,6 +182,20 @@ public class StreamOperatorService implements StreamOperator {
             builder = StreamFunctionCompiler.map(mapper, mappingMethod, args);
         }
         return builder.build();
+    }
+
+    @Override
+    public <T, I extends Integer> Comparator<T> comparing(SerializableBiFunction<T, T, I> func) {
+        throw new UnsupportedOperationException("in development");
+//        Class<?> type = func.method().getParameters()[0].getType();
+//        String name = func.method().getName();
+//        Class clazz = func.method().getDeclaringClass();
+//        
+//
+//        VelocityContext ctx = new VelocityContext();
+//        String genClassName = "Comparator" + clazz.getSimpleName() + GenerationContext.SINGLETON.nextId(clazz.getCanonicalName());   
+//
+//        return null;
     }
 
     @Override

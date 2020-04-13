@@ -30,8 +30,8 @@ public class Push_2Test extends StreamInprocessTest {
             Wrapper<DataEvent> inDA = select(DataEvent.class);
             UpdateCount counter = c.addNode(new UpdateCount(), "counter");
             //push
-            PushBuilder.push(inSD, counter);
-            PushBuilder.push(inDA, counter);
+            PushBuilder.pushNotification(inSD, counter);
+            PushBuilder.pushNotification(inDA, counter);
         });
 
         sep.onEvent(new DealEvent());
@@ -51,8 +51,8 @@ public class Push_2Test extends StreamInprocessTest {
             UpdateCount counter = c.addNode(new UpdateCount(), "counter");
             PushTarget pushTarget = c.addNode(new PushTarget(), "target");
             //push
-            PushBuilder.push(inSD, counter);
-            PushBuilder.push(inDA, counter);
+            PushBuilder.pushNotification(inSD, counter);
+            PushBuilder.pushNotification(inDA, counter);
             //push data
             PushBuilder.push(counter::getCount, pushTarget::setVal);
 
@@ -81,8 +81,8 @@ public class Push_2Test extends StreamInprocessTest {
             UpdateCount counter = c.addNode(new UpdateCount(), "counter");
             PushTarget pushTarget = c.addNode(new PushTarget(), "target");
             //push
-            PushBuilder.push(inSD, counter);
-            PushBuilder.push(inDA, counter);
+            PushBuilder.pushNotification(inSD, counter);
+            PushBuilder.pushNotification(inDA, counter);
             //push data
             PushBuilder.push(counter::getCount, pushTarget::setVal);
             PushBuilder.pushSource(counter, pushTarget::pushUpdateCount);

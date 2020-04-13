@@ -24,6 +24,7 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
@@ -75,7 +76,8 @@ public class GroupByContext<K, T> {
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
             Map.class, BitSet.class, GroupBy.class, EventHandler.class,
-            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class
+            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
+            WrappedCollection.class
     );
     private String genClassName;
     private String calcStateClass;
