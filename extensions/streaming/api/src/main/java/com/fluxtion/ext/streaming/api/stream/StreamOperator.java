@@ -65,6 +65,18 @@ public interface StreamOperator {
         return null;
     }
 
+    /**
+     * Streams the return of a method as a wrapped instance.
+     * @param <T>
+     * @param <R>
+     * @param mapper
+     * @param source
+     * @return 
+     */
+    default <T, R> Wrapper<R> get(SerializableFunction<T, R> mapper, Wrapper<T> source) {
+        return null;
+    }
+    
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
         return null;
     }
