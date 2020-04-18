@@ -5,6 +5,8 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.ConstantNumber;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Data;
 
 /**
@@ -49,7 +51,14 @@ public class Argument<T> {
     }
 
     public static <T> Argument<T> arg(SerializableSupplier<T> supplier) {
-        return new Argument<>(supplier.captured()[0], supplier.method(), true);
+        Class<? extends Object> aClass = supplier.captured()[0].getClass();
+        Method method = supplier.method();
+        try {
+            method = aClass.getMethod(supplier.method().getName());
+        } catch (NoSuchMethodException | SecurityException ex) {
+            Logger.getLogger(Argument.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Argument<>(supplier.captured()[0], method, true);
     }
 
     public static <T> Argument<T> arg(Class<T> clazz){
