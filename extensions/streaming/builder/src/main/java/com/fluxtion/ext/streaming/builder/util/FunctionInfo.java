@@ -37,6 +37,7 @@ public class FunctionInfo {
     private String sep;
     private int count;
     private ImportMap importMap;
+    private boolean primitiveNumber;
 
     public FunctionInfo(Method method) {
         this(method, null);
@@ -55,6 +56,7 @@ public class FunctionInfo {
                 : importMap.addImport(method.getReturnType());
         paramString = "";
         sep = "";
+        primitiveNumber = (returnTypeClass.isPrimitive() || Number.class.isAssignableFrom(returnTypeClass)) && returnTypeClass != boolean.class;
         this.importMap = importMap;
     }
 
@@ -93,7 +95,7 @@ public class FunctionInfo {
     }
 
     private void checkAddPrimitiveAccess() {
-        if (functionMethod.getParameterTypes()[count].isPrimitive()) {
+        if (functionMethod.getParameterTypes().length > 0 && functionMethod.getParameterTypes()[count].isPrimitive()) {
             String getNumber = functionMethod.getParameterTypes()[count].getName() + "Value()";
             paramString += "." + getNumber;
         }
@@ -179,7 +181,11 @@ public class FunctionInfo {
     public SourceInfo getSourceInfo() {
         return sourceInfo;
     }
-    
+
+    public boolean isPrimitiveNumber() {
+        return primitiveNumber;
+    }
+
     @Override
     public String toString() {
         return "FunctionInfo{" + "paramString=" + paramString + ", returnType=" + returnType + ", returnTypeClass=" + returnTypeClass + ", calculateMethod=" + calculateMethod + ", calculateClass=" + calculateClass + ", functionMethod=" + functionMethod + ", sep=" + sep + ", count=" + count + '}';

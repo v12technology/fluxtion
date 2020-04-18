@@ -17,10 +17,10 @@
 package com.fluxtion.ext.streaming.builder.stream;
 //      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -38,6 +38,7 @@ import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBui
 import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler.get;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -46,7 +47,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.apache.velocity.VelocityContext;
 
 /**
  *
@@ -130,6 +130,12 @@ public class StreamOperatorService implements StreamOperator {
         GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
         wcQuery.function(functionClass, supplier, MutableNumber::set);
         return (GroupBy<R>) wcQuery.build();
+    }
+    
+    
+    @Override
+    public <T, R> Wrapper<R> get(SerializableFunction<T, R> mapper, Wrapper<T> source) {
+        return StreamFunctionCompiler.get(mapper.method(), source);
     }
 
     @Override
@@ -236,6 +242,10 @@ public class StreamOperatorService implements StreamOperator {
         return GenerationContext.SINGLETON.nameNode(node, name);
     }
 
+    public static<S> Wrapper<S> stream(SerializableSupplier<S> source){
+        return StreamFunctionCompiler.get(source);
+    }
+    
     public static <T> Wrapper<T> stream(T node) {
         if (node instanceof Wrapper) {
             return (Wrapper) node;
