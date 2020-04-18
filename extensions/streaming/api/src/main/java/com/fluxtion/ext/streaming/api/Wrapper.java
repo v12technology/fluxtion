@@ -69,11 +69,7 @@ public interface Wrapper<T> {
     }
 
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
-        if (supplier.method().getReturnType().isPrimitive()) {
-            return (Wrapper<S>) map((SerializableFunction) StreamFunctions.toDouble(), supplier);
-        } else {
-            return (Wrapper<S>) map((SerializableFunction) StreamFunctions.toReference(), supplier);
-        }
+        return StreamOperator.service().get(supplier, this);
     }
 
     default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
