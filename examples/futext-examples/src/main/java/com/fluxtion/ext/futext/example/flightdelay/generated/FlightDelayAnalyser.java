@@ -28,7 +28,7 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-04-13T14:20:05.230429200
+ * generation time   : 2020-04-19T18:59:35.314264900
  * generator version : 2.0.1-SNAPSHOT
  * api version       : 2.0.1-SNAPSHOT
  * </pre>
@@ -116,6 +116,9 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
         carrierDelayMap.updatefilter_getDelay_By_positiveInt00(filter_getDelay_By_positiveInt0_1);
       }
     }
+    if (isDirty_filter_getDelay_By_positiveInt0_1) {
+      carrierDelayMap.updated();
+    }
     if (isDirty_flightDetailsCsvDecoder0_0) {
       totalFlights.onEvent();
     }
@@ -131,6 +134,9 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
       if (isDirty_filter_getDelay_By_positiveInt0_1) {
         carrierDelayMap.updatefilter_getDelay_By_positiveInt00(filter_getDelay_By_positiveInt0_1);
       }
+    }
+    if (isDirty_filter_getDelay_By_positiveInt0_1) {
+      carrierDelayMap.updated();
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
       totalFlights.onEvent();
