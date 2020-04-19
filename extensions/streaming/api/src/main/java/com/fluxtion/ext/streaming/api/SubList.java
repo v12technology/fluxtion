@@ -66,7 +66,12 @@ public class SubList<T> implements WrappedList<T> {
         sourceSize = -1;
         updatePointers();
     }
-
+    
+    @Override
+    public WrappedList<T> resetNotifier(Object resetNotifier){
+        return this;
+    }
+    
     private void updatePointers() {
         int size = parent.size();
         if (sourceSize < 0 | size != sourceSize) {

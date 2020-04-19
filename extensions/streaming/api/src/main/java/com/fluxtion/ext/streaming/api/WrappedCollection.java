@@ -50,6 +50,8 @@ public interface WrappedCollection<T> {
 
     Collection<T> collection();
 
+    WrappedCollection<T> resetNotifier(Object resetNotifier);
+        
     default int size() {
         return collection().size();
     }

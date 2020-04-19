@@ -17,13 +17,11 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import java.util.Arrays;
 import java.util.Comparator;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -35,7 +33,8 @@ public class SubListTest extends StreamInprocessTest{
     @Test
     public void subTop(){
         sep(c ->{
-            WrappedList<Integer> numbers = select(Integer.class).collect().comparator(new MyComparator());
+            WrappedList<Integer> numbers = select(Integer.class).collect().comparator(new MyComparator()).id("numbers");
+            numbers.resetNotifier(select(String.class));
             numbers.top(4).id("top4");
             numbers.last(4).id("last4");
             numbers.skip(4).id("skip4");
@@ -46,12 +45,23 @@ public class SubListTest extends StreamInprocessTest{
         for (int i = 0; i < 10; i++) {
             onEvent(i);
         }
+        
+        WrappedList numbers = getField("numbers");
+        assertEquals(numbers.collection(), Arrays.asList(9,8,7,6,5,4,3,2,1,0));
+        
         WrappedList top4 = getField("top4");
-        Assert.assertEquals(top4.collection(), Arrays.asList(9,8,7,6));
+        assertEquals(top4.collection(), Arrays.asList(9,8,7,6));
         WrappedList last4 = getField("last4");
-        Assert.assertEquals(last4.collection(), Arrays.asList(3,2,1, 0));
+        assertEquals(last4.collection(), Arrays.asList(3,2,1, 0));
         WrappedList skip4 = getField("skip4");
-        Assert.assertEquals(skip4.collection(), Arrays.asList(5,4,3,2,1,0));
+        assertEquals(skip4.collection(), Arrays.asList(5,4,3,2,1,0));
+        
+        onEvent("clear");
+        assertEquals(numbers.size(), 0);
+        assertEquals(top4.size(), 0);
+        assertEquals(last4.size(), 0);
+        assertEquals(skip4.size(), 0);
+        
     }
     
     public static class MyComparator implements Comparator<Integer>{

@@ -19,7 +19,9 @@ package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.util.ArrayList;
@@ -35,11 +37,14 @@ import java.util.Objects;
  */
 public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
+
     private List<T> unmodifiableCollection;
     private final Wrapper<T> wrappedSource;
-//    @NoEventReference
+    @NoEventReference
     private Comparator comparator;
     private List<T> collection;
+    private Object resetNotifier;
+    private boolean reset;
 
     public ArrayListWrappedCollection() {
         this(null);
@@ -47,6 +52,26 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     public ArrayListWrappedCollection(Wrapper<T> wrappedSource) {
         this.wrappedSource = wrappedSource;
+    }
+
+    @OnParentUpdate("resetNotifier")
+    public void resetNotification(Object resetNotifier) {
+        collection.clear();
+        reset = true;
+    }
+    
+    @Override
+    public WrappedList<T> resetNotifier(Object resetNotifier){
+        this.resetNotifier = resetNotifier;
+        return this;
+    }
+
+    public Object getResetNotifier() {
+        return resetNotifier;
+    }
+
+    public void setResetNotifier(Object resetNotifier) {
+        this.resetNotifier = resetNotifier;
     }
 
     @Initialise
@@ -59,12 +84,12 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public WrappedList<T> top(int n) {
         return SepContext.service().addOrReuse(new SubList<>(this, 0, n));
     }
-    
+
     @Override
     public WrappedList<T> last(int n) {
         return SepContext.service().addOrReuse(new SubList<>(this, -n, 0));
     }
-    
+
     @Override
     public WrappedList<T> skip(int n) {
         return SepContext.service().addOrReuse(new SubList<>(this, n, -n));
@@ -72,14 +97,18 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @OnEvent
     public boolean updated() {
-        final T newItem = wrappedSource.event();
-        addItem(newItem);
+        if(!reset){
+            final T newItem = wrappedSource.event();
+            addItem(newItem);
+        }
+        reset = false;
         return true;
     }
 
     public void addItem(final T newItem) {
-        if(collection.contains(newItem))
+        if (collection.contains(newItem)) {
             return;
+        }
         if (comparator != null) {
             int index = Collections.binarySearch(collection, newItem, comparator);
             if (index < 0) {
@@ -104,7 +133,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public Comparator getComparator() {
         return comparator;
     }
-    
+
     @Override
     public < I extends Integer> void comparing(SerializableBiFunction<T, T, I> func) {
         System.out.println("SETTING COMPARATOR STATIC FUNCTION " + func.method().getParameters()[0].getType());

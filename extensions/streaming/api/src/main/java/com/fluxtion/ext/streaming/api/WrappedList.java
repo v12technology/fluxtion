@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.streaming.api;
 
+import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.List;
 
 /**
@@ -36,6 +37,10 @@ public interface WrappedList<T> extends WrappedCollection<T> {
     @Override
     List<T> collection();
 
+    default WrappedList<T> id(String id) {
+        return StreamOperator.service().nodeId(this, id);
+    }
+    
     default List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
     }
