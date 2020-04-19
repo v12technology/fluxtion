@@ -71,6 +71,10 @@ public interface Wrapper<T> {
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
         return StreamOperator.service().get(supplier, this);
     }
+    
+    default WrappedCollection<T> collect(){
+       return  SepContext.service().addOrReuse(new ArrayListWrappedCollection<>(this));
+    }
 
     default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
             SerializableFunction<T, S> supplier,

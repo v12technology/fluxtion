@@ -19,9 +19,9 @@ package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,11 +33,11 @@ import java.util.Objects;
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
-public class ArrayListWrappedCollection<T> implements WrappedCollection<T> {
+public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     private List<T> unmodifiableCollection;
     private final Wrapper<T> wrappedSource;
-    @NoEventReference
+//    @NoEventReference
     private Comparator comparator;
     private List<T> collection;
 
@@ -53,6 +53,21 @@ public class ArrayListWrappedCollection<T> implements WrappedCollection<T> {
     public void init() {
         this.collection = new ArrayList<>();
         this.unmodifiableCollection = Collections.unmodifiableList(collection);
+    }
+
+    @Override
+    public WrappedList<T> top(int n) {
+        return SepContext.service().addOrReuse(new SubList<>(this, 0, n));
+    }
+    
+    @Override
+    public WrappedList<T> last(int n) {
+        return SepContext.service().addOrReuse(new SubList<>(this, -n, 0));
+    }
+    
+    @Override
+    public WrappedList<T> skip(int n) {
+        return SepContext.service().addOrReuse(new SubList<>(this, n, -n));
     }
 
     @OnEvent
@@ -77,17 +92,26 @@ public class ArrayListWrappedCollection<T> implements WrappedCollection<T> {
     }
 
     @Override
+    public WrappedList<T> comparator(Comparator comparator) {
+        setComparator(comparator);
+        return this;
+    }
+
     public void setComparator(Comparator comparator) {
         this.comparator = SepContext.service().addOrReuse(comparator);
     }
 
+    public Comparator getComparator() {
+        return comparator;
+    }
+    
     @Override
-    public < I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func) {
+    public < I extends Integer> void comparing(SerializableBiFunction<T, T, I> func) {
         System.out.println("SETTING COMPARATOR STATIC FUNCTION " + func.method().getParameters()[0].getType());
     }
 
     @Override
-    public <R> void comparing(LambdaReflection.SerializableFunction<T, R> in) {
+    public <R extends Comparable> void comparing(SerializableFunction<T, R> in) {
         System.out.println("SETTING COMPARATOR USING PROPERTY");
     }
 

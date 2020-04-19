@@ -32,32 +32,34 @@ import java.util.stream.Stream;
  */
 public interface WrappedCollection<T> {
 
-    default <I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func){
+    default <I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func) {
         throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");
     }
 
-    default <R> void comparing(LambdaReflection.SerializableFunction<T, R> in){
+    default <R extends Comparable> void comparing(LambdaReflection.SerializableFunction<T, R> in) {
         throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");
     }
 
-    default void setComparator(Comparator comparator){}
+    default WrappedList<T> comparator(Comparator comparator) {
+        return null;
+    }
 
     default WrappedCollection<T> id(String id) {
         return StreamOperator.service().nodeId(this, id);
     }
 
     Collection<T> collection();
-    
+
     default int size() {
-        return  collection().size();
+        return collection().size();
     }
 
     default boolean isEmpty() {
-        return  collection().isEmpty();
+        return collection().isEmpty();
     }
 
     default boolean contains(T o) {
-        return  collection().contains(o);
+        return collection().contains(o);
     }
 
     default Iterator<T> iterator() {
@@ -71,5 +73,5 @@ public interface WrappedCollection<T> {
     default void forEach(Consumer<? super T> action) {
         collection().forEach(action);
     }
-    
+
 }
