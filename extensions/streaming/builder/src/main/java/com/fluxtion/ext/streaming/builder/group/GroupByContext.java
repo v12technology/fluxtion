@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
@@ -24,6 +25,8 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
@@ -37,10 +40,12 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMapping
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
+import static com.fluxtion.generator.targets.JavaGenHelper.mapPrimitiveToWrapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +79,9 @@ public class GroupByContext<K, T> {
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
             Map.class, BitSet.class, GroupBy.class, EventHandler.class,
-            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class
+            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
+            WrappedCollection.class,Collection.class,
+            ArrayListWrappedCollection.class, SepContext.class
     );
     private String genClassName;
     private String calcStateClass;
@@ -125,7 +132,7 @@ public class GroupByContext<K, T> {
 
     GroupByContext(Group<K, T> group) {
         this.primaryGroup = group;
-        this.keyClazz = group.getKeyClass();
+        this.keyClazz = group.getInputClass();
         this.targetClazz = group.getTargetClass();
         Method[] methods = this.targetClazz.getMethods();
         for (Method method : methods) {
@@ -142,19 +149,31 @@ public class GroupByContext<K, T> {
         contexts.add(primaryContext);
     }
 
-    public GroupBy<K, T> build() {
+    public GroupBy<T> build() {
         try {
             genClassName = "GroupBy_" + GenerationContext.nextId();
             buildCalculationState();
             VelocityContext ctx = new VelocityContext();
             ctx.put(functionClass.name(), genClassName);
-            ctx.put(keyClass.name(), importMap.addImport(keyClazz));
+            if(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())==void.class){
+                if(primaryContext.isMultiKey()){
+                    ctx.put(keyClass.name(), primaryContext.getMultiKeyClassName());
+                }else{
+                    ctx.put(keyClass.name(), importMap.addImport(primaryContext.keyMethod.getReturnType()));
+                }
+//                ctx.put(keyClass.name(), importMap.addImport(keyClazz));
+            }else{
+                ctx.put(keyClass.name(), importMap.addImport(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())));
+            }
             ctx.put(targetClass.name(), importMap.addImport(targetClazz));
             ctx.put("primaryContext", primaryContext);
             ctx.put("calcStateClass", calcStateClass);
             ctx.put("initialiserRequired", initialiserRequired);
             ctx.put("isMultiKey", primaryContext.isMultiKey());
-            ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
+            if(primaryContext.isMultiKey()){
+                ctx.put("multiKeyFunctionSet", primaryGroup.getMultiKeySourceMap());
+                ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
+            }
             if (eventCompleteMethod != null) {
                 ctx.put("eventCompleteMethod", eventCompleteMethod);
             }
@@ -163,8 +182,8 @@ public class GroupByContext<K, T> {
             }
             ctx.put(imports.name(), importMap.asString());
             ctx.put(sourceMappingList.name(), contexts);
-            Class<GroupBy<K, T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
-            GroupBy<K, T> result = aggClass.newInstance();
+            Class<GroupBy<T>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
+            GroupBy<T> result = aggClass.newInstance();
 
             for (SourceContext context : contexts) {
 

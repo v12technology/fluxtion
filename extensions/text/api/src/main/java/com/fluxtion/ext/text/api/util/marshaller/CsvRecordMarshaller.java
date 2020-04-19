@@ -36,7 +36,7 @@ import com.fluxtion.ext.text.api.util.EventPublsher;
  * @author Greg Higgins
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-public class CsvRecordMarshaller implements StaticEventProcessor, Lifecycle {
+public class CsvRecordMarshaller implements StaticEventProcessor, Lifecycle, CharProcessor {
 
     //Node declarations
     private final RowProcessor rowProcessor;
@@ -91,6 +91,7 @@ public class CsvRecordMarshaller implements StaticEventProcessor, Lifecycle {
         afterEvent();
     }
 
+    @Override
     public void handleEvent(CharEvent typedEvent) {
         //Default, no filter methods
         isDirty_RowProcessor = rowProcessor.charEvent(typedEvent);

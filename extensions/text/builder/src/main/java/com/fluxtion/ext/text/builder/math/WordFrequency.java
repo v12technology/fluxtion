@@ -30,11 +30,11 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.wordSplitter;
  */
 public interface WordFrequency {
 
-  static GroupBy<ByteBufferDelimiter, MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
+  static GroupBy< MutableNumber> wordFrequency(ByteBufferDelimiter buffer) {
         return Frequency.frequency(buffer, ByteBufferDelimiter::asString);
     }
 
-  static GroupBy<ByteBufferDelimiter, MutableNumber> wordFrequency() {
+  static GroupBy< MutableNumber> wordFrequency() {
         return Frequency.frequency(wordSplitter(), ByteBufferDelimiter::asString);
     }
 

@@ -13,7 +13,6 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
-import com.fluxtion.generator.util.BaseSepTest;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -21,7 +20,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class AggregateTest extends BaseSepTest{
+public class AggregateTest {
 
     public static class CumSum implements NumericFunctionStateful {
 

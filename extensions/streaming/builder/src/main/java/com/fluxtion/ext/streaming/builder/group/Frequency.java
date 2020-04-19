@@ -26,7 +26,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
  */
 public class Frequency {
 
-    public static <K, T> GroupBy<K, MutableNumber> frequency(K k, LambdaReflection.SerializableFunction<K, ?> f) {
+    public static <K, T> GroupBy<MutableNumber> frequency(K k, LambdaReflection.SerializableFunction<K, ?> f) {
         GroupByBuilder<K, MutableNumber> wcQuery = Group.groupBy(k, f, MutableNumber.class);
         wcQuery.count(MutableNumber::setIntValue);
         return wcQuery.build();

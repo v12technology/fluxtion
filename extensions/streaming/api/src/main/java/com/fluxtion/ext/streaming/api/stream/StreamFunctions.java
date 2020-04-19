@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.streaming.api.stream;
 
+import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Stateful;
@@ -88,6 +89,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             count = 0;
         }
@@ -103,6 +105,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             sum = 0;
         }
@@ -120,6 +123,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             max = 0;
         }
@@ -137,6 +141,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             min = 0;
         }
@@ -156,6 +161,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             sum = 0;
             count = 0;
@@ -175,6 +181,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             previous = 0;
             result = 0;
@@ -193,6 +200,7 @@ public class StreamFunctions {
         }
 
         @Override
+        @Initialise
         public void reset() {
             previous = 0;
             result = 0;

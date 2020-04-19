@@ -27,6 +27,7 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.ServiceLoader;
 
 /**
@@ -38,6 +39,10 @@ import java.util.ServiceLoader;
  */
 public interface StreamOperator {
 
+    default <T> Wrapper<T> select(Class<T> eventClazz){
+        return null;
+    }
+
     default <S, T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter,
             Wrapper<T> source, Method accessor, boolean cast) {
         return (FilterWrapper<T>) source;
@@ -48,18 +53,30 @@ public interface StreamOperator {
         return (FilterWrapper<T>) source;
     }
 
-    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
+    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass){
         return null;
     }
 
-    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<K, R> group(Wrapper<T> source,
+    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
             Class<F> functionClass){
         return null;
     }
 
+    /**
+     * Streams the return of a method as a wrapped instance.
+     * @param <T>
+     * @param <R>
+     * @param mapper
+     * @param source
+     * @return 
+     */
+    default <T, R> Wrapper<R> get(SerializableFunction<T, R> mapper, Wrapper<T> source) {
+        return null;
+    }
+    
     default <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {
         return null;
     }
@@ -148,6 +165,15 @@ public interface StreamOperator {
     default <T> T nodeId(T node, String name) {
         return node;
     }
+
+    
+     default <T, I extends Integer> Comparator<T> comparing(SerializableBiFunction<T, T, I> func){
+         return null;
+     }
+            
+//    default <T, S extends T, R extends T, I extends Integer> Comparator<T> comparing(Class<T> clazz, SerializableBiFunction<S, R, I> func){
+//        return null;
+//    }
 
     static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);

@@ -37,7 +37,7 @@ import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.buildLog;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.arg;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -265,10 +265,10 @@ public class MathFunctionTest extends StreamInprocessTest {
             
             Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
             
-            netPos.filter(Number::doubleValue, inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
-            netPos.filter(Number::doubleValue, outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
-            netPos.filter(Number::doubleValue, inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
-            netPos.filter(Number::doubleValue, outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
+            netPos.filter(inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
+            netPos.filter(outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
+            netPos.filter(inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
+            netPos.filter(outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
 
             Log("-> Trade recived:'{}'@'{}' ", select(DataEvent.class),
                     DataEvent::getStringValue, DataEvent::getValue);         

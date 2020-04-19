@@ -48,7 +48,6 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
                 instance = targetClass.getDeclaredConstructor().newInstance();
                 initialiser.apply(source, instance.event());
                 map.put((K) key, instance);
-
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -68,7 +67,6 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
             return instance;
         }
         return instance;
-
     }
 
     //use charsequence key!!
@@ -135,7 +133,6 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
                 instance = targetClass.newInstance();
                 initialiser.apply(source, instance.event());
                 map.put(key.copyKey(), instance);
-
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }

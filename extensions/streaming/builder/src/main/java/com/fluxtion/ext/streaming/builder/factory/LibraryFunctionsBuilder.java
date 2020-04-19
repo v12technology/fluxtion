@@ -28,12 +28,12 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import com.fluxtion.ext.streaming.builder.util.FunctionArg;
+import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.*;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
-import static com.fluxtion.ext.streaming.builder.util.FunctionArg.*;
+import static com.fluxtion.ext.streaming.api.stream.Argument.*;
 
 /**
  * Utility class providing static helper methods to create mapping operations
@@ -58,7 +58,7 @@ public class LibraryFunctionsBuilder  {
         return map(add(), arg(supplier1), arg(supplier2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> add(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+    public static <T extends Number, S extends Number> Wrapper<Number> add(Argument<T> arg1, Argument<S> arg2) {
         return map(add(), arg1, arg2);
     }
 
@@ -87,7 +87,7 @@ public class LibraryFunctionsBuilder  {
         return map(subtract(), arg(supplier1), arg(supplier2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> subtract(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+    public static <T extends Number, S extends Number> Wrapper<Number> subtract(Argument<T> arg1, Argument<S> arg2) {
         return map(subtract(), arg1, arg2);
     }
 
@@ -116,7 +116,7 @@ public class LibraryFunctionsBuilder  {
         return map(multiply(), arg(supplier1), arg(supplier2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> multiply(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+    public static <T extends Number, S extends Number> Wrapper<Number> multiply(Argument<T> arg1, Argument<S> arg2) {
         return map(multiply(), arg1, arg2);
     }
 
@@ -145,7 +145,7 @@ public class LibraryFunctionsBuilder  {
         return map(divide(), arg(supplier1), arg(supplier2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> divide(FunctionArg<T> arg1, FunctionArg<S> arg2) {
+    public static <T extends Number, S extends Number> Wrapper<Number> divide(Argument<T> arg1, Argument<S> arg2) {
         return map(divide(), arg1, arg2);
     }
 
@@ -189,7 +189,7 @@ public class LibraryFunctionsBuilder  {
         return map(cumSum(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> cumSum(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> cumSum(Argument<T> arg) {
         return map(cumSum(), arg);
     }
 
@@ -243,7 +243,7 @@ public class LibraryFunctionsBuilder  {
         return map(avg(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> avg(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> avg(Argument<T> arg) {
         return map(avg(), arg);
     }
 
@@ -297,7 +297,7 @@ public class LibraryFunctionsBuilder  {
         return map(max(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> max(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> max(Argument<T> arg) {
         return map(max(), arg);
     }
 
@@ -351,7 +351,7 @@ public class LibraryFunctionsBuilder  {
         return map(min(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> min(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> min(Argument<T> arg) {
         return map(min(), arg);
     }
 
@@ -405,7 +405,7 @@ public class LibraryFunctionsBuilder  {
         return map(percentChange(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> percentChange(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> percentChange(Argument<T> arg) {
         return map(percentChange(), arg);
     }
 
@@ -459,7 +459,7 @@ public class LibraryFunctionsBuilder  {
         return map(delta(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> delta(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> delta(Argument<T> arg) {
         return map(delta(), arg);
     }
 
@@ -513,7 +513,7 @@ public class LibraryFunctionsBuilder  {
         return map(toDouble(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> toDouble(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> toDouble(Argument<T> arg) {
         return map(toDouble(), arg);
     }
 
@@ -567,7 +567,7 @@ public class LibraryFunctionsBuilder  {
         return map(ceil(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> ceil(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> ceil(Argument<T> arg) {
         return map(ceil(), arg);
     }
 
@@ -621,7 +621,7 @@ public class LibraryFunctionsBuilder  {
         return map(floor(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> floor(FunctionArg<T> arg) {
+    public static <T extends Number> Wrapper<Number> floor(Argument<T> arg) {
         return map(floor(), arg);
     }
 

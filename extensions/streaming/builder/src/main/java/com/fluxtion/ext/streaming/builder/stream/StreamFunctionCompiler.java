@@ -34,9 +34,9 @@ import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
-import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import com.fluxtion.ext.streaming.builder.util.FunctionArg;
+import com.fluxtion.ext.streaming.api.stream.Argument;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.FunctionInfo;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filter;
@@ -44,6 +44,7 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.filterSubject
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.input;
+import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.isPrimitiveNumeric;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.newFunction;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.outputClass;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceClass;
@@ -139,6 +140,7 @@ public class StreamFunctionCompiler<T, F> {
     private static final String MAPPER_BOOLEAN_TEMPLATE = "template/MapperBooleanTemplate.vsl";
     private static final String MAPPER_TEST_TEMPLATE = "template/TestTemplate.vsl";
     private static final String CONSUMER_TEMPLATE = "template/ConsumerTemplate.vsl";
+    private static final String MAPFIELD_TEMPLATE = "template/MapFieldTemplate.vsl";
     private FunctionClassKey key;
     private String currentTemplate = TEMPLATE;
     private String genClassSuffix = "Filter_";
@@ -212,11 +214,11 @@ public class StreamFunctionCompiler<T, F> {
         return filterBuilder;
     }
 
-    public static <T, R extends Boolean, S, F> StreamFunctionCompiler mapSet(F mapper, Method mappingMethod, FunctionArg... args) {
+    public static <T, R extends Boolean, S, F> StreamFunctionCompiler mapSet(F mapper, Method mappingMethod, Argument... args) {
         //call map then add sources
         //update the key
         //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
-        FunctionArg arg = args[0];
+        Argument arg = args[0];
         StreamFunctionCompiler builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
@@ -267,7 +269,6 @@ public class StreamFunctionCompiler<T, F> {
             buildTest = false;
         }
     } 
-    
     
     /**
      * Build a mapping function from n-ary arguments
@@ -409,6 +410,39 @@ public class StreamFunctionCompiler<T, F> {
         return filterBuilder;
     }
 
+    
+    public static<S> Wrapper<S> get(SerializableSupplier<S> source){
+        Argument<S> arg = arg(source);
+        return get(arg.getAccessor(), arg.source);
+    }
+    
+    public static<S> Wrapper get(Method accessor, S source){
+        StreamFunctionCompiler filterBuilder = new StreamFunctionCompiler(source);
+        filterBuilder.testFunction = null;
+        String sourceString = source.getClass().getSimpleName();
+        filterBuilder.currentTemplate = MAPFIELD_TEMPLATE;
+        filterBuilder.functionInfo = new FunctionInfo(accessor, filterBuilder.importMap);
+        filterBuilder.key = new FunctionClassKey(null, null, source, accessor, false, "mapField");
+        filterBuilder.filterSubject = source;
+        final Class<?> returnType = accessor.getReturnType();
+        if ((returnType.isPrimitive() || Number.class.isAssignableFrom(returnType)) && accessor.getReturnType() != boolean.class) {
+            FunctionInfo funcInfo = filterBuilder.functionInfo;
+            funcInfo.returnTypeClass = MutableNumber.class;
+            funcInfo.returnType = filterBuilder.importMap.addImport(Number.class);
+            filterBuilder.importMap.addImport(MutableNumber.class);
+        } 
+        if (source instanceof Wrapper) {
+            filterBuilder.filterSubjectWrapper = (Wrapper) source;
+            sourceString = filterBuilder.filterSubjectWrapper.eventClass().getSimpleName();
+            filterBuilder.functionInfo.appendParamLocal("filterSubject", (Wrapper) source, false);
+        } else {
+            filterBuilder.functionInfo.appendParamValue("filterSubject", false, false);
+        }
+        filterBuilder.genClassSuffix = "GetField_" + sourceString + "_" + accessor.getReturnType().getSimpleName();    
+        return filterBuilder.build();
+        
+    }
+    
     public static <S, C> StreamFunctionCompiler consume(C consumer, Method mappingMethod, S source) {
         if (consumer == System.out) {
             consumer = null;
@@ -520,6 +554,7 @@ public class StreamFunctionCompiler<T, F> {
             ctx.put(outputClass.name(), functionInfo.returnType);
             ctx.put(targetClass.name(), functionInfo.calculateClass);
             ctx.put(targetMethod.name(), functionInfo.calculateMethod);
+            ctx.put(isPrimitiveNumeric.name(), functionInfo.isPrimitiveNumber());
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(filter.name(), true);
             ctx.put("multiArgFunc", multiArgFunc);
@@ -561,7 +596,7 @@ public class StreamFunctionCompiler<T, F> {
             GenerationContext.SINGLETON.getNodeList().add(result);
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("could not buuld function " + toString(), e);
+            throw new RuntimeException("could not build function " + toString(), e);
         }
     }
 
@@ -602,6 +637,7 @@ public class StreamFunctionCompiler<T, F> {
             final SourceInfo srcInfo = new SourceInfo(
                     importMap.addImport(input.getClass()),
                     "source_" + sourceCount++);
+            srcInfo.setWrapper(Wrapper.class.isAssignableFrom(input.getClass()));
             srcInfo.setConstant(Constant.class.isAssignableFrom(input.getClass()));
             return srcInfo;
         });

@@ -33,6 +33,7 @@ import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.sourceMappingList;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.targetClass;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
+import static com.fluxtion.ext.text.api.csv.Converters.defaultCharSequence;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
@@ -44,6 +45,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.VelocityContext;
 
@@ -70,6 +72,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected final ArrayList<CsvPushFunctionInfo> srcMappingList;
     protected int converterCount;
     protected Map<Object, String> converterMap;
+    protected Map<Object, Pair> defaultValueMap;
     protected CharTokenConfig tokenCfg;
     protected boolean reuseTarget;
     protected final boolean fixedLen;
@@ -92,6 +95,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
+        this.defaultValueMap = new HashMap<>();
         this.tokenCfg = CharTokenConfig.WINDOWS;
         this.reuseTarget = true;
         this.addEventPublisher = false;
@@ -143,12 +147,43 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             Object captured = converterFunction.captured()[0];
             String localName = converterMap.computeIfAbsent(captured, (t) -> {
                 String name = declaringClass.getSimpleName();
-                name = name.toLowerCase().charAt(0) + name.substring(1) + "_" + converterCount++;
+                name = name.toLowerCase().charAt(0) + name.substring(1) + "_" + colName;
                 GenerationContext.SINGLETON.getNodeList().add(captured);
                 return name;
             });
             colInfo(colName).setConverter(localName, method, captured);
         }
+        return (P) this;
+    }
+
+    public P defaultValue(String colName, String defaultValue) {
+        importMap.addImport(NoEventReference.class);
+        LambdaReflection.SerializableFunction<CharSequence, CharSequence> converterFunction = defaultCharSequence(defaultValue);
+        Method method = converterFunction.method(SINGLETON.getClassLoader());
+        Class<?> declaringClass = method.getDeclaringClass();
+        Object captured = converterFunction.captured()[0];
+        Pair localName = defaultValueMap.computeIfAbsent(captured, (t) -> {
+            String name = declaringClass.getSimpleName();
+            name = name.toLowerCase().charAt(0) + name.substring(1) + "_" + colName;
+            //GenerationContext.SINGLETON.getNodeList().add(captured);
+            return new Pair(name, defaultValue);
+        });
+        colInfo(colName).setDefaultValue(localName.getId(), method, captured);  
+        return (P) this;
+    }
+
+    public P defaultValue(int colIndex, String defaultValue) {
+        importMap.addImport(NoEventReference.class);
+        LambdaReflection.SerializableFunction<CharSequence, CharSequence> converterFunction = defaultCharSequence(defaultValue);
+        Method method = converterFunction.method(SINGLETON.getClassLoader());
+        Class<?> declaringClass = method.getDeclaringClass();
+        Object captured = converterFunction.captured()[0];
+        Pair localName = defaultValueMap.computeIfAbsent(captured, (t) -> {
+            String name = declaringClass.getSimpleName();
+            name = name.toLowerCase().charAt(0) + name.substring(1) + "_Column" + colIndex;
+            return new Pair(name, defaultValue);
+        });
+        colInfo(colIndex).setDefaultValue(localName.getId(), method, captured);  
         return (P) this;
     }
 
@@ -224,6 +259,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     public RowProcessor<T> build() {
         try {
             VelocityContext ctx = new VelocityContext();
+            updateContext(ctx);
             HashMap<String, String> convereters = new HashMap<>();
             HashMap<String, String> validators = new HashMap<>();
             converterMap.entrySet().stream().forEach((e) -> {
@@ -249,6 +285,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             ctx.put("fixedLen", fixedLen);
             ctx.put("newTarget", !reuseTarget);
             ctx.put("convereters", convereters);
+            ctx.put("defaultValues", defaultValueMap);
             ctx.put("validators", validators);
             ctx.put(FunctionKeys.id.name(), id);
             ctx.put("delimiter", StringEscapeUtils.escapeJava("" + tokenCfg.getFieldSeparator()));
@@ -262,7 +299,6 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             if (eventCompleteMethod != null) {
                 ctx.put("eventCompleteMethod", eventCompleteMethod);
             }
-            updateContext(ctx);
             final Class<RowProcessor> aggClass = FunctionGeneratorHelper.generateAndCompile(null, CSV_MARSHALLER, GenerationContext.SINGLETON, ctx);
             final RowProcessor result = aggClass.newInstance();
 
@@ -306,6 +342,12 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     protected void updateContext(VelocityContext ctx) {
 
+    }
+    
+    @Data
+    public static class Pair{
+        private final String id;
+        private final String value;
     }
 
 }

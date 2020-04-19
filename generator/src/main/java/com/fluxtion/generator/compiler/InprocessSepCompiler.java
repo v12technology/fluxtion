@@ -100,6 +100,21 @@ public class InprocessSepCompiler {
     public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
     }
+    
+    public static StaticEventProcessor reuseOrBuild(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
+        StaticEventProcessor processor = null;
+        try {
+            Class<? extends StaticEventProcessor> processorClass = Class.forName(pkg + "." + name).asSubclass(StaticEventProcessor.class);
+            processor = processorClass.getDeclaredConstructor().newInstance();
+            if (processor instanceof Lifecycle) {
+                Lifecycle lifecycle = (Lifecycle) processor;
+                lifecycle.init();
+            }
+        } catch (Exception ex) {
+            processor = InprocessSepCompiler.sepInstance(builder, pkg, name);
+        }
+        return processor;
+    }
 
     /**
      * Compiles and instantiates a SEP described with the provided

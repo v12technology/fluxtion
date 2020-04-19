@@ -1,14 +1,9 @@
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.builder.node.SEPConfig;
-import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
-import static com.fluxtion.ext.declarative.builder.group.Order.ORDER;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
-import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.junit.Categories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,7 +11,7 @@ import org.junit.experimental.categories.Category;
 /**
  * @author gregp
  */
-public class ExpiringTest extends BaseSepTest {
+public class ExpiringTest extends StreamInprocessTest {
 
 //    @Override
 //    protected String testPackageID() {
@@ -26,8 +21,23 @@ public class ExpiringTest extends BaseSepTest {
     @Test
     @Category(Categories.FilterTest.class)
     public void test() {
-        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
-        GroupBy<Order, OrderSummary> summaryMap = getField("orderSummary");
+        sep(c ->{
+            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order.class, Order::getId, OrderSummary.class);
+            GroupByBuilder<Deal, OrderSummary> deals = orders.join(Deal.class, Deal::getOrderId);
+            //set default vaules for a group by row
+            orders.init(Order::getCcyPair, OrderSummary::setCcyPair);
+            orders.init(Order::getId, OrderSummary::setOrderId);
+            //set last deal id
+            deals.init(Deal::getDealId, OrderSummary::setFirstDealId);
+            //aggregate function values
+            orders.sum(Order::getSize, OrderSummary::setOrderSize);
+            deals.count(OrderSummary::setDealCount);
+            deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);
+            deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);
+            deals.sum(Deal::getDealtSize, OrderSummary::setVolumeDealt);
+            orders.build().id("orderSummary");
+        });
+        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
 //        
 
 //        sep.onEvent(new Order(2, "EURJPY", 100_000_000));
@@ -53,29 +63,4 @@ public class ExpiringTest extends BaseSepTest {
 //        System.out.println(euOrders);
     }
 
-    public static class Builder1 extends SEPConfig {
-
-        {
-            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order.class, Order::getId, OrderSummary.class);
-            GroupByBuilder<Deal, OrderSummary> deals = orders.join(Deal.class, Deal::getOrderId);
-            //set default vaules for a group by row
-            orders.init(Order::getCcyPair, OrderSummary::setCcyPair);
-            orders.init(Order::getId, OrderSummary::setOrderId);
-            //set last deal id
-            deals.init(Deal::getDealId, OrderSummary::setFirstDealId);
-            //aggregate function values
-            orders.sum(Order::getSize, OrderSummary::setOrderSize);
-            deals.count(OrderSummary::setDealCount);
-            deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);
-            deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);
-            deals.sum(Deal::getDealtSize, OrderSummary::setVolumeDealt);
-            GroupBy<Order, OrderSummary> orderSummary = orders.build();
-            //add public node for testing
-            addPublicNode(orderSummary, "orderSummary");
-            //logging
-            Log(DEAL);
-            Log(ORDER);
-            Log(orderSummary);
-        }
-    }
 }

@@ -21,6 +21,11 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     public ValidationLogger errorLog;
     //buffer management
     private final char[] chars = new char[4096];
+#if(${checksum})
+    private final byte[] checksumBytes = new byte[2 * chars.length];
+    private Checksum checksumCalc = new CRC32();
+    //checksum field = ${checksumField}
+#end
 #if(!${fixedLen})
     private final int[] delimIndex = new int[1024];
 #end
@@ -45,6 +50,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #foreach($converter in ${convereters.entrySet()})
     @NoEventReference
     public ${converter.value} ${converter.key};
+#end
+#foreach($defaultValue in ${defaultValues.entrySet()})
+    private final DefaultValue ${defaultValue.value.id} = new DefaultValue("${defaultValue.value.value}");
 #end
     private int rowNumber;
     private final HashMap fieldMap = new HashMap<>();
@@ -88,6 +96,10 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         }
 #end
         chars[writeIndex++] = character;
+#if(${checksum})
+        checksumBytes[writeIndex << 1] = (byte) ((character & 0xFF00) >> 8);
+        checksumBytes[writeIndex << 1 + 1] = (byte) (character & 0x00FF);
+#end
         return false;
     }
 
@@ -169,9 +181,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         header = header.replace("\"", "");
         List<String> headers = new ArrayList();
         for (String colName : header.split("[${delimiter}]")) {
-            char c[] = colName.trim().replace(" ", "").toCharArray();
-            c[0] = Character.toLowerCase(c[0]);
-            headers.add(new String(c));
+            headers.add(getIdentifier(colName));
         }
 #foreach($sourceInfo in $sourceMappingList)
 #* *##if(${sourceInfo.namedField})
@@ -226,6 +236,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #if(${eventMethod})
             target.${eventMethod}();
 #end
+#if(${checksum})
+            calculateChecksum();
+#end
         } catch (Exception e) {
             logException("problem pushing data from row:", false, e);
             passedValidation = false;
@@ -236,6 +249,14 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         return true;
     }
 
+#if(${checksum})
+    private void calculateChecksum(){
+        checksumCalc.update(checksumBytes, 0, writeIndex << 1);
+        long value = checksumCalc.getValue();
+        target.${checksumField}(value);
+        checksumCalc.reset();
+    }
+#end
     private void updateFieldIndex() {
 #if(${fixedLen})
         //Do nothing fixed len
@@ -319,6 +340,14 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
       CsvRecordMarshaller marshaller = marshaller();
       marshaller.handleEvent(new RegisterEventHandler(target));
       StringDriver.streamChars(input, marshaller);
+      target.onEvent(EofEvent.EOF);
+  }
+
+  public static void stream(StaticEventProcessor target, File input) throws IOException {
+      CsvRecordMarshaller marshaller = marshaller();
+      marshaller.handleEvent(new RegisterEventHandler(target));
+      CharStreamer.stream(input, marshaller).sync().stream();
+      target.onEvent(EofEvent.EOF);
   }
 #end
 }

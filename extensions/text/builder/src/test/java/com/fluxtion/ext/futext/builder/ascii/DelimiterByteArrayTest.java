@@ -41,7 +41,7 @@ public class DelimiterByteArrayTest extends BaseSepTest {
     @Test
     public void testByteBufferDelimiter() throws Exception {
         final StaticEventProcessor sep = buildAndInitSep(CsvBuilderTest.class);
-        GroupBy<ByteBufferDelimiter, MutableNumber> aggSales = getField(VAR_BUFFER);
+        GroupBy< MutableNumber> aggSales = getField(VAR_BUFFER);
         StringDriver.streamChars(".greg, fred... greg. greg?\nfred \"greg\" E\nbob ", sep, true);
         final Map<?, Wrapper<MutableNumber>> wordMap = aggSales.getMap();
         assertEquals(4, wordMap.get("greg").event().intValue());

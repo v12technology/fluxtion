@@ -39,8 +39,6 @@ public class FilterTest extends StreamInprocessTest {
 
     @Test
     public void testOnNotifyControl() {
-//        sep(com.fluxtion.ext.declarative.builder.filter.filtertest_testonnotifycontrol_1583866338817.TestSep_testOnNotifyControl.class);
-        
         sep((c) -> {
             cumSum(DataEvent::getValue).id("sum")
                     .filter(gt(10))

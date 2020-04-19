@@ -1,0 +1,58 @@
+## Velocity Template.
+package ${functionPackage};
+#foreach( $import in $imports)
+import $import;
+#end
+
+/**
+ * Generated get field template.
+ *<ul>
+ * <li>output class     : {@link ${outputClass}}
+ * <li>input class      : {@link ${filterSubjectClass}}
+ * <li>source function  : {@link ${filterSubjectClass}#${targetMethod}}
+ * <li>primitive number : ${isPrimitiveNumeric}
+ *</ul>
+ * 
+ * @author Greg Higgins
+ */
+public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
+
+    public ${sourceClass} filterSubject;
+#if(${isPrimitiveNumeric})
+    private MutableNumber result;
+#else
+    private ${outputClass} result;
+#end
+
+    @OnEvent
+    public boolean onEvent(){
+#if(${isPrimitiveNumeric})
+        result.set( ${input}.${targetMethod}());
+#else
+        result = ${input}.${targetMethod}();
+#end
+        return true;
+    }
+
+
+    @Override
+    public ${outputClass} event() {
+        return result;
+    }
+
+    @Override
+    public Class<${outputClass}> eventClass() {
+        return ${outputClass}.class;
+    }
+
+    @Initialise
+    public void init(){
+#if(${isPrimitiveNumeric})
+        result = new MutableNumber();
+#else
+        result = null;
+#end
+    }
+
+}
+

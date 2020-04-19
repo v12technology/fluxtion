@@ -12,9 +12,11 @@ import $import;
  * 
  * @author Greg Higgins
  */
-public final class ${functionClass} implements GroupBy<${keyClass}, ${targetClass}>{
+public final class ${functionClass} implements GroupBy<${targetClass}>{
 
   @NoEventReference public Object resetNotifier;
+  private ArrayListWrappedCollection<${targetClass}> wrappedList;
+  private boolean allMatched;
 #foreach( $source in $sourceMappingList)
 #if($!{source.eventClass})
 #elseif(${source.wrapped})
@@ -60,13 +62,20 @@ public final class ${functionClass} implements GroupBy<${keyClass}, ${targetClas
 #else
         ${calcStateClass} instance = calcState.getOrCreateInstance(event.${source.keyMethod}());
 #end
-        boolean allMatched = instance.processSource( $velocityCount,#if(${source.initialiserRequired}) ${source.initialiserId}, #end event);
+        boolean firstMatched = instance.processSource( $velocityCount,#if(${source.initialiserRequired}) ${source.initialiserId}, #end event);
+        allMatched = instance.allMatched();
         target = instance.target;
 #foreach( $functionInfo in ${source.functionSet} )
         {
 ${functionInfo.updateTarget}
          }
 #end
+#if(${source.eventClass})
+//    updated();
+#end
+        if (firstMatched) {
+            wrappedList.addItem(target);
+        }
 #if(${eventMethod})
         if(allMatched){
             target.${eventMethod}();
@@ -76,6 +85,13 @@ ${functionInfo.updateTarget}
     }
 
 #end
+    @OnEvent
+    public boolean updated() {
+        boolean updated = allMatched;
+        allMatched = false;
+        return updated;
+    }
+
 ##    @OnEvent
 ##    public boolean updated(){
 ##        return true;
@@ -91,6 +107,10 @@ ${functionInfo.updateTarget}
     @Initialise
     public void init(){
         calcState = new GroupByTargetMap<>(${calcStateClass}.class);
+        wrappedList = new ArrayListWrappedCollection<>();
+        wrappedList.init();
+        allMatched = false;
+        target = null;
 #if(${isMultiKey})
         multiKey = new ${multiKeyClassName}();
 #end
@@ -115,9 +135,38 @@ ${functionInfo.updateTarget}
 #end
     }
 
+#if(${isMultiKey})
+    //multikey finder
     @Override
-    public ${targetClass} value(${keyClass} key) {
-        return calcState.getInstance(key).target;
+    public ${targetClass} value(Object o){
+        if(o instanceof ${keyClass}){
+            return calcState.getInstance((${keyClass})o).target;
+        }
+#foreach( $srcInfo in $multiKeyFunctionSet.entrySet() )
+        if(o instanceof ${srcInfo.key}){
+            return value((${srcInfo.key}) o);
+        }
+#end
+        return null;
+    }
+
+#foreach( $srcInfo in $multiKeyFunctionSet.entrySet() )
+    public ${targetClass} value(${srcInfo.key} source){
+      multiKey.setKey(source);
+      return value(multiKey);
+    }
+#end
+
+#else
+    @Override
+    public ${targetClass} value(Object key) {
+        return calcState.getInstance((${keyClass})key).target;
+    }
+#end
+
+    @Override
+    public Collection<${targetClass}> collection() {
+      return wrappedList.collection();
     }
 
     @Override
@@ -142,6 +191,11 @@ ${functionInfo.updateTarget}
 
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier) {
+      init();
+    }
+
+    @Override
+    public void reset() {
       init();
     }
 }

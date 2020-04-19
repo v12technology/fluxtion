@@ -23,7 +23,7 @@ import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
- * A filtering wrapper that propagates the event wave when a referenced is in the
+ * A filtering wrapper that propagates the event wave when a referenced test is in the
  * passed state, validated with {@link Test#passed() }
  *
  *

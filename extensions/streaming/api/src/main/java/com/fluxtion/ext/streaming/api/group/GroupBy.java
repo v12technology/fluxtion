@@ -17,10 +17,9 @@
 package com.fluxtion.ext.streaming.api.group;
 
 import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,36 +28,34 @@ import java.util.Map;
  * @param <T> he target type of the group
  * @author greg
  */
-public interface GroupBy<K, T> extends Wrapper<T>, Stateful {
+public interface GroupBy<T> extends Stateful, WrappedCollection<T> {
 
-    T value(K key);
+    <K> T value(K key);
 
-    default T value(int i) {
-        return null;
-    }
-
-    <V extends Wrapper<T>> Map<K, V> getMap();
-
-    default List<T> expireTime(Long time, int joinNumber) {
-        return Collections.emptyList();
-    }
-
-    default List<T> expireCount(Long time, int joinNumber) {
-        return Collections.emptyList();
-    }
-
-    default List<T> expireAll() {
-        return Collections.emptyList();
-    }
+    <V extends Wrapper<T>> Map<?, V> getMap();
 
     @Override
-    default GroupBy<K, T> notifierOverride(Object eventNotifier) {
-        return (GroupBy<K, T>) StreamOperator.service().notifierOverride(this, eventNotifier);
+    default GroupBy<T> id(String id) {
+        return StreamOperator.service().nodeId(this, id);
     }
 
-    @Override
-    default void reset() {
-        //no-op
+    default GroupBy<T> resetNotifier(Object resetNotifier) {
+        return this;
     }
+
+    /**
+     * The last record that was updated as a wrapped node
+     *
+     * @return the wrapped node
+     */
+    T event();
+
+    /**
+     * The type of the wrapped node
+     *
+     * @return wrapped node class
+     */
+    Class<T> eventClass();
+
 
 }

@@ -48,6 +48,7 @@ public enum FunctionKeys {
     inputArray,
     inputClass,
     inputAccessor,
+    isPrimitiveNumeric,
     keyClass,
     keyAccessor,
     keyMappingList,

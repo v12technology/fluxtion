@@ -11,9 +11,8 @@
  */
 package com.fluxtion.ext.declarative.builder.log;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
@@ -21,19 +20,25 @@ import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilde
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
-import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Test;
 
 /**
  *
  * @author greg
  */
-public class ConsoleLogTest extends BaseSepTest{
-    
+public class ConsoleLogTest extends StreamInprocessTest {
+
     @Test
-    public void testBuildLogger() throws Exception{
-        System.out.println("testBuildLogger"); 
-        StaticEventProcessor sep = buildAndInitSep(LogBuilder1.class);
+    public void testBuildLogger() throws Exception {
+        System.out.println("testBuildLogger");
+        sep(c -> {
+            Wrapper<DataEvent> dataEventSelect = select(DataEvent.class);
+            MsgBuilder logger = LogBuilder.Log("DataEvent data:{} received {} ....{}",
+                     dataEventSelect, DataEvent::getValue, DataEvent::getValue, DataEvent::getValue);
+            logger.name = "fluxtion.test";
+            logger.logLevel = 3;
+        });
+
         //fire some events
         DataEvent de1 = new DataEvent();
         de1.value = 2;
@@ -41,36 +46,24 @@ public class ConsoleLogTest extends BaseSepTest{
         sep.onEvent(recordMsgBuilderId(true));
         de1.value = 200;
         sep.onEvent(de1);
-        de1.value = 999; 
+        de1.value = 999;
         sep.onEvent(enableLevelFiltering(1));
-        de1.value = 4000000; 
+        de1.value = 4000000;
         sep.onEvent(de1);
         sep.onEvent(de1);
         sep.onEvent(de1);
-        de1.value = 333; 
+        de1.value = 333;
         sep.onEvent(enableLevelFiltering(4));
-        de1.value = 5; 
+        de1.value = 5;
         sep.onEvent(de1);
         sep.onEvent(enableIdFiltering(new String[]{"fluxtion.prod"}));
-        de1.value = 10; 
+        de1.value = 10;
         sep.onEvent(de1);
         sep.onEvent(de1);
         sep.onEvent(enableIdFiltering(new String[]{"fluxtion"}));
-        de1.value = 70; 
+        de1.value = 70;
         sep.onEvent(de1);
         sep.onEvent(de1);
     }
-    
-    public static class LogBuilder1 extends SEPConfig{
 
-        public LogBuilder1() {
-            Wrapper<DataEvent> dataEventSelect = select(DataEvent.class);
-            MsgBuilder logger = LogBuilder.Log("DataEvent data:{} received {} ....{}"
-                    , dataEventSelect, DataEvent::getValue, DataEvent::getValue, DataEvent::getValue);
-            logger.name = "fluxtion.test";
-            logger.logLevel = 3;
-        }
-        
-    }
-    
 }
