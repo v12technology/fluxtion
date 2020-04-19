@@ -16,6 +16,7 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
@@ -24,6 +25,7 @@ import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
@@ -43,6 +45,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +80,8 @@ public class GroupByContext<K, T> {
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
             Map.class, BitSet.class, GroupBy.class, EventHandler.class,
             GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
-            WrappedCollection.class
+            WrappedCollection.class,Collection.class,
+            ArrayListWrappedCollection.class, SepContext.class
     );
     private String genClassName;
     private String calcStateClass;

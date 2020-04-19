@@ -37,17 +37,32 @@ public final class ${functionClass} implements Wrapper<${targetClass}>{
         return SOURCE_COUNT == updateMap.cardinality();
     }
 
+    /**
+     * 
+     * @param index
+     * @param initialiser
+     * @param source
+     * @return The first time this is a complete record is processed
+     */
     public boolean processSource(int index, GroupByIniitialiser initialiser, Object source) {
-        if (!updateMap.get(index)) {
-            initialiser.apply(source, target);
-        }
-        updateMap.set(index);
-        return allMatched();
+      boolean prevMatched = allMatched();
+      if (!updateMap.get(index)) {
+        initialiser.apply(source, target);
+      }
+      updateMap.set(index);
+      return allMatched() ^ prevMatched;
     }
-
+  
+    /**
+     * 
+     * @param index
+     * @param source
+     * @return The first time this is a complete record is processed
+     */
     public boolean processSource(int index, Object source) {
-        updateMap.set(index);
-        return allMatched();
+      boolean prevMatched = allMatched();
+      updateMap.set(index);
+      return allMatched() ^ prevMatched;
     }
 
     @Override

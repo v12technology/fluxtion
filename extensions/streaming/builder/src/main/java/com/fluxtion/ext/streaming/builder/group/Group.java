@@ -45,9 +45,9 @@ public class Group <S, T> {
      * 
      * @return The actual grouping function.
      */
-    public static <S> Group<S, ?> groupBy(S k, SerializableFunction<S, ?> f){
-        return new Group(k, f);
-    }
+//    public static <S> Group<S, ?> groupBy(S k, SerializableFunction<S, ?> f){
+//        return new Group(k, f);
+//    }
     
     /**
      *
@@ -64,8 +64,8 @@ public class Group <S, T> {
         return GroupByContext.builder(group);
     }
     
-    public static <S, T> GroupByBuilder<S, T> groupBy(Wrapper<S> k, SerializableFunction<S, ?> f, Class<T> target){
-        final Group group = new Group(k, f, target);
+    public static <S, T> GroupByBuilder<S, T> groupBy(Wrapper<S> sourceInstance, SerializableFunction<S, ?> keyFunction, Class<T> targetType){
+        final Group group = new Group(sourceInstance, keyFunction, targetType);
         group.wrapped = true;
         return GroupByContext.builder(group);
     }

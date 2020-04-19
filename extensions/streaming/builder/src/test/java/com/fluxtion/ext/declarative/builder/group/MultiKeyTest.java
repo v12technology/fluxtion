@@ -11,16 +11,13 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.MaxCcyTraderPosConfig.TRADER_POS_CFG;
 import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
-import com.fluxtion.generator.util.BaseSepTest;
 import java.util.List;
 import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,11 +28,20 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class MultiKeyTest extends BaseSepTest {
+public class MultiKeyTest extends StreamInprocessTest {
 
     @Test
     public void testMultiKey() {
-        StaticEventProcessor sep = buildAndInitSep(Builder1.class);
+        sep(c -> {
+            GroupByBuilder<Deal, TraderPosition> traderPos
+                    = groupBy(DEAL, TRADER_POSITION, Deal::getCcyPair, Deal::getTraderId);
+            traderPos.init(Deal::getTraderName, TraderPosition::setName);
+            traderPos.init(Deal::getCcyPair, TraderPosition::setCcyPair);
+            traderPos.sum(Deal::getDealtSize, TraderPosition::setDealtVolume);
+            traderPos.sum(Deal::getContraSize, TraderPosition::setContraVolume);
+            traderPos.build().id("traderPositions");
+        });
+
         Deal eu_john = new Deal();
         eu_john.traderId = 1;
         eu_john.traderName = "John Smith";
@@ -79,53 +85,9 @@ public class MultiKeyTest extends BaseSepTest {
         assertThat(2, is(gbpusddList.size()));
     }
 
-//    @Override
-//    protected String testPackageID() {
-//        return "";
-//    }
-
     @Test
     public void multiKeyJoin() {
-        StaticEventProcessor sep = buildAndInitSep(Builder_MultiKeyJoin.class);
-
-
-        Deal eu_john = new Deal();
-        eu_john.traderId = 1;
-        eu_john.traderName = "John Smith";
-        eu_john.setCcyPair("EURUSD");
-        eu_john.setOrderId(1001);
-        eu_john.setDealtSize(200_000);
-        eu_john.setContraSize(-224_000);
-        eu_john.setDealId(909);
-
-        sep.onEvent(eu_john);
-        GroupBy<TraderPosition> traderPositions = getField("traderPositions");
-        
-        sep.onEvent(new MaxCcyTraderPosConfig(1, "EURUSD"));
-
-    }
-
-    public static class Builder1 extends SEPConfig {
-
-        {
-            GroupByBuilder<Deal, TraderPosition> traderPos
-                    = groupBy(DEAL, TRADER_POSITION, Deal::getCcyPair, Deal::getTraderId);
-            traderPos.init(Deal::getTraderName, TraderPosition::setName);
-            traderPos.init(Deal::getCcyPair, TraderPosition::setCcyPair);
-            traderPos.sum(Deal::getDealtSize, TraderPosition::setDealtVolume);
-            traderPos.sum(Deal::getContraSize, TraderPosition::setContraVolume);
-            GroupBy<TraderPosition> traderPositions = traderPos.build();
-            //add public node for testing
-            addPublicNode(traderPositions, "traderPositions");
-            //logging
-            Log(DEAL);
-            Log(traderPositions);
-        }
-    }
-
-    public static class Builder_MultiKeyJoin extends SEPConfig {
-
-        {
+        sep(c -> {
             GroupByBuilder<Deal, TraderPosition> traderPos
                     = groupBy(DEAL, TRADER_POSITION, Deal::getCcyPair, Deal::getTraderId);
             //join
@@ -139,7 +101,7 @@ public class MultiKeyTest extends BaseSepTest {
             adjustment.sum(TraderPositionAdjustment::getDealtSize, TraderPosition::setDealtVolume);
             adjustment.sum(TraderPositionAdjustment::getContraSize, TraderPosition::setContraVolume);
             adjustment.optional(true);
-            
+
             //set cfg for max position
             maxPos.set(MaxCcyTraderPosConfig::getMaxPosition, TraderPosition::setMaxDealtVolume);
             //trader position calcs
@@ -147,14 +109,22 @@ public class MultiKeyTest extends BaseSepTest {
             traderPos.init(Deal::getCcyPair, TraderPosition::setCcyPair);
             traderPos.sum(Deal::getDealtSize, TraderPosition::setDealtVolume);
             traderPos.sum(Deal::getContraSize, TraderPosition::setContraVolume);
-            GroupBy<TraderPosition> traderPositions = traderPos.build();
-            //add public node for testing
-            addPublicNode(traderPositions, "traderPositions");
-            //logging
-            Log(DEAL);
-            Log(TRADER_POS_CFG);
-            Log(traderPositions);
-        }
+            traderPos.build().id("traderPositions");
+        });
+
+        Deal eu_john = new Deal();
+        eu_john.traderId = 1;
+        eu_john.traderName = "John Smith";
+        eu_john.setCcyPair("EURUSD");
+        eu_john.setOrderId(1001);
+        eu_john.setDealtSize(200_000);
+        eu_john.setContraSize(-224_000);
+        eu_john.setDealId(909);
+        sep.onEvent(eu_john);
+        GroupBy<TraderPosition> traderPositions = getField("traderPositions");
+        sep.onEvent(new MaxCcyTraderPosConfig(1, "EURUSD"));
+
     }
+
 
 }

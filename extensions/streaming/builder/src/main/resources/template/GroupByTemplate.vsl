@@ -15,7 +15,8 @@ import $import;
 public final class ${functionClass} implements GroupBy<${targetClass}>{
 
   @NoEventReference public Object resetNotifier;
-  private WrappedCollection<${targetClass}> wrappedList;
+  private ArrayListWrappedCollection<${targetClass}> wrappedList;
+  private boolean allMatched;
 #foreach( $source in $sourceMappingList)
 #if($!{source.eventClass})
 #elseif(${source.wrapped})
@@ -61,13 +62,20 @@ public final class ${functionClass} implements GroupBy<${targetClass}>{
 #else
         ${calcStateClass} instance = calcState.getOrCreateInstance(event.${source.keyMethod}());
 #end
-        boolean allMatched = instance.processSource( $velocityCount,#if(${source.initialiserRequired}) ${source.initialiserId}, #end event);
+        boolean firstMatched = instance.processSource( $velocityCount,#if(${source.initialiserRequired}) ${source.initialiserId}, #end event);
+        allMatched = instance.allMatched();
         target = instance.target;
 #foreach( $functionInfo in ${source.functionSet} )
         {
 ${functionInfo.updateTarget}
          }
 #end
+#if(${source.eventClass})
+//    updated();
+#end
+        if (firstMatched) {
+            wrappedList.addItem(target);
+        }
 #if(${eventMethod})
         if(allMatched){
             target.${eventMethod}();
@@ -77,6 +85,13 @@ ${functionInfo.updateTarget}
     }
 
 #end
+    @OnEvent
+    public boolean updated() {
+        boolean updated = allMatched;
+        allMatched = false;
+        return updated;
+    }
+
 ##    @OnEvent
 ##    public boolean updated(){
 ##        return true;
@@ -92,7 +107,10 @@ ${functionInfo.updateTarget}
     @Initialise
     public void init(){
         calcState = new GroupByTargetMap<>(${calcStateClass}.class);
-        wrappedList = new WrappedCollection<>();
+        wrappedList = new ArrayListWrappedCollection<>();
+        wrappedList.init();
+        allMatched = false;
+        target = null;
 #if(${isMultiKey})
         multiKey = new ${multiKeyClassName}();
 #end
@@ -147,8 +165,8 @@ ${functionInfo.updateTarget}
 #end
 
     @Override
-    public WrappedCollection<${targetClass}> wrappedCollection() {
-        return wrappedList;
+    public Collection<${targetClass}> collection() {
+      return wrappedList.collection();
     }
 
     @Override
@@ -173,6 +191,11 @@ ${functionInfo.updateTarget}
 
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier) {
+      init();
+    }
+
+    @Override
+    public void reset() {
       init();
     }
 }
