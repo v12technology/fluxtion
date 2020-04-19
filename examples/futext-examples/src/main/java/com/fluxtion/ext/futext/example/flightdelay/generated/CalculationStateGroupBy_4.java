@@ -1,5 +1,6 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
@@ -9,6 +10,7 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
 import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
@@ -18,6 +20,7 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -34,10 +37,10 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
   private final BitSet updateMap = new BitSet(SOURCE_COUNT);
 
   public CarrierDelay target;
-  public AggregateAverage aggregateAverage1Function = new AggregateAverage();
-  public double aggregateAverage1;
   public double aggregateSum3;
   public int aggregateCount2;
+  public AggregateAverage aggregateAverage1Function = new AggregateAverage();
+  public double aggregateAverage1;
 
   public CalculationStateGroupBy_4() {
     target = new CarrierDelay();
@@ -47,17 +50,30 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
     return SOURCE_COUNT == updateMap.cardinality();
   }
 
+  /**
+   * @param index
+   * @param initialiser
+   * @param source
+   * @return The first time this is a complete record is processed
+   */
   public boolean processSource(int index, GroupByIniitialiser initialiser, Object source) {
+    boolean prevMatched = allMatched();
     if (!updateMap.get(index)) {
       initialiser.apply(source, target);
     }
     updateMap.set(index);
-    return allMatched();
+    return allMatched() ^ prevMatched;
   }
 
+  /**
+   * @param index
+   * @param source
+   * @return The first time this is a complete record is processed
+   */
   public boolean processSource(int index, Object source) {
+    boolean prevMatched = allMatched();
     updateMap.set(index);
-    return allMatched();
+    return allMatched() ^ prevMatched;
   }
 
   @Override

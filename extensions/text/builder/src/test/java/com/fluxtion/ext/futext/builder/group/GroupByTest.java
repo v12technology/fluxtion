@@ -29,6 +29,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
+import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readBytesCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
@@ -171,8 +172,8 @@ public class GroupByTest extends BaseSepTest {
             LambdaReflection.SerializableFunction<MutableNumber, ?> f = MutableNumber::intValue;
             Log(result);
             LogBuilder.buildLog("XX Team:'{}' for:{} against:{} XX", result, MatchResult::getHomeTeamAsString)
-                    .input(homeGoalsGroup, f)
-                    .input(awayGoalsGroup, f)
+                    .input(stream(homeGoalsGroup::event), f)
+                    .input(stream(awayGoalsGroup::event), f)
                     .build();
         }
     }
