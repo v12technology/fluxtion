@@ -19,6 +19,7 @@ package com.fluxtion.generator;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.google.auto.service.AutoService;
+import java.util.ArrayList;
 
 /**
  *
@@ -31,6 +32,15 @@ public class SepContextService implements SepContext {
     public <T> T add(T node) {
         GenerationContext.SINGLETON.getNodeList().add(node);
         return node;
+    }
+
+    @Override
+    public <T> T[] add(T... nodes) {
+        ArrayList<T> out = new ArrayList();
+        for (T node : nodes) {
+            out.add(add(node));
+        }
+        return out.toArray(nodes);
     }
 
     @Override
@@ -49,6 +59,15 @@ public class SepContextService implements SepContext {
     @Override
     public <T> T addOrReuse(T node) {
         return GenerationContext.SINGLETON.addOrUseExistingNode(node);
+    }
+
+    @Override
+    public <T> T[] addOrReuse(T... nodes) {
+        ArrayList<T> out = new ArrayList();
+        for (T node : nodes) {
+            out.add(addOrReuse(node));
+        }
+        return out.toArray(nodes);
     }
 
     @Override
