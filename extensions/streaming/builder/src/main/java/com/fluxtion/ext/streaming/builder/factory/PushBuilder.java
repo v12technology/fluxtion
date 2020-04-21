@@ -1,10 +1,10 @@
 package com.fluxtion.ext.streaming.builder.factory;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.PushNotifier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -28,7 +28,7 @@ public class PushBuilder {
      * @return
      */
     public static <S, T> S pushNotification(S source, T target) {
-        PushNotifier p = GenerationContext.SINGLETON.addOrUseExistingNode(new PushNotifier(source, target));
+        PushNotifier p = SepContext.service().addOrReuse(new PushNotifier(source, target));
         return source;
     }
         

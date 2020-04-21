@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.api.SepContext;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.test.AndOperator;
 import com.fluxtion.ext.streaming.api.test.NandOperator;
@@ -36,32 +36,32 @@ public class BooleanBuilder {
 
     public static Test not(Object tracked) {
         NotOperator notOperator = new NotOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(notOperator);
+        return SepContext.service().addOrReuse(notOperator);
     }
 
     public static Test and(Object... tracked) {
         AndOperator and = new AndOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(and);
+        return SepContext.service().addOrReuse(and);
     }
 
     public static Test or(Object... tracked) {
         OrOperator or = new OrOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(or);
+        return SepContext.service().addOrReuse(or);
     }
 
     public static Test xor(Object... tracked) {
         XorOperator xor = new XorOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(xor);
+        return SepContext.service().addOrReuse(xor);
     }
 
     public static Test nor(Object... tracked) {
         NorOperator nor = new NorOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(nor);
+        return SepContext.service().addOrReuse(nor);
     }
 
     public static Test nand(Object... tracked) {
         NandOperator nand = new NandOperator(tracked);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(nand);
+        return SepContext.service().addOrReuse(nand);
     }
 
 }
