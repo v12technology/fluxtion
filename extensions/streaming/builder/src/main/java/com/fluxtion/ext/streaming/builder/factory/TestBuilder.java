@@ -24,9 +24,9 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableQuadFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 
 /**
  *
