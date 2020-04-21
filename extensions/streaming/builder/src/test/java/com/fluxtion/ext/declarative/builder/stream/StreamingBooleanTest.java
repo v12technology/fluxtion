@@ -65,8 +65,6 @@ public class StreamingBooleanTest extends StreamInprocessTest{
         assertThat(count.intValue(), is(1));
         onEvent(new CalcEvent());
         assertThat(count.intValue(), is(2));
-        
-        
     }
     
     public static class ResetEvent {}

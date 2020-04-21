@@ -17,7 +17,8 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.api.SepContext;
+import static com.fluxtion.api.SepContext.service;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.test.BooleanEitherFilter;
@@ -33,38 +34,38 @@ import com.fluxtion.ext.streaming.api.test.BooleanMatchFilter;
 public class FilterByNotificationBuilder {
 
     public static <T> FilterWrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
-        BooleanFilter<T> filter = new BooleanFilter<>(trackedWrapped, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(trackedWrapped), service().addOrReuse(notifier));
+        SepContext.service().addOrReuse(filter);
         return filter;
     }
 
     public static <T> FilterWrapper<T> filter(T tracked, Object notifier) {
-        BooleanFilter<T> filter = new BooleanFilter<>(tracked, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(tracked), service().addOrReuse(notifier));
+        service().addOrReuse(filter);
         return filter;
     }
 
     public static <T> FilterWrapper<T> filterEither(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(trackedWrapped, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        service().addOrReuse(filter);
         return filter;
     }
 
     public static <T> FilterWrapper<T> filterEither(T tracked, Object notifier) {
-        BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(tracked, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(service().addOrReuse(tracked), SepContext.service().addOrReuse(notifier));
+        service().addOrReuse(filter);
         return filter;
     }
 
     public static <T> Wrapper<T> filterMatch(Wrapper<T> trackedWrapped, Object notifier) {
-        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(trackedWrapped, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(service().addOrReuse(trackedWrapped), service().addOrReuse(notifier));;
+        service().addOrReuse(filter);
         return filter;
     }
 
     public static <T> FilterWrapper<T> filterMatch(T tracked, Object notifier) {
-        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(tracked, notifier);
-        GenerationContext.SINGLETON.addOrUseExistingNode(filter);
+        BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(service().addOrReuse(tracked), service().addOrReuse(notifier));
+        service().addOrReuse(filter);
         return filter;
     }
 }

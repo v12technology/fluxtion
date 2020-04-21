@@ -16,9 +16,9 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection;
-import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.ext.streaming.api.StringFilterEventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -33,7 +33,7 @@ public interface EventSelect {
 
     static <T> Wrapper<T> select(Class<T> eventClazz) {
             Wrapper<T> handler = new IntFilterEventHandler(eventClazz);
-            return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+            return SepContext.service().addOrReuse(handler);
     }
 
     static <T , S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
@@ -59,12 +59,12 @@ public interface EventSelect {
 
     static <T extends Event> Wrapper<T> select(Class<T> eventClazz, String filterId) {
         Wrapper<T> handler = new StringFilterEventHandler(filterId, eventClazz);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+        return SepContext.service().addOrReuse(handler);
     }
 
     static <T extends Event> Wrapper<T> select(Class<T> eventClazz, int filterId) {
         Wrapper<T> handler = new IntFilterEventHandler(filterId, eventClazz);
-        return GenerationContext.SINGLETON.addOrUseExistingNode(handler);
+        return SepContext.service().addOrReuse(handler);
     }
 
 }

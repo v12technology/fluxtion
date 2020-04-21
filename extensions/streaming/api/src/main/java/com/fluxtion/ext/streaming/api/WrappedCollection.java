@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T> The type held in this collection
  */
-public interface WrappedCollection<T> {
+public interface WrappedCollection<T> extends Stateful{
 
     default <I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func) {
         throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");

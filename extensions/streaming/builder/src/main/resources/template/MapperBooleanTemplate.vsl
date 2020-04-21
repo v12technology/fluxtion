@@ -120,7 +120,11 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
         }
         parentReset = false;
     }
-  
+
+    public void reset(){
+         f.reset();
+    }
+
     @Override
     public FilterWrapper<Boolean> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;

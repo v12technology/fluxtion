@@ -24,11 +24,11 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableQuadFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.Argument;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
-import com.fluxtion.ext.streaming.api.stream.Argument;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 
 /**
  * Provides helper methods to build mapping functions from nodes and Events.

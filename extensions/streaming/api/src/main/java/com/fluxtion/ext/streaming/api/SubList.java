@@ -61,6 +61,11 @@ public class SubList<T> implements WrappedList<T> {
         return SepContext.service().addOrReuse(new SubList<>(this, n, -n));
     }
 
+    @Override
+    public void reset() {
+        init();
+    }
+    
     @Initialise
     public void init() {
         sourceSize = -1;

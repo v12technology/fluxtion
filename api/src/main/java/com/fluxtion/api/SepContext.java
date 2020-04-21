@@ -27,11 +27,15 @@ public interface SepContext {
 
     <T> T add(T node);
 
+    <T> T[] add(T... nodes);
+
     <T> T add(T node, String privateId);
 
     <T> T addPublic(T node, String publicId);
 
     <T> T addOrReuse(T node);
+
+    <T> T[] addOrReuse(T... nodes);
 
     <T> T addOrReuse(T node, String privateId);
 
@@ -41,6 +45,16 @@ public interface SepContext {
         @Override
         public <T> T add(T node) {
             return node;
+        }
+
+        @Override
+        public <T> T[] add(T... nodes) {
+            return nodes;
+        }
+
+        @Override
+        public <T> T[] addOrReuse(T... nodes) {
+            return nodes;
         }
 
         @Override
