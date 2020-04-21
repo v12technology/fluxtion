@@ -35,32 +35,32 @@ import com.fluxtion.ext.streaming.api.test.XorOperator;
 public class BooleanBuilder {
 
     public static Test not(Object tracked) {
-        NotOperator notOperator = new NotOperator(tracked);
+        NotOperator notOperator = new NotOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(notOperator);
     }
 
     public static Test and(Object... tracked) {
-        AndOperator and = new AndOperator(tracked);
+        AndOperator and = new AndOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(and);
     }
 
     public static Test or(Object... tracked) {
-        OrOperator or = new OrOperator(tracked);
+        OrOperator or = new OrOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(or);
     }
 
     public static Test xor(Object... tracked) {
-        XorOperator xor = new XorOperator(tracked);
+        XorOperator xor = new XorOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(xor);
     }
 
     public static Test nor(Object... tracked) {
-        NorOperator nor = new NorOperator(tracked);
+        NorOperator nor = new NorOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(nor);
     }
 
     public static Test nand(Object... tracked) {
-        NandOperator nand = new NandOperator(tracked);
+        NandOperator nand = new NandOperator(SepContext.service().addOrReuse(tracked));
         return SepContext.service().addOrReuse(nand);
     }
 
