@@ -54,6 +54,11 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         this.wrappedSource = wrappedSource;
     }
 
+    @Override
+    public void reset() {
+        init();
+    }
+
     @OnParentUpdate("resetNotifier")
     public void resetNotification(Object resetNotifier) {
         collection.clear();
@@ -151,35 +156,6 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     public List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.wrappedSource);
-        hash = 97 * hash + Objects.hashCode(this.comparator);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ArrayListWrappedCollection<?> other = (ArrayListWrappedCollection<?>) obj;
-        if (!Objects.equals(this.wrappedSource, other.wrappedSource)) {
-            return false;
-        }
-        if (!Objects.equals(this.comparator, other.comparator)) {
-            return false;
-        }
-        return true;
     }
 
 }

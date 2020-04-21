@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * @author Greg Higgins
  * @param <T>
  */
-public interface Wrapper<T> {
+public interface Wrapper<T> extends Stateful{
 
     /**
      * The wrapped node
@@ -51,6 +51,8 @@ public interface Wrapper<T> {
      * @return wrapped node class
      */
     Class<T> eventClass();
+    
+    default void reset(){}
 
     default <S> Argument<S> arg(SerializableFunction<T, S> supplier){
         return Argument.arg(this, supplier);
@@ -73,7 +75,7 @@ public interface Wrapper<T> {
     }
     
     default WrappedCollection<T> collect(){
-       return  SepContext.service().addOrReuse(new ArrayListWrappedCollection<>(this));
+       return  SepContext.service().add(new ArrayListWrappedCollection<>(this));
     }
 
     default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
