@@ -92,6 +92,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(PushReference.class);
         importMap.addImport(CharArrayCharSequence.class);
         importMap.addImport(CharArrayCharSequence.CharSequenceView.class);
+        importMap.addImport(target);
         srcMappingList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
