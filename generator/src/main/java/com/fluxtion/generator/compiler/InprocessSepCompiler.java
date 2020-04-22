@@ -24,6 +24,7 @@ import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.builder.node.SEPConfig;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
 /**
@@ -102,7 +103,7 @@ public class InprocessSepCompiler {
     }
     
     public static StaticEventProcessor reuseOrBuild(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
-        StaticEventProcessor processor = null;
+        StaticEventProcessor processor;
         try {
             Class<? extends StaticEventProcessor> processorClass = Class.forName(pkg + "." + name).asSubclass(StaticEventProcessor.class);
             processor = processorClass.getDeclaredConstructor().newInstance();
@@ -110,7 +111,7 @@ public class InprocessSepCompiler {
                 Lifecycle lifecycle = (Lifecycle) processor;
                 lifecycle.init();
             }
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
             processor = InprocessSepCompiler.sepInstance(builder, pkg, name);
         }
         return processor;

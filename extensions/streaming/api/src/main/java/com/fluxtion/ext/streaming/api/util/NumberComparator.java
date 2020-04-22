@@ -15,35 +15,23 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.api;
+package com.fluxtion.ext.streaming.api.util;
 
-import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import java.util.List;
+import java.util.Comparator;
 
 /**
- * An ordered based collection of items can be sorted
  *
  * @author Greg Higgins greg.higgins@v12technology.com
- * @param <T>
  */
-public interface WrappedList<T> extends WrappedCollection<T> {
+public class NumberComparator implements Comparator<Number> {
 
-    WrappedList<T> top(int n);
+    public static final NumberComparator numberComparator(){
+        return new NumberComparator(); 
+    }
     
-    WrappedList<T> last(int n);
-    
-    WrappedList<T> skip(int n);
-
     @Override
-    List<T> collection();
+    public int compare(Number o1, Number o2) {
+        return (int) (o1.doubleValue() - o2.doubleValue());
+    }
 
-     WrappedList<T> reverse();
-    
-    default WrappedList<T> id(String id) {
-        return StreamOperator.service().nodeId(this, id);
-    }
-    
-    default List<T> subList(int fromIndex, int toIndex) {
-        return collection().subList(fromIndex, toIndex);
-    }
 }
