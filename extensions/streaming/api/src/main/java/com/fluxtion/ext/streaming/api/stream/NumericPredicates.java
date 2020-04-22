@@ -87,6 +87,10 @@ public class NumericPredicates {
     public static <T extends Double> SerializableFunction<T, Boolean> gt(double test) {
         return new NumericPredicates(test)::greaterThan;
     }
+
+    public static <T extends Double> SerializableFunction<T, Boolean> gt(double test, String cfgKey) {
+        return num(test, cfgKey)::greaterThan;
+    }
     
     public static <T extends Double> SerializableFunction<T, Boolean> deltaGt(double test) {
         return new NumericPredicates(test)::deltaGreaterThan;

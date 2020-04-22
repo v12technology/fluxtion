@@ -45,6 +45,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     private List<T> collection;
     private Object resetNotifier;
     private boolean reset;
+    private boolean reversed;
 
     public ArrayListWrappedCollection() {
         this(null);
@@ -52,6 +53,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     public ArrayListWrappedCollection(Wrapper<T> wrappedSource) {
         this.wrappedSource = wrappedSource;
+        reversed = false;
     }
 
     @Override
@@ -83,6 +85,16 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public void init() {
         this.collection = new ArrayList<>();
         this.unmodifiableCollection = Collections.unmodifiableList(collection);
+        if(reversed){
+            comparator = comparator.reversed();
+            reversed = false;
+        }
+    }
+
+    @Override
+    public WrappedList<T> reverse() {
+        reversed = !reversed;
+        return this;
     }
 
     @Override
@@ -127,16 +139,24 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @Override
     public WrappedList<T> comparator(Comparator comparator) {
-        setComparator(comparator);
+        setComparator(SepContext.service().addOrReuse(comparator));
         return this;
     }
 
     public void setComparator(Comparator comparator) {
-        this.comparator = SepContext.service().addOrReuse(comparator);
+        this.comparator = comparator;
     }
 
     public Comparator getComparator() {
         return comparator;
+    }
+
+    public boolean isReversed() {
+        return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     @Override

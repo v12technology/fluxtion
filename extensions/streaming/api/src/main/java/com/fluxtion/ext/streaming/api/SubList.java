@@ -63,7 +63,14 @@ public class SubList<T> implements WrappedList<T> {
 
     @Override
     public void reset() {
+        parent.reset();
         init();
+    }
+
+    @Override
+    public WrappedList<T> reverse() {
+        parent.reverse();
+        return this;
     }
     
     @Initialise
