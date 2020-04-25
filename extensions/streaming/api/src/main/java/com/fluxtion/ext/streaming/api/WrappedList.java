@@ -17,33 +17,26 @@
  */
 package com.fluxtion.ext.streaming.api;
 
-import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.List;
 
 /**
- * An ordered based collection of items can be sorted
+ * An ordered based collection of items that can be sorted or queried by position.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
-public interface WrappedList<T> extends WrappedCollection<T> {
+public interface WrappedList<T> extends WrappedCollection<T, List<T>, WrappedList<T>> {
 
     WrappedList<T> top(int n);
-    
+
     WrappedList<T> last(int n);
-    
+
     WrappedList<T> skip(int n);
 
-    @Override
-    List<T> collection();
+    WrappedList<T> reverse();
 
-     WrappedList<T> reverse();
-    
-    default WrappedList<T> id(String id) {
-        return StreamOperator.service().nodeId(this, id);
-    }
-    
     default List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
     }
+
 }

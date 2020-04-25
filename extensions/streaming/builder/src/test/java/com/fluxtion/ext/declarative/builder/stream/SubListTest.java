@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
+import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import java.util.Arrays;
@@ -38,9 +39,7 @@ public class SubListTest extends StreamInprocessTest{
             numbers.top(4).id("top4");
             numbers.last(4).id("last4");
             numbers.skip(4).id("skip4");
-//            Log("Top 4", numbers.top(4), WrappedCollection::collection);
-//            Log("Last 4", numbers.last(4), WrappedCollection::collection);
-//            Log("Skip 4", numbers.skip(4), WrappedCollection::collection);
+
         });
         for (int i = 0; i < 10; i++) {
             onEvent(i);

@@ -19,6 +19,7 @@ package com.fluxtion.ext.declarative.builder.group;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
@@ -47,7 +48,7 @@ public class WrappedCollectionGroupByTest extends StreamInprocessTest{
                     .resetNotifier(select(Deal.class));
         });
 
-        WrappedCollection<OrderSummary> summaryCollection = getField("orderSummaryCollection");
+        GroupBy<OrderSummary> summaryCollection = getField("orderSummaryCollection");
 
         sep.onEvent(new Order(1, "EURUSD", 100));
         sep.onEvent(new Order(2, "EURJPY", 250));

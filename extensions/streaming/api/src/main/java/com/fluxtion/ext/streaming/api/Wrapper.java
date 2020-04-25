@@ -23,7 +23,6 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
@@ -36,7 +35,7 @@ import java.util.function.Consumer;
  * @author Greg Higgins
  * @param <T>
  */
-public interface Wrapper<T> extends Stateful{
+public interface Wrapper<T> extends Stateful<T>{
 
     /**
      * The wrapped node
@@ -74,7 +73,7 @@ public interface Wrapper<T> extends Stateful{
         return StreamOperator.service().get(supplier, this);
     }
     
-    default WrappedCollection<T> collect(){
+    default  WrappedList<T> collect(){
        return  SepContext.service().add(new ArrayListWrappedCollection<>(this));
     }
 
@@ -92,10 +91,11 @@ public interface Wrapper<T> extends Stateful{
     }
 
     /**
-     * Maps a value using the provided mapping function. The input is the
+     * Maps a value using the provided mapping function.The input is the
      * wrapped instance inside this {@link Wrapper}.
      *
      * @param <R> The return type of the mapping function
+     * @param <S>
      * @param mapper the mapping function
      * @return A wrapped value containing the result of the mapping operation
      */
@@ -232,7 +232,7 @@ public interface Wrapper<T> extends Stateful{
         } else {
             consoleLog.suppliers(supplier);
         }
-        String consoleId = "consoleMsg_" + counter.intValue();
+        String consoleId = "consoleMsgW_" + counter.intValue();
         SepContext.service().add(consoleLog, consoleId);
         return this;
     }

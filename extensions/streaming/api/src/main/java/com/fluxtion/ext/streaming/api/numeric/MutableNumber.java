@@ -47,10 +47,15 @@ public class MutableNumber extends Number {
         return doubleValue;
     }
 
-    public void set(Number number){
+    public Number get() {
+        return doubleValue;
+    }
+
+    public MutableNumber set(Number number){
         intValue = number.intValue();
         longValue = number.longValue();
         doubleValue = number.doubleValue(); 
+        return this;
     }
     
     public void set(int value){

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  *
@@ -54,6 +53,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public ArrayListWrappedCollection(Wrapper<T> wrappedSource) {
         this.wrappedSource = wrappedSource;
         reversed = false;
+        init();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     }
 
     @Initialise
-    public void init() {
+    public final void init() {
         this.collection = new ArrayList<>();
         this.unmodifiableCollection = Collections.unmodifiableList(collection);
         if(reversed){
@@ -114,7 +114,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @OnEvent
     public boolean updated() {
-        if(!reset){
+        if(!reset && wrappedSource!=null){
             final T newItem = wrappedSource.event();
             addItem(newItem);
         }
@@ -122,9 +122,26 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         return true;
     }
 
-    public void addItem(final T newItem) {
+
+    @Override
+    public void combine(Stateful<? extends T> other) {
+        final WrappedList<T> otherList = (WrappedList<T>)other;
+        List<T> collection1 = otherList.collection();
+        for (int i = 0; i < collection1.size(); i++) {
+            T get = collection1.get(i);
+            this.addItem(get);
+        }
+    }
+
+    @Override
+    public void deduct(Stateful<? extends T> other) {
+        this.collection.removeAll(((WrappedList<T>)other).collection());
+    }
+
+    
+    public ArrayListWrappedCollection<T> addItem(final T newItem) {
         if (collection.contains(newItem)) {
-            return;
+            return this;
         }
         if (comparator != null) {
             int index = Collections.binarySearch(collection, newItem, comparator);
@@ -135,6 +152,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         } else {
             collection.add(newItem);
         }
+        return this;
     }
 
     @Override

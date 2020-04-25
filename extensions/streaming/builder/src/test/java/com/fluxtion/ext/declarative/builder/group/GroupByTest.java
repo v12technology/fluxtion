@@ -91,7 +91,7 @@ public class GroupByTest extends StreamInprocessTest {
             trades.function(Count, tradeVol, TradeSummary::setTradeCount);
             deals.function(Sum, dealVol, TradeSummary::setTotalConfirmedVolume);
             deals.function(Count, dealVol, TradeSummary::setDealCount);
-            stream(trades.build()::event)
+            stream(trades.build()::record)
                     .filter(TradeSummary::getOutstandingVoulme, negative())
                     .map(count()).id("badDealCount");
             

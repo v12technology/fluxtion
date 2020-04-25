@@ -55,8 +55,8 @@ public class TumbleTest extends StreamInprocessTest {
 //            tumble(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW));
         });
 
-        WrappedCollection<Number> listSmallWindow = getWrappedField("listSmallWindow");
-        WrappedCollection<Number> listLargeWindow = getWrappedField("listLargeWindow");
+        WrappedCollection<Number, ?, ?> listSmallWindow = getWrappedField("listSmallWindow");
+        WrappedCollection<Number, ?, ?> listLargeWindow = getWrappedField("listLargeWindow");
         Number avgSmallWindow = getWrappedField("avgSmallWindow");
         Number cumsumLargeWindow = getWrappedField("cumsumLargeWindow");
 
@@ -87,7 +87,7 @@ public class TumbleTest extends StreamInprocessTest {
             tumble(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW_LARGER)).id("cumWindow");
         });
 
-        WrappedCollection<Number> listWindow = getWrappedField("listWindow");
+        WrappedCollection<Number, ?, ?> listWindow = getWrappedField("listWindow");
         Number cumWindow = getWrappedField("cumWindow");
 
         MutableNumber n = new MutableNumber();

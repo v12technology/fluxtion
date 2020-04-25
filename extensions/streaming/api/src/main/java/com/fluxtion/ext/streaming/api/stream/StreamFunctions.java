@@ -20,7 +20,12 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 
 /**
  *
@@ -34,12 +39,16 @@ public class StreamFunctions {
 
     public static <T extends Double> SerializableFunction<T, Number> toDouble() {
         return StreamFunctions::asDouble;
-    } 
+    }
 
     public static <T> SerializableFunction<T, T> toReference() {
         return StreamFunctions::asReference;
-    } 
-    
+    }
+
+    public static <T> SerializableFunction<T, WrappedList<T>> collect() {
+        return new ArrayListWrappedCollection<T>()::addItem;
+    }
+
     public static double add(double a, double b) {
         return a + b;
     }
@@ -55,14 +64,14 @@ public class StreamFunctions {
     public static double divide(double a, double b) {
         return a / b;
     }
-    
-    public static double asDouble(double d){
+
+    public static double asDouble(double d) {
         return d;
-    } 
-    
-    public static <S>  S asReference(S d){
+    }
+
+    public static <S> S asReference(S d) {
         return d;
-    } 
+    }
 
     public static class IntCount implements Stateful {
 
@@ -95,12 +104,12 @@ public class StreamFunctions {
         }
     }
 
-    public static class Sum implements Stateful {
+    public static class Sum implements StatefulNumber<Sum> {
 
         private double sum;
 
-        public double addValue(double val) {
-            sum += val;
+        public double addValue(Number val) {
+            sum += val.doubleValue();
             return sum;
         }
 
@@ -109,6 +118,18 @@ public class StreamFunctions {
         public void reset() {
             sum = 0;
         }
+
+        @Override
+        public void combine(Sum other, MutableNumber result) {
+            result.set(this.addValue(other.sum));
+        }
+
+        @Override
+        public void deduct(Sum other, MutableNumber result) {
+            this.sum -= other.sum;
+            result.set(this.sum);
+        }
+
     }
 
     public static class Max implements Stateful {
@@ -196,7 +217,7 @@ public class StreamFunctions {
         public double value(double newVal) {
             result = (newVal - previous);
             previous = newVal;
-            return Double.isNaN(result)?0:result;
+            return Double.isNaN(result) ? 0 : result;
         }
 
         @Override
