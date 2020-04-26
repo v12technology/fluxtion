@@ -28,9 +28,9 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-04-25T23:05:46.264
- * generator version : ${generator_version_information}
- * api version       : ${api_version_information}
+ * generation time   : 2020-04-26T12:33:07.612215900
+ * generator version : 2.3.2-SNAPSHOT
+ * api version       : 2.3.2-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
