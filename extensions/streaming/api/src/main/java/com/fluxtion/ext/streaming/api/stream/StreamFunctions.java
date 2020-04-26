@@ -26,6 +26,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
+import java.util.ArrayDeque;
 
 /**
  *
@@ -150,10 +151,12 @@ public class StreamFunctions {
         }
     }
 
-    public static class Min implements Stateful {
+    public static class Min implements StatefulNumber<Min> {
 
         private double min = 0;
-
+        private int bucketCount;
+        private transient ArrayDeque<MutableNumber> history;
+        
         public double min(double val) {
             if (min > val) {
                 min = val;
@@ -162,13 +165,33 @@ public class StreamFunctions {
         }
 
         @Override
+        public void combine(Min other, MutableNumber result) {
+            StatefulNumber.super.combine(other, result); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void deduct(Min other, MutableNumber result) {
+            StatefulNumber.super.deduct(other, result); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setBucketCount(int count) {
+            this.bucketCount = count;
+        }
+
+        public int getBucketCount() {
+            return bucketCount;
+        }
+        
+        @Override
         @Initialise
         public void reset() {
             min = 0;
+            history = new ArrayDeque<>(bucketCount);
         }
     }
 
-    public static class Average implements Stateful {
+    public static class Average implements StatefulNumber<Average> {
 
         private double sum;
         private double count;
@@ -187,6 +210,18 @@ public class StreamFunctions {
             sum = 0;
             count = 0;
             average = 0;
+        }
+        
+        @Override
+        public void combine(Average other, MutableNumber result) {
+            count += other.count -1;
+            result.set(this.addValue(other.sum));
+        }
+
+        @Override
+        public void deduct(Average other, MutableNumber result) {
+            count -= other.count  + 1;
+            result.set(this.addValue(-other.sum));
         }
     }
 

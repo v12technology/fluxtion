@@ -45,7 +45,6 @@ public interface WrappedCollection<T, U extends Collection<T>, C extends Wrapped
     default WrappedList<T> comparator(Comparator comparator) {
         return null;
     }
-    
 
     U collection();
 

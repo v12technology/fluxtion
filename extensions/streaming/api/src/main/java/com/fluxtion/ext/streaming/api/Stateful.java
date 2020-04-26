@@ -32,6 +32,8 @@ public interface Stateful<S> {
 
     @Initialise
     void reset();
+    
+    default void setBucketCount(int count){}
 
     default void combine(Stateful<? extends S> other) {
         throw new UnsupportedOperationException("combine not supported");

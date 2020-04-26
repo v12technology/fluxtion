@@ -23,68 +23,97 @@ import java.util.List;
 
 /**
  * Functions to use with WrappedList
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class CollectionFunctions {
 
-    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> collectionAvg() {
-        return CollectionFunctions::avg;
-    }
-    
-    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> collectionMax() {
-        return CollectionFunctions::max;
+    public static <I extends Number> SerializableFunction<List<I>, Number> listSum() {
+        return CollectionFunctions::sumList;
     }
 
-    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> collectionMin() {
-        return CollectionFunctions::min;
+    public static <I extends Number> SerializableFunction<List<I>, Number> listMin() {
+        return CollectionFunctions::minList;
     }
 
-    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> collectionSum() {
-        SerializableFunction<WrappedList<I>, Number> sumCollection = CollectionFunctions::sum;
-        return CollectionFunctions::sum;
+    public static <I extends Number> SerializableFunction<List<I>, Number> listMax() {
+        return CollectionFunctions::maxList;
     }
 
-    public static <I extends Number> double sum(WrappedList<I> list) {
-        if (list.isEmpty()) {
+    public static <I extends Number> SerializableFunction<List<I>, Number> listAvg() {
+        return CollectionFunctions::avgList;
+    }
+
+    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> wrappedAvg() {
+        return CollectionFunctions::avgWrappedList;
+    }
+
+    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> wrappedMax() {
+        return CollectionFunctions::maxWrappedList;
+    }
+
+    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> wrappedMin() {
+        return CollectionFunctions::minWrappedList;
+    }
+
+    public static <I extends Number> SerializableFunction<WrappedList<I>, Number> wrappedSum() {
+        return CollectionFunctions::sumWrappedList;
+    }
+
+    public static <I extends Number> double sumList(final List<I> collection) {
+        if (collection.isEmpty()) {
             return Double.NaN;
         }
-        final List<I> collection = list.collection();
         int size = collection.size();
-        double ans = collection.get(0).doubleValue();
+        double ans = 0;
         for (int j = 0; j < size; j++) {
             ans += collection.get(j).doubleValue();
         }
         return ans;
     }
 
-    public static <I extends Number> double min(WrappedList<I> list) {
-        if (list.isEmpty()) {
+    public static <I extends Number> double minList(final List<I> collection) {
+        if (collection.isEmpty()) {
             return Double.NaN;
         }
-        final List<I> collection = list.collection();
         int size = collection.size();
-        double ans = collection.get(0).doubleValue();
+        double ans = 0;
         for (int j = 0; j < size; j++) {
             ans = Math.min(ans, collection.get(j).doubleValue());
         }
         return ans;
     }
 
-    public static <I extends Number> double max(WrappedList<I> list) {
-        if (list.isEmpty()) {
+    public static <I extends Number> double maxList(final List<I> collection) {
+        if (collection.isEmpty()) {
             return Double.NaN;
         }
-        final List<I> collection = list.collection();
         int size = collection.size();
-        double ans = collection.get(0).doubleValue();
+        double ans = 0;
         for (int j = 0; j < size; j++) {
             ans = Math.max(ans, collection.get(j).doubleValue());
         }
         return ans;
     }
-    public static <I extends Number> double avg(WrappedList<I> list) {
-        return max(list)/list.size();
+
+    public static <I extends Number> double avgList(final List<I> collection) {
+        return maxList(collection) / collection.size();
     }
-    
-    
+
+    public static <I extends Number> double sumWrappedList(WrappedList<I> list) {
+        return sumList(list.collection());
+    }
+
+    public static <I extends Number> double minWrappedList(WrappedList<I> list) {
+        return minList(list.collection());
+    }
+
+    public static <I extends Number> double maxWrappedList(WrappedList<I> list) {
+        return maxList(list.collection());
+    }
+
+    public static <I extends Number> double avgWrappedList(WrappedList<I> list) {
+        return maxWrappedList(list) / list.size();
+    }
+
 }

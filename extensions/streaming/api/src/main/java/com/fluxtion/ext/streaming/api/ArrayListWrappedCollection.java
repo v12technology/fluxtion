@@ -140,9 +140,6 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     
     public ArrayListWrappedCollection<T> addItem(final T newItem) {
-        if (collection.contains(newItem)) {
-            return this;
-        }
         if (comparator != null) {
             int index = Collections.binarySearch(collection, newItem, comparator);
             if (index < 0) {
