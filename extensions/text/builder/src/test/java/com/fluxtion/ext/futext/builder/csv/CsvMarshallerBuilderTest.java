@@ -470,7 +470,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -489,7 +488,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -510,7 +508,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -528,7 +525,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -552,7 +548,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -572,7 +567,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -593,7 +587,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -617,7 +610,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .build();
             addPublicNode(city, "city");
             addPublicNode(count(city), "count");
-            LogBuilder.Log(city);
             maxFiltersInline = 25;
         }
 
@@ -679,7 +671,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .processEscapeSequences(true)
                     .build();
             addPublicNode(city, "carAd");
-            LogBuilder.Log(city);
         }
 
     }
@@ -699,7 +690,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .processEscapeSequences(true)
                     .build();
             addPublicNode(city, "carAd");
-            LogBuilder.Log(city);
         }
 
     }
@@ -713,7 +703,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .processEscapeSequences(true)
                     .build();
             addPublicNode(city, "carAd");
-            LogBuilder.Log(city);
         }
 
     }
@@ -724,7 +713,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         {
             Wrapper<WorldCityBean> city = csvMarshaller(WorldCityBean.class).build();
             addPublicNode(city, "city");
-            LogBuilder.Log(city);
             addPublicNode(count(city), "count");
         }
 
@@ -748,7 +736,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .processEscapeSequences(true)
                     .build();
             addPublicNode(city, "city");
-            LogBuilder.Log(city);
             addPublicNode(count(city), "count");
         }
 
@@ -767,7 +754,6 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
                     .skipEmptyLines(true)
                     .build();
             addPublicNode(city, "city");
-            LogBuilder.Log(city);
             addPublicNode(count(city), "count");
             //validator count
             RulesEvaluator<WorldCityOnEvent> validator = validator(city).build();
