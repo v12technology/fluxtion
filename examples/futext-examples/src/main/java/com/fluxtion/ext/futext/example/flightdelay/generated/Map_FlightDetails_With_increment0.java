@@ -64,6 +64,10 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
     parentReset = false;
   }
 
+  public void reset() {
+    f.reset();
+  }
+
   @Override
   public FilterWrapper<Number> resetNotifier(Object resetNotifier) {
     this.resetNotifier = resetNotifier;

@@ -29,8 +29,10 @@ import java.util.stream.Stream;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T> The type held in this collection
+ * @param <U> The underlying collection type
+ * @param <C> The type of the subclass of WrappedCollection 
  */
-public interface WrappedCollection<T> extends Stateful{
+public interface WrappedCollection<T, U extends Collection<T>, C extends WrappedCollection<T, U, C>> extends Stateful<T>,  WrapperBase<Collection<T>, C> {
 
     default <I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func) {
         throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");
@@ -44,13 +46,28 @@ public interface WrappedCollection<T> extends Stateful{
         return null;
     }
 
-    default WrappedCollection<T> id(String id) {
-        return StreamOperator.service().nodeId(this, id);
+    U collection();
+
+    default <R> Wrapper<R> map(LambdaReflection.SerializableFunction<U, R> mapper) {
+        return StreamOperator.service().map(mapper, asWrapper(), true);
+    } 
+
+    default Wrapper<U> asWrapper(){
+        return StreamOperator.service().streamInstance(this::collection);
     }
+    
+    WrappedCollection<T, U, C> resetNotifier(Object resetNotifier);
 
-    Collection<T> collection();
 
-    WrappedCollection<T> resetNotifier(Object resetNotifier);
+    @Override
+    default U  event(){
+        return collection();
+    }
+    
+    @Override
+    default Class<Collection<T>> eventClass(){
+        return (Class<Collection<T>>) collection().getClass();
+    }
         
     default int size() {
         return collection().size();

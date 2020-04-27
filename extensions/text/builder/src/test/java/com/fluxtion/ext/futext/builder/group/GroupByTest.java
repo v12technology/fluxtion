@@ -27,9 +27,6 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import com.fluxtion.ext.streaming.builder.log.LogBuilder;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
-import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readBytesCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
@@ -105,18 +102,18 @@ public class GroupByTest extends BaseSepTest {
                 + "liverpool,0,1,arsenal\n",
                  sep, false);
         GroupBy< LeaguePosition> league = getField(VAR_AGG_LEAGUEPOSITION);
-        league.getMap().values().stream().map(w -> w.event())
-                .sorted((l1, l2) -> {
-                    if ((l2.totalPoints() - l1.totalPoints()) != 0) {
-                        return l2.totalPoints() - l1.totalPoints();
-                    } else if ((l2.goalDifference() - l1.goalDifference()) != 0) {
-                        return l2.goalDifference() - l1.goalDifference();
-                    } else if ((l2.awayPoints() - l1.awayPoints()) != 0) {
-                        return l2.awayPoints() - l1.awayPoints();
-                    }
-                    return 0;
-                })
-                .forEach(l -> System.out.println(l.toString()));
+//        league.getMap().values().stream().map(w -> w.event())
+//                .sorted((l1, l2) -> {
+//                    if ((l2.totalPoints() - l1.totalPoints()) != 0) {
+//                        return l2.totalPoints() - l1.totalPoints();
+//                    } else if ((l2.goalDifference() - l1.goalDifference()) != 0) {
+//                        return l2.goalDifference() - l1.goalDifference();
+//                    } else if ((l2.awayPoints() - l1.awayPoints()) != 0) {
+//                        return l2.awayPoints() - l1.awayPoints();
+//                    }
+//                    return 0;
+//                })
+//                .forEach(l -> System.out.println(l.toString()));
         Map<String, LeaguePosition> leagueList = league.getMap().values().stream().map(w -> w.event()).collect(Collectors.toMap(LeaguePosition::getTeamName, Function.identity()));
         LeaguePosition arsenal = leagueList.get("arsenal");
         LeaguePosition wba = leagueList.get("wba");
@@ -170,11 +167,11 @@ public class GroupByTest extends BaseSepTest {
             addPublicNode(awayGoalsGroup, VAR_SUM_AWAYGOALS);
             //logging - we need to cast to Function<MutableNumber, ?>  as java type inference is breaking down
             LambdaReflection.SerializableFunction<MutableNumber, ?> f = MutableNumber::intValue;
-            Log(result);
-            LogBuilder.buildLog("XX Team:'{}' for:{} against:{} XX", result, MatchResult::getHomeTeamAsString)
-                    .input(stream(homeGoalsGroup::event), f)
-                    .input(stream(awayGoalsGroup::event), f)
-                    .build();
+//            Log(result);
+//            LogBuilder.buildLog("XX Team:'{}' for:{} against:{} XX", result, MatchResult::getHomeTeamAsString)
+//                    .input(stream(homeGoalsGroup::record), f)
+//                    .input(stream(awayGoalsGroup::record), f)
+//                    .build();
         }
     }
 

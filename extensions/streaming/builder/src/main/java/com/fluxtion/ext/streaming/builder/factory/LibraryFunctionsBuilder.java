@@ -170,7 +170,7 @@ public class LibraryFunctionsBuilder  {
      * @param <T> input to {@link Sum#addValue }
      * @return {@link SerializableFunction} of {@link Sum#addValue }
      */
-    public static <T extends Double> SerializableFunction<T, Number> cumSum() {
+    public static <T extends Number> SerializableFunction<T, Number> cumSum() {
         return new Sum()::addValue;
     }
 

@@ -35,8 +35,9 @@ public class MsgSink {
 
     public void copyAsAscii(byte[] target) {
         int msgSize = sb.length();
+        //TODO change to sb.getChars 
         for (int i = 0; i < msgSize; i++) {
-            target[i] = (byte) sb.charAt(i);
+            target[i] = (byte) sb. charAt(i);
         }
     }
 

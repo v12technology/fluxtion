@@ -16,10 +16,10 @@
  */
 package com.fluxtion.ext.streaming.api.group;
 
-import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -28,7 +28,7 @@ import java.util.Map;
  * @param <T> he target type of the group
  * @author greg
  */
-public interface GroupBy<T> extends Stateful, WrappedCollection<T> {
+public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<T>> {
 
     <K> T value(K key);
 
@@ -39,6 +39,7 @@ public interface GroupBy<T> extends Stateful, WrappedCollection<T> {
         return StreamOperator.service().nodeId(this, id);
     }
 
+    @Override
     default GroupBy<T> resetNotifier(Object resetNotifier) {
         return this;
     }
@@ -48,14 +49,12 @@ public interface GroupBy<T> extends Stateful, WrappedCollection<T> {
      *
      * @return the wrapped node
      */
-    T event();
+    T record();
 
     /**
      * The type of the wrapped node
      *
      * @return wrapped node class
      */
-    Class<T> eventClass();
-
-
+    Class<T> recordClass();
 }

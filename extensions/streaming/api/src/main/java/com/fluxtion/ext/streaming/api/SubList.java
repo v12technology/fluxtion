@@ -20,11 +20,13 @@ package com.fluxtion.ext.streaming.api;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import java.util.Collections;
 import java.util.List;
 import lombok.Data;
 
 /**
- *
+ * A filtered view of a parent WrappedList
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Data
@@ -43,6 +45,9 @@ public class SubList<T> implements WrappedList<T> {
 
     @Override
     public List<T> collection() {
+        if(unmodifiableCollection == null){
+           return Collections.EMPTY_LIST;
+        }
         return unmodifiableCollection;
     }
 

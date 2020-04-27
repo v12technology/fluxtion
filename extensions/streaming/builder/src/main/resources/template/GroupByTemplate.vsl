@@ -175,12 +175,12 @@ ${functionInfo.updateTarget}
     }
 
     @Override
-    public ${targetClass} event() {
+    public ${targetClass} record() {
         return target;
     }
 
     @Override
-    public Class<${targetClass}> eventClass() {
+    public Class<${targetClass}> recordClass() {
         return ${targetClass}.class;
     }
 

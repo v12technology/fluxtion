@@ -49,7 +49,7 @@ public class ExpiringTest extends StreamInprocessTest {
 //        
 //        assertThat(summaryMap.getMap().size(), is(2));
 //        Optional<OrderSummary> euOrders = summaryMap.getMap().values().stream()
-//                .map(wrapper -> wrapper.event())
+//                .map(wrapper -> wrapper.record())
 //                .filter(summary -> summary.getCcyPair().equalsIgnoreCase("EURUSD"))
 //                .findFirst();
 //        assertThat(1_600_000, is((int)euOrders.get().getVolumeDealt()));

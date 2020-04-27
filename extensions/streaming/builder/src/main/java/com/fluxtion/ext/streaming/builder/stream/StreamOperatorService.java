@@ -137,6 +137,11 @@ public class StreamOperatorService implements StreamOperator {
     public <T, R> Wrapper<R> get(SerializableFunction<T, R> mapper, Wrapper<T> source) {
         return StreamFunctionCompiler.get(mapper.method(), source);
     }
+    
+    @Override
+    public <S> Wrapper<S> streamInstance(SerializableSupplier<S> source){
+        return StreamFunctionCompiler.get(source);
+    }
 
     @Override
     public <T, R> Wrapper<R> map(SerializableFunction<T, R> mapper, Wrapper<T> source, boolean cast) {

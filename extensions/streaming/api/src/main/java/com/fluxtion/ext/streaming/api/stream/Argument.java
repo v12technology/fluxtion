@@ -75,4 +75,8 @@ public class Argument<T> {
         this.accessor = accessor;
         this.cast = cast;
     }
+    
+    public boolean isWrapper(){
+        return source instanceof Wrapper;
+    }
 }
