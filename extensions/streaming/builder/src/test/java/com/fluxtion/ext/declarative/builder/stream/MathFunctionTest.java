@@ -18,6 +18,7 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
+import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
@@ -34,11 +35,11 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.Log;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.buildLog;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,7 +59,6 @@ public class MathFunctionTest extends StreamInprocessTest {
     public int numFun2(Number a, Number b) {
         return a.intValue() + b.intValue();
     }
-
 
     @Test
     public void generateProcessor() throws Exception {
@@ -124,7 +124,7 @@ public class MathFunctionTest extends StreamInprocessTest {
 
     @Test
     public void testAdd() {
-        sep((c) -> {            
+        sep((c) -> {
             Wrapper<Number> sum = map(MathFunctionTest::addNumber, Data1::getVal, Data1::getVal)
                     .map(Math::rint).id("random")
                     .map(cumSum()).console("sum:").id("add")
@@ -250,37 +250,35 @@ public class MathFunctionTest extends StreamInprocessTest {
         assertThat(colours.event().intValue(), is(1000));
         assertThat(nums.event().intValue(), is(600));
     }
-    
-    
+
     @Test
     public void testCombiningArray(){
         sep((c) -> {
-            Wrapper<Number> eurDealtPos = merge(select(DataEvent.class, "EU", "EC", "EG", "EY"))
-                    .map(cumSum(), DataEvent::getValue)
-                    .id("eurDealtPos");
-            
-            Wrapper<Number> eurContraPos = merge(select(DataEvent.class, "UE", "CE", "GE", "YE"))
-                    .map(cumSum(), DataEvent::getValue)
-                    .id("eurContraPos");
-            
-            Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
-            
-            netPos.filter(inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
-            netPos.filter(outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
-            netPos.filter(inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
-            netPos.filter(outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
+                Wrapper<Number> eurDealtPos = merge(select(DataEvent.class, "EU", "EC", "EG", "EY"))
+                        .map(cumSum(), DataEvent::getValue)
+                        .id("eurDealtPos");
 
-            Log("-> Trade recived:'{}'@'{}' ", select(DataEvent.class),
-                    DataEvent::getStringValue, DataEvent::getValue);         
-            
-            buildLog("<- Position update: EUR net:{} dealt:{} contra:{}", select(DataEvent.class))
-                    .input(netPos, Number::intValue)
-                    .input(eurDealtPos, Number::intValue)
-                    .input(eurContraPos, Number::intValue)
-                    .build();
-            
-        }); 
-        
+                Wrapper<Number> eurContraPos = merge(select(DataEvent.class, "UE", "CE", "GE", "YE"))
+                        .map(cumSum(), DataEvent::getValue)
+                        .id("eurContraPos");
+
+                Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
+
+                netPos.filter(inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
+                netPos.filter(outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
+                netPos.filter(inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
+                netPos.filter(outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
+
+                log("-> Trade recived:'{}'@'{}' ", 
+                        arg(DataEvent::getStringValue), 
+                        arg(DataEvent::getValue));
+                log("<- Position update: EUR net:{} dealt:{} contra:{} ", 
+                        arg(netPos, Number::intValue), 
+                        arg(eurDealtPos, Number::intValue), 
+                        arg(eurContraPos, Number::intValue)
+                );
+            });
+
         DataEvent de1 = new DataEvent();
         de1.setFilterString("EU");
         de1.value = 2;
@@ -306,10 +304,10 @@ public class MathFunctionTest extends StreamInprocessTest {
         de1.value = -1500;
         sep.onEvent(de1);
     }
-    
+
     @Test
-    public void chainedFunctions(){
-        sep((c) ->{
+    public void chainedFunctions() {
+        sep((c) -> {
             Wrapper<Number> add = LibraryFunctionsBuilder.add(arg(25), arg(DataEvent::getValue));
             multiply(arg(0.5), arg(add)).id("result");
         });
@@ -319,7 +317,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         Wrapper<Number> sum = getField("result");
         assertThat(sum.event().doubleValue(), is(17.5));
     }
-    
+
     public static class DataEvent extends DefaultEvent {
 
         public static final int ID = 1;
@@ -396,7 +394,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         }
     }
 
-    public static class Data1  {
+    public static class Data1 {
 
         public int val;
 

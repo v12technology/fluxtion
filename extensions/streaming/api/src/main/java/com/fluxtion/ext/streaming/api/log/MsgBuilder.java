@@ -58,6 +58,16 @@ public abstract class MsgBuilder {
         this.msgSink = msgSink;
     }
 
+    public MsgBuilder name(String name){
+        this.name = name;
+        return this;
+    }
+    
+    public MsgBuilder level(int level){
+        this.logLevel = level;
+        return this;
+    }
+    
     @EventHandler(filterString = LogControlEvent.FILTER, propagate = false)
     public boolean controlLogIdFilter(LogControlEvent control) {
         control.getFilter();

@@ -39,15 +39,30 @@ public class SlidingAggregator<T> implements Wrapper<T> {
     private final int size;
     private Stateful<T> aggregator;
     private ArrayDeque<Stateful> deque;
-
+    @NoEventReference
+    private TimeReset timeReset;
+    
     @OnEvent
-    public void aggregate() {
+    public void aggregate() {        
+        int expiredBuckete = timeReset == null ? 1 : timeReset.getWindowsExpired();
+        if(expiredBuckete==0){
+            return;
+        }
+        Stateful popped1 = deque.poll();
+        aggregator.deduct(popped1);
+        for (int i = 1; i < expiredBuckete; i++) {
+            Stateful popped2 = deque.poll();
+            aggregator.deduct(popped2);
+            popped2.reset();
+            deque.add(popped2);
+        }
+        popped1.reset();
+        popped1.combine(source);
+        deque.add(popped1);
+        //add
         aggregator.combine(source);
-        Stateful popped = deque.poll();
-        aggregator.deduct(popped);
-        popped.reset();
-        popped.combine(source);
-        deque.add(popped);
+        source.reset(); 
+        
     }
 
     @Override

@@ -19,9 +19,7 @@ package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.builder.factory.Duration;
@@ -30,7 +28,6 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
 import java.util.Arrays;
-import java.util.Comparator;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

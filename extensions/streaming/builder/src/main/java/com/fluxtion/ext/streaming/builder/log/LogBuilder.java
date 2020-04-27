@@ -19,15 +19,12 @@ package com.fluxtion.ext.streaming.builder.log;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
-import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
 import com.fluxtion.ext.streaming.api.log.MsgBuilder;
+import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.Templates;
-import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.imports;
@@ -44,8 +41,7 @@ import lombok.Value;
 import org.apache.velocity.VelocityContext;
 
 /**
- * Builder for a simple console logger. Static helper methods create a LogBuilder
- * or a MsgBuuilder. The MsgBuilder
+ * Builder for a simple console logger. 
  *
  * @author greg
  */
@@ -68,118 +64,36 @@ public class LogBuilder {
         this.logNotifier = notifier;
     }
 
-    public static LogBuilder buildLog(String message, Object notifier) {
+    public static MsgBuilder buildLog(String message, Object notifier) {
         LogBuilder logger = new LogBuilder(message, notifier);
-        return logger;
-    }
-
-    @SafeVarargs
-    public static <T> LogBuilder buildLog(String message, T source, SerializableFunction<T, ?>... data) {
-        LogBuilder logger = new LogBuilder(message, null);
-        logger.input(source, data);
-        return logger;
-    }
-
-    @SafeVarargs
-    public static <N, S, V> MsgBuilder LogOnNotify(String message, N notifier, S source, SerializableSupplier<V>... data) {
-        LogBuilder logger = new LogBuilder(message, notifier);
-        logger.input(source, data);
         return logger.build();
     }
 
-    @SafeVarargs
-    public static <S, V> MsgBuilder Log(String message, S source, SerializableSupplier<V>... data) {
-        LogBuilder logger = new LogBuilder(message, null);
-        logger.input(source, data);
-        return logger.build();
+    public static MsgBuilder log(String message, Argument... arguments){
+        return log(message, null, arguments);
     }
-
-    public <S, V> LogBuilder input(S source, SerializableSupplier<V>... data) {
-        SourceInfo sourceInfo = addSource(source);
-        for (SerializableSupplier<V> function : data) {
-            Method getMethod = function.method(SINGLETON.getClassLoader());
-            valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, getMethod));
-            count++;
+    
+    public static MsgBuilder log(String message, Object notifier, Argument... arguments){
+        LogBuilder logger = new LogBuilder(message, notifier);
+        for (Argument arg : arguments) {
+            Object source = arg.getSource();
+            Method method = arg.getAccessor();
+            if(method == null){
+                try {
+                    method = source.getClass().getMethod("toString");
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    throw new RuntimeException("cant fins toString!!!");
+                }
+            }
+            SourceInfo sourceInfo = logger.addSource(source);
+            if(arg.isWrapper()){
+                logger.valuesList.add(new ValueAccessor(logger.messageParts[logger.count], sourceInfo, (Wrapper) source, method));
+            }else{
+                logger.valuesList.add(new ValueAccessor(logger.messageParts[logger.count], sourceInfo, method));
+            }
+            logger.count++;
         }
-        return this;
-    }
-
-    public static <E> MsgBuilder Log(String message, Class<E> source) {
-        return Log(message, EventSelect.select(source));
-    }
-    
-    public static <E> MsgBuilder Log(String message, Class<E> source, SerializableFunction<E, ?>... data) {
-        return Log(message, EventSelect.select(source), data);
-    }
-    
-    @SafeVarargs
-    public static <S> MsgBuilder Log(String message, S source, SerializableFunction<S, ?>... data) {
-        LogBuilder logger = new LogBuilder(message, null);
-        logger.input(source, data);
         return logger.build();
-    }
-
-    @SafeVarargs
-    public static <E, W extends Wrapper<E>> MsgBuilder Log(String message, W source, SerializableFunction<E, ?>... data) {
-        LogBuilder logger = new LogBuilder(message, null);
-        logger.input(source, data);
-        return logger.build();
-    }
-    
-    public static <E> MsgBuilder Log(Class<E> source) {
-        return Log(EventSelect.select(source));
-    }
-    
-    public static <W> MsgBuilder Log(W source) {
-        LogBuilder logger = new LogBuilder("", null);
-        logger.input(source, W::toString);
-        return logger.build();
-    }
-    
-    public static <E, W extends Wrapper<E>> MsgBuilder Log(W source) {
-        LogBuilder logger = new LogBuilder("", null);
-        logger.input(source, E::toString);
-        return logger.build();
-    }
-
-    public static <E, W extends Wrapper<E>> MsgBuilder Log(String message, W source) {
-        LogBuilder logger = new LogBuilder(message, null);
-        logger.input(source, E::toString);
-        return logger.build();
-    }
-
-    @SafeVarargs
-    public static <S, N> MsgBuilder LogOnNotify(String message, N notifier, S source, SerializableFunction<S, ?>... data) {
-        LogBuilder logger = new LogBuilder(message, notifier);
-        logger.input(source, data);
-        return logger.build();
-    }
-
-    @SafeVarargs
-    public static <N, E, W extends Wrapper<E>> MsgBuilder LogOnNotify(String message, N notifier, W source, SerializableFunction<E, ?>... data) {
-        LogBuilder logger = new LogBuilder(message, notifier);
-        logger.input(source, data);
-        return logger.build();
-    }
-
-    public <T> LogBuilder input(T source, SerializableFunction<T, ?>... data) {
-        SourceInfo sourceInfo = addSource(source);
-        for (SerializableFunction<T, ?> function : data) {
-            Method getMethod = function.method();
-            valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, getMethod));
-            count++;
-        }
-        return this;
-    }
-
-    public <T, W extends Wrapper<T>> LogBuilder input(W functionWrapper, SerializableFunction<T, ?>... data) {
-        SourceInfo sourceInfo = addSource(functionWrapper);
-        for (SerializableFunction<T, ?> function : data) {
-            Method getMethod =  function.method();
-            valuesList.add(new ValueAccessor(messageParts[count], sourceInfo, functionWrapper, getMethod));
-            count++;
-        }
-        return this;
     }
 
     public MsgBuilder build() {
@@ -225,7 +139,6 @@ public class LogBuilder {
 
     }
 
-    //add static helper methods that configure patterns and flush rate and add multiple input sources
     @Value
     public static class ValueAccessor {
 

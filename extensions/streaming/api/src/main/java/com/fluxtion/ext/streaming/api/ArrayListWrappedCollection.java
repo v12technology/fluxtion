@@ -121,8 +121,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         reset = false;
         return true;
     }
-
-
+    
     @Override
     public void combine(Stateful<? extends T> other) {
         final WrappedList<T> otherList = (WrappedList<T>)other;
@@ -135,9 +134,13 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @Override
     public void deduct(Stateful<? extends T> other) {
-        this.collection.removeAll(((WrappedList<T>)other).collection());
+        final WrappedList<T> otherList = (WrappedList<T>)other;
+        List<T> collection1 = otherList.collection();
+        for (int i = 0; i < collection1.size(); i++) {
+            T get = collection1.get(i);
+            this.collection.remove(get);
+        }
     }
-
     
     public ArrayListWrappedCollection<T> addItem(final T newItem) {
         if (comparator != null) {

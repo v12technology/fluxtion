@@ -22,7 +22,6 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.ext.streaming.api.Stateful;
 
@@ -39,16 +38,16 @@ public class TimeReset {
     @Inject
     @NoEventReference
     private final Clock clock;
-    
-    
     private long lastCheckTime;
     private boolean reset;
+    private int windowsExpired;
 
     public TimeReset(Stateful source, long millisWindowSize, Clock clock) {
         this.source = source;
         this.millisWindowSize = millisWindowSize;
         this.clock = clock;
     }
+    
     
     @EventHandler
     public boolean anyEvent(Object o){
@@ -57,11 +56,16 @@ public class TimeReset {
             lastCheckTime = timeNow;
         }
         if(lastCheckTime + millisWindowSize <= timeNow){
+            windowsExpired = (int) ((timeNow - lastCheckTime)/millisWindowSize);
             reset = true;
-            lastCheckTime = timeNow;
+            lastCheckTime += windowsExpired * millisWindowSize;
             return true;
         }
         return false;
+    }
+
+    public int getWindowsExpired() {
+        return windowsExpired;
     }
 
     @AfterEvent
@@ -70,11 +74,13 @@ public class TimeReset {
             source.reset();
         }
         reset = false;
+        windowsExpired = 0;
     }
     
     @Initialise
     public void init(){
         lastCheckTime = -1;
+        windowsExpired = 0;
         reset = false;
     }
 }

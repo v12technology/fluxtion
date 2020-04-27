@@ -13,13 +13,11 @@ package com.fluxtion.ext.declarative.builder.log;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
-import com.fluxtion.ext.streaming.api.log.MsgBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.log.LogBuilder;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
 import org.junit.Test;
 
 /**
@@ -32,11 +30,11 @@ public class ConsoleLogTest extends StreamInprocessTest {
     public void testBuildLogger() throws Exception {
         System.out.println("testBuildLogger");
         sep(c -> {
-            Wrapper<DataEvent> dataEventSelect = select(DataEvent.class);
-            MsgBuilder logger = LogBuilder.Log("DataEvent data:{} received {} ....{}",
-                     dataEventSelect, DataEvent::getValue, DataEvent::getValue, DataEvent::getValue);
-            logger.name = "fluxtion.test";
-            logger.logLevel = 3;
+            log("DataEvent data:{} received {} ....{}", 
+                    arg(DataEvent::getValue),
+                    arg(DataEvent::getValue),
+                    arg(DataEvent::getValue)
+            ).name("fluxtion.test").level(3);
         });
 
         //fire some events

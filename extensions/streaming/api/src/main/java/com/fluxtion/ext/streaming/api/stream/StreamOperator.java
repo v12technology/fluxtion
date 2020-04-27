@@ -29,7 +29,9 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -67,9 +69,9 @@ public interface StreamOperator {
         return null;
     }
 
-     default   <S> Wrapper<S> streamInstance(LambdaReflection.SerializableSupplier<S> source){
-         return null;
-     }
+    default <S> Wrapper<S> streamInstance(LambdaReflection.SerializableSupplier<S> source) {
+        return null;
+    }
 
     /**
      * Streams the return of a method as a wrapped instance.
@@ -199,7 +201,7 @@ public interface StreamOperator {
         System.out.println(out);
     }
 
-    class ConsoleLog {
+    public class ConsoleLog {
 
         private final Object source;
         private Wrapper wrapped;
@@ -208,21 +210,27 @@ public interface StreamOperator {
         private boolean isWrapper;
         private boolean isWrapperBase;
         private String methodSupplier;
+        private List<String> methodSuppliers;
         private Method method;
 
         public ConsoleLog(Object source, String prefix) {
             this.source = source;
             this.prefix = prefix;
+            methodSuppliers = new ArrayList<>();
         }
 
         public ConsoleLog(Object source) {
             this(source, "");
         }
 
-        public <T, S> void suppliers(SerializableFunction<T, S>... supplier) {
-            if (supplier.length > 0) {
-                methodSupplier = supplier[0].method().getName();
+        public <T, S> void suppliers(SerializableFunction<T, ?>... suppliers) {
+            if (suppliers.length > 0) {
+                methodSupplier = suppliers[0].method().getName();
             }
+            for (SerializableFunction<T, ?> supplier : suppliers) {
+                methodSuppliers.add(supplier.method().getName());
+            }
+
         }
 
         public String getMethodSupplier() {
@@ -233,17 +241,25 @@ public interface StreamOperator {
             this.methodSupplier = methodSupplier;
         }
 
+        public List<String> getMethodSuppliers() {
+            return methodSuppliers;
+        }
+
+        public void setMethodSuppliers(List<String> methodSuppliers) {
+            this.methodSuppliers = methodSuppliers;
+        }
+
         @OnEvent
         public boolean log() {
             Object src = source;
-            if(isWrapper){
-                src =  wrapped.event();
-            }else if(isWrapperBase){
-                src =  wrappedBase.event();
+            if (isWrapper) {
+                src = wrapped.event();
+            } else if (isWrapperBase) {
+                src = wrappedBase.event();
             }
             if (method != null) {
                 try {
-                    System.out.println(prefix + method.invoke(src));
+                    System.out.println(prefix + method.invoke(src) );//+ " methods:" + methodSuppliers);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     System.out.println(prefix + "N/A" + " error:" + ex.getLocalizedMessage());
                     System.out.println(" obj.getClass->" + src.getClass() + " obj->" + src);
@@ -257,6 +273,7 @@ public interface StreamOperator {
         @Initialise
         public void init() {
             boolean methodName = methodSupplier != null;
+//            methodSuppliers = new ArrayList<>();
             try {
                 if (source instanceof Wrapper) {
                     wrapped = (Wrapper) source;

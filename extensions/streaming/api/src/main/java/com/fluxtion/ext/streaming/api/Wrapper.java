@@ -224,13 +224,13 @@ public interface Wrapper<T> extends Stateful<T>{
      * @param supplier
      * @return The current node
      */
-    default <S> Wrapper<T> console(String prefix, SerializableFunction<T, S>... supplier) {
+    default <S> Wrapper<T> console(String prefix, SerializableFunction<T, ?>... supplier) {
         StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
         counter.increment();
         if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
             consoleLog.suppliers(Number::doubleValue);
         } else {
-            consoleLog.suppliers(supplier);
+            consoleLog.suppliers( supplier);
         }
         String consoleId = "consoleMsgW_" + counter.intValue();
         SepContext.service().add(consoleLog, consoleId);

@@ -33,23 +33,38 @@ import lombok.Data;
 public class SlidingNumberAggregator implements Wrapper<Number> {
 
     private final Object notifier;
-    private MutableNumber value;
-    private MutableNumber emptyValue;
     @NoEventReference
     private final StatefulNumber source;
     private final int size;
+    @NoEventReference
+    private TimeReset timeReset;
     
+    private MutableNumber value;
+    private MutableNumber emptyValue;
     private StatefulNumber aggregator;
     private ArrayDeque<StatefulNumber> deque;
 
+
     @OnEvent
     public void aggregate() {
+        int expiredBuckete = timeReset == null ? 1 : timeReset.getWindowsExpired();
+        if(expiredBuckete==0){
+            return;
+        }
+        StatefulNumber popped1 = deque.poll();
+        aggregator.deduct(popped1, value);
+        for (int i = 1; i < expiredBuckete; i++) {
+            StatefulNumber popped2 = deque.poll();
+            aggregator.deduct(popped2, value);
+            popped2.reset();
+            deque.add(popped2);
+        }
+        popped1.reset();
+        popped1.combine(source, emptyValue);
+        deque.add(popped1);
+        //add
         aggregator.combine(source, value);
-        StatefulNumber popped = deque.poll();
-        aggregator.deduct(popped, value);
-        popped.reset();
-        popped.combine(source, emptyValue);
-        deque.add(popped);
+        source.reset();
     }
 
     @Override

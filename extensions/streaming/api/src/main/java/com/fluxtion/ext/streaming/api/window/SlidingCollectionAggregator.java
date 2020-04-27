@@ -40,17 +40,17 @@ import java.util.List;
 public class SlidingCollectionAggregator<T extends WrappedCollection> {
 
     private final Object notifier;
-    private final Class<T> clazz;
     @NoEventReference
     private final WrappedCollection<T, ?, ?> source;
     private final int size;
     @PushReference
     private ArrayListWrappedCollection<T> targetCollection;
     private ArrayDeque<Stateful> deque;
+    @NoEventReference
+    private TimeReset timeReset;
 
-    public SlidingCollectionAggregator(Object notifier, Class<T> clazz, WrappedCollection<T, ?, ?> source, int size) {
+    public SlidingCollectionAggregator(Object notifier, WrappedCollection<T, ?, ?> source, int size) {
         this.notifier = notifier;
-        this.clazz = clazz;
         this.source = source;
         this.size = size;
         targetCollection =  SepContext.service().addOrReuse(new ArrayListWrappedCollection<>());
@@ -63,7 +63,14 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
     public void setTargetCollection(ArrayListWrappedCollection<T> targetCollection) {
         this.targetCollection = targetCollection;
     }
-    
+
+    public TimeReset getTimeReset() {
+        return timeReset;
+    }
+
+    public void setTimeReset(TimeReset timeReset) {
+        this.timeReset = timeReset;
+    }
     
     public  SlidingCollectionAggregator<T> id(String id) {
         return StreamOperator.service().nodeId(this, id);
@@ -71,12 +78,24 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
     
     @OnEvent
     public void aggregate() {
-        targetCollection.combine(source);
+        //remove
+        int expiredBuckete = timeReset==null?1:timeReset.getWindowsExpired();
+        if(expiredBuckete==0){
+            return;
+        }
         Stateful popped = deque.poll();
         targetCollection.deduct(popped);
+        for (int i = 1; i < expiredBuckete; i++) {
+            Stateful popped2 = deque.poll();
+            targetCollection.deduct(popped2);
+            popped2.reset();
+            deque.add(popped2);
+        }
         popped.reset();
         popped.combine(source);
         deque.add(popped);
+        //add
+        targetCollection.combine(source);
     }
 
     public WrappedList<T> comparator(Comparator comparator) {
@@ -86,16 +105,6 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
     public List<T> collection() {
         return targetCollection.collection();
     }
-
-//    @Override
-//    public T event() {
-//        return (T)targetCollection;
-//    }
-//
-//    @Override
-//    public Class<T> eventClass() {
-//        return clazz;
-//    }
 
     @Initialise
     public void init() {
