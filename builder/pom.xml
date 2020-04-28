@@ -41,5 +41,56 @@ along with this program.  If not, see
     </dependencies>
     <properties>
         <netbeans.hint.license>ssl1</netbeans.hint.license>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    
+    
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <!--<release>8</release>-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>java9-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                            <multiReleaseOutput>true</multiReleaseOutput>
+                            <release>9</release>
+                            <compileSourceRoots>
+                                <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
+                            </compileSourceRoots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build> 
+    
+    
 </project>
