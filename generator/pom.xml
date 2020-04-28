@@ -29,33 +29,15 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>pre-compile</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <generatedTestSourcesDirectory>
-                                ${project.build.directory}/generated-test-sources/java
-                            </generatedTestSourcesDirectory>
-                            <excludes>
-                                <exclude>**/src/test/java/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <profile>
             <id>build-dist-jar</id>
@@ -96,12 +78,10 @@
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>  
         <dependency>
