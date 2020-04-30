@@ -22,6 +22,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.generator.util.BaseSepTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
@@ -35,43 +36,70 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class RegistrationListenerTest extends BaseSepTest {
+public class RegistrationListenerTest extends BaseSepInprocessTest {
 
     @Test
     public void testAudit() {
-        buildAndInitSep(ParentListProcessorSep.class);
+        sep(c -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
+            root.parentsNoType.add(c.addNode(new SimpleNode()));
+            //audit
+            c.addAuditor(new MyNodeAudit(), "myAuditor");
+        });
+
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(2));
     }
-    
+
     @Test
     public void testAuditInline() {
-        buildAndInitSep(ParentListProcessorSepInline.class);
+        sep(c -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
+            root.parentsNoType.add(c.addNode(new SimpleNode()));
+            //audit
+            c.addAuditor(new MyNodeAudit(), "myAuditor");
+            //inline
+            c.inlineEventHandling = true;
+        });
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(2));
     }
-    
+
     @Test
     public void testNoAuditInline() {
-        buildAndInitSep(ParentListProcessorSepInlineNoNodeAudit.class);
+        sep(c -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
+            root.parentsNoType.add(c.addNode(new SimpleNode()));
+            //audit
+            c.addAuditor(new MyNodeAudit(), "myAuditor").audit = false;
+            //inline
+            c.inlineEventHandling = true;
+        });
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(0));
     }
 
-
-    
-    public static class MyNodeAudit implements Auditor{
+    public static class MyNodeAudit implements Auditor {
 
         public HashMap<String, Object> registeredNodes = new HashMap<>();
         public transient int invokeCount;
         public transient boolean audit = true;
-        
+
         @Override
         public void nodeRegistered(Object node, String nodeName) {
             registeredNodes.put(nodeName, node);
@@ -86,68 +114,25 @@ public class RegistrationListenerTest extends BaseSepTest {
         public void nodeInvoked(Object node, String nodeName, String methodName, Object typedEvent) {
             invokeCount++;
         }
-        
+
     }
-    
-    public static class SimpleNode{
+
+    public static class SimpleNode {
+
         @OnEvent
-        public void event(){
-            
+        public void event() {
+
         }
-        
+
         @Initialise
-        public void init(){
-            
+        public void init() {
+
         }
-        
+
         @TearDown
-        public void tearDown(){
-            
+        public void tearDown() {
+
         }
     }
 
-    public static class ParentListProcessorSep extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            NodeWithParentList root = addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
-            root.parentsNoType.add(addNode(new SimpleNode()));
-            //audit
-            addAuditor(new MyNodeAudit(), "myAuditor");
-        }
-    }
-
-    
-    
-    public static class ParentListProcessorSepInline extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            NodeWithParentList root = addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
-            root.parentsNoType.add(addNode(new SimpleNode()));
-            //audit
-            addAuditor(new MyNodeAudit(), "myAuditor");
-            //inline
-            inlineEventHandling = true;
-        }
-    }
-    
-    public static class ParentListProcessorSepInlineNoNodeAudit extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            NodeWithParentList root = addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
-            root.parentsNoType.add(addNode(new SimpleNode()));
-            //audit
-            addAuditor(new MyNodeAudit(), "myAuditor").audit = false;
-            //inline
-            inlineEventHandling = true;
-        }
-    }
 }
