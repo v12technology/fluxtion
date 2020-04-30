@@ -39,9 +39,9 @@ import java.util.function.Consumer;
  *
  * {@code  sepTestInstance((c) -> c.addNode(new MyHandler(), "handler"), "com.fluxtion.examples.inprocess", "GenNode_1");}
  * <br><br>
-
- Optionally creates an instance of the compiled StaticEventProcessor with or without
- calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
+ *
+ * Optionally creates an instance of the compiled StaticEventProcessor with or
+ * without calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
  * }.<br><br>
  *
  * <h2>>This is an experimental feature that needs to tested carefully. The
@@ -82,7 +82,7 @@ public class InprocessSepCompiler {
                 genDir = JAVA_TESTGEN_DIR;
                 resDir = RESOURCE_TEST_DIR;
         }
-        boolean init = initOptions==InitOptions.INIT;
+        boolean init = initOptions == InitOptions.INIT;
         return sepInstance(cfgBuilder, pckg, sepName, genDir, resDir, init);
     }
 
@@ -101,7 +101,35 @@ public class InprocessSepCompiler {
     public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
         return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
     }
-    
+
+    /**
+     * Build a static event processor using the supplied consumer to populate
+     * the SEPConfig. Will always build a new processor, supplying a newly
+     * created instance of the class to the caller.
+     *
+     * @param name The name of the generated static event processor
+     * @param pkg The package name of the generated static event processor
+     * @param builder The Consumer that populates the SEPConfig
+     * @return An instance of the newly generated static event processor
+     * @throws Exception
+     */
+    public static StaticEventProcessor build(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
+        return InprocessSepCompiler.sepInstance(builder, pkg, name);
+    }
+
+    /**
+     * Returns an instance of a static event processor to the caller. Will only
+     * build a new processor if a class cannot be found on the classpath that
+     * matches the fqn name of the processor. Will generate a static event
+     * processor using the supplied consumer to populate the SEPConfig if an
+     * existing class cannot be found.
+     *
+     * @param name The name of the generated static event processor
+     * @param pkg The package name of the generated static event processor
+     * @param builder The Consumer that populates the SEPConfig
+     * @return An instance of the newly generated static event processor
+     * @throws Exception
+     */
     public static StaticEventProcessor reuseOrBuild(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
         StaticEventProcessor processor;
         try {
