@@ -79,7 +79,11 @@ public class GenerationContext {
     }
 
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory, boolean createResourceDirectory) {
-        SINGLETON = new GenerationContext(packageName, className, outputDirectory, resourcesRootDirectory);
+        File buildDir = null;
+        if (!System.getProperty("fluxtion.build.outputdirectory", "").isEmpty()) {
+            buildDir = new File(System.getProperty("fluxtion.build.outputdirectory", ""));
+        }
+        SINGLETON = new GenerationContext(packageName, className, outputDirectory, resourcesRootDirectory, buildDir);
         SINGLETON.createDirectories();
         if (createResourceDirectory) {
             SINGLETON.createResourceDirectory();

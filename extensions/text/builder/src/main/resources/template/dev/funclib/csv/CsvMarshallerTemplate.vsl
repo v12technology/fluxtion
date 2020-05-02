@@ -201,6 +201,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #if($newTarget)
         target = new ${targetClass}();
 #end
+#if(${fixedLen})
+        int length = 0;
+#end
         try{
             updateFieldIndex();
 #if($acceptPartials)
@@ -213,6 +216,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             fieldIndex = ${sourceInfo.fieldIdentifier};
 #* *##if($sourceInfo.trim)
 #*     *##if(${fixedLen})
+            length = ${sourceInfo.fieldLenIdentifier};
             ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
 #*     *##else
             #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
@@ -220,6 +224,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #*     *##end
 #* *##else
 #*     *##if(${fixedLen})
+            length = ${sourceInfo.fieldLenIdentifier};
             ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
 #*     *##else
             #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
@@ -240,7 +245,13 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             calculateChecksum();
 #end
         } catch (Exception e) {
-            logException("problem pushing data from row:", false, e);
+            logException("problem pushing '"
+#if(${fixedLen})
+                    + seq.subSequence(fieldIndex, length).toString() + "'"
+#else
+                    + seq.subSequence(delimIndex[fieldIndex], delimIndex[fieldIndex + 1] - 1).toString() + "'"
+#end
+                    + " from row:'" +rowNumber +"'", false, e);
             passedValidation = false;
             return false;
         } finally {
@@ -275,10 +286,16 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 
     private void logException(String prefix, boolean fatal, Exception e) {
-        errorLog.getSb().append("${functionClass} ").append(prefix)
-                .append(rowNumber).append(" fieldIndex:")
-                .append(fieldIndex-1).append(" targetMethod:")
-                .append(fieldMap.get(fieldIndex));
+        errorLog.getSb().append("${functionClass} ")
+                .append(prefix)
+                .append(" fieldIndex:'")
+                .append(fieldIndex)
+                .append("' targetMethod:'SensorReading#")
+                .append(fieldMap.get(fieldIndex))
+                .append("' error:'")
+                .append(e.toString())
+                .append("'")
+                ;
         if(fatal){
             errorLog.logFatal("");
             throw new RuntimeException(errorLog.getSb().toString(), e);
