@@ -44,9 +44,16 @@ public class SerialisedFunctionHelper {
     private static String ROOT_DIR = ROOT_DIR_DEFAULT;
     private static final String FUNCTION_DIR = "lambda.ser";
     private static int count;
+    private static boolean OVERRIDE_DIR = false;
 
     private static void serialise(Serializable s, String name) throws IOException {
-        final File outDir = new File(isTest?ROOT_DIR_TEST:ROOT_DIR, FUNCTION_DIR);
+        File outDir = new File(isTest ? ROOT_DIR_TEST : ROOT_DIR, FUNCTION_DIR);
+        if (!OVERRIDE_DIR) {
+            String dir = System.getProperty("fluxtion.cacheDirectory");
+            if (dir != null) {
+                outDir = new File(dir + "/resources/", FUNCTION_DIR);
+            }
+        }
         Files.createDirectories(outDir.toPath());
         OutputStream os = new FileOutputStream(new File(outDir, name));
         try (ObjectOutputStream ois = new ObjectOutputStream(os)) {
@@ -60,7 +67,13 @@ public class SerialisedFunctionHelper {
         try {
             ois = new ObjectInputStream(is);
         } catch (Exception exception) {
-            final File outDir = new File(isTest?ROOT_DIR_TEST:ROOT_DIR, FUNCTION_DIR);
+            File outDir = new File(isTest ? ROOT_DIR_TEST : ROOT_DIR, FUNCTION_DIR);
+            if (!OVERRIDE_DIR) {
+                String dir = System.getProperty("fluxtion.cacheDirectory");
+                if (dir != null) {
+                    outDir = new File(dir + "/resources/", FUNCTION_DIR);
+                }
+            }
             ois = new ObjectInputStream(new FileInputStream(new File(outDir, lambdaName)));
         }
         return (T) ois.readObject();
@@ -68,15 +81,17 @@ public class SerialisedFunctionHelper {
 
     public static <S, B> LambdaFunction<S, B> addLambda(SerializableFunction<S, B> func, String dir) {
         ROOT_DIR = dir;
+        OVERRIDE_DIR = true;
         LambdaFunction<S, B> addLambda = addLambda(func);
         ROOT_DIR = ROOT_DIR_DEFAULT;
+        OVERRIDE_DIR = false;
         return addLambda;
     }
 
     public static <S, B> LambdaFunction<S, B> addLambda(SerializableFunction<S, B> func) {
         LambdaFunction<S, B> retFunction = null;
         if (isLambda(func)) {
-            String serName = func.serialized().getImplMethodName() +"_"+ count++;
+            String serName = func.serialized().getImplMethodName() + "_" + count++;
             try {
                 serialise(func, serName);
                 retFunction = new LambdaFunction<>(serName);
