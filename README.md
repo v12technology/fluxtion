@@ -42,6 +42,10 @@ public static void buildSensorProcessor(SEPConfig cfg) {
 }
 ```
 Notice that method references are used throughout, no positional parameters or generic tuples are required. The strongly typing makes the code easier to read, maintain and refactor.
+## Documentation
+Check out detailed documentation at [gitbook](https://fluxtion.gitbook.io/docs/).
+This is undergoing active development so please check regularly.
+
 ## Contributing
 
 We welcome contributions to the project. Detailed information on our ways of working will be written in time. In brief our goals are:
