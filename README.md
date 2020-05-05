@@ -20,7 +20,7 @@ Traditional stream processors have an ingest, transform and publish cycle. When 
 
 Fluxtion is built as a graph processor and not a pipeline, handling heterogeneous event types in a unique fashion is the default behaviour. In fact the more complex the problem the greater the advantage that Fluxtion displays.
 ## Example
-We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/1.0.0). The excerpt below from the tutorial shows how a processing graph can be constructed in a few lines. A client instance, TempertureController that controls an external system, is integrated into the generated processor. When a filter is met, a method on the client instance is directly invoked.
+We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master). The excerpt below from the tutorial shows how a processing graph can be constructed in a few lines. A client instance, TempertureController that controls an external system, is integrated into the generated processor. When a filter is met, a method on the client instance is directly invoked.
 ```java
 public static void buildSensorProcessor(SEPConfig cfg) {
     //merge csv marshller and SensorReading instance events
