@@ -8,19 +8,25 @@
 # Introduction
 Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further.
 
-Fluxtion is a fully featured stream processor that is easy to use, ultra fast, embeds and is built to make both maintenance and development quick and easy. Uniquely among stream processors Fluxtion employs ahead of time compilation to create the processing engine. Ahead of time compilation offers several critical advantages over existing products, the standout feature is no product lock-in. We separate the processing logic from the infrastructure allowing clients to bind stream processing logic to any event delivery system.
+Fluxtion is a fully featured java based event stream processor that brings real-time data processing inside your application. If you need to build applications that react to complex events and make fast decisions then Fluxtion is for you. We build stream processing logic free from any messaging layer, there is no lock-in with Fluxtion.
 
-The sweet spot for Fluxtion is either edge processing or single server applications that process upto a few hundred million events per second. Retro fitting real-time calculations into an existing application without requiring wholesale changes to the infrastructure is a great fit.  Integrating stream processing into an environment with multiple messaging systems is easily accomplished.
+Fluxtion is is easy to use and ultra fast, our sweet spot is either edge processing or single server applications. Whether you need to process tens of millions of events per second or write complex rule driven applications that make decisions in microseconds we can help. Retro fitting real-time calculations into an existing application without requiring wholesale changes to the infrastructure is a great fit. When you need to make decisions and not just calculate then you are in the right place.
 
-A Fluxtion generated event processor is designed be embedded in a client application. After generating the stream processor the Fluxtion ahead of time compiler is not required in the running application.
+Uniquely among stream processors Fluxtion employs ahead of time compilation to create a stream processing engine. Describe your processing and Fluxtion tailors a solution to your needs at build time. Ahead of time compilation offers several critical advantages over existing products, 
+ - No vendor lock-in, the engine can be used within any java application
+ - Compiler optimized code gives higher performance, lower running costs and quicker response times
+ - Faster startup times for your application
+ - Integrates client logic as a first class citizen 
+ - Source code is generated that makes debugging and maintenance easy
+ - Meta-data such as images and graphml are created to visualise the process graph
+
 ## Philosophy
-Our philosophy is to make delivering streaming applications in java simple. Employing a clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the burden of generating clean efficient code that is optimised for memory and cpu to reduce running costs.
+Our philosophy is to make delivering streaming applications in java simple by employing a clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the burden of generating simple efficient code that is optimised for your specific application. We pay the cost at compile time only once, so every execution of your stream processor sees benefits in reduced startup time and smaller running costs.
 
-Traditional stream processors have an ingest, transform and publish cycle. When moving from analytics to actually taking actions there is a barrier to integrating the output with the client application. With Fluxtion client code is integrated into the generated processor and invoked directly. 
+Why concentrate solely on the processing logic? There are many great messaging systems out there offering scale out to hundreds of millions of events per second. But many reactive applications do not need that scale, the problem is integrating the event streams from different messaging systems into a single decision making engine. In cases like these you want to concentrate on writing the logic. 
 
-Fluxtion is built as a graph processor and not a pipeline, handling heterogeneous event types in a unique fashion is the default behaviour. In fact the more complex the problem the greater the advantage that Fluxtion displays.
 ## Example
-We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master). The excerpt below from the tutorial shows how a processing graph can be constructed in a few lines. A client instance, TempertureController that controls an external system, is integrated into the generated processor. When a filter is met, a method on the client instance is directly invoked.
+We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master). The excerpt below from the tutorial shows how a processing graph can be constructed in a few lines. 
 ```java
 public static void buildSensorProcessor(SEPConfig cfg) {
     //merge csv marshller and SensorReading instance events
@@ -41,7 +47,25 @@ public static void buildSensorProcessor(SEPConfig cfg) {
             .push(new TempertureController()::investigateSensors);
 }
 ```
-Notice that method references are used throughout, no positional parameters or generic tuples are required. The strongly typing makes the code easier to read, maintain and refactor.
+A client instance, TempertureController that controls an external system, is integrated into the generated processor. When a filter is met, a method on the client instance is directly invoked. Notice that method references are used throughout, no positional parameters or generic tuples are required. The strongly typing makes the code easier to read, maintain and refactor.
+
+A sample of the generated code and images for this example is [here](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated).
+
+## Describing a processor
+Deciding to apply stream processing to a problem leads you to your next decision, how to describe your processing requirements. Fluxtion constructs an intermediate representation for the ahead of time compiler to process. The intermediate representation can be built in a number of ways, each with their own advantages.
+### Declarative or DSL
+This is the most commonly seen in stream processors, a sql or stream like language is used to describe the requirements. Commonly found in numeric focused problems it is a good fit for real-time analytics.  The example [here](https://github.com/v12technology/fluxtion-quickstart/tree/master) is a declarative example using Fluxtion. When a problem is more rule based, such as constructing a tax calculation, then this is not a good approach.
+### Imperative
+Certain problems are more graph based and require conditional control of event propagation in the graph by user instances. Rule engines fall into this domain where there is a rich universe of events, multiple execution paths and many possible outputs. An imperative construction of the graph is a better fit. The engine provides the routing and connection logic between nodes.  **Example to be added**
+### Data driven
+Once a problem domain is well known and the degrees of freedom are constrained it is possible to construct a solution from a solely data definition. A scoring model from a machine learning analysis can be communicated purely as data for the execution engine to construct. **Example to be added**
+### Injected reuse
+Like any good system it is good to re-use existing well tested behaviour. This is the same for event processing systems. It is possible to "inject" a whole event process chain as a group. For example in trading application we can inject a volatility calculation, that comprises many node and and different event types. Injecting saves describing repeatable behaviours making systems quicker to build
+**Example to be added**
+## Stream processing vs flow processors
+Traditional stream processors have an ingest, transform and publish cycle. When moving from analytics to actually taking actions there is a barrier to integrating the output with the client application. With Fluxtion client code is integrated into the generated processor and invoked directly. 
+
+Fluxtion is built as a graph processor and not a pipeline, handling heterogeneous event types in a unique fashion is the default behaviour. In fact the more complex the problem the greater the advantage that Fluxtion displays.
 ## Documentation
 Check out detailed documentation at [gitbook](https://fluxtion.gitbook.io/docs/).
 This is undergoing active development so please check regularly.
