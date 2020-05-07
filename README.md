@@ -8,7 +8,7 @@
  - Pure java in memory fast data processing 
  - Ahead of time compiler means fast startup and small footprint
  - Batch or streaming
-## See the code
+## Code sample
 ```java
 public static void buildSensorProcessor(SEPConfig cfg) {
     //merge csv marshller and SensorReading instance events
