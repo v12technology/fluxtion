@@ -7,6 +7,7 @@
 # Lightweight event stream processor
  - Pure java in memory fast data processing 
  - Ahead of time compiler means fast startup and small footprint
+ - Built to embed perfect for use in microservices 
  - Batch or streaming
 ## Code sample
 ```java
@@ -29,10 +30,16 @@ public static void buildSensorProcessor(SEPConfig cfg) {
             .push(new TempertureController()::investigateSensors);
 }
 ```
+From our [five minute tutorial](https://github.com/v12technology/fluxtion-quickstart/tree/master). 
+Method references are used throughout, no positional parameters or generic tuples are required. The strongly typing makes the code easier to read, maintain and refactor. See the [generated code and images](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated) from the ahead of time compiler.
+# Uses
+ - Real-time analytics and processing
+ - ETL
+ - Rules engines
+ - Low response time requirements
+ - IoT processing
 # Introduction
-
 Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further.
-
 
 Fluxtion is a fully featured java based event stream processor that brings real-time data processing inside your application. If you need to build applications that react to complex events and make fast decisions then Fluxtion is for you. We build stream processing logic free from any messaging layer, there is no lock-in with Fluxtion.
 
@@ -46,30 +53,7 @@ Uniquely among stream processors Fluxtion employs ahead of time compilation to c
  - Source code is generated that makes debugging and maintenance easy
  - Meta-data such as images and graphml are created to visualise the process graph
 ## Example
-We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master). The excerpt below from the tutorial shows how a processing graph can be constructed in a few lines. 
-```java
-public static void buildSensorProcessor(SEPConfig cfg) {
-    //merge csv marshller and SensorReading instance events
-    Wrapper<SensorReading> sensorData = merge(select(SensorReading.class),
-            csvMarshaller(SensorReading.class).build()).console(" -> \t");
-    //group by sensor and calculate max, average
-    GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReading::getSensorName, 
-             SensorReadingDerived.class)
-            .init(SensorReading::getSensorName, SensorReadingDerived::setSensorName)
-            .max(SensorReading::getValue, SensorReadingDerived::setMax)
-            .avg(SensorReading::getValue, SensorReadingDerived::setAverage)
-            .build();
-    //tumble window (count=3), warning if avg > 60 && max > 90 in the window for a sensor
-    tumble(sensors, 3).console("readings in window : ", GroupBy::collection)
-            .map(SensorMonitor::warningSensors, GroupBy::collection)
-            .filter(c -> c.size() > 0)
-            .console("**** WARNING **** sensors to investigate:")
-            .push(new TempertureController()::investigateSensors);
-}
-```
-A client instance, TempertureController that controls an external system, is integrated into the generated processor. When a filter is met, a method on the client instance is directly invoked. Notice that method references are used throughout, no positional parameters or generic tuples are required. The strongly typing makes the code easier to read, maintain and refactor.
-
-A sample of the generated code and images for this example is [here](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated).
+We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master).  A client written instance that controls an external system is integrated directly into the generated processor. 
 ## Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the burden of generating simple efficient code that is optimised for your specific application. We pay the cost at compile time only once, so every execution of your stream processor sees benefits in reduced startup time and smaller running costs.
 
