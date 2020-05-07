@@ -4,9 +4,35 @@
 
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
-
+# Lightweight event stream processor
+ - Pure java in memory fast data processing 
+ - Ahead of time compiler means fast startup and small footprint
+ - Batch or streaming
+## See the code
+```java
+public static void buildSensorProcessor(SEPConfig cfg) {
+    //merge csv marshller and SensorReading instance events
+    Wrapper<SensorReading> sensorData = merge(select(SensorReading.class),
+            csvMarshaller(SensorReading.class).build()).console(" -> \t");
+    //group by sensor and calculate max, average
+    GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReading::getSensorName, 
+             SensorReadingDerived.class)
+            .init(SensorReading::getSensorName, SensorReadingDerived::setSensorName)
+            .max(SensorReading::getValue, SensorReadingDerived::setMax)
+            .avg(SensorReading::getValue, SensorReadingDerived::setAverage)
+            .build();
+    //tumble window (count=3), warning if avg > 60 && max > 90 in the window for a sensor
+    tumble(sensors, 3).console("readings in window : ", GroupBy::collection)
+            .map(SensorMonitor::warningSensors, GroupBy::collection)
+            .filter(c -> c.size() > 0)
+            .console("**** WARNING **** sensors to investigate:")
+            .push(new TempertureController()::investigateSensors);
+}
+```
 # Introduction
+
 Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further.
+
 
 Fluxtion is a fully featured java based event stream processor that brings real-time data processing inside your application. If you need to build applications that react to complex events and make fast decisions then Fluxtion is for you. We build stream processing logic free from any messaging layer, there is no lock-in with Fluxtion.
 
