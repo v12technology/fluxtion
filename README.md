@@ -60,24 +60,23 @@ We have a five minute tutorial to dive into [here](https://github.com/v12technol
 Our philosophy is to make delivering streaming applications in java simple by employing a clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the burden of generating simple efficient code that is optimised for your specific application. We pay the cost at compile time only once, so every execution of your stream processor sees benefits in reduced startup time and smaller running costs.
 
 Why concentrate solely on the processing logic? There are many great messaging systems out there offering scale out to hundreds of millions of events per second. But many reactive applications do not need that scale, the problem is integrating the event streams from different messaging systems into a single decision making engine. In cases like these you want to concentrate on writing the logic. 
-## Pipeline vs graph processing
+## Highlights
+### Ahead of time compiler
+Fluxtion constructs a model of the stream processor and generates a set of java classes that meet the requirement. The compiled code is highly optimised for memory and cpu. Small, compact and jit friendly flxution stream processors get the best out of the JVM, giving unbeatable performance. 
+### Pipeline vs graph processing
 Fluxtion is built as a graph processor and not a pipeline. A pipeline has a single entry point and single execution path, a graph processor has multiple entry points multiple execution paths. Handling heterogeneous event types in a unique fashion is the default behaviour. In fact the more complex the problem the greater the advantage that Fluxtion displays. 
-## Integrating with client code
+### Integrating with client code
 Traditional stream processors have an ingest, transform and publish cycle. When moving from analytics to actually taking actions there is a barrier to integrating the output with the client application. With Fluxtion client code is integrated into the generated processor and invoked directly. 
+### Describing a processor
+Fluxtion constructs an intermediate representation for the ahead of time compiler to process. The intermediate representation can be built from a variety of forms each with their own advantages. The following descriptions are supported:
+ - Declarative or DSL
+ - Imperative
+ - Data driven
+ - Dependency injection based
+
 ## Documentation
 Check out detailed documentation at [gitbook](https://fluxtion.gitbook.io/docs/).
 This is undergoing active development so please check regularly.
-## Describing a processor
-Deciding to apply stream processing to a problem leads you to your next decision, how to describe your processing requirements. Fluxtion constructs an intermediate representation for the ahead of time compiler to process. The intermediate representation can be built in a number of ways, each with their own advantages.
-### Declarative or DSL
-This is the most commonly seen in stream processors, a sql or stream like language is used to describe the requirements. Commonly found in numeric focused problems it is a good fit for real-time analytics.  The example [here](https://github.com/v12technology/fluxtion-quickstart/tree/master) is a declarative example using Fluxtion. When a problem is more rule based, such as constructing a tax calculation, then this is not a good approach.
-### Imperative
-Certain problems are more graph based and require conditional control of event propagation in the graph by user instances. Rule engines fall into this domain where there is a rich universe of events, multiple execution paths and many possible outputs. An imperative construction of the graph is a better fit. The engine provides the routing and connection logic between nodes.  **Example to be added**
-### Data driven
-Once a problem domain is well known and the degrees of freedom are constrained it is possible to construct a solution from a solely data definition. A scoring model from a machine learning analysis can be communicated purely as data for the execution engine to construct. **Example to be added**
-### Injected reuse
-Like any good system it is good to re-use existing well tested behaviour. This is the same for event processing systems. It is possible to "inject" a whole event process chain as a group. For example in trading application we can inject a volatility calculation, that comprises many node and and different event types. Injecting saves describing repeatable behaviours making systems quicker to build
-**Example to be added**
 ## Contributing
 We welcome contributions to the project. Detailed information on our ways of working will be written in time. In brief our goals are:
 
