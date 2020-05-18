@@ -111,6 +111,12 @@ public @interface CsvMarshaller {
     char ignoredChars() default '\r';
     
     /**
+     * Ignore quotes
+     * @return ignore quotes
+     */
+    boolean ignoreQuotes() default false;
+    
+    /**
      * Process and validate records that are missing fields, default is false
      * 
      * @return validate a record with missing field
@@ -123,5 +129,15 @@ public @interface CsvMarshaller {
      * @return trim white space flag
      */
     boolean trim() default false;
+    
+    /**
+     * Only allow basic latin characters in the header using:<p>
+     * <code>
+     *     header = header.replaceAll("\\P{InBasic_Latin}", "");
+     * </code>
+     * 
+     * @return only accept ascii in header
+     */
+    boolean asciiOnlyHeader() default true;
 
 }

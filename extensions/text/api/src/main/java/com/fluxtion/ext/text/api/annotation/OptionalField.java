@@ -29,5 +29,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface OptionalField {
-
+    /**
+     * A default value for a field if it is not present in the source data
+     *
+     * @return the String that is the default value
+     */
+    String defaultValue() default "";
 }
