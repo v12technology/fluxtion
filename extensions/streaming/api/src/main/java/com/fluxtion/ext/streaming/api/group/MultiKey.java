@@ -24,6 +24,10 @@ package com.fluxtion.ext.streaming.api.group;
  */
 public interface MultiKey<T> {
 
+    default MultiKey<T> calculateKey(Object o){
+        return this;
+    }
+    
     T copyInto(T copy);
 
     T copyKey();
