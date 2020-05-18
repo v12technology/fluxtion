@@ -78,6 +78,11 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             return false;
         }
 #end
+#if($ignoreQuotes)
+        if(character == '\"'){
+            return false;
+        }
+#end
 #if($processEscapeSequences)
         if(!processChar(character)){
             return false;
@@ -178,6 +183,9 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 
     private void mapHeader(){
         String header = new String(chars).trim();
+#if($asciiOnlyHeader)
+        header = header.replaceAll("\\P{InBasic_Latin}", "");
+#end
         header = header.replace("\"", "");
         List<String> headers = new ArrayList();
         for (String colName : header.split("[${delimiter}]")) {
@@ -214,25 +222,25 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
             if (maxFieldIndex > ${sourceInfo.fieldIdentifier}) {
 #* *##end
             fieldIndex = ${sourceInfo.fieldIdentifier};
-#* *##if($sourceInfo.trim)
-#*     *##if(${fixedLen})
-            length = ${sourceInfo.fieldLenIdentifier};
-            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier}).trim();
-#*     *##else
-            #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
-            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1).trim();
-#*     *##end
-#* *##else
-#*     *##if(${fixedLen})
-            length = ${sourceInfo.fieldLenIdentifier};
-            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier});
-#*     *##else
-            #if(!${sourceInfo.mandatory})if(fieldIndex > -1){#end
-            ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1);
-#*     *##end
-#* *##end
-            ${sourceInfo.updateTarget2}
-            #if(!${sourceInfo.mandatory}) #if(!${fixedLen})}#end #end
+#*  *##if(${fixedLen})
+         length = ${sourceInfo.fieldLenIdentifier};
+         ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(${sourceInfo.fieldIdentifier}, ${sourceInfo.fieldLenIdentifier})#if($sourceInfo.trim).trim()#end;
+#*  *##else
+         #if(${sourceInfo.defaultOptionalField})
+         if(fieldIndex > -1){
+         ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1)#if($sourceInfo.trim).trim()#end;
+         }else{
+         ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(0, 0)#if($sourceInfo.trim).trim()#end;
+         } 
+         #elseif(${sourceInfo.mandatoryField})
+         ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1)#if($sourceInfo.trim).trim()#end;
+         #else
+         if(fieldIndex > -1){
+         ${sourceInfo.targetCalcMethodName}.subSequenceNoOffset(delimIndex[${sourceInfo.fieldIdentifier}], delimIndex[${sourceInfo.fieldIdentifier} + 1] - 1)#if($sourceInfo.trim).trim()#end;
+         }
+         #end
+#*  *##end
+         ${sourceInfo.updateTarget2}
 #* *##if($acceptPartials)
         }
 #* *##end
@@ -290,7 +298,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
                 .append(prefix)
                 .append(" fieldIndex:'")
                 .append(fieldIndex)
-                .append("' targetMethod:'SensorReading#")
+                .append("' targetMethod:'${targetClass}#")
                 .append(fieldMap.get(fieldIndex))
                 .append("' error:'")
                 .append(e.toString())
@@ -365,6 +373,15 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
       marshaller.handleEvent(new RegisterEventHandler(target));
       CharStreamer.stream(input, marshaller).sync().stream();
       target.onEvent(EofEvent.EOF);
+  }
+
+  public static void stream(StaticEventProcessor target, File input, LogService validationLogger) throws IOException {
+    CsvRecordMarshaller marshaller = marshaller();
+    marshaller.init();
+    marshaller.handleEvent(new RegisterEventHandler(target));
+    marshaller.handleEvent(LogControlEvent.setLogService(validationLogger));
+    CharStreamer.stream(input, marshaller).noInit().sync().stream();
+    target.onEvent(EofEvent.EOF);
   }
 #end
 }

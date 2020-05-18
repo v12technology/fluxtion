@@ -118,6 +118,14 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
+    public <K> GroupByBuilder<K, T> join(Wrapper<K> k, SerializableFunction<K, ?>... f) {
+        Group<K, T> joinedGroup = primaryGroup.join(k, f);
+        SourceContext secondaryContext = new SourceContext(joinedGroup);
+        contexts.add(secondaryContext);
+        GroupByBuilder builder = new GroupByBuilder(this, secondaryContext);
+        return builder;
+    }
+
     public <K> GroupByBuilder<K, T> join(K k, SerializableFunction<K, ?> f) {
         Group<K, T> joinedGroup = primaryGroup.join(k, f);
         SourceContext secondaryContext = new SourceContext(joinedGroup);

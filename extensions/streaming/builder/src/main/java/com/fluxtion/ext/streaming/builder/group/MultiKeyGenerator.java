@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.builder.group;
 
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.MultiKey;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;

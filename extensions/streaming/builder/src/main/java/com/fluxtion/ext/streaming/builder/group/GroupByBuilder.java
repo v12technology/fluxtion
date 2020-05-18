@@ -66,6 +66,10 @@ public class GroupByBuilder<K, T> {
         return groupBy.join(k, f);
     }
 
+    public <S> GroupByBuilder<S, T> join(Wrapper<S> k, SerializableFunction<S, ?>... f) {
+        return groupBy.join(k, f);
+    }
+
     public <V> GroupByBuilder<K, T> init(SerializableFunction<K, V> valueFunction, SerializableBiConsumer<T, V> tragetFunction) {
         try {
             Method sourceMethod = valueFunction.method();

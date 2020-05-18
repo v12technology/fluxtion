@@ -22,6 +22,8 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.log.LogControlEvent;
+import com.fluxtion.ext.streaming.api.log.LogService;
 import com.fluxtion.ext.text.api.annotation.CheckSum;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
@@ -127,7 +129,9 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     private boolean mapBean = true;
     private String checkSumField;
     private boolean trimWhitespace = false;
-
+    private boolean ignoreQuotes = false;
+    protected boolean asciiOnlyHeader = true;
+    
     public static <S> CsvMarshallerBuilder<S> csvMarshaller(Class<S> target) {
         return csvMarshaller(target, 1);
     }
@@ -202,8 +206,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
             mappingRow(annotation.mappingRow());
             processEscapeSequences(annotation.processEscapeSequences());
             skipCommentLines(annotation.skipCommentLines());
+            asciiOnlyHeader(annotation.asciiOnlyHeader());
             skipEmptyLines(annotation.skipEmptyLines());
             reuseTarget(!annotation.newBeanPerRecord());
+            ignoreQuotes(annotation.ignoreQuotes());
             tokenConfig( new CharTokenConfig(annotation.lineEnding(), annotation.fieldSeparator(), annotation.ignoredChars()));
         }
         
@@ -234,6 +240,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                         String[] converterString = converter.value().split("#");
                         MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
                         converterMethod(fieldName, method.withAnyArgs());
+                    }
+                    final OptionalField defaultOptionalValue = field.getAnnotation(OptionalField.class);
+                    if(defaultOptionalValue!=null && !defaultOptionalValue.defaultValue().isEmpty()){
+                        defaultValue(fieldName,  defaultOptionalValue.defaultValue());
                     }
                     final DefaultFieldValue defaultValue = field.getAnnotation(DefaultFieldValue.class);
                     if(defaultValue!=null){
@@ -276,6 +286,16 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         return this;
     }
 
+    public CsvMarshallerBuilder<T> ignoreQuotes(boolean ignoreQuotes) {
+        this.ignoreQuotes = ignoreQuotes;
+        return this;
+    }
+
+    public CsvMarshallerBuilder<T> asciiOnlyHeader(boolean asciiOnlyHeader) {
+        this.asciiOnlyHeader = asciiOnlyHeader;
+        return this;
+    }
+
     protected void mapNamedFieldToMethod(Method targetMethod, String colName) {
         mapNamedFieldToMethod(targetMethod, colName, false);
     }
@@ -298,6 +318,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     @Override
     protected void updateContext(VelocityContext ctx) {
         ctx.put("csv", true);
+        ctx.put("ignoreQuotes", ignoreQuotes);
+        ctx.put("asciiOnlyHeader", asciiOnlyHeader);
+        importMap.addImport(LogService.class);
+        importMap.addImport(LogControlEvent.class);
         if(checkSumField!=null){
             ctx.put("checksum", true);
             ctx.put("checksumField", checkSumField);

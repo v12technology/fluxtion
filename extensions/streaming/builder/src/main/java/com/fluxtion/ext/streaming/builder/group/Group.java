@@ -80,6 +80,34 @@ public class Group <S, T> {
         }
     }
     
+    public static <S, T> GroupByBuilder<S, T> groupBy(Wrapper<S> sourceInstance, Class<T> target, SerializableFunction<S, ?>... f){
+        Class<S> k = sourceInstance.eventClass();
+        try {
+            ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
+            ImportMap importMap = ImportMap.newMap();
+            for (SerializableFunction<S, ?> function : f) {
+                MultiKeyInfo info = new MultiKeyInfo(importMap);
+                Method sourceMethod = function.method();
+                info.setSource(sourceMethod, sourceMethod.getName() + GenerationContext.nextId());
+                keyList.add(info);
+            }
+            HashMap<String, List<MultiKeyInfo>> multiKeySourceMap = new HashMap<>();
+            multiKeySourceMap.put(importMap.addImport(k), keyList);
+            String multiKeyClassName = "MultiKeyFor_" + target.getSimpleName() + "_" + GenerationContext.nextId();
+            MultiKey<?> multiKey = MultiKeyGenerator.generate(keyList, k, multiKeySourceMap, importMap, multiKeyClassName);
+            final Group group = new Group(sourceInstance, multiKey, target);
+            group.multiKeySourceMap = multiKeySourceMap;
+            group.multiKeyList = keyList;
+            group.wrapped = true;
+            group.multiKeyImportMap = importMap;
+            group.multiKeyClassName = multiKeyClassName;
+            return GroupByContext.builder(group);
+        } catch (Exception ex) {
+            throw new RuntimeException("cannot build Event class requires default constructor", ex);
+        }
+    }
+    
+    
     public static <S, T> GroupByBuilder<S, T> groupBy(Class<S> k, Class<T> target, SerializableFunction<S, ?>... f){
         try {
             ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
@@ -213,6 +241,37 @@ public class Group <S, T> {
             final Group group = new Group(secondInput.newInstance(), multiKey, getTargetClass());
             group.multiKeyList = keyList;
             group.eventClass = true;
+            group.joinedGroup = this;
+            group.multiKeySourceMap = multiKeySourceMap;
+            group.multiKeyImportMap = multiKeyImportMap;
+            group.setMultiKeyClassName(multiKeyClassName);
+            group.setMultiKey(multiKey);
+            return group;
+        } catch (Exception ex) {
+            throw new RuntimeException("cannot build Event class requires default constructor", ex);
+        }  
+    }
+        
+    public <S1> Group<S1, T> join(Wrapper<S1> secondInput, SerializableFunction<S1, ?>... keyFunction){
+        Class<S1> k = secondInput.eventClass();
+        try {
+            ArrayList<MultiKeyInfo> keyList = new ArrayList<>();
+            int i = 0;
+            for (SerializableFunction<S1, ?> function : keyFunction) {
+                MultiKeyInfo info = new MultiKeyInfo(multiKeyImportMap);
+                Method sourceMethod = function.method();
+                info.setSource(sourceMethod, multiKeyList.get(i).getId());
+                i++;
+//                info.setSource(sourceMethod, sourceMethod.getName() + GenerationContext.nextId());
+                keyList.add(info);
+            }
+            multiKeySourceMap.put(multiKeyImportMap.addImport(k), keyList);
+            String multiKeyClassName = "MultiKeyFor_" + target.getSimpleName() + "_" + GenerationContext.nextId();
+            MultiKey<?> multiKey = MultiKeyGenerator.generate(keyList, k, multiKeySourceMap, multiKeyImportMap, multiKeyClassName);
+            System.out.println(multiKey);
+            final Group group = new Group(secondInput, multiKey, getTargetClass());
+            group.multiKeyList = keyList;
+            group.wrapped = true;
             group.joinedGroup = this;
             group.multiKeySourceMap = multiKeySourceMap;
             group.multiKeyImportMap = multiKeyImportMap;
