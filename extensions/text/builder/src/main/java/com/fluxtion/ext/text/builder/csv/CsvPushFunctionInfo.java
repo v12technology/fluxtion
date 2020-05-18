@@ -123,6 +123,15 @@ public class CsvPushFunctionInfo {
         defaultMethod = defaultInstanceId + "." + method.getName();
     }
     
+    public boolean getMandatoryField(){
+        return mandatory;
+    }
+    
+    public boolean getDefaultOptionalField(){
+        final boolean test = defaultMethod!=null && !mandatory;
+        return  test;
+    }
+    
     public String getValidate(){
         return validatorMethod + ".validate(" + targetInstanceId + "." + targetGetMethod + "(), validationBuffer)";
     }

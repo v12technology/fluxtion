@@ -21,6 +21,7 @@ import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
+import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.annotation.TrimField;
 import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
@@ -46,6 +47,22 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         stream("2\n");
         Assert.assertThat(sample.getIntValue(), is(2));
 
+    }
+
+    @Test
+    public void testDefaultOptionalValue() {
+        sep(c -> {
+            c.addPublicNode(csvMarshaller(DefaultWithOptional.class).build(), "output");
+        });
+        DefaultWithOptional sample = getWrappedField("output");
+        stream("requiredInt\n3\n");
+        Assert.assertThat(sample.getOptionalInt(), is(-1));
+        Assert.assertThat(sample.getOptionalInt2(), is(-2));
+        Assert.assertThat(sample.getRequiredInt(), is(3));
+        stream("2\n");
+        Assert.assertThat(sample.getOptionalInt(), is(-1));
+        Assert.assertThat(sample.getOptionalInt2(), is(-2));
+        Assert.assertThat(sample.getRequiredInt(), is(2));
     }
 
     @Test
@@ -140,6 +157,20 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         @ConvertField("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#times10")
         @DefaultFieldValue("-1")
         protected int intValue;
+        
+    }
+    
+    @Data
+    public static class DefaultWithOptional{
+    
+        @OptionalField
+        @DefaultFieldValue("-1")
+        protected int optionalInt;
+    
+        @OptionalField(defaultValue = "-2")
+        protected int optionalInt2;
+        
+        protected int requiredInt;
         
     }
 
