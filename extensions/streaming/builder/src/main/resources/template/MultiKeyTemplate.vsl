@@ -20,6 +20,16 @@ public final class ${functionClass} implements MultiKey<${functionClass}> {
     private $keyInfo.initMethod($source);
 #end
 
+  @Override
+  public ${functionClass} calculateKey(Object o){
+      reset();
+#foreach( $srcInfo in $sourceMappingList.entrySet() )
+      if(o instanceof ${srcInfo.key})
+          setKey((${srcInfo.key}) o);
+#end
+      return this;
+  }
+
 #foreach( $srcInfo in $sourceMappingList.entrySet() )
     public void setKey(${srcInfo.key} $source){
 #foreach( $keyInfo in $srcInfo.value)
@@ -46,6 +56,15 @@ public final class ${functionClass} implements MultiKey<${functionClass}> {
     @Override
     public ${functionClass} copyKey(){
         return copyInto(new ${functionClass}());
+    }
+
+    @Override
+    public String toString() {
+        return "${functionClass}{" 
+#foreach( $keyInfo in $targetMappingList)
+        + "$keyInfo.id=" + ${keyInfo.id} #if( $foreach.hasNext )+ ", "#end
+#end
+        + '}';
     }
 
     @Override
