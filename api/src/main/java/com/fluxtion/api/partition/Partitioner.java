@@ -17,7 +17,7 @@
 package com.fluxtion.api.partition;
 
 import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.event.Event;
+//import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
@@ -32,30 +32,30 @@ import java.util.function.Supplier;
 
 /**
  * An StaticEventProcessor partitioner based upon a received event.A partitioner
- creates an instance of an {@link StaticEventProcessor} and dispatches events to that
- instance. Partitioning allows a separate memory context for an EventHandler,
- this can be useful when the structure of processing is repeated but the state
- is different for each instance.<p>
-
- For example monitoring the fuel level on a
- fleet of cars is the same processing for each car, but an individual car will
- have a unique fuel level. In this case the StaticEventProcessor can be
- partitioned on vehicle identification number.
- <p>
-
- The StaticEventProcessor instance will be re-used or a new one created
- when new {@link Event}'s are received. The {@link #partition()}
- * methods provide functions that map keys from an incoming {@link Event}. the
- key is used manage
- StaticEventProcessor instances in an underlying map. If no key/value mapping is found
- then a new StaticEventProcessor is created and handles the incoming message.
- <p>
+ * creates an instance of an {@link StaticEventProcessor} and dispatches events
+ * to that instance. Partitioning allows a separate memory context for an
+ * EventHandler, this can be useful when the structure of processing is repeated
+ * but the state is different for each instance.<p>
+ *
+ For example monitoring the fuel level on a fleet of cars is the same
+ * processing for each car, but an individual car will have a unique fuel level.
+ * In this case the StaticEventProcessor can be partitioned on vehicle
+ * identification number.
+ * <p>
+ *
+ The StaticEventProcessor instance will be re-used or a new one created when
+ * new {@link Event}'s are received. The {@link #partition()} methods provide
+ * functions that map keys from an incoming {@link Event}. the key is used
+ * manage StaticEventProcessor instances in an underlying map. If no key/value
+ * mapping is found then a new StaticEventProcessor is created and handles the
+ * incoming message.
+ * <p>
  *
  * New instances are created with s {@link Supplier} factory. Optionally an
- initialiser can be provided that can access the newly created
- StaticEventProcessor before any messages are processed. Using the car/fuel analogy
- the initialiser function may set a reference to a global fuel monitor from
- each newly created car processor.
+ * initialiser can be provided that can access the newly created
+ * StaticEventProcessor before any messages are processed. Using the car/fuel
+ * analogy the initialiser function may set a reference to a global fuel monitor
+ * from each newly created car processor.
  *
  * @author gregp
  * @param <E>
@@ -68,7 +68,7 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
     private final byte[] array;
     private static final int DEFAULT_SIZE = 64;
     private List<Function> charKeyedHandlers;
-    private HashMap<Object, StaticEventProcessor> handlerMap;
+    private HashMap<Object, E> handlerMap;
     private StaticEventProcessor[] handlerArray;
     private BatchHandler[] batchHandArray;
     private final Supplier<E> factory;
@@ -105,25 +105,26 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
 
     /**
      * Register a partition key generator function that creates a
-     * {@link CharSequence} key from an incoming event. The key values from function
-     * are interpreted with the following logic:
+     * {@link CharSequence} key from an incoming event.The key values from
+     * function are interpreted with the following logic:
      * <ul>
      * <li>null - no match and no dispatch
      * <li>'*' - will dispatch to all EventHandlers i.e. a broadcast
-     * <li>[CharSrquence] - creates an StaticEventProcessor keyed with this CharSequence
- </ul>
+     * <li>[CharSrquence] - creates an StaticEventProcessor keyed with this
+     * CharSequence
+     * </ul>
      *
+     * @param <I>
      * @param <K> Generated key
      * @param partitionKeyGen key mapping function
      */
-    public < K extends CharSequence> void keyPartitioner(Function<Event, K> partitionKeyGen) {
+    public <I, K extends CharSequence> void keyPartitioner(Function<I, K> partitionKeyGen) {
         charKeyedHandlers.add(partitionKeyGen);
     }
 
     /**
      * Register a partition key generator function that creates keys from a
-     * property on an incoming event.
-     * an incoming Event
+     * property on an incoming event. an incoming Event
      *
      * @param <s> The incoming event
      * @param <t> The key type
@@ -135,9 +136,8 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
     }
 
     /**
-     * Register a partition key generator function that creates keys from a
-     * set of properties on an incoming event.
-     * an incoming Event
+     * Register a partition key generator function that creates keys from a set
+     * of properties on an incoming event. an incoming Event
      *
      * @param <s> The incoming event
      * @param <t> The key type
@@ -174,6 +174,10 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
             }
         }
     }
+    
+    public E getProcessor(Object key){
+        return handlerMap.get(key);
+    }
 
     private boolean charsequenceKeyProcess(Object e) {
         boolean matched = false;
@@ -190,7 +194,7 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
                     buffer.put((byte) key.charAt(j));
                 }
                 buffer.flip();
-                StaticEventProcessor ret = handlerMap.get(buffer);
+                E ret = handlerMap.get(buffer);
                 if (ret != null) {
                     //invoke
                     pushEvent(ret, e);
