@@ -17,12 +17,18 @@
 package com.fluxtion.ext.streaming.api.log;
 
 /**
- * Simple console implementation of LogService. 
- * 
+ * Simple console implementation of LogService.
+ *
  * @author V12 Technology Ltd.
  */
 public class ConsoleLogProvider implements LogService {
-    
+
+    private boolean logPrefix = true;
+
+    public void logPrefix(boolean logPrefix) {
+        this.logPrefix = logPrefix;
+    }
+
     @Override
     public void trace(CharSequence msg) {
         log("[TRACE] ", msg);
@@ -54,8 +60,10 @@ public class ConsoleLogProvider implements LogService {
     }
 
     private void log(CharSequence prefix, CharSequence msg) {
-        System.out.print(prefix);
+        if (logPrefix) {
+            System.out.print(prefix);
+        }
         System.out.println(msg);
     }
-    
+
 }

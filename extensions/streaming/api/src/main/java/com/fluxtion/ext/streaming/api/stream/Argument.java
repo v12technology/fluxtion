@@ -3,6 +3,7 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.numeric.ConstantNumber;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -50,6 +51,10 @@ public class Argument<T> {
         return new Argument<>(wrapper, supplier.method(), true);
     }
 
+    public static <T, S> Argument<S> arg(WrapperBase<T, ?> wrapper, SerializableFunction<T, S> supplier) {
+        return new Argument<>(wrapper, supplier.method(), true);
+    }
+
     public static <T> Argument<T> arg(SerializableSupplier<T> supplier) {
         Class<? extends Object> aClass = supplier.captured()[0].getClass();
         Method method = supplier.method();
@@ -78,5 +83,9 @@ public class Argument<T> {
     
     public boolean isWrapper(){
         return source instanceof Wrapper;
+    }
+    
+    public boolean isWrapperBase(){
+        return source instanceof WrapperBase;
     }
 }

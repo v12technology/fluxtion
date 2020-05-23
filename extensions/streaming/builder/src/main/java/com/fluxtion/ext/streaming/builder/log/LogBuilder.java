@@ -21,8 +21,9 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
-import com.fluxtion.ext.streaming.api.log.MsgBuilder;
+import com.fluxtion.ext.streaming.api.log.LogMsgBuilder;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
@@ -34,10 +35,12 @@ import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.streaming.builder.util.SourceInfo;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import lombok.Value;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -54,26 +57,26 @@ public class LogBuilder {
     private String[] messageParts;
     private int count = 0;
     private Object logNotifier;
-    private final ImportMap importMap = ImportMap.newMap(MsgBuilder.class, OnEvent.class,
+    private final ImportMap importMap = ImportMap.newMap(LogMsgBuilder.class, OnEvent.class,
             NoEventReference.class, OnParentUpdate.class);
-    private static final AsciiConsoleLogger MAIN_LOGGER = new AsciiConsoleLogger();
+//    private static final AsciiConsoleLogger MAIN_LOGGER = new AsciiConsoleLogger();
 
     private LogBuilder(String message, Object notifier) {
-        this.message = message;
-        this.messageParts = message.split("\\{\\}");
+        this.message =  StringEscapeUtils.escapeJava(message);
+        this.messageParts = this.message.split("\\{\\}");
         this.logNotifier = notifier;
     }
 
-    public static MsgBuilder buildLog(String message, Object notifier) {
+    public static LogMsgBuilder buildLog(String message, Object notifier) {
         LogBuilder logger = new LogBuilder(message, notifier);
         return logger.build();
     }
 
-    public static MsgBuilder log(String message, Argument... arguments){
+    public static LogMsgBuilder log(String message, Argument... arguments){
         return log(message, null, arguments);
     }
     
-    public static MsgBuilder log(String message, Object notifier, Argument... arguments){
+    public static LogMsgBuilder log(String message, Object notifier, Argument... arguments){
         LogBuilder logger = new LogBuilder(message, notifier);
         for (Argument arg : arguments) {
             Object source = arg.getSource();
@@ -88,6 +91,8 @@ public class LogBuilder {
             SourceInfo sourceInfo = logger.addSource(source);
             if(arg.isWrapper()){
                 logger.valuesList.add(new ValueAccessor(logger.messageParts[logger.count], sourceInfo, (Wrapper) source, method));
+            }else if(arg.isWrapperBase()){
+                logger.valuesList.add(new ValueAccessor(logger.messageParts[logger.count], sourceInfo, (WrapperBase) source, method));
             }else{
                 logger.valuesList.add(new ValueAccessor(logger.messageParts[logger.count], sourceInfo, method));
             }
@@ -96,10 +101,10 @@ public class LogBuilder {
         return logger.build();
     }
 
-    public MsgBuilder build() {
+    public LogMsgBuilder build() {
         try {
             VelocityContext ctx = new VelocityContext();
-            String genClassName = "MsgBuilder" + GenerationContext.nextId();
+            String genClassName = "LogMsgBuilder" + GenerationContext.nextId();
             ctx.put(functionClass.name(), genClassName);
             ctx.put(updateNotifier.name(), logNotifier);
             ctx.put("valueAccessorList", valuesList);
@@ -110,8 +115,8 @@ public class LogBuilder {
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put(imports.name(), importMap.asString());
-            Class<MsgBuilder> msBuilderClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
-            MsgBuilder msgBuilder = msBuilderClass.newInstance();
+            Class<LogMsgBuilder> msBuilderClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
+            LogMsgBuilder msgBuilder = msBuilderClass.newInstance();
             //set sources via reflection
             Set<Map.Entry<Object, SourceInfo>> entrySet = inst2SourceInfo.entrySet();
             for (Map.Entry<Object, SourceInfo> entry : entrySet) {
@@ -123,9 +128,7 @@ public class LogBuilder {
                 msBuilderClass.getField("logNotifier").set(msgBuilder, logNotifier);
                 ctx.put("logOnNotify", true);
             }
-            MAIN_LOGGER.addMsgBuilder(msgBuilder);
             GenerationContext.SINGLETON.getNodeList().add(msgBuilder);
-            GenerationContext.SINGLETON.getNodeList().add(MAIN_LOGGER);
             return msgBuilder;
         } catch (Exception e) {
             throw new RuntimeException("could not buuld function " + toString(), e);
@@ -153,6 +156,15 @@ public class LogBuilder {
         public ValueAccessor(String message, SourceInfo source, Wrapper eventWrapper, Method accessor) {
             this.message = message;
             String eventClass = eventWrapper.eventClass().getCanonicalName();
+            value = "((" + eventClass + ")" + source.id + ".event())." + accessor.getName() + "()";
+        }
+
+        public ValueAccessor(String message, SourceInfo source, WrapperBase eventWrapper, Method accessor) {
+            this.message = message;
+            String eventClass = eventWrapper.eventClass().getCanonicalName();
+            if(Collection.class.isAssignableFrom(eventWrapper.eventClass())){
+                eventClass = Collection.class.getCanonicalName();
+            }
             value = "((" + eventClass + ")" + source.id + ".event())." + accessor.getName() + "()";
         }
     }

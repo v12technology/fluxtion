@@ -59,15 +59,22 @@ public interface WrapperBase<T, R extends WrapperBase<T, R>> {
      * @return The current node
      */
     default <S> R console(String prefix, LambdaReflection.SerializableFunction<T, S>... supplier) {
-        StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
-        counter.increment();
-        if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
-            consoleLog.suppliers(Number::doubleValue);
-        } else {
-            consoleLog.suppliers(supplier);
+        
+        if(!prefix.contains("{}")){
+            prefix += " {}";
         }
-        String consoleId = "consoleMsg_" + counter.intValue();
-        SepContext.service().add(consoleLog, consoleId);
+       StreamOperator.service().log(self(), prefix, supplier);
+//        
+//        
+//        StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
+//        counter.increment();
+//        if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
+//            consoleLog.suppliers(Number::doubleValue);
+//        } else {
+//            consoleLog.suppliers(supplier);
+//        }
+//        String consoleId = "consoleMsg_" + counter.intValue();
+//        SepContext.service().add(consoleLog, consoleId);
         return self();
     }
 

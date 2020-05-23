@@ -32,7 +32,7 @@ public class AsciiConsoleLogger {
     public int initCapacity = MIN_CAPACITY_BUFFER;
     private byte[] buffer;
     private byte[] metaBuffer;
-    public MsgBuilder[] msgBuilders;
+    public LogMsgBuilder[] msgBuilders;
     private boolean logName;
     private StringBuilder metaSb;
     private boolean logTime;
@@ -52,9 +52,9 @@ public class AsciiConsoleLogger {
         metaSb = new StringBuilder(64);
     }
 
-    public void addMsgBuilder(MsgBuilder sink) {
+    public void addMsgBuilder(LogMsgBuilder sink) {
         if (msgBuilders == null) {
-            msgBuilders = new MsgBuilder[0];
+            msgBuilders = new LogMsgBuilder[0];
         }
         msgBuilders = Arrays.copyOf(msgBuilders, msgBuilders.length + 1);
         msgBuilders[msgBuilders.length - 1] = sink;
@@ -76,7 +76,7 @@ public class AsciiConsoleLogger {
     }
 
     @OnParentUpdate("msgBuilders")
-    public void publishMessage(MsgBuilder msg) {
+    public void publishMessage(LogMsgBuilder msg) {
 //    @OnEvent
 //    public void publishMessage() {
 //        msg.name.charAt(0);
@@ -136,13 +136,13 @@ public class AsciiConsoleLogger {
         return metaSb.append(num);
     }
 
-    private void logName(MsgBuilder msg) {
+    private void logName(LogMsgBuilder msg) {
         if (logName & msg.name != null) {
             metaSb.append('[').append(msg.name).append(']').append(' ');
         }
     }
 
-    private void logLevel(MsgBuilder msg) {
+    private void logLevel(LogMsgBuilder msg) {
         if (!logLevel) {
             return;
         }

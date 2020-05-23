@@ -15,26 +15,41 @@ You should have received a copy of the Server Side Public License
 along with this program.  If not, see 
 <http://www.mongodb.com/licensing/server-side-public-license>.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
         <version>2.6.2</version>
-        <relativePath>../../../poms/parent-root/pom.xml</relativePath>
+        <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
 
-    <groupId>com.fluxtion.extension</groupId>
-    <artifactId>fluxtion-streaming-builder</artifactId>
-    <name>fluxtion :: ext :: streaming-builder</name>
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <netbeans.hint.license>fluxtion</netbeans.hint.license>
+    </properties>
+
+    <groupId>com.fluxtion.integration</groupId>
+    <artifactId>fluxtion-integration</artifactId>
+    <name>fluxtion :: integration</name>
     <packaging>jar</packaging>
     
+	
     <dependencies>
+        <!--fluxtion-->
         <dependency>
             <groupId>com.fluxtion</groupId>
-            <artifactId>generator</artifactId>
+            <artifactId>fluxtion-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-text-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
@@ -42,32 +57,20 @@ along with this program.  If not, see
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <!--log4j2 start-->
         <dependency>
-            <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-streaming-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.13.3</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.vidageek</groupId>
-            <artifactId>mirror</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-        </dependency>
+<!--        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.13.3</version>
+            <scope>provided</scope>
+        </dependency>-->
+        <!--log4j2 end-->
     </dependencies>
-    <properties>
-        <netbeans.hint.license>fluxtion</netbeans.hint.license>
-    </properties>
+	
 </project>

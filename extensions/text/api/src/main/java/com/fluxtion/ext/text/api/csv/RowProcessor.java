@@ -19,6 +19,7 @@ package com.fluxtion.ext.text.api.csv;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
+import java.io.IOException;
 
 /**
  * Interface implemented by nodes processing delimited or fixed length records
@@ -53,5 +54,12 @@ public interface RowProcessor<T> extends Wrapper<T> {
     void init();
     
     void setErrorLog(ValidationLogger errorLog);
+    
+    default String csvHeaders() {return "";}
+
+    default void toCsv(T src, Appendable target) throws IOException {
+        
+    }
+    
 
 }

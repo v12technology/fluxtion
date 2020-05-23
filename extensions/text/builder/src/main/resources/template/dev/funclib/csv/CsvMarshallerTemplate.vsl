@@ -29,6 +29,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #if(!${fixedLen})
     private final int[] delimIndex = new int[1024];
 #end
+    private StringBuilder msgSink = new StringBuilder(256);
     private final CharArrayCharSequence seq = new CharArrayCharSequence(chars);
     private int fieldIndex = 0;
     private int writeIndex = 0;
@@ -355,6 +356,45 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     public void setErrorLog(ValidationLogger errorLog) {
         this.errorLog = errorLog;
     }
+
+#if ( ${outSrcList.size()} != 0 )
+    public static String csvHeader(){
+        String out = "";
+#foreach($outInfo in $outSrcList)
+        out += "${outInfo.headername}#if( $foreach.hasNext ),#end";
+#end
+        return out;
+    }
+
+  public static void asCsv(${targetClass} src, StringBuilder msgSink) throws IOException {
+#foreach($outInfo in $outSrcList)
+        msgSink.append(src.${outInfo.srcMethod}());
+#if( $foreach.hasNext )msgSink.append(","); #end
+#end
+        msgSink.append("\n");
+  }
+  
+  public static void asCsv(${targetClass} src, Appendable target) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        asCsv(src, sb); 
+        target.append(sb);
+  }
+
+    
+    @Override
+    public String csvHeaders(){
+        return csvHeader();
+    }
+
+    @Override
+    public void toCsv(${targetClass} src, Appendable target) throws IOException{
+        msgSink.setLength(0);
+        asCsv(src, msgSink);
+        target.append(msgSink);
+        msgSink.setLength(0);
+  }
+#end
+
 
 #if(${csv})
   public static CsvRecordMarshaller marshaller(){
