@@ -44,6 +44,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.Checksum;
@@ -131,7 +132,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     private boolean trimWhitespace = false;
     private boolean ignoreQuotes = false;
     protected boolean asciiOnlyHeader = true;
-    
+
     public static <S> CsvMarshallerBuilder<S> csvMarshaller(Class<S> target) {
         return csvMarshaller(target, 1);
     }
@@ -147,12 +148,12 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
             map(targetClazz);
         }
     }
-    
+
     public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(int colIndex, SerializableBiConsumer<T, U> targetFunction, SerializableFunction<S, U> converterFunction) {
         map(colIndex, targetFunction);
         return converter(colIndex, converterFunction);
     }
-    
+
     public <U> CsvMarshallerBuilder<T> map(int colIndex, SerializableBiConsumer<T, U> targetFunction) {
         if (mapBean) {
             srcMappingList.clear();
@@ -170,8 +171,8 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, SerializableFunction<S, U> converterFunction) {
         map(colName, targetFunction);
         return converter(colName, converterFunction);
-    } 
-    
+    }
+
     public <U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction) {
         if (mapBean) {
             srcMappingList.clear();
@@ -185,8 +186,8 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     public <S extends CharSequence, U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, boolean optional, SerializableFunction<S, U> converterFunction) {
         map(colName, targetFunction, optional);
         return converter(colName, converterFunction);
-    }  
-    
+    }
+
     public <U> CsvMarshallerBuilder<T> map(String colName, SerializableBiConsumer<T, U> targetFunction, boolean optional) {
         if (mapBean) {
             srcMappingList.clear();
@@ -210,46 +211,63 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
             skipEmptyLines(annotation.skipEmptyLines());
             reuseTarget(!annotation.newBeanPerRecord());
             ignoreQuotes(annotation.ignoreQuotes());
-            tokenConfig( new CharTokenConfig(annotation.lineEnding(), annotation.fieldSeparator(), annotation.ignoredChars()));
+            tokenConfig(new CharTokenConfig(annotation.lineEnding(), annotation.fieldSeparator(), annotation.ignoredChars()));
         }
-        
+
         try {
             for (PropertyDescriptor md : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+                Mirror m = new Mirror();
+                Field field;// = clazz.getDeclaredField(md.getName());
                 if (md.getWriteMethod() != null) {
-                    Mirror m = new Mirror();
-                    Field field;// = clazz.getDeclaredField(md.getName());
                     field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
                     String fieldName = md.getName();
-                    boolean optional = field.getAnnotation(OptionalField.class)!=null;
-                    boolean checkSum = field.getAnnotation(CheckSum.class)!=null;
-                    if(checkSum){
+                    boolean optional = field.getAnnotation(OptionalField.class) != null;
+                    boolean checkSum = field.getAnnotation(CheckSum.class) != null;
+                    if (checkSum) {
                         checkSumField = md.getWriteMethod().getName();
-                    }else if (!Modifier.isTransient(field.getModifiers()) ) {
+                    } else if (!Modifier.isTransient(field.getModifiers())) {
                         mapNamedFieldToMethod(md.getWriteMethod(), fieldName, fieldName.equals("eventTime") || optional);
+                        if (md.getReadMethod() != null ) {
+                            CsvOutInfo outInfo = new CsvOutInfo();
+                            outInfo.setHeadername(fieldName);
+                            outInfo.setSrcMethod(md.getReadMethod().getName());
+                            outSrcList.add(outInfo);
+                        }
                     }
-                    if(trimWhitespace){
+                    if (trimWhitespace) {
                         trim(fieldName);
                     }
                     final TrimField trim = field.getAnnotation(TrimField.class);
-                    if (trim!=null) {
+                    if (trim != null) {
                         colInfo(fieldName).setTrim(trim.value());
                     }
                     final ConvertField converter = field.getAnnotation(ConvertField.class);
-                    if(converter!=null){
+                    if (converter != null) {
                         String[] converterString = converter.value().split("#");
                         MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
                         converterMethod(fieldName, method.withAnyArgs());
                     }
                     final OptionalField defaultOptionalValue = field.getAnnotation(OptionalField.class);
-                    if(defaultOptionalValue!=null && !defaultOptionalValue.defaultValue().isEmpty()){
-                        defaultValue(fieldName,  defaultOptionalValue.defaultValue());
+                    if (defaultOptionalValue != null && !defaultOptionalValue.defaultValue().isEmpty()) {
+                        defaultValue(fieldName, defaultOptionalValue.defaultValue());
                     }
                     final DefaultFieldValue defaultValue = field.getAnnotation(DefaultFieldValue.class);
-                    if(defaultValue!=null){
-                        defaultValue(fieldName,  defaultValue.value());
+                    if (defaultValue != null) {
+                        defaultValue(fieldName, defaultValue.value());
                     }
                 }
+//                if (md.getReadMethod() != null ) {
+//                    field = m.on(clazz).reflect().field(md.getName());
+//                    field.setAccessible(true);
+//                    String fieldName = md.getName();
+//                    if(!Modifier.isTransient(field.getModifiers())){
+//                        CsvOutInfo outInfo = new CsvOutInfo();
+//                        outInfo.setHeadername(fieldName);
+//                        outInfo.setSrcMethod(md.getReadMethod().getName());
+//                        outSrcList.add(outInfo);
+//                    }
+//                }
             }
         } catch (Exception ex) {
             throw new RuntimeException("could not map java bean to csv header " + ex.getMessage(), ex);
@@ -299,7 +317,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
     protected void mapNamedFieldToMethod(Method targetMethod, String colName) {
         mapNamedFieldToMethod(targetMethod, colName, false);
     }
-    
+
     protected void mapNamedFieldToMethod(Method targetMethod, String colName, boolean optional) {
         CsvPushFunctionInfo info = new CsvPushFunctionInfo(importMap);
         info.setMandatory(!optional);
@@ -322,12 +340,12 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         ctx.put("asciiOnlyHeader", asciiOnlyHeader);
         importMap.addImport(LogService.class);
         importMap.addImport(LogControlEvent.class);
-        if(checkSumField!=null){
+        if (checkSumField != null) {
             ctx.put("checksum", true);
             ctx.put("checksumField", checkSumField);
             importMap.addImport(java.util.zip.CRC32.class);
             importMap.addImport(Checksum.class);
         }
     }
-    
+
 }

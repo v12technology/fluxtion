@@ -40,6 +40,7 @@ import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.util.EventPublsher;
 import static com.fluxtion.ext.text.builder.Templates.CSV_MARSHALLER;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     protected boolean acceptPartials;
     protected boolean addEventPublisher;
     protected final ArrayList<CsvPushFunctionInfo> srcMappingList;
+    protected final ArrayList<CsvOutInfo> outSrcList;
     protected int converterCount;
     protected Map<Object, String> converterMap;
     protected Map<Object, Pair> defaultValueMap;
@@ -92,8 +94,10 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(PushReference.class);
         importMap.addImport(CharArrayCharSequence.class);
         importMap.addImport(CharArrayCharSequence.CharSequenceView.class);
+        importMap.addImport(IOException.class);
         importMap.addImport(target);
         srcMappingList = new ArrayList<>();
+        outSrcList = new ArrayList<>();
         this.headerLines = headerLines;
         this.converterMap = new HashMap<>();
         this.defaultValueMap = new HashMap<>();
@@ -275,6 +279,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             ctx.put("imports", importMap.asString());
             ctx.put(targetClass.name(), targetClazz.getSimpleName());
             ctx.put(sourceMappingList.name(), srcMappingList);
+            ctx.put("outSrcList", outSrcList);
             ctx.put("headerPresent", headerLines > 0);
             ctx.put("headerLines", headerLines);
             ctx.put("mappingRowPresent", mappingRow > 0);
