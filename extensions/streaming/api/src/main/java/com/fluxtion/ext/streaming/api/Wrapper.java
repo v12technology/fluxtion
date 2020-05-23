@@ -219,22 +219,15 @@ public interface Wrapper<T> extends Stateful<T>{
      * dump this node to console, prefixed with the supplied
      * message.{@link Object#toString()} will be invoked on the node instance.
      *
-     * @param <S>
      * @param prefix String prefix for the console message
      * @param supplier
      * @return The current node
      */
-    default <S> Wrapper<T> console(String prefix, SerializableFunction<T, ?>... supplier) {
-        StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
-        counter.increment();
-        if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
-            consoleLog.suppliers(Number::doubleValue);
-        } else {
-            consoleLog.suppliers( supplier);
+    default Wrapper<T> console(String prefix, SerializableFunction<T, ?>... supplier) {
+        if(!prefix.contains("{}")){
+            prefix += " {}";
         }
-        String consoleId = "consoleMsgW_" + counter.intValue();
-        SepContext.service().add(consoleLog, consoleId);
-        return this;
+        return (Wrapper<T>) StreamOperator.service().log(this, prefix, supplier);
     }
 
     /**

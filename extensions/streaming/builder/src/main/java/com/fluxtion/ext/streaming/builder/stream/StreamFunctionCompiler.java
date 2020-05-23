@@ -446,7 +446,7 @@ public class StreamFunctionCompiler<T, F> {
     public static <S, C> StreamFunctionCompiler consume(C consumer, Method mappingMethod, S source) {
         if (consumer == System.out) {
             consumer = null;
-            mappingMethod = ((SerializableConsumer) StreamOperator::standardOut).method();
+            mappingMethod = ((SerializableConsumer) System.out::println).method();
         }
         StreamFunctionCompiler filterBuilder;
         if (consumer == null) {

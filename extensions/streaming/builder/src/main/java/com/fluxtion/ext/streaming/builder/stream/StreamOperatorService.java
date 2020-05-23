@@ -24,6 +24,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
@@ -38,6 +39,7 @@ import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBui
 import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler.get;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
@@ -226,6 +228,36 @@ public class StreamOperatorService implements StreamOperator {
             builder = StreamFunctionCompiler.consume(consumer.captured()[0], consumerMethod, source);
         }
         nodeId(builder.build(), consumerId);
+        return source;
+    }
+    
+    @Override
+    public <T> Wrapper<T> log(Wrapper<T> source, String message, SerializableFunction<T, ?>... supplier) {
+        Argument[] args = new Argument[supplier.length];
+        for (int i = 0; i < supplier.length; i++) {
+            SerializableFunction<T, ?> f = supplier[i];
+            args[i] = Argument.arg(source, f);
+        }
+        if(args.length == 0){
+            LogBuilder.log(message, source, Argument.arg(source)).setLogPrefix(false);
+        }else{
+            LogBuilder.log(message, source, args).setLogPrefix(false);
+        }
+        return source;
+    }
+    
+    @Override
+    public <T, R> WrapperBase<T,?> log(WrapperBase<T,?> source, String message, SerializableFunction<T, ?>... supplier) {
+        Argument[] args = new Argument[supplier.length];
+        for (int i = 0; i < supplier.length; i++) {
+            SerializableFunction<T, ?> f = supplier[i];
+            args[i] = Argument.arg(source, f);
+        }
+        if(args.length == 0){
+            LogBuilder.log(message, source, Argument.arg(source)).setLogPrefix(false);
+        }else{
+            LogBuilder.log(message, source, args).setLogPrefix(false);
+        }
         return source;
     }
 

@@ -16,8 +16,6 @@
  */
 package com.fluxtion.ext.streaming.api.stream;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
@@ -27,11 +25,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -130,6 +125,14 @@ public interface StreamOperator {
     default <T, S extends T> Wrapper<T> forEach(SerializableConsumer<S> consumer, Wrapper<T> source, String consumerId) {
         return source;
     }
+    
+    default <T> Wrapper<T> log(Wrapper<T> source, String message, SerializableFunction<T, ?>... supplier) {
+        return source;
+    }
+    
+    default <T, R> WrapperBase<T,?> log(WrapperBase<T,?> source, String message, SerializableFunction<T, ?>... supplier) {
+        return source;
+    }
 
     /**
      * Attaches an event notification instance to the current stream node and
@@ -178,6 +181,8 @@ public interface StreamOperator {
     default <T, I extends Integer> Comparator<T> comparing(SerializableBiFunction<T, T, I> func) {
         return null;
     }
+    
+
 
 //    default <T, S extends T, R extends T, I extends Integer> Comparator<T> comparing(Class<T> clazz, SerializableBiFunction<S, R, I> func){
 //        return null;
@@ -197,106 +202,4 @@ public interface StreamOperator {
         }
     }
 
-    static <I> void standardOut(I out) {
-        System.out.println(out);
-    }
-
-    public class ConsoleLog {
-
-        private final Object source;
-        private Wrapper wrapped;
-        private WrapperBase wrappedBase;
-        private final String prefix;
-        private boolean isWrapper;
-        private boolean isWrapperBase;
-        private String methodSupplier;
-        private List<String> methodSuppliers;
-        private Method method;
-
-        public ConsoleLog(Object source, String prefix) {
-            this.source = source;
-            this.prefix = prefix;
-            methodSuppliers = new ArrayList<>();
-        }
-
-        public ConsoleLog(Object source) {
-            this(source, "");
-        }
-
-        public <T, S> void suppliers(SerializableFunction<T, ?>... suppliers) {
-            if (suppliers.length > 0) {
-                methodSupplier = suppliers[0].method().getName();
-            }
-            for (SerializableFunction<T, ?> supplier : suppliers) {
-                methodSuppliers.add(supplier.method().getName());
-            }
-
-        }
-
-        public String getMethodSupplier() {
-            return methodSupplier;
-        }
-
-        public void setMethodSupplier(String methodSupplier) {
-            this.methodSupplier = methodSupplier;
-        }
-
-        public List<String> getMethodSuppliers() {
-            return methodSuppliers;
-        }
-
-        public void setMethodSuppliers(List<String> methodSuppliers) {
-            this.methodSuppliers = methodSuppliers;
-        }
-
-        @OnEvent
-        public boolean log() {
-            Object src = source;
-            if (isWrapper) {
-                src = wrapped.event();
-            } else if (isWrapperBase) {
-                src = wrappedBase.event();
-            }
-            if (method != null) {
-                try {
-                    System.out.println(prefix + method.invoke(src) );//+ " methods:" + methodSuppliers);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    System.out.println(prefix + "N/A" + " error:" + ex.getLocalizedMessage());
-                    System.out.println(" obj.getClass->" + src.getClass() + " obj->" + src);
-                }
-            } else {
-                System.out.println(prefix + src.toString());
-            }
-            return false;
-        }
-
-        @Initialise
-        public void init() {
-            boolean methodName = methodSupplier != null;
-//            methodSuppliers = new ArrayList<>();
-            try {
-                if (source instanceof Wrapper) {
-                    wrapped = (Wrapper) source;
-                    isWrapper = true;
-                    if (methodName) {
-                        method = wrapped.eventClass().getMethod(methodSupplier);
-                    }
-                } else if (source instanceof WrapperBase) {
-                    wrappedBase = (WrapperBase) source;
-                    isWrapperBase = true;
-                    if (methodName) {
-                        method = wrappedBase.eventClass().getMethod(methodSupplier);
-                    }
-                } else {
-                    if (methodName) {
-                        method = source.getClass().getMethod(methodSupplier);
-                    }
-                }
-                method.setAccessible(true);
-            } catch (Exception e) {
-                method = null;
-            }
-        }
-
-    }
 }

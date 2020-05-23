@@ -120,4 +120,8 @@ public class MsgSink {
         sb.appendCodePoint(codePoint);
         return this;
     }
+    
+    public CharSequence asCharSequence(){
+        return sb;
+    }
 }

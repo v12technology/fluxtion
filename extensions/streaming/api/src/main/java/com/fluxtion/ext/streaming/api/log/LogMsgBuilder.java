@@ -26,11 +26,14 @@ import java.util.Arrays;
  *
  * @author greg
  */
-public abstract class MsgBuilder {
+public abstract class LogMsgBuilder {
+
+    private LogService logService;
 
     public String name;
     public int logLevel = 3;
     private String _name;
+    private boolean logPrefix;
     private boolean filterMatched;
     private boolean levelMatched;
     private boolean goodToLog;
@@ -58,14 +61,53 @@ public abstract class MsgBuilder {
         this.msgSink = msgSink;
     }
 
-    public MsgBuilder name(String name){
+    public LogMsgBuilder name(String name){
         this.name = name;
         return this;
     }
     
-    public MsgBuilder level(int level){
+    public LogMsgBuilder level(int level){
         this.logLevel = level;
         return this;
+    }
+
+    public boolean isLogPrefix() {
+        return logPrefix;
+    }
+
+    public void setLogPrefix(boolean logPrefix) {
+        this.logPrefix = logPrefix;
+    }
+    
+    protected void log(){
+        switch (logLevel) {
+            case 0:
+                logService.fatal(msgSink.asCharSequence());
+                break;
+            case 1:
+                logService.error(msgSink.asCharSequence());
+                break;
+            case 2:
+                logService.warn(msgSink.asCharSequence());
+                break;
+            case 3:
+                logService.info(msgSink.asCharSequence());
+                break;
+            case 4:
+                logService.debug(msgSink.asCharSequence());
+                break;
+            case 5:
+                logService.trace(msgSink.asCharSequence());
+                break;
+            default:
+                logService.debug(msgSink.asCharSequence());
+        }   
+        msgSink.resetLogBuffer();
+    }
+    
+    @EventHandler(filterString = LogControlEvent.PROVIDER, propagate = false)
+    public void controlLogProvider(LogControlEvent control) {
+        logService = control.getLogService();
     }
     
     @EventHandler(filterString = LogControlEvent.FILTER, propagate = false)
@@ -73,6 +115,7 @@ public abstract class MsgBuilder {
         control.getFilter();
         filterMatched = Arrays.stream(control.getFilter()).anyMatch(s -> _name.startsWith(s));
         if (filterMatched & levelMatched) {
+            goodToLog = true;
         } else {
             goodToLog = false;
         }
@@ -83,13 +126,14 @@ public abstract class MsgBuilder {
     public boolean controlLogLevelFilter(LogControlEvent control) {
         levelMatched = logLevel < control.getLevel();
         if (filterMatched & levelMatched) {
+            goodToLog = true;
         } else {
             goodToLog = false;
         }
         return false;
     }
 
-    @AfterEvent
+//    @AfterEvent
     public void afterEvent() {
         goodToLog = filterMatched & levelMatched;
         if (goodToLog) {
@@ -103,6 +147,10 @@ public abstract class MsgBuilder {
             msgSink = new MsgSink();
             msgSink.initCapacity = Math.max(MIN_CAPACITY, initCapacity);
             msgSink.init();
+        }
+        if(logService == null){
+            logService = new ConsoleLogProvider();
+            ((ConsoleLogProvider)logService).logPrefix(logPrefix);
         }
         this._name = name;
         this.filterMatched = true;
