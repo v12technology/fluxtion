@@ -52,21 +52,15 @@ public class FileDispatchTest extends BaseSepInprocessTest {
 
     @Test
     public void testGatheringPipeline() {
-        
-        
         Pipeline pipe = new Pipeline();
-        
-        ForwardingSep forwardingSep = new ForwardingSep();
+        ForwardingSep sampleSep = new ForwardingSep();
         EventFilter csvDecoder = RowProcessorFilter.of(DataEventCsvDecoder0.class);
-        
         pipe.entry(csvDecoder)
-                .merge(pipe.entry(SepFilter.of(forwardingSep)))
+                .merge(pipe.entry(SepFilter.of(sampleSep)))
                 .next(new ConsoleFilter());      
-        
         pipe.start();        
 
-
-        forwardingSep.onEvent("helloworld");
+        sampleSep.onEvent("helloworld");
         String input = DataEventCsvDecoder0.csvHeader() + "\n"
                 + "1,tom\n"
                 + "21,fred\n"
