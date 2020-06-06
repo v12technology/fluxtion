@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import static com.fluxtion.ext.text.api.ascii.Conversion.*;
 import static com.fluxtion.ext.text.api.csv.Converters.*;
+import java.util.Arrays;
 
 /**
  * Fluxtion generated CSV decoder.
@@ -89,7 +90,7 @@ public class DataEventCsvDecoder0 implements RowProcessor<DataEvent> {
   private boolean processRow() {
     boolean targetChanged = false;
     rowNumber++;
-    if (HEADER_ROWS < rowNumber) {
+    if (HEADER_ROWS < rowNumber  & writeIndex > 0) {
       targetChanged = updateTarget();
     } else if (rowNumber == MAPPING_ROW) {
       mapHeader();
@@ -145,6 +146,8 @@ public class DataEventCsvDecoder0 implements RowProcessor<DataEvent> {
       return false;
     } finally {
       fieldIndex = 0;
+      Arrays.fill(delimIndex,-1);
+      delimIndex[0] = 0;
     }
     return true;
   }

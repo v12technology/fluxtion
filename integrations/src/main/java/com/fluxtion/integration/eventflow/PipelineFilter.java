@@ -15,39 +15,40 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.dispatch;
+package com.fluxtion.integration.eventflow;
 
 import lombok.extern.log4j.Log4j2;
 
 /**
  * Base class for a filter stage in a event pipeline
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public abstract class EventFilter {
+public abstract class PipelineFilter implements EventConsumer {
 
-    protected EventFilter nextHandler;
+    protected PipelineFilter nextHandler;
 
-    public final EventFilter next(EventFilter nextHandler) {
+    public final PipelineFilter next(PipelineFilter nextHandler) {
         this.nextHandler = nextHandler;
         return nextHandler;
     }
 
+    @Override
     public abstract void processEvent(Object o);
-
 
     /**
      *
      * Override in subclass to execute init methods on the handler instance
      */
     protected void initHandler() {
-        log.info("init filter:{}", this.getClass().getSimpleName());
+        log.info("init pipeline filter:{}", this.getClass().getSimpleName());
     }
 
     /**
      * Override in subclass to execute stop methods on the handler instance
      */
     protected void stopHandler() {
-        log.info("stop filter:{}", this.getClass().getSimpleName());
+        log.info("stop pipeline filter:{}", this.getClass().getSimpleName());
     }
 }

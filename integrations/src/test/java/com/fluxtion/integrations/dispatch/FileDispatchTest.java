@@ -19,12 +19,14 @@ package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import com.fluxtion.integration.dispatch.ConsoleFilter;
-import com.fluxtion.integration.dispatch.EventFilter;
-import com.fluxtion.integration.dispatch.Pipeline;
-import com.fluxtion.integration.dispatch.RowProcessorFilter;
-import com.fluxtion.integration.dispatch.SepFilter;
-import com.fluxtion.integration.dispatch.SynchronizedFilter;
+import com.fluxtion.integration.eventflow.filters.CharReader;
+import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
+import com.fluxtion.integration.eventflow.PipelineFilter;
+import com.fluxtion.integration.eventflow.Pipeline;
+import com.fluxtion.integration.eventflow.filters.RowProcessorFilter;
+import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import lombok.Data;
 import org.junit.Test;
 
@@ -35,28 +37,22 @@ import org.junit.Test;
 public class FileDispatchTest extends BaseSepInprocessTest {
 
     @Test
-    public void testFileRead() {
+    public void testFileRead() throws FileNotFoundException {
+        Pipeline.build(CharReader.of(new FileReader("src/test/data/data1.csv")))
+                .next(RowProcessorFilter.of(DataEventCsvDecoder0.class))
+                .next(new ConsoleFilter())
+                .start()
+                .stop();
 
-        Pipeline pipe = new Pipeline();
-        EventFilter csvDecoder = RowProcessorFilter.of(DataEventCsvDecoder0.class);
-        pipe.entry(csvDecoder).next(new ConsoleFilter());
-
-        String input = DataEventCsvDecoder0.csvHeader() + "\n"
-                + "1,tom\n"
-                + "21,fred\n"
-                + "346,dfgfgfgf\n";
-
-        pipe.start();
-        StringDriver.streamChars(input, csvDecoder::processEvent);
     }
 
     @Test
     public void testGatheringPipeline() {
         Pipeline pipe = new Pipeline();
         ForwardingSep sampleSep = new ForwardingSep();
-        EventFilter csvDecoder = RowProcessorFilter.of(DataEventCsvDecoder0.class);
+        PipelineFilter csvDecoder = RowProcessorFilter.of(DataEventCsvDecoder0.class);
         pipe.entry(csvDecoder)
-                .merge(pipe.entry(SepFilter.of(sampleSep)))
+                .merge(pipe.entry(SepEventPublisher.of(sampleSep)))
                 .next(new ConsoleFilter());      
         pipe.start();        
 

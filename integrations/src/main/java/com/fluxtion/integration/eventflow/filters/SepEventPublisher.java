@@ -15,11 +15,12 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.dispatch;
+package com.fluxtion.integration.eventflow.filters;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.integration.eventflow.PipelineFilter;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 @Data(staticConstructor = "of")
 @EqualsAndHashCode(callSuper = false)
 @Log4j2
-public class SepFilter extends EventFilter {
+public class SepEventPublisher extends PipelineFilter {
 
     private final StaticEventProcessor target;
 

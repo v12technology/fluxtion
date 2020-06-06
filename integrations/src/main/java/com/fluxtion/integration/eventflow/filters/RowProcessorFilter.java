@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.dispatch;
+package com.fluxtion.integration.eventflow.filters;
 
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
@@ -24,6 +24,7 @@ import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.marshaller.CharProcessor;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
+import com.fluxtion.integration.eventflow.PipelineFilter;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -32,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class RowProcessorFilter extends EventFilter implements CharProcessor {
+public class RowProcessorFilter extends PipelineFilter implements CharProcessor {
 
     private final CsvRecordMarshaller marshaller;
     private RowProcessor target;

@@ -15,17 +15,19 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.dispatch;
+package com.fluxtion.integration.eventflow.filters;
+
+import com.fluxtion.integration.eventflow.PipelineFilter;
 
 /**
- * Acts as a thread synchronisation point in a {@link Pipeline}
+ * A terminal operation 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SynchronizedFilter extends EventFilter{
+public class ConsoleFilter extends PipelineFilter{
 
     @Override
-    public synchronized void processEvent(Object o) {
-        nextHandler.processEvent(o);
+    public void processEvent(Object o) {
+        System.out.println(o);
     }
     
 }

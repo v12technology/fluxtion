@@ -1,10 +1,10 @@
 package com.fluxtion.integrations.dispatch;
 
-import com.fluxtion.integration.dispatch.ConsoleFilter;
-import com.fluxtion.integration.dispatch.EventFilter;
-import com.fluxtion.integration.dispatch.Pipeline;
-import com.fluxtion.integration.dispatch.RowProcessorFilter;
-import com.fluxtion.integration.dispatch.SepFilter;
+import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
+import com.fluxtion.integration.eventflow.PipelineFilter;
+import com.fluxtion.integration.eventflow.Pipeline;
+import com.fluxtion.integration.eventflow.filters.RowProcessorFilter;
+import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
 import org.junit.Test;
 
 /*
@@ -36,7 +36,7 @@ public class PipelinBuilderTest {
         Pipeline pipeline = new Pipeline();
         pipeline
                 .entry(RowProcessorFilter.of(DataEventCsvDecoder0.class))
-                .next(SepFilter.of(new ForwardingSep()))
+                .next(SepEventPublisher.of(new ForwardingSep()))
                 .next(new ConsoleFilter())
                 ;
         pipeline.start();
