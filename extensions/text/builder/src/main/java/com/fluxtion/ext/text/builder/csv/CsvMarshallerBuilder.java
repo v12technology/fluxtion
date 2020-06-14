@@ -202,6 +202,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         CsvMarshaller annotation = (CsvMarshaller) clazz.getAnnotation(CsvMarshaller.class);
         if (annotation != null) {
             trimWhitespace = annotation.trim();
+            acceptPartials(annotation.acceptPartials());
             headerLines(annotation.headerLines());
             includeEventPublisher(annotation.addEventPublisher());
             mappingRow(annotation.mappingRow());

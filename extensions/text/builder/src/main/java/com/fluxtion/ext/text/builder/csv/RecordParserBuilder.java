@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
@@ -95,6 +96,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(CharArrayCharSequence.class);
         importMap.addImport(CharArrayCharSequence.CharSequenceView.class);
         importMap.addImport(IOException.class);
+        importMap.addImport(Arrays.class);
         importMap.addImport(target);
         srcMappingList = new ArrayList<>();
         outSrcList = new ArrayList<>();
@@ -279,6 +281,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             ctx.put("imports", importMap.asString());
             ctx.put(targetClass.name(), targetClazz.getSimpleName());
             ctx.put(sourceMappingList.name(), srcMappingList);
+            ctx.put("fieldCount", maxFieldCount());
             ctx.put("outSrcList", outSrcList);
             ctx.put("headerPresent", headerLines > 0);
             ctx.put("headerLines", headerLines);
@@ -348,6 +351,14 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
 
     protected void updateContext(VelocityContext ctx) {
 
+    }
+    
+    private int maxFieldCount(){
+        int max = srcMappingList.size();
+        for (CsvPushFunctionInfo csvPushFunctionInfo : srcMappingList) {
+            max = Math.max(max, csvPushFunctionInfo.getFieldIndex());
+        }
+        return max;
     }
     
     @Data
