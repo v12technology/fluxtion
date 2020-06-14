@@ -58,9 +58,10 @@ public class SepEventPublisher extends PipelineFilter {
         if (target instanceof Lifecycle) {
             ((Lifecycle) target).init();
         }
-        if (nextHandler != null) {
-            target.onEvent(new RegisterEventHandler(nextHandler::processEvent));
-        }
+        target.onEvent(new RegisterEventHandler(this::propagate));
+//        if (nextHandler != null) {
+//            target.onEvent(new RegisterEventHandler(nextHandler::processEvent));
+//        }
     }
 
 }

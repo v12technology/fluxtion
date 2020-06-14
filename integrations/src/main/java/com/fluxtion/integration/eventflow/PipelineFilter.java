@@ -17,6 +17,8 @@
  */
 package com.fluxtion.integration.eventflow;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -27,15 +29,26 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class PipelineFilter implements EventConsumer {
 
-    protected PipelineFilter nextHandler;
+    private final List<PipelineFilter> handlers;
+
+    public PipelineFilter() {
+        this.handlers = new ArrayList<>();
+    }
 
     public final PipelineFilter next(PipelineFilter nextHandler) {
-        this.nextHandler = nextHandler;
+        handlers.add(nextHandler);
         return nextHandler;
     }
 
     @Override
     public abstract void processEvent(Object o);
+    
+    protected final void propagate(Object o){
+        for (int i = 0; i < handlers.size(); i++) {
+            PipelineFilter filter = handlers.get(i);
+            filter.processEvent(o);
+        }
+    }
 
     /**
      *

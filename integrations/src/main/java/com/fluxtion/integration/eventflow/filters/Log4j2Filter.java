@@ -18,20 +18,18 @@
 package com.fluxtion.integration.eventflow.filters;
 
 import com.fluxtion.integration.eventflow.PipelineFilter;
+import lombok.extern.log4j.Log4j2;
 
 /**
- * Acts as a thread synchronisation point in a {@link Pipeline}
- *
+ * A terminal operation 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SynchronizedFilter extends PipelineFilter {
+@Log4j2
+public class Log4j2Filter extends PipelineFilter{
 
     @Override
-    public synchronized void processEvent(Object o) {
-        propagate(o);
-//        if (nextHandler != null) {
-//            nextHandler.processEvent(o);
-//        }
+    public void processEvent(Object o) {
+        log.info(o);
     }
-
+    
 }

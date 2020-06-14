@@ -77,9 +77,10 @@ public class RowProcessorFilter extends PipelineFilter implements CharProcessor 
         if (validationLogger != null) {
             marshaller.handleEvent(LogControlEvent.setLogService(validationLogger));
         }
-        if (nextHandler != null) {
-            marshaller.handleEvent(new RegisterEventHandler(nextHandler::processEvent));
-        }
+        marshaller.handleEvent(new RegisterEventHandler(this::propagate));
+//        if (nextHandler != null) {
+//            marshaller.handleEvent(new RegisterEventHandler(nextHandler::processEvent));
+//        }
     }
 
     @Override

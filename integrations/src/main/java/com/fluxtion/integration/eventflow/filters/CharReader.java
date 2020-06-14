@@ -64,12 +64,12 @@ public class CharReader extends PipelineFilter implements CharProcessor, StaticE
 
     @Override
     public void handleEvent(CharEvent charEvent) {
-        nextHandler.processEvent(charEvent);
+        propagate(charEvent);
     }
 
     @Override
-    public void onEvent(Object e) {
-        nextHandler.processEvent(e);
+    public void onEvent(Object event) {
+        propagate(event);
     }
 
     @Override

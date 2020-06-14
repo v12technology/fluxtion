@@ -22,6 +22,11 @@ import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.LockSupport;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -36,9 +41,13 @@ public class EventFlow {
 
     private PipelineBuilder pipelineBuilder;
     private final LinkedHashMap<String, EventSource> sourceMap;
+    private final LinkedHashMap<String, EventQueueSource> queueSourceMap;
     private final LinkedHashMap<String, EventPublisher> publisherMap;
     private final List startedInstances;
     private SynchronizedFilter defaultDispatcher;
+    private AtomicBoolean runReaderThread;
+    private ReaderThread readerThread;
+    private static LongAdder count = new LongAdder();
 
     private enum State {
         STARTED, STOPPED, INIT
@@ -47,6 +56,7 @@ public class EventFlow {
 
     public EventFlow() {
         sourceMap = new LinkedHashMap<>();
+        queueSourceMap = new LinkedHashMap<>();
         publisherMap = new LinkedHashMap<>();
         startedInstances = new ArrayList();
         defaultDispatcher = new SynchronizedFilter();
@@ -54,6 +64,7 @@ public class EventFlow {
         pipelineBuilder = new PipelineBuilder();
         pipeline = new Pipeline();
         dispatcherFilter = pipeline.entry(defaultDispatcher);
+        runReaderThread = new AtomicBoolean(false);
     }
 
     public EventFlow start() {
@@ -136,6 +147,16 @@ public class EventFlow {
         return source(source, null);
     }
 
+    public EventFlow source(EventQueueSource source, String identifier) {
+        String id = identifier == null ? source.id() : identifier;
+        queueSourceMap.put(id, source);
+        return this;
+    }
+
+    public EventFlow source(EventQueueSource source) {
+        return source(source, null);
+    }
+
     public class PipelineBuilder {
 
         public <S extends PipelineFilter> PipelineBuilder next(S filter) {
@@ -172,6 +193,14 @@ public class EventFlow {
                 src.init();
             }
         });
+        queueSourceMap.forEach((String id, EventQueueSource src) -> {
+            if (startedInstances.contains(src)) {
+                log.info("eventQueueSource:'{}' already init", id);
+            } else {
+                log.info("init eventQueueSource:'{}'", id);
+                src.init();
+            }
+        });
         log.info("init sources end");
     }
 
@@ -182,7 +211,17 @@ public class EventFlow {
             //TODO remove this dummy target and replace with the pipeline
             src.start(defaultDispatcher);
         });
+        queueSourceMap.forEach((String id, EventQueueSource src) -> {
+            log.info("starting eventQueueSource:'{}'", id);
+            src.start(defaultDispatcher);
+        });
         log.info("start sources end");
+        if(!queueSourceMap.isEmpty()){
+            log.info("starting reader thread");
+            runReaderThread.set(true);
+            readerThread = new ReaderThread();
+            readerThread.start();
+        }
     }
 
     private void teardownSources() {
@@ -192,6 +231,14 @@ public class EventFlow {
             src.tearDown();
         });
         log.info("teardown sources end");
+        runReaderThread.set(false);
+        if(readerThread!=null){
+            try {
+                readerThread.join(5_000);
+            } catch (InterruptedException ex) {
+                log.info("interrupted while waiting for reader thread to stop", ex);
+            }
+        }
     }
 
     private void startPublishers() {
@@ -215,6 +262,37 @@ public class EventFlow {
             con.tearDown();
         });
         log.info("teardown publishers end");
+    }
+    
+    private class ReaderThread extends Thread{
+
+        
+        public ReaderThread() {
+            super("sourceQueueReader-" + count.intValue());
+            count.increment();
+        }
+        
+        @Override
+        public void run() {
+            log.info("starting reader thread");
+            EventQueueSource[] sources = new EventQueueSource[queueSourceMap.size()];
+            sources = queueSourceMap.values().toArray(sources);
+            while(runReaderThread.get()){
+                for (int i = 0; i < sources.length; i++) {
+                    EventQueueSource source = sources[i];
+                    source.poll();
+                }
+//                LockSupport.parkNanos(1_000);
+//                try {
+//                    Thread.sleep(1);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(EventFlow.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+            }
+            log.info("exiting reader thread");
+        }
+    
+        
     }
 
 }

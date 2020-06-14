@@ -15,23 +15,12 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.eventflow.filters;
-
-import com.fluxtion.integration.eventflow.PipelineFilter;
+package com.fluxtion.integration.profile;
 
 /**
- * Acts as a thread synchronisation point in a {@link Pipeline}
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SynchronizedFilter extends PipelineFilter {
-
-    @Override
-    public synchronized void processEvent(Object o) {
-        propagate(o);
-//        if (nextHandler != null) {
-//            nextHandler.processEvent(o);
-//        }
-    }
-
+public class Main {
+    
 }

@@ -18,13 +18,13 @@
 package com.fluxtion.integration.eventflow.sources;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
+import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
-import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
 import com.fluxtion.integration.eventflow.EventConsumer;
-import com.fluxtion.integration.eventflow.EventSource;
-import java.io.File;
+import com.fluxtion.integration.eventflow.EventQueueSource;
 import java.io.IOException;
+import java.io.Reader;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -32,22 +32,20 @@ import lombok.extern.log4j.Log4j2;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class DelimitedSource implements EventSource {
+public class DelimitedPullSource implements EventQueueSource {
 
     private final CsvRecordMarshaller marshaller;
     private final String id;
-    private int pollRate;
-    private final CharStreamer streamer;
+    private char[] readBuffer;
+    private final CharEvent charEvent;
+    private final Reader reader;
 
-    public DelimitedSource(RowProcessor processor, File inputFile, String id) {
-        this.id = id;
+    public DelimitedPullSource(Reader reader, RowProcessor processor, String id) {
         this.marshaller = new CsvRecordMarshaller(processor);
-        this.streamer = CharStreamer.stream(inputFile, marshaller);
-    }
-    
-    public DelimitedSource pollRate(int pollRate){
-        this.pollRate = pollRate;
-        return this;
+        this.id = id;
+        this.reader = reader;
+        readBuffer = new char[4096];
+        charEvent = new CharEvent(' ');
     }
 
     @Override
@@ -57,21 +55,35 @@ public class DelimitedSource implements EventSource {
 
     @Override
     public void init() {
+        log.info("init DelimitedPullSource id:'{}'", id);
         marshaller.init();
     }
 
     @Override
     public void start(EventConsumer target) {
+        log.info("start DelimitedPullSource id:'{}'", id);
+        marshaller.handleEvent(new RegisterEventHandler(target::processEvent));
+    }
+
+    @Override
+    public void poll() {
         try {
-            marshaller.handleEvent(new RegisterEventHandler(target::processEvent));
-            streamer.sync().stream();
+            //log.debug("poll DelimitedPullSource id:'{}'", id);
+            if (reader.ready()) {
+                int readSize = reader.read(readBuffer);
+                for (int i = 0; i < readSize; i++) {
+                    charEvent.setCharacter(readBuffer[i]);
+                    marshaller.handleEvent(charEvent);
+                }
+            }
         } catch (IOException ex) {
-            log.error("problem streaming file", ex);
+            log.error("problem reading from stream id:'{}'", id, ex);
         }
     }
 
     @Override
     public void tearDown() {
+        log.info("tearDown DelimitedPullSource id:'{}'", id);
         marshaller.tearDown();
     }
 
