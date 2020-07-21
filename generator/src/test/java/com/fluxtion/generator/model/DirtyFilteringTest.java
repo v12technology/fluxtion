@@ -60,7 +60,7 @@ public class DirtyFilteringTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, e2, dirty_1, dirty_2, dirty_3, i1, i2, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
         //
@@ -141,7 +141,7 @@ public class DirtyFilteringTest {
                 dirty_1, dirty_2,
                 i1, i2, i3, i4, i5, i6);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
 
@@ -160,7 +160,7 @@ public class DirtyFilteringTest {
         DirtyNotifierNode dirty_1 = new DirtyNotifierNode("dirty_1", eh);
         
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(Arrays.asList(eh, dirty_1));
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(Arrays.asList(eh, dirty_1));
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
         

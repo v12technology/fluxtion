@@ -130,7 +130,7 @@ public class SimpleEventProcessorModel {
     /**
      * The dependency model for this SEP
      */
-    private final TopologicallySortedDependecyGraph dependencyGraph;
+    private final TopologicallySortedDependencyGraph dependencyGraph;
 
     /**
      * Map of constructor argument lists for a node.
@@ -210,15 +210,15 @@ public class SimpleEventProcessorModel {
      */
     private boolean supportDirtyFiltering;
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph) throws Exception {
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph) throws Exception {
         this(dependencyGraph, new HashMap());
     }
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
         this(dependencyGraph, filterMap, null);
     }
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph,
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph,
             Map<Object, Integer> filterMap,
             Map<Object, String> nodeClassMap) throws Exception {
         this.dependencyGraph = dependencyGraph;

@@ -90,17 +90,17 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     isDirty_configHandler_7 = true;
     configHandler_7.cfgUpdate(typedEvent);
     if (isDirty_configHandler_7) {
-      aggregator_13.parentUdated(configHandler_7);
+      aggregator_13.parentUpdated(configHandler_7);
     }
     isDirty_configHandler_9 = true;
     configHandler_9.cfgUpdate(typedEvent);
     if (isDirty_configHandler_9) {
-      aggregator_13.parentCfgUdated(configHandler_9);
+      aggregator_13.parentCfgUpdated(configHandler_9);
     }
     isDirty_configHandler_11 = true;
     configHandler_11.cfgUpdate(typedEvent);
     if (isDirty_configHandler_11) {
-      aggregator_13.parentCfgUdated(configHandler_11);
+      aggregator_13.parentCfgUpdated(configHandler_11);
     }
     if (isDirty_configHandler_7
         | isDirty_configHandler_9
@@ -119,7 +119,7 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     isDirty_dataEventHandler_5 = true;
     dataEventHandler_5.handleEvent(typedEvent);
     if (isDirty_dataEventHandler_5) {
-      aggregator_13.parentUdated(dataEventHandler_5);
+      aggregator_13.parentUpdated(dataEventHandler_5);
     }
     if (isDirty_configHandler_7
         | isDirty_configHandler_9
@@ -138,12 +138,12 @@ public class SampleProcessor implements StaticEventProcessor, BatchHandler, Life
     isDirty_myEventHandler_1 = true;
     myEventHandler_1.handleEvent(typedEvent);
     if (isDirty_myEventHandler_1) {
-      aggregator_13.parentUdated(myEventHandler_1);
+      aggregator_13.parentUpdated(myEventHandler_1);
     }
     isDirty_myEventHandler_3 = true;
     myEventHandler_3.handleEvent(typedEvent);
     if (isDirty_myEventHandler_3) {
-      aggregator_13.parentUdated(myEventHandler_3);
+      aggregator_13.parentUpdated(myEventHandler_3);
     }
     if (isDirty_configHandler_7
         | isDirty_configHandler_9

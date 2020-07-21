@@ -23,7 +23,7 @@ package com.fluxtion.ext.streaming.api.group;
  * @param <S> Source type of group by
  * @param <T> Target type of group by
  */
-public interface GroupByIniitialiser<S, T> {
+public interface GroupByInitializer<S, T> {
     
     void apply(S source, T target);
     

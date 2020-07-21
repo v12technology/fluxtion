@@ -35,12 +35,12 @@ public class Aggregator {
     }
 
     @OnParentUpdate("handlers")
-    public void parentUdated(Object parent) {
+    public void parentUpdated(Object parent) {
 
     }
 
     @OnParentUpdate
-    public void parentCfgUdated(ConfigHandler parent) {
+    public void parentCfgUpdated(ConfigHandler parent) {
 
     }
     

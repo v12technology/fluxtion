@@ -186,7 +186,7 @@ public class SEPConfig {
     /**
      * Node Factory configuration
      */
-    public DeclarativeNodeConiguration declarativeConfig;
+    public DeclarativeNodeConfiguration declarativeConfig;
 
     //MAPPING
     /**

@@ -41,7 +41,7 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
     }
 
     //TODO add methods for Numeric value, and primitive types
-    public T getOrCreateInstance(Object key, GroupByIniitialiser<K, U> initialiser, K source) {
+    public T getOrCreateInstance(Object key, GroupByInitializer<K, U> initialiser, K source) {
         T instance = map.get(key);
         if (instance == null) {
             try {
@@ -97,7 +97,7 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public T getOrCreateInstance(CharSequence key, GroupByIniitialiser<K, U> initialiser, K source) {
+    public T getOrCreateInstance(CharSequence key, GroupByInitializer<K, U> initialiser, K source) {
         String keyString = key.toString();
         T instance = map.get(keyString);
         if (instance == null) {
@@ -112,7 +112,7 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public T getOrCreateInstance(BufferValue key, GroupByIniitialiser<K, U> initialiser, K source) {
+    public T getOrCreateInstance(BufferValue key, GroupByInitializer<K, U> initialiser, K source) {
         T instance = map.get(key.asString());
         if (instance == null) {
             try {
@@ -126,7 +126,7 @@ public class GroupByTargetMap<K, U, T extends Wrapper<U>> {
         return instance;
     }
 
-    public T getOrCreateInstance(MultiKey<K> key, GroupByIniitialiser<K, U> initialiser, K source) {
+    public T getOrCreateInstance(MultiKey<K> key, GroupByInitializer<K, U> initialiser, K source) {
         T instance = map.get(key);
         if (instance == null) {
             try {

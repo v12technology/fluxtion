@@ -34,7 +34,7 @@ import com.fluxtion.ext.text.api.csv.RowExceptionNotifier;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import com.fluxtion.ext.text.api.csv.ValidationLogSink.LogNotifier;
-import com.fluxtion.ext.text.api.util.EventPublsher;
+import com.fluxtion.ext.text.api.util.EventPublisher;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +105,7 @@ public class RulesEvaluatorBuilder<T> {
                 );
             }
 
-            EventPublsher publisher = new EventPublsher();
+            EventPublisher publisher = new EventPublisher();
             publisher.addEventSource(monitoredWrapped);
             publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
             publisher.addValidatedSource(evaluator.passedNotifier());
@@ -159,7 +159,7 @@ public class RulesEvaluatorBuilder<T> {
                 );
             }
 
-            EventPublsher publisher = new EventPublsher();
+            EventPublisher publisher = new EventPublisher();
             publisher.addEventSource(monitoredWrapped);
             publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
             publisher.addValidatedSource(evaluator.passedNotifier());
@@ -209,7 +209,7 @@ public class RulesEvaluatorBuilder<T> {
                         filter(monitored, nand(testList.toArray()))
                 );
             }
-            EventPublsher publisher = new EventPublsher();
+            EventPublisher publisher = new EventPublisher();
             publisher.addEventSource(monitored);
             publisher = GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
             publisher.addValidatedSource(evaluator.passedNotifier());

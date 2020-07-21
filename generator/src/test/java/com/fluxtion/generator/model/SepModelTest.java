@@ -89,7 +89,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         //sizes
@@ -136,7 +136,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
@@ -180,7 +180,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap);
         sep.generateMetaModel();
@@ -227,7 +227,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         //
@@ -255,7 +255,7 @@ public class SepModelTest {
         i2.parents = new Object[]{testHandler2};
         root.parents = new Object[]{i1, i2};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(timeHandler1, testHandler2, i1, i2, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(timeHandler1, testHandler2, i1, i2, root);
         graph.generateDependencyTree();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
@@ -294,7 +294,7 @@ public class SepModelTest {
         i2.parents = new Object[]{filter_10_Handler, inverseHandler};
         root.parents = new Object[]{i1, i2};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(noFilterHandler, filter_10_Handler, i1, i2, root, inverseHandler);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(noFilterHandler, filter_10_Handler, i1, i2, root, inverseHandler);
         graph.generateDependencyTree();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
@@ -328,7 +328,7 @@ public class SepModelTest {
         unFilteredInter.parents = new Object[]{unFilteredTestHandler};
         root.parents = new Object[]{filteredInter, unFilteredInter};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(filteredTestHandler, unFilteredTestHandler, filteredInter, unFilteredInter, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(filteredTestHandler, unFilteredTestHandler, filteredInter, unFilteredInter, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -369,7 +369,7 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -398,7 +398,7 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -427,7 +427,7 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -468,7 +468,7 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -515,7 +515,7 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{ thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -539,7 +539,7 @@ public class SepModelTest {
         complete1.parents = new Object[]{handler};
         root.parents = new Object[]{complete1};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(handler, root, complete1);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(handler, root, complete1);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -575,7 +575,7 @@ public class SepModelTest {
         complete3.parents = new Object[]{noFilterEh};
         root.parents = new Object[]{complete1, complete2, complete3};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, noFilterEh, root, complete1, complete2, complete3);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, noFilterEh, root, complete1, complete2, complete3);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
@@ -629,7 +629,7 @@ public class SepModelTest {
         filterMap.put(thExt, 100);
         filterMap.put(thImpl, 200);
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap, null);
@@ -692,7 +692,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, pl_1, pl_2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         final Map<Object, List<CbMethodHandle>> listenerMethodMap = sep.getParentUpdateListenerMethodMap();
@@ -732,7 +732,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(root, e1, e2, e3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         final Map<Object, List<CbMethodHandle>> listenerMethodMap = sep.getParentUpdateListenerMethodMap();
@@ -765,7 +765,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, pl_1, dirty_2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
         //

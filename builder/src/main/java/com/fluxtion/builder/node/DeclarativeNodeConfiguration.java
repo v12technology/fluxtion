@@ -28,7 +28,7 @@ import java.util.Set;
  * <h2>Doc to be completed</h2>
  * @author Greg Higgins
  */
-public final class DeclarativeNodeConiguration {
+public final class DeclarativeNodeConfiguration {
 
     /**
      * The root nodes to create and the variable names they should be mapped to.
@@ -63,7 +63,7 @@ public final class DeclarativeNodeConiguration {
      */
     public final Map config;
 
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config) {
+    public DeclarativeNodeConfiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config) {
         this(rootNodeMappings, factoryList, config, null);
     }
 
@@ -75,7 +75,7 @@ public final class DeclarativeNodeConiguration {
      * @param factorySet 
      */
     @SuppressWarnings("unchecked")
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
+    public DeclarativeNodeConfiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
         this.rootNodeMappings = rootNodeMappings == null ? Collections.EMPTY_MAP : rootNodeMappings;
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
@@ -101,7 +101,7 @@ public final class DeclarativeNodeConiguration {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DeclarativeNodeConiguration other = (DeclarativeNodeConiguration) obj;
+        final DeclarativeNodeConfiguration other = (DeclarativeNodeConfiguration) obj;
         if (!Objects.equals(this.rootNodeMappings, other.rootNodeMappings)) {
             return false;
         }

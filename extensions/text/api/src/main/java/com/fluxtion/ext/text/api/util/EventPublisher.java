@@ -30,7 +30,7 @@ import java.util.Arrays;
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T> {
+public class EventPublisher<T> {
 
     private Wrapper<T>[] wrapperSource;
     private Wrapper<T>[] validatedSource;
@@ -38,7 +38,7 @@ public class EventPublsher<T> {
     private StaticEventProcessor[] handlers;
     public boolean publishOnValidate = false;
 
-    public EventPublsher() {
+    public EventPublisher() {
         init();
     }
 
@@ -138,7 +138,7 @@ public class EventPublsher<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EventPublsher<?> other = (EventPublsher<?>) obj;
+        final EventPublisher<?> other = (EventPublisher<?>) obj;
         if (!Arrays.deepEquals(this.wrapperSource, other.wrapperSource)) {
             return false;
         }

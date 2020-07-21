@@ -25,7 +25,7 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
-import com.fluxtion.ext.text.api.util.EventPublsher;
+import com.fluxtion.ext.text.api.util.EventPublisher;
 
 /*
  * <pre>
@@ -40,7 +40,7 @@ public class CsvRecordMarshaller implements StaticEventProcessor, Lifecycle, Cha
 
     //Node declarations
     private final RowProcessor rowProcessor;
-    private final EventPublsher eventPublsher = new EventPublsher();
+    private final EventPublisher eventPublisher = new EventPublisher();
     private final ValidationLogger validationLogger = new ValidationLogger("validationLog");
     private final ValidationLogSink validationLogSink = new ValidationLogSink("validationLogSink");
     //Dirty flags
@@ -51,7 +51,7 @@ public CsvRecordMarshaller(RowProcessor rowProcessor) {
         this.rowProcessor.setErrorLog(validationLogger);
         validationLogSink.setPublishLogImmediately(true);
         validationLogger.logSink = validationLogSink;
-        eventPublsher.publishOnValidate = (boolean) false;
+        eventPublisher.publishOnValidate = false;
     }
 
     @Override
@@ -96,7 +96,7 @@ public CsvRecordMarshaller(RowProcessor rowProcessor) {
         //Default, no filter methods
         isDirty_RowProcessor = rowProcessor.charEvent(typedEvent);
         if (isDirty_RowProcessor) {
-            eventPublsher.wrapperUpdate(rowProcessor);
+            eventPublisher.wrapperUpdate(rowProcessor);
         }
         //event stack unwind callbacks
         afterEvent();
@@ -106,7 +106,7 @@ public CsvRecordMarshaller(RowProcessor rowProcessor) {
         //Default, no filter methods
         isDirty_RowProcessor = rowProcessor.eof(typedEvent);
         if (isDirty_RowProcessor) {
-            eventPublsher.wrapperUpdate(rowProcessor);
+            eventPublisher.wrapperUpdate(rowProcessor);
         }
         //event stack unwind callbacks
         afterEvent();
@@ -114,7 +114,7 @@ public CsvRecordMarshaller(RowProcessor rowProcessor) {
 
     public void handleEvent(RegisterEventHandler typedEvent) {
         //Default, no filter methods
-        eventPublsher.registerEventHandler(typedEvent);
+        eventPublisher.registerEventHandler(typedEvent);
         //event stack unwind callbacks
         afterEvent();
     }
@@ -126,7 +126,7 @@ public CsvRecordMarshaller(RowProcessor rowProcessor) {
     @Override
     public void init() {
         rowProcessor.init();
-        eventPublsher.init();
+        eventPublisher.init();
         validationLogSink.init();
     }
 
