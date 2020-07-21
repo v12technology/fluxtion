@@ -21,7 +21,7 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.SepCompilerConfig;
@@ -88,10 +88,10 @@ public class BaseSepTest {
         }
     }
 
-    public static DeclarativeNodeConiguration factorySet(Class<? extends NodeFactory>... classes) {
+    public static DeclarativeNodeConfiguration factorySet(Class<? extends NodeFactory>... classes) {
         Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
         factoryList.addAll(Arrays.asList(classes));
-        DeclarativeNodeConiguration declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
+        DeclarativeNodeConfiguration declarativeConfig = new DeclarativeNodeConfiguration(null, factoryList, null);
         return declarativeConfig;
     }
 

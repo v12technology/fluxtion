@@ -20,7 +20,7 @@ package com.fluxtion.generator.compiler;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
@@ -157,7 +157,7 @@ public class SepCompiler {
             LOG.debug("loading SepFactoryConfigBean with beanLoader");
             SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
             LOG.debug("DeclarativeNodeConiguration load");
-            DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+            DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
             LOG.debug("searching for NodeFactory's");
             Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
@@ -177,7 +177,7 @@ public class SepCompiler {
                 SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
                 loadedConfig.setRootNodeMappings(rootNodeMappings);
                 loadedConfig.setConfig(new HashMap());
-                DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+                DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
                 Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
                 builderConfig.declarativeConfig = cfgActual;
@@ -192,7 +192,7 @@ public class SepCompiler {
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
         Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         loadedConfig.setConfig(new HashMap());
-        DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+        DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
         if (builderConfig == null || builderConfig.declarativeConfig==null) {
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.declarativeConfig = cfgActual;

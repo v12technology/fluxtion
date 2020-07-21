@@ -54,7 +54,7 @@ public class JavaSourceModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep);

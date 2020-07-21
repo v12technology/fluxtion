@@ -1,25 +1,18 @@
 package com.fluxtion.ext.futext.example.flightdelay.generated;
 
-import com.fluxtion.api.SepContext;
-import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
+import com.fluxtion.ext.streaming.api.group.GroupByInitializer;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,7 +31,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   public Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt00;
   private CarrierDelay target;
   private GroupByTargetMap<String, CarrierDelay, CalculationStateGroupBy_4> calcState;
-  private GroupByIniitialiser<FlightDetails, CarrierDelay>
+  private GroupByInitializer<FlightDetails, CarrierDelay>
       initialiserfilter_getDelay_By_positiveInt00;
 
   @OnParentUpdate("filter_getDelay_By_positiveInt00")
@@ -90,7 +83,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
     allMatched = false;
     target = null;
     initialiserfilter_getDelay_By_positiveInt00 =
-        new GroupByIniitialiser<FlightDetails, CarrierDelay>() {
+        new GroupByInitializer<FlightDetails, CarrierDelay>() {
 
           @Override
           public void apply(FlightDetails source, CarrierDelay target) {

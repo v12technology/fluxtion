@@ -38,7 +38,7 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
-import com.fluxtion.ext.text.api.util.EventPublsher;
+import com.fluxtion.ext.text.api.util.EventPublisher;
 import static com.fluxtion.ext.text.builder.Templates.CSV_MARSHALLER;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -322,7 +322,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             });
             GenerationContext.SINGLETON.getNodeList().add(result);
             if (addEventPublisher) {
-                EventPublsher publisher = new EventPublsher();
+                EventPublisher publisher = new EventPublisher();
                 GenerationContext.SINGLETON.addOrUseExistingNode(publisher);
                 publisher.addEventSource(result);
             }

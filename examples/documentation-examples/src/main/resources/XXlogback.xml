@@ -26,7 +26,7 @@ along with this program.  If not, see
     </encoder>
   </appender>
   <logger name="org.reflections.Reflections" level="warn"/>
-  <logger name="com.fluxtion.generator.model.TopologicallySortedDependecyGraph" level="info"/>
+  <logger name="com.fluxtion.generator.model.TopologicallySortedDependencyGraph" level="info"/>
 
   <root level="info">
     <appender-ref ref="STDOUT" />

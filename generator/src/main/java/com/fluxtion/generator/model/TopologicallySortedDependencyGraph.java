@@ -27,7 +27,7 @@ import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.generation.NodeNameProducer;
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.builder.node.SEPConfig;
@@ -73,13 +73,13 @@ import org.xml.sax.SAXException;
  *
  * @author Greg Higgins
  */
-public class TopologicallySortedDependecyGraph implements NodeRegistry {
+public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     //TODO move this to constructor
     private Map<String, Auditor> registrationListenerMap;
 
     //TODO check there are no variable name clashes
-    private final Logger LOGGER = LoggerFactory.getLogger(TopologicallySortedDependecyGraph.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(TopologicallySortedDependencyGraph.class);
     private BiMap<Object, String> inst2Name;
     private final BiMap<Object, String> inst2NameTemp;
     private final SimpleDirectedGraph<Object, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
@@ -89,34 +89,34 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     private boolean processed = false;
     private int count;
 //    private static final int MAX_NAME_TRIES = 10000;
-    private final DeclarativeNodeConiguration declarativeNodeConiguration;
+    private final DeclarativeNodeConfiguration declarativeNodeConfiguration;
     private final HashMap<Class, CbMethodHandle> class2FactoryMethod;
     private final List publicNodeList;
     private final GenerationContext generationContext;
     private NodeNameProducer nameStrategy;
     private final SEPConfig config;
 
-    public TopologicallySortedDependecyGraph(Object... obj) {
+    public TopologicallySortedDependencyGraph(Object... obj) {
         this(Arrays.asList(obj));
     }
 
-    public TopologicallySortedDependecyGraph(List nodes) {
+    public TopologicallySortedDependencyGraph(List nodes) {
         this(nodes, null, null, null, null, null);
     }
 
-    public TopologicallySortedDependecyGraph(Map<Object, String> publicNodes) {
+    public TopologicallySortedDependencyGraph(Map<Object, String> publicNodes) {
         this(null, publicNodes, null, null, null, null);
     }
 
-    public TopologicallySortedDependecyGraph(DeclarativeNodeConiguration declarativeNodeConiguration) {
-        this(null, null, declarativeNodeConiguration, null, null, null);
+    public TopologicallySortedDependencyGraph(DeclarativeNodeConfiguration declarativeNodeConfiguration) {
+        this(null, null, declarativeNodeConfiguration, null, null, null);
     }
 
-    public TopologicallySortedDependecyGraph(List nodes, Map<Object, String> publicNodes) {
+    public TopologicallySortedDependencyGraph(List nodes, Map<Object, String> publicNodes) {
         this(nodes, publicNodes, null, null, null, null);
     }
 
-    public TopologicallySortedDependecyGraph(SEPConfig config) {
+    public TopologicallySortedDependencyGraph(SEPConfig config) {
         this(config.nodeList,
                 config.publicNodes,
                 config.declarativeConfig,
@@ -132,15 +132,15 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
      * @param publicNodes Map of public available instances, the value is the
      * unique name of each instance. The names will override existing instances
      * in the nodes List or add the node to the set.
-     * @param declarativeNodeConiguration factory description
+     * @param declarativeNodeConfiguration factory description
      * @param strat NodeNameProducer strategy
      * @param context Generation context for this cycle
      * @param auditorMap Auditors to inject
      * @param config Config for this generation cycle
      *
      */
-    public TopologicallySortedDependecyGraph(List nodes, Map<Object, String> publicNodes,
-            DeclarativeNodeConiguration declarativeNodeConiguration,
+    public TopologicallySortedDependencyGraph(List nodes, Map<Object, String> publicNodes,
+            DeclarativeNodeConfiguration declarativeNodeConfiguration,
             GenerationContext context, Map<String, Auditor> auditorMap, SEPConfig config) {
         this.config = config;
         this.nameStrategy = new NamingStrategy();
@@ -184,7 +184,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         });
         //declaritive nodes - add arguments to method and make defensive copy 
 //        declarativeNodeMap = new HashMap<>();
-        this.declarativeNodeConiguration = declarativeNodeConiguration;
+        this.declarativeNodeConfiguration = declarativeNodeConfiguration;
         this.generationContext = context;
     }
 
@@ -493,7 +493,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             return;
         }
 
-        if (declarativeNodeConiguration != null) {
+        if (declarativeNodeConfiguration != null) {
 
             /**
              * TODO create the NodeBuilder, passing this in as a reference loop
@@ -503,17 +503,17 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
              *
              */
             //store the factory callbacks
-            for (Class<? extends NodeFactory> clazz : declarativeNodeConiguration.factoryClassSet) {
+            for (Class<? extends NodeFactory> clazz : declarativeNodeConfiguration.factoryClassSet) {
                 NodeFactory factory = clazz.newInstance();
                 registerNodeFactory(factory);
             }
             //override any any classes with pre-initialised NodeFactories
-            for (NodeFactory factory : declarativeNodeConiguration.factorySet) {
+            for (NodeFactory factory : declarativeNodeConfiguration.factorySet) {
                 registerNodeFactory(factory);
             }
             //loop through root instance and 
-            for (Map.Entry<Class, String> rootNode : declarativeNodeConiguration.rootNodeMappings.entrySet()) {
-                Object newNode = findOrCreateNode(rootNode.getKey(), declarativeNodeConiguration.config, rootNode.getValue());
+            for (Map.Entry<Class, String> rootNode : declarativeNodeConfiguration.rootNodeMappings.entrySet()) {
+                Object newNode = findOrCreateNode(rootNode.getKey(), declarativeNodeConfiguration.config, rootNode.getValue());
                 publicNodeList.add(newNode);
             }
         }

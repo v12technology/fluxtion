@@ -18,14 +18,14 @@
 package com.fluxtion.generator.declarative;
 
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.Field;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
-import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
+import com.fluxtion.generator.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.test.nodes.Calculator;
 import com.fluxtion.test.nodes.CalculatorRegisteringAccumulatorFactory;
@@ -69,9 +69,9 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, new HashMap<>());
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
     }
 
@@ -83,7 +83,7 @@ public class SimpleDeclarativeTest {
         rootNodeMappings.put(Calculator.class, "calculator");
         GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "SimpleCalculator", new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, new HashMap<>());
         SEPConfig cfg = new SEPConfig();
         cfg.templateFile = "javaTemplate.vsl";
         cfg.declarativeConfig = config;
@@ -106,9 +106,9 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         assertEquals(1, instance.getInstanceMap().size());
@@ -126,9 +126,9 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(Calculator.class, "calcInjecting");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         assertEquals(2, instance.getInstanceMap().size());
@@ -149,9 +149,9 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         Object x = instance.getSortedDependents().get(0);
@@ -175,9 +175,9 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
     }
@@ -189,8 +189,8 @@ public class SimpleDeclarativeTest {
         factorySet.add(new WindowNodeFactory());
         Map<Class, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, null, null, factorySet);
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, null, null, factorySet);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         //override the EindowNode class with DynamicallyGeneratedWindowNode
         Object x = instance.getSortedDependents().get(0);

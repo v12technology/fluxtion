@@ -29,7 +29,7 @@ import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
+import com.fluxtion.ext.streaming.api.group.GroupByInitializer;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
@@ -79,7 +79,7 @@ public class GroupByContext<K, T> {
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
             Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
             Map.class, BitSet.class, GroupBy.class, EventHandler.class,
-            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
+            GroupByInitializer.class, GroupByTargetMap.class, NoEventReference.class,
             WrappedCollection.class,Collection.class,
             ArrayListWrappedCollection.class, SepContext.class
     );
