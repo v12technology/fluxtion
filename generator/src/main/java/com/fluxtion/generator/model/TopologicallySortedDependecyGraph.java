@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
 import javax.xml.transform.TransformerConfigurationException;
@@ -459,9 +460,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (!inst2Name.containsKey(newNode)) {
                 String name = nameNode(newNode);
                 if (useTempMap) {
-                    inst2NameTemp.put(newNode, variableName == null ? name : variableName);
+                    inst2NameTemp.put(newNode, (variableName == null || variableName.isBlank()) ? name : variableName);
                 } else {
-                    inst2Name.put(newNode, variableName == null ? name : variableName);
+                    inst2Name.put(newNode, (variableName == null || variableName.isBlank()) ? name : variableName);
                 }
             } else {
                 String name = inst2Name.get(newNode);
@@ -738,7 +739,16 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;
                 inst2Name = inst2NameTemp;
-                Object newNode = findOrCreateNode(field.getType(), map, null, false, true);
+                Object newNode = null;
+                if(injecting.singleton()){
+                    newNode = inst2Name.keySet().stream()
+                            .filter(o -> o.getClass()==field.getType())
+                            .findFirst().orElse(null);
+                
+                }
+                if(newNode == null){
+                    newNode = findOrCreateNode(field.getType(), map, injecting.singletonName(), false, true);
+                }
                 inst2Name = oldMap;
                 addNodesFromContext();
                 field.set(object, newNode);
