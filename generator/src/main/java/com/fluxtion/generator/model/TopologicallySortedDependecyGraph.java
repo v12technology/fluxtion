@@ -57,6 +57,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.reflect.dsl.ReflectionHandler;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.IntegerEdgeNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
@@ -460,9 +461,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (!inst2Name.containsKey(newNode)) {
                 String name = nameNode(newNode);
                 if (useTempMap) {
-                    inst2NameTemp.put(newNode, (variableName == null || variableName.isBlank()) ? name : variableName);
+                    inst2NameTemp.put(newNode, (variableName == null || isBlank(variableName)) ? name : variableName);
                 } else {
-                    inst2Name.put(newNode, (variableName == null || variableName.isBlank()) ? name : variableName);
+                    inst2Name.put(newNode, (variableName == null || isBlank(variableName)) ? name : variableName);
                 }
             } else {
                 String name = inst2Name.get(newNode);
