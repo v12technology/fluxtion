@@ -1258,6 +1258,8 @@ public class SimpleEventProcessorModel {
                     } else if (f.getType().equals(short.class)) {
                         filterIdOverride = f.getShort(instance);
                         //                    filterIdOverride = instance.getClass().getField(annotation.filterVariable()).getInt(instance);
+                    } else{
+                        filterStringOverride = f.get(instance).toString();
                     }
                 }
             }
