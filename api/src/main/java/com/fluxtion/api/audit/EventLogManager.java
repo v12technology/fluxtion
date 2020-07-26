@@ -52,6 +52,7 @@ public class EventLogManager implements Auditor {
     private boolean clearAfterPublish;
     private static final Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
     public boolean trace = false;
+    public boolean printEventToString = true;
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
     public Clock clock;
@@ -79,6 +80,10 @@ public class EventLogManager implements Auditor {
         trace = true;
         this.traceLevel = level;
         return this;
+    }
+    
+    public void printEventToString(boolean printEventToString){
+        this.printEventToString = printEventToString;
     }
 
     @Override
@@ -147,6 +152,7 @@ public class EventLogManager implements Auditor {
     @Override
     public void init() {
         logRecord = new LogRecord(clock);
+        logRecord.printEventToString(printEventToString);
         node2Logger = new HashMap<>();
         clearAfterPublish = true;
     }

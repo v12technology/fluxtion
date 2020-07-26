@@ -65,6 +65,7 @@ public class LogRecord {
     private String sourceId;
     private boolean firstProp;
     private Clock clock;
+    private boolean printEventToString = false;
 
     public LogRecord(Clock clock) {
         sb = new StringBuilder();
@@ -95,11 +96,20 @@ public class LogRecord {
         addSourceId(sourceId, propertyKey);
         sb.append(value);
     }
-    
-    public void addTrace(String sourceId){
+
+    public void addTrace(String sourceId) {
+        if (this.sourceId != null) {
+            sb.append("}");
+        }
+        firstProp = true;
+        this.sourceId = null;
         addSourceId(sourceId, null);
     }
 
+    public void printEventToString(boolean printEventToString) {
+        this.printEventToString = printEventToString;
+    }
+    
     private void addSourceId(String sourceId, String propertyKey) {
         if (this.sourceId == null) {
             sb.append("\n        - ").append(sourceId).append(": {");
@@ -112,7 +122,7 @@ public class LogRecord {
         if (!firstProp) {
             sb.append(",");
         }
-        if(propertyKey!=null){
+        if (propertyKey != null) {
             firstProp = false;
             sb.append(" ").append(propertyKey).append(": ");
         }
@@ -135,6 +145,9 @@ public class LogRecord {
         sb.append("\n    logTime: ").append(clock.getWallClockTime());
         sb.append("\n    groupingId: ").append(groupingId);
         sb.append("\n    event: ").append(aClass.getSimpleName());
+        if (printEventToString) {
+            sb.append("\n    eventToString: ").append(event.toString());
+        }
         if (event.filterString() != null && !event.filterString().isEmpty()) {
             sb.append("\n    eventFilter: ").append(event.filterString());
         }
@@ -151,6 +164,9 @@ public class LogRecord {
             sb.append("\n    logTime: ").append(clock.getWallClockTime());
             sb.append("\n    groupingId: ").append(groupingId);
             sb.append("\n    event: ").append(aClass.getSimpleName());
+            if (printEventToString) {
+                sb.append("\n    eventToString: ").append(event.toString());
+            }
             sb.append("\n    nodeLogs: ");
         }
     }
