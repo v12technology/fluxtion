@@ -102,6 +102,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         stream("stringValue\njunk\n   TEST   \n");
         Assert.assertThat(sample.getStringValue(), is("TEST"));
     }
+    
     @Test
     public void testMultipleAnnotationsValue() {
         sep(c -> {
@@ -113,6 +114,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         Assert.assertThat(sample.getIntValue(), is(560));
         stream("ff|\n");
         Assert.assertThat(sample.getIntValue(), is(-10));
+    }
+    
+    @Test
+    public void testEnumValue() {
+        sep(c -> {
+            c.addPublicNode(csvMarshaller(EnumData.class).build(), "output");
+        });
+        EnumData sample = getWrappedField("output");
+        stream("myState\nOPEN\n");
+        Assert.assertThat(sample.getMyState(), is(State.OPEN));
     }
 
     @Data
@@ -172,6 +183,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         
         protected int requiredInt;
         
+    }
+    
+    public enum State{
+        OPEN, CLOSE;
+    }
+    
+    @Data
+    public static class EnumData{
+        protected State myState;
+    
     }
 
 }

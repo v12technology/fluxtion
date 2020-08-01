@@ -40,6 +40,7 @@ public class CsvPushFunctionInfo {
     
     //Target
     private Class targetClass;
+    private boolean targetIsEnum;
     private Method targetMethod;
     private String targetArgType;
     private String targetClassName;
@@ -95,6 +96,7 @@ public class CsvPushFunctionInfo {
         targetInstanceId = id;
         targetClassName = importMap.addImport(clazz);
         targetCalcMethodName = method.getName();
+        targetIsEnum = method.getParameterTypes()[0].isEnum();
         targetArgType = importMap.addImport(method.getParameterTypes()[0]);
         getUpdateTarget2();
     }
@@ -151,7 +153,9 @@ public class CsvPushFunctionInfo {
         if (converterMethod != null) {
             addConversion = false;
             conversion = converterMethod + "(" + defaultMethodCalc + ")";
-        } else {
+        }else if(targetIsEnum){
+            conversion =  targetArgType + ".valueOf(" + defaultMethodCalc + ".toString())";
+        }else {
             switch (targetArgType) {
                 case "String":
                     conversion += ".toString()";
