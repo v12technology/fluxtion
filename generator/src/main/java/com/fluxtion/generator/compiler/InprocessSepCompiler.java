@@ -57,6 +57,7 @@ public class InprocessSepCompiler {
     public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/fluxtion/";
     public static final String JAVA_GEN_DIR = "target/generated-sources/fluxtion/";
     public static final String JAVA_SRC_DIR = "src/main/java/";
+    public static final String JAVA_TEST_SRC_DIR = "src/test/java/";
 
     public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
     public static final String RESOURCE_DIR = "src/main/resources/";

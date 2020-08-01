@@ -244,11 +244,12 @@ public class DataEventCsvDecoder0 implements RowProcessor<DataEvent> {
   }
 
   @Override
-  public void toCsv(DataEvent src, Appendable target) throws IOException {
+  public Appendable toCsv(DataEvent src, Appendable target) throws IOException {
     msgSink.setLength(0);
     asCsv(src, msgSink);
     target.append(msgSink);
     msgSink.setLength(0);
+    return target;
   }
 
   public static CsvRecordMarshaller marshaller() {

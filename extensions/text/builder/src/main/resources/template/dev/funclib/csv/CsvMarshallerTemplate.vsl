@@ -387,11 +387,12 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 
     @Override
-    public void toCsv(${targetClass} src, Appendable target) throws IOException{
+    public Appendable toCsv(${targetClass} src, Appendable target) throws IOException{
         msgSink.setLength(0);
         asCsv(src, msgSink);
         target.append(msgSink);
         msgSink.setLength(0);
+        return target;
   }
 #end
 

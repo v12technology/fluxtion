@@ -17,7 +17,9 @@
  */
 package com.fluxtion.integrations.dispatch;
 
+import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.integration.eventflow.filters.CharReader;
 import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
@@ -28,6 +30,7 @@ import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import lombok.Data;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -62,6 +65,15 @@ public class FileDispatchTest extends BaseSepInprocessTest {
                 + "21,fred\n"
                 + "346,dfgfgfgf\n";
         StringDriver.streamChars(input, csvDecoder::processEvent);
+    }
+    
+    @Test
+    @Ignore
+    public void geneerateMarshaller(){
+        CsvToBeanBuilder.nameSpace("com.fluxtion.integrations.dispatch")
+                .dirOption(InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT)
+                .builder(DataEvent.class, 1)
+                .build();
     }
 
     @Data

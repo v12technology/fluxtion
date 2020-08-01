@@ -19,6 +19,7 @@ package com.fluxtion.ext.text.builder.csv;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
@@ -69,6 +70,13 @@ public class CsvToBeanBuilder {
      */
     public static CsvToBeanBuilder nameSpace(String pkg) {
         return new CsvToBeanBuilder(pkg);
+    }
+
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        return CsvToBeanBuilder.nameSpace(annotation.packageName())
+                .builder(csvClass, annotation.headerLines())
+                .build();
     }
 
     /**
@@ -141,9 +149,8 @@ public class CsvToBeanBuilder {
         processors.add(builder.build());
         return this;
     }
-    
-    
-     public <T> CsvMarshallerBuilder<T> builder( Class<T> clazz, int headerLines) {
+
+    public <T> CsvMarshallerBuilder<T> builder(Class<T> clazz, int headerLines) {
         GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
         CsvMarshallerBuilder<T> builder = csvMarshaller(clazz, headerLines).tokenConfig(CharTokenConfig.WINDOWS);
         return builder;
