@@ -82,8 +82,9 @@ public class EventLogManager implements Auditor {
         return this;
     }
     
-    public void printEventToString(boolean printEventToString){
+    public EventLogManager printEventToString(boolean printEventToString){
         this.printEventToString = printEventToString;
+        return this;
     }
 
     @Override
