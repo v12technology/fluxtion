@@ -50,6 +50,7 @@ public class Log4j2CsvJournaller extends PipelineFilter {
         RowProcessor processor = marshallerMap.get(o.getClass());
         if(processor!=null){
             try {
+                sb.append(o.getClass().getSimpleName()).append(',');
                 processor.toCsv(o, sb);
                 log.info(sb);
             } catch (IOException ex) {
@@ -62,6 +63,7 @@ public class Log4j2CsvJournaller extends PipelineFilter {
     }
 
     public void initHandler() {
+        marshallerMap = new HashMap<>();
         appLog.info("init scanning for csv marshallers");
         try (ScanResult scanResult = new ClassGraph()
                 .enableClassInfo()
@@ -72,7 +74,6 @@ public class Log4j2CsvJournaller extends PipelineFilter {
     }
     
     private void addMarshaller(ClassInfo info)  {
-        marshallerMap = new HashMap<>();
         try {
             Class<RowProcessor> marshallerClass = info.loadClass(RowProcessor.class);
             RowProcessor rowProcessor = marshallerClass.getDeclaredConstructor().newInstance();
