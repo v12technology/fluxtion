@@ -47,6 +47,7 @@ public class Pipeline {
         sortTopologically(root);
         log.debug("filter chain:{}", sortedFilters);
         sortedFilters.forEach(PipelineFilter::initHandler);
+        sortedFilters.forEach(PipelineFilter::startHandler);
         log.info("started pipeline");
         return this;
     }

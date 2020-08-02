@@ -79,6 +79,13 @@ public class CsvToBeanBuilder {
                 .build();
     }
 
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass, String packageName) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        return CsvToBeanBuilder.nameSpace(packageName)
+                .builder(csvClass, annotation.headerLines())
+                .build();
+    }
+
     /**
      * Add event publisher
      *

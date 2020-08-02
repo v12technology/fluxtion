@@ -29,9 +29,6 @@ public class SynchronizedFilter extends PipelineFilter {
     @Override
     public synchronized void processEvent(Object o) {
         propagate(o);
-//        if (nextHandler != null) {
-//            nextHandler.processEvent(o);
-//        }
     }
 
 }

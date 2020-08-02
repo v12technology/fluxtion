@@ -146,7 +146,7 @@ public class LogRecord {
         sb.append("\n    groupingId: ").append(groupingId);
         sb.append("\n    event: ").append(aClass.getSimpleName());
         if (printEventToString) {
-            sb.append("\n    eventToString: ").append(event.toString());
+            sb.append("\n    eventToString: {").append(event.toString()).append('}');
         }
         if (event.filterString() != null && !event.filterString().isEmpty()) {
             sb.append("\n    eventFilter: ").append(event.filterString());
@@ -165,7 +165,7 @@ public class LogRecord {
             sb.append("\n    groupingId: ").append(groupingId);
             sb.append("\n    event: ").append(aClass.getSimpleName());
             if (printEventToString) {
-                sb.append("\n    eventToString: ").append(event.toString());
+                sb.append("\n    eventToString: {").append(event.toString()).append('}');
             }
             sb.append("\n    nodeLogs: ");
         }

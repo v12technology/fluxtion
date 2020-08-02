@@ -55,7 +55,11 @@ public abstract class PipelineFilter implements EventConsumer {
      * Override in subclass to execute init methods on the handler instance
      */
     protected void initHandler() {
-        log.info("init pipeline filter:{}", this.getClass().getSimpleName());
+        log.info("init:'{}'", this.getClass().getSimpleName());
+    }
+    
+    protected void startHandler() {
+        log.info("start:'{}'", this.getClass().getSimpleName());
     }
 
     /**

@@ -66,6 +66,10 @@ public class EventFlow {
         dispatcherFilter = pipeline.entry(defaultDispatcher);
         runReaderThread = new AtomicBoolean(false);
     }
+    
+    public static EventFlow flow(EventSource source){
+        return new EventFlow().source(source);
+    }
 
     public EventFlow start() {
         switch (currentState) {

@@ -22,14 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a bean field to use a converter method that will convert from CharSequence
- * to a field in the target instance
+ * Marks a bean field to use a converter method that will convert from a field
+ * to a CharSequence that will be written by the marshaller
  *
  * @author gregp
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConvertField {
+public @interface ConvertToCharSeq {
 
     /**
      * The static method that will convert this {@link CharSequence} into some

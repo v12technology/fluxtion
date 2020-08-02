@@ -368,7 +368,13 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 
   public static void asCsv(${targetClass} src, StringBuilder msgSink) throws IOException {
 #foreach($outInfo in $outSrcList)
+#if( ${outInfo.converterMethod} )
+//FOUND marshallerMethod = ${outInfo.converterMethod}
+//    CcyPair.ccyPairToCharSequence(src.getCcyPair(), msgSink);
+     ${outInfo.converterMethod}(src.${outInfo.srcMethod}(), msgSink);
+#else
         msgSink.append(src.${outInfo.srcMethod}());
+#end
 #if( $foreach.hasNext )msgSink.append(","); #end
 #end
         msgSink.append("\n");

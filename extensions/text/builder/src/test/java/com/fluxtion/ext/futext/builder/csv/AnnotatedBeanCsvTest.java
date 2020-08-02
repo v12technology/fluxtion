@@ -19,12 +19,18 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.annotation.TrimField;
 import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -88,6 +94,24 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
     public static String convert(CharSequence in) {
         return "CONVERTED_" + in;
     }
+    
+    @Test
+    public void testCustomFieldMarshaller() throws IOException{
+        RowProcessor<MarshallerCustomised> processor = buildRowProcessor(MarshallerCustomised.class, pckName());
+        StringBuilder sb = new StringBuilder();
+        MarshallerCustomised instance = new MarshallerCustomised();
+        instance.setStringValue("hello");
+        processor.toCsv(instance, sb);
+        Assert.assertEquals("OVERWRITTEN_hello\n", sb.toString());
+    }
+    
+    public static void marshall(String field, Appendable msgSink){
+        try {
+            msgSink.append("OVERWRITTEN_" + field);
+        } catch (IOException ex) {
+            Logger.getLogger(AnnotatedBeanCsvTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static int times10(CharSequence in) {
         return 10 * atoi(in);
@@ -149,7 +173,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         protected String stringValue;
 
     }
-
+    
+    @Data
+    @CsvMarshaller(packageName = "")
+    public static class MarshallerCustomised{
+        
+        @ConvertToCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#marshall")
+        protected String stringValue;
+    
+    }
+    
     @Data
     @CsvMarshaller(headerLines = 2, trim = true)
     public static class BeanSample {

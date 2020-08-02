@@ -15,22 +15,26 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.eventflow.filters;
+package com.fluxtion.integration.log4j2;
 
-import com.fluxtion.integration.eventflow.PipelineFilter;
+import com.fluxtion.api.audit.LogRecord;
+import com.fluxtion.api.audit.LogRecordListener;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
 
 /**
- * A terminal operation 
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-@Log4j2
-public class Log4j2Filter extends PipelineFilter{
+@Log4j2(topic = "fluxtion.eventLog")
+public class Log4j2AuditLogger implements LogRecordListener{
 
+    private Level level = Level.INFO;
+    
     @Override
-    public void processEvent(Object o) {
-        log.info(o);
-        propagate(o);
+    public void processLogRecord(LogRecord logRecord) {
+        log.log(level, logRecord.asCharSequence());
+        log.log(level, "\n---\n");
     }
     
 }

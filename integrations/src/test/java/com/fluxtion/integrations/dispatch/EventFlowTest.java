@@ -15,22 +15,23 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.eventflow.filters;
+package com.fluxtion.integrations.dispatch;
 
-import com.fluxtion.integration.eventflow.PipelineFilter;
-import lombok.extern.log4j.Log4j2;
+import com.fluxtion.integration.eventflow.EventFlow;
+import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
+import com.fluxtion.integration.eventflow.sources.ManualEventSource;
+import org.junit.Test;
 
 /**
- * A terminal operation 
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-@Log4j2
-public class Log4j2Filter extends PipelineFilter{
+public class EventFlowTest {
 
-    @Override
-    public void processEvent(Object o) {
-        log.info(o);
-        propagate(o);
+    @Test
+    public void simpleFlow() {
+        ManualEventSource eventInjector = new ManualEventSource("manualSource1");
+        EventFlow.flow(eventInjector).pipeline(new ConsoleFilter()).start();
+        eventInjector.publishToFlow("hello world");
     }
-    
 }
