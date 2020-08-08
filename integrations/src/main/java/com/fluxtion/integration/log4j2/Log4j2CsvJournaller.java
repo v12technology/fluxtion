@@ -18,6 +18,7 @@
 package com.fluxtion.integration.log4j2;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
+import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -26,7 +27,7 @@ import io.github.classgraph.ScanResult;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.logging.Level;
+import java.util.HashSet;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,27 +44,43 @@ public class Log4j2CsvJournaller extends PipelineFilter {
     StringBuilder sb = new StringBuilder();
     private static final Logger appLog = LogManager.getLogger(Log4j2CsvJournaller.class);
     private HashMap<Class, RowProcessor> marshallerMap;
+    private HashSet<Class> blackList;
 
     @Override
     public void processEvent(Object o) {
-        sb.setLength(0);
-        RowProcessor processor = marshallerMap.get(o.getClass());
-        if(processor!=null){
-            try {
-                sb.append(o.getClass().getSimpleName()).append(',');
-                processor.toCsv(o, sb);
-                log.info(sb);
-            } catch (IOException ex) {
-                appLog.warn("could not marshall instabce to csv:", o);
+        final Class<? extends Object> clazz = o.getClass();
+        if (!blackList.contains(clazz)) {
+            sb.setLength(0);
+            RowProcessor processor = marshallerMap.computeIfAbsent(clazz, (c) -> {
+                RowProcessor processorX = null;
+                try {
+                    appLog.info("generating marsahller for:{}", clazz);
+                    processorX = CsvToBeanBuilder.buildRowProcessor(c, "com.fluxtion.csvmarshaller.autogen");
+                } catch (Exception e) {
+                    appLog.info("problem generating marshaller", e);
+                    blackList.add(c);
+                }
+                return processorX;
+            });
+//        RowProcessor processor = marshallerMap.get(o.getClass());
+            if (processor != null) {
+                try {
+                    sb.append(clazz.getSimpleName()).append(',');
+                    processor.toCsv(o, sb);
+                    log.info(sb);
+                } catch (IOException ex) {
+                    appLog.warn("could not marshall instabce to csv:", o);
+                }
+            } else {
+                appLog.debug("no marshaller registred for:", clazz);
             }
-        }else{
-            appLog.debug("no marshaller registred for:", o.getClass());
         }
         propagate(o);
     }
 
     public void initHandler() {
         marshallerMap = new HashMap<>();
+        blackList = new HashSet();
         appLog.info("init scanning for csv marshallers");
         try (ScanResult scanResult = new ClassGraph()
                 .enableClassInfo()
@@ -72,8 +89,8 @@ public class Log4j2CsvJournaller extends PipelineFilter {
             rowProcessorInfoList.forEach(this::addMarshaller);
         }
     }
-    
-    private void addMarshaller(ClassInfo info)  {
+
+    private void addMarshaller(ClassInfo info) {
         try {
             Class<RowProcessor> marshallerClass = info.loadClass(RowProcessor.class);
             RowProcessor rowProcessor = marshallerClass.getDeclaredConstructor().newInstance();
@@ -82,7 +99,7 @@ public class Log4j2CsvJournaller extends PipelineFilter {
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             appLog.warn("unable to load RowProcessor", ex);
         }
-    
+
     }
 
 }
