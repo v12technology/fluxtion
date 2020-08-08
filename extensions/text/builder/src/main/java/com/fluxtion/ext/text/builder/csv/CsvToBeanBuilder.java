@@ -74,15 +74,17 @@ public class CsvToBeanBuilder {
 
     public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass) {
         CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation==null?1:annotation.headerLines();
         return CsvToBeanBuilder.nameSpace(annotation.packageName())
-                .builder(csvClass, annotation.headerLines())
+                .builder(csvClass, headerLines)
                 .build();
     }
 
     public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass, String packageName) {
         CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation==null?1:annotation.headerLines();
         return CsvToBeanBuilder.nameSpace(packageName)
-                .builder(csvClass, annotation.headerLines())
+                .builder(csvClass, headerLines)
                 .build();
     }
 

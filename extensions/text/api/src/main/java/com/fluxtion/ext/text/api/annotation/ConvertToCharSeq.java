@@ -25,6 +25,24 @@ import java.lang.annotation.Target;
  * Marks a bean field to use a converter method that will convert from a field
  * to a CharSequence that will be written by the marshaller
  *
+ * <pre>
+ * //SPECIFY MARSHALL METHOD
+ * @ConvertToCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#marshall")
+ * protected MyType stringValue;
+ *
+ * //Actual marshal method
+ *     public static void marshall(MyType field, Appendable msgSink){
+ *      try {
+ *          msgSink.append("OVERWRITTEN_" + field);
+ *      } catch (IOException ex) {
+ *          Logger.getLogger(AnnotatedBeanCsvTest.class.getName()).log(Level.SEVERE, null, ex);
+ *      }
+ *     }
+ *
+ *
+ *
+ * <pre>
+ *
  * @author gregp
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -32,8 +50,7 @@ import java.lang.annotation.Target;
 public @interface ConvertToCharSeq {
 
     /**
-     * The static method that will convert this {@link CharSequence} into some
-     * type the field expects.
+     * The static method that will convert this field into a {@link CharSequence}
      *
      * The syntax is: [fully qualified class name]#[method name]
      *
