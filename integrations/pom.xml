@@ -94,6 +94,12 @@ along with this program.  If not, see
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 	
 </project>
