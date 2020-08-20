@@ -56,8 +56,11 @@ package com.fluxtion.api.event;
  */
 public class Signal<T> implements Event{
     
-    private final String filterString;
-    private final T value;
+    private String filterString;
+    private T value;
+
+    public Signal() {
+    }
     
     public Signal(String filterString) {
         this(filterString, null);
@@ -76,6 +79,19 @@ public class Signal<T> implements Event{
         return value;
     }
 
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public String getFilterString() {
+        return filterString;
+    }
+
+    public void setFilterString(String filterString) {
+        this.filterString = filterString;
+    }
+    
     @Override
     public String filterString() {
         return filterString;
@@ -84,6 +100,6 @@ public class Signal<T> implements Event{
     @Override
     public String toString() {
         return "Signal: {" + "filterString: " + filterString + ", value: " + value + '}';
-    }
+    }  
     
 }
