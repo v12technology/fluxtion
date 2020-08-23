@@ -25,6 +25,7 @@ import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventSource;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -36,7 +37,6 @@ public class DelimitedSource implements EventSource {
 
     private final CsvRecordMarshaller marshaller;
     private final String id;
-    private int pollRate;
     private final CharStreamer streamer;
 
     public DelimitedSource(RowProcessor processor, File inputFile, String id) {
@@ -44,10 +44,11 @@ public class DelimitedSource implements EventSource {
         this.marshaller = new CsvRecordMarshaller(processor);
         this.streamer = CharStreamer.stream(inputFile, marshaller);
     }
-    
-    public DelimitedSource pollRate(int pollRate){
-        this.pollRate = pollRate;
-        return this;
+
+    public DelimitedSource(RowProcessor processor, Reader reader, String id) {
+        this.id = id;
+        this.marshaller = new CsvRecordMarshaller(processor);
+        this.streamer = CharStreamer.stream(reader, marshaller);
     }
 
     @Override

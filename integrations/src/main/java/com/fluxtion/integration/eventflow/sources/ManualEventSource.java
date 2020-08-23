@@ -19,6 +19,8 @@ package com.fluxtion.integration.eventflow.sources;
 
 import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventSource;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -30,6 +32,9 @@ public class ManualEventSource implements EventSource{
 
     private final String id;
     private EventConsumer target;
+    private boolean cacheEventsBeforeStart = true;
+    private List cacheEvents = new ArrayList();
+
 
     public ManualEventSource(String id) {
         this.id = id;
@@ -43,10 +48,26 @@ public class ManualEventSource implements EventSource{
     @Override
     public void start(EventConsumer target) {
         this.target = target;
+        if(cacheEventsBeforeStart && !cacheEvents.isEmpty()){
+            cacheEvents.forEach(this::publishToFlow);
+        }
+        cacheEvents.clear();
     }
 
     public void publishToFlow(Object event){
-        target.processEvent(event);
+        if(target==null && cacheEventsBeforeStart){
+            cacheEvents.add(event);
+        }else{
+            target.processEvent(event);
+        }
     }
 
+    public boolean cacheEventsBeforeStart() {
+        return cacheEventsBeforeStart;
+    }
+
+    public void cacheEventsBeforeStart(boolean cacheEventsBeforeStart) {
+        this.cacheEventsBeforeStart = cacheEventsBeforeStart;
+    }
+    
 }

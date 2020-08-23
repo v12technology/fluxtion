@@ -57,7 +57,7 @@ public class EventFlowManagerTest {
                 .source(new DelimitedSource(new DataEventCsvDecoder0(), new File("src/test/data/data1.csv"), "data-1"))
                 //                .source(new EventSourceImpl("src-1"))
                 //                .source(new EventSourceImpl("src-2"))
-                .pipeline(new ConsoleFilter())
+                .first(new ConsoleFilter())
                 .start();
     }
 
@@ -65,8 +65,8 @@ public class EventFlowManagerTest {
     public void testReader() throws FileNotFoundException, IOException, InterruptedException {
         File testFile = folder.newFile("EventFlowManagerTest_testReader.csv");
         EventFlow flow = new EventFlow()
-                .source(new DelimitedPullSource(new FileReader(testFile), new DataEventCsvDecoder0(), "data-1"))
-                .pipeline(new Log4j2Filter())
+                .source(new DelimitedPullSource(new DataEventCsvDecoder0(), new FileReader(testFile), "data-1"))
+                .first(new Log4j2Filter())
                 .start();
 //        Thread.sleep(100);
         String part1 = "id,name\n"
@@ -96,8 +96,8 @@ public class EventFlowManagerTest {
         PipedWriter writer = new PipedWriter(reader);
         LongAdder count = new LongAdder();
         EventFlow.PipelineBuilder builder = new EventFlow()
-                .source(new DelimitedPullSource(reader, new DataEventCsvDecoder0(), "data-1"))
-                .pipeline(new PipelineFilter() {
+                .source(new DelimitedPullSource(new DataEventCsvDecoder0(), reader, "data-1"))
+                .first(new PipelineFilter() {
                     @Override
                     public void processEvent(Object o) {
 //                        log.info("received:{}", o);

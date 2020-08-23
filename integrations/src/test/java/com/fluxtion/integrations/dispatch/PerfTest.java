@@ -39,8 +39,8 @@ public class PerfTest {
         PipedWriter writer = new PipedWriter(reader);
         LongAdder count = new LongAdder();
         EventFlow.PipelineBuilder builder = new EventFlow()
-                .source(new DelimitedPullSource(reader, new DataEventCsvDecoder0(), "data-1"))
-                .pipeline(new PipelineFilter() {
+                .source(new DelimitedPullSource(new DataEventCsvDecoder0(), reader, "data-1"))
+                .first(new PipelineFilter() {
                     @Override
                     public void processEvent(Object o) {
 //                        log.info("received:{}", o);

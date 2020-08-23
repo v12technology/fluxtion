@@ -17,7 +17,9 @@
  */
 package com.fluxtion.integration.eventflow;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.RegisterEventHandler;
+import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -108,12 +110,13 @@ public class EventFlow {
     }
 
     /**
-     * Set the thread dispatch strategy that routes events from
+     * Set the thread dispatch strategy that routes events from sources to pipeline
      */
     public void setThreadDispatcher() {
+        throw new UnsupportedOperationException("configurable dispatch strategy not supported");
     }
 
-    public PipelineBuilder pipeline(PipelineFilter firstFilter) {
+    public PipelineBuilder first(PipelineFilter firstFilter) {
         lastStage = dispatcherFilter.next(firstFilter);
         return pipelineBuilder;
     }
@@ -168,6 +171,11 @@ public class EventFlow {
             return this;
         }
         
+        public <S extends StaticEventProcessor> PipelineBuilder next(S filter) {
+            next(SepEventPublisher.of(filter));
+            return this;
+        }
+        
         public EventFlow start(){
             return EventFlow.this.start();
         }
@@ -182,9 +190,9 @@ public class EventFlow {
     }
 
     private void teardownPipeline() {
-        log.info("pipeline start begin");
+        log.info("pipeline stop begin");
         pipeline.stop();
-        log.info("pipeline start end");
+        log.info("pipeline stop end");
     }
 
     private void initSources() {

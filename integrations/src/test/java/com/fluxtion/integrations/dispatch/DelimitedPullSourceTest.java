@@ -64,7 +64,7 @@ public class DelimitedPullSourceTest {
         LongAdder count = new LongAdder();
         DataEvent[] store = new DataEvent[10];
 
-        DelimitedPullSource pullSource = new DelimitedPullSource(reader, new DataEventCsvDecoder0(), "push1");
+        DelimitedPullSource pullSource = new DelimitedPullSource(new DataEventCsvDecoder0(), reader, "push1");
         pullSource.init();
         pullSource.start((o) -> {
             store[count.intValue()] = (DataEvent) o;

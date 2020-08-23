@@ -19,6 +19,7 @@ package com.fluxtion.integration.eventflow;
 
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
@@ -54,9 +55,9 @@ public class Pipeline {
 
     public Pipeline stop() {
         log.info("stopping pipeline");
-        for (int i = sortedFilters.size(); i-- > 0;) {
-            sortedFilters.get(i).stopHandler();
-        }
+        Collections.reverse(sortedFilters);
+        sortedFilters.forEach(PipelineFilter::stopHandler);
+        Collections.reverse(sortedFilters);
         log.info("stopped pipeline");
         return this;
     }

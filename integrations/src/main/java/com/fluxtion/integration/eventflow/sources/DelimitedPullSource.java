@@ -40,7 +40,7 @@ public class DelimitedPullSource implements EventQueueSource {
     private final CharEvent charEvent;
     private final Reader reader;
 
-    public DelimitedPullSource(Reader reader, RowProcessor processor, String id) {
+    public DelimitedPullSource(RowProcessor processor, Reader reader, String id) {
         this.marshaller = new CsvRecordMarshaller(processor);
         this.id = id;
         this.reader = reader;

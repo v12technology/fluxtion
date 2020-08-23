@@ -31,7 +31,7 @@ public class EventFlowTest {
     @Test
     public void simpleFlow() {
         ManualEventSource eventInjector = new ManualEventSource("manualSource1");
-        EventFlow.flow(eventInjector).pipeline(new ConsoleFilter()).start();
+        EventFlow.flow(eventInjector).first(new ConsoleFilter()).start();
         eventInjector.publishToFlow("hello world");
     }
 }

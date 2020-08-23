@@ -82,13 +82,15 @@ public class CharReader extends PipelineFilter implements CharProcessor, StaticE
     }
 
     @Override
-    protected void initHandler() {
+    protected void startHandler() {
         try {
             streamer.noInit().noTeardown().stream();
         } catch (IOException ex) {
             log.error("porblem while streaming from reader", ex);
         }
     }
+    
+    
     
     
     
