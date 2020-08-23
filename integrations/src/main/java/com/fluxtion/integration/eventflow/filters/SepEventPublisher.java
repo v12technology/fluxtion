@@ -46,7 +46,7 @@ public class SepEventPublisher extends PipelineFilter {
 
     @Override
     protected void stopHandler() {
-        log.info("stop filter:{}", getClass().getSimpleName());
+        log.info("stop sep:'{}'", target.getClass().getSimpleName());
         if (target instanceof Lifecycle) {
             ((Lifecycle) target).tearDown();
         }
@@ -54,7 +54,7 @@ public class SepEventPublisher extends PipelineFilter {
 
     @Override
     protected void initHandler() {
-        log.info("init filter:{}", getClass().getSimpleName());
+        log.info("init sep:'{}'", target.getClass().getSimpleName());
         if (target instanceof Lifecycle) {
             ((Lifecycle) target).init();
         }
