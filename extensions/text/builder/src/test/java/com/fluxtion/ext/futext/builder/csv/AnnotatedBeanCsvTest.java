@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
@@ -28,6 +29,9 @@ import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
+import com.fluxtion.generator.compiler.InprocessSepCompiler;
+import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,7 +101,10 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
     
     @Test
     public void testCustomFieldMarshaller() throws IOException{
-        RowProcessor<MarshallerCustomised> processor = buildRowProcessor(MarshallerCustomised.class, pckName());
+        RowProcessor<MarshallerCustomised> processor = buildRowProcessor(MarshallerCustomised.class, 
+                pckName(), 
+                DirOptions.TEST_DIR_OUTPUT
+        );
         StringBuilder sb = new StringBuilder();
         MarshallerCustomised instance = new MarshallerCustomised();
         instance.setStringValue("hello");
@@ -175,7 +182,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
     }
     
     @Data
-    @CsvMarshaller(packageName = "")
+    @CsvMarshaller()
     public static class MarshallerCustomised{
         
         @ConvertToCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#marshall")
