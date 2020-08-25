@@ -88,6 +88,15 @@ public class CsvToBeanBuilder {
                 .build();
     }
 
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass, String packageName, DirOptions dirOption) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation==null?1:annotation.headerLines();
+        return CsvToBeanBuilder.nameSpace(packageName)
+                .dirOption(dirOption)
+                .builder(csvClass, headerLines)
+                .build();
+    }
+
     /**
      * Add event publisher
      *
