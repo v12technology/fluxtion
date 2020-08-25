@@ -21,12 +21,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,9 +65,10 @@ public class CharStreamer {
     private final StaticEventProcessor handler;
     private boolean init = true;
     private final File inputFile;
-    private final Reader inputStream;
+    private Reader inputStream;
     private boolean tearDown = true;
     private boolean eof = true;
+    private AtomicBoolean terminateAtEof = new AtomicBoolean(true);
 
     private CharStreamer(StaticEventProcessor handler, Reader input) {
         this.handler = handler;
@@ -107,20 +112,35 @@ public class CharStreamer {
         return this;
     }
 
+    public CharStreamer pollForever() {
+        this.terminateAtEof.set(false);
+        return this;
+    }
+
+    public CharStreamer terminateAtEof() {
+        this.terminateAtEof.set(true);
+        return this;
+    }
+
+    private CountDownLatch stopLatch = new CountDownLatch(0);
+
+    public void shutDown() throws InterruptedException {
+        terminateAtEof();
+        if (!stopLatch.await(5, TimeUnit.SECONDS)) {
+            System.err.println("CharStreamer problem shutting down the input source within 5 seconds");
+        };
+    }
+
     public void stream() throws IOException {
+        stopLatch = new CountDownLatch(1);
         if (init && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
         if (asynch) {
-            ReadEventFactory factory = new ReadEvent.ReadEventFactory();
             int bufferSize = 16;
-//            disruptor = new Disruptor<>(factory, bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BlockingWaitStrategy());
-            disruptor = new Disruptor<>(factory, bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
-            disruptor.handleEventsWith(new com.lmax.disruptor.EventHandler<ReadEvent>() {
-                @Override
-                public void onEvent(ReadEvent event, long sequence, boolean endOfBatch) throws Exception {
-                    event.pushToHandler(handler);
-                }
+            disruptor = new Disruptor<>(new ReadEvent.ReadEventFactory(), bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
+            disruptor.handleEventsWith((ReadEvent event, long sequence, boolean endOfBatch) -> {
+                event.pushToHandler(handler);
             });
             disruptor.start();
             if (inputFile == null) {
@@ -145,18 +165,23 @@ public class CharStreamer {
 
     private void streamAsyncFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
-            FileChannel fileChannel = new FileInputStream(inputFile).getChannel();
-            long size = Math.min(inputFile.length(), 500_000_000);
+            if (terminateAtEof.get()) {
+                inputStream = Files.newBufferedReader(inputFile.toPath());
+                streamAsyncReader();
+            } else {
+                FileChannel fileChannel = new FileInputStream(inputFile).getChannel();
+                long size = Math.min(inputFile.length(), 500_000_000);
 //                long size = Math.min(inputFile.length(), Integer.MAX_VALUE-1);
-            mappedBuffer = fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY, 0, size);
+                mappedBuffer = fileChannel.map(
+                        FileChannel.MapMode.READ_ONLY, 0, size);
 
-            RingBuffer<ReadEvent> ringBuffer = disruptor.getRingBuffer();
-            final EventTranslatorChannel eventXlator = new EventTranslatorChannel();
-            while (!eventXlator.eof) {
-                ringBuffer.publishEvent(eventXlator);
+                RingBuffer<ReadEvent> ringBuffer = disruptor.getRingBuffer();
+                final EventTranslatorChannel eventXlator = new EventTranslatorChannel();
+                while (!eventXlator.eof) {
+                    ringBuffer.publishEvent(eventXlator);
+                }
+                disruptor.shutdown();
             }
-            disruptor.shutdown();
         }
     }
 
@@ -178,7 +203,7 @@ public class CharStreamer {
             String readLine = "";
             if (handler instanceof CharProcessor) {
                 CharProcessor charHandler = (CharProcessor) handler;
-                while ((readLine = rd.readLine()) != null) {
+                while ((readLine = rd.readLine()) != null | !terminateAtEof.get()) {
                     for (char c : readLine.toCharArray()) {
                         charEvent.setCharacter(c);
                         charHandler.handleEvent(charEvent);
@@ -187,7 +212,7 @@ public class CharStreamer {
                     charHandler.handleEvent(charEvent);
                 }
             } else {
-                while ((readLine = rd.readLine()) != null) {
+                while ((readLine = rd.readLine()) != null | !terminateAtEof.get()) {
                     for (char c : readLine.toCharArray()) {
                         charEvent.setCharacter(c);
                         handler.onEvent(charEvent);
@@ -197,11 +222,12 @@ public class CharStreamer {
                 }
             }
         }
+        stopLatch.countDown();
     }
 
     private void streamFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
-            if (inputFile.length() < Integer.MAX_VALUE) {
+            if (inputFile.length() < Integer.MAX_VALUE || !terminateAtEof.get()) {
                 try (FileChannel fileChannel = new FileInputStream(inputFile).getChannel()) {
                     long size = inputFile.length();
                     MappedByteBuffer buffer = fileChannel.map(
@@ -221,7 +247,9 @@ public class CharStreamer {
                     }
                 }
             } else {
-                streamFileLarge();
+//                streamFileLarge();
+                inputStream = Files.newBufferedReader(inputFile.toPath());
+                streamSyncReader();
             }
         } else {
             throw new FileNotFoundException("cannot locate file:" + inputFile.getAbsolutePath());
@@ -231,14 +259,31 @@ public class CharStreamer {
     private void streamSyncReader() throws IOException {
         boolean eof = false;
         ReadEvent event = new ReadEvent(4096);
-        while (!eof) {
-            int readCount = inputStream.read(event.array);
-            event.setLimit(readCount);
-            if (readCount < 0) {
-                eof = true;
+        if (handler instanceof CharProcessor) {
+            CharProcessor charHandler = (CharProcessor) handler;
+            while (!eof) {
+                int readCount = inputStream.read(event.array);
+                event.setLimit(readCount);
+                if (readCount < 0) {
+                    eof = terminateAtEof.get();
+                    event.pushToHandler(handler);
+                } else if (readCount > 0) {
+                    event.pushToHandler(charHandler);
+                }
             }
-            event.pushToHandler(handler);
+        } else {
+            while (!eof) {
+                int readCount = inputStream.read(event.array);
+                event.setLimit(readCount);
+                if (readCount < 0) {
+                    eof = terminateAtEof.get();
+                    event.pushToHandler(handler);
+                } else if (readCount > 0) {
+                    event.pushToHandler(handler);
+                }
+            }
         }
+        stopLatch.countDown();
     }
 
     public CharStreamer teardown() {
@@ -286,7 +331,7 @@ public class CharStreamer {
                 int readCount = inputStream.read(event.array);
                 event.setLimit(readCount);
                 if (readCount < 0) {
-                    eof = true;
+                    eof = terminateAtEof.get();
                 }
             } catch (IOException ex) {
                 Logger.getLogger(CharStreamer.class.getName()).log(Level.SEVERE, null, ex);
