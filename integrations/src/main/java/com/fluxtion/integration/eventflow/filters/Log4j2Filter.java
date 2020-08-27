@@ -19,6 +19,7 @@ package com.fluxtion.integration.eventflow.filters;
 
 import com.fluxtion.integration.eventflow.PipelineFilter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 
@@ -31,6 +32,7 @@ import org.apache.logging.log4j.Level;
  */
 @Log4j2
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class Log4j2Filter extends PipelineFilter {
 
     private Level logLevel = Level.INFO;

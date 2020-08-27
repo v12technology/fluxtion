@@ -30,7 +30,8 @@ import lombok.extern.log4j.Log4j2;
 /**
  * Integrates a {@link RowProcessor} into an {@link Pipeline}. Processes
  * {@link CharEvent}'s with a registered RowProcessor, when a parse for an
- * instance is complete the Marshalled instance will propagate to the next
+ * instance is complete the Marshalled instance will propagate the marshalled as
+ * an instance to the next
  * handler.
  *
  * @author Greg Higgins greg.higgins@v12technology.com

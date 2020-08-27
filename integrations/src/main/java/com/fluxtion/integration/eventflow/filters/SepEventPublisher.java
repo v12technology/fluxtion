@@ -27,9 +27,11 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Pushes events published by a {@link StaticEventProcessor} along the filter
- * chain. The registered SEP must accept event subscribers by listening to 
+ * Propagates events into a StaticEventProcessor as part of the pipeline. If the
+ * StaticEventProcessor generates events they can be propagated along the filter
+ * chain. The registered SEP must accept event subscribers by listening to
  * {@link RegisterEventHandler} events.
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Data(staticConstructor = "of")
@@ -59,10 +61,10 @@ public class SepEventPublisher extends PipelineFilter {
         if (target instanceof Lifecycle) {
             ((Lifecycle) target).init();
         }
-        if(propagate){
+        if (propagate) {
             log.info("registering a propagation endpoint to push events along the pipeline");
             target.onEvent(new RegisterEventHandler(this::propagate));
-        }else{
+        } else {
             log.info("No propagation along the pipeline, all events will be consumed");
         }
     }

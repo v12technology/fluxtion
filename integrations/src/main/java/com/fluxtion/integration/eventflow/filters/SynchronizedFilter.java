@@ -22,7 +22,8 @@ import com.fluxtion.integration.eventflow.PipelineFilter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Acts as a thread synchronisation point in a {@link Pipeline}
+ * Acts as a thread synchronisation point in a {@link Pipeline}. Multiple filters
+ * on different can safely feed into this filter.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
