@@ -20,6 +20,12 @@ package com.fluxtion.integration.eventflow;
 import com.fluxtion.api.lifecycle.Lifecycle;
 
 /**
+ * An EventSource that is polled by an external agent for any events to publish
+ * to a supplied {@link EventConsumer}. The event consumer is provided in the {@link #start(com.fluxtion.integration.eventflow.EventConsumer)
+ * }
+ * callback. if the source has no events to send then it returns from the {@link #poll()
+ * } call without invoking {@link EventConsumer#processEvent(java.lang.Object)
+ * }.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>

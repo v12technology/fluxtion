@@ -21,13 +21,18 @@ import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * A pipeline is made up of multiple {@link PipelineFilter} stages. The pipeline
- * supports multiplexing with the {@link PipelineStatge#merge(com.fluxtion.integration.dispatch.Pipeline.PipelineStatge)
- * } operation.
+ * A pipeline is made up of multiple {@link PipelineFilter} stages, an event
+ * flows from an entry point along the pipeline. A pipeline is built up by
+ * calling {@link #entry(com.fluxtion.integration.eventflow.PipelineFilter)
+ * } and then adding stages with {@link PipelineStatge#next(com.fluxtion.integration.eventflow.PipelineFilter)
+ * }. The pipeline supports multiplexing with the {@link PipelineStatge#merge(com.fluxtion.integration.dispatch.Pipeline.PipelineStatge)
+ * } operation. A pipeline is started and stopped, invoking the lifecycle
+ * methods in the managed {@link PipelineFilter}'s.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
@@ -63,6 +68,10 @@ public class Pipeline {
 //        Collections.reverse(sortedFilters);
         log.info("stopped pipeline");
         return this;
+    }
+    
+    public void forEachFilter(Consumer<PipelineFilter> consumer){
+        sortedFilters.forEach(consumer);
     }
 
     private void sortTopologically(PipelineStatge stage) {

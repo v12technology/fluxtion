@@ -41,6 +41,7 @@ public class ForwardingSep implements StaticEventProcessor, Lifecycle{
     
     @Override
     public void onEvent(Object e) {
+        log.debug("processing event:'{}'", e);
         if(e instanceof RegisterEventHandler){
             publisher.registerEventHandler((RegisterEventHandler) e);
         }else{

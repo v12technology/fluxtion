@@ -18,7 +18,7 @@
 package com.fluxtion.integration.eventflow;
 
 /**
- *
+ * Functional interface defining consumption of an event.
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */

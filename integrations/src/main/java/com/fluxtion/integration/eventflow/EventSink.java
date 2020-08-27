@@ -20,10 +20,12 @@ package com.fluxtion.integration.eventflow;
 import com.fluxtion.api.lifecycle.Lifecycle;
 
 /**
- * Consumes events and publishes
+ * Consumes events and publishes to an external endpoint. Events sent to an
+ * EventSink do not propagate along the pipeline.
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public interface EventPublisher extends Lifecycle {
+public interface EventSink extends Lifecycle {
 
     /**
      * A unique identifier for this {@link EventSource}
@@ -31,8 +33,16 @@ public interface EventPublisher extends Lifecycle {
      * @return identifier
      */
     String id();
-    
+
     void publish(Object o);
-    
+
     boolean publishSync(Object o);
+
+    @Override
+    default void tearDown(){}
+
+    @Override
+    default void init(){}
+    
+    
 }

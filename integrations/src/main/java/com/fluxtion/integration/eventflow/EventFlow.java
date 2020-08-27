@@ -32,6 +32,10 @@ import java.util.function.Predicate;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Joins a {@link Pipeline} to {@link EventSource}'s and {@link EventSink}.
+ *
+ * An event flow can have multiple EventSources feeding into single pipeline.
+ * The
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
@@ -42,15 +46,15 @@ public class EventFlow {
     private Pipeline.PipelineStatge<PipelineFilter> lastStage;
     private final Pipeline pipeline;
 
-    private PipelineBuilder pipelineBuilder;
+    private final PipelineBuilder pipelineBuilder;
     private final LinkedHashMap<String, EventSource> sourceMap;
     private final LinkedHashMap<String, EventQueueSource> queueSourceMap;
-    private final LinkedHashMap<String, EventPublisher> publisherMap;
+    private final LinkedHashMap<String, EventSink> publisherMap;
     private final List startedInstances;
     private SynchronizedFilter defaultDispatcher;
-    private AtomicBoolean runReaderThread;
+    private final AtomicBoolean runReaderThread;
     private ReaderThread readerThread;
-    private static LongAdder count = new LongAdder();
+    private static final LongAdder count = new LongAdder();
 
     private enum State {
         STARTED, STOPPED, INIT
@@ -146,13 +150,13 @@ public class EventFlow {
      * @param identifier
      * @return
      */
-    public EventFlow publisher(EventPublisher publisher, String identifier) {
+    public EventFlow publisher(EventSink publisher, String identifier) {
         String id = identifier == null ? publisher.id() : identifier;
         publisherMap.put(id, publisher);
         return this;
     }
 
-    public EventFlow publisher(EventPublisher publisher) {
+    public EventFlow publisher(EventSink publisher) {
         return publisher(publisher, null);
     }
 
@@ -222,6 +226,16 @@ public class EventFlow {
             return this;
         }
 
+        public PipelineBuilder publisher(EventSink publisher, String identifier) {
+            EventFlow.this.publisher(publisher, identifier);
+            return this;
+        }
+
+        public PipelineBuilder publisher(EventSink publisher) {
+            EventFlow.this.publisher(publisher, null);
+            return this;
+        }
+
         public EventFlow start() {
             return EventFlow.this.start();
         }
@@ -229,7 +243,7 @@ public class EventFlow {
         public EventFlow stop() {
             return EventFlow.this.stop();
         }
-        
+
     }
 
     private void startPipeline() {
@@ -307,13 +321,13 @@ public class EventFlow {
 
     private void startPublishers() {
         log.info("start publishers begin");
-        publisherMap.forEach((String id, EventPublisher con) -> {
-            if (startedInstances.contains(con)) {
+        publisherMap.forEach((String id, EventSink sink) -> {
+            if (startedInstances.contains(sink)) {
                 log.info("eventPublisher:'{}' already started", id);
             } else {
                 log.info("starting eventPublisher:'{}'", id);
-                con.init();
-                defaultDispatcher.processEvent(new RegisterEventHandler(con::publish));
+                sink.init();
+                pipeline.forEachFilter(p -> p.registeEventSink(sink));
             }
         });
         log.info("start publishers end");
@@ -321,7 +335,7 @@ public class EventFlow {
 
     private void teardownPublishers() {
         log.info("teardown publishers begin");
-        publisherMap.forEach((String id, EventPublisher con) -> {
+        publisherMap.forEach((String id, EventSink con) -> {
             log.info("teardown eventPublisher:'{}'", id);
             con.tearDown();
         });

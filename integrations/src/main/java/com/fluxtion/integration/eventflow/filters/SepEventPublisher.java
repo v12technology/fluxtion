@@ -20,6 +20,7 @@ package com.fluxtion.integration.eventflow.filters;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.integration.eventflow.EventSink;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 
 import lombok.Data;
@@ -55,6 +56,13 @@ public class SepEventPublisher extends PipelineFilter {
         }
     }
 
+    @Override
+    protected void registeEventSink(EventSink sink) {
+        super.registeEventSink(sink);
+        log.info("registering EventSink id:'{}' with sep:'{}'", sink.id(), target.getClass().getSimpleName());
+        target.onEvent(new RegisterEventHandler(sink::publish));
+    }
+    
     @Override
     protected void initHandler() {
         log.info("init sep:'{}'", target.getClass().getSimpleName());

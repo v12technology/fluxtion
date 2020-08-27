@@ -25,6 +25,7 @@ import com.fluxtion.integration.eventflow.EventSource;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
 import com.fluxtion.integration.eventflow.filters.Log4j2Filter;
+import com.fluxtion.integration.eventflow.sinks.ConsoleSink;
 import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
 import com.fluxtion.integration.eventflow.sources.DelimitedSource;
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
@@ -153,6 +154,29 @@ public class EventFlowManagerTest {
         flow.stop();
     }
 
+    //TODO: complete test
+    @Test
+    public void testPipelinePublish() {
+        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(injector)
+                .peek(System.out::println)
+                .map(i -> "transfomred = " + i)
+                .peek(System.out::println)
+                .next(new ForwardingSep())
+                .publisher(new ConsoleSink())
+                .start();
+//        assertThat(audit, contains("f2", "f1", "f2", "f1"));
+//        //send event
+//        audit.clear();
+        injector.publishToFlow("e1");
+//        assertThat(audit, contains("f1", "e1", "f2", "e1"));
+//        //stop
+//        audit.clear();
+        flow.stop();
+//        assertThat(audit, contains("f1", "f2"));
+    } 
+    
     @Test
     public void testAsyncPushReader() throws FileNotFoundException, IOException, InterruptedException {
         PipedReader reader = new PipedReader();
