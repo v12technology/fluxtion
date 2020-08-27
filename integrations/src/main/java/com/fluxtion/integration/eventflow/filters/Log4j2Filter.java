@@ -18,19 +18,28 @@
 package com.fluxtion.integration.eventflow.filters;
 
 import com.fluxtion.integration.eventflow.PipelineFilter;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
 
 /**
- * A terminal operation 
+ * Logs the event using Log4j2, and propagates to the next
+ * {@link PipelineFilter}. The logging level is configurable with {@link #setLogLevel(org.apache.logging.log4j.Level)
+ * }, default value is info.
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class Log4j2Filter extends PipelineFilter{
+@Data
+public class Log4j2Filter extends PipelineFilter {
+
+    private Level logLevel = Level.INFO;
 
     @Override
     public void processEvent(Object o) {
         log.info(o);
+        log.log(logLevel, o);
         propagate(o);
     }
-    
+
 }

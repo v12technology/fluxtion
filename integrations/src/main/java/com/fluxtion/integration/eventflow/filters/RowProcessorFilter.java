@@ -28,7 +28,10 @@ import com.fluxtion.integration.eventflow.PipelineFilter;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Integrates a {@link RowProcessor} into an {@link Pipeline}
+ * Integrates a {@link RowProcessor} into an {@link Pipeline}. Processes
+ * {@link CharEvent}'s with a registered RowProcessor, when a parse for an
+ * instance is complete the Marshalled instance will propagate to the next
+ * handler.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
@@ -78,9 +81,6 @@ public class RowProcessorFilter extends PipelineFilter implements CharProcessor 
             marshaller.handleEvent(LogControlEvent.setLogService(validationLogger));
         }
         marshaller.handleEvent(new RegisterEventHandler(this::propagate));
-//        if (nextHandler != null) {
-//            marshaller.handleEvent(new RegisterEventHandler(nextHandler::processEvent));
-//        }
     }
 
     @Override

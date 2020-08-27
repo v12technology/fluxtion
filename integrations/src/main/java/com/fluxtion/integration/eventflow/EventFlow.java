@@ -21,14 +21,14 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
+import com.fluxtion.integration.eventflow.sources.AsynchEventSource;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.LockSupport;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -37,8 +37,9 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 public class EventFlow {
+
     private final Pipeline.PipelineStatge<SynchronizedFilter> dispatcherFilter;
-    private  Pipeline.PipelineStatge<PipelineFilter> lastStage;
+    private Pipeline.PipelineStatge<PipelineFilter> lastStage;
     private final Pipeline pipeline;
 
     private PipelineBuilder pipelineBuilder;
@@ -68,8 +69,8 @@ public class EventFlow {
         dispatcherFilter = pipeline.entry(defaultDispatcher);
         runReaderThread = new AtomicBoolean(false);
     }
-    
-    public static EventFlow flow(EventSource source){
+
+    public static EventFlow flow(EventSource source) {
         return new EventFlow().source(source);
     }
 
@@ -79,12 +80,12 @@ public class EventFlow {
                 log.error("Cannot start already in started state");
                 break;
             default: {
+                currentState = State.STARTED;
                 startedInstances.clear();
                 startPipeline();
                 initSources();
                 startPublishers();
                 startSources();
-                currentState = State.STARTED;
             }
         }
         return this;
@@ -97,7 +98,7 @@ public class EventFlow {
                 log.error("Cannot stop already in stopped state");
                 break;
             case INIT:
-                log.error("Cannot stop not yet state");
+                log.error("Cannot stop not yet started");
                 break;
             default: {
                 teardownSources();
@@ -110,7 +111,8 @@ public class EventFlow {
     }
 
     /**
-     * Set the thread dispatch strategy that routes events from sources to pipeline
+     * Set the thread dispatch strategy that routes events from sources to
+     * pipeline
      */
     public void setThreadDispatcher() {
         throw new UnsupportedOperationException("configurable dispatch strategy not supported");
@@ -119,6 +121,22 @@ public class EventFlow {
     public PipelineBuilder first(PipelineFilter firstFilter) {
         lastStage = dispatcherFilter.next(firstFilter);
         return pipelineBuilder;
+    }
+
+    public <S extends StaticEventProcessor> PipelineBuilder first(S filter) {
+        return first(SepEventPublisher.of(filter));
+    }
+
+    public <S extends EventConsumer> PipelineBuilder peek(S filter) {
+        return first(new PipelineFilter.Consumer(filter));
+    }
+
+    public <S extends Function> PipelineBuilder map(S filter) {
+        return first(new PipelineFilter.MapFunction(filter));
+    }
+
+    public <S extends Predicate> PipelineBuilder filter(S filter) {
+        return first(new PipelineFilter.PredicateFunction(filter));
     }
 
     /**
@@ -154,6 +172,14 @@ public class EventFlow {
         return source(source, null);
     }
 
+    public EventFlow sourceAsync(EventSource source) {
+        return source(new AsynchEventSource(source), null);
+    }
+
+    public EventFlow sourceAsync(EventSource source, String identifier) {
+        return source(new AsynchEventSource(source), identifier);
+    }
+
     public EventFlow source(EventQueueSource source, String identifier) {
         String id = identifier == null ? source.id() : identifier;
         queueSourceMap.put(id, source);
@@ -166,20 +192,44 @@ public class EventFlow {
 
     public class PipelineBuilder {
 
+        public <S extends PipelineFilter> PipelineBuilder id(String id) {
+            lastStage.id(id);
+            return this;
+        }
+
         public <S extends PipelineFilter> PipelineBuilder next(S filter) {
             lastStage = lastStage.next(filter);
             return this;
         }
-        
+
         public <S extends StaticEventProcessor> PipelineBuilder next(S filter) {
             next(SepEventPublisher.of(filter));
             return this;
         }
-        
-        public EventFlow start(){
+
+        public <S extends EventConsumer> PipelineBuilder peek(S filter) {
+            next(new PipelineFilter.Consumer(filter));
+            return this;
+        }
+
+        public <S extends Function> PipelineBuilder map(S filter) {
+            next(new PipelineFilter.MapFunction(filter));
+            return this;
+        }
+
+        public <S extends Predicate> PipelineBuilder filter(S filter) {
+            next(new PipelineFilter.PredicateFunction(filter));
+            return this;
+        }
+
+        public EventFlow start() {
             return EventFlow.this.start();
         }
 
+        public EventFlow stop() {
+            return EventFlow.this.stop();
+        }
+        
     }
 
     private void startPipeline() {
@@ -228,7 +278,7 @@ public class EventFlow {
             src.start(defaultDispatcher);
         });
         log.info("start sources end");
-        if(!queueSourceMap.isEmpty()){
+        if (!queueSourceMap.isEmpty()) {
             log.info("starting reader thread");
             runReaderThread.set(true);
             readerThread = new ReaderThread();
@@ -244,9 +294,11 @@ public class EventFlow {
         });
         log.info("teardown sources end");
         runReaderThread.set(false);
-        if(readerThread!=null){
+        if (readerThread != null) {
             try {
+                log.debug("waiting for reader thread to stop");
                 readerThread.join(5_000);
+                log.debug("reader thread stopped");
             } catch (InterruptedException ex) {
                 log.info("interrupted while waiting for reader thread to stop", ex);
             }
@@ -275,21 +327,20 @@ public class EventFlow {
         });
         log.info("teardown publishers end");
     }
-    
-    private class ReaderThread extends Thread{
 
-        
+    private class ReaderThread extends Thread {
+
         public ReaderThread() {
             super("sourceQueueReader-" + count.intValue());
             count.increment();
         }
-        
+
         @Override
         public void run() {
             log.info("starting reader thread");
             EventQueueSource[] sources = new EventQueueSource[queueSourceMap.size()];
             sources = queueSourceMap.values().toArray(sources);
-            while(runReaderThread.get()){
+            while (runReaderThread.get()) {
                 for (int i = 0; i < sources.length; i++) {
                     EventQueueSource source = sources[i];
                     source.poll();
@@ -303,8 +354,7 @@ public class EventFlow {
             }
             log.info("exiting reader thread");
         }
-    
-        
+
     }
 
 }

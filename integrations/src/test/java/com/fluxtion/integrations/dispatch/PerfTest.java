@@ -22,9 +22,10 @@ import com.fluxtion.integration.eventflow.PipelineFilter;
 import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
 import java.util.concurrent.atomic.LongAdder;
 import lombok.extern.log4j.Log4j2;
-import org.junit.Test;
 
 /**
  *

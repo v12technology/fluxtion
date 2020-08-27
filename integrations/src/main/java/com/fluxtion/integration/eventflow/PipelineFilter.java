@@ -19,6 +19,9 @@ package com.fluxtion.integration.eventflow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -30,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 public abstract class PipelineFilter implements EventConsumer {
 
     private final List<PipelineFilter> handlers;
+    private String id;
 
     public PipelineFilter() {
         this.handlers = new ArrayList<>();
@@ -50,22 +54,72 @@ public abstract class PipelineFilter implements EventConsumer {
         }
     }
 
+    public String id() {
+        return id==null?"noId":id;
+    }
+
+    public void id(String id) {
+        this.id = id;
+    }
+
     /**
      *
      * Override in subclass to execute init methods on the handler instance
      */
     protected void initHandler() {
-        log.info("init:'{}'", this.getClass().getSimpleName());
+        log.info("init filter id:'{}', type:'{}'", id(), this.getClass().getSimpleName());
     }
     
     protected void startHandler() {
-        log.info("start:'{}'", this.getClass().getSimpleName());
+        log.info("start filter id:'{}', type:'{}'", id(), this.getClass().getSimpleName());
     }
 
     /**
      * Override in subclass to execute stop methods on the handler instance
      */
     protected void stopHandler() {
-        log.info("stop pipeline filter:{}", this.getClass().getSimpleName());
+        log.info("stop filter id:'{}', type:'{}'", id(), this.getClass().getSimpleName());
+    }
+    
+    @Data
+    public static class MapFunction extends PipelineFilter{
+        
+        private final Function consumer;
+        
+        @Override
+        public void processEvent(Object o) {
+            Object result = consumer.apply(o);
+            if(result!=null){
+                propagate(result);
+            }
+        }
+    
+    }
+    
+    @Data
+    public static class Consumer extends PipelineFilter{
+        
+        private final EventConsumer consumer;
+        
+        @Override
+        public void processEvent(Object o) {
+            consumer.processEvent(o);
+            propagate(o);
+        }
+    
+    }
+    
+    @Data
+    public static class PredicateFunction extends PipelineFilter{
+        
+        private final Predicate consumer;
+        
+        @Override
+        public void processEvent(Object o) {
+            if(consumer.test(o)){
+                propagate(o);
+            }
+        }
+    
     }
 }

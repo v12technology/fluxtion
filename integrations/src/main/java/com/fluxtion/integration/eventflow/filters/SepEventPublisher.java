@@ -38,6 +38,7 @@ import lombok.extern.log4j.Log4j2;
 public class SepEventPublisher extends PipelineFilter {
 
     private final StaticEventProcessor target;
+    private boolean propagate = true;
 
     @Override
     public void processEvent(Object o) {
@@ -58,7 +59,12 @@ public class SepEventPublisher extends PipelineFilter {
         if (target instanceof Lifecycle) {
             ((Lifecycle) target).init();
         }
-        target.onEvent(new RegisterEventHandler(this::propagate));
+        if(propagate){
+            log.info("registering a propagation endpoint to push events along the pipeline");
+            target.onEvent(new RegisterEventHandler(this::propagate));
+        }else{
+            log.info("No propagation along the pipeline, all events will be consumed");
+        }
     }
 
 }

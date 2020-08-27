@@ -88,10 +88,6 @@ public class CharReader extends PipelineFilter implements CharProcessor, StaticE
         } catch (IOException ex) {
             log.error("porblem while streaming from reader", ex);
         }
-    }
-    
-    
-    
-    
+    } 
     
 }

@@ -18,6 +18,7 @@
 package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.integration.eventflow.EventFlow;
+import static com.fluxtion.integration.eventflow.EventFlow.flow;
 import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import org.junit.Test;
@@ -31,7 +32,17 @@ public class EventFlowTest {
     @Test
     public void simpleFlow() {
         ManualEventSource eventInjector = new ManualEventSource("manualSource1");
-        EventFlow.flow(eventInjector).first(new ConsoleFilter()).start();
+        EventFlow flow = flow(eventInjector)
+//                .first(new ConsoleFilter())
+                .peek(System.out::println)
+//                .map(i -> "TRANSFORMED -> "  + i )
+//                .peek(System.out::println)
+                .filter(String.class::isInstance)
+                .map(i -> "IS A STRING -> "  + i )
+                .peek(System.out::println)
+                .start();
         eventInjector.publishToFlow("hello world");
+        eventInjector.publishToFlow(111);
+        flow.stop();
     }
 }

@@ -18,17 +18,8 @@
 package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import com.fluxtion.ext.text.builder.util.StringDriver;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import com.fluxtion.integration.eventflow.filters.CharReader;
-import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
-import com.fluxtion.integration.eventflow.PipelineFilter;
-import com.fluxtion.integration.eventflow.Pipeline;
-import com.fluxtion.integration.eventflow.filters.RowProcessorFilter;
-import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import lombok.Data;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,34 +29,6 @@ import org.junit.Test;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class FileDispatchTest extends BaseSepInprocessTest {
-
-    @Test
-    public void testFileRead() throws FileNotFoundException {
-        Pipeline.build(CharReader.of(new FileReader("src/test/data/data1.csv")))
-                .next(RowProcessorFilter.of(DataEventCsvDecoder0.class))
-                .next(new ConsoleFilter())
-                .start()
-                .stop();
-
-    }
-
-    @Test
-    public void testGatheringPipeline() {
-        Pipeline pipe = new Pipeline();
-        ForwardingSep sampleSep = new ForwardingSep();
-        PipelineFilter csvDecoder = RowProcessorFilter.of(DataEventCsvDecoder0.class);
-        pipe.entry(csvDecoder)
-                .merge(pipe.entry(SepEventPublisher.of(sampleSep)))
-                .next(new ConsoleFilter());      
-        pipe.start();        
-
-        sampleSep.onEvent("helloworld");
-        String input = DataEventCsvDecoder0.csvHeader() + "\n"
-                + "1,tom\n"
-                + "21,fred\n"
-                + "346,dfgfgfgf\n";
-        StringDriver.streamChars(input, csvDecoder::processEvent);
-    }
     
     @Test
     @Ignore
@@ -73,6 +36,7 @@ public class FileDispatchTest extends BaseSepInprocessTest {
         CsvToBeanBuilder.nameSpace("com.fluxtion.integrations.dispatch")
                 .dirOption(InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT)
                 .builder(DataEvent.class, 1)
+                .reuseTarget(false)
                 .build();
     }
 

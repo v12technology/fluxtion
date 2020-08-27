@@ -33,22 +33,27 @@ import lombok.extern.log4j.Log4j2;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class DelimitedSource implements EventSource {
+public class DelimitedSource<T> implements EventSource<T> {
 
     private final CsvRecordMarshaller marshaller;
     private final String id;
     private final CharStreamer streamer;
 
-    public DelimitedSource(RowProcessor processor, File inputFile, String id) {
+    public DelimitedSource(RowProcessor<T> processor, File inputFile, String id) {
         this.id = id;
         this.marshaller = new CsvRecordMarshaller(processor);
         this.streamer = CharStreamer.stream(inputFile, marshaller);
     }
 
-    public DelimitedSource(RowProcessor processor, Reader reader, String id) {
+    public DelimitedSource(RowProcessor<T> processor, Reader reader, String id) {
         this.id = id;
         this.marshaller = new CsvRecordMarshaller(processor);
         this.streamer = CharStreamer.stream(reader, marshaller);
+    }
+    
+    public DelimitedSource<T> pollForever(){
+        streamer.pollForever();
+        return this;
     }
 
     @Override
@@ -62,9 +67,9 @@ public class DelimitedSource implements EventSource {
     }
 
     @Override
-    public void start(EventConsumer target) {
+    public void start(EventConsumer<T> target) {
         try {
-            marshaller.handleEvent(new RegisterEventHandler(target::processEvent));
+            marshaller.handleEvent(new RegisterEventHandler(o -> target.processEvent((T) o)));
             streamer.sync().stream();
         } catch (IOException ex) {
             log.error("problem streaming file", ex);
@@ -73,6 +78,11 @@ public class DelimitedSource implements EventSource {
 
     @Override
     public void tearDown() {
+        try {
+            streamer.shutDown();
+        } catch (InterruptedException ex) {
+            log.info("problem stopping event source input", ex);
+        }
         marshaller.tearDown();
     }
 

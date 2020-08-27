@@ -20,8 +20,9 @@ package com.fluxtion.integration.eventflow;
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
+ * @param <T>
  */
-public interface EventConsumer {
+public interface EventConsumer<T> {
 
-    void processEvent(Object o);
+    void processEvent(T o);
 }

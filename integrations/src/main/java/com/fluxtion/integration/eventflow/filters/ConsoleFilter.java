@@ -20,7 +20,8 @@ package com.fluxtion.integration.eventflow.filters;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 
 /**
- * A terminal operation 
+ * Dumps the received event to console and propagates to the next Filter.
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ConsoleFilter extends PipelineFilter{
@@ -28,6 +29,7 @@ public class ConsoleFilter extends PipelineFilter{
     @Override
     public void processEvent(Object o) {
         System.out.println(o);
+        propagate(o);
     }
     
 }

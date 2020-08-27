@@ -122,6 +122,7 @@ public class DataEventCsvDecoder0 implements RowProcessor<DataEvent> {
   }
 
   private boolean updateTarget() {
+    target = new DataEvent();
     try {
       updateFieldIndex();
       fieldIndex = fieldName_id;

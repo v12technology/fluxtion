@@ -19,24 +19,38 @@ package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventFlow;
+import com.fluxtion.integration.eventflow.EventFlow.PipelineBuilder;
+import static com.fluxtion.integration.eventflow.EventFlow.flow;
 import com.fluxtion.integration.eventflow.EventSource;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
 import com.fluxtion.integration.eventflow.filters.Log4j2Filter;
 import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
 import com.fluxtion.integration.eventflow.sources.DelimitedSource;
+import com.fluxtion.integration.eventflow.sources.ManualEventSource;
+import com.fluxtion.integration.eventflow.sources.TransformPullSource;
+import com.fluxtion.integration.eventflow.sources.TransformSource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-//import java.io.PipedReader;
-//import java.io.PipedWriter;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import org.junit.Assert;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -51,139 +65,172 @@ public class EventFlowManagerTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-//    @Test
-    public void testSimple() {
-        new EventFlow()
-                .source(new DelimitedSource(new DataEventCsvDecoder0(), new File("src/test/data/data1.csv"), "data-1"))
-                //                .source(new EventSourceImpl("src-1"))
-                //                .source(new EventSourceImpl("src-2"))
-                .first(new ConsoleFilter())
-                .start();
+    @Test
+    public void testStartStopSources() {
+        ArrayList started = new ArrayList();
+        List<String> audit = (List<String>) started;
+//        val src1 = new EventSourceImpl("src1");
+        PipelineBuilder flow = flow(new EventSourceImpl("src1"))
+                .source(new EventSourceImpl("src2"))
+                .peek(started::add);
+        assertTrue(started.isEmpty());
+        flow.start();
+        assertThat(audit, contains("src1", "src2"));
+        assertThat(audit, hasSize(2));
+        flow.stop();
+        assertThat(audit, hasSize(4));
+        assertThat(audit, contains("src1", "src2", "src1", "src2"));
     }
 
-//    @Test
-    public void testReader() throws FileNotFoundException, IOException, InterruptedException {
-        File testFile = folder.newFile("EventFlowManagerTest_testReader.csv");
+    @Test
+    public void transformPushSource() {
+        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(TransformSource.transform(injector, i -> "transform"))
+                .first(new TestFilter("f1", audit))
+                .start();
+        audit.clear();
+        injector.publishToFlow(1);
+        assertThat(audit, contains("f1", "transform"));
+        audit.clear();
+        injector.publishToFlow("e1");
+        assertThat(audit, contains("f1", "transform"));
+        flow.stop();
+    }
+
+    @Test
+    public void testPipeline() {
+        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(injector)
+                .first(new TestFilter("f1", audit))
+                .next(new TestFilter("f2", audit))
+                .start();
+        assertThat(audit, contains("f2", "f1", "f2", "f1"));
+        //send event
+        audit.clear();
+        injector.publishToFlow("e1");
+        assertThat(audit, contains("f1", "e1", "f2", "e1"));
+        //stop
+        audit.clear();
+        flow.stop();
+        assertThat(audit, contains("f1", "f2"));
+    }
+
+    @Test
+    public void filterPipeline() {
+        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(injector)
+                .first(new TestFilter("f1", audit))
+                .filter(String.class::isInstance)
+                .next(new TestFilter("f2", audit))
+                .start();
+        audit.clear();
+        injector.publishToFlow(1);
+        assertThat(audit, contains("f1", "1"));
+        audit.clear();
+        injector.publishToFlow("e1");
+        assertThat(audit, contains("f1", "e1", "f2", "e1"));
+        flow.stop();
+    }
+
+    @Test
+    public void mapPipeline() {
+        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(injector)
+                .first(new TestFilter("f1", audit))
+                .map(i -> "transformed")
+                .next(new TestFilter("f2", audit))
+                .start();
+        audit.clear();
+        injector.publishToFlow(1);
+        assertThat(audit, contains("f1", "1", "f2", "transformed"));
+        audit.clear();
+        injector.publishToFlow("e1");
+        assertThat(audit, contains("f1", "e1", "f2", "transformed"));
+        flow.stop();
+    }
+
+    @Test
+    public void testAsyncPushReader() throws FileNotFoundException, IOException, InterruptedException {
+        PipedReader reader = new PipedReader();
+        PipedWriter writer = new PipedWriter(reader);
+        ArrayList audit = new ArrayList();
+        CountDownLatch latch = new CountDownLatch(2);
         EventFlow flow = new EventFlow()
-                .source(new DelimitedPullSource(new DataEventCsvDecoder0(), new FileReader(testFile), "data-1"))
-                .first(new Log4j2Filter())
+                .sourceAsync(new DelimitedSource(new DataEventCsvDecoder0(), reader, "data-1").pollForever())
+                .peek(audit::add).id("audit")
+                .peek(i -> latch.countDown()).id("countdown")
                 .start();
-//        Thread.sleep(100);
         String part1 = "id,name\n"
                 + "1,greg\n"
-                + "2,jo";
-
-        String part2 = "sie\n";
-        FileWriter writer = new FileWriter(testFile);
+                + "2,josie\n";
         writer.write(part1);
         writer.flush();
-        writer.write(part2);
-        writer.flush();
-
-        Thread.sleep(1);
-        for (int i = 0; i < 10; i++) {
-            writer.write(i + ",freddie\n");
-            writer.flush();
-            Thread.sleep(1);
-
+        if (!latch.await(1, TimeUnit.SECONDS)) {
+            Assert.fail("records not received within time window of 1 second");
+        } else {
+            assertThat((List<?>)audit, hasSize(2));
         }
+        reader.close();
+        writer.close();
         flow.stop();
     }
-
-//    @Test
-    public void testPipedReader() throws FileNotFoundException, IOException, InterruptedException {
+    @Test
+    public void testPullReader() throws FileNotFoundException, IOException, InterruptedException {
         PipedReader reader = new PipedReader();
         PipedWriter writer = new PipedWriter(reader);
-        LongAdder count = new LongAdder();
-        EventFlow.PipelineBuilder builder = new EventFlow()
+        ArrayList audit = new ArrayList();
+        CountDownLatch latch = new CountDownLatch(2);
+        EventFlow flow = new EventFlow()
                 .source(new DelimitedPullSource(new DataEventCsvDecoder0(), reader, "data-1"))
-                .first(new PipelineFilter() {
-                    @Override
-                    public void processEvent(Object o) {
-//                        log.info("received:{}", o);
-                        count.increment();
-                    }
-                });
-        EventFlow flow = builder.start();
-//                .start();
-        Thread.sleep(100);
+                .peek(audit::add)
+                .peek(i -> latch.countDown())
+                .start();
         String part1 = "id,name\n"
                 + "1,greg\n"
-                + "2,jo";
-
-        String part2 = "sie\n";
+                + "2,josie\n";
         writer.write(part1);
         writer.flush();
-        writer.write(part2);
-        writer.flush();
-
-        Thread.sleep(1);
-        log.info("starting writing");
-        for (int i = 0; i < 100; i++) {
-            writer.write(i + ",freddie\n");
-//            log.info("writing id:{}", i);
-//            writer.flush();
-//            LockSupport.parkNanos(1_000);
-//            Thread.yield();
-//            Thread.sleep(1);
-
+        if (!latch.await(1, TimeUnit.SECONDS)) {
+            Assert.fail("records not received within time window of 1 second");
+        } else {
+            assertThat((List<?>)audit, hasSize(2));
         }
-        log.info("finished writing");
-//        Thread.sleep(10);
         flow.stop();
-        log.info("stopped reader");
-        System.out.println("processed:" + count.intValue());
     }
 
-//    @Test
-    public void testPipeeComms() throws IOException, InterruptedException {
+    @Test
+    public void testTransformPullReader() throws FileNotFoundException, IOException, InterruptedException {
         PipedReader reader = new PipedReader();
         PipedWriter writer = new PipedWriter(reader);
-        LongAdder count = new LongAdder();
-
-        Thread writerThread = new Thread(() -> {
-            try {
-                for (int i = 0; i < 100_000; i++) {
-                    writer.write(i + ",freddie\n");
-//            log.info("writing");
-//            writer.flush();
-//            Thread.yield();
-//            Thread.sleep(1);
-
-                }
-                writer.close();
-                System.out.println("closing writer");
-            } catch (IOException ex) {
-                Logger.getLogger(EventFlowManagerTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
-        Thread readerThread = new Thread(() -> {
-            try {
-                int i = 0;
-                while (i > -1) {
-                    i = reader.read();
-                    count.increment();
-                }
-                System.out.println("exiting reader");
-            } catch (IOException ex) {
-                Logger.getLogger(EventFlowManagerTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        
-        long now = System.currentTimeMillis();
-        readerThread.start();
-        writerThread.start();        
-        readerThread.join(10_000);
-        writerThread.join(10_000);
-        long end = System.currentTimeMillis();
-        System.out.println("Time:" + (end-now));
-        System.out.println("count:" + count.intValue());
+        ArrayList audit = new ArrayList();
+        CountDownLatch latch = new CountDownLatch(2);
+        EventFlow flow = new EventFlow()
+                .source(TransformPullSource.transform(new DelimitedPullSource(new DataEventCsvDecoder0(), reader, "data-1"), i -> "transformed"))
+                .peek(audit::add)
+                .peek(i -> latch.countDown())
+                .start();
+        String part1 = "id,name\n"
+                + "1,greg\n"
+                + "2,josie\n";
+        writer.write(part1);
+        writer.flush();
+        if (!latch.await(1, TimeUnit.SECONDS)) {
+            Assert.fail("records not received within time window of 1 second");
+        } else {
+            assertThat((List<?>)audit, hasSize(2));
+            assertThat((List<?>)audit, contains( "transformed", "transformed"));
+        }
+        flow.stop();
     }
 
     private static class EventSourceImpl implements EventSource {
 
         private final String id;
+        private EventConsumer target;
 
         public EventSourceImpl(String id) {
             this.id = id;
@@ -202,12 +249,48 @@ public class EventFlowManagerTest {
         @Override
         public void start(EventConsumer target) {
             log.info("setConsumer id:{}", id);
-            target.processEvent("hello from - " + id);
+            this.target = target;
+            target.processEvent(id);
         }
 
         @Override
         public void tearDown() {
             log.info("tearDown id:{}", id);
+            target.processEvent(id);
         }
+    }
+
+    @Data
+    private static class TestFilter extends PipelineFilter {
+
+        private final String id;
+        private final List audit;
+
+        @Override
+        public void processEvent(Object o) {
+            log.info("process id:{} event:{}", id, o);
+            audit.add(id);
+            audit.add(o.toString());
+            propagate(o);
+        }
+
+        @Override
+        protected void stopHandler() {
+            log.info("stop id:{}", id);
+            audit.add(id);
+        }
+
+        @Override
+        protected void startHandler() {
+            log.info("start id:{}", id);
+            audit.add(id);
+        }
+
+        @Override
+        protected void initHandler() {
+            log.info("init id:{}", id);
+            audit.add(id);
+        }
+
     }
 }

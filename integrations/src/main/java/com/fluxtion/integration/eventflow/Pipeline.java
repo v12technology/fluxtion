@@ -36,6 +36,7 @@ public class Pipeline {
 
     private final PipelineStatge root = new PipelineStatge(new RootNode());
     private final List<PipelineFilter> sortedFilters = new ArrayList<>();
+    private List<PipelineFilter> reversedFilters;
 
     public static <S extends PipelineFilter> PipelineStatge<S> build(S entryNode) {
         Pipeline pipe = new Pipeline();
@@ -46,7 +47,9 @@ public class Pipeline {
         log.info("starting pipeline");
         sortedFilters.clear();
         sortTopologically(root);
-        log.debug("filter chain:{}", sortedFilters);
+        reversedFilters = new ArrayList<>(sortedFilters);
+        Collections.reverse(reversedFilters);
+        log.debug("filter chain:{}", reversedFilters);
         sortedFilters.forEach(PipelineFilter::initHandler);
         sortedFilters.forEach(PipelineFilter::startHandler);
         log.info("started pipeline");
@@ -55,9 +58,9 @@ public class Pipeline {
 
     public Pipeline stop() {
         log.info("stopping pipeline");
-        Collections.reverse(sortedFilters);
-        sortedFilters.forEach(PipelineFilter::stopHandler);
-        Collections.reverse(sortedFilters);
+//        Collections.reverse(sortedFilters);
+        reversedFilters.forEach(PipelineFilter::stopHandler);
+//        Collections.reverse(sortedFilters);
         log.info("stopped pipeline");
         return this;
     }
@@ -85,6 +88,10 @@ public class Pipeline {
 
         private final T filterElement;
         private boolean visited = false;
+
+        void id(String id) {
+            filterElement.id(id);
+        }
 
         public boolean isVisited() {
             return visited;

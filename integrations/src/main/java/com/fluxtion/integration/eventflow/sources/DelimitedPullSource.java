@@ -32,7 +32,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class DelimitedPullSource implements EventQueueSource {
+public class DelimitedPullSource<T> implements EventQueueSource<T> {
 
     private final CsvRecordMarshaller marshaller;
     private final String id;
@@ -40,7 +40,7 @@ public class DelimitedPullSource implements EventQueueSource {
     private final CharEvent charEvent;
     private final Reader reader;
 
-    public DelimitedPullSource(RowProcessor processor, Reader reader, String id) {
+    public DelimitedPullSource(RowProcessor<T> processor, Reader reader, String id) {
         this.marshaller = new CsvRecordMarshaller(processor);
         this.id = id;
         this.reader = reader;
@@ -60,9 +60,10 @@ public class DelimitedPullSource implements EventQueueSource {
     }
 
     @Override
-    public void start(EventConsumer target) {
+    public void start(EventConsumer<T> target) {
         log.info("start DelimitedPullSource id:'{}'", id);
-        marshaller.handleEvent(new RegisterEventHandler(target::processEvent));
+//        marshaller.handleEvent(new RegisterEventHandler(target::processEvent));
+        marshaller.handleEvent(new RegisterEventHandler(o -> target.processEvent((T) o)));
     }
 
     @Override

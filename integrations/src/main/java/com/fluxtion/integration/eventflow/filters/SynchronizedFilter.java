@@ -17,7 +17,9 @@
  */
 package com.fluxtion.integration.eventflow.filters;
 
+import com.fluxtion.integration.eventflow.Pipeline;
 import com.fluxtion.integration.eventflow.PipelineFilter;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Acts as a thread synchronisation point in a {@link Pipeline}
@@ -25,6 +27,12 @@ import com.fluxtion.integration.eventflow.PipelineFilter;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class SynchronizedFilter extends PipelineFilter {
+    
+    private static AtomicInteger count = new AtomicInteger();
+    
+    public SynchronizedFilter(){
+        id ("sync-" + count.incrementAndGet());
+    }
 
     @Override
     public synchronized void processEvent(Object o) {
