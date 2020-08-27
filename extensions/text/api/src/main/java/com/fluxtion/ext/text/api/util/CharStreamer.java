@@ -9,7 +9,6 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
-import com.fluxtion.ext.text.api.util.ReadEvent.ReadEventFactory;
 import com.fluxtion.ext.text.api.util.marshaller.CharProcessor;
 import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.EventTranslator;
@@ -17,11 +16,9 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -136,30 +133,34 @@ public class CharStreamer {
         if (init && handler instanceof Lifecycle) {
             ((Lifecycle) handler).init();
         }
-        if (asynch) {
-            int bufferSize = 16;
-            disruptor = new Disruptor<>(new ReadEvent.ReadEventFactory(), bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
-            disruptor.handleEventsWith((ReadEvent event, long sequence, boolean endOfBatch) -> {
-                event.pushToHandler(handler);
-            });
-            disruptor.start();
-            if (inputFile == null) {
-                streamAsyncReader();
+        try {
+            if (asynch) {
+                int bufferSize = 16;
+                disruptor = new Disruptor<>(new ReadEvent.ReadEventFactory(), bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
+                disruptor.handleEventsWith((ReadEvent event, long sequence, boolean endOfBatch) -> {
+                    event.pushToHandler(handler);
+                });
+                disruptor.start();
+                if (inputFile == null) {
+                    streamAsyncReader();
+                } else {
+                    streamAsyncFile();
+                }
             } else {
-                streamAsyncFile();
+                if (inputFile == null) {
+                    streamSyncReader();
+                } else {
+                    streamFile();
+                }
             }
-        } else {
-            if (inputFile == null) {
-                streamSyncReader();
-            } else {
-                streamFile();
+            if (eof) {
+                handler.onEvent(EofEvent.EOF);
             }
-        }
-        if (eof) {
-            handler.onEvent(EofEvent.EOF);
-        }
-        if (tearDown && handler instanceof Lifecycle) {
-            ((Lifecycle) handler).tearDown();
+            if (tearDown && handler instanceof Lifecycle) {
+                ((Lifecycle) handler).tearDown();
+            }
+        } finally {
+            stopLatch.countDown();
         }
     }
 
@@ -195,36 +196,6 @@ public class CharStreamer {
 
     }
 
-    private void streamFileLarge() throws FileNotFoundException, IOException {
-
-        if (inputFile.exists() && inputFile.isFile()) {
-            BufferedReader rd = Files.newBufferedReader(inputFile.toPath());
-            CharEvent charEvent = new CharEvent(' ');
-            String readLine = "";
-            if (handler instanceof CharProcessor) {
-                CharProcessor charHandler = (CharProcessor) handler;
-                while ((readLine = rd.readLine()) != null | !terminateAtEof.get()) {
-                    for (char c : readLine.toCharArray()) {
-                        charEvent.setCharacter(c);
-                        charHandler.handleEvent(charEvent);
-                    }
-                    charEvent.setCharacter('\n');
-                    charHandler.handleEvent(charEvent);
-                }
-            } else {
-                while ((readLine = rd.readLine()) != null | !terminateAtEof.get()) {
-                    for (char c : readLine.toCharArray()) {
-                        charEvent.setCharacter(c);
-                        handler.onEvent(charEvent);
-                    }
-                    charEvent.setCharacter('\n');
-                    handler.onEvent(charEvent);
-                }
-            }
-        }
-        stopLatch.countDown();
-    }
-
     private void streamFile() throws FileNotFoundException, IOException {
         if (inputFile.exists() && inputFile.isFile()) {
             if (inputFile.length() < Integer.MAX_VALUE || !terminateAtEof.get()) {
@@ -247,7 +218,6 @@ public class CharStreamer {
                     }
                 }
             } else {
-//                streamFileLarge();
                 inputStream = Files.newBufferedReader(inputFile.toPath());
                 streamSyncReader();
             }
@@ -283,7 +253,6 @@ public class CharStreamer {
                 }
             }
         }
-        stopLatch.countDown();
     }
 
     public CharStreamer teardown() {
