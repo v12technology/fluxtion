@@ -18,7 +18,6 @@
 package com.fluxtion.integration.eventflow;
 
 import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import com.fluxtion.integration.eventflow.sources.AsynchEventSource;
@@ -45,11 +44,9 @@ public class EventFlow {
     private final Pipeline.PipelineStatge<SynchronizedFilter> dispatcherFilter;
     private Pipeline.PipelineStatge<PipelineFilter> lastStage;
     private final Pipeline pipeline;
-
     private final PipelineBuilder pipelineBuilder;
     private final LinkedHashMap<String, EventSource> sourceMap;
     private final LinkedHashMap<String, EventQueueSource> queueSourceMap;
-    private final LinkedHashMap<String, EventSink> publisherMap;
     private final List startedInstances;
     private SynchronizedFilter defaultDispatcher;
     private final AtomicBoolean runReaderThread;
@@ -64,7 +61,6 @@ public class EventFlow {
     public EventFlow() {
         sourceMap = new LinkedHashMap<>();
         queueSourceMap = new LinkedHashMap<>();
-        publisherMap = new LinkedHashMap<>();
         startedInstances = new ArrayList();
         defaultDispatcher = new SynchronizedFilter();
         currentState = State.INIT;
@@ -88,7 +84,6 @@ public class EventFlow {
                 startedInstances.clear();
                 startPipeline();
                 initSources();
-                startPublishers();
                 startSources();
             }
         }
@@ -106,7 +101,6 @@ public class EventFlow {
                 break;
             default: {
                 teardownSources();
-                teardownPublishers();
                 teardownPipeline();
                 currentState = State.STOPPED;
             }
@@ -143,29 +137,10 @@ public class EventFlow {
         return first(new PipelineFilter.PredicateFunction(filter));
     }
 
-    /**
-     * Register a publisher as an output for use in the pipeline
-     *
-     * @param publisher
-     * @param identifier
-     * @return
-     */
-    public EventFlow publisher(EventSink publisher, String identifier) {
-        String id = identifier == null ? publisher.id() : identifier;
-        publisherMap.put(id, publisher);
-        return this;
+    public PipelineBuilder sink(EventSink publisher) {
+        return first(new PipelineFilter.SinkStage(publisher));
     }
 
-    public EventFlow publisher(EventSink publisher) {
-        return publisher(publisher, null);
-    }
-
-    /**
-     *
-     * @param source
-     * @param identifier
-     * @return
-     */
     public EventFlow source(EventSource source, String identifier) {
         String id = identifier == null ? source.id() : identifier;
         sourceMap.put(id, source);
@@ -226,13 +201,8 @@ public class EventFlow {
             return this;
         }
 
-        public PipelineBuilder publisher(EventSink publisher, String identifier) {
-            EventFlow.this.publisher(publisher, identifier);
-            return this;
-        }
-
-        public PipelineBuilder publisher(EventSink publisher) {
-            EventFlow.this.publisher(publisher, null);
+        public PipelineBuilder sink(EventSink publisher) {
+            next(new PipelineFilter.SinkStage(publisher));
             return this;
         }
 
@@ -317,29 +287,6 @@ public class EventFlow {
                 log.info("interrupted while waiting for reader thread to stop", ex);
             }
         }
-    }
-
-    private void startPublishers() {
-        log.info("start publishers begin");
-        publisherMap.forEach((String id, EventSink sink) -> {
-            if (startedInstances.contains(sink)) {
-                log.info("eventPublisher:'{}' already started", id);
-            } else {
-                log.info("starting eventPublisher:'{}'", id);
-                sink.init();
-                pipeline.forEachFilter(p -> p.registeEventSink(sink));
-            }
-        });
-        log.info("start publishers end");
-    }
-
-    private void teardownPublishers() {
-        log.info("teardown publishers begin");
-        publisherMap.forEach((String id, EventSink con) -> {
-            log.info("teardown eventPublisher:'{}'", id);
-            con.tearDown();
-        });
-        log.info("teardown publishers end");
     }
 
     private class ReaderThread extends Thread {

@@ -95,10 +95,6 @@ public abstract class PipelineFilter implements EventConsumer {
     public void id(String id) {
         this.id = id;
     }
-
-    protected void registeEventSink(EventSink sink){
-        log.info("register sink id:'{}' filter id:'{}', type:'{}'", sink.id(), id(), this.getClass().getSimpleName());
-    }
     
     /**
      *
@@ -159,5 +155,38 @@ public abstract class PipelineFilter implements EventConsumer {
             }
         }
 
+    }
+    
+    @Data
+    public static class SinkStage extends PipelineFilter{
+    
+        private final EventSink consumer;
+
+        @Override
+        protected void stopHandler() {
+            super.stopHandler(); 
+            consumer.tearDown();
+        }
+
+        @Override
+        protected void initHandler() {
+            super.initHandler();
+            consumer.init();
+        }
+
+        @Override
+        protected void startHandler() {
+            super.startHandler();
+        }
+
+        @Override
+        public void processEvent(Object o) {
+            try {
+                consumer.publish(o);
+            } catch (Exception ex) {
+                log.error("problem writing data to sink", ex);
+            }
+            propagate(o);
+        }
     }
 }

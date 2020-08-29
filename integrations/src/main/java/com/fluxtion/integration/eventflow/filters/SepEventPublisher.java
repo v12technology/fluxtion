@@ -22,9 +22,12 @@ import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.integration.eventflow.EventSink;
 import com.fluxtion.integration.eventflow.PipelineFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -38,10 +41,12 @@ import lombok.extern.log4j.Log4j2;
 @Data(staticConstructor = "of")
 @EqualsAndHashCode(callSuper = false)
 @Log4j2
+@Accessors(fluent = true, chain = true)
 public class SepEventPublisher extends PipelineFilter {
 
     private final StaticEventProcessor target;
     private boolean propagate = true;
+    private List<EventSink> sinks = new ArrayList<>();
 
     @Override
     public void processEvent(Object o) {
@@ -56,13 +61,16 @@ public class SepEventPublisher extends PipelineFilter {
         }
     }
 
-    @Override
-    protected void registeEventSink(EventSink sink) {
-        super.registeEventSink(sink);
-        log.info("registering EventSink id:'{}' with sep:'{}'", sink.id(), target.getClass().getSimpleName());
-        target.onEvent(new RegisterEventHandler(sink::publish));
+    public SepEventPublisher sink(EventSink sink) {
+        sinks.add(sink);
+        return this;
     }
     
+    private void registeEventSink(EventSink sink) {
+        log.info("registering none-piepline EventSink id:'{}' with sep:'{}'", sink.id(), target.getClass().getSimpleName());
+        target.onEvent(new RegisterEventHandler(sink::publish));
+    }
+
     @Override
     protected void initHandler() {
         log.info("init sep:'{}'", target.getClass().getSimpleName());
@@ -73,8 +81,9 @@ public class SepEventPublisher extends PipelineFilter {
             log.info("registering a propagation endpoint to push events along the pipeline");
             target.onEvent(new RegisterEventHandler(this::propagate));
         } else {
-            log.info("No propagation along the pipeline, all events will be consumed");
+            log.info("No propagation of events along the pipeline, all events will be consumed");
         }
+        sinks.forEach(this::registeEventSink);
     }
 
 }

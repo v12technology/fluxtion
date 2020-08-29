@@ -34,9 +34,4 @@ public class ConsoleSink implements EventSink{
         System.out.println("SINK console -> " + o);
     }
 
-    @Override
-    public boolean publishSync(Object o) {
-        System.out.println("ASYNC SINK console -> " + o);
-        return true;
-    }
 }

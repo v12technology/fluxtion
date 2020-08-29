@@ -32,11 +32,11 @@ public interface EventSink extends Lifecycle {
      *
      * @return identifier
      */
-    String id();
+    default String id(){
+        return EventSink.class.getSimpleName();
+    }
 
     void publish(Object o);
-
-    boolean publishSync(Object o);
 
     @Override
     default void tearDown(){}

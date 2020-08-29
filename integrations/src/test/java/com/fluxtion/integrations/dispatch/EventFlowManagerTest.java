@@ -21,20 +21,15 @@ import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventFlow;
 import com.fluxtion.integration.eventflow.EventFlow.PipelineBuilder;
 import static com.fluxtion.integration.eventflow.EventFlow.flow;
+import com.fluxtion.integration.eventflow.EventSink;
 import com.fluxtion.integration.eventflow.EventSource;
 import com.fluxtion.integration.eventflow.PipelineFilter;
-import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
-import com.fluxtion.integration.eventflow.filters.Log4j2Filter;
-import com.fluxtion.integration.eventflow.sinks.ConsoleSink;
 import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
 import com.fluxtion.integration.eventflow.sources.DelimitedSource;
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import com.fluxtion.integration.eventflow.sources.TransformPullSource;
 import com.fluxtion.integration.eventflow.sources.TransformSource;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
@@ -42,9 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import static org.hamcrest.Matchers.contains;
@@ -154,29 +146,29 @@ public class EventFlowManagerTest {
         flow.stop();
     }
 
-    //TODO: complete test
     @Test
     public void testPipelinePublish() {
         ManualEventSource injector = new ManualEventSource("manSrc1");
         ArrayList<String> audit = new ArrayList();
         EventFlow flow = flow(injector)
-                .peek(System.out::println)
-                .map(i -> "transfomred = " + i)
-                .peek(System.out::println)
+                .sink( new TestSink("s1", audit)).id("sink-1")
+                .map(i -> "t1" + i).id("map-1")
+                .sink( new TestSink("s2", audit)).id("sink-2")
                 .next(new ForwardingSep())
-                .publisher(new ConsoleSink())
+                .map(i -> "t2" + i).id("map-2")
+                .sink( new TestSink("s3", audit)).id("sink-3")
                 .start();
-//        assertThat(audit, contains("f2", "f1", "f2", "f1"));
-//        //send event
-//        audit.clear();
+        assertThat(audit, contains("s3", "s2", "s1"));
+        audit.clear();
+        //send event
         injector.publishToFlow("e1");
-//        assertThat(audit, contains("f1", "e1", "f2", "e1"));
-//        //stop
-//        audit.clear();
+        assertThat(audit, contains("s1", "e1", "s2", "t1e1", "s3", "t2t1e1"));
+        //stop
+        audit.clear();
         flow.stop();
-//        assertThat(audit, contains("f1", "f2"));
-    } 
-    
+        assertThat(audit, contains("s1", "s2", "s3"));
+    }
+
     @Test
     public void testAsyncPushReader() throws FileNotFoundException, IOException, InterruptedException {
         PipedReader reader = new PipedReader();
@@ -196,12 +188,13 @@ public class EventFlowManagerTest {
         if (!latch.await(1, TimeUnit.SECONDS)) {
             Assert.fail("records not received within time window of 1 second");
         } else {
-            assertThat((List<?>)audit, hasSize(2));
+            assertThat((List<?>) audit, hasSize(2));
         }
         reader.close();
         writer.close();
         flow.stop();
     }
+
     @Test
     public void testPullReader() throws FileNotFoundException, IOException, InterruptedException {
         PipedReader reader = new PipedReader();
@@ -221,7 +214,7 @@ public class EventFlowManagerTest {
         if (!latch.await(1, TimeUnit.SECONDS)) {
             Assert.fail("records not received within time window of 1 second");
         } else {
-            assertThat((List<?>)audit, hasSize(2));
+            assertThat((List<?>) audit, hasSize(2));
         }
         flow.stop();
     }
@@ -245,8 +238,8 @@ public class EventFlowManagerTest {
         if (!latch.await(1, TimeUnit.SECONDS)) {
             Assert.fail("records not received within time window of 1 second");
         } else {
-            assertThat((List<?>)audit, hasSize(2));
-            assertThat((List<?>)audit, contains( "transformed", "transformed"));
+            assertThat((List<?>) audit, hasSize(2));
+            assertThat((List<?>) audit, contains("transformed", "transformed"));
         }
         flow.stop();
     }
@@ -313,6 +306,33 @@ public class EventFlowManagerTest {
         @Override
         protected void initHandler() {
             log.info("init id:{}", id);
+            audit.add(id);
+        }
+
+    }
+
+    @Data
+    private static class TestSink implements EventSink {
+
+        private final String id;
+        private final List audit;
+
+        @Override
+        public void init() {
+            log.info("init id:{}", id);
+            audit.add(id);
+        }
+
+        @Override
+        public void publish(Object o) {
+            log.info("publish id:{} event:{}", id, o);
+            audit.add(id);
+            audit.add(o.toString());
+        }
+
+        @Override
+        public void tearDown() {
+            log.info("tearDown id:{}", id);
             audit.add(id);
         }
 

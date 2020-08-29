@@ -39,7 +39,6 @@ public class Log4j2Filter extends PipelineFilter {
 
     @Override
     public void processEvent(Object o) {
-        log.info(o);
         log.log(logLevel, o);
         propagate(o);
     }
