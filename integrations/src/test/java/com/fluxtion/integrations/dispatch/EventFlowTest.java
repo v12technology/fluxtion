@@ -17,32 +17,37 @@
  */
 package com.fluxtion.integrations.dispatch;
 
-import com.fluxtion.integration.eventflow.EventFlow;
-import static com.fluxtion.integration.eventflow.EventFlow.flow;
-import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
-import com.fluxtion.integration.eventflow.sources.ManualEventSource;
+import com.fluxtion.ext.text.api.annotation.ColumnName;
+import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import static com.fluxtion.integration.eventflow.sources.Builders.csvSource;
+import java.io.IOException;
+import static java.nio.file.Files.newBufferedReader;
+import java.nio.file.Paths;
+import lombok.Data;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventFlowTest {
+public class EventFlowTest extends TextInprocessTest {
 
     @Test
-    public void simpleFlow() {
-        ManualEventSource eventInjector = new ManualEventSource("manualSource1");
-        EventFlow flow = flow(eventInjector)
-//                .first(new ConsoleFilter())
-                .peek(System.out::println)
-//                .map(i -> "TRANSFORMED -> "  + i )
-//                .peek(System.out::println)
-                .filter(String.class::isInstance)
-                .map(i -> "IS A STRING -> "  + i )
-                .peek(System.out::println)
-                .start();
-        eventInjector.publishToFlow("hello world");
-        eventInjector.publishToFlow(111);
-        flow.stop();
+    public void simpleFlow() throws IOException {
+        
+        csvSource(Iris.class, newBufferedReader(Paths.get("src/test/data/iris.csv")), 
+                pckName(), DirOptions.TEST_DIR_OUTPUT)
+                .filter(i -> ((Iris)i).getName().startsWith("g"))
+                .sink(System.out::println)
+                .start()
+                .stop();
+    }
+    
+    @Data
+    public static class Iris{
+    
+        @ColumnName("f_name")
+        private String name;
+        private int size;
     }
 }

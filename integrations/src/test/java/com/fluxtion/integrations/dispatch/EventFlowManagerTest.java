@@ -77,17 +77,32 @@ public class EventFlowManagerTest {
 
     @Test
     public void transformPushSource() {
-        ManualEventSource injector = new ManualEventSource("manSrc1");
+        ManualEventSource<String> injector = new ManualEventSource<>("manSrc1");
         ArrayList<String> audit = new ArrayList();
         EventFlow flow = flow(TransformSource.transform(injector, i -> "transform"))
                 .first(new TestFilter("f1", audit))
                 .start();
         audit.clear();
-        injector.publishToFlow(1);
+        injector.publishToFlow("1");
         assertThat(audit, contains("f1", "transform"));
         audit.clear();
         injector.publishToFlow("e1");
         assertThat(audit, contains("f1", "transform"));
+        flow.stop();
+    }
+    
+    @Test
+    public void transformFilterPushSource() {
+        ManualEventSource<String> injector = new ManualEventSource<>("manSrc1");
+        ArrayList<String> audit = new ArrayList();
+        EventFlow flow = flow(TransformSource.transform(injector, String::toUpperCase).filter(String::isEmpty))
+                .first(new TestFilter("f1", audit))
+                .start();
+        audit.clear();
+        injector.publishToFlow("");
+        assertThat(audit, contains("f1", ""));
+        injector.publishToFlow("e1");
+        assertThat(audit, contains("f1", ""));
         flow.stop();
     }
 

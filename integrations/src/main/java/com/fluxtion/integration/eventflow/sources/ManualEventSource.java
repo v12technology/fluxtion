@@ -26,14 +26,15 @@ import lombok.extern.log4j.Log4j2;
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
+ * @param <T>
  */
 @Log4j2
-public class ManualEventSource implements EventSource{
+public class ManualEventSource<T> implements EventSource<T>{
 
     private final String id;
     private EventConsumer target;
     private boolean cacheEventsBeforeStart = true;
-    private List cacheEvents = new ArrayList();
+    private List<T> cacheEvents = new ArrayList();
 
 
     public ManualEventSource(String id) {
@@ -46,7 +47,7 @@ public class ManualEventSource implements EventSource{
     }
 
     @Override
-    public void start(EventConsumer target) {
+    public void start(EventConsumer<T> target) {
         this.target = target;
         if(cacheEventsBeforeStart && !cacheEvents.isEmpty()){
             cacheEvents.forEach(this::publishToFlow);
@@ -54,7 +55,7 @@ public class ManualEventSource implements EventSource{
         cacheEvents.clear();
     }
 
-    public void publishToFlow(Object event){
+    public void publishToFlow(T event){
         if(target==null && cacheEventsBeforeStart){
             cacheEvents.add(event);
         }else{

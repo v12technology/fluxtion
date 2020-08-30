@@ -20,6 +20,7 @@ package com.fluxtion.integration.eventflow.sources;
 import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventQueueSource;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -31,11 +32,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TransformPullSource<T,R> implements EventConsumer<T>, EventQueueSource<R> {
 
-    private final EventQueueSource source;
-    private final Function<T,R> f;
+    protected final EventQueueSource<T> source;
+    protected final Function<T,R> f;
     private String id;
     private static int count;
-    private EventConsumer target;
+    protected EventConsumer<R> target;
     
     public static <T,R> TransformPullSource<T,R> transform(String id, EventQueueSource<T> source, Function<T,R> transformFunction){
         return new TransformPullSource(id, source, transformFunction);
@@ -44,6 +45,15 @@ public class TransformPullSource<T,R> implements EventConsumer<T>, EventQueueSou
     public static <T,R> TransformPullSource<T,R> transform(EventQueueSource<T> source, Function<T,R> transformFunction){
         return new TransformPullSource(source, transformFunction);
     }
+    
+    public static <R> FilterSource<R> filter(EventQueueSource<R> source, Predicate<R> predicate){
+        return new FilterSource(source, predicate);
+    }
+
+    public static <R> FilterSource<R> filter(String id, EventQueueSource<R> source, Predicate<R> predicate){
+        return new FilterSource(id, source, predicate);
+    }
+    
 
     public TransformPullSource(EventQueueSource source, Function f) {
         this.source = source;
@@ -56,12 +66,20 @@ public class TransformPullSource<T,R> implements EventConsumer<T>, EventQueueSou
         this.id = id;
     }
     
-    public <P> TransformPullSource<R, P> next(Function<R, P> transformFunction){
+    public <P> TransformPullSource<R, P> transform(Function<R, P> transformFunction){
         return transform(this, transformFunction);
     }
     
-    public <P> TransformPullSource<R, P> next(String id, Function<R, P> transformFunction){
+    public <P> TransformPullSource<R, P> transform(String id, Function<R, P> transformFunction){
         return transform(id, this, transformFunction);
+    }
+   
+    public FilterSource<R> filter(Predicate<R> predicate){
+        return filter(this, predicate);
+    }
+    
+    public FilterSource<R> filter(String id, Predicate<R> predicate){
+        return filter(id, this, predicate);
     }
     
     @Override
@@ -72,7 +90,7 @@ public class TransformPullSource<T,R> implements EventConsumer<T>, EventQueueSou
     @Override
     public void init() {
         if (id == null) {
-            id = "TransformSource-" + count++;
+            id = "TransformPullSource-" + count++;
         }
         source.init();
     }
@@ -96,6 +114,29 @@ public class TransformPullSource<T,R> implements EventConsumer<T>, EventQueueSou
     @Override
     public void tearDown() {
         source.tearDown();
+    }
+    
+    public static class FilterSource<T> extends TransformPullSource<T, T>{
+
+        private final Predicate<T> predicate;
+        
+        public FilterSource(EventQueueSource<T> source, Predicate<T> predicate) {
+            super(source, null);
+            this.predicate = predicate;
+        }
+        
+        public FilterSource(String id, EventQueueSource<T> source, Predicate<T> predicate) {
+            super(id, source, null);
+            this.predicate = predicate;
+        }
+
+        @Override
+        public void processEvent(T o) {
+            if(predicate.test(o)){
+                target.processEvent(o);
+            }
+        }
+        
     }
 
 }
