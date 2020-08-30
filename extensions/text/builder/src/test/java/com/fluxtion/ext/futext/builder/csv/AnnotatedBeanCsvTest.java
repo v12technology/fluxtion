@@ -19,6 +19,7 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
+import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
@@ -75,6 +76,19 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         Assert.assertThat(sample.getRequiredInt(), is(2));
     }
 
+
+    @Test
+    public void testNamedColumn() {
+        sep(c -> {
+            c.addPublicNode(csvMarshaller(OverrideColName.class).build(), "output");
+        });
+        OverrideColName sample = getWrappedField("output");
+        stream("f_name,current_age\n"
+                + "greg,25\n");
+        Assert.assertThat(sample.getName(), is("greg"));
+        Assert.assertThat(sample.getAge(), is(25));
+    }
+    
     @Test
     public void testTrimmedValue() {
         sep(c -> {
@@ -163,6 +177,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         @DefaultFieldValue("-1")
         protected int intValue;
 
+    }
+    
+    @Data
+    public static class OverrideColName{
+    
+        @ColumnName("f_name")
+        private String name;
+        @ColumnName("current_age")
+        private int age;
+        
     }
 
     @Data

@@ -25,6 +25,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
 import com.fluxtion.ext.text.api.annotation.CheckSum;
+import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
@@ -224,6 +225,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                     field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
                     String fieldName = md.getName();
+                    ColumnName overrideName = field.getAnnotation(ColumnName.class);
+                    if(overrideName!=null){
+                        fieldName = overrideName.value()!=null?overrideName.value():fieldName;
+                    }
                     boolean optional = field.getAnnotation(OptionalField.class) != null;
                     boolean checkSum = field.getAnnotation(CheckSum.class) != null;
                     if (checkSum) {
