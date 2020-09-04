@@ -19,7 +19,7 @@ package com.fluxtion.integration.eventflow.sources;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
-import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import com.fluxtion.generator.compiler.DirOptions;
 import com.fluxtion.integration.eventflow.EventFlow;
 import java.io.File;
 import java.io.IOException;

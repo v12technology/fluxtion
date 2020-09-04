@@ -18,7 +18,7 @@
 package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.ext.text.api.annotation.ColumnName;
-import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import com.fluxtion.generator.compiler.DirOptions;
 import static com.fluxtion.integration.eventflow.sources.Builders.csvSource;
 import java.io.IOException;
 import static java.nio.file.Files.newBufferedReader;

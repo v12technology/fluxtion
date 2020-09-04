@@ -15,37 +15,34 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integrations.dispatch;
+package com.fluxtion.integration.etl;
 
-import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import com.fluxtion.generator.compiler.DirOptions;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.squareup.javapoet.TypeName;
 import lombok.Data;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.commons.lang3.ClassUtils;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class FileDispatchTest extends BaseSepInprocessTest {
+@Data
+public class Column {
     
-    @Test
-    @Ignore
-    public void geneerateMarshaller(){
-        CsvToBeanBuilder.nameSpace("com.fluxtion.integrations.dispatch")
-                .dirOption(DirOptions.TEST_DIR_OUTPUT)
-                .builder(DataEvent.class, 1)
-                .reuseTarget(false)
-                .build();
+    String name;
+    String type;
+    String mapName;
+    String function;
+    
+    public TypeName typeName() {
+        return Util.typeName(type);
     }
 
-    @Data
-    public static class DataEvent {
-
-        private int id;
-        private String name;
+    public String packageName() {
+        return ClassUtils.getPackageCanonicalName(type);
     }
 
+    public String className() {
+        return ClassUtils.getShortCanonicalName(type);
+    }
+    
 }
