@@ -31,7 +31,7 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import com.fluxtion.generator.compiler.DirOptions;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;

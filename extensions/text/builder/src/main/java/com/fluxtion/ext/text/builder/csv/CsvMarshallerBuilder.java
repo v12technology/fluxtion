@@ -257,10 +257,13 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                         colInfo(fieldName).setTrim(trim.value());
                     }
                     final ConvertField converter = field.getAnnotation(ConvertField.class);
-                    if (converter != null) {
+                    if (converter != null && converter.value().contains("#")) {
                         String[] converterString = converter.value().split("#");
                         MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
                         converterMethod(fieldName, method.withAnyArgs());
+                    }else if(converter != null ){
+                        MethodReflector method = m.on(clazz).reflect().method(converter.value());
+                        converterMethod(fieldName, method.withAnyArgs(), "target");
                     }
                     final OptionalField defaultOptionalValue = field.getAnnotation(OptionalField.class);
                     if (defaultOptionalValue != null && !defaultOptionalValue.defaultValue().isEmpty()) {

@@ -37,7 +37,7 @@ public class CsvPushFunctionInfo {
     private int fixedStart;
     private int fixedLen;
     private int fixedEnd;
-    
+
     //Target
     private Class targetClass;
     private boolean targetIsEnum;
@@ -66,7 +66,7 @@ public class CsvPushFunctionInfo {
     private String defaultClass;
     //validator
     private String validatorMethod;
-    
+
     public CsvPushFunctionInfo(ImportMap importMap) {
         this.importMap = importMap;
     }
@@ -81,8 +81,8 @@ public class CsvPushFunctionInfo {
         this.fieldIndex = -1;
         indexField = false;
     }
-    
-    public void setSourceFixedField(int startIndex, int length){
+
+    public void setSourceFixedField(int startIndex, int length) {
         this.fixedStart = startIndex;
         this.fixedLen = length;
         this.fixedEnd = fixedStart + fixedLen;
@@ -104,47 +104,48 @@ public class CsvPushFunctionInfo {
     public void setConverter(Method method) {
         converterMethod = method.getName();
     }
-    
-    public void setValidator(String validatorId, Method targetGetMethod){
+
+    public void setValidator(String validatorId, Method targetGetMethod) {
         validatorMethod = validatorId;
         this.targetGetMethod = targetGetMethod.getName();
     }
-    
-    public void setConverter(String instanceId, Method method, Object converterInstance){
+
+    public void setConverter(String instanceId, Method method, Object converterInstance) {
         this.converterInstanceId = instanceId;
         this.converterInstance = converterInstance;
-        this.converterClass = importMap.addImport(converterInstance.getClass());
+        if (converterInstance != null) {
+            this.converterClass = importMap.addImport(converterInstance.getClass());
+        }
         converterMethod = converterInstanceId + "." + method.getName();
     }
-    
-    
-    public void setDefaultValue(String instanceId, Method method, Object converterInstance){
+
+    public void setDefaultValue(String instanceId, Method method, Object converterInstance) {
         this.defaultInstanceId = instanceId;
         this.defaultInstance = converterInstance;
         this.defaultClass = importMap.addImport(converterInstance.getClass());
         defaultMethod = defaultInstanceId + "." + method.getName();
     }
-    
-    public boolean getMandatoryField(){
+
+    public boolean getMandatoryField() {
         return mandatory;
     }
-    
-    public boolean getDefaultOptionalField(){
-        final boolean test = defaultMethod!=null && !mandatory;
-        return  test;
+
+    public boolean getDefaultOptionalField() {
+        final boolean test = defaultMethod != null && !mandatory;
+        return test;
     }
-    
-    public String getValidate(){
+
+    public String getValidate() {
         return validatorMethod + ".validate(" + targetInstanceId + "." + targetGetMethod + "(), validationBuffer)";
     }
-    
-    public boolean isValidated(){
-        return validatorMethod!=null;
+
+    public boolean isValidated() {
+        return validatorMethod != null;
     }
 
     public String getUpdateTarget2() {
         String defaultMethodCalc = targetCalcMethodName;
-        if(defaultMethod !=null){
+        if (defaultMethod != null) {
             defaultMethodCalc = defaultMethod + "(" + targetCalcMethodName + ")";
         }
         String conversion = defaultMethodCalc;
@@ -153,9 +154,9 @@ public class CsvPushFunctionInfo {
         if (converterMethod != null) {
             addConversion = false;
             conversion = converterMethod + "(" + defaultMethodCalc + ")";
-        }else if(targetIsEnum){
-            conversion =  targetArgType + ".valueOf(" + defaultMethodCalc + ".toString())";
-        }else {
+        } else if (targetIsEnum) {
+            conversion = targetArgType + ".valueOf(" + defaultMethodCalc + ".toString())";
+        } else {
             switch (targetArgType) {
                 case "String":
                     conversion += ".toString()";
@@ -203,24 +204,24 @@ public class CsvPushFunctionInfo {
     }
 
     public String getFieldIdentifier() {
-        if(indexField){
+        if (indexField) {
             fieldIdentifier = "fieldIndex_" + getFieldIndex();
-        }else if(fixedWidth){
+        } else if (fixedWidth) {
             fieldIdentifier = "fixedStart_" + getFieldIndex();
-        }else{
+        } else {
             fieldIdentifier = "fieldName_" + getFieldName();
         }
         return fieldIdentifier;
     }
-    
-    public String getFieldLenIdentifier(){
+
+    public String getFieldLenIdentifier() {
         return "fixedStart_" + getFieldIndex() + "_Len_" + getFixedLen();
     }
-    
-    public int getFieldLength(){
-        if(fixedWidth){
+
+    public int getFieldLength() {
+        if (fixedWidth) {
             return fixedLen;
-        }else{
+        } else {
             return -1;
         }
     }

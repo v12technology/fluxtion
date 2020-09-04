@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions.TEST_DIR_OUTPUT;
+import static com.fluxtion.generator.compiler.DirOptions.TEST_DIR_OUTPUT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
