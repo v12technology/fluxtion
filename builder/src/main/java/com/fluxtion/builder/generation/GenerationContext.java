@@ -58,20 +58,32 @@ public class GenerationContext {
     public static int nextId() {
         return COUNT.getAndIncrement();
     }
-    
-    private static class X{}
 
-  public int nextId(String className){
-        Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap() );
+    private static class X {
+    }
+
+    public int nextId(String className) {
+        Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap());
         String key = packageName + "." + className;
-        Integer nextId = classCount.compute(key, (String k, Integer v) ->{
-            int ret  = 0;
-            if(v!=null){
+        Integer nextId = classCount.compute(key, (String k, Integer v) -> {
+            int ret = 0;
+            if (v != null) {
                 ret = v + 1;
             }
             return ret;
         });
         return nextId;
+    }
+
+    public static void updateContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
+        CachedCompiler javaCompiler1 = null;
+        if (SINGLETON != null) {
+            javaCompiler1 = SINGLETON.getJavaCompiler();
+        }
+        setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);
+        if (javaCompiler1 != null) {
+            SINGLETON.javaCompiler = javaCompiler1;
+        }
     }
 
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
@@ -183,7 +195,7 @@ public class GenerationContext {
      */
     public File resourcesRootDirectory;
     public File resourcesOutputDirectory;
-    private final CachedCompiler javaCompiler;
+    private CachedCompiler javaCompiler;
 
     public GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory) {
         this(packageName, sepClassName, outputDirectory, resourcesRootDirectory, null);
@@ -215,7 +227,7 @@ public class GenerationContext {
 
     private void createDirectories() {
         packageDirectory = new File(GenerationContext.SINGLETON.sourceRootDirectory, packageName.replace(".", "/"));
-      packageDirectory.mkdirs();
+        packageDirectory.mkdirs();
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
     }
 
@@ -237,16 +249,17 @@ public class GenerationContext {
     }
 
     /**
-     * Performs a class.forName operation on the cached classes that have been 
+     * Performs a class.forName operation on the cached classes that have been
      * compiled into this GenerationContext
+     *
      * @param <T>
      * @param name
-     * @return 
+     * @return
      */
-    public <T> Class<T> forName(String name){
+    public <T> Class<T> forName(String name) {
         return javaCompiler.forName(name, classLoader);
-    } 
-    
+    }
+
     /**
      * a cache that is tied to this generation context instance. A new Map will
      * be created for each unique cache key.
