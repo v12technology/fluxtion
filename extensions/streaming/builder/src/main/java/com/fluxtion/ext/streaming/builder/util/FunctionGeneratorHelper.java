@@ -18,13 +18,20 @@ package com.fluxtion.ext.streaming.builder.util;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.Generator;
+import com.fluxtion.generator.compiler.InprocessSepCompiler;
+import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.openhft.compiler.CachedCompiler;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
@@ -52,6 +59,47 @@ public interface FunctionGeneratorHelper {
         }
         return defualtValue;
     }
+    
+    static File sourcesDir(boolean isTest){
+        String dir = System.getProperty("fluxtion.cacheDirectory");
+        File sourcesDir = new File(isTest?OutputRegistry.JAVA_TESTGEN_DIR:OutputRegistry.JAVA_GEN_DIR);
+        if (dir != null) {
+            sourcesDir = new File(dir + "/source/");
+        }
+        return sourcesDir;
+    }
+    
+    static File resourcesDir(boolean isTest){
+        String dir = System.getProperty("fluxtion.cacheDirectory");
+        File resourcesDir = new File(isTest?OutputRegistry.RESOURCE_TEST_DIR:OutputRegistry.RESOURCE_DIR);
+        if (dir != null) {
+            resourcesDir = new File(dir + "/resources/");
+        }
+        return resourcesDir;
+    }
+
+    static <T> Class<T> compile(Reader srcFile, String fqn) throws IOException, ClassNotFoundException {
+        return compile(srcFile, fqn, false);
+    }
+
+    static <T> Class<T> compileTest(Reader srcFile, String fqn) throws IOException, ClassNotFoundException {
+        return compile(srcFile, fqn, true);
+    }
+    
+    static <T> Class<T> compile(Reader srcFile, String fqn, boolean isTest) throws IOException, ClassNotFoundException {
+        String packageName = ClassUtils.getPackageCanonicalName(fqn);
+        String className = ClassUtils.getShortCanonicalName(fqn);
+        String dir = System.getProperty("fluxtion.cacheDirectory");
+        File sourcesDir = sourcesDir(isTest);
+        File resourcesDir = resourcesDir(isTest);
+        if (dir != null) {
+            System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
+        }
+        GenerationContext.updateContext(packageName, className, sourcesDir, resourcesDir);
+        CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
+        Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, IOUtils.toString(srcFile));
+        return newClass;
+    }
 
     static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
@@ -59,7 +107,7 @@ public interface FunctionGeneratorHelper {
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
-        new Thread(() ->  Generator.formatSource(file)).start();
+        new Thread(() -> Generator.formatSource(file)).start();
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         return newClass;
     }
