@@ -17,6 +17,7 @@
  */
 package com.fluxtion.integration.etl;
 
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import io.github.classgraph.ClassGraph;
@@ -24,6 +25,13 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -31,31 +39,68 @@ import lombok.extern.log4j.Log4j2;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class PipelineRegistry {
+@Data
+public class PipelineRegistry implements Lifecycle {
+    
+    private PipelineStore pipelineStore;
+    private Map<String, CsvEtlPipeline> pipelines;
 
-    public void loadModels() {
-        //what is the classpath?!!
-        try (ScanResult scanResult = new ClassGraph()
-                .enableClassInfo()
-                .overrideClassLoaders(OutputRegistry.INSTANCE.getClassLoader())
-                .scan()) {
-            ClassInfoList rowProcessorInfoList = scanResult.getClassesImplementing(RowProcessor.class.getCanonicalName());
-            rowProcessorInfoList.forEach((ClassInfo t) -> {
-                System.out.println("loaded rowprocessor:" + t);
-            });
-        }
+    @Override
+    public void init() {
+        log.info("init loading pipelines");
+        pipelines = new HashMap<>();
+        pipelineStore.getAllPipelines().forEach(c ->{
+            try {
+                String csvProcessorClassName = c.getCsvProcessorClassName();
+                OutputRegistry.INSTANCE.getClassLoader();
+                Class<RowProcessor> forName = (Class<RowProcessor>) Class.forName(csvProcessorClassName, true, OutputRegistry.INSTANCE.getClassLoader());
+                RowProcessor newInstance = (RowProcessor) forName.getDeclaredConstructors()[0].newInstance();
+                log.info("created rowprocessor id:{}, instance:{}", c.getId(), newInstance);
+                c.setCsvProcessor(newInstance);
+                pipelines.put(c.getId(), c);
+            } catch (ClassNotFoundException ex) {
+                log.warn("could not create csv processor", ex);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                Logger.getLogger(PipelineRegistry.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        });
+    }
+    
+    void registerModel(CsvEtlPipeline pipeline) {
+        log.info("registering model id:'{}'", pipeline.getId());
+//        pipelineStore.writePipelines(List.of(pipeline));
+        pipelines.put(pipeline.getId(), pipeline);
+        pipelineStore.writePipelines(new ArrayList<>(pipelines.values()));
     }
 
-    private void addMarshaller(ClassInfo info) {
-        try {
-            Class<RowProcessor> marshallerClass = info.loadClass(RowProcessor.class);
-            RowProcessor rowProcessor = marshallerClass.getDeclaredConstructor().newInstance();
-            log.info("registering marshaller:{} for type:{}", marshallerClass.getName(), rowProcessor.eventClass());
-//            marshallerMap.put(rowProcessor.eventClass(), rowProcessor);
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            log.warn("unable to load RowProcessor", ex);
-        }
 
+    @Override
+    public void tearDown() {
     }
 
+//    public void loadModels() {
+//        //what is the classpath?!!
+//        try (ScanResult scanResult = new ClassGraph()
+//                .enableClassInfo()
+//                .overrideClassLoaders(OutputRegistry.INSTANCE.getClassLoader())
+//                .scan()) {
+//            ClassInfoList rowProcessorInfoList = scanResult.getClassesImplementing(RowProcessor.class.getCanonicalName());
+//            rowProcessorInfoList.forEach((ClassInfo t) -> {
+//                System.out.println("loaded rowprocessor:" + t);
+//            });
+//        }
+//    }
+//
+//    private void addMarshaller(ClassInfo info) {
+//        try {
+//            Class<RowProcessor> marshallerClass = info.loadClass(RowProcessor.class);
+//            RowProcessor rowProcessor = marshallerClass.getDeclaredConstructor().newInstance();
+//            log.info("registering marshaller:{} for type:{}", marshallerClass.getName(), rowProcessor.eventClass());
+////            marshallerMap.put(rowProcessor.eventClass(), rowProcessor);
+//        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+//            log.warn("unable to load RowProcessor", ex);
+//        }
+//
+//    }
 }

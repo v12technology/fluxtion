@@ -19,6 +19,7 @@ package com.fluxtion.integration.etl;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.generator.compiler.OutputRegistry;
+import java.beans.Transient;
 import lombok.Data;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
@@ -36,9 +37,16 @@ public class CsvEtlPipeline {
     private String id;
     private transient RowProcessor csvProcessor;
     private CsvLoadDefinition defintion;
+    private String csvProcessorClassName;
+    
+    @Transient
+    public RowProcessor getCsvProcessor(){
+        return csvProcessor;
+    }
 
     public String toYaml() {
         Representer representer = new Representer() {
+            @Override
             protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
                 // if value of property is null, ignore it.
                 if (propertyValue == null) {
@@ -53,17 +61,17 @@ public class CsvEtlPipeline {
         return yaml.dumpAs(this, Tag.MAP, null);
     }
 
-    public static CsvEtlPipeline loadPipeline(String yaml) {
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(OutputRegistry.INSTANCE.getClassLoader());
-        CsvEtlPipeline pipeline = null;
-        try {
-            Yaml yamlParser = new Yaml();
-            pipeline = yamlParser.loadAs(yaml, CsvEtlPipeline.class);
-        } catch (Exception e) {
-        }
-        Thread.currentThread().setContextClassLoader(originalClassLoader);
-        return pipeline;
-    }
+//    public static CsvEtlPipeline loadPipeline(String yaml) {
+//        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+//        Thread.currentThread().setContextClassLoader(OutputRegistry.INSTANCE.getClassLoader());
+//        CsvEtlPipeline pipeline = null;
+//        try {
+//            Yaml yamlParser = new Yaml();
+//            pipeline = yamlParser.loadAs(yaml, CsvEtlPipeline.class);
+//        } catch (Exception e) {
+//        }
+//        Thread.currentThread().setContextClassLoader(originalClassLoader);
+//        return pipeline;
+//    }
 
 }

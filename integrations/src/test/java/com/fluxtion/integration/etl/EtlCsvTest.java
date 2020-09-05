@@ -48,21 +48,11 @@ public class EtlCsvTest {
         System.out.println("CsvLoadDefinition:\n" + def.toYaml());
 
         CsvEtlBuilder etl = new CsvEtlBuilder().setTestBuild(true);
-        CsvEtlPipeline pipeline = etl.buildWorkFlow("pipeline-test1", def);
+        CsvEtlPipeline pipeline = etl.buildWorkFlow( def);
         String toYaml = pipeline.toYaml();
         System.out.println(toYaml);
-
-        CsvEtlPipeline loadPipeline = CsvEtlPipeline.loadPipeline(toYaml);
-        System.out.println("loadPipeline:" + loadPipeline);
-
     }
     
-    @Test
-    public void pipelineReg(){
-        System.setProperty("fluxtion.cacheDirectory", "src/test/fluxtion-cache/test1");
-        PipelineRegistry pipelineRegistry = new PipelineRegistry();
-        pipelineRegistry.loadModels();
-    }
 
     @Test
     public void fromYaml() throws IOException, ClassNotFoundException, InterruptedException {
@@ -82,7 +72,7 @@ public class EtlCsvTest {
                 + "postRecordFunction: '//no-op demo callback\n'"
                 + "";
         CsvEtlBuilder etl = new CsvEtlBuilder().setTestBuild(true);
-        CsvEtlPipeline pipeline = etl.buildWorkFlow("pipeline-test1", yaml);
+        CsvEtlPipeline pipeline = etl.buildWorkFlow(yaml);     
         //age,character,eventTime,F__NAME
         StringReader reader = new StringReader("age,f__NAME,lastName\n"
                 + "22,feed,fgggf\n"

@@ -56,7 +56,6 @@ along with this program.  If not, see
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-text-builder</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>

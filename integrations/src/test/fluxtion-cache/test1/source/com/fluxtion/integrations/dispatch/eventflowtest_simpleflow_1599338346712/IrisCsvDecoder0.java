@@ -1,4 +1,4 @@
-package com.fluxtion.integrations.dispatch.eventflowtest_simpleflow_1599215664942;
+package com.fluxtion.integrations.dispatch.eventflowtest_simpleflow_1599338346712;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.annotations.Config;

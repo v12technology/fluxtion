@@ -17,10 +17,9 @@
  */
 package com.fluxtion.integration.etl;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -28,18 +27,53 @@ import org.apache.commons.io.FileUtils;
  */
 @Log4j2
 public class Main {
-    public static final String pipelineDefDir = "fluxtion/pipelines/";
-    public static final String workDir = "fluxtion/work/";
-    public static final String cacheDir = "fluxtion/cache/";
+
     public static void main(String[] args) throws IOException {
-        System.setProperty("fluxtion.cacheDirectory", "fluxtion/cache/");
-        FileUtils.forceMkdir(new File(pipelineDefDir));
-        FileUtils.forceMkdir(new File(workDir));
-        FileUtils.forceMkdir(new File(cacheDir));
+        new Main().start();
+    }
+
+    private PipelineController controller;
+    private CsvEtlBuilder etlBuilder;
+    private FileConfig fileConfig;
+    private PipelineFileStore pipelineFileStore;
+    private PipelineRegistry pipelineRegistry;
+
+    public Main start() {
+        //create instances
+        fileConfig = new FileConfig("src/test/fluxtion-etl/test1");
+        pipelineFileStore = new PipelineFileStore();
+        pipelineRegistry = new PipelineRegistry();
+        etlBuilder = new CsvEtlBuilder();
+        controller = new PipelineController();
+        //set config
+        //set references
+        pipelineFileStore.setFileConfig(fileConfig);
+        pipelineRegistry.setPipelineStore(pipelineFileStore);
+        controller.setPipelineRegistry(pipelineRegistry);
+        controller.setBuilder(etlBuilder);
+        //init
+        fileConfig.init();
+        pipelineFileStore.init();
+        pipelineRegistry.init();
+        etlBuilder.init();
+        return this;
+    }
+
+    public void buildModel(String yaml) {
+        controller.buildModel(yaml);
+    }
+
+    public void executePipeline(String id, Reader reader) {
+        controller.executePipeline(id, reader);
     }
     
-    private void init(){
-        
+    public Main stop() {
+        controller.tearDown();
+        etlBuilder.tearDown();
+        pipelineRegistry.tearDown();
+        pipelineFileStore.tearDown();
+        fileConfig.tearDown();
+        return this;
     }
-    
+
 }

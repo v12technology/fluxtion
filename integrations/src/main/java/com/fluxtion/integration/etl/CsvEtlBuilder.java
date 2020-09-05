@@ -19,6 +19,7 @@ package com.fluxtion.integration.etl;
 
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.DefaultEvent;
+import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
@@ -46,28 +47,39 @@ import org.yaml.snakeyaml.Yaml;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class CsvEtlBuilder {
+public class CsvEtlBuilder implements Lifecycle{
 
     private CsvLoadDefinition loadDefinition;
     private TypeSpec.Builder csvProcessorBuilder;
     private boolean testBuild;
 
-    public CsvEtlPipeline buildWorkFlow(String id, String definitionAsYaml) throws IOException, ClassNotFoundException {
+    public CsvEtlPipeline buildWorkFlow(String definitionAsYaml) throws IOException, ClassNotFoundException {
         Yaml yamlParser = new Yaml();
-        return buildWorkFlow(id, yamlParser.loadAs(definitionAsYaml, CsvLoadDefinition.class));
+        return buildWorkFlow(yamlParser.loadAs(definitionAsYaml, CsvLoadDefinition.class));
     }
 
-    public CsvEtlPipeline buildWorkFlow(String id, CsvLoadDefinition loadDefinition) throws IOException, ClassNotFoundException {
+    public CsvEtlPipeline buildWorkFlow( CsvLoadDefinition loadDefinition) throws IOException, ClassNotFoundException {
         //store somewhere!!
         this.loadDefinition = loadDefinition;
         RowProcessor<Object> generateCsvClass = generateCsvClass();
         CsvEtlPipeline pipeline = new CsvEtlPipeline();
         pipeline.setCsvProcessor(generateCsvClass);
+        pipeline.setCsvProcessorClassName(generateCsvClass.getClass().getCanonicalName());
         pipeline.setDefintion(loadDefinition);
-        pipeline.setId(id);
+        pipeline.setId(loadDefinition.getId());
         return pipeline;
     }
 
+    @Override
+    public void init() {
+        log.info("starting");
+    }
+
+    @Override
+    public void tearDown() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    } 
+    
     public boolean isTestBuild() {
         return testBuild;
     }
@@ -178,4 +190,5 @@ public class CsvEtlBuilder {
                         + "<http://www.mongodb.com/licensing/server-side-public-license>.");
         return builder;
     }
+
 }
