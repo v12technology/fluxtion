@@ -18,15 +18,18 @@
 package com.fluxtion.generator.compiler;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.java.Log;
+import org.apache.commons.io.FileUtils;
 
 /**
- * A registry that stores the output destinations for use by the generation/loading
- * processes.
- * 
+ * A registry that stores the output destinations for use by the
+ * generation/loading processes.
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log
@@ -72,7 +75,7 @@ public class OutputRegistry {
                 log.log(Level.WARNING, "could not build classloader from cache directories", e);
             }
         } else {
-            if(dirOptions == null){
+            if (dirOptions == null) {
                 dirOptions = DirOptions.JAVA_GENDIR_OUTPUT;
             }
             switch (dirOptions) {
@@ -85,6 +88,23 @@ public class OutputRegistry {
                     resDir = OutputRegistry.RESOURCE_TEST_DIR;
             }
         }
+
+        try {
+            FileUtils.forceMkdir(getGenDirFile());
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "could not make generated output directory {0}", getGenDirFile());
+        }
+        try {
+            FileUtils.forceMkdir(getClassesDirFile());
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "could not make classes output directory {0}", getClassesDirFile());
+        }
+        try {
+            FileUtils.forceMkdir(getResDirFile());
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, "could not make recources output directory {0}", getResDirFile());
+        }
+
         log.log(Level.INFO, "updated resources registry : {0}", toString());
     }
 
@@ -124,18 +144,28 @@ public class OutputRegistry {
     public ClassLoader getClassLoader() {
         return classLoader;
     }
-    
+
     @Override
     public String toString() {
-        return "OutputRegistry{" 
-                + "fluxtion.cacheDirectory=" + System.getProperty("fluxtion.cacheDirectory") 
-                + ", dirOptions=" + dirOptions 
-                + ", genDir=" + genDir 
-                + ", resDir=" + resDir 
-                + ", classesDir=" + classesDir 
-                + ", classLoader=" + classLoader 
-                + '}';
+        try {
+            return "OutputRegistry{"
+                    + "fluxtion.cacheDirectory=" + System.getProperty("fluxtion.cacheDirectory")
+                    + ", dirOptions=" + dirOptions
+                    + ", genDir=" + getGenDirFile().getCanonicalPath()
+                    + ", resDir=" + getResDirFile().getCanonicalPath()
+                    + ", classesDir=" + getClassesDirFile().getCanonicalPath()
+                    + ", classLoader=" + classLoader
+                    + '}';
+        } catch (IOException ex) {
+            return "OutputRegistry{"
+                    + "fluxtion.cacheDirectory=" + System.getProperty("fluxtion.cacheDirectory")
+                    + ", dirOptions=" + dirOptions
+                    + ", genDir=" + genDir
+                    + ", resDir=" + resDir
+                    + ", classesDir=" + classesDir
+                    + ", classLoader=" + classLoader
+                    + '}';
+        }
     }
 
-    
 }
