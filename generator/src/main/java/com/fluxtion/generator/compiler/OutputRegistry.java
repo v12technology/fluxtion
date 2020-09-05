@@ -95,7 +95,9 @@ public class OutputRegistry {
             log.log(Level.SEVERE, "could not make generated output directory {0}", getGenDirFile());
         }
         try {
-            FileUtils.forceMkdir(getClassesDirFile());
+            if (getClassesDirFile() != null) {
+                FileUtils.forceMkdir(getClassesDirFile());
+            }
         } catch (IOException ex) {
             log.log(Level.SEVERE, "could not make classes output directory {0}", getClassesDirFile());
         }
@@ -156,7 +158,7 @@ public class OutputRegistry {
                     + ", classesDir=" + getClassesDirFile().getCanonicalPath()
                     + ", classLoader=" + classLoader
                     + '}';
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return "OutputRegistry{"
                     + "fluxtion.cacheDirectory=" + System.getProperty("fluxtion.cacheDirectory")
                     + ", dirOptions=" + dirOptions
