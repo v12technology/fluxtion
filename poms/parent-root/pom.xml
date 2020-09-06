@@ -284,8 +284,8 @@ along with this program.  If not, see
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
-            <scope>provided</scope>
+<!--            <version>1.18.12</version>
+            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -461,6 +461,12 @@ along with this program.  If not, see
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.12</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
