@@ -417,7 +417,7 @@ along with this program.  If not, see
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
-                <version>1.14</version>
+                <version>1.26</version>
             </dependency>
             <!--Replace reflections with classgraph-->
             <dependency>
