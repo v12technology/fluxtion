@@ -47,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 public class GenerationContext {
 
     public static GenerationContext SINGLETON;
+    public static ClassLoader DEFAULT_CLASSLOADER;
     private static final AtomicInteger COUNT = new AtomicInteger();
     private final Map<? super Object, Map> cacheMap;
 
@@ -206,7 +207,7 @@ public class GenerationContext {
         this.sepClassName = sepClassName;
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
-        this.classLoader = this.getClass().getClassLoader();
+        this.classLoader = DEFAULT_CLASSLOADER == null ? this.getClass().getClassLoader() : DEFAULT_CLASSLOADER;
         javaCompiler = new CachedCompiler(null, buildOutputDirectory);
         cacheMap = new HashMap<>();
     }
@@ -317,13 +318,18 @@ public class GenerationContext {
 
     private static InputStream getInputStream(@NotNull String filename) throws FileNotFoundException {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        InputStream is = contextClassLoader.getResourceAsStream(filename);
-        if (is != null) {
-            return is;
-        }
-        InputStream is2 = contextClassLoader.getResourceAsStream('/' + filename);
-        if (is2 != null) {
-            return is2;
+        InputStream is = null;
+        try {
+            is = contextClassLoader.getResourceAsStream(filename);
+            if (is != null) {
+                return is;
+            }
+            InputStream is2 = contextClassLoader.getResourceAsStream('/' + filename);
+            if (is2 != null) {
+                return is2;
+            }
+        }catch(Exception e){
+            //problem reading - continue
         }
         return new FileInputStream(filename);
     }
