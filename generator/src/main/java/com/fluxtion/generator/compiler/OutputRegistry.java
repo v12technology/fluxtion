@@ -70,7 +70,9 @@ public class OutputRegistry {
             try {
                 final URL classesDir = getClassesDirFile().toURI().toURL();
                 final URL reosurcesDir = getResDirFile().toURI().toURL();
-                classLoader = new URLClassLoader(new URL[]{classesDir, reosurcesDir});
+                //TODO valiate if we need a parent class loder or not
+                classLoader = new URLClassLoader( new URL[]{classesDir, reosurcesDir});
+//                classLoader = new URLClassLoader("fluxtionCompilerClassloader", new URL[]{classesDir, reosurcesDir}, null);
             } catch (Exception e) {
                 log.log(Level.WARNING, "could not build classloader from cache directories", e);
             }
