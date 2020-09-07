@@ -5,7 +5,7 @@ import com.fluxtion.integration.eventflow.PipelineFilter;
 import com.fluxtion.integration.eventflow.Pipeline;
 import com.fluxtion.integration.eventflow.filters.RowProcessorFilter;
 import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  * Copyright (c) 2020, V12 Technology Ltd.

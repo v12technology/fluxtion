@@ -24,7 +24,7 @@ import java.io.IOException;
 import static java.nio.file.Files.newBufferedReader;
 import java.nio.file.Paths;
 import lombok.Data;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

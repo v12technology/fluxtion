@@ -23,7 +23,7 @@ import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import lombok.Data;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

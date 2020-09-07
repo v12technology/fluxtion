@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-spring-boot run</actionName>
+            <displayName>spring-boot run</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-spring-boot package</actionName>
+            <displayName>spring-boot package</displayName>
+            <goals>
+                <goal>package</goal>
+                
+            </goals>
+        </action>
+    </actions>

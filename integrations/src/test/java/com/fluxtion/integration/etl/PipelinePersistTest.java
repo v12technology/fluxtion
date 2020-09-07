@@ -21,7 +21,7 @@ import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,9 +30,10 @@ import org.junit.Test;
 public class PipelinePersistTest {
 
     @Test
-    @Ignore
+//    @Ignore
     public void writeAndReadPipelines() throws IOException {
         Main main = new Main().start();
+        String id = "org.greg.Data2";
         String yaml = ""
                 + "id: org.greg.Data2\n"
                 + "columns:\n"
@@ -41,15 +42,24 @@ public class PipelinePersistTest {
                 + "derived:\n"
                 + "- {name: halfAge, type: int, function: '"
                 + "//some comments\n\n"
-                + "return age * 2;'}\n"
+                + "return age / 2;'}\n"
                 + "postRecordFunction: '//no-op demo callback\n'"
                 + "";
-        main.buildModel(yaml);
+
+        if (main.getModel(id) == null) {
+            main.buildModel(yaml);
+        }
+        StringReader reader = new StringReader("age,f__NAME,lastName\n"
+                + "22,feed,fgggf\n"
+                + "30AAA000,tim,hfd8e\n"
+                + "80,mary,blythe\n"
+        );
+        main.executePipeline(id, reader);
     }
-    
+
     @Test
     @Ignore
-    public void runPipeline(){
+    public void runPipeline() {
         Main main = new Main().start();
         String id = "org.greg.Data1";
         StringReader reader = new StringReader("age,f__NAME,lastName\n"
