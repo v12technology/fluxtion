@@ -72,6 +72,7 @@ public class FileConfig implements Lifecycle {
 
     @Override
     public void tearDown() {
+        log.info("stopping");
     }
 
     public File getGenDirFile() {

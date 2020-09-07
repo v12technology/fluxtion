@@ -28,8 +28,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.Yaml;
@@ -51,22 +49,29 @@ public class PipelineFileStore implements PipelineStore, Lifecycle {
 
     @Override
     public List<CsvEtlPipeline> getAllPipelines() {
-        log.info("getAllPipelines");
-        File pipeFile = new File(fileConfig.getResDirFile(), pipelineFile);
         List<CsvEtlPipeline> list = new ArrayList<>();
-        try(Reader reader = new FileReader(pipeFile)){
-            Yaml yaml = new Yaml();
-            Iterable<Object> loadAll = yaml.loadAll(reader);
-            for (Iterator<Object> iterator = yaml.loadAll(reader).iterator(); iterator.hasNext();) {
-                CsvEtlPipeline next = (CsvEtlPipeline) iterator.next();
-                list.add(next);
+        try {
+            log.info("getAllPipelines");
+            File pipeFile = new File(fileConfig.getResDirFile(), pipelineFile);
+            if(pipeFile.createNewFile()){
+                log.info("created new pipeline file:{}", pipeFile);
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(PipelineFileStore.class.getName()).log(Level.SEVERE, null, ex);
+            try (Reader reader = new FileReader(pipeFile)) {
+                Yaml yaml = new Yaml();
+                Iterable<Object> loadAll = yaml.loadAll(reader);
+                for (Iterator<Object> iterator = yaml.loadAll(reader).iterator(); iterator.hasNext();) {
+                    CsvEtlPipeline next = (CsvEtlPipeline) iterator.next();
+                    list.add(next);
+                }
+            } catch (FileNotFoundException ex) {
+                log.info("no pipeline file found", ex);
+            } catch (IOException ex) {
+                log.warn("problem while reading pipeline file", ex);
+            }
+            log.info("loaded:{}", list);
         } catch (IOException ex) {
-            Logger.getLogger(PipelineFileStore.class.getName()).log(Level.SEVERE, null, ex);
+            log.warn("could not create pipeline file", ex);
         }
-        log.info("loaded:{}", list);
         return list;
     }
 
@@ -102,6 +107,7 @@ public class PipelineFileStore implements PipelineStore, Lifecycle {
 
     @Override
     public void tearDown() {
+        log.info("stopping");
     }
 
 }

@@ -77,7 +77,7 @@ public class CsvEtlBuilder implements Lifecycle{
 
     @Override
     public void tearDown() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        log.info("stopping");
     } 
     
     public boolean isTestBuild() {

@@ -36,13 +36,15 @@ public class PipelineController implements Lifecycle {
     private CsvEtlBuilder builder;
     private PipelineRegistry pipelineRegistry;
 
-    public void buildModel(String yaml) {
+    public CsvEtlPipeline buildModel(String yaml) {
+        CsvEtlPipeline pipeline = null;
         try {
-            CsvEtlPipeline pipeline = builder.buildWorkFlow(yaml);
+            pipeline = builder.buildWorkFlow(yaml);
             pipelineRegistry.registerModel(pipeline);
         } catch (IOException | ClassNotFoundException ex) {
             log.warn("unable to build pipeliine", ex);
         }
+        return pipeline;
     }
 
     public void executePipeline(String id, Reader reader) {

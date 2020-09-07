@@ -52,7 +52,6 @@ public class PipelineRegistry implements Lifecycle {
         pipelineStore.getAllPipelines().forEach(c ->{
             try {
                 String csvProcessorClassName = c.getCsvProcessorClassName();
-                OutputRegistry.INSTANCE.getClassLoader();
                 Class<RowProcessor> forName = (Class<RowProcessor>) Class.forName(csvProcessorClassName, true, OutputRegistry.INSTANCE.getClassLoader());
                 RowProcessor newInstance = (RowProcessor) forName.getDeclaredConstructors()[0].newInstance();
                 log.info("created rowprocessor id:{}, instance:{}", c.getId(), newInstance);
@@ -77,6 +76,7 @@ public class PipelineRegistry implements Lifecycle {
 
     @Override
     public void tearDown() {
+        log.info("stopping");
     }
 
 //    public void loadModels() {

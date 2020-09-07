@@ -19,13 +19,16 @@ package com.fluxtion.integration.etl;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
+@Service
 public class Main {
 
     public static void main(String[] args) throws IOException {
@@ -59,20 +62,30 @@ public class Main {
         return this;
     }
 
-    public void buildModel(String yaml) {
-        controller.buildModel(yaml);
+    public CsvEtlPipeline buildModel(String yaml) {
+        return controller.buildModel(yaml);
     }
 
     public void executePipeline(String id, Reader reader) {
         controller.executePipeline(id, reader);
     }
     
+    public CsvEtlPipeline getModel(String id){
+        return pipelineRegistry.getPipelines().get(id);
+    }
+    
+    public Map<String, CsvEtlPipeline> listModels(){
+        return pipelineRegistry.getPipelines();
+    }
+    
     public Main stop() {
+        log.info("stopping etl");
         controller.tearDown();
         etlBuilder.tearDown();
         pipelineRegistry.tearDown();
         pipelineFileStore.tearDown();
         fileConfig.tearDown();
+        log.info("stopped etl");
         return this;
     }
 
