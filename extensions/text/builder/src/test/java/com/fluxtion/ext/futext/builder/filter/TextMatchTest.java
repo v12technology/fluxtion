@@ -22,7 +22,7 @@ import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.futext.builder.test.helpers.TextMatchPrinter;
 import com.fluxtion.ext.text.builder.ascii.AsciiMatchFilterFactory;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.HashSet;
 import java.util.Set;

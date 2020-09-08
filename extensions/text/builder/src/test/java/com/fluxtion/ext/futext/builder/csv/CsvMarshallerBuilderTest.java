@@ -28,7 +28,7 @@ import com.fluxtion.ext.text.builder.csv.CharTokenConfig;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.FixedLenMarshallerBuilder.fixedLenMarshaller;
 import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.concurrent.atomic.LongAdder;

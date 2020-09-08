@@ -37,7 +37,7 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;

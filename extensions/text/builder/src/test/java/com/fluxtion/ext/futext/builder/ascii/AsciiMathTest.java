@@ -15,7 +15,7 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntDelimited;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntFixedLength;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

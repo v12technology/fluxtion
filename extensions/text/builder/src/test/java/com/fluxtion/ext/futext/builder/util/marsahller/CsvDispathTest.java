@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.util.marsahller;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import java.util.concurrent.atomic.LongAdder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

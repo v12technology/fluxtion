@@ -31,7 +31,7 @@ import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readBytesCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import java.util.Map;
 import java.util.function.Function;
