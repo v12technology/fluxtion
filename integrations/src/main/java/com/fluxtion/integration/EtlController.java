@@ -34,54 +34,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class EtlController {
 
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
     @Autowired
     private Main main;
-
-    @GetMapping("loadclass")
-    public String classLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-        Class<?> clazz = Class.forName("com.fluxtion.api.annotations.OnEvent");
-        Class<?> clazz2 = Class.forName("com.fluxtion.api.annotations.OnEvent", true, DEFAULT_CLASSLOADER);
-        final String info = "clazz:" + clazz.getName() + " loader:" + clazz.getClassLoader().getName() + "\nclazz2:" + clazz2.getName() + " loader2:" + clazz2.getClassLoader().getName();
-//        Object newInstance = clazz.getDeclaredConstructors()[0].newInstance();
-        log.info(info);
-        String s;
-        return info;
-    }
     
     @GetMapping("/pipeline/list")
     public Collection<CsvEtlPipeline> getAllPipelines() {
         return main.listModels().values();
     }
 
-    @GetMapping("/pipeline/buildsample")
-    public CsvEtlPipeline buildSample() {
-        String id = "org.greg.Data2";
-        String yaml = ""
-                + "id: org.greg.Data2\n"
-                + "columns:\n"
-                + "- {name: age, type: int}\n"
-                + "- {name: lastName, type: String, function: 'return input.toString().toUpperCase();' }\n"
-                + "derived:\n"
-                + "- {name: halfAge, type: int, function: '"
-                + "//some comments\n\n"
-                + "return age / 2;'}\n"
-                + "postRecordFunction: '//no-op demo callback\n'"
-                + "";
-
-        return  main.buildModel(yaml);
-    }
-
     @PostConstruct
     public void init() {
         log.info("starting");
-        main.start();
+//        main.start();
     }
 
     @PreDestroy
     public void teardown() {
         log.info("stopping");
-        main.stop();
+//        main.stop();
     }
 }

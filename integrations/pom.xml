@@ -50,25 +50,6 @@ along with this program.  If not, see
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-<!--                add these to the finished jar by hand to run in the spring boot uber jar:
-                    jar uf fluxtion-integration-2.6.3-SNAPSHOT.jar -C src\test\fluxtion-etl\test1\cache\classes lombok
-                    jar uf fluxtion-integration-2.6.3-SNAPSHOT.jar -C src\test\fluxtion-etl\test1\cache\classes com-->
-                    <excludes>
-                        <exclude>
-                            <groupId>com.fluxtion</groupId>
-                            <artifactId>fluxtion-api</artifactId>
-                        </exclude>
-                        <exclude>
-                            <groupId>com.fluxtion.extension</groupId>
-                            <artifactId>fluxtion-streaming-api</artifactId>
-                        </exclude>
-                        <exclude>
-                            <groupId>com.fluxtion.extension</groupId>
-                            <artifactId>fluxtion-text-api</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -153,13 +134,11 @@ along with this program.  If not, see
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.13.3</version>
             <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.13.3</version>
             <!--<scope>provided</scope>-->
         </dependency>
         <!--log4j2 end-->

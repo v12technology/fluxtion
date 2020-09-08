@@ -20,6 +20,8 @@ package com.fluxtion.integration.etl;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +43,9 @@ public class Main {
     private PipelineFileStore pipelineFileStore;
     private PipelineRegistry pipelineRegistry;
 
+    @PostConstruct
     public Main start() {
+        log.info("starting etl");
         //create instances
         fileConfig = new FileConfig("src/test/fluxtion-etl/test1");
         pipelineFileStore = new PipelineFileStore();
@@ -59,6 +63,7 @@ public class Main {
         pipelineFileStore.init();
         pipelineRegistry.init();
         etlBuilder.init();
+        log.info("started etl");
         return this;
     }
 
@@ -78,6 +83,7 @@ public class Main {
         return pipelineRegistry.getPipelines();
     }
     
+    @PreDestroy
     public Main stop() {
         log.info("stopping etl");
         controller.tearDown();

@@ -30,7 +30,7 @@ public class EtlViewController {
     @Autowired
     private Main main;
 
-    @GetMapping("/pipeline/view/all")
+    @GetMapping("/")
     public String viewAll( Model model) {
         model.addAttribute("size", main.listModels().size());
         model.addAttribute("pipelines", main.listModels().values());

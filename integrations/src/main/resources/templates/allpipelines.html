@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <p th:text="'Number pipelines = ' + ${size}" />
-    
-    
-<tbody>
-    <tr th:each="pipeline: ${pipelines}">
-        <td th:text="${pipeline.id}" />
-    </tr>
-</tbody>
-    
+    <head>
+        <title>Getting Started: Serving Web Content</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <h1>Testing page for fluxtion etl</h1>
+        <h2>Useful links</h2>
+        <nav>
+            <ul>
+                <li> <a href="/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config">Swagger - REST documentation</a> </li>
+                <li> <a href="/pipeline/list">All pipelines - JSON</a> </li>
+                <li> <a href="/dev-test/loadclass">Test loading a class</a> </li>
+                <li> <a href="/dev-test/buildsample">Test build a sample pipeline</a> </li>
+            </ul>
+        </nav>  
+        <h2>Summary of pipelines</h2>
+        <p th:text="'Number pipelines = ' + ${size}" />
+    <tbody>
+        <tr th:each="pipeline: ${pipelines}">
+            <td th:text="${pipeline.id}" />
+        </tr>
+    </tbody>
+
 </body>
 </html>
