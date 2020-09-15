@@ -9,7 +9,8 @@ defintion:
   id: org.greg.Data3
   postRecordFunction: //no-op demo callback
 id: org.greg.Data3
---- !!com.fluxtion.integration.etl.CsvEtlPipeline
+--- 
+!!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.Test_1CsvDecoder0
 defintion:
   columns:
@@ -18,7 +19,8 @@ defintion:
   derived: []
   id: org.greg.Test_1
 id: org.greg.Test_1
---- !!com.fluxtion.integration.etl.CsvEtlPipeline
+--- 
+!!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.Data2CsvDecoder0
 defintion:
   columns:
