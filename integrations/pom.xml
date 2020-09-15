@@ -53,6 +53,25 @@ along with this program.  If not, see
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>patch-fatjar-fluxtion</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>springbootfix/updateBootJar.bat</executable>
+                    <commandlineArgs></commandlineArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
            
@@ -155,12 +174,6 @@ along with this program.  If not, see
             <!--<scope>provided</scope>-->
         </dependency>
         <!--log4j2 end-->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.4.2</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
