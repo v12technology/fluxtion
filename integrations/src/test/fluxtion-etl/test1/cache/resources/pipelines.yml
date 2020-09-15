@@ -1,0 +1,35 @@
+!!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.Data3CsvDecoder0
+defintion:
+  columns:
+  - {name: age, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
+  derived:
+  - {function: return age / 2;, name: halfAge, type: int}
+  id: org.greg.Data3
+  postRecordFunction: //no-op demo callback
+id: org.greg.Data3
+--- !!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.Test_1CsvDecoder0
+defintion:
+  columns:
+  - {name: height, type: int}
+  - {name: lastName, type: String}
+  derived: []
+  id: org.greg.Test_1
+id: org.greg.Test_1
+--- !!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.Data2CsvDecoder0
+defintion:
+  columns:
+  - {name: age, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
+  derived:
+  - function: |-
+      //some comments
+      return age / 2;
+    name: halfAge
+    type: int
+  id: org.greg.Data2
+  postRecordFunction: '//no-op demo callback '
+id: org.greg.Data2
