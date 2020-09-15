@@ -25,8 +25,6 @@ import com.fluxtion.integration.eventflow.sources.DelimitedSource;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
