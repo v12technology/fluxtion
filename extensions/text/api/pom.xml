@@ -40,7 +40,6 @@ along with this program.  If not, see
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>3.4.2</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <properties>
