@@ -12,9 +12,8 @@ public class DemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
-//        DEFAULT_CLASSLOADER = DemoApplication.class.getClassLoader();
         DEFAULT_CLASSLOADER = OutputRegistry.INSTANCE.getClassLoader();;
-        log.info("default classloader: '{}'", DEFAULT_CLASSLOADER.getName());
+        log.info("default classloader: '{}'", DEFAULT_CLASSLOADER);
         log.info("java.io.tmpdir: '{}'", System.getProperty("java.io.tmpdir"));
         log.debug("testing DEBUG message");
     }
