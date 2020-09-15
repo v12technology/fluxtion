@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/include" />
+    <body>
+        <nav th:replace="fragments/header"/>
+
+        <div class="container">
+            <h2>Summary of pipelines</h2>
+            <p th:text="'Number pipelines = ' + ${size}" />
+
+            <table id="pipelineList">
+                <thead>
+                    <tr>
+                        <th> Pipeline id </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pipeline: ${pipelines}">
+                        <td th:text="${pipeline.id}" />
+                    </tr>
+                </tbody>
+            </table>    
+        </div>
+
+        <div th:replace="fragments/footer"/>
+    </body>
+</html>
