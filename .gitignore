@@ -21,3 +21,5 @@
 /integrations/target/
 /integrations/nbproject/
 /integrations/springbootfix/extract/
+/integrations/src/test/fluxtion-etl/test1/cache/source/
+/integrations/src/test/fluxtion-etl/test1/cache/classes/
