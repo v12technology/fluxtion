@@ -18,8 +18,13 @@
 package com.fluxtion.integration.etl;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
-import com.fluxtion.generator.compiler.OutputRegistry;
 import java.beans.Transient;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import lombok.Data;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
@@ -38,10 +43,15 @@ public class CsvEtlPipeline {
     private transient RowProcessor csvProcessor;
     private CsvLoadDefinition defintion;
     private String csvProcessorClassName;
-    
+
     @Transient
-    public RowProcessor getCsvProcessor(){
-        return csvProcessor;
+    public RowProcessor getCsvProcessor() {
+        try {
+            return (RowProcessor) csvProcessor.getClass().getDeclaredConstructors()[0].newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(CsvEtlPipeline.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("cnnot buuld row processor", ex);
+        }
     }
 
     public String toYaml() {
@@ -61,6 +71,18 @@ public class CsvEtlPipeline {
         return yaml.dumpAs(this, Tag.MAP, null);
     }
 
+    public List<String> getHeaders() {
+        List<String> headers = new ArrayList<>();
+        defintion.getColumns().forEach(c -> headers.add("\"" + c.getName() + "\""));
+        defintion.getColumns().stream().map(Column::getName).collect(Collectors.joining(","));
+        return headers;
+    }
+
+    public String getHeadersAsCsv() {
+        List<String> headers = new ArrayList<>();
+        return defintion.getColumns().stream().map(Column::getName).collect(Collectors.joining(","));
+    }
+
 //    public static CsvEtlPipeline loadPipeline(String yaml) {
 //        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 //        Thread.currentThread().setContextClassLoader(OutputRegistry.INSTANCE.getClassLoader());
@@ -73,5 +95,4 @@ public class CsvEtlPipeline {
 //        Thread.currentThread().setContextClassLoader(originalClassLoader);
 //        return pipeline;
 //    }
-
 }

@@ -19,6 +19,7 @@ package com.fluxtion.integration.etl;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -42,6 +43,7 @@ public class Main {
     private FileConfig fileConfig;
     private PipelineFileStore pipelineFileStore;
     private PipelineRegistry pipelineRegistry;
+    private MarshallerRegistry marshallerRegistry;
 
     @PostConstruct
     public Main start() {
@@ -52,13 +54,16 @@ public class Main {
         pipelineRegistry = new PipelineRegistry();
         etlBuilder = new CsvEtlBuilder();
         controller = new PipelineController();
+        marshallerRegistry = new MarshallerRegistry();
         //set config
         //set references
         pipelineFileStore.setFileConfig(fileConfig);
         pipelineRegistry.setPipelineStore(pipelineFileStore);
         controller.setPipelineRegistry(pipelineRegistry);
         controller.setBuilder(etlBuilder);
+        controller.setMarshallerRegistry(marshallerRegistry);
         //init
+        marshallerRegistry.init();
         fileConfig.init();
         pipelineFileStore.init();
         pipelineRegistry.init();
@@ -73,6 +78,10 @@ public class Main {
 
     public void executePipeline(String id, Reader reader) {
         controller.executePipeline(id, reader);
+    }
+
+    public void executePipeline(String id, Reader reader, Writer out) {
+        controller.executePipeline(id, reader, out);
     }
     
     public CsvEtlPipeline getModel(String id){

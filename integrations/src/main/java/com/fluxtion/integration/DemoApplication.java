@@ -16,6 +16,7 @@ public class DemoApplication {
         DEFAULT_CLASSLOADER = OutputRegistry.INSTANCE.getClassLoader();;
         log.info("default classloader: '{}'", DEFAULT_CLASSLOADER.getName());
         log.info("java.io.tmpdir: '{}'", System.getProperty("java.io.tmpdir"));
+        log.debug("testing DEBUG message");
     }
 
 }

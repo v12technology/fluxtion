@@ -19,9 +19,14 @@ package com.fluxtion.integration.etl;
 
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.integration.eventflow.EventFlow;
+import com.fluxtion.integration.eventflow.sinks.CsvSink;
+import com.fluxtion.integration.eventflow.sinks.WriterSink;
 import com.fluxtion.integration.eventflow.sources.DelimitedSource;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -35,6 +40,7 @@ public class PipelineController implements Lifecycle {
 
     private CsvEtlBuilder builder;
     private PipelineRegistry pipelineRegistry;
+    private MarshallerRegistry marshallerRegistry;
 
     public CsvEtlPipeline buildModel(String yaml) {
         CsvEtlPipeline pipeline = null;
@@ -52,6 +58,17 @@ public class PipelineController implements Lifecycle {
         if (pipeline != null) {
             EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
                     .first(System.out::println)
+                    .start();
+        }
+    }
+
+    public void executePipeline(String id, Reader reader, Writer out) {
+        CsvEtlPipeline pipeline = pipelineRegistry.getPipelines().get(id);
+        if (pipeline != null) {
+            pipeline.getCsvProcessor().init();
+            EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
+                    .sink(new WriterSink(out))
+                    .sink(new CsvSink(marshallerRegistry))
                     .start();
         }
     }

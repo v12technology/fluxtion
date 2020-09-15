@@ -52,10 +52,23 @@ public class PipelineRegistry implements Lifecycle {
         pipelineStore.getAllPipelines().forEach(c ->{
             try {
                 String csvProcessorClassName = c.getCsvProcessorClassName();
-                Class<RowProcessor> forName = (Class<RowProcessor>) Class.forName(csvProcessorClassName, true, OutputRegistry.INSTANCE.getClassLoader());
-                RowProcessor newInstance = (RowProcessor) forName.getDeclaredConstructors()[0].newInstance();
-                log.info("created rowprocessor id:{}, instance:{}", c.getId(), newInstance);
-                c.setCsvProcessor(newInstance);
+                Class forName = Class.forName(csvProcessorClassName, true, OutputRegistry.INSTANCE.getClassLoader());
+                
+                log.info("interfaces:{}", List.of(forName.getInterfaces()));
+                Class superclass = forName.getInterfaces()[0];
+                log.info("superclass:{} classloader:{}", superclass, superclass.getClassLoader());
+                log.info("RowProcessor:{} classloader:{}", RowProcessor.class, RowProcessor.class.getClassLoader());
+                
+                log.info("equal classes:{}", RowProcessor.class.equals(superclass));
+                
+                Object newInstance =  forName.getDeclaredConstructors()[0].newInstance();
+                log.info("created rowprocessor id:{}, instance:{} rowProcessor:{}", c.getId(), newInstance, newInstance instanceof RowProcessor);
+                
+                superclass = newInstance.getClass().getSuperclass();
+                log.info("superclass:{} classloader:{}", superclass, superclass.getClassLoader());
+                
+                
+                c.setCsvProcessor((RowProcessor)newInstance);
                 pipelines.put(c.getId(), c);
             } catch (ClassNotFoundException ex) {
                 log.warn("could not create csv processor", ex);
