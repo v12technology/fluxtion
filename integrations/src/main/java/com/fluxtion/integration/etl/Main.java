@@ -59,14 +59,15 @@ public class Main {
         //set references
         pipelineFileStore.setFileConfig(fileConfig);
         pipelineRegistry.setPipelineStore(pipelineFileStore);
+        pipelineRegistry.setBuilder(etlBuilder);
         controller.setPipelineRegistry(pipelineRegistry);
         controller.setBuilder(etlBuilder);
         controller.setMarshallerRegistry(marshallerRegistry);
         //init
-        marshallerRegistry.init();
         fileConfig.init();
         pipelineFileStore.init();
         pipelineRegistry.init();
+        marshallerRegistry.init();
         etlBuilder.init();
         log.info("started etl");
         return this;
