@@ -20,7 +20,6 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.generator.compiler.OutputRegistry;
-import com.fluxtion.integration.eventflow.EventSink;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
@@ -79,6 +78,7 @@ public class MarshallerRegistry implements Lifecycle {
             rowProcessorInfoList.forEach(this::addMarshaller);
         }
         log.info("init completed scan for csv marshallers");
+        marshallerMap.keySet().stream().forEach(k -> log.info("marsahller:{}", k));
     }
 
     private void addMarshaller(ClassInfo info) {
@@ -90,7 +90,6 @@ public class MarshallerRegistry implements Lifecycle {
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             log.warn("unable to load RowProcessor", ex);
         }
-        marshallerMap.keySet().stream().forEach(k -> log.info("marsahller:{}", k));
     }
 
     @Override
