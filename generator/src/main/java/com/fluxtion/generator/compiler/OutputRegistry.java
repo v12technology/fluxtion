@@ -56,6 +56,7 @@ public class OutputRegistry {
 
     public final void update() {
         String dir = System.getProperty("fluxtion.cacheDirectory");
+        log.log(Level.INFO, "upate fluxtion.cacheDirectory:'{0}'", dir);
         genDir = OutputRegistry.JAVA_GEN_DIR;
         resDir = OutputRegistry.RESOURCE_DIR;
         classLoader = ClassLoader.getSystemClassLoader();
