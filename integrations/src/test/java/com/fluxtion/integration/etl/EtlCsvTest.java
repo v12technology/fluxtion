@@ -59,7 +59,7 @@ public class EtlCsvTest {
     @Test
     public void fromYaml() throws IOException, ClassNotFoundException, InterruptedException {
 
-        System.setProperty("fluxtion.cacheDirectory", "src/test/fluxtion-cache/test1");
+        System.setProperty("fluxtion.cacheDirectory", "src/test/fluxtion-cache/test2");
         System.out.println(OutputRegistry.INSTANCE.toString());
         String yaml = ""
                 + "id: org.greg.Data1\n"
