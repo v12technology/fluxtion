@@ -32,6 +32,6 @@ $jar uf $SCRIPTDIR/../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extrac
 
 echo "patching fluxtion classes"
 $jar uf $SCRIPTDIR/../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir com
-echo "completed parching"
+echo "completed patching"
 
 
