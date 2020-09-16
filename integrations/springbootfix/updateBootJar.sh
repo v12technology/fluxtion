@@ -28,10 +28,10 @@ fi
 cd $CD
 
 echo "patching lombok classes"
-$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir lombok
+$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir/lombok
 
 echo "patching fluxtion classes"
-$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir com
+$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir/com
 echo "completed parching"
 
 
