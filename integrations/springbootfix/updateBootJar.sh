@@ -1,10 +1,9 @@
 #!/bin/bash
 #script to patch springboot jar with fluxtion classes required for dynamic compilation
 set -m
-echo "hello world"
+echo "patching springboot fat jar with fluxtion classes"
 jar=$JAVA_HOME/bin/jar
 java=$JAVA_HOME/bin/java
-
 
 CD=`pwd`
 cd `dirname $0`
@@ -26,6 +25,13 @@ then
     $jar -xvf ../lombok-1.18.12.jar
     $jar -xvf ../disruptor-3.4.2.jar  
 fi
-
 cd $CD
+
+echo "patching lombok classes"
+$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir lombok
+
+echo "patching fluxtion classes"
+$jar uf $extractDir../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir com
+echo "completed parching"
+
 

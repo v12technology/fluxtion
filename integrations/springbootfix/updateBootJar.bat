@@ -1,6 +1,6 @@
 @echo off
 @break off
-@title Create folder with batch but only if it doesn't already exist - D3F4ULT
+@title Create folder with batch but only if it doesn't already exist 
 @color 0a
 @cls
 set jar="%java_home%\bin\jar.exe"
