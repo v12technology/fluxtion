@@ -62,9 +62,9 @@ public class PipelineRegistry implements Lifecycle {
             } catch (ClassNotFoundException ex) {
                 log.warn("ClassNotFoundException could not create csv processor cannot find decoder:'{}'", csvProcessorClassName);
                 try {
-                    log.info("trying to rebuild workfllow, missing etl processing classes");
-                    builder.buildWorkFlow(c.getDefintion());
-                    pipelines.put(c.getId(), c);
+                    log.info("trying to rebuild CsvEtlPipeline due to missing etl processing classes");
+                    final CsvEtlPipeline pipeline = builder.buildWorkFlow(c.getDefintion());
+                    pipelines.put(c.getId(), pipeline);
                 } catch (IOException | ClassNotFoundException ex1) {
                     Logger.getLogger(PipelineRegistry.class.getName()).log(Level.SEVERE, null, ex1);
                 }
