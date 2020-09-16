@@ -20,10 +20,6 @@ package com.fluxtion.integration;
 import com.fluxtion.integration.etl.CsvEtlPipeline;
 import com.fluxtion.integration.etl.Main;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import static com.fluxtion.builder.generation.GenerationContext.DEFAULT_CLASSLOADER;
@@ -41,10 +37,8 @@ public class DevTestEtlController {
     public String classLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
         Class<?> clazz = Class.forName("com.fluxtion.api.annotations.OnEvent");
         Class<?> clazz2 = Class.forName("com.fluxtion.api.annotations.OnEvent", true, DEFAULT_CLASSLOADER);
-        final String info = "clazz:" + clazz.getName() + " loader:" + clazz.getClassLoader().getName() + "\nclazz2:" + clazz2.getName() + " loader2:" + clazz2.getClassLoader().getName();
-//        Object newInstance = clazz.getDeclaredConstructors()[0].newInstance();
+        final String info = "clazz:" + clazz.getName() + " loader:" + clazz.getClassLoader() + "\nclazz2:" + clazz2.getName() + " loader2:" + clazz2.getClassLoader();
         log.info(info);
-        String s;
         return info;
     }
     

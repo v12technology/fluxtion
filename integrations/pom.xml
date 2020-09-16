@@ -47,7 +47,71 @@ along with this program.  If not, see
     <packaging>jar</packaging>
     <version>2.6.3-SNAPSHOT</version>
     
-    <build>
+    
+    <profiles>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <script.to.execute></script.to.execute>
+                <script.executor>springbootfix/updateBootJar.bat</script.executor>
+            </properties>
+        </profile>
+        <profile>
+            <id>unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <script.to.execute>springbootfix/updateBootJar.sh</script.to.execute>
+                <script.executor>bash</script.executor>
+            </properties>
+        </profile>
+        <profile>
+            <id>our-default-profile</id>
+            <activation>
+                <property>
+                    <name>!unsetDefaultProfile</name>
+                </property>
+            </activation>
+            <build>
+                <defaultGoal>exec:exec</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>patch-fatjar-fluxtion</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>${script.executor}</executable>
+                            <commandlineArgs>${script.to.execute}</commandlineArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
+    <!--    <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -73,7 +137,7 @@ along with this program.  If not, see
                 </configuration>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
            
     <dependencyManagement>   
         <dependencies>
