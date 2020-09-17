@@ -265,6 +265,10 @@ public interface Conversion {
         }
         return -1;
     }
+    
+    static boolean atobool(CharSequence s){
+        return Boolean.valueOf(s.toString());
+    }
 
     static int atoi(CharSequence s)
             throws NumberFormatException {

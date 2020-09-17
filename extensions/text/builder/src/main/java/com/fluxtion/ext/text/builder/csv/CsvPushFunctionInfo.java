@@ -187,6 +187,9 @@ public class CsvPushFunctionInfo {
                 case "long":
                     conversion = "atol(" + defaultMethodCalc + ")";
                     break;
+                case "boolean":
+                    conversion = "atobool(" + defaultMethodCalc + ")";
+                    break;
             }
             if (addConversion) {
                 importMap.addStaticImport(Conversion.class);
