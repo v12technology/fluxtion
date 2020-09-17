@@ -45,6 +45,10 @@ public class Main {
     private PipelineRegistry pipelineRegistry;
     private MarshallerRegistry marshallerRegistry;
 
+    public void deletePipeline(String pipelineId) {
+        pipelineRegistry.deletePipeline(pipelineId);
+    }
+
     @PostConstruct
     public Main start() {
         log.info("starting etl");
@@ -81,16 +85,26 @@ public class Main {
         controller.executePipeline(id, reader);
     }
 
-    public void executePipeline(String id, Reader reader, Writer out) {
-        controller.executePipeline(id, reader, out);
+//    public void executePipeline(String id, Reader reader, Writer out) {
+//        controller.executePipeline(id, reader, out);
+//    }
+
+    public void executePipeline(String id, Reader reader, Writer out, Writer outCsv, Writer errorLog) {
+        controller.executePipeline(id, reader, out, outCsv, errorLog);
     }
     
     public CsvEtlPipeline getModel(String id){
-        return pipelineRegistry.getPipelines().get(id);
+        CsvEtlPipeline pipeline = pipelineRegistry.getPipelines().get(id);
+        pipeline = pipeline==null?pipelineRegistry.getPipelineFailures().get(id):pipeline;
+        return pipeline;
     }
     
     public Map<String, CsvEtlPipeline> listModels(){
         return pipelineRegistry.getPipelines();
+    }
+    
+    public Map<String, CsvEtlPipeline> listFailedModels(){
+        return pipelineRegistry.getPipelineFailures();
     }
     
     @PreDestroy

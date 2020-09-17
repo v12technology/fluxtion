@@ -58,7 +58,7 @@ along with this program.  If not, see
             </activation>
             <properties>
                 <script.to.execute></script.to.execute>
-                <script.executor>springbootfix/updateBootJar.bat</script.executor>
+                <script.executor>springbootfix\updateBootJar.bat</script.executor>
             </properties>
         </profile>
         <profile>

@@ -18,6 +18,7 @@
 package com.fluxtion.integration.etl;
 
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.integration.eventflow.EventFlow;
 import com.fluxtion.integration.eventflow.sinks.CsvSink;
 import com.fluxtion.integration.eventflow.sinks.WriterSink;
@@ -27,6 +28,7 @@ import java.io.Reader;
 import java.io.Writer;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -47,6 +49,12 @@ public class PipelineController implements Lifecycle {
             pipelineRegistry.registerModel(pipeline);
         } catch (IOException | ClassNotFoundException ex) {
             log.warn("unable to build pipeliine", ex);
+            Yaml yamlParser = new Yaml();
+            CsvLoadDefinition loadDefinition = yamlParser.loadAs(yaml, CsvLoadDefinition.class);
+            pipeline = new CsvEtlPipeline();
+            pipeline.setDefintion(loadDefinition);
+            pipeline.setId(loadDefinition.getId());
+            pipelineRegistry.registerFailedModel(pipeline);
         }
         return pipeline;
     }
@@ -60,13 +68,14 @@ public class PipelineController implements Lifecycle {
         }
     }
 
-    public void executePipeline(String id, Reader reader, Writer out) {
+    public void executePipeline(String id, Reader reader, Writer out, Writer outCsv, Writer errorLog) {
         CsvEtlPipeline pipeline = pipelineRegistry.getPipelines().get(id);
         if (pipeline != null) {
+            pipeline.getCsvProcessor().setErrorLog(new ValidationLogger(id));
             pipeline.getCsvProcessor().init();
-            EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
+            EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, errorLog, "limitFromCsv"))
                     .sink(new WriterSink(out))
-                    .sink(new CsvSink(marshallerRegistry))
+                    .sink(new CsvSink(new WriterSink(outCsv), marshallerRegistry))
                     .start();
         }
     }

@@ -24,11 +24,15 @@ import lombok.Data;
  */
 @Data
 public class EtlSampleRun {
+
     private String pipelineId;
     private String inputData;
     private String result;
+    private String result_csv;
+    private String errorLog;
     private boolean processed = false;
-    public String id(){
+
+    public String id() {
         return pipelineId.substring(0, pipelineId.indexOf(","));
     }
 }

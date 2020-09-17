@@ -6,23 +6,25 @@
         <nav th:replace="fragments/header"/>
 
         <div class="container">
-            <h2>Summary of pipelines</h2>
+            <h2>Valid pipelines</h2>
+            <th:block th:each="pipeline: ${pipelines}">
+                Pipeline: [[${pipeline.id}]] 
+                <a th:href="@{/edit-pipeline(id=${pipeline.id})}">edit</a> 
+                <a th:href="@{/delete-pipeline(id=${pipeline.id})}">delete</a> <br/>
+            </th:block>
+            <p/>
+            <p/>
             <p th:text="'Number pipelines = ' + ${size}" />
-
-            <table id="pipelineList">
-                <thead>
-                    <tr>
-                        <th> Pipeline id </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="pipeline: ${pipelines}">
-                        <td th:text="${pipeline.id}" />
-                    </tr>
-                </tbody>
-            </table>    
+            <h2>Invalid pipelines</h2>
+            <th:block th:each="pipeline: ${pipelineFailures}">
+                Pipeline: [[${pipeline.id}]] 
+                <a th:href="@{/edit-pipeline(id=${pipeline.id})}">edit</a>
+                <a th:href="@{/delete-pipeline(id=${pipeline.id})}">delete</a> <br/>
+            </th:block>
+            <p/>
+            <p/>
+            <p th:text="'Number pipelines = ' + ${failedSize}" />
         </div>
-
         <div th:replace="fragments/footer"/>
     </body>
 </html>

@@ -79,20 +79,7 @@ public class CsvEtlPipeline {
     }
 
     public String getHeadersAsCsv() {
-        List<String> headers = new ArrayList<>();
         return defintion.getColumns().stream().map(Column::getName).collect(Collectors.joining(","));
     }
 
-//    public static CsvEtlPipeline loadPipeline(String yaml) {
-//        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-//        Thread.currentThread().setContextClassLoader(OutputRegistry.INSTANCE.getClassLoader());
-//        CsvEtlPipeline pipeline = null;
-//        try {
-//            Yaml yamlParser = new Yaml();
-//            pipeline = yamlParser.loadAs(yaml, CsvEtlPipeline.class);
-//        } catch (Exception e) {
-//        }
-//        Thread.currentThread().setContextClassLoader(originalClassLoader);
-//        return pipeline;
-//    }
 }

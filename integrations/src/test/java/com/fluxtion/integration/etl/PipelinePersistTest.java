@@ -17,7 +17,6 @@
  */
 package com.fluxtion.integration.etl;
 
-import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Ignore;

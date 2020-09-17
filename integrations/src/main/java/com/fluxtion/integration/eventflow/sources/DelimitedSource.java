@@ -17,6 +17,8 @@
  */
 package com.fluxtion.integration.eventflow.sources;
 
+import com.fluxtion.ext.streaming.api.log.LogControlEvent;
+import com.fluxtion.ext.streaming.api.log.WriterLogProvider;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.CharStreamer;
@@ -26,6 +28,7 @@ import com.fluxtion.integration.eventflow.EventSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -36,6 +39,7 @@ import lombok.extern.log4j.Log4j2;
 public class DelimitedSource<T> implements EventSource<T> {
 
     private final CsvRecordMarshaller marshaller;
+    private Writer errorLog;
     private final String id;
     private final CharStreamer streamer;
 
@@ -50,8 +54,15 @@ public class DelimitedSource<T> implements EventSource<T> {
         this.marshaller = new CsvRecordMarshaller(processor);
         this.streamer = CharStreamer.stream(reader, marshaller);
     }
-    
-    public DelimitedSource<T> pollForever(){
+
+    public DelimitedSource(RowProcessor<T> processor, Reader reader, Writer errorLog, String id) {
+        this.errorLog = errorLog;
+        this.id = id;
+        this.marshaller = new CsvRecordMarshaller(processor);
+        this.streamer = CharStreamer.stream(reader, marshaller);
+    }
+
+    public DelimitedSource<T> pollForever() {
         streamer.pollForever();
         return this;
     }
@@ -69,8 +80,11 @@ public class DelimitedSource<T> implements EventSource<T> {
     @Override
     public void start(EventConsumer<T> target) {
         try {
+            if (errorLog != null) {
+                marshaller.handleEvent(LogControlEvent.setLogService(new WriterLogProvider(errorLog).logPrefix(false)));
+            }
             marshaller.handleEvent(new RegisterEventHandler(o -> target.processEvent((T) o)));
-            streamer.sync().stream();
+            streamer.sync().noInit().stream();
         } catch (IOException ex) {
             log.error("problem streaming file", ex);
         }

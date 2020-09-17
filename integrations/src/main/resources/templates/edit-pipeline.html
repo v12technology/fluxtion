@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2020 V12 Technology Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Server Side Public License, version 1,
+as published by MongoDB, Inc.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Server Side License for more details.
+
+You should have received a copy of the Server Side Public License
+along with this program.  If not, see 
+<http://www.mongodb.com/licensing/server-side-public-license>.
+-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/include" />
+    <body>
+        <nav th:replace="fragments/header"/>
+        <div class="container">
+            <h2 th:text="'Edit pipeline: ' + ${etlRequest.pipelineId}" />
+            <form th:action="@{/build-newpipeline}" th:object="${etlRequest}" method="post">
+                <div class="form-group">
+                    <label for="csvDefinition">defintion</label>
+                    <textarea class="form-control" th:field="*{defintion}" rows="25" cols="30"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div th:replace="fragments/footer"/>
+    </body>
+</html>

@@ -87,8 +87,8 @@ public class MarshallerRegistry implements Lifecycle {
             RowProcessor rowProcessor = marshallerClass.getDeclaredConstructor().newInstance();
             log.info("registering marshaller:{} for type:{}", marshallerClass.getName(), rowProcessor.eventClass());
             marshallerMap.put(rowProcessor.eventClass(), rowProcessor);
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            log.warn("unable to load RowProcessor", ex);
+        } catch (Exception ex) {
+            log.warn("unable to load RowProcessor:{}",info, ex);
         }
     }
 
