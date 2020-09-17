@@ -37,6 +37,7 @@ public class PipelinePersistTest {
                 + "id: org.greg.Data2\n"
                 + "columns:\n"
                 + "- {name: age, type: int}\n"
+                + "- {name: alive, type: boolean}\n"
                 + "- {name: lastName, type: String, function: 'return input.toString().toUpperCase();' }\n"
                 + "derived:\n"
                 + "- {name: halfAge, type: int, function: '"
@@ -48,10 +49,10 @@ public class PipelinePersistTest {
         if (main.getModel(id) == null) {
             main.buildModel(yaml);
         }
-        StringReader reader = new StringReader("age,f__NAME,lastName\n"
-                + "22,feed,fgggf\n"
-                + "30AAA000,tim,hfd8e\n"
-                + "80,mary,blythe\n"
+        StringReader reader = new StringReader("age,f__NAME,lastName,alive\n"
+                + "22,feed,fgggf,true\n"
+                + "30AAA000,tim,hfd8e,false\n"
+                + "80,mary,blythe,true\n"
         );
         main.executePipeline(id, reader);
     }

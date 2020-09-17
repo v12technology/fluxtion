@@ -22,13 +22,9 @@ then
     $jar -xvf ../fluxtion-api-2.6.3-SNAPSHOT.jar
     $jar -xvf ../fluxtion-streaming-api-2.6.3-SNAPSHOT.jar
     $jar -xvf ../fluxtion-text-api-2.6.3-SNAPSHOT.jar
-    $jar -xvf ../lombok-1.18.12.jar
     $jar -xvf ../disruptor-3.4.2.jar  
 fi
 cd $CD
-
-echo "patching lombok classes"
-$jar uf $SCRIPTDIR/../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir lombok
 
 echo "patching fluxtion classes"
 $jar uf $SCRIPTDIR/../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C $extractDir com

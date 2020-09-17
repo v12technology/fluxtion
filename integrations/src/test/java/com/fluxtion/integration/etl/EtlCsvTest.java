@@ -65,6 +65,7 @@ public class EtlCsvTest {
                 + "id: org.greg.Data1\n"
                 + "columns:\n"
                 + "- {name: age, type: int}\n"
+                + "- {name: alive, type: boolean}\n"
                 + "- {name: name, mapName: f__NAME, type: String}\n"
                 + "- {name: lastName, type: String, function: 'return input.toString().toUpperCase();' }\n"
                 + "derived:\n"
@@ -76,10 +77,10 @@ public class EtlCsvTest {
         CsvEtlBuilder etl = new CsvEtlBuilder().setTestBuild(true);
         CsvEtlPipeline pipeline = etl.buildWorkFlow(yaml);     
         //age,character,eventTime,F__NAME
-        StringReader reader = new StringReader("age,f__NAME,lastName\n"
-                + "22,feed,fgggf\n"
-                + "30AAA000,tim,hfd8e\n"
-                + "80,mary,blythe\n"
+        StringReader reader = new StringReader("age,f__NAME,lastName,alive\n"
+                + "22,feed,fgggf,true\n"
+                + "30AAA000,tim,hfd8e,false\n"
+                + "80,mary,blythe,true\n"
         );
         EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
                 .first(System.out::println)

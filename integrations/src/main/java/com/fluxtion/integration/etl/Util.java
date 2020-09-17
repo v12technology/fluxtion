@@ -36,7 +36,7 @@ public interface Util {
         String lowerCase = type.toLowerCase();
         TypeName asType = TypeName.OBJECT;
         switch (lowerCase) {
-            case "onject":
+            case "object":
                 asType = TypeName.OBJECT;
                 break;
             case "byte":

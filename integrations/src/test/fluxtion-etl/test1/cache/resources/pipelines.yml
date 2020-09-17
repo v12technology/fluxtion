@@ -1,4 +1,14 @@
 !!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.PaulDataCsvDecoder0
+defintion:
+  columns:
+  - {name: age, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
+  derived:
+  - {function: return age / 2;, name: halfAge, type: int}
+  id: org.greg.PaulData
+id: org.greg.PaulData
+--- !!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.DataFailCsvDecoder0
 defintion:
   columns:
@@ -16,6 +26,16 @@ defintion:
   postRecordFunction: '//no-op demo callback '
 id: org.greg.DataFail
 --- !!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.DataXXXCsvDecoder0
+defintion:
+  columns:
+  - {name: age, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
+  derived:
+  - {function: return age / 2;, name: halfAge, type: int}
+  id: org.greg.DataXXX
+id: org.greg.DataXXX
+--- !!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.DataFail1CsvDecoder0
 defintion:
   columns:
@@ -31,6 +51,16 @@ defintion:
   id: org.greg.DataFail1
   postRecordFunction: '//no-op demo callback '
 id: org.greg.DataFail1
+--- !!com.fluxtion.integration.etl.CsvEtlPipeline
+csvProcessorClassName: org.greg.Data3CsvDecoder0
+defintion:
+  columns:
+  - {name: age, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
+  derived:
+  - {function: return ageXXX / 2;, name: halfAge, type: int}
+  id: org.greg.Data3
+id: org.greg.Data3
 --- !!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.Test_1CsvDecoder0
 defintion:

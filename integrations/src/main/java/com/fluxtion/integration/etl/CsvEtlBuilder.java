@@ -37,9 +37,11 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.lang.model.element.Modifier;
-import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -47,7 +49,7 @@ import org.yaml.snakeyaml.Yaml;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Log4j2
-public class CsvEtlBuilder implements Lifecycle{
+public class CsvEtlBuilder implements Lifecycle {
 
     private CsvLoadDefinition loadDefinition;
     private TypeSpec.Builder csvProcessorBuilder;
@@ -58,7 +60,7 @@ public class CsvEtlBuilder implements Lifecycle{
         return buildWorkFlow(yamlParser.loadAs(definitionAsYaml, CsvLoadDefinition.class));
     }
 
-    public CsvEtlPipeline buildWorkFlow( CsvLoadDefinition loadDefinition) throws IOException, ClassNotFoundException {
+    public CsvEtlPipeline buildWorkFlow(CsvLoadDefinition loadDefinition) throws IOException, ClassNotFoundException {
         //store somewhere!!
         this.loadDefinition = loadDefinition;
         RowProcessor<Object> generateCsvClass = generateCsvClass();
@@ -78,8 +80,8 @@ public class CsvEtlBuilder implements Lifecycle{
     @Override
     public void tearDown() {
         log.info("stopping");
-    } 
-    
+    }
+
     public boolean isTestBuild() {
         return testBuild;
     }
@@ -97,15 +99,15 @@ public class CsvEtlBuilder implements Lifecycle{
                 .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .superclass(ClassName.get(DefaultEvent.class));
 
-        csvProcessorBuilder.addAnnotation(Data.class);
+//        csvProcessorBuilder.addAnnotation(Data.class);
         //fields
         loadDefinition.getColumns().stream().forEach(this::columnToField);
         loadDefinition.getDerived().stream().forEach(this::derivedToField);
+        addToString();
         //
         addOnComplete();
         //build file
         TypeSpec nodeClass = csvProcessorBuilder.build();
-
         //license
         JavaFile javaFile = addLicense(
                 JavaFile.builder(pkgName, nodeClass))
@@ -121,6 +123,7 @@ public class CsvEtlBuilder implements Lifecycle{
     private void columnToField(Column column) {
         FieldSpec.Builder field = FieldSpec.builder(column.typeName(), column.getName())
                 .addModifiers(Modifier.PRIVATE);
+        addBeanAccessor(column);
         if (column.getMapName() != null) {
             log.info("add mapped name:'{}'", column.getMapName());
             field.addAnnotation(AnnotationSpec.builder(ColumnName.class).addMember("value", "$S", column.getMapName()).build());
@@ -137,6 +140,24 @@ public class CsvEtlBuilder implements Lifecycle{
             csvProcessorBuilder.addMethod(funSpec.build());
         }
         csvProcessorBuilder.addField(field.build());
+    }
+
+    private void addBeanAccessor(Column column) {
+        String prefix = column.getType().equalsIgnoreCase("boolean") ? "is" : "get";
+        String get = prefix + StringUtils.capitalize(column.getName());
+        String set = "set" + StringUtils.capitalize(column.getName());
+        MethodSpec.Builder getSpec = MethodSpec.methodBuilder(get)
+                .returns(column.typeName())
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return $L", column.getName());
+        MethodSpec.Builder setSpec = MethodSpec.methodBuilder(set)
+                .addParameter(column.typeName(), column.getName())
+                .returns(void.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("this.$1L = $1L", column.getName());
+        csvProcessorBuilder.addMethod(getSpec.build());
+        csvProcessorBuilder.addMethod(setSpec.build());
+
     }
 
     private void derivedToField(DerivedColumn column) {
@@ -167,6 +188,24 @@ public class CsvEtlBuilder implements Lifecycle{
             funSpec.addCode(postReadFunc.replace("\\n", "\n") + "\n");
             csvProcessorBuilder.addMethod(funSpec.build());
         }
+    }
+
+    private void addToString() {
+        List<String> propertyList = new ArrayList<>();
+        loadDefinition.getColumns().stream().map(Column::getName).forEach(propertyList::add);
+        loadDefinition.getDerived().stream().map(DerivedColumn::getName).forEach(propertyList::add);
+        MethodSpec.Builder toStringSpec = MethodSpec.methodBuilder("toString")
+                .returns(ClassName.get(String.class))
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("String out = \"$1L : {\"", loadDefinition.className());
+        String comma = "";
+        for (String string : propertyList) {
+            toStringSpec.addStatement("out += \"$2L$1L: \" + $1L", string, comma);
+            comma = ", ";
+        }
+        toStringSpec.addStatement("out += \"}\"");
+        toStringSpec.addStatement("return out");
+        csvProcessorBuilder.addMethod(toStringSpec.build());
     }
 
     public void startImport() {

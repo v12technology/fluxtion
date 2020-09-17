@@ -16,14 +16,10 @@ if not exist %~dp0extract (
     %jar% -xvf ..\fluxtion-api-2.6.3-SNAPSHOT.jar
     %jar% -xvf ..\fluxtion-streaming-api-2.6.3-SNAPSHOT.jar
     %jar% -xvf ..\fluxtion-text-api-2.6.3-SNAPSHOT.jar
-    %jar% -xvf ..\lombok-1.18.12.jar
     %jar% -xvf ..\disruptor-3.4.2.jar
     cd "%CD%"  
 ) 
 
-echo patching lombok classes
-%jar% uf %~dp0../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C %extractDir% lombok
-timeout /t 2
 echo patching fluxtion classes
 %jar% uf %~dp0../target/fluxtion-integration-2.6.3-SNAPSHOT.jar  -C %extractDir% com
 echo completed parching 
