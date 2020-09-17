@@ -375,7 +375,7 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 #end
 #if( $foreach.hasNext )msgSink.append(","); #end
 #end
-        msgSink.append("\n");
+        //msgSink.append("\n");
   }
   
   public static void asCsv(${targetClass} src, Appendable target) throws IOException {

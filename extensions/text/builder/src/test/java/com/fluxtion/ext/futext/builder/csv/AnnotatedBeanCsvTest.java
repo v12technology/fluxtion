@@ -123,7 +123,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         MarshallerCustomised instance = new MarshallerCustomised();
         instance.setStringValue("hello");
         processor.toCsv(instance, sb);
-        Assert.assertEquals("OVERWRITTEN_hello\n", sb.toString());
+        Assert.assertEquals("OVERWRITTEN_hello", sb.toString());
     }
     
     public static void marshall(String field, Appendable msgSink){
