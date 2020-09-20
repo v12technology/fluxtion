@@ -38,6 +38,7 @@ along with this program.  If not, see
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <bootstrap.version>4.0.0-2</bootstrap.version>
+        <fontawesome.version>5.14.0</fontawesome.version>
         <webjars-locator.version>0.30</webjars-locator.version>
     </properties>
 
@@ -169,6 +170,11 @@ along with this program.  If not, see
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>${bootstrap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>${fontawesome.version}</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

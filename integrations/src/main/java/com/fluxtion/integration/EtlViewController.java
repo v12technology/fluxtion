@@ -44,6 +44,30 @@ public class EtlViewController {
         return "index";
     }
 
+    @GetMapping({"/admin"})
+    public String indexLte(Model model) {
+        log.info("admin request");
+        return "starter";
+    }
+
+    @GetMapping({"/blank"})
+    public String blank(Model model) {
+        log.info("blank request");
+        return "blank";
+    }
+
+    @GetMapping({"/sample"})
+    public String sample(Model model) {
+        log.info("sample request");
+        return "sample";
+    }
+
+    @GetMapping({"/swagger-wrapped"})
+    public String swaggerWrapped(Model model) {
+        log.info("sample request");
+        return "swagger-wrapped";
+    }
+
     private void buildIndexModel(Model model) {
         model.addAttribute("size", main.listModels().size());
         model.addAttribute("pipelines", main.listModels().values());
@@ -92,10 +116,11 @@ public class EtlViewController {
 
     @GetMapping("/test-newpipeline")
     public String testPipelineForm(Model model) {
+        log.info("new-pipeline request");
         model.addAttribute("classActiveTestPipeline", "active");
         model.addAttribute("etlRequest", new EtlSampleRun());
         model.addAttribute("pipelines", main.listModels().values());
-        return "test-newpipeline";
+        return "new-pipeline";
     }
 
     @PostMapping("/test-newpipeline")
