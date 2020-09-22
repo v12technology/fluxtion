@@ -47,6 +47,7 @@ public class EtlViewController {
     @GetMapping({"/admin"})
     public String indexLte(Model model) {
         log.info("admin request");
+        buildIndexModel(model);
         return "starter";
     }
 
@@ -73,6 +74,10 @@ public class EtlViewController {
         model.addAttribute("pipelines", main.listModels().values());
         model.addAttribute("failedSize", main.listFailedModels().size());
         model.addAttribute("pipelineFailures", main.listFailedModels().values());
+        //for test pipeline card
+        model.addAttribute("classActiveTestPipeline", "active");
+        model.addAttribute("etlRequest", new EtlSampleRun());
+        model.addAttribute("pipelines", main.listModels().values());
     }
 
     @GetMapping("/bootstrapsample")

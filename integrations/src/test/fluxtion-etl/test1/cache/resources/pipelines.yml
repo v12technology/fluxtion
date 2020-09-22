@@ -86,6 +86,7 @@ csvProcessorClassName: org.greg.Data2CsvDecoder0
 defintion:
   columns:
   - {name: age, type: int}
+  - {name: alive, type: boolean}
   - {function: return input.toString().toUpperCase();, name: lastName, type: String}
   derived:
   - function: |-
