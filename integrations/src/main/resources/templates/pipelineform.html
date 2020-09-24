@@ -16,11 +16,17 @@ along with this program.  If not, see
 <http://www.mongodb.com/licensing/server-side-public-license>.
 -->
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="fragments/include" />
-    <body>
-        <nav th:replace="fragments/header"/>
-        <div class="container" style="margin-top:80px">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:th="http://www.thymeleaf.org">    
+  <head th:replace="fragments/lte/admintemplate :: header"/>
+  <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+      <nav th:replace="fragments/lte/admintemplate :: top-navbar"/>
+      <aside th:replace="fragments/lte/admintemplate :: side-navbar"/>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <div class="container">
             <form th:action="@{/build-newpipeline}" th:object="${etlRequest}" method="post">
                 <div class="form-group">
                     <label for="csvDefinition">Etl defintion</label>
@@ -33,6 +39,19 @@ along with this program.  If not, see
                 <p th:text="${sampleYaml}" />
             </pre>
         </div>
-        <div th:replace="fragments/footer"/>
-    </body>
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+
+      <aside th:fragment="control-sidebar"/>
+      <div th:replace="fragments/lte/admintemplate :: footer"></div>
+    </div>
+    <div th:replace = "fragments/lte/admintemplate :: script1"></div>
+  </body>  
+    
+    
+    
+    
+    
+    
 </html>

@@ -163,7 +163,7 @@ public class EtlViewController {
         log.info("delete id:{}", pipelineId);
         main.deletePipeline(pipelineId);
         buildIndexModel(model);
-        return "index";
+        return "starter";
     }
 
 }
