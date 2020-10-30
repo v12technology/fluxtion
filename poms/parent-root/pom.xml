@@ -150,7 +150,7 @@ along with this program.  If not, see
                             <password>${fluxtion.github.password}</password>
                         </configuration>
                     </plugin>  
-                    <plugin>
+<!--                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
                         <executions>
@@ -161,7 +161,7 @@ along with this program.  If not, see
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin> 
+                    </plugin> -->
                 </plugins>
             </build>
         </profile>
