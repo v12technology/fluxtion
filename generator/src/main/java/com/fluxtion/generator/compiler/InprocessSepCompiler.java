@@ -54,54 +54,41 @@ import java.util.function.Consumer;
  */
 public class InprocessSepCompiler {
 
-    public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/fluxtion/";
-    public static final String JAVA_GEN_DIR = "target/generated-sources/fluxtion/";
-    public static final String JAVA_SRC_DIR = "src/main/java/";
-
-    public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
-    public static final String RESOURCE_DIR = "src/main/resources/";
-
-    public enum DirOptions {
-        TEST_DIR_OUTPUT,
-        JAVA_GENDIR_OUTPUT,
-        JAVA_SRCDIR_OUTPUT
-    }
-
     public enum InitOptions {
         INIT,
         NO_INIT
     }
 
     public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, DirOptions dirOptions, InitOptions initOptions) throws InstantiationException, IllegalAccessException, Exception {
-        String genDir = JAVA_GEN_DIR;
-        String resDir = RESOURCE_DIR;
+        String genDir = OutputRegistry.JAVA_GEN_DIR;
+        String resDir = OutputRegistry.RESOURCE_DIR;
         switch (dirOptions) {
             case JAVA_SRCDIR_OUTPUT:
-                genDir = JAVA_SRC_DIR;
-                resDir = RESOURCE_DIR;
+                genDir = OutputRegistry.JAVA_SRC_DIR;
+                resDir = OutputRegistry.RESOURCE_DIR;
                 break;
             case TEST_DIR_OUTPUT:
-                genDir = JAVA_TESTGEN_DIR;
-                resDir = RESOURCE_TEST_DIR;
+                genDir = OutputRegistry.JAVA_TESTGEN_DIR;
+                resDir = OutputRegistry.RESOURCE_TEST_DIR;
         }
         boolean init = initOptions == InitOptions.INIT;
         return sepInstance(cfgBuilder, pckg, sepName, genDir, resDir, init);
     }
 
     public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
-        return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, true);
+        return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
     }
 
     public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
-        return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, true);
+        return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, true);
     }
 
     public static StaticEventProcessor sepInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
-        return sepInstance(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR, false);
+        return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, false);
     }
 
     public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
-        return sepInstance(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR, false);
+        return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, false);
     }
 
     /**
@@ -212,11 +199,11 @@ public class InprocessSepCompiler {
     }
 
     public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
-        return compileSep(cfgBuilder, pckg, sepName, JAVA_GEN_DIR, RESOURCE_DIR);
+        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR);
     }
 
     public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
-        return compileSep(cfgBuilder, pckg, sepName, JAVA_TESTGEN_DIR, RESOURCE_TEST_DIR);
+        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR);
     }
 
     /**

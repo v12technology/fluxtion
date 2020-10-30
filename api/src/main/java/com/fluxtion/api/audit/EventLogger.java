@@ -92,6 +92,26 @@ public class EventLogger {
     public void warn(String key, boolean value) {
         log(key, value, LogLevel.WARN);
     }
+    
+    public void error(String key, Object value) {
+        log(key, value, LogLevel.ERROR);
+    }
+
+    public void warn(String key, Object value) {
+        log(key, value, LogLevel.WARN);
+    }
+
+    public void info(String key, Object value) {
+        log(key, value, LogLevel.INFO);
+    }
+
+    public void debug(String key, Object value) {
+        log(key, value, LogLevel.DEBUG);
+    }
+
+    public void trace(String key, Object value) {
+        log(key, value, LogLevel.TRACE);
+    }
 
     public void info(String key, boolean value) {
         log(key, value, LogLevel.INFO);
@@ -151,6 +171,10 @@ public class EventLogger {
         }
     }
 
+    public void log(String key, Object value, LogLevel logLevel){
+        log(key, value==null?"NULL":value.toString(), logLevel);
+    }
+    
     public void log(String key, double value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);

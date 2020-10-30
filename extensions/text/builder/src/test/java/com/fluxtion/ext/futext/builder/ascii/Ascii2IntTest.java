@@ -18,7 +18,7 @@ package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.ext.text.api.ascii.Ascii2IntFixedLength;
 import com.fluxtion.ext.text.api.event.CharEvent;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import static org.junit.Assert.*;
 import org.junit.Test;
 

@@ -25,6 +25,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.window.SlidingCollectionAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
+import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -52,8 +53,8 @@ public class SlidingCollectionAggregatorTest {
         time.set(1);
         timer = new TimeReset(inputCollection, 100, clock);
         GenerationContext.setupStaticContext("", "", 
-                new File(InprocessSepCompiler.JAVA_TESTGEN_DIR), 
-                new File(InprocessSepCompiler.RESOURCE_TEST_DIR));
+                new File(OutputRegistry.JAVA_TESTGEN_DIR), 
+                new File(OutputRegistry.RESOURCE_TEST_DIR));
     }
 
     @Test

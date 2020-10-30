@@ -25,7 +25,9 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
 import com.fluxtion.ext.text.api.annotation.CheckSum;
+import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
@@ -35,7 +37,7 @@ import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -202,6 +204,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         CsvMarshaller annotation = (CsvMarshaller) clazz.getAnnotation(CsvMarshaller.class);
         if (annotation != null) {
             trimWhitespace = annotation.trim();
+            acceptPartials(annotation.acceptPartials());
             headerLines(annotation.headerLines());
             includeEventPublisher(annotation.addEventPublisher());
             mappingRow(annotation.mappingRow());
@@ -222,6 +225,10 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                     field = m.on(clazz).reflect().field(md.getName());
                     field.setAccessible(true);
                     String fieldName = md.getName();
+                    ColumnName overrideName = field.getAnnotation(ColumnName.class);
+                    if(overrideName!=null){
+                        fieldName = overrideName.value()!=null?overrideName.value():fieldName;
+                    }
                     boolean optional = field.getAnnotation(OptionalField.class) != null;
                     boolean checkSum = field.getAnnotation(CheckSum.class) != null;
                     if (checkSum) {
@@ -232,6 +239,13 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                             CsvOutInfo outInfo = new CsvOutInfo();
                             outInfo.setHeadername(fieldName);
                             outInfo.setSrcMethod(md.getReadMethod().getName());
+                            final ConvertToCharSeq marshaller = field.getAnnotation(ConvertToCharSeq.class);
+                            if(marshaller!=null){
+                                String[] converterString = marshaller.value().split("#");
+                                MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
+                                importMap.addStaticImport(method.withAnyArgs().getDeclaringClass());
+                                outInfo.setConverterMethod(method.withAnyArgs().getName());
+                            }
                             outSrcList.add(outInfo);
                         }
                     }
@@ -243,10 +257,13 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                         colInfo(fieldName).setTrim(trim.value());
                     }
                     final ConvertField converter = field.getAnnotation(ConvertField.class);
-                    if (converter != null) {
+                    if (converter != null && converter.value().contains("#")) {
                         String[] converterString = converter.value().split("#");
                         MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);
                         converterMethod(fieldName, method.withAnyArgs());
+                    }else if(converter != null ){
+                        MethodReflector method = m.on(clazz).reflect().method(converter.value());
+                        converterMethod(fieldName, method.withAnyArgs(), "target");
                     }
                     final OptionalField defaultOptionalValue = field.getAnnotation(OptionalField.class);
                     if (defaultOptionalValue != null && !defaultOptionalValue.defaultValue().isEmpty()) {

@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
@@ -95,6 +97,7 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         importMap.addImport(CharArrayCharSequence.class);
         importMap.addImport(CharArrayCharSequence.CharSequenceView.class);
         importMap.addImport(IOException.class);
+        importMap.addImport(Arrays.class);
         importMap.addImport(target);
         srcMappingList = new ArrayList<>();
         outSrcList = new ArrayList<>();
@@ -197,6 +200,16 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         colInfo(colName).setConverter(method);
         return (P) this;
     }
+    
+    <S extends CharSequence, U> P converterMethod(String colName, Method method, String instanceId) {
+        if (Modifier.isStatic(method.getModifiers())) {
+            importMap.addStaticImport(method.getDeclaringClass());
+        }else{
+            importMap.addImport(method.getDeclaringClass());
+        }
+        colInfo(colName).setConverter(instanceId, method, null);
+        return (P) this;
+    }
 
     public P headerLines(int lines) {
         this.headerLines = lines;
@@ -275,10 +288,12 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
             }
             String genClassSuffix = targetClazz.getSimpleName() + "CsvDecoder";
             String genClassName = genClassSuffix + GenerationContext.SINGLETON.nextId(genClassSuffix);
+            sortSrcMappingList();
             ctx.put(functionClass.name(), genClassName);
             ctx.put("imports", importMap.asString());
             ctx.put(targetClass.name(), targetClazz.getSimpleName());
             ctx.put(sourceMappingList.name(), srcMappingList);
+            ctx.put("fieldCount", maxFieldCount());
             ctx.put("outSrcList", outSrcList);
             ctx.put("headerPresent", headerLines > 0);
             ctx.put("headerLines", headerLines);
@@ -345,9 +360,35 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
     public Class<T> getTargetClazz() {
         return targetClazz;
     }
+    
+    protected final void sortSrcMappingList(){
+        srcMappingList.sort(new Comparator<CsvPushFunctionInfo>() {
+            @Override
+            public int compare(CsvPushFunctionInfo o1, CsvPushFunctionInfo o2) {
+                boolean o1Derived = o1.getConverterMethod()!=null;
+                boolean o2Derived = o2.getConverterMethod()!=null;
+                if(o1Derived==o2Derived){
+                    return 0;
+                }else if(o1Derived){
+                    return 1;
+                }else{
+                    return -1;
+                }
+            }
+        });
+    
+    } 
 
     protected void updateContext(VelocityContext ctx) {
 
+    }
+    
+    private int maxFieldCount(){
+        int max = srcMappingList.size();
+        for (CsvPushFunctionInfo csvPushFunctionInfo : srcMappingList) {
+            max = Math.max(max, csvPushFunctionInfo.getFieldIndex());
+        }
+        return max;
     }
     
     @Data

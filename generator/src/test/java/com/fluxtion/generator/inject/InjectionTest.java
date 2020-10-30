@@ -80,9 +80,9 @@ public class InjectionTest extends BaseSepInprocessTest {
         Assert.assertEquals(10, processor.handler.intVal);
         Assert.assertEquals("variable val", processor.handler.stringVal);
     }
-    
+
     @Test
-    public void injectFinalField(){
+    public void injectFinalField() {
         sep(cfg -> {
             cfg.addPublicNode(new InjectClockWithSetter(), "injectedClock");
         });
@@ -90,13 +90,39 @@ public class InjectionTest extends BaseSepInprocessTest {
         Assert.assertNotNull(inj.getClock());
     }
 
+    @Test
+    public void injectSingleton() {
+        sep(cfg -> {
+            cfg.addPublicNode(new InjectingSingletonHolder(), "instance1");
+            cfg.addPublicNode(new InjectingSingletonHolder(), "instance2");
+        });
+        InjectingSingletonHolder instance1 = getField("instance1");
+        InjectingSingletonHolder instance2 = getField("instance2");
+        Assert.assertNotEquals(instance1, instance2);
+        Assert.assertEquals(instance1.singleton, instance2.singleton);
+    }
+
     @Getter
     @Setter
     public static class InjectClockWithSetter {
-        
+
         @Inject
         private Clock clock;
-                
+
+    }
+
+    public static class MySingleton {
+
+    }
+
+    public static class InjectingSingletonHolder {
+
+        @Inject(singleton = true, singletonName = "mySingleton")
+        public MySingleton singleton;
+
+        @EventHandler
+        public void onChar(CharEvent charEvent) {
+        }
     }
 
     public static class NoFactoryCharHandler {

@@ -23,6 +23,7 @@ import com.fluxtion.api.annotations.ConfigVariable;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -41,6 +42,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +58,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.reflect.dsl.ReflectionHandler;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.IntegerEdgeNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
@@ -459,9 +462,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (!inst2Name.containsKey(newNode)) {
                 String name = nameNode(newNode);
                 if (useTempMap) {
-                    inst2NameTemp.put(newNode, variableName == null ? name : variableName);
+                    inst2NameTemp.put(newNode, (variableName == null || isBlank(variableName)) ? name : variableName);
                 } else {
-                    inst2Name.put(newNode, variableName == null ? name : variableName);
+                    inst2Name.put(newNode, (variableName == null || isBlank(variableName)) ? name : variableName);
                 }
             } else {
                 String name = inst2Name.get(newNode);
@@ -621,12 +624,17 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 if (list == null) {
                     continue;
                 }
+                boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
                     if (inst2Name.containsKey(parent)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(parent);
-                        eventGraph.addEdge(parent, object);
-                        walkDependenciesForEventHandling(parent);
+                        if(pushCollection){
+                            eventGraph.addEdge( object, parent);
+                        }else{
+                            eventGraph.addEdge(parent, object);
+                            walkDependenciesForEventHandling(parent);
+                        }
                     }
                 }
             } else if (refName != null) {
@@ -640,6 +648,23 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 }
             }
         }
+    }
+    
+    private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
+        field.setAccessible(true);
+        Object refField = field.get(node);
+        String refName = inst2Name.get(refField);
+        boolean addNode = field.getAnnotation(SepNode.class) != null;
+        if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField!=null) {
+            LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
+            refName = nameNode(refField);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("from @SepNode adding:'" + refField + "' name:'" + refName + "'");
+            }
+            inst2NameTemp.put(refField, refName);
+            walkDependencies(refField);
+        }
+        return refName;
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -657,7 +682,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         for (Field field : fields) {
             field.setAccessible(true);
             Object refField = field.get(object);
-            String refName = inst2Name.get(refField);
+//            String refName = inst2Name.get(refField);
+            String refName = getInstanceName(field, object);
             if (field.getType().isArray()) {
                 Object array = field.get(object);
                 if (array == null) {
@@ -690,12 +716,18 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 if (list == null) {
                     continue;
                 }
+                boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
                     if (inst2Name.containsKey(parent)) {
                         graph.addVertex(object);
                         graph.addVertex(parent);
-                        graph.addEdge(parent, object);
-                        walkDependencies(parent);
+                        
+                        if(pushCollection){
+                            graph.addEdge( object, parent);
+                        }else{
+                            graph.addEdge(parent, object);
+                            walkDependencies(parent);
+                        }
                     }
                 }
             } else if (refName != null) {
@@ -738,7 +770,16 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;
                 inst2Name = inst2NameTemp;
-                Object newNode = findOrCreateNode(field.getType(), map, null, false, true);
+                Object newNode = null;
+                if(injecting.singleton()){
+                    newNode = inst2Name.keySet().stream()
+                            .filter(o -> o.getClass()==field.getType())
+                            .findFirst().orElse(null);
+                
+                }
+                if(newNode == null){
+                    newNode = findOrCreateNode(field.getType(), map, injecting.singletonName(), false, true);
+                }
                 inst2Name = oldMap;
                 addNodesFromContext();
                 field.set(object, newNode);

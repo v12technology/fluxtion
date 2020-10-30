@@ -27,7 +27,7 @@ import com.fluxtion.ext.text.api.csv.RulesEvaluator;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.NumericValidatorBuilder.withinRange;
 import static com.fluxtion.ext.text.builder.csv.RulesEvaluatorBuilder.validator;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepTest;
 import org.junit.Assert;
 import org.junit.Test;

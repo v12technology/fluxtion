@@ -22,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a bean field as an optional field to marshal
+ * Marks a bean field to use a converter method that will convert from CharSequence
+ * to a field in the target instance
  *
  * @author gregp
  */

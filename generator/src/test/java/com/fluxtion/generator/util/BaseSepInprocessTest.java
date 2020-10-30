@@ -23,6 +23,7 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import java.util.function.Consumer;
 import net.vidageek.mirror.dsl.Mirror;
@@ -49,8 +50,8 @@ public class BaseSepInprocessTest {
 
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
         GenerationContext.setupStaticContext(pckName(), sepClassName(), 
-                new File(InprocessSepCompiler.JAVA_TESTGEN_DIR), 
-                new File(InprocessSepCompiler.RESOURCE_TEST_DIR));
+                new File(OutputRegistry.JAVA_TESTGEN_DIR), 
+                new File(OutputRegistry.RESOURCE_TEST_DIR));
         try {
             sep = handlerClass.newInstance();
             if (sep instanceof Lifecycle) {

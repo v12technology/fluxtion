@@ -17,14 +17,25 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
+import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
+import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.annotation.TrimField;
 import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
+import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
+import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
+import com.fluxtion.generator.compiler.InprocessSepCompiler;
+import com.fluxtion.generator.compiler.DirOptions;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
@@ -65,6 +76,19 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         Assert.assertThat(sample.getRequiredInt(), is(2));
     }
 
+
+    @Test
+    public void testNamedColumn() {
+        sep(c -> {
+            c.addPublicNode(csvMarshaller(OverrideColName.class).build(), "output");
+        });
+        OverrideColName sample = getWrappedField("output");
+        stream("f_name,current_age\n"
+                + "greg,25\n");
+        Assert.assertThat(sample.getName(), is("greg"));
+        Assert.assertThat(sample.getAge(), is(25));
+    }
+    
     @Test
     public void testTrimmedValue() {
         sep(c -> {
@@ -88,6 +112,27 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
     public static String convert(CharSequence in) {
         return "CONVERTED_" + in;
     }
+    
+    @Test
+    public void testCustomFieldMarshaller() throws IOException{
+        RowProcessor<MarshallerCustomised> processor = buildRowProcessor(MarshallerCustomised.class, 
+                pckName(), 
+                DirOptions.TEST_DIR_OUTPUT
+        );
+        StringBuilder sb = new StringBuilder();
+        MarshallerCustomised instance = new MarshallerCustomised();
+        instance.setStringValue("hello");
+        processor.toCsv(instance, sb);
+        Assert.assertEquals("OVERWRITTEN_hello", sb.toString());
+    }
+    
+    public static void marshall(String field, Appendable msgSink){
+        try {
+            msgSink.append("OVERWRITTEN_" + field);
+        } catch (IOException ex) {
+            Logger.getLogger(AnnotatedBeanCsvTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static int times10(CharSequence in) {
         return 10 * atoi(in);
@@ -102,6 +147,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         stream("stringValue\njunk\n   TEST   \n");
         Assert.assertThat(sample.getStringValue(), is("TEST"));
     }
+    
     @Test
     public void testMultipleAnnotationsValue() {
         sep(c -> {
@@ -114,6 +160,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         stream("ff|\n");
         Assert.assertThat(sample.getIntValue(), is(-10));
     }
+    
+    @Test
+    public void testEnumValue() {
+        sep(c -> {
+            c.addPublicNode(csvMarshaller(EnumData.class).build(), "output");
+        });
+        EnumData sample = getWrappedField("output");
+        stream("myState\nOPEN\n");
+        Assert.assertThat(sample.getMyState(), is(State.OPEN));
+    }
 
     @Data
     public static class DefaultValueSample {
@@ -121,6 +177,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         @DefaultFieldValue("-1")
         protected int intValue;
 
+    }
+    
+    @Data
+    public static class OverrideColName{
+    
+        @ColumnName("f_name")
+        private String name;
+        @ColumnName("current_age")
+        private int age;
+        
     }
 
     @Data
@@ -138,7 +204,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         protected String stringValue;
 
     }
-
+    
+    @Data
+    @CsvMarshaller()
+    public static class MarshallerCustomised{
+        
+        @ConvertToCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#marshall")
+        protected String stringValue;
+    
+    }
+    
     @Data
     @CsvMarshaller(headerLines = 2, trim = true)
     public static class BeanSample {
@@ -172,6 +247,16 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         
         protected int requiredInt;
         
+    }
+    
+    public enum State{
+        OPEN, CLOSE;
+    }
+    
+    @Data
+    public static class EnumData{
+        protected State myState;
+    
     }
 
 }

@@ -126,7 +126,7 @@ public @interface EventHandler {
      * A member of this class that provides a value to override static values in
      * annotation.
      *
-     * @return FIled providing filter override
+     * @return field providing filter override
      */
     String filterVariable() default "";
 

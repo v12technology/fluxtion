@@ -76,7 +76,7 @@ public class TraceLogTest extends BaseSepInprocessTest {
             ChildNode child = c.addNode(new ChildNode(parent), "child");
             GrandChildNode grandChild = c.addNode(new GrandChildNode(child), "grandChild");
             c.addNode(new GreatGrandChildNode(grandChild), "greatGrandChild");
-            c.addAuditor(new EventLogManager().tracingOn(LogLevel.INFO), "sampleLogger");
+            c.addAuditor(new EventLogManager().tracingOn(LogLevel.INFO).printEventToString(false), "sampleLogger");
         });
         onEvent(new EventLogControlEvent(yamlRecord));
         onEvent(new CharEvent('b'));
@@ -106,7 +106,7 @@ public class TraceLogTest extends BaseSepInprocessTest {
             ChildNode child = c.addNode(new ChildNode(parent), "child");
             GrandChildNode grandChild = c.addNode(new GrandChildNode(child), "grandChild");
             c.addNode(new GreatGrandChildNode(grandChild), "greatGrandChild");
-            c.addAuditor(new EventLogManager().tracingOn(LogLevel.TRACE), "sampleLogger");
+            c.addAuditor(new EventLogManager().tracingOn(LogLevel.TRACE).printEventToString(false), "sampleLogger");
         });
         onEvent(new EventLogControlEvent(yamlRecord));
         onEvent(new CharEvent('c'));//2 audit

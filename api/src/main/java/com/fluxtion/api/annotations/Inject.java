@@ -51,4 +51,15 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Inject {
 
+    /**
+     * Create and inject only a single instance in the generated SEP if true.
+     * @return singleton flag
+     */
+    boolean singleton() default false;
+    
+    /**
+     * The name of the singleton if the singleton = true
+     * @return singleton name
+     */
+    String singletonName() default "";
 }

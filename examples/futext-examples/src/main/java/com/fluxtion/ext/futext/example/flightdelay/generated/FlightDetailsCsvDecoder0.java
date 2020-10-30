@@ -16,15 +16,15 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
-import com.fluxtion.ext.text.builder.util.StringDriver;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import static com.fluxtion.ext.text.api.ascii.Conversion.*;
 import static com.fluxtion.ext.text.api.csv.Converters.*;
+import com.fluxtion.ext.text.api.util.StringDriver;
 
 /**
  * Fluxtion generated CSV decoder.

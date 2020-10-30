@@ -368,10 +368,14 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
 
   public static void asCsv(${targetClass} src, StringBuilder msgSink) throws IOException {
 #foreach($outInfo in $outSrcList)
+#if( ${outInfo.converterMethod} )
+     ${outInfo.converterMethod}(src.${outInfo.srcMethod}(), msgSink);
+#else
         msgSink.append(src.${outInfo.srcMethod}());
+#end
 #if( $foreach.hasNext )msgSink.append(","); #end
 #end
-        msgSink.append("\n");
+        //msgSink.append("\n");
   }
   
   public static void asCsv(${targetClass} src, Appendable target) throws IOException {
@@ -387,11 +391,12 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
     }
 
     @Override
-    public void toCsv(${targetClass} src, Appendable target) throws IOException{
+    public Appendable toCsv(${targetClass} src, Appendable target) throws IOException{
         msgSink.setLength(0);
         asCsv(src, msgSink);
         target.append(msgSink);
         msgSink.setLength(0);
+        return target;
   }
 #end
 

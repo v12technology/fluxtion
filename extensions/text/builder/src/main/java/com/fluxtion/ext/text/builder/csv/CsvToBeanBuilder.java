@@ -19,13 +19,15 @@ package com.fluxtion.ext.text.builder.csv;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.api.util.marshaller.DispatchingCsvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import com.fluxtion.generator.compiler.InprocessSepCompiler.DirOptions;
+import com.fluxtion.generator.compiler.DirOptions;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepInstance;
+import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +57,8 @@ public class CsvToBeanBuilder {
     public CsvToBeanBuilder(String pckg) {
         this.pckg = pckg;
         addEventPublisher = true;
-        this.resorcesDir = InprocessSepCompiler.RESOURCE_DIR;
-        this.generatedDir = InprocessSepCompiler.JAVA_GEN_DIR;
+//        this.resorcesDir = OutputRegistry.RESOURCE_DIR;
+//        this.generatedDir = OutputRegistry.JAVA_GEN_DIR;
         clazz2Handler = new HashMap<>();
         processors = new ArrayList<>();
     }
@@ -69,6 +71,31 @@ public class CsvToBeanBuilder {
      */
     public static CsvToBeanBuilder nameSpace(String pkg) {
         return new CsvToBeanBuilder(pkg);
+    }
+
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation == null ? 1 : annotation.headerLines();
+        return CsvToBeanBuilder.nameSpace(annotation.packageName())
+                .builder(csvClass, headerLines)
+                .build();
+    }
+
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass, String packageName) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation == null ? 1 : annotation.headerLines();
+        return CsvToBeanBuilder.nameSpace(packageName)
+                .builder(csvClass, headerLines)
+                .build();
+    }
+
+    public static <T> RowProcessor<T> buildRowProcessor(Class<T> csvClass, String packageName, DirOptions dirOption) {
+        CsvMarshaller annotation = csvClass.getAnnotation(CsvMarshaller.class);
+        int headerLines = annotation == null ? 1 : annotation.headerLines();
+        return CsvToBeanBuilder.nameSpace(packageName)
+                .dirOption(dirOption)
+                .builder(csvClass, headerLines)
+                .build();
     }
 
     /**
@@ -94,20 +121,7 @@ public class CsvToBeanBuilder {
      * @return CsvToBeanBuilder for fluent api calls.
      */
     public CsvToBeanBuilder dirOption(DirOptions dirOption) {
-        switch (dirOption) {
-            case JAVA_GENDIR_OUTPUT:
-                this.resorcesDir = InprocessSepCompiler.RESOURCE_DIR;
-                this.generatedDir = InprocessSepCompiler.JAVA_GEN_DIR;
-                break;
-            case JAVA_SRCDIR_OUTPUT:
-                this.resorcesDir = InprocessSepCompiler.RESOURCE_DIR;
-                this.generatedDir = InprocessSepCompiler.JAVA_SRC_DIR;
-                break;
-            case TEST_DIR_OUTPUT:
-                this.resorcesDir = InprocessSepCompiler.RESOURCE_TEST_DIR;
-                this.generatedDir = InprocessSepCompiler.JAVA_TESTGEN_DIR;
-                break;
-        }
+        OutputRegistry.INSTANCE.setDirOptions(dirOption);
         return this;
     }
 
@@ -135,16 +149,15 @@ public class CsvToBeanBuilder {
      * @return
      */
     public <T> CsvToBeanBuilder mapBean(String marshallerId, Class<T> clazz) {
-        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        setupContext();
         CsvMarshallerBuilder<T> builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
         builder.addEventPublisher = addEventPublisher;
         processors.add(builder.build());
         return this;
     }
-    
-    
-     public <T> CsvMarshallerBuilder<T> builder( Class<T> clazz, int headerLines) {
-        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+
+    public <T> CsvMarshallerBuilder<T> builder(Class<T> clazz, int headerLines) {
+        setupContext();
         CsvMarshallerBuilder<T> builder = csvMarshaller(clazz, headerLines).tokenConfig(CharTokenConfig.WINDOWS);
         return builder;
     }
@@ -171,7 +184,7 @@ public class CsvToBeanBuilder {
                     ruleGenerator.accept(validator1);
                     validator1.build();
                 }
-            }, pckg + ".fluxCsv" + marshallerId, cap, generatedDir, resorcesDir, true);
+            }, pckg + ".fluxCsv" + marshallerId, cap, OutputRegistry.INSTANCE.getGenDir(), OutputRegistry.INSTANCE.getResDir(), true);
             clazz2Handler.put(clazz, sep);
             return this;
         } catch (Exception ex) {
@@ -180,7 +193,7 @@ public class CsvToBeanBuilder {
     }
 
     public <T> CsvToBeanBuilder mapCustomBean(String marshallerId, Class<T> clazz, Consumer<CsvMarshallerBuilder<T>> ruleGenerator) {
-        GenerationContext.setupStaticContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        setupContext();
         CsvMarshallerBuilder<T> builder = csvMarshaller(clazz).tokenConfig(CharTokenConfig.WINDOWS);
         builder.addEventPublisher = addEventPublisher;
         ruleGenerator.accept(builder);
@@ -207,5 +220,13 @@ public class CsvToBeanBuilder {
 
     public CsvRecordStream build() {
         return CsvRecordStream.decoders(processors.toArray(new RowProcessor[0]));
+    }
+
+    private void setupContext() {
+        if (generatedDir != null && resorcesDir != null) {
+            GenerationContext.updateContext(pckg, "", new File(generatedDir), new File(resorcesDir));
+        } else {
+            GenerationContext.updateContext(pckg, "", OutputRegistry.INSTANCE.getGenDirFile(), OutputRegistry.INSTANCE.getResDirFile());
+        }
     }
 }

@@ -46,7 +46,7 @@ public class CsvRecordMarshaller implements StaticEventProcessor, Lifecycle, Cha
     //Dirty flags
     private boolean isDirty_RowProcessor = false;
 
-    public CsvRecordMarshaller(RowProcessor rowProcessor) {
+public CsvRecordMarshaller(RowProcessor rowProcessor) {
         this.rowProcessor = rowProcessor;
         this.rowProcessor.setErrorLog(validationLogger);
         validationLogSink.setPublishLogImmediately(true);

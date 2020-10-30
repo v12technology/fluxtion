@@ -28,4 +28,5 @@ public class CsvOutInfo {
     
     private String srcMethod;
     private String headername;
+    private String converterMethod;
 }

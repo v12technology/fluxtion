@@ -57,8 +57,8 @@ public interface RowProcessor<T> extends Wrapper<T> {
     
     default String csvHeaders() {return "";}
 
-    default void toCsv(T src, Appendable target) throws IOException {
-        
+    default Appendable toCsv(T src, Appendable target) throws IOException {
+        return target;
     }
     
 

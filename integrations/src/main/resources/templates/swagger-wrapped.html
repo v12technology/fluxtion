@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+  <head th:replace="fragments/lte/admintemplate :: header"/>
+  <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+      <nav th:replace="fragments/lte/admintemplate :: top-navbar"/>
+      <aside th:replace="fragments/lte/admintemplate :: side-navbar"/>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+
+
+        <div class="embed-responsive embed-responsive-1by1">
+          <iframe class="responsive-iframe" src="swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config"></iframe>
+        </div>
+
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+
+      <aside th:fragment="control-sidebar"/>
+      <div th:replace="fragments/lte/admintemplate :: footer"></div>
+    </div>
+    <div th:replace = "fragments/lte/admintemplate :: script1"></div>
+  </body>
+</html>

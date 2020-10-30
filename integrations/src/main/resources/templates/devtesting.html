@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/include" />
+    <body>
+        <nav th:replace="fragments/header"/>
+
+        <div class="container" style="margin-top:80px">
+            <h1>Testing page for fluxtion etl</h1>
+            <nav>
+                <ul>
+                    <li> <a href="/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config">Swagger - REST documentation</a> </li>
+                    <li> <a href="/pipeline/list">All pipelines - JSON</a> </li>
+                    <li> <a href="/dev-test/loadclass">Test loading a class</a> </li>
+                    <li> <a href="/dev-test/buildsample">Test build a sample pipeline</a> </li>
+                </ul>
+            </nav>  
+        </div>
+
+        <div th:replace="fragments/footer"/>
+    </body>
+</html>
