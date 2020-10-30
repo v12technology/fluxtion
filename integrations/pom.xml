@@ -104,7 +104,7 @@ along with this program.  If not, see
                         </executions>
                         <configuration>
                             <executable>${script.executor}</executable>
-                            <commandlineArgs>${script.to.execute}</commandlineArgs>
+                            <commandlineArgs>${script.to.execute} ${project.version}</commandlineArgs>
                         </configuration>
                     </plugin>
                 </plugins>

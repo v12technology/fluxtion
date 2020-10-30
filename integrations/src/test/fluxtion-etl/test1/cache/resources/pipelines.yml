@@ -16,14 +16,14 @@ defintion:
   postRecordFunction: '//no-op demo callback '
 id: org.greg.DataFail
 --- !!com.fluxtion.integration.etl.CsvEtlPipeline
-csvProcessorClassName: org.greg.Test_1CsvDecoder0
+csvProcessorClassName: test.Test_02CsvDecoder0
 defintion:
   columns:
-  - {name: height, type: int}
-  - {name: lastName, type: String}
+  - {name: currentAge, type: int}
+  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
   derived: []
-  id: org.greg.Test_1
-id: org.greg.Test_1
+  id: test.Test_02
+id: test.Test_02
 --- !!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.Data4CsvDecoder0
 defintion:
