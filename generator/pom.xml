@@ -86,11 +86,6 @@ Copyright (C) 2018 V12 Technology Ltd.
     
     <dependencies>
         <dependency>
-            <groupId>com.github.monkeysintown</groupId>
-            <artifactId>jgraphx</artifactId>
-            <version>3.1.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
         </dependency>
@@ -108,8 +103,12 @@ Copyright (C) 2018 V12 Technology Ltd.
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-ext</artifactId>
         </dependency>
         <dependency>
             <groupId>net.vidageek</groupId>

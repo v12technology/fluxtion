@@ -150,7 +150,7 @@ along with this program.  If not, see
                             <password>${fluxtion.github.password}</password>
                         </configuration>
                     </plugin>  
-<!--                    <plugin>
+                    <!--                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
                         <executions>
@@ -450,11 +450,15 @@ along with this program.  If not, see
                 <version>4.6.27</version>
             </dependency>
             <dependency>
-                <groupId>net.sf.jgrapht</groupId>
-                <artifactId>jgrapht</artifactId>
-                <version>0.8.3</version>
-                <type>jar</type>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>0.9.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-ext</artifactId>
+                <version>0.9.0</version>
+            </dependency> 
             <dependency>
                 <groupId>net.jodah</groupId>
                 <artifactId>typetools</artifactId>
