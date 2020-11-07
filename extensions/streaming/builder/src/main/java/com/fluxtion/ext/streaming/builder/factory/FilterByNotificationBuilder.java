@@ -33,12 +33,34 @@ import com.fluxtion.ext.streaming.api.test.BooleanMatchFilter;
  */
 public class FilterByNotificationBuilder {
 
+    /**
+     * Separates triggers and tracked object for event notification. Allows a
+     * child node to depend
+     * on a parent and will be notified when a separate notifier instance
+     * triggers an update.
+     *
+     * @param <T> The Type of the tracked object
+     * @param trackedWrapped The wrapped tracked instance
+     * @param notifier The triggering instance
+     * @return The tracked instance as a FilterWrapper
+     */
     public static <T> FilterWrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(trackedWrapped), service().addOrReuse(notifier));
         SepContext.service().addOrReuse(filter);
         return filter;
     }
 
+    /**
+     * Separates triggers and tracked object for event notification. Allows a
+     * child node to depend
+     * on a parent and will be notified when a separate notifier instance
+     * triggers an update.
+     *
+     * @param <T> The Type of the tracked object
+     * @param tracked The wrapped tracked instance
+     * @param notifier The triggering instance
+     * @return The tracked instance as a FilterWrapper
+     */
     public static <T> FilterWrapper<T> filter(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(tracked), service().addOrReuse(notifier));
         service().addOrReuse(filter);
