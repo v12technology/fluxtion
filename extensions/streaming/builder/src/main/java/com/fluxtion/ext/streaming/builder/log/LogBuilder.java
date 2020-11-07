@@ -22,7 +22,6 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.WrapperBase;
-import com.fluxtion.ext.streaming.api.log.AsciiConsoleLogger;
 import com.fluxtion.ext.streaming.api.log.LogMsgBuilder;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.builder.Templates;
