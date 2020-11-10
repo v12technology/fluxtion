@@ -25,21 +25,11 @@ defintion:
   id: test.Test_02
 id: test.Test_02
 --- !!com.fluxtion.integration.etl.CsvEtlPipeline
-csvProcessorClassName: org.greg.Data4CsvDecoder0
-defintion:
-  columns:
-  - {name: age, type: int}
-  - {name: date, type: int}
-  - {name: month, type: String}
-  - {function: return input.toString().toUpperCase();, name: lastName, type: String}
-  derived: []
-  id: org.greg.Data4
-id: org.greg.Data4
---- !!com.fluxtion.integration.etl.CsvEtlPipeline
 csvProcessorClassName: org.greg.Data2CsvDecoder0
 defintion:
   columns:
   - {name: age, type: int}
+  - {name: alive, type: boolean}
   - {function: return input.toString().toUpperCase();, name: lastName, type: String}
   derived:
   - function: |-

@@ -20,6 +20,7 @@ package com.fluxtion.integration.etl;
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class PipelinePersistTest {
 
     @Test
-//    @Ignore
+    @Disabled
     public void writeAndReadPipelines() throws IOException {
         Main main = new Main().start();
         String id = "org.greg.Data2";
@@ -58,7 +59,7 @@ public class PipelinePersistTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void runPipeline() {
         Main main = new Main().start();
         String id = "org.greg.Data1";

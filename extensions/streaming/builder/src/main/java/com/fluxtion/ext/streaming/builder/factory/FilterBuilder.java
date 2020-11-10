@@ -40,7 +40,7 @@ public class FilterBuilder {
      * subscription for the input stream type
      *
      * @param <T> The input stream type
-     * @param <S> The type of the property to extract and apply a filer functionó
+     * @param <S> The type of the property to extract and apply a filer function
      * to
      * @param supplier The instance stream to filter
      * @param filter The filter function applied to the property of the incoming

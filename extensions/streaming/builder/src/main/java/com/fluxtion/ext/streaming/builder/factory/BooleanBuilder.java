@@ -26,7 +26,7 @@ import com.fluxtion.ext.streaming.api.test.OrOperator;
 import com.fluxtion.ext.streaming.api.test.XorOperator;
 
 /**
- * Factory class for building Test notifications based upon boolean operations on events
+ * Factory class for building Test notifications based upon Boolean operations on events
  * emitted by tracked nodes. Tests can be used in conjunction with {@link FilterByNotificationBuilder}
  * to create complex filtering rules.
  * 

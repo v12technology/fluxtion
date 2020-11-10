@@ -37,7 +37,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div class="row">
                             <!-- left column -->
                             <div class="col-md-6">
-                                <div class="card card-primary collapsed-card" id="validpipeline-card">
+                                <div class="card card-primary" th:classappend="${expandValidPipelines}" id="validpipeline-card">
                                     <div class="card-header">
                                         <!--<h3 class="card-title">Valid piplelines </h3>-->
                                         <h3 class="card-title" th:text="'Valid piplelines (' + ${size} + ')'" />
@@ -196,7 +196,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <div th:replace = "fragments/lte/admintemplate :: script1"></div>
         <script>
-            $('#validpipeline-card').CardWidget('collapse');
+            $('#validpipeline-card').CardWidget('expand');
             $('#invalidpipeline-card').CardWidget('collapse');
             $('#testpipeline-card').CardWidget('collapse');
         </script>
