@@ -78,6 +78,8 @@ public class EtlViewController {
         model.addAttribute("classActiveTestPipeline", "active");
         model.addAttribute("etlRequest", new EtlSampleRun());
         model.addAttribute("pipelines", main.listModels().values());
+        model.addAttribute("expandValidPipelines", "");
+        model.addAttribute("expandInvalidPipelines", "collapsed-card");
     }
 
     @GetMapping("/bootstrapsample")
