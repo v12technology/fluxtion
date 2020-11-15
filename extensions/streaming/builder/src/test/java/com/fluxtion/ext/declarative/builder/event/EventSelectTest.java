@@ -95,6 +95,30 @@ public class EventSelectTest extends StreamInprocessTest {
         assertEquals(20, cumSum2.intValue());
 
     }
+    
+    @Test
+    public void testFilterProperty(){
+    
+        sep((cfg) ->{
+            select(DataEvent::getValue).id("dataNoFilter");
+            select(DataEvent::getValue, "XXX").id("dataXXXFilter");
+        });
+        Number dataNoFilter = getWrappedField("dataNoFilter");
+        Number dataXXXFilter = getWrappedField("dataXXXFilter");
+        assertEquals(0, dataNoFilter.intValue());
+        assertEquals(0, dataXXXFilter.intValue());
+        onEvent(new DataEvent(2));
+        assertEquals(2, dataNoFilter.intValue());
+        assertEquals(0, dataXXXFilter.intValue());
+        dataEvent = new DataEvent(12);
+        dataEvent.setDataKey("XXX");
+        onEvent(dataEvent);
+        assertEquals(12, dataNoFilter.intValue());
+        assertEquals(12, dataXXXFilter.intValue());
+        
+        
+    }
+    private DataEvent dataEvent;
 
     @Data
     public static class DataNonFluxtion {

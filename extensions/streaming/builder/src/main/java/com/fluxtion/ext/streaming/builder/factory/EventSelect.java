@@ -18,7 +18,7 @@ package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.ext.streaming.api.StringFilterEventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -36,7 +36,7 @@ public interface EventSelect {
             return SepContext.service().addOrReuse(handler);
     }
 
-    static <T , S> Wrapper<S> select(LambdaReflection.SerializableFunction<T, S> supplier) {
+    static <T , S> Wrapper<S> select(SerializableFunction<T, S> supplier) {
         Class<T> eventClazz = supplier.getContainingClass();
         return select(eventClazz).get(supplier);
     }
@@ -66,5 +66,31 @@ public interface EventSelect {
         Wrapper<T> handler = new IntFilterEventHandler(filterId, eventClazz);
         return SepContext.service().addOrReuse(handler);
     }
+    
+    static <T extends Event, S> Wrapper<S> select(SerializableFunction<T, S> supplier, String filterId) {
+        Class eventClazz = supplier.getContainingClass();
+        return select( eventClazz, filterId).get(supplier);
+    }
+    
+    static <T extends Event, S> Wrapper<S> select(SerializableFunction<T, S> supplier, int filterId) {
+        Class eventClazz = supplier.getContainingClass();
+        return select( eventClazz, filterId).get(supplier);
+    }
 
+    
+    static <T extends Event, S> Wrapper<T>[] select(SerializableFunction<T, S> supplier, int... filterId) {
+        Wrapper[] result = new Wrapper[filterId.length];
+        for (int i = 0; i < filterId.length; i++) {
+            result[i] = select(supplier, filterId[i]);
+        }
+        return result;
+    }
+
+    static <T extends Event, S> Wrapper<T>[] select(SerializableFunction<T, S> supplier, String... filterId) {
+        Wrapper[] result = new Wrapper[filterId.length];
+        for (int i = 0; i < filterId.length; i++) {
+            result[i] = select(supplier, filterId[i]);
+        }
+        return result;
+    }
 }
