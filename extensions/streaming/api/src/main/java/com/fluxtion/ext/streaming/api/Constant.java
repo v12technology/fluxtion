@@ -17,9 +17,12 @@ package com.fluxtion.ext.streaming.api;
 
 /**
  * Marker interface, declares a node as holding a constant value.
- * 
+ *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public interface Constant {
-    
+
+    default boolean isValidOnStart() {
+        return true;
+    }
 }

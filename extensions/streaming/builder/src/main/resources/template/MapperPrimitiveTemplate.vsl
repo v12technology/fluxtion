@@ -5,9 +5,10 @@ import $import;
 #end
 
 /**
- * generated mapper function wrapper for a numeric primitive.
+ * generated mapper function wrapper for a numeric primitive. 
  *  
  *<ul>
+ * <li>template file: MapperPrimitiveTemplate.vsl
  * <li>output class : {@link Number}
  * <li>input class  : {@link ${filterSubjectClass}}
  * <li>map function : {@link ${targetClass}#${targetMethod}}
@@ -73,7 +74,7 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
 
 #if(${multiArgFunc})
     private boolean allSourcesUpdated(){
-        boolean updated = filterSubjectUpdated;
+        boolean updated = filterSubjectUpdated #if(${validOnStart})| filterSubject.isValidOnStart()#end;
 #foreach($sourceInfo in $sourceMappingList)
 #if(!${sourceInfo.constant})
         updated &= ${sourceInfo.id}Updated #if(${sourceInfo.wrapper}) | ${sourceInfo.id}.isValidOnStart()#end;

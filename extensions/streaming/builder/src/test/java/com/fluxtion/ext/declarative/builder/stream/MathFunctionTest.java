@@ -39,11 +39,10 @@ import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -62,11 +61,22 @@ public class MathFunctionTest extends StreamInprocessTest {
 
     @Test
     public void generateProcessor() throws Exception {
-        sep((c) -> {
+        sep((SEPConfig c) -> {
             LibraryFunctionsBuilder.add(DataEvent::getValue, Data1::getVal);
-            multiply(select(DataEvent.class, "temp"), DataEvent::getValue, select(DataEvent.class, "offset"), DataEvent::getValue);
+            multiply(
+//                    select(DataEvent.class, "temp").get(DataEvent::getValue), 
+                    select(DataEvent::getValue, "temp"), 
+                    select(DataEvent::getValue, "offset")
+            ).id("multiply");
         });
-
+        Number multiply = getWrappedField("multiply");
+        assertThat(multiply.intValue(), is(0));
+        sep.onEvent(new DataEvent().value(10));
+        assertThat(multiply.intValue(), is(0));
+        sep.onEvent(new DataEvent().value(10).setFilterString("temp"));
+        assertThat(multiply.intValue(), is(0));
+        sep.onEvent(new DataEvent().value(10).setFilterString("offset"));
+        assertThat(multiply.intValue(), is(100));
     }
 
     @Test
@@ -75,7 +85,7 @@ public class MathFunctionTest extends StreamInprocessTest {
             Wrapper<Integer> sum1 = map(MathFunctionTest::intFun, Data1::getVal, Data1::getVal).id("sum1");
             Wrapper<Integer> sum2 = map(MathFunctionTest::intFun, Data1::getVal, Data2::getVal).id("sum2");
             subtract(sum2, sum1).id("subtractSum");
-            multiply(select(Data1.class), Data1::getVal, select(Data2.class), Data2::getVal).id("multiply");
+            multiply(select(Data1::getVal), select(Data2::getVal)).id("multiply");
             subtract(arg(Data1::getVal), arg(Data2::getVal)).id("subtract");
             map(divide(), arg(Data1::getVal), arg(Data2::getVal)).id("divide");
             multiply(Data2::getVal, Data2::getVal).id("squared");
@@ -325,6 +335,11 @@ public class MathFunctionTest extends StreamInprocessTest {
         public DataEvent() {
             super(ID);
         }
+        
+        public DataEvent value(int value){
+            this.value = value;
+            return this;
+        }
 
         public int value;
 
@@ -332,15 +347,16 @@ public class MathFunctionTest extends StreamInprocessTest {
             return value;
         }
 
-        public void setFilterString(String key) {
+        public DataEvent setFilterString(String key) {
             this.filterString = key;
             this.filterId = Integer.MAX_VALUE;
+            return this;
         }
 
-        public void setFilterInt(int id) {
+        public DataEvent setFilterInt(int id) {
             this.filterString = "";
             this.filterId = id;
-
+            return this;
         }
 
         public String getStringValue() {

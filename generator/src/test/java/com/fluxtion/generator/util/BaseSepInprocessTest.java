@@ -71,6 +71,13 @@ public class BaseSepInprocessTest {
             throw new RuntimeException(ex);
         }
     }
+    
+    protected StaticEventProcessor init(){
+        if(sep instanceof Lifecycle){
+            ((Lifecycle)sep).init();
+        }
+        return sep;
+    }
 
     protected String pckName() {
         String pckg = this.getClass().getCanonicalName() + "_" + testName.getMethodName();

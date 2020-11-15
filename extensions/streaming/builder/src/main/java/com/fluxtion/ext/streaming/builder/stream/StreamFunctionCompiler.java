@@ -565,11 +565,13 @@ public class StreamFunctionCompiler<T, F> {
                 importMap.addImport(filterSubjectWrapper.eventClass());
                 ctx.put(sourceClass.name(), importMap.addImport(filterSubjectWrapper.getClass()));//.getSimpleName());
                 ctx.put("sourceConstant", Constant.class.isAssignableFrom(filterSubjectWrapper.eventClass()));
+                ctx.put("validOnStart", true);
             } else {
                 ctx.put(filterSubjectClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 ctx.put(sourceClass.name(), importMap.addImport(filterSubject.getClass()));//.getSimpleName());
                 importMap.addImport(filterSubject.getClass());
                 ctx.put("sourceConstant", Constant.class.isAssignableFrom(filterSubject.getClass()));
+                ctx.put("validOnStart", Constant.class.isAssignableFrom(filterSubject.getClass()));
             }
             ctx.put(sourceMappingList.name(), new ArrayList(inst2SourceInfo.values()));
             ctx.put("sourceFunctions", sourceFunctions);
