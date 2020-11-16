@@ -18,12 +18,12 @@ package com.fluxtion.ext.declarative.builder.function;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.numeric.NumericSignal;
-import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.number;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.subtract;
 import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
+import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultNum;
 
 /**
  *
@@ -34,7 +34,7 @@ public class DefaultNumberTest extends StreamInprocessTest {
     @Test
     public void defaultNumber() {
         sep((c) -> {
-            subtract(number(55, "key_b"), number(12, Sale::getAmountSold)).id("result");
+            subtract(defaultNum(55, "key_b"), defaultNum(12, Sale::getAmountSold)).id("result");
         });
 //        sep(com.fluxtion.ext.declarative.builder.function.defaultnumbertest_defaultnumber_1605386238496.TestSep_defaultNumber.class);
         
