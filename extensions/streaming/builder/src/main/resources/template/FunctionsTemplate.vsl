@@ -52,12 +52,12 @@ public class ${className}  {
         return map(${FunctionInfo.functionName}(), arg(wrapper1), arg(wrapper2));
     }
 
-    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier1, Wrapper<S> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier1, Wrapper<S> supplier2) {
+        return map(${FunctionInfo.functionName}(), arg(supplier1), arg(supplier2));
     }
     
-    public static <T extends ${FunctionInfo.inputType}, S extends ${FunctionInfo.input1Type}> Wrapper<${FunctionInfo.returnType}>  ${FunctionInfo.functionName}( Wrapper<T> supplier1, SerializableFunction<S, ${FunctionInfo.inputType}> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T extends ${FunctionInfo.inputType}, S> Wrapper<${FunctionInfo.returnType}>  ${FunctionInfo.functionName}( Wrapper<T> supplier1, SerializableFunction<S, ${FunctionInfo.inputType}> supplier2) {
+        return map(${FunctionInfo.functionName}(), arg(supplier1), arg(supplier2));
     }
 
 #end

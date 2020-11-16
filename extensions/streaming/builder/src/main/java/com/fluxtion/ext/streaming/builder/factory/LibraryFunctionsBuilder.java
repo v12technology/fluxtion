@@ -66,12 +66,12 @@ public class LibraryFunctionsBuilder  {
         return map(add(), arg(wrapper1), arg(wrapper2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> add(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T, S extends Number> Wrapper<Number> add(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
+        return map(add(), arg(supplier1), arg(supplier2));
     }
     
-    public static <T extends Number, S extends Number> Wrapper<Number>  add( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T extends Number, S> Wrapper<Number>  add( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
+        return map(add(), arg(supplier1), arg(supplier2));
     }
 
 
@@ -95,11 +95,11 @@ public class LibraryFunctionsBuilder  {
         return map(subtract(), arg(wrapper1), arg(wrapper2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> subtract(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
+    public static <T, S extends Number> Wrapper<Number> subtract(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
         return map(subtract(), arg(supplier1), arg(supplier2));
     }
     
-    public static <T extends Number, S extends Number> Wrapper<Number>  subtract( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
+    public static <T extends Number, S> Wrapper<Number>  subtract( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
         return map(subtract(), arg(supplier1), arg(supplier2));
     }
 
@@ -124,12 +124,12 @@ public class LibraryFunctionsBuilder  {
         return map(multiply(), arg(wrapper1), arg(wrapper2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> multiply(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T, S extends Number> Wrapper<Number> multiply(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
+        return map(multiply(), arg(supplier1), arg(supplier2));
     }
     
-    public static <T extends Number, S extends Number> Wrapper<Number>  multiply( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T extends Number, S> Wrapper<Number>  multiply( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
+        return map(multiply(), arg(supplier1), arg(supplier2));
     }
 
 
@@ -153,12 +153,12 @@ public class LibraryFunctionsBuilder  {
         return map(divide(), arg(wrapper1), arg(wrapper2));
     }
 
-    public static <T extends Number, S extends Number> Wrapper<Number> divide(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T, S extends Number> Wrapper<Number> divide(SerializableFunction<T, Number> supplier1, Wrapper<S> supplier2) {
+        return map(divide(), arg(supplier1), arg(supplier2));
     }
     
-    public static <T extends Number, S extends Number> Wrapper<Number>  divide( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
-        return map(subtract(), arg(supplier1), arg(supplier2));
+    public static <T extends Number, S> Wrapper<Number>  divide( Wrapper<T> supplier1, SerializableFunction<S, Number> supplier2) {
+        return map(divide(), arg(supplier1), arg(supplier2));
     }
 
 
