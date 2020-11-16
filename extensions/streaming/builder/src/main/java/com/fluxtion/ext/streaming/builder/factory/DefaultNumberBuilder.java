@@ -40,46 +40,58 @@ import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.st
  */
 public class DefaultNumberBuilder {
 
-    public static <T> Wrapper<Number> number(int value, SerializableFunction<T, Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(int value, Wrapper< Number> supplier) {
+        return SepContext.service().addOrReuse(new DefaultIntWrapper(supplier, value));
+    }
+
+    public static <T> Wrapper<Number> defaultNum(double value, Wrapper< Number> supplier) {
+        return SepContext.service().addOrReuse(new DefaultDoubleWrapper(supplier, value));
+    }
+
+    public static <T> Wrapper<Number> defaultNum(long value, Wrapper< Number> supplier) {
+        return SepContext.service().addOrReuse(new DefaultLongWrapper(supplier, value));
+    }
+
+    public static <T> Wrapper<Number> defaultNum(int value, SerializableFunction<T, Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultIntWrapper(select(supplier), value));
     }
 
-    public static <T> Wrapper<Number> number(double value, SerializableFunction<T, Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(double value, SerializableFunction<T, Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultDoubleWrapper(select(supplier), value));
     }
 
-    public static <T> Wrapper<Number> number(long value, SerializableFunction<T, Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(long value, SerializableFunction<T, Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultLongWrapper(select(supplier), value));
     }
 
-    public static <T> Wrapper<Number> number(int value, SerializableSupplier<Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(int value, SerializableSupplier<Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultIntWrapper(stream(supplier), value));
     }
 
-    public static <T> Wrapper<Number> number(double value, SerializableSupplier<Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(double value, SerializableSupplier<Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultDoubleWrapper(stream(supplier), value));
     }
 
-    public static <T> Wrapper<Number> number(long value, SerializableSupplier<Number> supplier) {
+    public static <T> Wrapper<Number> defaultNum(long value, SerializableSupplier<Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultLongWrapper(stream(supplier), value));
     }
     
-    public static Wrapper<Number> number(int value, String key) {
+    public static Wrapper<Number> defaultNum(int value, String key) {
         EventMutableNumber num = new EventMutableInt(value, key);
         return SepContext.service().addOrReuse(num);
     }
 
-    public static Wrapper<Number> number(double value, String key) {
+    public static Wrapper<Number> defaultNum(double value, String key) {
         EventMutableNumber num = new EventMutableDouble(value, key);
         return SepContext.service().addOrReuse(num);
     }
 
-    public static Wrapper<Number> number(long value, String key) {
+    public static Wrapper<Number> defaultNum(long value, String key) {
         EventMutableNumber num = new EventMutableLong(value, key);
         return SepContext.service().addOrReuse(num);
     }
 
-    public static Wrapper<Number> number(String key) {
+    public static Wrapper<Number> defaultNum(String key) {
         EventMutableNumber num = new EventMutableNumber(key);
         return SepContext.service().addOrReuse(num);
     }
