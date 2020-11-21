@@ -24,7 +24,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.api.window.SlidingNumberAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,7 +69,7 @@ public class SlidingNumberAggregatorTest {
             aggregator.aggregate();
             timer.resetIfNecessary();
         }
-        Assert.assertThat(aggregator.event().intValue(), is(100));
+        assertThat(aggregator.event().intValue(), is(100));
         validateValue(2050, 100, aggregator);
         validateValue(2_101, 90, aggregator);
         validateValue(2_501, 50, aggregator);
@@ -79,7 +79,7 @@ public class SlidingNumberAggregatorTest {
     private void validateValue(int time, int value, SlidingNumberAggregator aggregator){
         setTime(time);
         aggregator.aggregate();
-        Assert.assertThat(aggregator.event().intValue(), is(value));
+        assertThat(aggregator.event().intValue(), is(value));
         timer.resetIfNecessary();
     }
 

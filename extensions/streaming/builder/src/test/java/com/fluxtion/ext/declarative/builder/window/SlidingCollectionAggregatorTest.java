@@ -24,13 +24,12 @@ import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.window.SlidingCollectionAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import static java.util.Arrays.asList;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,7 +81,7 @@ public class SlidingCollectionAggregatorTest {
     private void validateValue(int time, List expected, SlidingCollectionAggregator aggregator){
         setTime(time);
         aggregator.aggregate();
-        Assert.assertThat(aggregator.getTargetCollection().collection(), is(expected));
+        assertThat(aggregator.getTargetCollection().collection(), is(expected));
         timer.resetIfNecessary();
     }
 
