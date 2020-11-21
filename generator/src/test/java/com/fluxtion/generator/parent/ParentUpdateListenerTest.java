@@ -18,26 +18,35 @@
 package com.fluxtion.generator.parent;
 
 import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.ArrayList;
+import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentUpdateListenerTest extends BaseSepTest {
+public class ParentUpdateListenerTest extends BaseSepInprocessTest {
 
     @Test
     public void testClassFilter() {
-        buildAndInitSep(FilterBuilder.class);
+        sep(cfg -> {
+            TestHandler handler = cfg.addPublicNode(new TestHandler(), "handler");
+            cfg.addPublicNode(new TestChild(), "child").parent = handler;
+        });
+
         TestHandler testHandler = getField("handler");
         TestChild child = getField("child");
         onEvent(new ClassFilterEvent(String.class));
@@ -50,10 +59,14 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         assertThat(child.eventCount, is(1));
         assertThat(child.parentCount, is(1));
     }
-    
+
     @Test
     public void testClassFilterPrivateParent() {
-        buildAndInitSep(FilterBuilderPrivate.class);
+        sep(cfg -> {
+            TestHandler handler = cfg.addPublicNode(new TestHandler(), "handler");
+            cfg.addPublicNode(new TestChildPrivateParent(handler), "child");
+        });
+
         TestHandler testHandler = getField("handler");
         TestChildPrivateParent child = getField("child");
         onEvent(new ClassFilterEvent(String.class));
@@ -69,7 +82,12 @@ public class ParentUpdateListenerTest extends BaseSepTest {
 
     @Test
     public void testMultipleRules() {
-        buildAndInitSep(ValidationBuilder.class);
+        sep(cfg -> {
+            RuleValidator validator = cfg.addPublicNode(new RuleValidator(), "validator");
+            OrderCache cache = cfg.addNode(new OrderCache());
+            validator.rules.add(cfg.addPublicNode(new Rule1(cache), "rule1"));
+            validator.rules.add(cfg.addPublicNode(new Rule2(cache), "rule2"));
+        });
         RuleValidator validator = getField("validator");
         Rule2 rule2 = getField("rule2");
         onEvent(new NewOrderEvent());
@@ -84,7 +102,18 @@ public class ParentUpdateListenerTest extends BaseSepTest {
 
     @Test
     public void dirtyFiltering() {
-        buildAndInitSep(PriceBuilder.class);
+        sep(cfg -> {
+            MarketHandler tickHandler = cfg.addPublicNode(new MarketHandler(), "marketHandler");
+            PricerFormer pricerFormer = cfg.addPublicNode(new PricerFormer(), "priceFormer");
+            TickCounter tickCounter = cfg.addPublicNode(new TickCounter(), "tickCounter");
+            ThrottledPublisher throttledPublisher = cfg.addPublicNode(new ThrottledPublisher(), "throttledPublisher");
+            PositionCalculator positionCalc = cfg.addPublicNode(new PositionCalculator(), "positionCalc");
+            pricerFormer.marketHandler = tickHandler;
+            tickCounter.marketHandler = tickHandler;
+            throttledPublisher.pricerFormer = pricerFormer;
+            throttledPublisher.positionCalc = positionCalc;
+        });
+
         TickCounter tickCounter = getField("tickCounter");
         PricerFormer priceFormer = getField("priceFormer");
         assertThat(tickCounter.eventCount, is(0));
@@ -99,6 +128,33 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         assertThat(priceFormer.parentCount, is(0));
 
     }
+    
+    @Test
+    public void noEventGuardedParent() {
+        String matchKey = "match_me";
+        String matchKey2 = "match_2";
+        sep(cfg -> {
+            cfg.addPublicNode(new NoEventHandler(new FilterHandler(matchKey), new FilterHandler(matchKey2)), "test");
+        }, "com.test.noEventGuardedParent.GuardForNoEventReference");
+        NoEventHandler handler = getField("test");
+//      
+        onEvent(matchKey2);
+        assertTrue(handler.parent2Updated);
+        assertTrue(handler.onEvent);
+        assertFalse(handler.parentUpdated);
+//        
+        handler.reset();
+        onEvent(matchKey);
+        assertTrue(handler.parentUpdated);
+        assertFalse(handler.parent2Updated);
+        assertFalse(handler.onEvent);
+//        
+        handler.reset();
+        onEvent("hello");
+        assertFalse(handler.parentUpdated);
+        assertFalse(handler.parent2Updated);
+        assertFalse(handler.onEvent);
+    }
 
     public static class ClassFilterEvent extends DefaultEvent {
 
@@ -107,8 +163,61 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         }
     }
 
-    public static class NoUpdateEvent implements Event {
+    @Value
+    public static class FilterHandler {
 
+        String filter;
+
+        @EventHandler
+        public boolean checkString(String s) {
+            return filter.equalsIgnoreCase(s);
+        }
+    }
+    
+    
+    public static class NoEventHandler{
+        @NoEventReference @SepNode
+        final FilterHandler handler;
+        @SepNode
+        final FilterHandler handler2;
+        transient boolean parentUpdated;
+        transient boolean parent2Updated;
+        transient boolean onEvent;
+
+        public NoEventHandler(FilterHandler handler) {
+            this(handler, null);
+        }
+        
+        public NoEventHandler(FilterHandler handler, FilterHandler handler2) {
+            this.handler = handler;
+            this.handler2 = handler2;
+            reset();
+        }
+
+        @OnParentUpdate(value = "handler", guarded = true)
+        public void handlerUpdated(FilterHandler handler){
+            parentUpdated = true;
+        }
+
+        @OnParentUpdate(value = "handler2", guarded = true)
+        public void handler2Updated(FilterHandler handler){
+            parent2Updated = true;
+        }
+        
+        @OnEvent
+        public void onEvent(){
+            onEvent = true;
+        }
+        
+        public void reset(){
+            parentUpdated = false;
+            parent2Updated = false;
+            onEvent = false;
+        }
+        
+    }
+
+    public static class NoUpdateEvent implements Event {
     }
 
     public static class TestHandler {
@@ -168,33 +277,6 @@ public class ParentUpdateListenerTest extends BaseSepTest {
     }
 
     public static class NoParentUpdate {
-
-    }
-
-    public static class FilterBuilder extends SEPConfig {
-
-        {
-            TestHandler handler = addPublicNode(new TestHandler(), "handler");
-            addPublicNode(new TestChild(), "child").parent = handler;
-        }
-    }
-
-    public static class FilterBuilderPrivate extends SEPConfig {
-
-        {
-            TestHandler handler = addPublicNode(new TestHandler(), "handler");
-            addPublicNode(new TestChildPrivateParent(handler), "child");
-        }
-    }
-
-    public static class ValidationBuilder extends SEPConfig {
-
-        {
-            RuleValidator validator = addPublicNode(new RuleValidator(), "validator");
-            OrderCache cache = addNode(new OrderCache());
-            validator.rules.add(addPublicNode(new Rule1(cache), "rule1"));
-            validator.rules.add(addPublicNode(new Rule2(cache), "rule2"));
-        }
     }
 
     public static final class ConfigEvent implements Event {
@@ -281,24 +363,6 @@ public class ParentUpdateListenerTest extends BaseSepTest {
 
     }
 
-    //*********** DIRTY TEST *******************
-    public static class PriceBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            MarketHandler tickHandler = addPublicNode(new MarketHandler(), "marketHandler");
-            PricerFormer pricerFormer = addPublicNode(new PricerFormer(), "priceFormer");
-            TickCounter tickCounter = addPublicNode(new TickCounter(), "tickCounter");
-            ThrottledPublisher throttledPublisher = addPublicNode(new ThrottledPublisher(), "throttledPublisher");
-            PositionCalculator positionCalc = addPublicNode(new PositionCalculator(), "positionCalc");
-            pricerFormer.marketHandler = tickHandler;
-            tickCounter.marketHandler = tickHandler;
-            throttledPublisher.pricerFormer = pricerFormer;
-            throttledPublisher.positionCalc = positionCalc;
-        }
-
-    }
-
     public static class MarketTickEvent implements Event {
     }
 
@@ -306,7 +370,9 @@ public class ParentUpdateListenerTest extends BaseSepTest {
     }
 
     public static class MarketHandler {
+
         int eventCount;
+
         @EventHandler
         public boolean newTick(MarketTickEvent tick) {
             eventCount++;
@@ -319,74 +385,74 @@ public class ParentUpdateListenerTest extends BaseSepTest {
         public MarketHandler marketHandler;
         int eventCount;
         int parentCount;
-        
+
         @OnParentUpdate
-        public void tickUpdated( MarketHandler marketHandler){
+        public void tickUpdated(MarketHandler marketHandler) {
             parentCount++;
         }
-        
+
         @OnEvent
         public void formPrice() {
             eventCount++;
         }
 
     }
-    
-    public static class TickCounter{
+
+    public static class TickCounter {
+
         public MarketHandler marketHandler;
         int eventCount;
         int parentCount;
-        
+
         @OnParentUpdate(guarded = false)
-        public void tickUpdated( MarketHandler marketHandler){
+        public void tickUpdated(MarketHandler marketHandler) {
             parentCount++;
         }
-        
+
         @OnEvent
         public void formPrice() {
             eventCount++;
         }
     }
-    
-    public static class PositionCalculator{
-        
+
+    public static class PositionCalculator {
+
         @EventHandler
-        public boolean postionUpdate(PositionEvent orderEvent){
+        public boolean postionUpdate(PositionEvent orderEvent) {
             return true;
         }
-        
+
         @OnEvent
-        public boolean recalcPosition(){
+        public boolean recalcPosition() {
             return false;
         }
-        
+
     }
 
     public static class ThrottledPublisher {
-        
+
         public PricerFormer pricerFormer;
         public PositionCalculator positionCalc;
         int eventCount;
-        
+
         @OnEvent
-        public void publish(){
+        public void publish() {
             eventCount++;
         }
-        
+
         @EventHandler
-        public void newOrder(NewOrderEvent orderEvent){
-            
+        public void newOrder(NewOrderEvent orderEvent) {
+
         }
 
-        
         @OnParentUpdate
-        public boolean positionChanged(PositionCalculator positionCalc){
+        public boolean positionChanged(PositionCalculator positionCalc) {
             return true;
         }
-        
+
         @OnParentUpdate
-        public void priceChanged(PricerFormer pricerFormer){
-            
+        public void priceChanged(PricerFormer pricerFormer) {
+
         }
     }
 

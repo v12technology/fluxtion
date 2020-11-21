@@ -21,7 +21,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
