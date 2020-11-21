@@ -70,7 +70,7 @@ public class FilterBuilder {
 
     /**
      * Applies a filter function to an incoming event stream, and only produces
-     * an output if the function returns true.Creates a subscription for the
+     * an output if the function returns true. Creates a subscription for the
      * input stream type
      *
      * @param <T> The input stream type
@@ -80,6 +80,21 @@ public class FilterBuilder {
      * @return The filtered stream
      */
     public static <T> FilterWrapper<T> filter(Class<T> clazz, SerializableFunction<? extends T, Boolean> filter) {
+        return select(clazz).filter(filter);
+    }
+
+    /**
+     * Applies a filter function to an incoming event stream, and only produces
+     * an output if the function returns true. Creates a subscription for the
+     * input stream type
+     *
+     * @param <T> The input stream type
+     * @param filter The filter function applied to the property of the incoming
+     * stream
+     * @return The filtered stream
+     */
+    public static <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter) {
+        Class<T> clazz = filter.getContainingClass();
         return select(clazz).filter(filter);
     }
 
