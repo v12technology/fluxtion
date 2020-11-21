@@ -17,7 +17,6 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
@@ -26,8 +25,8 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import java.util.HashMap;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**

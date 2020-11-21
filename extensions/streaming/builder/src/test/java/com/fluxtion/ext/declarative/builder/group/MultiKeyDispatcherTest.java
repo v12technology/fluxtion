@@ -28,7 +28,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import net.vidageek.mirror.dsl.Mirror;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,8 +64,8 @@ public class MultiKeyDispatcherTest extends StreamInprocessTest {
         TraderPosition primaryPositionJohn = primaryGroup.value(eu_john);
         TraderPosition primaryPositionDave = primaryGroup.value(eu_dave);
         
-        Assert.assertThat(primaryPositionJohn.getDealtVolume(), is(400_000d));
-        Assert.assertThat(primaryPositionDave.getDealtVolume(), is(20_000d));
+        assertThat(primaryPositionJohn.getDealtVolume(), is(400_000d));
+        assertThat(primaryPositionDave.getDealtVolume(), is(20_000d));
         
         StaticEventProcessor secondary = sep.getClass().newInstance();
         ((Lifecycle)secondary).init();
@@ -75,8 +75,8 @@ public class MultiKeyDispatcherTest extends StreamInprocessTest {
         TraderPosition secondaryPositionJohn = secondaryyGroup.value(eu_john);
         TraderPosition secondaryPositionLinda = secondaryyGroup.value(eu_linda);
         
-        Assert.assertThat(secondaryPositionJohn.getDealtVolume(), is(200_000d));
-        Assert.assertThat(secondaryPositionLinda.getDealtVolume(), is(1_000d));
+        assertThat(secondaryPositionJohn.getDealtVolume(), is(200_000d));
+        assertThat(secondaryPositionLinda.getDealtVolume(), is(1_000d));
         
         
         MultiKeyDispatcher dispatcher = new MultiKeyDispatcher((t) -> {
@@ -88,10 +88,10 @@ public class MultiKeyDispatcherTest extends StreamInprocessTest {
         dispatcher.onEvent(eu_john);
         dispatcher.onEvent(eu_linda);
         
-        Assert.assertThat(primaryPositionJohn.getDealtVolume(), is(600_000d));
-        Assert.assertThat(primaryPositionDave.getDealtVolume(), is(20_000d));
-        Assert.assertThat(secondaryPositionJohn.getDealtVolume(), is(400_000d));
-        Assert.assertThat(secondaryPositionLinda.getDealtVolume(), is(2_000d));
+        assertThat(primaryPositionJohn.getDealtVolume(), is(600_000d));
+        assertThat(primaryPositionDave.getDealtVolume(), is(20_000d));
+        assertThat(secondaryPositionJohn.getDealtVolume(), is(400_000d));
+        assertThat(secondaryPositionLinda.getDealtVolume(), is(2_000d));
     }
     
     

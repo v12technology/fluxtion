@@ -21,6 +21,7 @@ import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import lombok.Data;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 /**
@@ -34,26 +35,26 @@ public class EventSelectTest extends StreamInprocessTest {
         JavaTestGeneratorHelper.setupDefaultTestContext("com.fluxtion.ext.declarative.builder.event", "EventSelectTest");
         Wrapper<DataEvent> dataHandler = EventSelect.select(DataEvent.class);
         Wrapper<DataEvent> dataHandler_1 = EventSelect.select(DataEvent.class);
-        Assert.assertEquals(dataHandler, dataHandler_1);
+        assertEquals(dataHandler, dataHandler_1);
 
         Wrapper<DataEvent> dataHandler_int = EventSelect.select(DataEvent.class, 200);
         Wrapper<DataEvent> dataHandler_int2 = EventSelect.select(DataEvent.class, 200);
         Wrapper<DataEvent> dataHandler_int3 = EventSelect.select(DataEvent.class, 5454);
-        Assert.assertEquals(dataHandler_int, dataHandler_int2);
-        Assert.assertNotEquals(dataHandler_int, dataHandler_int3);
-        Assert.assertNotEquals(dataHandler, dataHandler_int2);
+        assertEquals(dataHandler_int, dataHandler_int2);
+        assertNotEquals(dataHandler_int, dataHandler_int3);
+        assertNotEquals(dataHandler, dataHandler_int2);
 
         Wrapper<DataEvent> dataHandler_String = EventSelect.select(DataEvent.class, "Hello");
         Wrapper<DataEvent> dataHandler_String_1 = EventSelect.select(DataEvent.class, "Hello");
         Wrapper<DataEvent> dataHandler_String_bye = EventSelect.select(DataEvent.class, "bye");
-        Assert.assertEquals(dataHandler_String, dataHandler_String_1);
-        Assert.assertNotEquals(dataHandler_String, dataHandler_String_bye);
-        Assert.assertNotEquals(dataHandler, dataHandler_String);
-        Assert.assertNotEquals(dataHandler_int, dataHandler_String);
+        assertEquals(dataHandler_String, dataHandler_String_1);
+        assertNotEquals(dataHandler_String, dataHandler_String_bye);
+        assertNotEquals(dataHandler, dataHandler_String);
+        assertNotEquals(dataHandler_int, dataHandler_String);
 
-        Assert.assertEquals(dataHandler.eventClass(), DataEvent.class);
-        Assert.assertEquals(dataHandler_int.eventClass(), DataEvent.class);
-        Assert.assertEquals(dataHandler_String.eventClass(), DataEvent.class);
+        assertEquals(dataHandler.eventClass(), DataEvent.class);
+        assertEquals(dataHandler_int.eventClass(), DataEvent.class);
+        assertEquals(dataHandler_String.eventClass(), DataEvent.class);
     }
 
     @Test
@@ -64,7 +65,7 @@ public class EventSelectTest extends StreamInprocessTest {
         Wrapper<Data2NonFluxtion> data_2 = EventSelect.select(Data2NonFluxtion.class);
         Assert.assertEquals(data_1, data_1_copy);
         Assert.assertNotEquals(data_1, data_2);
-       DataNonFluxtion data = new DataNonFluxtion(10);
+        DataNonFluxtion data = new DataNonFluxtion(10);
     }
 
     @Test
@@ -76,7 +77,7 @@ public class EventSelectTest extends StreamInprocessTest {
             data_1_copy.map(cumSum(), DataNonFluxtion::getValue).id("cumSum1");
             data_1.map(cumSum(), DataNonFluxtion::getValue).id("cumSum1_copy");
             data_2.map(cumSum(), Data2NonFluxtion::getValue).id("cumSum2");
-        });
+        });//, "com.test.select1.SelectProcessor");
 
         Number cumSum1 = getWrappedField("cumSum1");
         Number cumSum1_copy = getWrappedField("cumSum1_copy");
@@ -87,7 +88,9 @@ public class EventSelectTest extends StreamInprocessTest {
         assertEquals(0, cumSum2.intValue());
 
         onEvent(new Data2NonFluxtion(2));
+        assertEquals(2, cumSum2.intValue());
         onEvent(new Data2NonFluxtion(12));
+        assertEquals(14, cumSum2.intValue());
         onEvent(new Data2NonFluxtion(6));
 
         assertEquals(0, cumSum1.intValue());
@@ -98,7 +101,6 @@ public class EventSelectTest extends StreamInprocessTest {
     
     @Test
     public void testFilterProperty(){
-    
         sep((cfg) ->{
             select(DataEvent::getValue).id("dataNoFilter");
             select(DataEvent::getValue, "XXX").id("dataXXXFilter");
