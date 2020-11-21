@@ -17,9 +17,9 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import java.util.Arrays;
 import java.util.Comparator;
 import static org.junit.Assert.assertEquals;
@@ -35,11 +35,10 @@ public class SubListTest extends StreamInprocessTest{
     public void subTop(){
         sep(c ->{
             WrappedList<Integer> numbers = select(Integer.class).collect().comparator(new MyComparator()).id("numbers");
-            numbers.resetNotifier(select(String.class));
+            numbers.resetNotifier(filter("clear"::equalsIgnoreCase));
             numbers.top(4).id("top4");
             numbers.last(4).id("last4");
             numbers.skip(4).id("skip4");
-
         });
         for (int i = 0; i < 10; i++) {
             onEvent(i);
@@ -53,6 +52,11 @@ public class SubListTest extends StreamInprocessTest{
         WrappedList last4 = getField("last4");
         assertEquals(last4.collection(), Arrays.asList(3,2,1, 0));
         WrappedList skip4 = getField("skip4");
+        assertEquals(skip4.collection(), Arrays.asList(5,4,3,2,1,0));
+        
+        onEvent("falseClear");
+        assertEquals(top4.collection(), Arrays.asList(9,8,7,6));
+        assertEquals(last4.collection(), Arrays.asList(3,2,1, 0));
         assertEquals(skip4.collection(), Arrays.asList(5,4,3,2,1,0));
         
         onEvent("clear");
