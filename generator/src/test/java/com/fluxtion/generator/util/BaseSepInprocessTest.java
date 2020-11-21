@@ -18,10 +18,10 @@
 package com.fluxtion.generator.util;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
@@ -49,9 +49,9 @@ public class BaseSepInprocessTest {
     }
 
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
-        GenerationContext.setupStaticContext(pckName(), sepClassName(), 
-                new File(OutputRegistry.JAVA_TESTGEN_DIR), 
-                new File(OutputRegistry.RESOURCE_TEST_DIR));
+        GenerationContext.setupStaticContext(pckName(), sepClassName(),
+            new File(OutputRegistry.JAVA_TESTGEN_DIR),
+            new File(OutputRegistry.RESOURCE_TEST_DIR));
         try {
             sep = handlerClass.newInstance();
             if (sep instanceof Lifecycle) {
@@ -71,10 +71,41 @@ public class BaseSepInprocessTest {
             throw new RuntimeException(ex);
         }
     }
-    
-    protected StaticEventProcessor init(){
-        if(sep instanceof Lifecycle){
-            ((Lifecycle)sep).init();
+
+    /**
+     * Lazily generates a SEP using the supplied String as the generated fully qualified class name. If a SEP cannot be
+     * loaded then a new SEP is generated and initialised, using the supplied builder.
+     *
+     * @param <T> The subclass of the generated StaticEventProcessor
+     * @param cfgBuilder The user supplied builder that adds nodes to the generation context 
+     * @param handlerClass The fqn of the SEP that will be generated if it cannot be loaded
+     * @return The SEP that the user can interact with in the test
+     */
+    protected <T extends StaticEventProcessor> T sep(Consumer<SEPConfig> cfgBuilder, String handlerClass) {
+        try {
+            try {
+                sep = (StaticEventProcessor) Class.forName(handlerClass).newInstance();
+                if (sep instanceof Lifecycle) {
+                    ((Lifecycle) sep).init();
+                }
+                return (T) sep;
+            } catch (Exception e) {
+                String pckName = org.apache.commons.lang3.ClassUtils.getPackageName(handlerClass);
+                String className = org.apache.commons.lang3.ClassUtils.getShortCanonicalName(handlerClass);
+                GenerationContext.setupStaticContext(pckName, className,
+                    new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                    new File(OutputRegistry.RESOURCE_TEST_DIR));
+                sep = sepTestInstance(cfgBuilder, pckName, className);
+                return (T) sep;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected StaticEventProcessor init() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).init();
         }
         return sep;
     }
@@ -99,9 +130,32 @@ public class BaseSepInprocessTest {
     protected void onEvent(Object e) {
         sep.onEvent(e);
     }
-    
-    protected void onGenericEvent(Object e){
-         onEvent(e);
+
+    protected void onGenericEvent(Object e) {
+        onEvent(e);
+    }
+
+    protected StaticEventProcessor batchPause() {
+        if (sep instanceof BatchHandler) {
+            BatchHandler batchHandler = (BatchHandler) sep;
+            batchHandler.batchPause();
+        }
+        return sep;
+    }
+
+    protected StaticEventProcessor batchEnd() {
+        if (sep instanceof BatchHandler) {
+            BatchHandler batchHandler = (BatchHandler) sep;
+            batchHandler.batchEnd();
+        }
+        return sep;
+    }
+
+    protected StaticEventProcessor teardDown() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).tearDown();
+        }
+        return sep;
     }
 
 }
