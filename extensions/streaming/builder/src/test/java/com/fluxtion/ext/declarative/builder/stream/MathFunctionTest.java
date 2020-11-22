@@ -147,6 +147,7 @@ public class MathFunctionTest extends StreamInprocessTest {
             ceil(sum).id("ceilFromWrapper");
             LibraryFunctionsBuilder.add(Data1::getVal, Data2::getVal).id("adding");
         });
+        //TODO write tests
     }
 
     @Test
@@ -213,7 +214,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     public void testMapSet() {
         sep((c) -> {
             mapSet(cumSum(), arg(Data1::getVal), arg(Data2::getVal))
-                    .id("cumSum").console("[cumsum]");
+                    .id("cumSum");//.console("[cumsum]");
         });
         Wrapper<Number> sum = getField("cumSum");
         sep.onEvent(new Data1(10));
@@ -313,6 +314,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         sep.onEvent(de1);
         de1.value = -1500;
         sep.onEvent(de1);
+        //TODO write tests and move to tutorial
     }
 
     @Test

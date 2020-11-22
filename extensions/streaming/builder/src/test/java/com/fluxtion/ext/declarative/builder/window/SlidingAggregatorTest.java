@@ -23,12 +23,11 @@ import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.window.SlidingAggregator;
-import com.fluxtion.ext.streaming.api.window.SlidingNumberAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,7 +81,7 @@ public class SlidingAggregatorTest {
     private void validateValue(int time, String value, SlidingAggregator<LongestWord> aggregator) {
         setTime(time);
         aggregator.aggregate();
-        Assert.assertThat(aggregator.event().getWord(), is(value));
+        assertThat(aggregator.event().getWord(), is(value));
         timer.resetIfNecessary();
     }
 

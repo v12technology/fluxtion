@@ -48,11 +48,6 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
 //    @Override
 //    <S> FilterWrapper<T> console(String prefix, SerializableFunction<T, S>... supplier);
 
-    @Override
-    default FilterWrapper<T> resetNotifier(Object resetNotifier) {
-        return this;
-    }
-
 //    @Override
 //    default FilterWrapper<T> notiferMerge(Object eventNotifier) {
 //        return (FilterWrapper<T>)StreamOperator.service().notiferMerge(this, eventNotifier);
@@ -65,16 +60,6 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
 
 //    @Override
 //    FilterWrapper<T> publishAndReset(Object notifier);
-
-    @Override
-    default FilterWrapper<T> immediateReset(boolean immediateReset) {
-        return this;
-    }
-
-    @Override
-    default FilterWrapper<T> alwaysReset(boolean alwaysReset) {
-        return this;
-    }
     
     @Override
     default FilterWrapper<T> validOnStart(boolean alwaysReset) {

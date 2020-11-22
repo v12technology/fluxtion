@@ -60,8 +60,8 @@ public class EventMutableNumber implements Wrapper<Number> {
             this(defaultValue, null);
         }
 
-        @Initialise
-        public void init() {
+        @Override
+        public void reset() {
             set(defaultValue);
         }
     }
@@ -80,8 +80,8 @@ public class EventMutableNumber implements Wrapper<Number> {
             this(defaultValue, null);
         }
 
-        @Initialise
-        public void init() {
+        @Override
+        public void reset() {
             set(defaultValue);
         }
     }
@@ -100,8 +100,8 @@ public class EventMutableNumber implements Wrapper<Number> {
             this(defaultValue, null);
         }
 
-        @Initialise
-        public void init() {
+        @Override
+        public void reset() {
             set(defaultValue);
         }
     }

@@ -27,7 +27,7 @@ import static com.fluxtion.ext.streaming.builder.factory.TestBuilder.test;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -72,6 +72,20 @@ public class FilterTest extends StreamInprocessTest {
         assertThat(count.intValue(), is(1));
     }
 
+    @Test
+    public void testInstanceFilter(){
+        sep((c) -> {
+            filter("matched"::equalsIgnoreCase).map(count()).id("count");
+        });
+        Number count = getWrappedField("count");
+        onEvent(new DataEvent(10));
+        assertThat(count.intValue(), is(0));
+        onEvent("not matched");
+        assertThat(count.intValue(), is(0));
+        onEvent("matched");
+        assertThat(count.intValue(), is(1));        
+    }
+    
     @Test
     public void complexNaryTest() {
         sep((c) -> {

@@ -4,7 +4,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**

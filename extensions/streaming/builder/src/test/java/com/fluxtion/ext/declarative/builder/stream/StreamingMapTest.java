@@ -23,7 +23,7 @@ import com.fluxtion.ext.streaming.api.util.Pair;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -148,6 +148,23 @@ public class StreamingMapTest extends StreamInprocessTest {
         assertThat(valStatic.event().getKey(), is("89"));
         assertThat(valStatic.event().getValue(), is(89));
 
+    }
+    
+    @Test
+    public void mapStatefulRef2Ref() {
+        sep((c) -> {
+            Wrapper<StreamData> in = select(StreamData.class);
+            in.map(new MapFunctions.MapStringCount()::stringCount, StreamData::getStringValue)
+                .resetAndPublish(select(String.class))
+                .id("result");
+        });
+        onEvent(new StreamData("1"));
+        onEvent(new StreamData("1"));
+        onEvent(new StreamData("1"));
+        assertThat(getWrappedField("result"), is("3"));
+        onEvent("reset");
+        onEvent(new StreamData("1"));
+        assertThat(getWrappedField("result"), is("1"));
     }
 
     @Test

@@ -28,9 +28,9 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-04-28T00:13:00.874918
- * generator version : 2.3.2-SNAPSHOT
- * api version       : 2.3.2-SNAPSHOT
+ * generation time   : 2020-11-22T21:03:09.201837
+ * generator version : 2.7.10-SNAPSHOT
+ * api version       : 2.7.10-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -54,17 +54,13 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
   //Filter constants
 
   public FlightDelayAnalyser() {
-    filter_getDelay_By_positiveInt0_1.setAlwaysReset(false);
     filter_getDelay_By_positiveInt0_1.setNotifyOnChangeOnly(false);
-    filter_getDelay_By_positiveInt0_1.setResetImmediate(true);
     filter_getDelay_By_positiveInt0_1.setValidOnStart(false);
     filter_getDelay_By_positiveInt0_1.filterSubject = flightDetailsCsvDecoder0_0;
     filter_getDelay_By_positiveInt0_1.source_0 = flightDetailsCsvDecoder0_0;
     flightDetailsCsvDecoder0_0.errorLog = validationLogger_5;
     carrierDelayMap.filter_getDelay_By_positiveInt00 = filter_getDelay_By_positiveInt0_1;
-    totalFlights.setAlwaysReset(false);
     totalFlights.setNotifyOnChangeOnly(false);
-    totalFlights.setResetImmediate(true);
     totalFlights.setValidOnStart(false);
     totalFlights.filterSubject = flightDetailsCsvDecoder0_0;
     totalFlights.f = count_3;
@@ -156,9 +152,11 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
   public void init() {
     count_3.reset();
     flightDetailsCsvDecoder0_0.init();
-    filter_getDelay_By_positiveInt0_1.init();
+    flightDetailsCsvDecoder0_0.reset();
+    filter_getDelay_By_positiveInt0_1.reset();
     carrierDelayMap.init();
-    totalFlights.init();
+    carrierDelayMap.reset();
+    totalFlights.reset();
     validationLogSink_6.init();
   }
 

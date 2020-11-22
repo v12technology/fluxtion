@@ -38,6 +38,7 @@ import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.generator.model.Field.MappedField;
 import com.fluxtion.generator.util.ClassUtils;
 import com.fluxtion.generator.util.NaturalOrderComparator;
+import static com.fluxtion.generator.util.SuperMethodAnnotationScanner.annotationInHierarchy;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashMultimap;
@@ -502,21 +503,21 @@ public class SimpleEventProcessorModel {
 //            Method[] methodList = object.getClass().getDeclaredMethods();
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
-                if (method.getAnnotation(Initialise.class) != null) {
+                if (annotationInHierarchy(method, Initialise.class)) {
                     initialiseMethods.add(new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
                         LOGGER.debug("initialse call back : " + validCb);
                     }
                 }
-                if (method.getAnnotation(TearDown.class) != null) {
+                if (annotationInHierarchy(method, TearDown.class)) {
                     tearDownMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
                         LOGGER.debug("tear down call back : " + validCb);
                     }
                 }
-                if (method.getAnnotation(OnBatchEnd.class) != null) {
+                if (annotationInHierarchy(method, OnBatchEnd.class)) {
                     //revered for the batch callbacks
                     batchEndMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
@@ -524,7 +525,7 @@ public class SimpleEventProcessorModel {
                         LOGGER.debug("batch end call back : " + validCb);
                     }
                 }
-                if (method.getAnnotation(OnBatchPause.class) != null) {
+                if (annotationInHierarchy(method, OnBatchPause.class)) {
                     //revered for the batch callbacks
                     batchPauseMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
@@ -532,7 +533,7 @@ public class SimpleEventProcessorModel {
                         LOGGER.debug("batch pause call back : " + validCb);
                     }
                 }
-                if (method.getAnnotation(AfterEvent.class) != null) {
+                if (annotationInHierarchy(method, AfterEvent.class)) {
                     //revered for the batch callbacks
                     eventEndMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
@@ -541,7 +542,7 @@ public class SimpleEventProcessorModel {
                     }
                 }
 
-                if (method.getAnnotation(OnEvent.class) != null) {
+                if (annotationInHierarchy(method, OnEvent.class)) {
                     node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                 }
 
@@ -887,10 +888,11 @@ public class SimpleEventProcessorModel {
     }
 
     private boolean noDirtyFlagNeeded(Field node) {
-        boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty();
+        boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty() && 
+            parentUpdateListenerMethodMap.get(node.instance).isEmpty();
         Method[] methodList = node.instance.getClass().getDeclaredMethods();
         for (Method method : methodList) {
-            if (method.getAnnotation(OnEventComplete.class) != null) {
+            if (annotationInHierarchy(method, OnEventComplete.class)) {
                 notRequired = false;
             }
         }
@@ -1152,7 +1154,6 @@ public class SimpleEventProcessorModel {
      */
     private class EventCallList {
 
-//        final FilteredEventHandler eh;
         final int filterId;
         final String filterString;
         final boolean isIntFilter;
@@ -1200,13 +1201,13 @@ public class SimpleEventProcessorModel {
             for (int i = 1; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
                 name = dependencyGraph.variableName(object);
-                Method[] methodList = object.getClass().getDeclaredMethods();
+                Method[] methodList = object.getClass().getMethods();
 
                 for (Method method : methodList) {
-                    if (method.getAnnotation(OnEvent.class) != null) {
+                    if (annotationInHierarchy(method, OnEvent.class)){
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
-                    if (method.getAnnotation(OnEventComplete.class) != null) {
+                    if (annotationInHierarchy(method, OnEventComplete.class)) {
                         postDispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
                 }
@@ -1312,9 +1313,9 @@ public class SimpleEventProcessorModel {
             String name = dependencyGraph.variableName(instance);
             dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true));
             //check for @OnEventComplete on the root of the event tree
-            Method[] methodList = instance.getClass().getDeclaredMethods();
+            Method[] methodList = instance.getClass().getMethods();
             for (Method method : methodList) {
-                if (method.getAnnotation(OnEventComplete.class) != null) {
+                if (annotationInHierarchy(method,OnEventComplete.class)) {
                     postDispatchMethods.add(new CbMethodHandle(method, instance, name));
                 }
             }
@@ -1322,13 +1323,12 @@ public class SimpleEventProcessorModel {
             for (int i = 0; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
                 name = dependencyGraph.variableName(object);
-                methodList = object.getClass().getDeclaredMethods();
-
+                methodList = object.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(OnEvent.class) != null) {
+                    if (annotationInHierarchy(method, OnEvent.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
-                    }
-                    if (method.getAnnotation(OnEventComplete.class) != null && i > 0) {
+                    }               
+                    if (annotationInHierarchy(method, OnEventComplete.class) && i > 0) {
                         postDispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
                 }

@@ -38,9 +38,9 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
 
   public CarrierDelay target;
   public double aggregateSum3;
-  public int aggregateCount2;
   public AggregateAverage aggregateAverage1Function = new AggregateAverage();
   public double aggregateAverage1;
+  public int aggregateCount2;
 
   public CalculationStateGroupBy_4() {
     target = new CarrierDelay();

@@ -23,7 +23,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.toDouble;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -34,7 +34,6 @@ public class NumericPredicateTest extends StreamInprocessTest {
 
     @Test
     public void elseNotifyOnce() {
-//        fixedPkg = true;
         sep((c) -> {
             FilterWrapper<Number> filter = toDouble(StreamData::getIntValue)
                     .filter( num(10,"gt")::greaterThan)

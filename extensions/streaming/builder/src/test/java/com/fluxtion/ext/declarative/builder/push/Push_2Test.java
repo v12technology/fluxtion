@@ -13,7 +13,7 @@ import com.fluxtion.ext.streaming.builder.factory.PushBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -24,7 +24,6 @@ public class Push_2Test extends StreamInprocessTest {
 
     @Test
     public void pushNotification() {
-//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -39,12 +38,11 @@ public class Push_2Test extends StreamInprocessTest {
         sep.onEvent(new DealEvent());
         sep.onEvent(new TradeEvent());
         UpdateCount counter = getField("counter");
-        Assert.assertThat(counter.count, is(3));
+        assertThat(counter.count, is(3));
     }
 
     @Test
     public void pushNotificationDataViaStream() {
-//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -67,14 +65,13 @@ public class Push_2Test extends StreamInprocessTest {
         sep.onEvent(new TradeEvent());
         UpdateCount counter = getField("counter");
         PushTarget target = getField("target");
-        Assert.assertThat(counter.count, is(3));
-        Assert.assertThat(target.count, is(3));
-        Assert.assertThat(target.val, is(30));
+        assertThat(counter.count, is(3));
+        assertThat(target.count, is(3));
+        assertThat(target.val, is(30));
     }
 
     @Test
     public void pushNotificationData() {
-//        fixedPkg = true;
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
             Wrapper<DataEvent> inDA = select(DataEvent.class);
@@ -96,11 +93,11 @@ public class Push_2Test extends StreamInprocessTest {
         sep.onEvent(new TradeEvent());
         UpdateCount counter = getField("counter");
         PushTarget target = getField("target");
-        Assert.assertThat(counter.count, is(3));
-        Assert.assertThat(target.count, is(3));
-        Assert.assertThat(target.val, is(30));
-        Assert.assertThat(target.updatePushVal, is(300));
-        Assert.assertThat(target.longVal, is(3000l));
+        assertThat(counter.count, is(3));
+        assertThat(target.count, is(3));
+        assertThat(target.val, is(30));
+        assertThat(target.updatePushVal, is(300));
+        assertThat(target.longVal, is(3000l));
     }
 
     @Test
@@ -117,8 +114,8 @@ public class Push_2Test extends StreamInprocessTest {
         sep.onEvent(new LongNumber((8000)));
         sep.onEvent(new LongNumber((2000)));
         sep.onEvent(new LongNumber((1000)));
-        Assert.assertThat(date.getTime(), is(1000L));
-        Assert.assertThat(date_2.getTime(), is(3L));
+        assertThat(date.getTime(), is(1000L));
+        assertThat(date_2.getTime(), is(3L));
     }
 
     public static class LongNumber {

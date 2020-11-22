@@ -16,15 +16,18 @@
  */
 package com.fluxtion.ext.streaming.api.numeric;
 
-import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class DefaultNumberWrapper implements Wrapper<Number> {
+public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number> {
+//public class DefaultNumberWrapper implements Wrapper<Number> {
 
     private final Wrapper<Number> parent;
     protected transient final MutableNumber result = new MutableNumber();
@@ -42,15 +45,9 @@ public class DefaultNumberWrapper implements Wrapper<Number> {
             this.defaultVal = defaultVal;
         }
 
-        @Initialise
-        public void init() {
+        public void reset() {
+            recalculate = true;
             result.set(defaultVal);
-        }
-
-        @OnEvent
-        @Override
-        public boolean onEvent() {
-            return super.onEvent();
         }
 
     }
@@ -64,15 +61,9 @@ public class DefaultNumberWrapper implements Wrapper<Number> {
             this.defaultVal = defaultVal;
         }
 
-        @Initialise
-        public void init() {
+        public void reset() {
+            recalculate = true;
             result.set(defaultVal);
-        }
-
-        @OnEvent
-        @Override
-        public boolean onEvent() {
-            return super.onEvent();
         }
 
     }
@@ -86,26 +77,32 @@ public class DefaultNumberWrapper implements Wrapper<Number> {
             this.defaultVal = defaultVal;
         }
 
-        @Initialise
-        public void init() {
+        public void reset() {
+            recalculate = true;
             result.set(defaultVal);
-        }
-
-        @OnEvent
-        @Override
-        public boolean onEvent() {
-            return super.onEvent();
         }
 
     }
 
     @OnEvent
     public boolean onEvent() {
-        Number parentNumber = parent.event();
-        boolean updated = !parentNumber.equals(result);
-        result.set(parentNumber);
+        boolean updated = true;
+        if (recalculate) {
+            Number parentNumber = parent.event();
+            updated = !parentNumber.equals(result);
+            result.set(parentNumber);
+        }
+        recalculate = true;
         return updated;
     }
+    
+    @AfterEvent
+    public void resetAfterEvent() {
+      if (reset) {
+        reset();
+      }
+      reset = false;
+    } 
 
     @Override
     public Number event() {
@@ -120,6 +117,24 @@ public class DefaultNumberWrapper implements Wrapper<Number> {
     @Override
     public boolean isValidOnStart() {
         return true;
+    }
+
+    @Override
+    public FilterWrapper<Number> publishAndReset(Object notifier) {
+        parent.publishAndReset(notifier);
+        return super.publishAndReset(notifier);
+    }
+
+    @Override
+    public FilterWrapper<Number> resetNoPublish(Object notifier) {
+        parent.resetNoPublish(notifier);
+        return super.resetNoPublish(notifier); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public FilterWrapper<Number> resetAndPublish(Object notifier) {
+        parent.resetAndPublish(notifier);
+        return super.resetAndPublish(notifier); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

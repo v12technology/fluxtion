@@ -124,4 +124,10 @@ public class MsgSink {
     public CharSequence asCharSequence(){
         return sb;
     }
+
+    @Override
+    public String toString() {
+        return "MsgSink{" + sb + '}';
+    }
+    
 }

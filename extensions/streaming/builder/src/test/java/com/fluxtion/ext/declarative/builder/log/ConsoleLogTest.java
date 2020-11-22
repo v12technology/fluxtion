@@ -13,7 +13,6 @@ package com.fluxtion.ext.declarative.builder.log;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
 import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
@@ -24,7 +23,7 @@ import com.fluxtion.junit.SystemOutResource;
 import java.util.Collection;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;

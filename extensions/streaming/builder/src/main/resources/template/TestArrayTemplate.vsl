@@ -52,8 +52,8 @@ public class ${functionClass} implements Test{
 
 #else
 
-    @Initialise
-    public void init(){
+    @Override
+    public void reset(){
         f = new  ${targetClass}();
     }
 

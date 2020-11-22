@@ -29,7 +29,7 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -40,7 +40,6 @@ public class StreamingFilterTest extends StreamInprocessTest {
 
     @Test
     public void elseNotifyOnce() {
-//        fixedPkg = true;
         sep((c) -> {
             FilterWrapper<StreamData> filter = select(StreamData.class)
                     .filter(StreamData::getIntValue, gt(10)).notifyOnChange(true);
@@ -141,7 +140,6 @@ public class StreamingFilterTest extends StreamInprocessTest {
 
     @Test
     public void mapRef2Ref() {
-//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.filter(StreamData::getIntValue, FilterFunctions::posStatic)

@@ -18,6 +18,7 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 
+import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.util.Pair;
 
 /**
@@ -101,6 +102,41 @@ public class MapFunctions {
     //help
     public int count(Object o){
         return ++count;
+    }
+    
+    
+    public static class MapStringCount implements Stateful<String> {
+
+        private int count = 0;
+        
+        @Override
+        public void reset() {
+            count = 0;
+        }
+
+        public String stringCount(String in){
+            return "" + ++count;
+        }
+    }
+    
+    public static class MapBooleanSwitch implements Stateful<String> {
+
+        private boolean latch = false;
+        
+        @Override
+        public void reset() {
+             latch = false;
+        }
+
+        public boolean stringLatch(String in){
+            latch |= in.equalsIgnoreCase("on");
+            return latch;
+        }
+
+        public boolean isLatch() {
+            return latch;
+        }
+        
     }
     
 }

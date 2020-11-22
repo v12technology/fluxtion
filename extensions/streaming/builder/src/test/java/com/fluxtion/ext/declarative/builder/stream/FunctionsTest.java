@@ -20,6 +20,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.ceil;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -30,7 +32,6 @@ public class FunctionsTest extends StreamInprocessTest {
 
     @Test
     public void mapRef2Ref() {
-//        fixedPkg = true;
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(cumSum(), StreamData::getIntValue);
@@ -40,18 +41,18 @@ public class FunctionsTest extends StreamInprocessTest {
             in.filter(StreamData::getIntValue, new FilterFunctions()::positive).id("data")
                     .map(new MapFunctions()::count).id("count");
         });
-//        Wrapper<StreamData> data = getField("data");
-//        Wrapper<Number> count = getField("count");
-//        Wrapper<Number> countStatic = getField("countStatic");
-//        onEvent(new StreamData(89));
-//        assertThat(count.event().intValue(), is(1));
-//        assertThat(countStatic.event().intValue(), is(1));
-//        onEvent(new StreamData(89));
-//        assertThat(count.event().intValue(), is(2));
-//        assertThat(countStatic .event().intValue(), is(2));
-//        onEvent(new StreamData(-10));
-//        assertThat(count.event().intValue(), is(2));
-//        assertThat(countStatic .event().intValue(), is(2));
+        Wrapper<StreamData> data = getField("data");
+        Wrapper<Number> count = getField("count");
+        Wrapper<Number> countStatic = getField("countStatic");
+        onEvent(new StreamData(89));
+        assertThat(count.event().intValue(), is(1));
+        assertThat(countStatic.event().intValue(), is(1));
+        onEvent(new StreamData(89));
+        assertThat(count.event().intValue(), is(2));
+        assertThat(countStatic .event().intValue(), is(2));
+        onEvent(new StreamData(-10));
+        assertThat(count.event().intValue(), is(2));
+        assertThat(countStatic .event().intValue(), is(2));
     }
 
     @Test
@@ -60,6 +61,7 @@ public class FunctionsTest extends StreamInprocessTest {
             cumSum(StreamData::getDoubleValue);
             cumSum(new StreamData()::getIntValue);
         });
+        //TODO write tests
     }
 
     @Test
@@ -67,5 +69,6 @@ public class FunctionsTest extends StreamInprocessTest {
         sep((c) -> {
             ceil(new StreamData()::getDoubleValue);
         });
+        //TODO write tests
     }
 }

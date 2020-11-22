@@ -24,7 +24,7 @@ import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -43,11 +43,11 @@ public class MapTest extends StreamInprocessTest {
         Number sum = getWrappedField("sum");
         Number sum2 = getWrappedField("sum2");
         onEvent(new DataEvent(77, 10));
-        Assert.assertThat(sum.intValue(), is(154));
-        Assert.assertThat(sum2.intValue(), is(20));
+        assertThat(sum.intValue(), is(154));
+        assertThat(sum2.intValue(), is(20));
         onEvent(new DataEvent(4, -7));
-        Assert.assertThat(sum.intValue(), is(8));
-        Assert.assertThat(sum2.intValue(), is(14));
+        assertThat(sum.intValue(), is(8));
+        assertThat(sum2.intValue(), is(14));
     }
     
     

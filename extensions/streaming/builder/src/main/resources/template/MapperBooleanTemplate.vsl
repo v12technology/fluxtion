@@ -6,17 +6,19 @@ import $import;
 
 /**
  * generated mapper function wrapper for a boolesn primitive.
- *  
- *<ul>
- * <li>output class : {@link Boolean}
- * <li>input class  : {@link ${filterSubjectClass}}
-#foreach($sourceInfo in $sourceMappingList)
- * <li>input class  : {@link ${sourceInfo.type}}
-#end
- * <li>map function : {@link ${targetClass}#${targetMethod}}
- * <li>multiArg     : ${multiArgFunc}
- *</ul>
  * 
+ *  <pre> 
+ *  <ul>
+ *   <li>template file: ${currentTemplate}
+ *   <li>output class : {@link Boolean}
+ *   <li>input class  : {@link ${filterSubjectClass}}
+#foreach($sourceInfo in $sourceMappingList)
+ *   <li>input class  : {@link ${sourceInfo.type}}
+#end
+ *   <li>map function : {@link ${targetClass}#${targetMethod}}
+ *   <li>multiArg     : ${multiArgFunc}
+ *  </ul>
+ * </pre>
  * @author Greg Higgins
  */
 public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
@@ -35,42 +37,41 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
     @NoEventReference
     public ${targetClass} f;
 #end
-    //private ${outputClass} result;
-#if(${stateful})
-    @NoEventReference
-    public Object resetNotifier;
-    private boolean parentReset = false;
-#end
     private boolean value;
     private boolean oldValue;
 
     @OnEvent
     public boolean onEvent(){
-        oldValue = result;
+        boolean updated = true;
+        if(recalculate){
+            oldValue = result;
 #if(${newFunction})
 #if(${multiArgFunc})
-        if(allSourcesUpdated()){
-        result = ${targetClass}.${targetMethod}(${input});
-        }
+            if(allSourcesUpdated()){
+            result = ${targetClass}.${targetMethod}(${input});
+            }
 #else
-         result = ${targetClass}.${targetMethod}(${input});
+             result = ${targetClass}.${targetMethod}(${input});
 #end
 #else
 #if(${multiArgFunc})
-        if(allSourcesUpdated()){
-            result = f.${targetMethod}(${input});
-        }
+            if(allSourcesUpdated()){
+                result = f.${targetMethod}(${input});
+            }
 #else
             result = f.${targetMethod}(${input});
 #end
 #foreach($functionInfo in $sourceFunctions)
-        if(${functionInfo.sourceInfo.id}Updated){
-            result =  f.${targetMethod}(${functionInfo.paramString});
+            if(${functionInfo.sourceInfo.id}Updated){
+                result =  f.${targetMethod}(${functionInfo.paramString});
+            }
+#end
+#end
+            value = result;
+            return #if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly || (oldValue != value);
         }
-#end
-#end
-        value = result;
-        return #if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly || (oldValue != value);
+        recalculate = true;
+        return updated; 
     }
 #if(!${newFunction} || ${multiArgFunc} )
 
@@ -102,34 +103,17 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
 #end
 #if(${stateful})
 
-    @OnParentUpdate("resetNotifier")
-    public void resetNotification(Object resetNotifier) {
-        parentReset = true;
-        if (isResetImmediate()) {
-            result = false;
-            f.reset();
-            parentReset = false;
-        }
-    }
-
     @AfterEvent
     public void resetAfterEvent() {
-        if (parentReset | alwaysReset) {
-            result = false;
-            f.reset();
+#if(${alwaysReset})
+        f.reset();
+#end
+        if (reset) {
+          reset();
         }
-        parentReset = false;
+        reset = false;
     }
 
-    public void reset(){
-         f.reset();
-    }
-
-    @Override
-    public FilterWrapper<Boolean> resetNotifier(Object resetNotifier) {
-        this.resetNotifier = resetNotifier;
-        return this;
-    }
 #end
 
     @Override
@@ -142,8 +126,8 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
         return Boolean.class;
     }
 
-    @Initialise
-    public void init(){
+    @Override
+    public void reset(){
         result = false;
         value = false;
         oldValue = false;
@@ -153,6 +137,11 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
 #foreach($sourceInfo in $sourceMappingList)
         ${sourceInfo.id}Updated = false;
 #end
+#if(${stateful})
+        f.reset();
+#end
+        recalculate = true;
+        reset = false;
     }
 
 }

@@ -16,10 +16,13 @@ import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 /**
  * generated filter function wrapper.
  *
- * <ul>
- *   <li>input class : {@link FlightDetails}
- *   <li>filter function : {@link NumericPredicates#positiveInt}
- * </ul>
+ * <pre>
+ *  <ul>
+ *      <li>template file   : template/FilterTemplate.vsl
+ *      <li>input class     : {@link FlightDetails}
+ *      <li>filter function : {@link NumericPredicates#positiveInt}
+ *  </ul>
+ * </pre>
  *
  * @author Greg Higgins
  */
@@ -28,13 +31,6 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
   //source operand inputs
   public FlightDetailsCsvDecoder0 filterSubject;
   public FlightDetailsCsvDecoder0 source_0;
-  @NoEventReference public Object resetNotifier;
-  private boolean parentReset = false;
-
-  @Initialise
-  public void init() {
-    result = false;
-  }
 
   @OnEvent
   @SuppressWarnings("unchecked")
@@ -43,32 +39,16 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
     result =
         (boolean)
             NumericPredicates.positiveInt((double) ((FlightDetails) source_0.event()).getDelay());
-    //this is probably right - to be tested
-    //return (!notifyOnChangeOnly | !oldValue) & result;
-    return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
-  }
-
-  @OnParentUpdate("resetNotifier")
-  public void resetNotification(Object resetNotifier) {
-    parentReset = true;
-    if (isResetImmediate()) {
-      result = false;
-      parentReset = false;
-    }
+    return (!notifyOnChangeOnly | !oldValue) & result;
+    //return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
   }
 
   @AfterEvent
   public void resetAfterEvent() {
-    if (parentReset) {
+    if (reset) {
       result = false;
     }
-    parentReset = false;
-  }
-
-  @Override
-  public FilterWrapper<FlightDetails> resetNotifier(Object resetNotifier) {
-    this.resetNotifier = resetNotifier;
-    return this;
+    reset = false;
   }
 
   @Override
@@ -79,5 +59,11 @@ public class Filter_getDelay_By_positiveInt0 extends AbstractFilterWrapper<Fligh
   @Override
   public Class<FlightDetails> eventClass() {
     return FlightDetails.class;
+  }
+
+  @Override
+  public void reset() {
+    //add override logic
+    result = false;
   }
 }

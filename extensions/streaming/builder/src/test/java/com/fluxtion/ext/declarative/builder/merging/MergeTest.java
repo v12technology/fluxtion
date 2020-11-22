@@ -16,16 +16,12 @@
  */
 package com.fluxtion.ext.declarative.builder.merging;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.declarative.builder.stream.StreamTest;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
-import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -33,25 +29,6 @@ import org.junit.Test;
  * @author V12 Technology Ltd.
  */
 public class MergeTest extends StreamInprocessTest {
-
-    @Test
-    public void multipleSelect() {
-        StaticEventProcessor handler = sep((c) -> {
-            select(DataEvent.class).console("dataEvent").id("nonMergedCount")
-                    .map(count())
-                    .resetNotifier(select(StreamTest.TempF.class).console("[reset event] ->"));
-        });
-        handler.onEvent(new DataEvent(5));
-        handler.onEvent(new StreamTest.TempF(10, "outside")); 
-        
-    }
-
-    @Test
-    public void dirtySelect() {
-        sep((c) -> {
-            EventSelect.select(DataEvent.class).map(count()).id("nonMergedCount");
-        });
-    }
 
     @Test
     public void mapRef2Ref() {

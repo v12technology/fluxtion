@@ -23,7 +23,7 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static com.fluxtion.ext.streaming.builder.factory.TestBuilder.test;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -48,30 +48,30 @@ public class TestBuilderTest extends StreamInprocessTest{
         Number g3 = getWrappedField("gt3");
         
         onEvent(new DataEvent(2));
-        Assert.assertThat(g0.intValue(), is(0));
-        Assert.assertThat(g1.intValue(), is(0));
-        Assert.assertThat(g2.intValue(), is(0));
-        Assert.assertThat(g3.intValue(), is(0));
+        assertThat(g0.intValue(), is(0));
+        assertThat(g1.intValue(), is(0));
+        assertThat(g2.intValue(), is(0));
+        assertThat(g3.intValue(), is(0));
         onEvent(new DataEvent(3));
-        Assert.assertThat(g0.intValue(), is(0));
-        Assert.assertThat(g1.intValue(), is(0));
-        Assert.assertThat(g2.intValue(), is(0));
-        Assert.assertThat(g3.intValue(), is(0));
+        assertThat(g0.intValue(), is(0));
+        assertThat(g1.intValue(), is(0));
+        assertThat(g2.intValue(), is(0));
+        assertThat(g3.intValue(), is(0));
         onEvent(new DataEvent(4));
-        Assert.assertThat(g0.intValue(), is(0));
-        Assert.assertThat(g1.intValue(), is(0));
-        Assert.assertThat(g2.intValue(), is(0));
-        Assert.assertThat(g3.intValue(), is(1));
+        assertThat(g0.intValue(), is(0));
+        assertThat(g1.intValue(), is(0));
+        assertThat(g2.intValue(), is(0));
+        assertThat(g3.intValue(), is(1));
         onEvent(new DataEvent(6));
-        Assert.assertThat(g0.intValue(), is(0));
-        Assert.assertThat(g1.intValue(), is(0));
-        Assert.assertThat(g2.intValue(), is(1));
-        Assert.assertThat(g3.intValue(), is(2));
+        assertThat(g0.intValue(), is(0));
+        assertThat(g1.intValue(), is(0));
+        assertThat(g2.intValue(), is(1));
+        assertThat(g3.intValue(), is(2));
         onEvent(new DataEvent(12));
-        Assert.assertThat(g0.intValue(), is(1));
-        Assert.assertThat(g1.intValue(), is(1));
-        Assert.assertThat(g2.intValue(), is(2));
-        Assert.assertThat(g3.intValue(), is(3));
+        assertThat(g0.intValue(), is(1));
+        assertThat(g1.intValue(), is(1));
+        assertThat(g2.intValue(), is(2));
+        assertThat(g3.intValue(), is(3));
         
     }
     

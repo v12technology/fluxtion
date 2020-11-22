@@ -18,12 +18,15 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 /**
  * generated mapper function wrapper for a numeric primitive.
  *
- * <ul>
+ * <pre>
+ *  <ul>
+ *   <li>template file: template/MapperPrimitiveTemplate.vsl
  *   <li>output class : {@link Number}
- *   <li>input class : {@link FlightDetails}
+ *   <li>input class  : {@link FlightDetails}
  *   <li>map function : {@link Count#increment}
- *   <li>multiArg : false
- * </ul>
+ *   <li>multiArg     : false
+ *  </ul>
+ * </pre>
  *
  * @author Greg Higgins
  */
@@ -39,39 +42,23 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
 
   @OnEvent
   public boolean onEvent() {
-    oldValue.set(result);
-    result = f.increment((Object) ((FlightDetails) filterSubject.event()));
-    value.set(result);
-    return !notifyOnChangeOnly | (!oldValue.equals(value));
-  }
-
-  @OnParentUpdate("resetNotifier")
-  public void resetNotification(Object resetNotifier) {
-    parentReset = true;
-    if (isResetImmediate()) {
-      result = 0;
-      f.reset();
-      parentReset = false;
+    boolean updated = true;
+    if (recalculate) {
+      oldValue.set(result);
+      result = f.increment((Object) ((FlightDetails) filterSubject.event()));
+      value.set(result);
+      updated = !notifyOnChangeOnly | (!oldValue.equals(value));
     }
+    recalculate = true;
+    return updated;
   }
 
   @AfterEvent
   public void resetAfterEvent() {
-    if (parentReset | alwaysReset) {
-      result = 0;
-      f.reset();
+    if (reset) {
+      reset();
     }
-    parentReset = false;
-  }
-
-  public void reset() {
-    f.reset();
-  }
-
-  @Override
-  public FilterWrapper<Number> resetNotifier(Object resetNotifier) {
-    this.resetNotifier = resetNotifier;
-    return this;
+    reset = false;
   }
 
   @Override
@@ -84,10 +71,15 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
     return Number.class;
   }
 
-  @Initialise
-  public void init() {
+  @Override
+  public void reset() {
     result = 0;
-    value = new MutableNumber();
-    oldValue = new MutableNumber();
+    value = value == null ? new MutableNumber() : value;
+    oldValue = oldValue == null ? new MutableNumber() : oldValue;
+    value.set(result);
+    oldValue.set(result);
+    f.reset();
+    recalculate = true;
+    reset = false;
   }
 }

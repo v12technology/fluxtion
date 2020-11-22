@@ -39,13 +39,13 @@ public class StreamTest implements Stateful {
             Wrapper<Double> logTemp = select(TempF.class)
                     .map(Math::log, TempF::getFahrenheit)
                     .map(new StreamTest()::cumSum)
-                    .resetNotifier(select(DataEvent.class).console("[reset] ->"))
+                    .resetAndPublish(select(DataEvent.class).console("[reset] ->"))
                     .console("[cum sum] ->");
             //on change
             select(TempF.class)
                     .map(Math::log, TempF::getFahrenheit)
                     .notifyOnChange(true)
-                    .map(new StreamTest()::cumSum).resetNotifier(select(DataEvent.class))
+                    .map(new StreamTest()::cumSum).resetAndPublish(select(DataEvent.class))
                     .console("[cum sum notifyOnChange] ->");
 
             c.addPublicNode(logTemp, "cumLogTemp");
@@ -67,6 +67,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new DataEvent());
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
+        //TODO write tests and move to tutorial
     }
 
     @Test
@@ -86,6 +87,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
+        //TODO write tests and move to tutorial
     }
 
     @Test
@@ -111,6 +113,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new TempF(100, "outside"));
         handler.onEvent(new TempF(-10, "ignore me"));
+        //TODO write tests and move to tutorial
     }
 
     @Test
@@ -128,7 +131,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
-
+        //TODO write tests and move to tutorial
     }
 
     @Test
@@ -145,7 +148,7 @@ public class StreamTest implements Stateful {
                     .filter(DataEvent::getValue, negative()).id("temp_BelowZero");
             //tee 2
             f.filter(new StreamTest()::ignoreFirsTwo).id("ignoreFirst2Events")
-                    .resetNotifier(select(TempF.class).console("[reset event] ->"))
+                    .resetAndPublish(select(TempF.class).console("[reset event] ->"))
                     .console("[ignored first two] ->");
             //tee 3
             f.filter(StreamTest::validData).id("validateData2")
@@ -160,6 +163,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
         handler.onEvent(new DataEvent(5));
+        //TODO write tests and move to tutorial
     }
 
     @Test
@@ -186,6 +190,7 @@ public class StreamTest implements Stateful {
         handler.onEvent(new TempF(-10, "ignore me"));
         handler.onEvent(new DataEvent(12));
         handler.onEvent(new TempF(40, "outside"));
+        //TODO write tests and move to tutorial
     }
 
     public static class TempF {

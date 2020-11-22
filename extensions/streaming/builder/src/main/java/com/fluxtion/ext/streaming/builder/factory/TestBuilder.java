@@ -44,7 +44,6 @@ public class TestBuilder {
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
         StreamFunctionCompiler builder = StreamFunctionCompiler.test(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
-        wrapper.alwaysReset(false);
         return (Test) wrapper;
     }
     

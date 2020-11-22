@@ -17,13 +17,16 @@
 package com.fluxtion.ext.declarative.builder.function;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.numeric.NumericSignal;
+import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultVal;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.subtract;
 import lombok.Value;
+import org.apache.commons.lang3.ClassUtils;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Ignore;
 import org.junit.Test;
-import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultNum;
 
 /**
  *
@@ -34,10 +37,9 @@ public class DefaultNumberTest extends StreamInprocessTest {
     @Test
     public void defaultNumber() {
         sep((c) -> {
-            subtract(defaultNum(55, "key_b"), defaultNum(12, Sale::getAmountSold)).id("result");
+            subtract(defaultVal(55, "key_b"), defaultVal(12, Sale::getAmountSold)).id("result");
         });
-//        sep(com.fluxtion.ext.declarative.builder.function.defaultnumbertest_defaultnumber_1605386238496.TestSep_defaultNumber.class);
-        
+//        sep(com.fluxtion.ext.declarative.builder.function.defaultValbertest_defaultValber_1605386238496.TestSep_defaultValber.class);
         
         Number result = getWrappedField("result");
         assertThat(result.intValue(), is(0));
@@ -57,5 +59,21 @@ public class DefaultNumberTest extends StreamInprocessTest {
     public static class Sale {
 
         int amountSold;
+    }
+
+    @Test
+    @Ignore
+    public void testPrimitive() {
+        whatType(22.3);
+        whatType(22.3f);
+        whatType(22);
+        whatType(new MutableNumber().set((Double)56.9));
+    }
+
+    public static void whatType(Number n) {
+        boolean primitiveOrWrapper = ClassUtils.isPrimitiveOrWrapper(n.getClass());
+        String className = n.getClass().getName();
+        String primitiveType = primitiveOrWrapper?ClassUtils.wrapperToPrimitive(n.getClass()).getName():"non-primitive";
+        System.out.println("primitiveOrWrapper:" + primitiveOrWrapper + " className:" + className + " primitiveType:" + primitiveType);
     }
 }

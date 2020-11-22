@@ -176,7 +176,7 @@ public class AsciiMathTest extends BaseSepInprocessTest {
         sep((cfg) -> {
             SoldAggregator aggregator = cfg.addPublicNode(new SoldAggregator(), VAR_AGGREGATED_SALES);
             aggregator.dayId = readIntFixedLength("eod day_id=", 3);
-            aggregator.salesVolumeDailyWrapper =  cumSum(readInt("sold volume=")::intValue).resetNotifier(aggregator.dayId);
+            aggregator.salesVolumeDailyWrapper =  cumSum(readInt("sold volume=")::intValue).resetAndPublish(aggregator.dayId);
             aggregator.salesVolumeTotalNumber = cumSum(readInt("sold volume=")::intValue);
             aggregator.vatRate = readDouble("VAT:", " \n\t%");
         });

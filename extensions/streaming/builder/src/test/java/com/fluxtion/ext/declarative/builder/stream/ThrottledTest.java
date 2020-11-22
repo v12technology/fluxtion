@@ -24,7 +24,7 @@ import static com.fluxtion.ext.streaming.api.stream.TimerFilter.throttle;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
