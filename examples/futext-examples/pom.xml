@@ -32,6 +32,9 @@
                 <activeByDefault>false</activeByDefault>
                 <!--<activeByDefault>true</activeByDefault>-->
             </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
