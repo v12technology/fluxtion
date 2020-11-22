@@ -36,10 +36,12 @@ public class StreamingBooleanTest extends StreamInprocessTest{
     public void statefulAnd(){
         sep((c) ->{
             Wrapper<StreamData> gt10 = select(StreamData.class)
-                    .filter(StreamData::getIntValue, gt(10))
-                    .resetNotifier(select(ResetEvent.class));
+                    .filter(StreamData::getIntValue, gt(10)) ;
             
-            stream(and(select(CalcEvent.class), gt10)).map(count()).id("count");
+            stream(
+                and(select(CalcEvent.class), gt10))
+                .map(count()).id("count")
+                .resetAndPublish(select(ResetEvent.class));
             
         });
         
@@ -56,15 +58,20 @@ public class StreamingBooleanTest extends StreamInprocessTest{
         //calc
         onEvent(new CalcEvent());
         assertThat(count.intValue(), is(1));
-        //reset
-        onEvent(new ResetEvent());
+        //push a failed test
+        onEvent(new StreamData(5));
+        assertThat(count.intValue(), is(1));
         onEvent(new CalcEvent());
         assertThat(count.intValue(), is(1));
-        //
-        onEvent(new StreamData(12));
+        //push succedding test
+        onEvent(new StreamData(100));
         assertThat(count.intValue(), is(1));
         onEvent(new CalcEvent());
         assertThat(count.intValue(), is(2));
+        //fire a reset
+        onEvent(new ResetEvent());
+        assertThat(count.intValue(), is(0));
+        
     }
     
     public static class ResetEvent {}

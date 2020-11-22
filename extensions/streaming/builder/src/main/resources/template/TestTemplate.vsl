@@ -134,8 +134,8 @@ public class ${functionClass} extends AbstractFilterWrapper<Boolean>{
         return Boolean.class;
     }
 
-    @Initialise
-    public void init(){
+    @Override
+    public void reset(){
         result = false;
 #if(${multiArgFunc})
         filterSubjectUpdated = ${sourceConstant};

@@ -1,5 +1,7 @@
 package com.fluxtion.ext.streaming.api.stream;
 
+import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 
 /**
@@ -11,26 +13,53 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
 
     protected boolean notifyOnChangeOnly = false;
-    protected boolean resetImmediate = true;
-    protected boolean alwaysReset = false;
     protected boolean validOnStart = false;
     protected boolean result;
+    public Object publishThenResetNotifier;
+    public Object resetThenPublishNotifier;
+    @NoEventReference
+    public Object resetNoPublishNotifier;
+    protected boolean recalculate;
+    protected boolean reset;
+    
+    @Override
+    public FilterWrapper<T> publishAndReset(Object notifier) {
+        publishThenResetNotifier = notifier;
+        return this;
+    }
+
+    @Override
+    public FilterWrapper<T> resetAndPublish(Object notifier) {
+        resetThenPublishNotifier = notifier;
+        return this;
+    }
+    
+    @Override
+    public FilterWrapper<T> resetNoPublish(Object notifier){
+        resetNoPublishNotifier = notifier;
+        return this;
+    }
+
+    @OnParentUpdate(value = "publishThenResetNotifier", guarded = true)
+    public void publishThenResehNotification(Object publishThenResetNotifier){
+        recalculate = false;
+        reset = true;
+    }
+    
+    @OnParentUpdate(value = "resetThenPublishNotifier", guarded = true)
+    public void resetThenPublishNotification(Object resetThenPublishNotifier){
+        reset();
+        recalculate = false;
+    }
+    
+    @OnParentUpdate(value = "resetNoPublishNotifier", guarded = true)
+    public void resetNoPublishNotification(Object resetNoPublishNotifier){
+        reset();
+    }
     
     @Override
     public FilterWrapper<T> notifyOnChange(boolean notifyOnChange) {
         this.notifyOnChangeOnly = notifyOnChange;
-        return this;
-    }
-    
-    @Override
-    public FilterWrapper<T> immediateReset(boolean immediateReset) {
-        this.resetImmediate = immediateReset;
-        return this;
-    }
-    
-    @Override
-    public FilterWrapper<T> alwaysReset(boolean alwaysReset) {
-        this.alwaysReset = alwaysReset;
         return this;
     }
     
@@ -47,23 +76,8 @@ public abstract class AbstractFilterWrapper<T> implements FilterWrapper<T> {
     public void setNotifyOnChangeOnly(boolean notifyOnChangeOnly) {
         this.notifyOnChangeOnly = notifyOnChangeOnly;
     }
-    
-    public boolean isResetImmediate() {
-        return resetImmediate;
-    }
 
-    public void setResetImmediate(boolean resetImmediate) {
-        this.resetImmediate = resetImmediate;
-    }
-
-    public boolean isAlwaysReset() {
-        return alwaysReset;
-    }
-
-    public void setAlwaysReset(boolean alwaysReset) {
-        this.alwaysReset = alwaysReset;
-    }
-
+    @Override
     public boolean isValidOnStart() {
         return validOnStart;
     }

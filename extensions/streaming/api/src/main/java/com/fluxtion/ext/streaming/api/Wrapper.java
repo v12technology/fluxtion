@@ -51,6 +51,7 @@ public interface Wrapper<T> extends Stateful<T>{
      */
     Class<T> eventClass();
     
+    @Override
     default void reset(){}
 
     default <S> Argument<S> arg(SerializableFunction<T, S> supplier){
@@ -231,19 +232,6 @@ public interface Wrapper<T> extends Stateful<T>{
     }
 
     /**
-     * Attaches a reset notifier instance to the current stream node. If the
-     * node is {@link Stateful} it may be desirable to reset its state under
-     * controlled conditions. When the resetNotifier is on an execution path it
-     * will invoke the reset method of this node if it is {@link Stateful}
-     *
-     * @param resetNotifier external notifier
-     * @return
-     */
-    default Wrapper<T> resetNotifier(Object resetNotifier) {
-        return this;
-    }
-
-    /**
      * Attaches an event notification instance to the current stream node. When
      * the notifier updates all the child nodes of this stream node will be on
      * the execution path and invoked following normal SEP rules.
@@ -273,32 +261,38 @@ public interface Wrapper<T> extends Stateful<T>{
     }
 
     /**
-     * resets the stateful node and publishes the current value. The reset is
-     * after the last child on the execution path is executed, equivalent to {@link #immediateReset(boolean)
-     * }
-     * with value of false.
+     * Publishes the current value to all child dependencies and then resets. After all children have processed the trigger a reset is 
+     * invoked on the wrapped instance. The publish and reset is triggered when the supplied notifier triggers in the
+     * execution graph.
      *
-     * @param notifier
+     * @param notifier trigger for publish and reset
      * @return
      */
     default Wrapper<T> publishAndReset(Object notifier) {
-        resetNotifier(notifier);
-        immediateReset(false);
-        return resetNotifier(notifier);
+        return this;
+    }
+    
+    /**
+     * Resets the current value without notifying children of a change. The reset is triggered when the supplied notifier triggers in the
+     * execution graph.
+     *
+     * @param notifier trigger for reset
+     * @return
+     */
+    default Wrapper<T> resetNoPublish(Object notifier){
+        return this;
     }
 
     /**
-     * resets the stateful node and publishes the current value. The reset is
-     * before the publish to children on the execution path equivalent to
-     * {@link #immediateReset(boolean)} with value of true.
+     * Resets the stateful node and publishes the current value by notifying child nodes. The reset is
+     * before the notification is broadcast. The reset and publish is triggered when the supplied notifier triggers in the
+     * execution graph.
      *
-     * @param notifier
+     * @param notifier trigger for reset and publish
      * @return
      */
     default Wrapper<T> resetAndPublish(Object notifier) {
-        resetNotifier(notifier);
-        immediateReset(true);
-        return resetNotifier(notifier);
+        return this;
     }
 
     /**
@@ -321,41 +315,13 @@ public interface Wrapper<T> extends Stateful<T>{
     }
 
     /**
-     * Controls reset timing policy for stateful nodes. Stateful nodes are reset
-     * with {@link #resetNotifier(java.lang.Object)
-     * } or {@link #alwaysReset(boolean) }. The timing policy has the following
-     * behaviour:
-     * <ul>
-     * <li>true - the stateful node will be reset before any child nodes are
-     * invoked on the execution path
-     * <li>false: - the stateful node will be reset after the final node on the
-     * execution path
-     * </ul>
-     *
-     * @param immediateReset reset timing policy
-     * @return
+     * Set this property to signal the wrapper has a valid value and child nodes do not have to wait for a trigger 
+     * notification before using the data from this instance.
+     * 
+     * @param validOnStart
+     * @return 
      */
-    default Wrapper<T> immediateReset(boolean immediateReset) {
-        return this;
-    }
-
-    /**
-     * Reset a stateful node after every execution cycle, without the need for a
-     * an external {@link #resetNotifier(java.lang.Object) }.
-     * <ul>
-     * <li>true - the stateful node will be reset after every execution cycle
-     * <li>false: - the stateful node will only be reset with {@link #resetNotifier(java.lang.Object)
-     * }
-     * </ul>
-     *
-     * @param alwaysReset - reset policy for stateful nodes
-     * @return
-     */
-    default Wrapper<T> alwaysReset(boolean alwaysReset) {
-        return this;
-    }
-
-    default Wrapper<T> validOnStart(boolean alwaysReset) {
+    default Wrapper<T> validOnStart(boolean validOnStart) {
         return this;
     }
 

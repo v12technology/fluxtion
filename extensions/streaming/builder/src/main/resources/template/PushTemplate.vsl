@@ -16,6 +16,7 @@ import $import;
 public class ${functionClass} implements Wrapper<${functionClass}>{
 
     public ${sourceClass} filterSubject;
+
     @PushReference
     public ${targetClass} f;
 

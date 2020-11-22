@@ -6,12 +6,15 @@ import $import;
 
 /**
  * Generated get field template.
- *<ul>
- * <li>output class     : {@link ${outputClass}}
- * <li>input class      : {@link ${filterSubjectClass}}
- * <li>source function  : {@link ${filterSubjectClass}#${targetMethod}}
- * <li>primitive number : ${isPrimitiveNumeric}
- *</ul>
+ *<pre>
+ *  <ul>
+ *     <li>template file    : ${currentTemplate}
+ *     <li>output class     : {@link ${outputClass}}
+ *     <li>input class      : {@link ${filterSubjectClass}}
+ *     <li>source function  : {@link ${filterSubjectClass}#${targetMethod}}
+ *     <li>primitive number : ${isPrimitiveNumeric}
+ *  </ul>
+ *</pre>
  * 
  * @author Greg Higgins
  */
@@ -45,8 +48,8 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
         return ${outputClass}.class;
     }
 
-    @Initialise
-    public void init(){
+    @Override
+    public void reset(){
 #if(${isPrimitiveNumeric})
         result = new MutableNumber();
 #else

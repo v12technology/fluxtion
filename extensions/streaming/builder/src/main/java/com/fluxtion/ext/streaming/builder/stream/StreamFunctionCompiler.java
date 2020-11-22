@@ -155,6 +155,7 @@ public class StreamFunctionCompiler<T, F> {
     //for sources id's
     private int sourceCount;
     private boolean multiArgFunc = false;
+    private boolean alwaysReset = false;
     private static boolean buildTest = false;
     //To be used for rationalising imports
     private final ImportMap importMap = ImportMap.newMap();
@@ -220,6 +221,7 @@ public class StreamFunctionCompiler<T, F> {
         //filterBuilder.key = new FunctionClassKey(mapper, mappingMethod, source, accessor, cast, "mapper");
         Argument arg = args[0];
         StreamFunctionCompiler builder = map(mapper, mappingMethod, arg.getSource(), arg.getAccessor(), arg.isCast());
+        builder.alwaysReset = true;
         for (int i = 1; i < args.length; i++) {
             arg = args[i];
             builder.key.multiArg = false;
@@ -558,6 +560,7 @@ public class StreamFunctionCompiler<T, F> {
             ctx.put(input.name(), functionInfo.paramString);
             ctx.put(filter.name(), true);
             ctx.put("multiArgFunc", multiArgFunc);
+            ctx.put("alwaysReset", alwaysReset);
             ctx.put(stateful.name(), isStateful(functionInfo.getFunctionMethod()));
             if (filterSubjectWrapper != null) {
                 ctx.put(wrappedSubject.name(), true);
@@ -605,6 +608,7 @@ public class StreamFunctionCompiler<T, F> {
     private Class<Wrapper<F>> compileIfAbsent(VelocityContext ctx) throws Exception {
         Map<FunctionClassKey, Class<Wrapper<F>>> cache = GenerationContext.SINGLETON.getCache(StreamFunctionCompiler.class);
         Class<Wrapper<F>> clazz = cache.get(key);
+        ctx.put("currentTemplate", currentTemplate);
         if (clazz == null) {
             clazz = FunctionGeneratorHelper.generateAndCompile(null, currentTemplate, GenerationContext.SINGLETON, ctx);
             cache.put(key, clazz);

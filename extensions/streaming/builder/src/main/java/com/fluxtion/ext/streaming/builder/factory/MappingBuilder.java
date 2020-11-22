@@ -49,7 +49,6 @@ public class MappingBuilder {
         final Object mapperInstance = test.captured().length == 0 ? null : test.captured()[0];
         StreamFunctionCompiler builder = StreamFunctionCompiler.map(mapperInstance, test.method(), args);
         final Wrapper wrapper = builder.build();
-        wrapper.alwaysReset(false);
         return wrapper;
     }
 
@@ -129,13 +128,12 @@ public class MappingBuilder {
             Argument... suppliers) {
         StreamFunctionCompiler builder = StreamFunctionCompiler.mapSet(mapper.captured()[0], mapper.method(), suppliers);
         final Wrapper wrapper = builder.build();
-        wrapper.alwaysReset(true);
         return wrapper;
     }
 
     /**
      * Maps a set of nodes with a mapping function. Only nodes that notify in
-     * the current execution path are included in the mapping function.
+     * the current execution path are processed by the mapping function.
      *
      * @param <R>
      * @param <S>

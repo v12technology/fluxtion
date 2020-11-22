@@ -6,11 +6,13 @@ import $import;
 
 /**
  * generated filter function wrapper.
- *
- *<ul>
- * <li>input class     : {@link ${filterSubjectClass}}
- * <li>filter function : {@link ${targetClass}#${targetMethod}}
- *</ul>
+ *<pre>
+ *  <ul>
+ *      <li>template file   : ${currentTemplate}
+ *      <li>input class     : {@link ${filterSubjectClass}}
+ *      <li>filter function : {@link ${targetClass}#${targetMethod}}
+ *  </ul>
+ *</pre>
  * 
  * @author Greg Higgins
  */
@@ -25,14 +27,6 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     @NoEventReference
     public ${targetClass} f;
 #end
-    @NoEventReference
-    public Object resetNotifier;
-    private boolean parentReset = false;
-
-    @Initialise
-    public void init(){
-        result = false;
-    }
 
     @OnEvent
     @SuppressWarnings("unchecked")
@@ -43,38 +37,19 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
 #else
         result = (boolean)f.${targetMethod}(${input});
 #end
-        //this is probably right - to be tested
-        //return (!notifyOnChangeOnly | !oldValue) & result;
-        return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
-    }
-
-    @OnParentUpdate("resetNotifier")
-    public void resetNotification(Object resetNotifier) {
-        parentReset = true;
-        if (isResetImmediate()) {
-            result = false;
-#if(${stateful})
-            f.reset();
-#end
-            parentReset = false;
-        }
+        return (!notifyOnChangeOnly | !oldValue) & result;
+        //return (!notifyOnChangeOnly & result) | ((!oldValue) & result);
     }
 
     @AfterEvent
     public void resetAfterEvent() {
-        if (parentReset) {
+        if (reset) {
             result = false;
 #if(${stateful})
             f.reset();
 #end
         }
-        parentReset = false;
-    }
-
-    @Override
-    public FilterWrapper<${filterSubjectClass}> resetNotifier(Object resetNotifier) {
-        this.resetNotifier = resetNotifier;
-        return this;
+        reset = false;
     }
 
     @Override
@@ -89,6 +64,12 @@ public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass
     @Override
     public Class<${filterSubjectClass}> eventClass() {
         return ${filterSubjectClass}.class;
+    }
+
+    @Override
+    public void reset(){
+        //add override logic
+        result = false;
     }
 
 }

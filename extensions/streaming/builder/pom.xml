@@ -30,6 +30,24 @@ Copyright (C) 2018 V12 Technology Ltd.
     <name>fluxtion :: ext :: streaming-builder</name>
     <packaging>jar</packaging>
     
+    <build>
+        <plugins>
+            <!-- installs test-jar to repo -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <id>test-jar</id>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
     <dependencies>
         <dependency>
             <groupId>com.fluxtion</groupId>
