@@ -27,7 +27,6 @@ import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
  * @author V12 Technology Ltd.
  */
 public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number> {
-//public class DefaultNumberWrapper implements Wrapper<Number> {
 
     private final Wrapper<Number> parent;
     protected transient final MutableNumber result = new MutableNumber();
@@ -45,6 +44,7 @@ public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number>
             this.defaultVal = defaultVal;
         }
 
+        @Override
         public void reset() {
             recalculate = true;
             result.set(defaultVal);
@@ -61,6 +61,7 @@ public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number>
             this.defaultVal = defaultVal;
         }
 
+        @Override
         public void reset() {
             recalculate = true;
             result.set(defaultVal);
@@ -77,6 +78,7 @@ public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number>
             this.defaultVal = defaultVal;
         }
 
+        @Override
         public void reset() {
             recalculate = true;
             result.set(defaultVal);
@@ -128,13 +130,13 @@ public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number>
     @Override
     public FilterWrapper<Number> resetNoPublish(Object notifier) {
         parent.resetNoPublish(notifier);
-        return super.resetNoPublish(notifier); //To change body of generated methods, choose Tools | Templates.
+        return super.resetNoPublish(notifier);
     }
 
     @Override
     public FilterWrapper<Number> resetAndPublish(Object notifier) {
         parent.resetAndPublish(notifier);
-        return super.resetAndPublish(notifier); //To change body of generated methods, choose Tools | Templates.
+        return super.resetAndPublish(notifier);
     }
 
 }

@@ -30,25 +30,52 @@ import com.fluxtion.ext.streaming.api.numeric.EventMutableNumber.EventMutableLon
 import com.fluxtion.ext.streaming.api.numeric.NumericSignal;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
+import org.apache.commons.lang3.ClassUtils;
 
 /**
- * Add Wrapper<Number> nodes to a graph that are controlled by either events {@link NumericSignal} or extracted from
- * a property of a parent node. A default values for the number can be set. A default value can be used in a calculation
+ * Add Wrapper<Number> nodes to a graph that are controlled by either events {@link NumericSignal} or extracted from a
+ * property of a parent node. A default values for the number can be set. A default value can be used in a calculation
  * with requiting an initial event.
  *
  * @author V12 Technology Ltd.
  */
 public class DefaultNumberBuilder {
 
-    public static <T> Wrapper<Number> defaultVal(int value, Wrapper< Number> supplier) {
+    public static <T> Wrapper<T> defaultVal(T defaultValue, Wrapper<T> supplier) {
+        if (defaultValue instanceof Number) {
+            Number number = (Number) defaultValue;
+            Class<?> primitiveClass = ClassUtils.wrapperToPrimitive(number.getClass());
+            if(primitiveClass.getName().equalsIgnoreCase(Integer.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.intValue(), (Wrapper<Number>) supplier);
+            }else if(primitiveClass.getName().equalsIgnoreCase(Short.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.intValue(), (Wrapper<Number>) supplier);
+            }else if(primitiveClass.getName().equalsIgnoreCase(Byte.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.intValue(), (Wrapper<Number>) supplier);
+            }else if(primitiveClass.getName().equalsIgnoreCase(Double.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.doubleValue(), (Wrapper<Number>) supplier);
+            }else if(primitiveClass.getName().equalsIgnoreCase(Long.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.longValue(), (Wrapper<Number>) supplier);
+            }else if(primitiveClass.getName().equalsIgnoreCase(Float.TYPE.getName())){
+                return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.doubleValue(), (Wrapper<Number>) supplier);
+            }
+            return (Wrapper<T>) DefaultNumberBuilder.defaultVal(number.doubleValue(), (Wrapper<Number>) supplier);
+        }
+        throw new UnsupportedOperationException("default values for reference types are unsupported");
+    }
+
+    public static <T, R> Wrapper<R> defaultVal(T value, SerializableFunction<T, R> supplier) {
+        throw new UnsupportedOperationException("default values for reference types are unsupported");
+    }
+
+    public static Wrapper<Number> defaultVal(int value, Wrapper< Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultIntWrapper(supplier, value));
     }
 
-    public static <T> Wrapper<Number> defaultVal(double value, Wrapper< Number> supplier) {
+    public static Wrapper<Number> defaultVal(double value, Wrapper< Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultDoubleWrapper(supplier, value));
     }
 
-    public static <T> Wrapper<Number> defaultVal(long value, Wrapper< Number> supplier) {
+    public static Wrapper<Number> defaultVal(long value, Wrapper< Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultLongWrapper(supplier, value));
     }
 
@@ -75,7 +102,7 @@ public class DefaultNumberBuilder {
     public static <T> Wrapper<Number> defaultVal(long value, SerializableSupplier<Number> supplier) {
         return SepContext.service().addOrReuse(new DefaultLongWrapper(stream(supplier), value));
     }
-    
+
     public static Wrapper<Number> defaultVal(int value, String key) {
         EventMutableNumber num = new EventMutableInt(value, key);
         return SepContext.service().addOrReuse(num);
