@@ -26,8 +26,8 @@ import com.fluxtion.ext.streaming.api.Constant;
  */
 public class ConstantNumber extends Number implements Constant{
 
-    private final int intValue;
-    private final long longValue;
+    private transient int intValue;
+    private transient long longValue;
     private final double doubleValue;
 
     public ConstantNumber(double doubleValue) {
