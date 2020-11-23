@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.ext.streaming.builder.stream;
-//      com.fluxtion.ext.declarative.builder.stream.StreamBuilder 
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
@@ -33,6 +32,7 @@ import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunction;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterEither;
@@ -40,7 +40,6 @@ import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
-import static com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler.get;
 import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -200,20 +199,15 @@ public class StreamOperatorService implements StreamOperator {
     @Override
     public <T, I extends Integer> Comparator<T> comparing(SerializableBiFunction<T, T, I> func) {
         throw new UnsupportedOperationException("in development");
-//        Class<?> type = func.method().getParameters()[0].getType();
-//        String name = func.method().getName();
-//        Class clazz = func.method().getDeclaringClass();
-//        
-//
-//        VelocityContext ctx = new VelocityContext();
-//        String genClassName = "Comparator" + clazz.getSimpleName() + GenerationContext.SINGLETON.nextId(clazz.getCanonicalName());   
-//
-//        return null;
     }
 
     @Override
+    public <T> Wrapper<T> defaultVal(Wrapper<T> source, T defaultValue) {
+         return DefaultNumberBuilder.defaultVal(defaultValue, source);
+    }
+    
+    @Override
     public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
-//        final Object sourceInstance = unWrap(source);
         final Object targetInstance = unWrap(consumer);
         StreamFunctionCompiler.push(targetInstance, consumer.method(), source, accessor, true).build();
     }

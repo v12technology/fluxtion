@@ -62,6 +62,17 @@ public interface Wrapper<T> extends Stateful<T>{
         return Argument.arg(this);
     }
     
+    /**
+     * Set the default value for this instance. The default value will be set when any call to reset is made. Having a 
+     * default value allows an instance to be used by its children before an event has been processed.
+     * 
+     * @param defaultValue the default value to use
+     * @return 
+     */
+    default Wrapper<T> defaultVal(T defaultValue){
+        return  StreamOperator.service().defaultVal(this, defaultValue);
+    }
+    
     default <S extends T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, true);
     }

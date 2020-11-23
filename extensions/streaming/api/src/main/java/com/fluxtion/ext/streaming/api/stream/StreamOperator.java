@@ -182,11 +182,10 @@ public interface StreamOperator {
         return null;
     }
     
+    default <T> Wrapper<T> defaultVal(Wrapper<T> source, T defaultValue){
+        return null;
+    }
 
-
-//    default <T, S extends T, R extends T, I extends Integer> Comparator<T> comparing(Class<T> clazz, SerializableBiFunction<S, R, I> func){
-//        return null;
-//    }
     static StreamOperator service() {
         ServiceLoader<StreamOperator> load = ServiceLoader.load(StreamOperator.class);
         if (load.iterator().hasNext()) {
