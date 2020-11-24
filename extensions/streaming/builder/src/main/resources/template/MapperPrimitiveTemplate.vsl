@@ -38,11 +38,6 @@ public class ${functionClass} extends AbstractFilterWrapper<Number>{
     public ${targetClass} f;
 #end
     private ${outputClass} result;
-#if(${stateful})
-    @NoEventReference
-    public Object resetNotifier;
-    private boolean parentReset = false;
-#end
     private MutableNumber value;
     private MutableNumber oldValue;
 
