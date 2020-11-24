@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.integration.etl;
+package com.fluxtion.integration.eventflow;
 
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
@@ -24,7 +24,6 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import lombok.extern.log4j.Log4j2;

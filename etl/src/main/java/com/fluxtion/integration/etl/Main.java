@@ -17,6 +17,7 @@
  */
 package com.fluxtion.integration.etl;
 
+import com.fluxtion.integration.eventflow.MarshallerRegistry;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;

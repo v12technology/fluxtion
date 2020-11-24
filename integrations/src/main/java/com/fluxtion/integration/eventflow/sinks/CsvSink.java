@@ -18,7 +18,7 @@
 package com.fluxtion.integration.eventflow.sinks;
 
 import com.fluxtion.ext.text.api.csv.RowProcessor;
-import com.fluxtion.integration.etl.MarshallerRegistry;
+import com.fluxtion.integration.eventflow.MarshallerRegistry;
 import com.fluxtion.integration.eventflow.EventSink;
 import java.io.IOException;
 import lombok.extern.log4j.Log4j2;
