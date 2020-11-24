@@ -32,6 +32,7 @@ along with this program.  If not, see
         <module>extensions</module>
         <module>examples</module>
         <module>integrations</module>
+        <module>etl</module>
     </modules>
     
     <properties>

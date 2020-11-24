@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+    <head th:replace="fragments/lte/admintemplate :: header"/>
+    <body class="hold-transition skin-green sidebar-mini">
+        <div class="wrapper">
+            <nav th:replace="fragments/lte/admintemplate :: top-navbar"/>
+            <aside th:replace="fragments/lte/admintemplate :: side-navbar"/>
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div class="content-header">
+                    <div class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <h1 class="m-0 text-dark">Fluxtion ETL summary</h1>
+                            </div><!-- /.col -->
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb float-sm-right">
+                                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                    <li class="breadcrumb-item active">Summary</li>
+                                </ol>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.content-header -->
+
+                <!-- Main content -->
+                <div class="content">
+
+                    <!-- Main content -->
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!-- left column -->
+                            <div class="col-md-6">
+                                <div class="card card-primary" th:classappend="${expandValidPipelines}" id="validpipeline-card">
+                                    <div class="card-header">
+                                        <!--<h3 class="card-title">Valid piplelines </h3>-->
+                                        <h3 class="card-title" th:text="'Valid piplelines (' + ${size} + ')'" />
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse" aria-expanded="false">
+                                                <i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body table-responsive p-0">
+                                        <table class="table table-hover text-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>Pipeline ID</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="pipeline: ${pipelines}">
+                                                    <td th:text="${pipeline.id}" >1</td>
+                                                    <td class="text-right">
+                                                        <a class="btn btn-primary btn-sm" href="#">
+                                                            <i class="fas fa-folder">
+                                                            </i>
+                                                            View
+                                                        </a>
+                                                        <a class="btn btn-info btn-sm" th:href="@{/edit-pipeline(id=${pipeline.id})}">
+                                                            <i class="fas fa-pencil-alt">
+                                                            </i>
+                                                            Edit
+                                                        </a>
+                                                        <a class="btn btn-danger btn-sm" th:href="@{/delete-pipeline(id=${pipeline.id})}">
+                                                            <i class="fas fa-trash">
+                                                            </i>
+                                                            Delete
+                                                        </a>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        End of valid pipelines
+                                    </div>
+                                </div>  
+                            </div>
+                            <!--right column-->
+                            <div class="col-md-6">
+                                <!-- general form elements -->
+                                <div class="card card-warning collapsed-card" id="invalidpipeline-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title" th:text="'Invalid piplelines (' + ${failedSize} + ')'" />
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                                                <i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body table-responsive p-0">
+                                        <table class="table table-hover text-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>Pipeline ID</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="pipeline: ${pipelineFailures}">
+                                                    <td th:text="${pipeline.id}">1</td>
+                                                    <td align="right">
+                                                        <a class="btn btn-info btn-sm" th:href="@{/edit-pipeline(id=${pipeline.id})}">
+                                                            <i class="fas fa-pencil-alt">
+                                                            </i>
+                                                            Edit
+                                                        </a>
+                                                        <a class="btn btn-danger btn-sm" th:href="@{/delete-pipeline(id=${pipeline.id})}">
+                                                            <i class="fas fa-trash">
+                                                            </i>
+                                                            Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>    
+                            </div>
+                            <!--right column-->
+                        </div>
+                    </div>
+
+
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card card-info collapsed-card" id="testpipeline-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Test pipleline</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                                                <i class="fas fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <form th:action="@{/test-newpipeline}" th:object="${etlRequest}" method="post">
+                                            <div class="form-group row">
+                                                <label for="selectPipeline" class="col-sm-2 col-form-label">Select pipeline</label>
+                                                <div class="col-sm-10">
+                                                    <select th:field="*{pipelineId}" class="form-control" id="selectPipeline" onchange="val()">
+                                                        <option th:each="pipeline: ${pipelines}" th:value="${pipeline.id}+','+${pipeline.headersAsCsv}" th:text="${pipeline.id}">
+                                                        </option>
+                                                    </select>    
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Csv for processing</label>
+                                                <div class="col-sm-10">   
+                                                    <textarea class="form-control" id="csvInput" th:field="*{inputData}" rows="5" cols="30"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Result</label>
+                                                <div class="col-sm-10">   
+                                                    <textarea readonly class="form-control" th:field="*{result}" rows="5" cols="30"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Result as Csv</label>
+                                                <div class="col-sm-10">   
+                                                    <textarea readonly class="form-control" th:field="*{result_csv}" rows="5" cols="30"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Error log</label>
+                                                <div class="col-sm-10">   
+                                                    <textarea readonly class="form-control" th:field="*{errorLog}" rows="5" cols="30"></textarea>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary float-right">Submit</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.content -->
+            </div>
+            <!-- /.content-wrapper -->
+
+
+            <aside th:fragment="control-sidebar"/>
+            <div th:replace="fragments/lte/admintemplate :: footer"></div>
+        </div>
+        <div th:replace = "fragments/lte/admintemplate :: script1"></div>
+        <script>
+            $('#validpipeline-card').CardWidget('expand');
+            $('#invalidpipeline-card').CardWidget('collapse');
+            $('#testpipeline-card').CardWidget('collapse');
+        </script>
+    </body>
+</html>

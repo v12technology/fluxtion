@@ -17,6 +17,7 @@
  */
 package com.fluxtion.integration.etl;
 
+import com.fluxtion.integration.eventflow.MarshallerRegistry;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.integration.eventflow.EventFlow;
