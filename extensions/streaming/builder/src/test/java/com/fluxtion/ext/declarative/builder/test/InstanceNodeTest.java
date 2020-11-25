@@ -1,22 +1,24 @@
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.generator.util.BaseSepTest;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-public class InstanceNodeTest extends BaseSepTest {
+public class InstanceNodeTest extends StreamInprocessTest {
 
     @Test
     public void testSelectValidator() {
-        StaticEventProcessor sep = buildAndInitSep(ValidatorBuilder_1.class);
+        sep(c -> {
+            c.addPublicNode(new TestResultListener(
+                    select(DataEvent.class).filter(DataEvent::getValue, gt(20))
+            ), "results");
+        }); 
         TestResultListener results = getField("results");
         DataEvent de = new DataEvent();
         sep.onEvent(de);
@@ -30,17 +32,6 @@ public class InstanceNodeTest extends BaseSepTest {
       de.value = 5;
         sep.onEvent(de);
         assertFalse(results.receivedNotification);
-    }
-
-    public static final class ValidatorBuilder_1 extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            addPublicNode(new TestResultListener(
-                    select(DataEvent.class).filter(DataEvent::getValue, gt(20))
-            ), "results");
-        }
-
     }
 
     public static class NumberCompareValidators {
