@@ -20,8 +20,10 @@ package com.fluxtion.maven;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -133,7 +135,8 @@ public class FluxtionGeneratorMojo extends AbstractMojo {
                 cmdList.add("-cp");
                 cmdList.add(classPath);
                 getLog().info("java -jar fluxtion.jar " + cmdList.stream().collect(Collectors.joining(" ")));
-                com.fluxtion.generator.Main.main(cmdList.toArray(new String[0]));
+                throw new UnsupportedOperationException("unsupported maven goal");
+//                com.fluxtion.generator.Main.main(cmdList.toArray(new String[0]));
             } catch (IOException e) {
                 getLog().error("error while invoking Fluxtion generator", e);
                 throw new RuntimeException(e);

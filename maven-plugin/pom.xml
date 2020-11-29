@@ -86,7 +86,7 @@
             <artifactId>plexus-utils</artifactId>
             <version>3.1.1</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>generator</artifactId>
             <scope>compile</scope>
@@ -95,7 +95,7 @@
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-builder</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>  
