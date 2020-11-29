@@ -75,32 +75,32 @@ public class Argument<T> {
         return new Argument(supplier, null, true);
     }
     
-    public static <T extends Number> Argument<T> argInt(Number i) {
+    public static <T extends Number> Argument<T> argInt(T i) {
         SerializableFunction<Number, Integer> s = Number::intValue;
         return new Argument<>(i, s.method(), true);
     }
     
-    public static <T extends Number> Argument<T> argInt(Wrapper<Number> i) {
+    public static <T extends Number> Argument<T> argInt(Wrapper<T> i) {
         SerializableFunction<Number, Integer> s = Number::intValue;
         return new Argument<>(i, s.method(), true);
     }
     
-    public static <T extends Number> Argument<T> argLong(Number i) {
+    public static <T extends Number> Argument<T> argLong(T i) {
         SerializableFunction<Number, Long> s = Number::longValue;
         return new Argument<>(i, s.method(), true);
     }
     
-    public static <T extends Number> Argument<T> argLong(Wrapper<Number> i) {
+    public static <T extends Number> Argument<T> argLong(Wrapper<T> i) {
         SerializableFunction<Number, Long> s = Number::longValue;
         return new Argument<>(i, s.method(), true);
     }
     
-    public static <T extends Number> Argument<T> argDouble(Number i) {
+    public static <T extends Number> Argument<T> argDouble(T i) {
         SerializableFunction<Number, Double> s = Number::doubleValue;
         return new Argument<>(i, s.method(), true);
     }
     
-    public static <T extends Number> Argument<T> argDouble(Wrapper<Number> i) {
+    public static <T extends Number> Argument<T> argDouble(Wrapper<T> i) {
         SerializableFunction<Number, Double> s = Number::doubleValue;
         return new Argument<>(i, s.method(), true);
     }

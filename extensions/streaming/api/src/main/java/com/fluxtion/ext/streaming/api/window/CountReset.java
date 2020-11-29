@@ -20,6 +20,7 @@ package com.fluxtion.ext.streaming.api.window;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.ext.streaming.api.Stateful;
 import lombok.Data;
 
@@ -30,6 +31,7 @@ import lombok.Data;
 @Data
 public class CountReset {
 
+    @SepNode
     private final Stateful source;
     private final int bucketSize;
     private int count;

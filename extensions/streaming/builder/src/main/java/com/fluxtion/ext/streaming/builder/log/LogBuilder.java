@@ -43,7 +43,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.VelocityContext;
 
 /**
- * Builder for a simple console logger. 
+ * Builder for a simple log logger. 
  *
  * @author greg
  */

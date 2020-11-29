@@ -6,16 +6,19 @@ import $import;
 
 /**
  * generated wrapper for a test function.
- *  
- *<ul>
- * <li>output class : {@link Boolean}
- * <li>input class  : {@link ${filterSubjectClass}}
+ * 
+ *<pre> 
+ *  <ul>
+ *     <li>template file: ${currentTemplate}
+ *     <li>output class : {@link Boolean}
+ *     <li>input class  : {@link ${filterSubjectClass}}
 #foreach($sourceInfo in $sourceMappingList)
- * <li>input class  : {@link ${sourceInfo.type}}
+ *     <li>input class  : {@link ${sourceInfo.type}}
 #end
- * <li>map function : {@link ${targetClass}#${targetMethod}}
- * <li>multiArg     : ${multiArgFunc}
- *</ul>
+ *     <li>map function : {@link ${targetClass}#${targetMethod}}
+ *     <li>multiArg     : ${multiArgFunc}
+ * </ul>
+ *</pre>
  * 
  * @author Greg Higgins
  */

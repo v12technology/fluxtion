@@ -20,39 +20,52 @@ package com.fluxtion.ext.declarative.builder.window;
 import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.api.stream.Argument.argInt;
 import com.fluxtion.ext.streaming.builder.factory.Duration;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
 import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
 import org.junit.Test;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class TumbleTest extends StreamInprocessTest {
-    
+
+
+
     @Test
     @Ignore
     public void countTumble() {
-        //TODO fix this test - tumble windows are broken
+        //TODO fix this test - tumbleIncremental windows are broken
         final int COUNT_SIZE = 6;
         final int COUNT_SIZE_LARGER = 9;
 //        final int TIME_WINDOW = 25;
         sep(c -> {
             Wrapper<Double> doubleIn = select(Double.class);
-            tumble(doubleIn.collect(), COUNT_SIZE).id("listSmallWindow");
-            tumble(doubleIn.collect(), COUNT_SIZE_LARGER).id("listLargeWindow");
-//            tumble(doubleIn.collect(), Duration.millis(TIME_WINDOW));
-            tumble(doubleIn.map(avg()), COUNT_SIZE).id("avgSmallWindow");
-            tumble(doubleIn.map(cumSum()), COUNT_SIZE_LARGER).id("cumsumLargeWindow");
-//            tumble(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW));
+            tumbleIncremental(doubleIn.collect(), COUNT_SIZE).id("listSmallWindow");
+            tumbleIncremental(doubleIn.collect(), COUNT_SIZE_LARGER).id("listLargeWindow");
+//            tumbleIncremental(doubleIn.collect(), Duration.millis(TIME_WINDOW));
+            tumbleIncremental(doubleIn.map(avg()), COUNT_SIZE).id("avgSmallWindow");
+            tumbleIncremental(doubleIn.map(cumSum()), COUNT_SIZE_LARGER).id("cumsumLargeWindow");
+//            tumbleIncremental(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW));
         });
 
         WrappedCollection<Number, ?, ?> listSmallWindow = getWrappedField("listSmallWindow");
@@ -83,8 +96,8 @@ public class TumbleTest extends StreamInprocessTest {
         final int TIME_WINDOW_LARGER = 90;
         sep(c -> {
             Wrapper<Double> doubleIn = select(Double.class);
-            tumble(doubleIn.collect(), Duration.millis(TIME_WINDOW)).id("listWindow");
-            tumble(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW_LARGER)).id("cumWindow");
+            tumbleIncremental(doubleIn.collect(), Duration.millis(TIME_WINDOW)).id("listWindow");
+            tumbleIncremental(doubleIn.map(cumSum()), Duration.millis(TIME_WINDOW_LARGER)).id("cumWindow");
         });
 
         WrappedCollection<Number, ?, ?> listWindow = getWrappedField("listWindow");

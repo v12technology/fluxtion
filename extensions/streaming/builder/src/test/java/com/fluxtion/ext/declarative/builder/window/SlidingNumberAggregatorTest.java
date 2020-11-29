@@ -61,7 +61,7 @@ public class SlidingNumberAggregatorTest {
         aggregator.init();
 
         sum.addValue(10);
-        validateValue(101, 10, aggregator);
+        validateValue(101, 0, aggregator);
 
         for (int i = 2; i < 21; i++) {
             sum.addValue(10);

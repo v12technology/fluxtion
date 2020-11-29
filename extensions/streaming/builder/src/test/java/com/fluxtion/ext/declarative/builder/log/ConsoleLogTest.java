@@ -40,8 +40,8 @@ public class ConsoleLogTest extends StreamInprocessTest {
     @Test
     public void streamLog() {
         sep(c -> {
-            select(DataEvent.class).console("intValue:{} eventTime:{}", DataEvent::getValue, DataEvent::getEventTime);
-            select(MyEvent.class).console("");
+            select(DataEvent.class).log("intValue:{} eventTime:{}", DataEvent::getValue, DataEvent::getEventTime);
+            select(MyEvent.class).log("");
         });
         DataEvent de1 = new DataEvent();
         de1.value = 2;
@@ -58,7 +58,7 @@ public class ConsoleLogTest extends StreamInprocessTest {
     @Test
     public void streamToCollection(){
         sep(c ->{
-            select(MyEvent.class).collect().console("size:{} collection:{}", Collection::size, Collection::toString);
+            select(MyEvent.class).collect().log("size:{} collection:{}", Collection::size, Collection::toString);
         });
         MyEvent evt = new MyEvent();
         sep.onEvent(evt);

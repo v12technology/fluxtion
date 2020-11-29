@@ -195,5 +195,11 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
     }
+
+    @Override
+    public String toString() {
+        return "ArrayListWrappedCollection{" + "collection=" + collection + '}';
+    }
+    
     
 }

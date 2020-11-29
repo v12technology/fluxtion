@@ -26,6 +26,7 @@ import com.fluxtion.ext.streaming.api.window.SlidingCollectionAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
+import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
@@ -49,36 +50,77 @@ public class SlidingCollectionAggregatorTest {
         time = new MutableNumber();
         clock = new Clock();
         clock.setClockStrategy(new ClockStrategy.ClockStrategyEvent(time::longValue));
-        time.set(1);
+        time.set(0);
         timer = new TimeReset(inputCollection, 100, clock);
-        GenerationContext.setupStaticContext("", "", 
-                new File(OutputRegistry.JAVA_TESTGEN_DIR), 
-                new File(OutputRegistry.RESOURCE_TEST_DIR));
+        GenerationContext.setupStaticContext("", "",
+            new File(OutputRegistry.JAVA_TESTGEN_DIR),
+            new File(OutputRegistry.RESOURCE_TEST_DIR));
     }
 
     @Test
-    public void testCombine() {
+    public void testTImedSlidingCollection() {
         Object notifier = "";
         int size = 10;
         ArrayListWrappedCollection outputCollection = new ArrayListWrappedCollection();
-        
+
         SlidingCollectionAggregator aggregator = new SlidingCollectionAggregator(notifier, inputCollection, size);
         aggregator.setTimeReset(timer);
         aggregator.setTargetCollection(outputCollection);
         aggregator.init();
-        
+
         inputCollection.addItem(1);
-        validateValue(101, asList(1), aggregator);
-        
+        validateValue(25, asList(), aggregator);
+        inputCollection.addItem(99);
+        validateValue(45, asList(), aggregator);
+        inputCollection.addItem(555);
+        validateValue(85, asList(), aggregator);
+
         inputCollection.addItem(2);
         inputCollection.addItem(3);
-        validateValue(150, asList(1), aggregator);
-        validateValue(201, asList(1,2,3), aggregator);
-        validateValue(1_101, asList(2,3), aggregator);
-        validateValue(1_201, asList(), aggregator);
+        validateValue(150, asList(), aggregator);
+        validateValue(450, asList(), aggregator);
+        validateValue(1_099, asList(1, 99, 555, 2, 3), aggregator);
+        validateValue(1_100, asList(2, 3), aggregator);
+        validateValue(1_105, asList(2, 3), aggregator);
+        validateValue(1_200, asList(), aggregator);
+        validateValue(1_451, asList(), aggregator);
     }
-    
-    private void validateValue(int time, List expected, SlidingCollectionAggregator aggregator){
+
+    @Test
+    public void testCountSlidingColllection() {
+        Object notifier = "";
+        int bucketCount = 3;
+        int bucketSize = 5;
+        ArrayListWrappedCollection outputCollection = new ArrayListWrappedCollection();
+        SlidingCollectionAggregator aggregator = new SlidingCollectionAggregator(notifier, inputCollection, bucketCount);
+        aggregator.setTargetCollection(outputCollection);
+        aggregator.init();
+        //send some data
+        int i;
+        for (i = 0; i < 3 * bucketSize; i++) {
+//            System.out.println(" -> " + i);
+            inputCollection.addItem(i);
+            if (i > 0 && i % bucketSize == 0) {
+                aggregator.aggregate();
+            }
+        }
+        assertThat(aggregator.getTargetCollection().collection(), is(Arrays.asList()));
+
+        for (; i < 5 * bucketSize; i++) {
+//            System.out.println(" -> " + i);
+            inputCollection.addItem(i);
+            if (i > 0 && i % bucketSize == 0) {
+                aggregator.aggregate();
+            }
+        }
+        assertThat(aggregator.getTargetCollection().collection(), is(Arrays.asList(6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)));
+//        System.out.println(" -> " + i);
+        inputCollection.addItem(i);
+        aggregator.aggregate();
+        assertThat(aggregator.getTargetCollection().collection(), is(Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)));
+    }
+
+    private void validateValue(int time, List expected, SlidingCollectionAggregator aggregator) {
         setTime(time);
         aggregator.aggregate();
         assertThat(aggregator.getTargetCollection().collection(), is(expected));

@@ -42,7 +42,7 @@ public class ResetNotifierTest extends StreamInprocessTest {
         sep(c -> {
             Wrapper<Number> cumSum = cumSum(Sale::getAmountSold)
                 .id("soldCumSum")
-//                .console("amountSold:", Number::intValue)
+//                .log("amountSold:", Number::intValue)
                 .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
                 .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
                 .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"));
@@ -102,7 +102,7 @@ public class ResetNotifierTest extends StreamInprocessTest {
         sep(c -> {
             Wrapper<Number> cumSum = defaultVal(0, cumSum(Sale::getAmountSold))
                 .id("soldCumSum")
-//                .console("amountSold:", Number::intValue)
+//                .log("amountSold:", Number::intValue)
                 .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
                 .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
                 .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"))
