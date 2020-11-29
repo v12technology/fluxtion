@@ -35,8 +35,6 @@ public class Map_FlightDetails_With_increment0 extends AbstractFilterWrapper<Num
   public FlightDetailsCsvDecoder0 filterSubject;
   @NoEventReference public Count f;
   private int result;
-  @NoEventReference public Object resetNotifier;
-  private boolean parentReset = false;
   private MutableNumber value;
   private MutableNumber oldValue;
 

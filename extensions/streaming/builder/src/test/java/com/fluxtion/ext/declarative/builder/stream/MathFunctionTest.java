@@ -137,7 +137,7 @@ public class MathFunctionTest extends StreamInprocessTest {
         sep((c) -> {
             Wrapper<Number> sum = map(MathFunctionTest::addNumber, Data1::getVal, Data1::getVal)
                     .map(Math::rint).id("random")
-                    .map(cumSum()).console("sum:").id("add")
+                    .map(cumSum()).log("sum:").id("add")
                     .map(count()).id("intCount")
                     .map(LibraryFunctionsBuilder.ceil(), Number::doubleValue)
                     .map(avg());
@@ -154,12 +154,12 @@ public class MathFunctionTest extends StreamInprocessTest {
     public void test1() {
         sep((c) -> {
             MappingBuilder.map(this::add, Data1::getVal, Data2::getVal)
-                    .notifyOnChange(true).id("addInstance").console("[addInstance]");
+                    .notifyOnChange(true).id("addInstance").log("[addInstance]");
 
-            LibraryFunctionsBuilder.add(Data1::getVal, Data2::getVal).map(cumSum()).console("sum:");
+            LibraryFunctionsBuilder.add(Data1::getVal, Data2::getVal).map(cumSum()).log("sum:");
 
             MappingBuilder.map(MathFunctionTest::addStatic, Data1::getVal, Data2::getVal)
-                    .notifyOnChange(true).id("addStatic").console("[addStatic] = ", Number::intValue);
+                    .notifyOnChange(true).id("addStatic").log("[addStatic] = ", Number::intValue);
         });
         Wrapper<Number> addInstance = getField("addInstance");
         Wrapper<Number> addStatic = getField("addStatic");
@@ -191,7 +191,7 @@ public class MathFunctionTest extends StreamInprocessTest {
                 Method m = MathFunctionTest.class.getDeclaredMethod("add", int.class, int.class);
                 Wrapper result = StreamFunctionCompiler.map(new MathFunctionTest(), m,
                         arg(new Data1Handler()::val), arg(new Data2Handler()::val)).build();
-                result.id("result").console("[add=]");
+                result.id("result").log("[add=]");
 
             } catch (NoSuchMethodException | SecurityException ex) {
                 Logger.getLogger(MathFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -214,7 +214,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     public void testMapSet() {
         sep((c) -> {
             mapSet(cumSum(), arg(Data1::getVal), arg(Data2::getVal))
-                    .id("cumSum");//.console("[cumsum]");
+                    .id("cumSum");//.log("[cumsum]");
         });
         Wrapper<Number> sum = getField("cumSum");
         sep.onEvent(new Data1(10));
@@ -275,10 +275,10 @@ public class MathFunctionTest extends StreamInprocessTest {
 
                 Wrapper<Number> netPos = subtract(eurDealtPos, eurContraPos);
 
-                netPos.filter(inBand(-10, 20)).console("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
-                netPos.filter(outsideBand(-10, 20)).console("[WARNING outside range]").notifyOnChange(true);
-                netPos.filter(inBand(-600, 600)).console("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
-                netPos.filter(outsideBand(-600, 600)).console("[CRITICAL outside range]").notifyOnChange(true);
+                netPos.filter(inBand(-10, 20)).log("[REMOVE WARNING pos inside range -10 < pos < 20 ]").notifyOnChange(true);
+                netPos.filter(outsideBand(-10, 20)).log("[WARNING outside range]").notifyOnChange(true);
+                netPos.filter(inBand(-600, 600)).log("[REMOVE CRITICAL pos inside range -600 < pos < 600 ]").notifyOnChange(true);
+                netPos.filter(outsideBand(-600, 600)).log("[CRITICAL outside range]").notifyOnChange(true);
 
                 log("-> Trade recived:'{}'@'{}' ", 
                         arg(DataEvent::getStringValue), 

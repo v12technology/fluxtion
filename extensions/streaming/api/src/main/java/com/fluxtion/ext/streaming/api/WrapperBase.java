@@ -50,15 +50,15 @@ public interface WrapperBase<T, R extends WrapperBase<T, R>> {
     Class<T> eventClass();
 
     /**
-     * dump this node to console, prefixed with the supplied
-     * message.{@link Object#toString()} will be invoked on the node instance.
+     * dump this node to log, prefixed with the supplied
+ message.{@link Object#toString()} will be invoked on the node instance.
      *
      * @param <S>
-     * @param prefix String prefix for the console message
+     * @param prefix String prefix for the log message
      * @param supplier
      * @return The current node
      */
-    default <S> R console(String prefix, LambdaReflection.SerializableFunction<T, S>... supplier) {
+    default <S> R log(String prefix, LambdaReflection.SerializableFunction<T, S>... supplier) {
         
         if(!prefix.contains("{}")){
             prefix += " {}";

@@ -18,7 +18,7 @@ import org.junit.Test;
  *
  * @author gregp
  */
-public class SerializableLambdaTest extends BaseSepTest {
+public class SerializableLambdaTest {
 
     @Test
     @Ignore

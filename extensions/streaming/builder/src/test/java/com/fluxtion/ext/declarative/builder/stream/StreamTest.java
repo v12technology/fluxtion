@@ -39,14 +39,14 @@ public class StreamTest implements Stateful {
             Wrapper<Double> logTemp = select(TempF.class)
                     .map(Math::log, TempF::getFahrenheit)
                     .map(new StreamTest()::cumSum)
-                    .resetAndPublish(select(DataEvent.class).console("[reset] ->"))
-                    .console("[cum sum] ->");
+                    .resetAndPublish(select(DataEvent.class).log("[reset] ->"))
+                    .log("[cum sum] ->");
             //on change
             select(TempF.class)
                     .map(Math::log, TempF::getFahrenheit)
                     .notifyOnChange(true)
                     .map(new StreamTest()::cumSum).resetAndPublish(select(DataEvent.class))
-                    .console("[cum sum notifyOnChange] ->");
+                    .log("[cum sum notifyOnChange] ->");
 
             c.addPublicNode(logTemp, "cumLogTemp");
             //control signals depend on temp value
@@ -75,9 +75,9 @@ public class StreamTest implements Stateful {
         StaticEventProcessor handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<TempC> tempC = select(TempF.class).id("tempIn")
-                    .console("[f] ->")
+                    .log("[f] ->")
                     .map(StreamTest::tempFtoTempC).id("convert_FtoC")
-                    .console("[c] ->");
+                    .log("[c] ->");
             //control signals depend on temp value
         }, "com.fluxtion.ext.declarative.builder.tempMapToClass", "TempConverter");
         handler.onEvent(new TempF(10, "outside"));
@@ -95,13 +95,13 @@ public class StreamTest implements Stateful {
         StaticEventProcessor handler = sepTestInstance((c) -> {
             //convert to C from F
             Wrapper<Double> tempC = select(TempF.class)
-                    .console("\n[1.TempF] ->")
+                    .log("\n[1.TempF] ->")
                     .filter(TempF::getSensorId, is("outside"))
-                    .console("[2.sensorId='outside'] ->")
+                    .log("[2.sensorId='outside'] ->")
                     .filter(TempF::getFahrenheit, StreamTest::gt10)
-                    .console("[3.temp>10] ->")
+                    .log("[3.temp>10] ->")
                     .map(StreamTest::fahrToCentigrade)
-                    .console("[4.degC] ->");
+                    .log("[4.degC] ->");
             //convert to log temps
 
         }, "com.fluxtion.ext.declarative.builder.tempsensorconsumer", "TempConsumer");
@@ -138,18 +138,18 @@ public class StreamTest implements Stateful {
     public void graphOfStreamsTest() throws Exception {
         StaticEventProcessor handler = sepTestInstance((c) -> {
             Wrapper<DataEvent> f = select(DataEvent.class)
-                    .console("[data in] ->")
+                    .log("[data in] ->")
                     .filter(DataEvent::getValue, positive()).id("temp_AboveZero")
                     .filter(DataEvent::getValue, lt(20)).id("tempLT20")
-                    .console("[val: +ve and <20] ->");
+                    .log("[val: +ve and <20] ->");
             //tee1
             f.filter(StreamTest::validData).id("validateData1")
                     .filter(DataEvent::getValue, gt(-20)).id("temp_Above_Neg20")
                     .filter(DataEvent::getValue, negative()).id("temp_BelowZero");
             //tee 2
             f.filter(new StreamTest()::ignoreFirsTwo).id("ignoreFirst2Events")
-                    .resetAndPublish(select(TempF.class).console("[reset event] ->"))
-                    .console("[ignored first two] ->");
+                    .resetAndPublish(select(TempF.class).log("[reset event] ->"))
+                    .log("[ignored first two] ->");
             //tee 3
             f.filter(StreamTest::validData).id("validateData2")
                     .filter(DataEvent::getValue, gt(20)).id("temp_Above_20");
@@ -171,12 +171,12 @@ public class StreamTest implements Stateful {
         StaticEventProcessor handler = sepTestInstance((c) -> {
             //notify when > 20 on breach only
             Wrapper tempC = select(TempF.class).id("tempIn")
-                    .console("\n[1.TempF] ->")
+                    .log("\n[1.TempF] ->")
                     .filter(TempF::getFahrenheit, gt(20)).id("breach20C")
-                    .notiferMerge(select(DataEvent.class).id("logTrigger").console("\n[trigger event]"))
-                    .console("[2.temp>20] ->")
+                    .notiferMerge(select(DataEvent.class).id("logTrigger").log("\n[trigger event]"))
+                    .log("[2.temp>20] ->")
                     .map(new StreamTest()::max, TempF::getFahrenheit).notifyOnChange(true).id("maxTemp")
-                    .console("[3.new max temp] ->");
+                    .log("[3.new max temp] ->");
             //convert to log temps
 
         }, "com.fluxtion.ext.declarative.builder.filternotify", "FilterNotifyOnChange");

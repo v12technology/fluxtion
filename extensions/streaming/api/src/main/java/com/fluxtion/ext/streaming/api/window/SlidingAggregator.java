@@ -20,6 +20,7 @@ package com.fluxtion.ext.streaming.api.window;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import java.util.ArrayDeque;
@@ -32,15 +33,20 @@ import lombok.Data;
 @Data
 public class SlidingAggregator<T> implements Wrapper<T> {
 
+    @SepNode
     private final Object notifier;
     private final Class<T> clazz;
     @NoEventReference
+    @SepNode
     private final Stateful<T> source;
+    @NoEventReference
+    @SepNode
+    private TimeReset timeReset;
+    
+    
     private final int size;
     private Stateful<T> aggregator;
     private ArrayDeque<Stateful> deque;
-    @NoEventReference
-    private TimeReset timeReset;
     
     @OnEvent
     public void aggregate() {        

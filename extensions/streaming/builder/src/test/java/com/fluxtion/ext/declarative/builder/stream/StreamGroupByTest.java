@@ -34,7 +34,7 @@ public class StreamGroupByTest extends StreamInprocessTest{
         sep((c) ->{
             GroupBy<Number> group = select(StreamData.class)
                     .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions.Sum);
-            group.id("group");//.console("groupBy Map -> ");
+            group.id("group");//.log("groupBy Map -> ");
         });
         GroupBy<Number> group = getField("group");
         sep.onEvent(new StreamData("one", 1000));

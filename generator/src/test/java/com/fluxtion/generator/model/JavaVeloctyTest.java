@@ -20,6 +20,7 @@ package com.fluxtion.generator.model;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
+import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.test.event.AnnotatedHandlerNoEventId;
 import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
 import com.fluxtion.test.event.AnnotatedHandlerStringFilter;
@@ -79,8 +80,7 @@ public class JavaVeloctyTest {
         overrides.put(eRoot, "root_output");
         overrides.put(e1, "event_handler_1");
         
-        
-        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "TestJava", new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
+        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "TestJava", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
         cfg.templateFile = "javaTemplate.vsl";
         cfg.nodeList = nodeList;
         cfg.publicNodes = overrides;

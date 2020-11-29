@@ -27,9 +27,11 @@ import org.junit.Assert;
  * @author Greg Higgins
  */
 public interface JavaTestGeneratorHelper {
+    
+    static final String TEST_SOURCE_GEN_DIR = "target/generated-test-sources/fluxtion/";
 
     static void setupDefaultTestContext(String packageName, String className){
-        GenerationContext.setupStaticContext(packageName, className, new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
+        GenerationContext.setupStaticContext(packageName, className, new File(TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
     }
     
     /**
@@ -40,7 +42,7 @@ public interface JavaTestGeneratorHelper {
      */
     static SepCompilerConfig getTestSepCompileConfig(String packageName, String className){
         SepCompilerConfig cfg = new SepCompilerConfig();
-        cfg.setOutputDirectory("target/generated-test-sources/java/");
+        cfg.setOutputDirectory(TEST_SOURCE_GEN_DIR);
         cfg.setResourcesOutputDirectory("target/generated-test-sources/resources/");
         cfg.setPackageName(packageName);
         cfg.setClassName(className);
@@ -68,7 +70,7 @@ public interface JavaTestGeneratorHelper {
         Generator generator = new Generator();
         generator.templateSep(cfg);
         JavaDocBuilder builder = new JavaDocBuilder();
-        File f = new File("target/generated-test-sources/java/");
+        File f = new File(TEST_SOURCE_GEN_DIR);
         builder.addSourceTree(f);
         JavaClass genClass = builder.getClassByName(context.getPackageName() + "." + context.getSepClassName());
         //build inline version:
@@ -77,11 +79,11 @@ public interface JavaTestGeneratorHelper {
     
     static JavaClass generateClass(SEPConfig cfg, String packageName, String className) throws Exception {
         cfg.templateFile = "javaTemplate.vsl";
-        GenerationContext.setupStaticContext(packageName, className, new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
+        GenerationContext.setupStaticContext(packageName, className, new File(TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
         Generator generator = new Generator();
         generator.templateSep(cfg);
         JavaDocBuilder builder = new JavaDocBuilder();
-        File f = new File("target/generated-test-sources/java/");
+        File f = new File(TEST_SOURCE_GEN_DIR);
         builder.addSourceTree(f);
         JavaClass genClass = builder.getClassByName(packageName + "." + className);
         //build inline version:

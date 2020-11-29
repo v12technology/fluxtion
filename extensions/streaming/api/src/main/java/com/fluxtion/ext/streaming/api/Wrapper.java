@@ -228,14 +228,14 @@ public interface Wrapper<T> extends Stateful<T>{
     LongAdder counter = new LongAdder();
 
     /**
-     * dump this node to console, prefixed with the supplied
-     * message.{@link Object#toString()} will be invoked on the node instance.
+     * dump this node to log, prefixed with the supplied
+ message.{@link Object#toString()} will be invoked on the node instance.
      *
-     * @param prefix String prefix for the console message
+     * @param prefix String prefix for the log message
      * @param supplier
      * @return The current node
      */
-    default Wrapper<T> console(String prefix, SerializableFunction<T, ?>... supplier) {
+    default Wrapper<T> log(String prefix, SerializableFunction<T, ?>... supplier) {
         if(!prefix.contains("{}")){
             prefix += " {}";
         }

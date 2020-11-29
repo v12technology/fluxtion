@@ -20,6 +20,7 @@ package com.fluxtion.ext.streaming.api.window;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import java.util.ArrayDeque;
@@ -32,25 +33,31 @@ import lombok.Data;
 @Data
 public class SlidingNumberAggregator implements Wrapper<Number> {
 
+    @SepNode
     private final Object notifier;
     @NoEventReference
+    @SepNode
     private final StatefulNumber source;
     private final int size;
-    @NoEventReference
-    private TimeReset timeReset;
     
+    @NoEventReference
+    @SepNode
+    private TimeReset timeReset;
     private MutableNumber value;
     private MutableNumber emptyValue;
     private StatefulNumber aggregator;
     private ArrayDeque<StatefulNumber> deque;
+    private int publishCount;
 
 
     @OnEvent
-    public void aggregate() {
+    public boolean aggregate() {
         int expiredBuckete = timeReset == null ? 1 : timeReset.getWindowsExpired();
         if(expiredBuckete==0){
-            return;
+            return false;
         }
+        publishCount += expiredBuckete;
+        publishCount = Math.min(size+1, publishCount);
         StatefulNumber popped1 = deque.poll();
         aggregator.deduct(popped1, value);
         for (int i = 1; i < expiredBuckete; i++) {
@@ -65,11 +72,12 @@ public class SlidingNumberAggregator implements Wrapper<Number> {
         //add
         aggregator.combine(source, value);
         source.reset();
+        return publishCount >=size;
     }
 
     @Override
     public Number event() {
-        return value;
+        return publishCount >=size?value:0;
     }
 
     @Override
@@ -80,6 +88,7 @@ public class SlidingNumberAggregator implements Wrapper<Number> {
     @Initialise
     public void init() {
         try {
+            publishCount = 0;
             value = new MutableNumber();
             emptyValue = new MutableNumber();
             deque = new ArrayDeque<>(size);

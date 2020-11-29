@@ -26,6 +26,7 @@ import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.Field;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
+import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.test.nodes.Calculator;
 import com.fluxtion.test.nodes.CalculatorRegisteringAccumulatorFactory;
@@ -81,7 +82,7 @@ public class SimpleDeclarativeTest {
         Map<Class, String> rootNodeMappings = new HashMap<>();
 //        rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
         rootNodeMappings.put(Calculator.class, "calculator");
-        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "SimpleCalculator", new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
+        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "SimpleCalculator", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
 
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
         SEPConfig cfg = new SEPConfig();
@@ -203,7 +204,7 @@ public class SimpleDeclarativeTest {
         //setup files, packages and class name for generated java
         String outputPackage = "com.fluxtion.test.derived.java";
         String className = "TestDerived";
-        File outputDirectory = new File("target/generated-test-sources/java/");
+        File outputDirectory = new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR);
         outputDirectory = new File(outputDirectory, outputPackage.replace(".", "/"));
         outputDirectory.mkdirs();
         String templateFile = "javaTemplate.vsl";

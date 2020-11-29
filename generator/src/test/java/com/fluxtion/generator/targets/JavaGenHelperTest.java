@@ -111,7 +111,7 @@ public class JavaGenHelperTest {
         cfg.templateFile = "javaTemplate.vsl";
         cfg.supportDirtyFiltering = true;
         //HUGE
-        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "TestJava_Huge", new File("target/generated-test-sources/java/"), new File("target/generated-test-sources/resources/"));
+        GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "TestJava_Huge", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
         Generator generator = new Generator();
         generator.templateSep(cfg);
 

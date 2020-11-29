@@ -56,7 +56,7 @@ public class Push_2Test extends StreamInprocessTest {
 
             StreamOperatorService.stream(pushTarget).id("streamedCumSum")
                     .filter(PushTarget::getVal, gt(25))
-                    .console("[above 25]");
+                    .log("[above 25]");
         });
 
         sep.onEvent(new DealEvent());
