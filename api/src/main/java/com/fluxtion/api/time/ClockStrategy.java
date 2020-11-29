@@ -25,6 +25,10 @@ import lombok.Data;
 public interface ClockStrategy {
 
     long getWallClockTime();
+    
+    static ClockStrategyEvent registerClockEvent(ClockStrategy clock){
+        return new ClockStrategyEvent(clock);
+    }
 
     @Data
     public static class ClockStrategyEvent {
