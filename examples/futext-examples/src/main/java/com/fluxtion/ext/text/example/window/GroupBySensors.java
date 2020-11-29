@@ -24,7 +24,7 @@ import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import static com.fluxtion.ext.text.api.util.StringDriver.streamChars;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
@@ -63,8 +63,8 @@ import lombok.NoArgsConstructor;
  * <li>Stateful pre-defined calculations
  * <li>User supplied arbitrary mapping calculation
  * <li>User lambda functions for filtering
- * <li>Logging to console for debug while developing
- * <li>Integrating a user instance into the execution graph
+ * <li>Logging to log for debug while developing
+ <li>Integrating a user instance into the execution graph
  * <li>Sending data events to a user instance via onEvent
  * <li>Propogating updates only when tests are valid
  * <li>Pushing data to a user instance, removing the pull from user code.
@@ -104,7 +104,7 @@ public class GroupBySensors {
     public static void buildSensorProcessor(SEPConfig cfg) {
         //merge csv marshller and SensorReading instance events
         Wrapper<SensorReading> sensorData = merge(select(SensorReading.class),
-                csvMarshaller(SensorReading.class).build()).console(" -> \t");
+                csvMarshaller(SensorReading.class).build()).log(" -> \t");
         //group by sensor and calculate max, average
         GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReading::getSensorName, SensorReadingDerived.class)
                 .init(SensorReading::getSensorName, SensorReadingDerived::setSensorName)
@@ -112,12 +112,16 @@ public class GroupBySensors {
                 .avg(SensorReading::getValue, SensorReadingDerived::setAverage)
                 .build();
         //tumble window (count=3), warning if avg > 60 && max > 90 in the window for a sensor
-        tumble(sensors, 3).console("readings in window : ", GroupBy::collection)
+        Wrapper<GroupBy<SensorReadingDerived>> tumbleIncremental = tumbleIncremental(sensors, 3);
+        
+        
+        tumbleIncremental(sensors, 3).log("readings in window : ", GroupBy::collection)
                 .get(GroupBy::collection)
                 .map(GroupBySensors::warningSensors)
                 .filter(c -> c.size() > 0)
-                .console("**** WARNING **** sensors to investigate:")
+                .log("**** WARNING **** sensors to investigate:")
                 .push(new TempertureController()::investigateSensors);
+            ;
     }
 
     public static Collection<String> warningSensors(Collection<SensorReadingDerived> readings) {

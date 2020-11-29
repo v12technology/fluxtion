@@ -29,20 +29,20 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="consoleMsg_1">
+        <node id="logMsgBuilder1_2">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="consoleMsg_1:&#10;ConsoleLog"/>
-                    <jGraph:Style properties="NODE"/>
+                    <jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;logMsgBuilder1_2:&#10;LogMsgBuilder1"/>
+                    <jGraph:Style properties="EVENTHANDLER"/>
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="groupBy_3_3">
+        <node id="groupBy_5_3">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="groupBy_3_3:&#10;GroupBy_3"/>
+                    <jGraph:label text="groupBy_5_3:&#10;GroupBy_5"/>
                     <jGraph:Style properties="NODE"/>
                 </jGraph:ShapeNode>
             </data>
@@ -65,20 +65,20 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="consoleMsg_2">
+        <node id="logMsgBuilder7_6">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="consoleMsg_2:&#10;ConsoleLog"/>
-                    <jGraph:Style properties="NODE"/>
+                    <jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;logMsgBuilder7_6:&#10;LogMsgBuilder7"/>
+                    <jGraph:Style properties="EVENTHANDLER"/>
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="getField_GroupBy_3_Collection0_7">
+        <node id="getField_GroupBy_5_Collection0_7">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="getField_GroupBy_3_Collection0_7:&#10;GetField_GroupBy_3_Collection0"/>
+                    <jGraph:label text="getField_GroupBy_5_Collection0_7:&#10;GetField_GroupBy_5_Collection0"/>
                     <jGraph:Style properties="NODE"/>
                 </jGraph:ShapeNode>
             </data>
@@ -110,12 +110,12 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="consoleMsg_3">
+        <node id="logMsgBuilder9_11">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="consoleMsg_3:&#10;ConsoleLog"/>
-                    <jGraph:Style properties="NODE"/>
+                    <jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;logMsgBuilder9_11:&#10;LogMsgBuilder9"/>
+                    <jGraph:Style properties="EVENTHANDLER"/>
                 </jGraph:ShapeNode>
             </data>
         </node>
@@ -182,20 +182,20 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="String">
-            <data key="vertex_label">
-                <jGraph:ShapeNode>
-                    <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;String"/>
-                    <jGraph:Style properties="EVENT"/>
-                </jGraph:ShapeNode>
-            </data>
-        </node>
         <node id="LogControlEvent">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
                     <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;LogControlEvent"/>
+                    <jGraph:Style properties="EVENT"/>
+                </jGraph:ShapeNode>
+            </data>
+        </node>
+        <node id="String">
+            <data key="vertex_label">
+                <jGraph:ShapeNode>
+                    <jGraph:Geometry height="70" width="160" x="20" y="20"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;String"/>
                     <jGraph:Style properties="EVENT"/>
                 </jGraph:ShapeNode>
             </data>
@@ -210,17 +210,17 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="3" source="mergingWrapper_1" target="consoleMsg_1">
+        <edge id="3" source="mergingWrapper_1" target="logMsgBuilder1_2">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="4" source="mergingWrapper_1" target="groupBy_3_3">
+        <edge id="4" source="mergingWrapper_1" target="groupBy_5_3">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="5" source="groupBy_3_3" target="countReset_4">
+        <edge id="5" source="groupBy_5_3" target="countReset_4">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -230,22 +230,22 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="7" source="groupBy_3_3" target="booleanFilter_5">
+        <edge id="7" source="groupBy_5_3" target="booleanFilter_5">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="8" source="booleanFilter_5" target="consoleMsg_2">
+        <edge id="8" source="booleanFilter_5" target="logMsgBuilder7_6">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="9" source="booleanFilter_5" target="getField_GroupBy_3_Collection0_7">
+        <edge id="9" source="booleanFilter_5" target="getField_GroupBy_5_Collection0_7">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="10" source="getField_GroupBy_3_Collection0_7" target="map_Collection_With_warningSensors0_8">
+        <edge id="10" source="getField_GroupBy_5_Collection0_7" target="map_Collection_With_warningSensors0_8">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -260,7 +260,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="13" source="filter_Collection_By_apply0_10" target="consoleMsg_3">
+        <edge id="13" source="filter_Collection_By_apply0_10" target="logMsgBuilder9_11">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -300,12 +300,27 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="21" source="String" target="tempertureController_12">
+        <edge id="21" source="LogControlEvent" target="logMsgBuilder1_2">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="22" source="LogControlEvent" target="validationLogSink_15">
+        <edge id="22" source="LogControlEvent" target="logMsgBuilder7_6">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="23" source="LogControlEvent" target="logMsgBuilder9_11">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="24" source="String" target="tempertureController_12">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="25" source="LogControlEvent" target="validationLogSink_15">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
