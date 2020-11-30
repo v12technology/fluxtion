@@ -77,6 +77,10 @@ public interface WrapperBase<T, R extends WrapperBase<T, R>> {
 //        SepContext.service().add(consoleLog, consoleId);
         return self();
     }
+    
+    default <S> R log(){
+        return log("");
+    }
 
     default R self() {
         return (R) this;

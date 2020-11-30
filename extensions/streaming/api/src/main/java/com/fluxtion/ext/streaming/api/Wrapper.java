@@ -241,6 +241,10 @@ public interface Wrapper<T> extends Stateful<T>{
         }
         return (Wrapper<T>) StreamOperator.service().log(this, prefix, supplier);
     }
+    
+    default Wrapper<T> log() {
+        return log("");
+    }
 
     /**
      * Attaches an event notification instance to the current stream node. When

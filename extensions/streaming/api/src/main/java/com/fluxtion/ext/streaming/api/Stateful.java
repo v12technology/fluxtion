@@ -40,7 +40,7 @@ public interface Stateful<S> {
     }
 
     default void deduct(Stateful<? extends S> other) {
-        throw new UnsupportedOperationException("deduct not supported");
+//        throw new UnsupportedOperationException("deduct not supported");
     }
 
     public static interface StatefulNumber<S> extends Stateful {
