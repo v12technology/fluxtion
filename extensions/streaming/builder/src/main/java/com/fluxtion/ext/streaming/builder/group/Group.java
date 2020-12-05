@@ -160,7 +160,7 @@ public class Group <S, T> {
     
     private void setMultiKey(MultiKey<?> multiKey){
         if(joinedGroup==null){
-            multiKey = multiKey;
+            this.multiKey = multiKey;
         }else{
             joinedGroup.setMultiKey(multiKey);
         }

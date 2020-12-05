@@ -78,6 +78,23 @@ public class GroupByTest extends StreamInprocessTest {
     }
 
     @org.junit.Test
+    public void testGroupByFunction() {
+        sep((c) -> {
+            groupBy(TradeEvent::getTradeId, TradeSummary.class)
+                    .function(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions.AggregateSum::calcSum)
+                    .build()
+                    .id("tradeSum");
+        });
+
+        sep.onEvent(new TradeEvent(14, 1000));
+        sep.onEvent(new TradeEvent(14, 2000));
+        sep.onEvent(new TradeEvent(2, 300));
+        GroupBy<TradeSummary> summary = getField("tradeSum");
+        assertThat(summary.value(14).getOutstandingVoulme(), is(3000));
+        assertThat(summary.value(2).getOutstandingVoulme(), is(300));
+    }
+
+    @org.junit.Test
     public void testGroupBy() {
         sep((c) -> {
             GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent::getTradeId, TradeSummary.class);
@@ -94,7 +111,7 @@ public class GroupByTest extends StreamInprocessTest {
             stream(trades.build()::record)
                     .filter(TradeSummary::getOutstandingVoulme, negative())
                     .map(count()).id("badDealCount");
-            
+
         });
         //events
         sep.onEvent(new TradeEvent(14, 1000));
@@ -109,7 +126,7 @@ public class GroupByTest extends StreamInprocessTest {
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new TradeEvent(9, 2780));
         //tests
-        Number badDealCount = ((Wrapper<Number>) getField("badDealCount")).event();
+        Number badDealCount = getWrappedField("badDealCount");
         assertThat(badDealCount.intValue(), is(1));
     }
 

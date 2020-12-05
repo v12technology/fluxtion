@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.builder.group;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -34,7 +35,7 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * The main instance a user interacts with while building a group by function. 
+ * The main instance a user interacts with while building a group by function.
  *
  * @author Greg Higgins
  * @param <K> Source type
@@ -107,40 +108,68 @@ public class GroupByBuilder<K, T> {
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             avg(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Avg, sourceFunction, target);
+        return GroupByBuilder.this.function(Avg, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             count(SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Count, target);
+        return GroupByBuilder.this.function(Count, target);
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             set(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Set, sourceFunction, target);
+        return GroupByBuilder.this.function(Set, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             min(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Min, sourceFunction, target);
+        return GroupByBuilder.this.function(Min, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             max(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Max, sourceFunction, target);
+        return GroupByBuilder.this.function(Max, sourceFunction, target);
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder<K, T>
             sum(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(Sum, sourceFunction, target);
+        return GroupByBuilder.this.function(Sum, sourceFunction, target);
     }
 
     public void optional(boolean optional) {
         sourceContext.setOptional(optional);
     }
 
+    public <S extends Number, G extends Number, R> GroupByBuilder function(
+            SerializableFunction<K, ? extends S> sourceFunction,
+            SerializableBiConsumer<T, ? super R> target,
+            SerializableBiFunction<? super G, ? super G, ? extends G> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set function
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.keyProvider).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.group.getInputSource().getClass();
+        }
+        Method sourceMethod = sourceFunction.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.targetClass, target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+
     public <F extends NumericFunctionStateless> GroupByBuilder
-            function(Class<F> calcFunctionClass, SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
+            function(
+                    Class<F> calcFunctionClass,
+                    SerializableFunction<K, ? extends Number> sourceFunction,
+                    SerializableBiConsumer<T, ? super Byte> target) {
         //set function
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
@@ -162,7 +191,9 @@ public class GroupByBuilder<K, T> {
     }
 
     public <F extends NumericFunctionStateless> GroupByBuilder
-            function(Class<F> calcFunctionClass, SerializableBiConsumer<T, ? super Byte> target) {
+            function(
+                    Class<F> calcFunctionClass,
+                    SerializableBiConsumer<T, ? super Byte> target) {
         //set function
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
@@ -181,7 +212,7 @@ public class GroupByBuilder<K, T> {
     public GroupBy<T> build(String publicName) {
         return groupBy.build();
     }
-    
+
     private <F extends NumericFunctionStateless> Method checkFunction(Class<F> calcFunctionClass) {
         Method[] methods = calcFunctionClass.getDeclaredMethods();
         Method calcMethod = null;
