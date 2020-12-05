@@ -125,26 +125,19 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     @Override
     public void combine(Stateful<? extends T> other) {
         if (other instanceof WrappedCollection) {
-            WrappedCollection wrappedCollection = (WrappedCollection) other;
-            Collection collection1 = wrappedCollection.collection();
+            WrappedCollection<T,?,?> wrappedCollection = (WrappedCollection<T,?,?>) other;
+            Collection<T> collection1 = wrappedCollection.collection();
             if(collection1 == null)
                 return;
             if (collection1 instanceof List) {
-                List list = (List) collection1;
+                List<T> list = (List) collection1;
                 for (int i = 0; i < list.size(); i++) {
-                    T get = (T) list.get(i);
-                    this.addItem(get);
+                    this.addItem(list.get(i));
                 }
             }else{
                collection1.forEach(this::addItem);
             }
         }
-//        final WrappedList<T> otherList = (WrappedList<T>) other;
-//        List<T> collection1 = otherList.collection();
-//        for (int i = 0; i < collection1.size(); i++) {
-//            T get = collection1.get(i);
-//            this.addItem(get);
-//        }
     }
 
     @Override
@@ -207,6 +200,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         return unmodifiableCollection;
     }
 
+    @Override
     public List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
     }

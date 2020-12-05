@@ -126,7 +126,7 @@ public interface Wrapper<T> extends Stateful<T>{
      * @return A wrapped value containing the result of the mapping operation
      */
     default <R, S> Wrapper<R> map(SerializableFunction<? extends S, R> mapper, SerializableFunction<T, S> supplier) {
-        return (Wrapper<R>) StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
+        return StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
 
     /**
