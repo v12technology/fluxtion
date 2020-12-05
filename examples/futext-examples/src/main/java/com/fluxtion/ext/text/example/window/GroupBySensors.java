@@ -106,7 +106,7 @@ public class GroupBySensors {
         Wrapper<SensorReading> sensorData = merge(select(SensorReading.class),
                 csvMarshaller(SensorReading.class).build()).log(" -> \t");
         //group by sensor and calculate max, average
-        GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReading::getSensorName, SensorReadingDerived.class)
+        GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReadingDerived.class, SensorReading::getSensorName)
                 .init(SensorReading::getSensorName, SensorReadingDerived::setSensorName)
                 .max(SensorReading::getValue, SensorReadingDerived::setMax)
                 .avg(SensorReading::getValue, SensorReadingDerived::setAverage)
