@@ -20,6 +20,7 @@ package com.fluxtion.generator.util;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import static com.fluxtion.api.time.ClockStrategy.registerClockEvent;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
@@ -40,6 +41,9 @@ public class BaseSepInprocessTest {
 
     protected StaticEventProcessor sep;
     protected boolean fixedPkg = false;
+    protected TestMutableNumber time;
+    protected boolean timeAdded = false;
+
     @Rule
     public TestName testName = new TestName();
 
@@ -158,4 +162,33 @@ public class BaseSepInprocessTest {
         return sep;
     }
 
+    protected StaticEventProcessor setTime(long newTime) {
+        addClock();
+        time.set(newTime);
+        return sep;
+    }
+
+    protected StaticEventProcessor advanceTime(long delta) {
+        addClock();
+        time.set(time.longValue + delta);
+        return sep;
+    }
+
+    protected void tick() {
+        onEvent(new Object());
+    }
+
+    protected void tick(long newTime){
+        setTime(newTime);
+        tick();
+    }
+    
+    public void addClock() {
+        if (!timeAdded) {
+            time = new TestMutableNumber();
+            time.set(0);
+            onEvent(registerClockEvent(time::longValue));
+        }
+        timeAdded = true;
+    }
 }
