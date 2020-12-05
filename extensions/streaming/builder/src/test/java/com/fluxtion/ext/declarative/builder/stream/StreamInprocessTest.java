@@ -17,10 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.api.StaticEventProcessor;
-import static com.fluxtion.api.time.ClockStrategy.registerClockEvent;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import net.vidageek.mirror.dsl.Mirror;
 
@@ -30,42 +27,9 @@ import net.vidageek.mirror.dsl.Mirror;
  */
 public class StreamInprocessTest extends BaseSepInprocessTest {
 
-    private MutableNumber time;
-    private boolean timeAdded = false;
-
     protected <T> T getWrappedField(String name) {
         Wrapper<T> wrapped = (Wrapper<T>) new Mirror().on(sep).get().field(name);
         return wrapped.event();
-    }
-
-    protected StaticEventProcessor setTime(long newTime) {
-        addClock();
-        time.set(newTime);
-        return sep;
-    }
-
-    protected StaticEventProcessor advanceTime(long delta) {
-        addClock();
-        time.set(time.longValue + delta);
-        return sep;
-    }
-
-    protected void tick() {
-        onEvent(new Object());
-    }
-
-    protected void tick(long newTime){
-        setTime(newTime);
-        tick();
-    }
-    
-    public void addClock() {
-        if (!timeAdded) {
-            time = new MutableNumber();
-            time.set(0);
-            onEvent(registerClockEvent(time::longValue));
-        }
-        timeAdded = true;
     }
 
 }

@@ -110,14 +110,14 @@ public class StreamOperatorService implements StreamOperator {
 //      @Override
     public <K, T, S> GroupByBuilder<S, T> groupBy(Wrapper<S> source,
             SerializableFunction<S, K> key, Class<T> targetClass) {
-        GroupByBuilder<S, T> wcQuery = Group.groupBy(source, key, targetClass);
+        GroupByBuilder<S, T> wcQuery = Group.groupBy(source, targetClass, key);
         return wcQuery;
     }
 
     @Override
     public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, S> key, Class<F> functionClass) {
-        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, MutableNumber.class, key);
         wcQuery.function(functionClass, MutableNumber::set);
         return (GroupBy<R>) wcQuery.build();
     }
@@ -128,7 +128,7 @@ public class StreamOperatorService implements StreamOperator {
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
             Class<F> functionClass) {
-        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, MutableNumber.class, key);
         wcQuery.function(functionClass, supplier, MutableNumber::set);
         return (GroupBy<R>) wcQuery.build();
     }

@@ -11,9 +11,14 @@ import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import com.fluxtion.ext.streaming.builder.factory.PushBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import org.junit.Test;
 
 /**
@@ -42,6 +47,36 @@ public class Push_2Test extends StreamInprocessTest {
     }
 
     @Test
+    public void anchorTest() {
+        sep((c) -> {
+            ArrayList list = c.addPublicNode(new ArrayList(), "recorder");
+            Wrapper<DealEvent> inSD = select(DealEvent.class).id("sda");
+            Tracker track_1 = c.addNode(new Tracker("track_1", inSD), "track_1");
+            Tracker track_2 = c.addNode(new Tracker("track_2", inSD), "track_2");
+            track_1.setSecondParent(select(DataEvent.class));
+            track_2.setSecondParent(select(String.class));
+            track_1.setRecorder(list);
+            track_2.setRecorder(list);
+            PushBuilder.anchor(track_1, track_2);
+        });
+        List<String> list = getField("recorder");
+        assertThat(list, empty());
+        //both
+        onEvent(new DealEvent());
+        assertThat(list, contains("track_1", "track_2"));
+        //t1
+        list.clear();
+        assertThat(list, empty());
+        onEvent(new DataEvent());
+        assertThat(list, contains("track_1"));
+        //t1
+        list.clear();
+        assertThat(list, empty());
+        onEvent("hello world");
+        assertThat(list, contains("track_2"));
+    }
+
+    @Test
     public void pushNotificationDataViaStream() {
         sep((c) -> {
             Wrapper<DealEvent> inSD = select(DealEvent.class);
@@ -55,8 +90,8 @@ public class Push_2Test extends StreamInprocessTest {
             PushBuilder.push(counter::getCount, pushTarget::setVal);
 
             StreamOperatorService.stream(pushTarget).id("streamedCumSum")
-                    .filter(PushTarget::getVal, gt(25))
-                    .log("[above 25]");
+                .filter(PushTarget::getVal, gt(25))
+                .log("[above 25]");
         });
 
         sep.onEvent(new DealEvent());
@@ -104,11 +139,11 @@ public class Push_2Test extends StreamInprocessTest {
     public void pushToComplexObject() {
         sep((c) -> {
             select(LongNumber.class)
-                    .push(LongNumber::getVal, c.addPublicNode(new Date(), "date")::setTime)
-                    .map(count())
-                    .push(c.addPublicNode(new Date(), "date_2")::setTime);
+                .push(LongNumber::getVal, c.addPublicNode(new Date(), "date")::setTime)
+                .map(count())
+                .push(c.addPublicNode(new Date(), "date_2")::setTime);
         });
-        
+
         Date date = getField("date");
         Date date_2 = getField("date_2");
         sep.onEvent(new LongNumber((8000)));
@@ -136,10 +171,9 @@ public class Push_2Test extends StreamInprocessTest {
 
     }
 
-    public static class UpdateCount extends Number{
+    public static class UpdateCount extends Number {
 
         public int count;
-
 
         public int getCount() {
             return count;
@@ -148,7 +182,7 @@ public class Push_2Test extends StreamInprocessTest {
         public void setCount(int count) {
             this.count = count;
         }
-        
+
         @Override
         public double doubleValue() {
             return getCount();
@@ -187,16 +221,16 @@ public class Push_2Test extends StreamInprocessTest {
         public void update() {
             count++;
         }
-        
-        public void pushUpdateCount(UpdateCount update){
+
+        public void pushUpdateCount(UpdateCount update) {
             this.updatePushVal = update.getCount() * 100;
         }
 
         public void setVal(int val) {
             this.val = val * 10;
         }
-        
-        public void setLongCount(long longVal){
+
+        public void setLongCount(long longVal) {
             this.longVal = longVal * 1000;
         }
 
@@ -210,4 +244,23 @@ public class Push_2Test extends StreamInprocessTest {
 
     }
 
+    @Data
+    public static class Tracker {
+
+        final String name;
+        final Object parent;
+        List<String> recorder;
+        Object secondParent;
+
+        @OnEvent
+        public boolean handleEvent() {
+            recorder.add(name);
+            return true;
+        }
+    }
+
+    @Data
+    public static class Recorder {
+
+    }
 }

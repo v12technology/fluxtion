@@ -197,7 +197,8 @@ public class GroupByContext<K, T> {
 
                 Group group = context.getGroup();
                 if (!group.isEventClass()) {
-                    aggClass.getField(context.sourceInfo.id).set(result, group.getInputSource());
+                    Object source = GenerationContext.SINGLETON.addOrUseExistingNode(group.getInputSource());
+                    aggClass.getField(context.sourceInfo.id).set(result, source);
                 }
             }
             GenerationContext.SINGLETON.getNodeList().add(result);
@@ -264,9 +265,9 @@ public class GroupByContext<K, T> {
                 multiKeyId = group.getMultiKey().getClass().getSimpleName() + GenerationContext.nextId();
                 multiKeyId = StringUtils.uncapitalize(multiKeyId);
             } else if (group.isWrapped()) {
-                keyMethod = group.getKeyFunction().method();
+                keyMethod = group.getKeyMethod();
             } else {
-                keyMethod = group.getKeyFunction().method();
+                keyMethod = group.getKeyMethod();
             }
             String id = StringUtils.uncapitalize(keyProvider.getClass().getSimpleName() + (count++));
 

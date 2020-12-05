@@ -22,7 +22,7 @@ public class ExpiringTest extends StreamInprocessTest {
     @Category(Categories.FilterTest.class)
     public void test() {
         sep(c ->{
-            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order.class, Order::getId, OrderSummary.class);
+            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order::getId, OrderSummary.class);
             GroupByBuilder<Deal, OrderSummary> deals = orders.join(Deal.class, Deal::getOrderId);
             //set default vaules for a group by row
             orders.init(Order::getCcyPair, OrderSummary::setCcyPair);

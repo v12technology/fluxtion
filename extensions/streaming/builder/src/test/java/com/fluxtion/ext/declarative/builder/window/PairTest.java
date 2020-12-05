@@ -20,7 +20,6 @@ package com.fluxtion.ext.declarative.builder.window;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.api.group.AggregateFunctions.Sum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
@@ -30,7 +29,6 @@ import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -104,8 +102,8 @@ public class PairTest extends StreamInprocessTest {
         SerializableFunction<S, V> valueSupplier,
         Class<F> calcFunctionClass
     ) {
-        Class<S> sourceClass = keySupplier.getContainingClass();
-        GroupBy<Pair<K, V>> build = Group.groupBy(sourceClass, keySupplier, Pair.class)
+//        Class<S> sourceClass = keySupplier.getContainingClass();
+        GroupBy<Pair<K, V>> build = Group.groupBy(keySupplier, Pair.class)
             .init(keySupplier, Pair::setKey)
             .function(calcFunctionClass, valueSupplier, Pair::setValue)
             .build();
@@ -114,8 +112,7 @@ public class PairTest extends StreamInprocessTest {
     }
 
     private <S, T extends Number> GroupBy<Pair> groupBySum(SerializableFunction<S, ?> key, SerializableFunction<S, T> supplier) {
-        Class<S> sourceClass = key.getContainingClass();
-        GroupBy<Pair> build = Group.groupBy(sourceClass, key, Pair.class)
+        GroupBy<Pair> build = Group.groupBy(key, Pair.class)
             .init(key, Pair::setKey)
             .sum(supplier, Pair::setValue)
             .build();

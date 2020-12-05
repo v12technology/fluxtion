@@ -42,8 +42,8 @@ public class GroupByTest extends StreamInprocessTest {
     public void testGroupByNonEvent() {
         sep((c) -> {
             EnrichedDeliveryItem enrichedDeliveryItem = c.addNode(new EnrichedDeliveryItem());
-            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary;
-            deliverySummary = groupBy(enrichedDeliveryItem, EnrichedDeliveryItem::getCustomerId, DeliverySummary.class);
+//            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary;
+            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary = groupBy(enrichedDeliveryItem::getCustomerId, DeliverySummary.class);
             //init
             deliverySummary.init(EnrichedDeliveryItem::getCustomerId, DeliverySummary::setCustomerId);
             //calc
@@ -80,7 +80,7 @@ public class GroupByTest extends StreamInprocessTest {
     @org.junit.Test
     public void testGroupBy() {
         sep((c) -> {
-            GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent.class, TradeEvent::getTradeId, TradeSummary.class);
+            GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent::getTradeId, TradeSummary.class);
             GroupByBuilder<DealEvent, TradeSummary> deals = trades.join(DealEvent.class, DealEvent::getParentTradeId);
             //vars
             SerializableFunction<TradeEvent, ? extends Number> tradeVol = TradeEvent::getTradeVolume;

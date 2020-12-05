@@ -39,7 +39,7 @@ public class FilteredGroupByTest extends StreamInprocessTest {
     public void testFilteredGroupBy() {
         sep(c -> {
             Wrapper<Order> largeOrders = select(Order.class).filter(Order::getSize, gt(200));
-            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, Order::getCcyPair, OrderSummary.class);
+            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, OrderSummary.class, Order::getCcyPair);
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count(OrderSummary::setDealCount);
             largeOrdersByCcy.sum(Order::getSize, OrderSummary::setOrderSize)
@@ -71,7 +71,7 @@ public class FilteredGroupByTest extends StreamInprocessTest {
     public void test() {
         sep(c -> {
             Wrapper<Deal> validDeal = select(Deal.class).filter(Deal::getDealtSize, positive());
-            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order.class, Order::getId, OrderSummary.class);
+            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order::getId, OrderSummary.class);
             GroupByBuilder<Deal, OrderSummary> deals = orders.join(validDeal, Deal::getOrderId);
             //set default vaules for a group by row
             orders.init(Order::getCcyPair, OrderSummary::setCcyPair);

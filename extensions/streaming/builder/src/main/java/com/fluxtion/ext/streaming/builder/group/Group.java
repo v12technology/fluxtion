@@ -17,6 +17,7 @@
 package com.fluxtion.ext.streaming.builder.group;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.MultiKey;
@@ -45,33 +46,34 @@ public class Group <S, T> {
      * 
      * @return The actual grouping function.
      */
-//    public static <S> Group<S, ?> groupBy(S k, SerializableFunction<S, ?> f){
-//        return new Group(k, f);
-//    }
-    
+
     /**
      *
      * @param <S> The data node Type from which a grouping key will be extracted at runtime.
      * @param <T> Target type that is the holder of aggregate function results.
+     * @param <K>
      * 
      * @param k The actual data node the key will be extracted from.
      * @param f A function used to extract the key value from K used to group source data by.
      * @param target target of any aggregate function created with this grouping
      * @return A builder
      */
-    public static <S, T> GroupByBuilder<S, T> groupBy(S k, SerializableFunction<S, ?> f, Class<T> target){
-        final Group group = new Group(k, f, target);
+    public static <S, T, K> GroupByBuilder<S, T> groupBy(SerializableSupplier<? extends K> f, Class<T> target){
+        final Group group = new Group(f.captured()[0], f.method(), target);
         return GroupByContext.builder(group);
     }
     
-    public static <S, T> GroupByBuilder<S, T> groupBy(Wrapper<S> sourceInstance, SerializableFunction<S, ?> keyFunction, Class<T> targetType){
+    
+    public static <S, T> GroupByBuilder<S, T> groupBy(Wrapper<S> sourceInstance, Class<T> targetType, SerializableFunction<S, ?> keyFunction){
         final Group group = new Group(sourceInstance, keyFunction, targetType);
         group.wrapped = true;
         return GroupByContext.builder(group);
     }
-      
-    public static <S, T> GroupByBuilder<S, T> groupBy(Class<S> k, SerializableFunction<S, ?> f, Class<T> target){
+
+    public static <S, T> GroupByBuilder<S, T> groupBy(SerializableFunction<S, ?> f, Class<T> target){
         try {
+            Class<S> k = f.getContainingClass();
+            k.newInstance();
             final Group group = new Group(k.newInstance(), f, target);
             group.eventClass = true;
             return GroupByContext.builder(group);
@@ -138,6 +140,7 @@ public class Group <S, T> {
     private boolean wrapped = false;
     private final S inputSource;
     private final SerializableFunction<S, ?> keyFunction;
+    private final Method keyMethod;
     private MultiKey<?> multiKey;
     private Class<T> target;
     private Group joinedGroup;
@@ -179,20 +182,24 @@ public class Group <S, T> {
         }
     }
     
-    
-    private Group(S input, SerializableFunction<S, ?> keyFunction) {
-        this(input, keyFunction, null);
+    private Group(S input, Method keyMethod, Class<T> target){
+        this.inputSource = input;
+        this.keyFunction = null;
+        this.keyMethod = keyMethod;
+        this.target = target;
     }
 
     private Group(S input, SerializableFunction<S, ?> keyFunction, Class<T> target) {
         this.inputSource = input;
         this.keyFunction = keyFunction;
+        this.keyMethod = keyFunction.method();
         this.target = target;
     }
 
     private Group(S input, MultiKey<?> multiKey, Class<T> target) {
         this.inputSource = input;
         keyFunction = null;
+        this.keyMethod = null;
         this.multiKey = multiKey;
         this.target = target;
     }
@@ -300,8 +307,12 @@ public class Group <S, T> {
         return inputSource;
     }
 
-    public SerializableFunction<S, ?> getKeyFunction() {
-        return keyFunction;
+//    public SerializableFunction<S, ?> getKeyFunction() {
+//        return keyFunction;
+//    }
+    
+    public Method getKeyMethod(){
+        return keyMethod;
     }
 
     public boolean isEventClass() {
