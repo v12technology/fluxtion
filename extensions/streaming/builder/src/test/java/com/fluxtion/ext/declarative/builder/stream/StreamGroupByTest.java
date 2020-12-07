@@ -32,9 +32,9 @@ public class StreamGroupByTest extends StreamInprocessTest {
     @Test
     public void groupByStream() {
         sep((c) -> {
-            GroupBy<Double> group = select(StreamData.class)
-                .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions.AggregateSum::calcSum);
-            group.id("group");//.log("groupBy Map -> ");
+            select(StreamData.class)
+                .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions::calcSum)
+                .id("group");//.log("groupBy Map -> ");
         });
         GroupBy<Number> group = getField("group");
         sep.onEvent(new StreamData("one", 1000));
@@ -44,8 +44,8 @@ public class StreamGroupByTest extends StreamInprocessTest {
         sep.onEvent(new StreamData("two", 40));
         sep.onEvent(new StreamData("two", 100));
 
-        assertThat(group.getMap().get("one").event().intValue(), is(2700));
-        assertThat(group.getMap().get("two").event().intValue(), is(200));
+        assertThat(group.value("one").intValue(), is(2700));
+        assertThat(group.value("two").intValue(), is(200));
     }
 
 }

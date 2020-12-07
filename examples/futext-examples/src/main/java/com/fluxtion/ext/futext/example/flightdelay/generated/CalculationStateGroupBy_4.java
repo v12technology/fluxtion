@@ -13,9 +13,8 @@ import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
@@ -37,10 +36,10 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
   private final BitSet updateMap = new BitSet(SOURCE_COUNT);
 
   public CarrierDelay target;
-  public double aggregateSum3;
+  public double aggregateFunctions3;
   public AggregateAverage aggregateAverage1Function = new AggregateAverage();
   public double aggregateAverage1;
-  public int aggregateCount2;
+  public int aggregateFunctions2;
 
   public CalculationStateGroupBy_4() {
     target = new CarrierDelay();

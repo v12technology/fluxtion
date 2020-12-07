@@ -59,7 +59,7 @@ public class GroupFunctionsBuilder {
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions.AggregateSum::calcSum);
+        return groupBy(key, supplier, AggregateFunctions::calcSum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByAvg(
@@ -73,20 +73,20 @@ public class GroupFunctionsBuilder {
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions.AggregateMax::maximum);
+        return groupBy(key, supplier, AggregateFunctions::maximum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByMin(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions.AggregateMin::minimum);
+        return groupBy(key, supplier, AggregateFunctions::minimum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByCount(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions.AggregateCount::increment);
+        return groupBy(key, supplier, AggregateFunctions::count);
     }
 }

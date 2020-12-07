@@ -13,9 +13,8 @@ import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateCount;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
@@ -51,10 +50,10 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
     allMatched = instance.allMatched();
     target = instance.target;
     {
-      double value = instance.aggregateSum3;
-      value = AggregateSum.calcSum((double) event.getDelay(), (double) value);
+      double value = instance.aggregateFunctions3;
+      value = AggregateFunctions.calcSum((double) event.getDelay(), (double) value);
       target.setTotalDelayMins((int) value);
-      instance.aggregateSum3 = value;
+      instance.aggregateFunctions3 = value;
     }
     {
       double value = instance.aggregateAverage1;
@@ -64,10 +63,10 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
       instance.aggregateAverage1 = value;
     }
     {
-      int value = instance.aggregateCount2;
-      value = AggregateCount.increment((int) 0, (int) value);
+      int value = instance.aggregateFunctions2;
+      value = AggregateFunctions.count((int) 0, (int) value);
       target.setTotalFlights((int) value);
-      instance.aggregateCount2 = value;
+      instance.aggregateFunctions2 = value;
     }
     if (firstMatched) {
       wrappedList.addItem(target);
