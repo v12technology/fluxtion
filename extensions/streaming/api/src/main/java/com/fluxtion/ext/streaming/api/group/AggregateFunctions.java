@@ -17,7 +17,7 @@
 package com.fluxtion.ext.streaming.api.group;
 
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
+//import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 
 /**
  * Math functions for use with GroupBy.
@@ -33,21 +33,21 @@ public class AggregateFunctions {
     public static Class<AggregateSum> Sum = AggregateSum.class;
     public static Class<AggregatePassThrough> Set = AggregatePassThrough.class;
 
-    public static class AggregateSum implements NumericFunctionStateless {
+    public static class AggregateSum {
 
         public static double calcSum(double newValue, double oldSum) {
             return newValue + oldSum;
         }
     }
     
-    public static class AggregatePassThrough implements NumericFunctionStateless {
+    public static class AggregatePassThrough {
         
         public static double set(double newValue, double oldSum) {
             return newValue;
         }
     }
 
-    public static class AggregateCount implements NumericFunctionStateless {
+    public static class AggregateCount  {
 
         public static int increment(int newValue, int oldValue) {
             oldValue++;
@@ -55,14 +55,14 @@ public class AggregateFunctions {
         }
     }
     
-    public static class AggregateMin implements NumericFunctionStateless {
+    public static class AggregateMin  {
 
         public static int minimum(int newValue, int oldValue) {
             return Math.min(newValue, oldValue);
         }
     }
     
-    public static class AggregateMax implements NumericFunctionStateless {
+    public static class AggregateMax  {
 
         public static int maximum(int newValue, int oldValue) {
             return Math.max(newValue, oldValue);

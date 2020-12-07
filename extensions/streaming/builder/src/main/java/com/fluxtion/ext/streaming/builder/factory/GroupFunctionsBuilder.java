@@ -19,9 +19,9 @@ package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.ext.streaming.builder.group.Group;
 
@@ -30,44 +30,63 @@ import com.fluxtion.ext.streaming.builder.group.Group;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class GroupFunctionsBuilder {
-    
-    public static <S, K, V extends Number, F extends NumericFunctionStateless> GroupBy<Tuple<K, V>> groupBy(
-        SerializableFunction<S, K> keySupplier,
-        SerializableFunction<S, V> valueSupplier,
-        Class<F> calcFunctionClass
-    ) {
-        GroupBy<Tuple<K, V>> build = Group.groupBy(keySupplier, Tuple.class)
-            .init(keySupplier, Tuple::setKey)
-            .function(calcFunctionClass, valueSupplier, Tuple::setValue)
-            .build();
-        return build;
 
-    }
-    
     public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, V>> groupBy(
         SerializableFunction<S, K> keySupplier,
         SerializableFunction<S, V> valueSupplier,
-        SerializableBiFunction<R, R, F> calcFunctionClass
+        SerializableBiFunction<? super R, ? super R, ? extends R> calcFunctionClass
     ) {
         GroupBy<Tuple<K, V>> build = Group.groupBy(keySupplier, Tuple.class)
             .init(keySupplier, Tuple::setKey)
-            .function(calcFunctionClass.getContainingClass(), valueSupplier, Tuple::setValue)
+            .function(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
             .build();
         return build;
-
     }
+
+    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, V>> groupBy(
+        SerializableFunction<S, K> keySupplier,
+        SerializableFunction<S, V> valueSupplier,
+        SerializableTriFunction<F, ? super R, ? super R, ? extends R> calcFunctionClass
+    ) {
+        GroupBy<Tuple<K, V>> build = Group.groupBy(keySupplier, Tuple.class)
+            .init(keySupplier, Tuple::setKey)
+            .function(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .build();
+        return build;
+    }    
     
     public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupBySum(
-        SerializableFunction<S, K> key, 
+        SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
         return groupBy(key, supplier, AggregateFunctions.AggregateSum::calcSum);
     }
-    
+
+    public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByAvg(
+        SerializableFunction<S, K> key,
+        SerializableFunction<S, T> supplier
+    ) {
+        return groupBy(key, supplier, AggregateFunctions.AggregateAverage::calcAverage);
+    }
+
     public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByMax(
-        SerializableFunction<S, K> key, 
+        SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
         return groupBy(key, supplier, AggregateFunctions.AggregateMax::maximum);
+    }
+
+    public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByMin(
+        SerializableFunction<S, K> key,
+        SerializableFunction<S, T> supplier
+    ) {
+        return groupBy(key, supplier, AggregateFunctions.AggregateMin::minimum);
+    }
+
+    public static <K, S, T extends Number> GroupBy<Tuple<K, T>> groupByCount(
+        SerializableFunction<S, K> key,
+        SerializableFunction<S, T> supplier
+    ) {
+        return groupBy(key, supplier, AggregateFunctions.AggregateCount::increment);
     }
 }

@@ -24,7 +24,6 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.ServiceLoader;
@@ -51,16 +50,16 @@ public interface StreamOperator {
             Wrapper<T> source, boolean cast) {
         return (FilterWrapper<T>) source;
     }
-
-    default <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
-            SerializableFunction<T, S> key, Class<F> functionClass) {
+    
+    default <T, S extends Number, R extends Number> GroupBy<R> group(Wrapper<T> source,
+            SerializableFunction<T, S> key, SerializableBiFunction<? super R, ? super R, ? extends R> calcFunctionClass) {
         return null;
     }
 
-    default <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
+    default <K, T, S extends Number, R extends Number> GroupBy<R> group(Wrapper<T> source,
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
-            Class<F> functionClass) {
+            SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return null;
     }
 

@@ -11,8 +11,8 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 
 /**
  *
@@ -23,15 +23,20 @@ public class AggregateFunctions {
     static Class<AggregateSum> Sum = AggregateSum.class;
     static Class<AggregateAverage> Avg = AggregateAverage.class;
     static Class<AggregateCount> Count = AggregateCount.class;
-
-    public static class AggregateSum implements NumericFunctionStateless {
+    
+    public static <T extends Double, S extends Double> LambdaReflection.SerializableBiFunction< T, S, Number> sum(){
+        return AggregateFunctions.AggregateSum::calcSum;
+    }
+    
+    
+    public static class AggregateSum {
 
         public static double calcSum(double newValue, double oldSum) {
             return newValue + oldSum;
         }
     }
 
-    public static class AggregateCount implements NumericFunctionStateless {
+    public static class AggregateCount  {
 
         public static int increment(int newValue, int oldValue) {
             oldValue++;

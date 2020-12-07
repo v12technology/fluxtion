@@ -21,7 +21,6 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.concurrent.atomic.LongAdder;
@@ -89,19 +88,19 @@ public interface Wrapper<T> extends Stateful<T>{
        return  SepContext.service().add(new ArrayListWrappedCollection<>(this));
     }
 
-    default <S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+    default <S extends Number, R extends Number> GroupBy<R> group(
             SerializableFunction<T, S> supplier,
-            Class<F> functionClass) {
+            SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, supplier, functionClass);
     }
-
-    default <K, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
+    
+    default <K, S extends Number, R extends Number> GroupBy<R> group(
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
-            Class<F> functionClass) {
+            SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, key, supplier, functionClass);
     }
-
+    
     /**
      * Maps a value using the provided mapping function.The input is the
      * wrapped instance inside this {@link Wrapper}.

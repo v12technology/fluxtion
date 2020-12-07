@@ -25,7 +25,7 @@ package com.fluxtion.ext.streaming.api.numeric;
  *
  * @author greg higgins
  */
-public interface NumericFunctionStateful extends NumericFunctionStateless {
+public interface NumericFunctionStateful {
     /**
      * A stateful function should be reset to initial state on receiving this 
      * call. For example an average calculation would zero all counts and sums.
