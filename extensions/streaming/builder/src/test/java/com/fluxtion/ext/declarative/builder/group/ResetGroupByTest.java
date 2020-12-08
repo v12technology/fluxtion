@@ -40,7 +40,7 @@ public class ResetGroupByTest extends StreamInprocessTest{
         sep((c) ->{
             fixedPkg = true;
             Wrapper<Order> largeOrders = select(Order.class).filter( Order::getSize, gt(200));
-            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, Order::getCcyPair, OrderSummary.class);
+            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, OrderSummary.class, Order::getCcyPair);
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count( OrderSummary::setDealCount);
             largeOrdersByCcy.sum(Order::getSize, OrderSummary::setOrderSize);

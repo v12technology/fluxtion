@@ -114,7 +114,7 @@ public class AnalysisBuilder {
         //filter for positive delays
         Wrapper<FlightDetails> delayedFlight = flightDetails.filter(FlightDetails::getDelay, positive());
         //group by carrier name and store in map<"carrier", CarrierDelay> 
-        GroupByBuilder<FlightDetails, CarrierDelay> carrierDelay = groupBy(delayedFlight, FlightDetails::getCarrier, CarrierDelay.class);
+        GroupByBuilder<FlightDetails, CarrierDelay> carrierDelay = groupBy(delayedFlight, CarrierDelay.class, FlightDetails::getCarrier);
         //init each group record with human readable name
         carrierDelay.init(FlightDetails::getCarrier, CarrierDelay::setCarrierId);
         //aggregate calculations

@@ -12,14 +12,11 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Avg;
-import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Count;
-import static com.fluxtion.ext.declarative.builder.group.AggregateFunctions.Sum;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
@@ -42,8 +39,8 @@ public class GroupByTest extends StreamInprocessTest {
     public void testGroupByNonEvent() {
         sep((c) -> {
             EnrichedDeliveryItem enrichedDeliveryItem = c.addNode(new EnrichedDeliveryItem());
-            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary;
-            deliverySummary = groupBy(enrichedDeliveryItem, EnrichedDeliveryItem::getCustomerId, DeliverySummary.class);
+//            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary;
+            GroupByBuilder<EnrichedDeliveryItem, DeliverySummary> deliverySummary = groupBy(enrichedDeliveryItem::getCustomerId, DeliverySummary.class);
             //init
             deliverySummary.init(EnrichedDeliveryItem::getCustomerId, DeliverySummary::setCustomerId);
             //calc
@@ -78,23 +75,40 @@ public class GroupByTest extends StreamInprocessTest {
     }
 
     @org.junit.Test
+    public void testGroupByFunction() {
+        sep((c) -> {
+            groupBy(TradeEvent::getTradeId, TradeSummary.class)
+                    .function(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
+                    .build()
+                    .id("tradeSum");
+        });
+
+        sep.onEvent(new TradeEvent(14, 1000));
+        sep.onEvent(new TradeEvent(14, 2000));
+        sep.onEvent(new TradeEvent(2, 300));
+        GroupBy<TradeSummary> summary = getField("tradeSum");
+        assertThat(summary.value(14).getOutstandingVoulme(), is(3000));
+        assertThat(summary.value(2).getOutstandingVoulme(), is(300));
+    }
+
+    @org.junit.Test
     public void testGroupBy() {
         sep((c) -> {
-            GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent.class, TradeEvent::getTradeId, TradeSummary.class);
+            GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent::getTradeId, TradeSummary.class);
             GroupByBuilder<DealEvent, TradeSummary> deals = trades.join(DealEvent.class, DealEvent::getParentTradeId);
             //vars
             SerializableFunction<TradeEvent, ? extends Number> tradeVol = TradeEvent::getTradeVolume;
             SerializableFunction<DealEvent, ? extends Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
-            trades.function(Sum, tradeVol, TradeSummary::setTotalVolume);
-            trades.function(Avg, tradeVol, TradeSummary::setAveragOrderSize);
-            trades.function(Count, tradeVol, TradeSummary::setTradeCount);
-            deals.function(Sum, dealVol, TradeSummary::setTotalConfirmedVolume);
-            deals.function(Count, dealVol, TradeSummary::setDealCount);
+            trades.function( tradeVol, TradeSummary::setTotalVolume, AggregateFunctions::calcSum);
+            trades.function( tradeVol, TradeSummary::setAveragOrderSize, AggregateFunctions.AggregateAverage::calcAverage);
+            trades.function(tradeVol, TradeSummary::setTradeCount, AggregateFunctions::count);
+            deals.function( dealVol, TradeSummary::setTotalConfirmedVolume, AggregateFunctions::calcSum);
+            deals.function(dealVol, TradeSummary::setDealCount, AggregateFunctions::count);
             stream(trades.build()::record)
                     .filter(TradeSummary::getOutstandingVoulme, negative())
                     .map(count()).id("badDealCount");
-            
+
         });
         //events
         sep.onEvent(new TradeEvent(14, 1000));
@@ -109,7 +123,7 @@ public class GroupByTest extends StreamInprocessTest {
         sep.onEvent(new DealEvent(1, 25));
         sep.onEvent(new TradeEvent(9, 2780));
         //tests
-        Number badDealCount = ((Wrapper<Number>) getField("badDealCount")).event();
+        Number badDealCount = getWrappedField("badDealCount");
         assertThat(badDealCount.intValue(), is(1));
     }
 

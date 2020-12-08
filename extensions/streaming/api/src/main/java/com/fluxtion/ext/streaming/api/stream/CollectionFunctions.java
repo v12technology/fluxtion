@@ -97,7 +97,7 @@ public class CollectionFunctions {
     }
 
     public static <I extends Number> double avgList(final List<I> collection) {
-        return maxList(collection) / collection.size();
+        return sumList(collection) / collection.size();
     }
 
     public static <I extends Number> double sumWrappedList(WrappedList<I> list) {
@@ -113,7 +113,7 @@ public class CollectionFunctions {
     }
 
     public static <I extends Number> double avgWrappedList(WrappedList<I> list) {
-        return maxWrappedList(list) / list.size();
+        return sumWrappedList(list) / list.size();
     }
 
 }

@@ -21,6 +21,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import java.util.HashMap;
@@ -38,8 +39,8 @@ public class WrappedCollectionGroupByTest extends StreamInprocessTest{
     @Test
     public void resetGroup(){
         sep((c) ->{
-            Wrapper<Order> largeOrders = select(Order.class).filter( Order::getSize, gt(200));
-            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, Order::getCcyPair, OrderSummary.class);
+            Wrapper<Order> largeOrders = filter( Order::getSize, gt(200));
+            GroupByBuilder<Order, OrderSummary> largeOrdersByCcy = groupBy(largeOrders, OrderSummary.class, Order::getCcyPair);
             largeOrdersByCcy.init(Order::getCcyPair, OrderSummary::setCcyPair);
             largeOrdersByCcy.count( OrderSummary::setDealCount);
             largeOrdersByCcy.sum(Order::getSize, OrderSummary::setOrderSize);

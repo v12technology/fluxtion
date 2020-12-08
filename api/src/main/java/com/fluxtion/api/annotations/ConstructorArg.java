@@ -14,14 +14,23 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.api.numeric;
+package com.fluxtion.api.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A Marker interface for numeric functions. If a class uses this interface
- * then it must implement only one public method.
- * 
- * @author greg higgins
+ * Marks a reference as an instance that will be used in the constructor. By default only final, non-static, non-public, non-transient
+ * members are used in the constructor.
+ * <p>
+ *
+ *
+ * @author Greg Higgins
  */
-public interface NumericFunctionStateless {
-    
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ConstructorArg {
+
 }

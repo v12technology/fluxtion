@@ -26,7 +26,6 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.WrapperBase;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.NodeWrapper;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
@@ -109,38 +108,40 @@ public class StreamOperatorService implements StreamOperator {
 
 //      @Override
     public <K, T, S> GroupByBuilder<S, T> groupBy(Wrapper<S> source,
-            SerializableFunction<S, K> key, Class<T> targetClass) {
-        GroupByBuilder<S, T> wcQuery = Group.groupBy(source, key, targetClass);
+        SerializableFunction<S, K> key, Class<T> targetClass) {
+        GroupByBuilder<S, T> wcQuery = Group.groupBy(source, targetClass, key);
         return wcQuery;
     }
 
     @Override
-    public <T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(Wrapper<T> source,
-            SerializableFunction<T, S> key, Class<F> functionClass) {
-        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
-        wcQuery.function(functionClass, MutableNumber::set);
-        return (GroupBy<R>) wcQuery.build();
+    public <T, S extends Number, R extends Number> GroupBy group(Wrapper<T> source, SerializableFunction<T, S> key, SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, MutableNumber.class, key);
+        wcQuery.function(MutableNumber::set, functionClass);
+        return wcQuery.build();
     }
 
     @Override
-    public <K, T, S extends Number, F extends NumericFunctionStateless, R extends Number> GroupBy<R> group(
-            Wrapper<T> source,
-            SerializableFunction<T, K> key,
-            SerializableFunction<T, S> supplier,
-            Class<F> functionClass) {
-        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, key, MutableNumber.class);
-        wcQuery.function(functionClass, supplier, MutableNumber::set);
-        return (GroupBy<R>) wcQuery.build();
+    public <K, T, S extends Number, R extends Number> GroupBy<R> group(
+        Wrapper<T> source, 
+        SerializableFunction<T, K> key, 
+        SerializableFunction<T, S> supplier, 
+        SerializableBiFunction<? super R, ? super R, ? extends R> functionClass
+    ) {
+        
+         GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(source, MutableNumber.class, key);
+        wcQuery.function(supplier, MutableNumber::set, functionClass);
+        return (GroupBy<R>) wcQuery.build();  
     }
     
     
+
     @Override
     public <T, R> Wrapper<R> get(SerializableFunction<T, R> mapper, Wrapper<T> source) {
         return StreamFunctionCompiler.get(mapper.method(), source);
     }
-    
+
     @Override
-    public <S> Wrapper<S> streamInstance(SerializableSupplier<S> source){
+    public <S> Wrapper<S> streamInstance(SerializableSupplier<S> source) {
         return StreamFunctionCompiler.get(source);
     }
 
@@ -174,7 +175,7 @@ public class StreamOperatorService implements StreamOperator {
 
     @Override
     public <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
-            Argument<? extends U> arg1, Argument<? extends S> arg2) {
+        Argument<? extends U> arg1, Argument<? extends S> arg2) {
         Method mappingMethod = mapper.method();
         StreamFunctionCompiler builder = null;
         if (Modifier.isStatic(mappingMethod.getModifiers())) {
@@ -203,9 +204,9 @@ public class StreamOperatorService implements StreamOperator {
 
     @Override
     public <T> Wrapper<T> defaultVal(Wrapper<T> source, T defaultValue) {
-         return DefaultNumberBuilder.defaultVal(defaultValue, source);
+        return DefaultNumberBuilder.defaultVal(defaultValue, source);
     }
-    
+
     @Override
     public <T, R> void push(Wrapper<T> source, Method accessor, SerializableConsumer<R> consumer) {
         final Object targetInstance = unWrap(consumer);
@@ -224,7 +225,7 @@ public class StreamOperatorService implements StreamOperator {
         nodeId(builder.build(), consumerId);
         return source;
     }
-    
+
     @Override
     public <T> Wrapper<T> log(Wrapper<T> source, String message, SerializableFunction<T, ?>... supplier) {
         Argument[] args = new Argument[supplier.length];
@@ -232,24 +233,24 @@ public class StreamOperatorService implements StreamOperator {
             SerializableFunction<T, ?> f = supplier[i];
             args[i] = Argument.arg(source, f);
         }
-        if(args.length == 0){
+        if (args.length == 0) {
             LogBuilder.log(message, source, Argument.arg(source)).setLogPrefix(false);
-        }else{
+        } else {
             LogBuilder.log(message, source, args).setLogPrefix(false);
         }
         return source;
     }
-    
+
     @Override
-    public <T, R> WrapperBase<T,?> log(WrapperBase<T,?> source, String message, SerializableFunction<T, ?>... supplier) {
+    public <T, R> WrapperBase<T, ?> log(WrapperBase<T, ?> source, String message, SerializableFunction<T, ?>... supplier) {
         Argument[] args = new Argument[supplier.length];
         for (int i = 0; i < supplier.length; i++) {
             SerializableFunction<T, ?> f = supplier[i];
             args[i] = Argument.arg(source, f);
         }
-        if(args.length == 0){
+        if (args.length == 0) {
             LogBuilder.log(message, source, Argument.arg(source)).setLogPrefix(false);
-        }else{
+        } else {
             LogBuilder.log(message, source, args).setLogPrefix(false);
         }
         return source;
@@ -273,10 +274,10 @@ public class StreamOperatorService implements StreamOperator {
         return GenerationContext.SINGLETON.nameNode(node, name);
     }
 
-    public static<S> Wrapper<S> stream(SerializableSupplier<S> source){
+    public static <S> Wrapper<S> stream(SerializableSupplier<S> source) {
         return StreamFunctionCompiler.get(source);
     }
-    
+
     public static <T> Wrapper<T> stream(T node) {
         if (node instanceof Wrapper) {
             return (Wrapper) node;

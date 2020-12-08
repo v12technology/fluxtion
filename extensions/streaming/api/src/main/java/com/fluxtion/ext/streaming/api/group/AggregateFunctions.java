@@ -17,56 +17,33 @@
 package com.fluxtion.ext.streaming.api.group;
 
 import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateless;
 
 /**
  * Math functions for use with GroupBy.
- * 
+ *
  * @author Greg Higgins
  */
 public class AggregateFunctions {
 
-    public static Class<AggregateAverage> Avg = AggregateAverage.class;
-    public static Class<AggregateCount> Count = AggregateCount.class;
-    public static Class<AggregateMax> Max = AggregateMax.class;
-    public static Class<AggregateMin> Min = AggregateMin.class;
-    public static Class<AggregateSum> Sum = AggregateSum.class;
-    public static Class<AggregatePassThrough> Set = AggregatePassThrough.class;
-
-    public static class AggregateSum implements NumericFunctionStateless {
-
-        public static double calcSum(double newValue, double oldSum) {
-            return newValue + oldSum;
-        }
-    }
-    
-    public static class AggregatePassThrough implements NumericFunctionStateless {
-        
-        public static double set(double newValue, double oldSum) {
-            return newValue;
-        }
+    public static double calcSum(double newValue, double oldSum) {
+        return newValue + oldSum;
     }
 
-    public static class AggregateCount implements NumericFunctionStateless {
-
-        public static int increment(int newValue, int oldValue) {
-            oldValue++;
-            return oldValue;
-        }
+    public static double set(double newValue, double oldSum) {
+        return newValue;
     }
-    
-    public static class AggregateMin implements NumericFunctionStateless {
 
-        public static int minimum(int newValue, int oldValue) {
-            return Math.min(newValue, oldValue);
-        }
+    public static int count(int newValue, int oldValue) {
+        oldValue++;
+        return oldValue;
     }
-    
-    public static class AggregateMax implements NumericFunctionStateless {
 
-        public static int maximum(int newValue, int oldValue) {
-            return Math.max(newValue, oldValue);
-        }
+    public static double minimum(double newValue, double oldValue) {
+        return Math.min(newValue, oldValue);
+    }
+
+    public static double maximum(double newValue, double oldValue) {
+        return Math.max(newValue, oldValue);
     }
 
     public static class AggregateAverage implements NumericFunctionStateful {

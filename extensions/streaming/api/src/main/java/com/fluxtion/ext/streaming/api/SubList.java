@@ -19,6 +19,7 @@ package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,11 @@ public class SubList<T> implements WrappedList<T> {
         updatePointers();
     }
 
+    @OnEvent
+    public boolean onEvent(){
+        return true;
+    }
+    
     @Override
     public List<T> collection() {
         if(unmodifiableCollection == null){

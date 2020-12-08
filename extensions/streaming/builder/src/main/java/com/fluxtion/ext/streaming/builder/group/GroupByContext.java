@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +58,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 
 /**
- * Builds a group by set of functions, each function built will push its
- * calculated value into a target type, using a mutator method on the target
- * type to accept the value.
+ * Builds a group by set of functions, each function built will push its calculated value into a target type, using a
+ * mutator method on the target type to accept the value.
  *
  * @param <K> key provider
  * @param <T> the target class for the result of aggregate operations
@@ -77,11 +77,11 @@ public class GroupByContext<K, T> {
     private static final String TEMPLATE_CALC_STATE = Templates.PACKAGE + "/GroupByCalculationState.vsl";
     private final SourceContext<K, T> primaryContext;
     final ImportMap importMap = ImportMap.newMap(Initialise.class, OnEvent.class,
-            Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
-            Map.class, BitSet.class, GroupBy.class, EventHandler.class,
-            GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
-            WrappedCollection.class,Collection.class,
-            ArrayListWrappedCollection.class, SepContext.class
+        Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
+        Map.class, BitSet.class, GroupBy.class, EventHandler.class,
+        GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
+        WrappedCollection.class, Collection.class,
+        ArrayListWrappedCollection.class, SepContext.class, Collections.class
     );
     private String genClassName;
     private String calcStateClass;
@@ -163,22 +163,21 @@ public class GroupByContext<K, T> {
             buildCalculationState();
             VelocityContext ctx = new VelocityContext();
             ctx.put(functionClass.name(), genClassName);
-            if(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())==void.class){
-                if(primaryContext.isMultiKey()){
+            if (mapPrimitiveToWrapper(primaryContext.getKeyMethodActual().getReturnType()) == void.class) {
+                if (primaryContext.isMultiKey()) {
                     ctx.put(keyClass.name(), primaryContext.getMultiKeyClassName());
-                }else{
-                    ctx.put(keyClass.name(), importMap.addImport(primaryContext.keyMethod.getReturnType()));
+                } else {
+                    ctx.put(keyClass.name(), importMap.addImport(primaryContext.getKeyMethodActual().getReturnType()));
                 }
-//                ctx.put(keyClass.name(), importMap.addImport(keyClazz));
-            }else{
-                ctx.put(keyClass.name(), importMap.addImport(mapPrimitiveToWrapper(primaryContext.keyMethod.getReturnType())));
+            } else {
+                ctx.put(keyClass.name(), importMap.addImport(mapPrimitiveToWrapper(primaryContext.getKeyMethodActual().getReturnType())));
             }
             ctx.put(targetClass.name(), importMap.addImport(targetClazz));
             ctx.put("primaryContext", primaryContext);
             ctx.put("calcStateClass", calcStateClass);
             ctx.put("initialiserRequired", initialiserRequired);
             ctx.put("isMultiKey", primaryContext.isMultiKey());
-            if(primaryContext.isMultiKey()){
+            if (primaryContext.isMultiKey()) {
                 ctx.put("multiKeyFunctionSet", primaryGroup.getMultiKeySourceMap());
                 ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
             }
@@ -197,26 +196,27 @@ public class GroupByContext<K, T> {
 
                 Group group = context.getGroup();
                 if (!group.isEventClass()) {
-                    aggClass.getField(context.sourceInfo.id).set(result, group.getInputSource());
+                    Object source = GenerationContext.SINGLETON.addOrUseExistingNode(group.getInputSource());
+                    aggClass.getField(context.getSourceInfo().id).set(result, source);
                 }
             }
             GenerationContext.SINGLETON.getNodeList().add(result);
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("could not buuld function " + e.getMessage(), e);
+            throw new RuntimeException("could not build function " + e.getMessage(), e);
         }
     }
 
     private void buildCalculationState() {
         Set<GroupByFunctionInfo> functionSet = new HashSet<>();
         contexts.stream().forEach((context) -> {
-            functionSet.addAll(context.functionSet);
+            functionSet.addAll(context.getFunctionSet());
         });
         List<Integer> optionals = contexts.stream().filter(SourceContext::isOptional)
-                .mapToInt(contexts::indexOf)
-                .map(i -> ++i)
-                .boxed()
-                .collect(Collectors.toList());
+            .mapToInt(contexts::indexOf)
+            .map(i -> ++i)
+            .boxed()
+            .collect(Collectors.toList());
         try {
             VelocityContext ctx = new VelocityContext();
             calcStateClass = "CalculationState" + genClassName;
@@ -253,6 +253,23 @@ public class GroupByContext<K, T> {
         String initialiserId;
         Object generatedInstance;
         private boolean optional;
+        private Group<K, T> group;
+        private K keyProvider;
+        private Class<T> targetClass;
+        /**
+         * the lookup key provider for the group context, this specifies where in the group map data will be created or
+         * updated.
+         */
+        private Method keyMethod;
+        /**
+         * Identification for the data provider.
+         */
+        private SourceInfo sourceInfo;
+        /**
+         * The set of functions that bridge incoming data to the target instance
+         */
+        private Set<GroupByFunctionInfo> functionSet;
+        private Set<GroupByInitialiserInfo> initialiserSet;
 
         public SourceContext(Group<K, T> group) {
             this.group = group;
@@ -264,17 +281,17 @@ public class GroupByContext<K, T> {
                 multiKeyId = group.getMultiKey().getClass().getSimpleName() + GenerationContext.nextId();
                 multiKeyId = StringUtils.uncapitalize(multiKeyId);
             } else if (group.isWrapped()) {
-                keyMethod = group.getKeyFunction().method();
+                keyMethod = group.getKeyMethod();
             } else {
-                keyMethod = group.getKeyFunction().method();
+                keyMethod = group.getKeyMethod();
             }
             String id = StringUtils.uncapitalize(keyProvider.getClass().getSimpleName() + (count++));
 
             if (group.isWrapped()) {
-                sourceInfo = new SourceInfo(importMap.addImport(((Wrapper) keyProvider).eventClass()), id);
+                sourceInfo = new SourceInfo(importMap.addImport(((Wrapper) getKeyProvider()).eventClass()), id);
                 sourceInfo.setWrapperType(importMap.addImport(keyProvider.getClass()));
             } else {
-                sourceInfo = new SourceInfo(importMap.addImport(keyProvider.getClass()), id);
+                sourceInfo = new SourceInfo(importMap.addImport(getKeyProvider().getClass()), id);
             }
             functionSet = new HashSet<>();
             initialiserSet = new HashSet<>();
@@ -287,58 +304,60 @@ public class GroupByContext<K, T> {
         }
 
         public void addGroupByFunctionInfo(GroupByFunctionInfo info) {
-            functionSet.add(info);
+            getFunctionSet().add(info);
         }
 
         public void addInitialiserFunction(GroupByInitialiserInfo initialiser) {
             initialiserRequired = true;
-            initialiserSet.add(initialiser);
+            getInitialiserSet().add(initialiser);
         }
 
         public boolean isEventClass() {
-            return group.isEventClass();
+            return getGroup().isEventClass();
         }
 
         public boolean isWrapped() {
-            return group.isWrapped();
+            return getGroup().isWrapped();
         }
 
         public boolean isInitialiserRequired() {
-            return initialiserSet.size() > 0;
+            return getInitialiserSet().size() > 0;
         }
 
         public boolean isMultiKey() {
-            return group.isMultiKey();
+            return getGroup().isMultiKey();
         }
 
         public String getMultiKeyClassName() {
-            return group.getMultiKeyClassName();
+            return getGroup().getMultiKeyClassName();
         }
 
-        Group<K, T> group;
-
-        K keyProvider;
-
-        Class<T> targetClass;
-        /**
-         * the lookup key provider for the group context, this specifies where
-         * in the group map data will be created or updated.
-         */
-        Method keyMethod;
-        /**
-         * Identification for the data provider.
-         */
-        SourceInfo sourceInfo;
-
-        /**
-         * The set of functions that bridge incoming data to the target instance
-         */
-        Set<GroupByFunctionInfo> functionSet;
-
-        Set<GroupByInitialiserInfo> initialiserSet;
+        public Method getKeyMethodActual() {
+            return keyMethod;
+        }
 
         public String getKeyMethod() {
             return keyMethod.getName();
+        }
+
+        public K getKeyProvider() {
+            return keyProvider;
+        }
+
+        public Class<T> getTargetClass() {
+            return targetClass;
+        }
+
+        public SourceInfo getSourceInfo() {
+            return sourceInfo;
+        }
+
+        public Set<GroupByFunctionInfo> getFunctionSet() {
+            return functionSet;
+        }
+
+        public Set<GroupByInitialiserInfo> getInitialiserSet() {
+            return initialiserSet;
         }
     }
 }

@@ -21,10 +21,15 @@ public class DataEvent extends DefaultEvent{
 
     
     public DataEvent() {
+        super();
     }
 
     public DataEvent(int value) {
         this.value = value;
+    }
+    
+    public DataEvent(String value) {
+        this.filterString = value;
     }
     
     public int value;

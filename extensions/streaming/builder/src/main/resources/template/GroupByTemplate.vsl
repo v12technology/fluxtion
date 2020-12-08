@@ -166,7 +166,7 @@ ${functionInfo.updateTarget}
 
     @Override
     public Collection<${targetClass}> collection() {
-      return wrappedList.collection();
+      return wrappedList==null?Collections.EMPTY_LIST:wrappedList.collection();
     }
 
     @Override

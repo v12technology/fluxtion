@@ -29,6 +29,7 @@ import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -177,7 +178,7 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
     }
 
     public List<T> collection() {
-        return publishCount >= bucketCount ? targetCollection.collection() : List.of();
+        return publishCount >= bucketCount ? targetCollection.collection() : Collections.emptyList();
     }
 
     @Initialise

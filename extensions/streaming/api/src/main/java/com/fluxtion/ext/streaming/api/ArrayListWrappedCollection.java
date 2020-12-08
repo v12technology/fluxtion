@@ -25,6 +25,7 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,7 +36,6 @@ import java.util.List;
  * @param <T>
  */
 public class ArrayListWrappedCollection<T> implements WrappedList<T> {
-
 
     private List<T> unmodifiableCollection;
     private final Wrapper<T> wrappedSource;
@@ -124,11 +124,19 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     
     @Override
     public void combine(Stateful<? extends T> other) {
-        final WrappedList<T> otherList = (WrappedList<T>)other;
-        List<T> collection1 = otherList.collection();
-        for (int i = 0; i < collection1.size(); i++) {
-            T get = collection1.get(i);
-            this.addItem(get);
+        if (other instanceof WrappedCollection) {
+            WrappedCollection<T,?,?> wrappedCollection = (WrappedCollection<T,?,?>) other;
+            Collection<T> collection1 = wrappedCollection.collection();
+            if(collection1 == null)
+                return;
+            if (collection1 instanceof List) {
+                List<T> list = (List) collection1;
+                for (int i = 0; i < list.size(); i++) {
+                    this.addItem(list.get(i));
+                }
+            }else{
+               collection1.forEach(this::addItem);
+            }
         }
     }
 
@@ -192,6 +200,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         return unmodifiableCollection;
     }
 
+    @Override
     public List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);
     }

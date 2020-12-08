@@ -16,7 +16,9 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
-import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 
@@ -26,8 +28,20 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
  */
 public class Frequency {
 
-    public static <K, T> GroupBy<MutableNumber> frequency(K k, LambdaReflection.SerializableFunction<K, ?> f) {
-        GroupByBuilder<K, MutableNumber> wcQuery = Group.groupBy(k, f, MutableNumber.class);
+    public static <K, T> GroupBy<MutableNumber> frequency(SerializableFunction<T, K> f) {
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(f, MutableNumber.class);
+        wcQuery.count(MutableNumber::setIntValue);
+        return wcQuery.build();
+    }
+
+    public static <K, T> GroupBy<MutableNumber> frequency(SerializableSupplier<K> f) {
+        GroupByBuilder<K, MutableNumber> wcQuery = Group.groupBy(f, MutableNumber.class);
+        wcQuery.count(MutableNumber::setIntValue);
+        return wcQuery.build();
+    }
+
+    public static <K, T> GroupBy<MutableNumber> frequency(Wrapper<T> wrapper, SerializableFunction<T, K> f) {
+        GroupByBuilder<T, MutableNumber> wcQuery = Group.groupBy(wrapper, MutableNumber.class, f);
         wcQuery.count(MutableNumber::setIntValue);
         return wcQuery.build();
     }

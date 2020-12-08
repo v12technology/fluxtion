@@ -912,7 +912,7 @@ public class SepJavaSourceModelHugeFilter {
             
 //            java.lang.reflect.Field[] fields = object.getClass().getDeclaredFields();
             java.lang.reflect.Field[] fields = object.getClass().getFields();
-
+            
             MirrorList<java.lang.reflect.Field> fields1 = new Mirror().on(object.getClass()).reflectAll().fields();
             fields = fields1.toArray(fields);
 

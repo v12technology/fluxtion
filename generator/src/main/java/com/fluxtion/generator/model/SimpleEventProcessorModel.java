@@ -76,6 +76,7 @@ import static org.reflections.ReflectionUtils.withName;
 import static org.reflections.ReflectionUtils.withParametersCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fluxtion.api.annotations.ConstructorArg;
 
 /**
  * A class defining the meta-data for the SEP.This class can be introspected
@@ -319,6 +320,15 @@ public class SimpleEventProcessorModel {
                     List<String> properties = stream(Introspector.getBeanInfo(f.instance.getClass()).getPropertyDescriptors())
                             .filter((PropertyDescriptor p) -> p.getWriteMethod() != null)
                             .filter((PropertyDescriptor p) -> ClassUtils.propertySupported(p, f, nodeFields))
+                            .filter(p -> {
+                                boolean isConstructorArg = false;
+                                try {
+                                    isConstructorArg  = null != ClassUtils.getReflectField(field.getClass(), p.getName()).getAnnotation(ConstructorArg.class);
+                                } catch (NoSuchFieldException ex) {
+                                    LOGGER.warn("cannot process field for ConstructorArg annotation", ex);
+                                }
+                                return !isConstructorArg;
+                            })
                             .map(p -> ClassUtils.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
                             .filter(s -> s != null)
                             .collect(Collectors.toList());
@@ -342,10 +352,15 @@ public class SimpleEventProcessorModel {
             MappedField[] cstrArgList = new MappedField[(directParents.size()) + 200];
             Class<?> fieldClass = field.getClass();
             //is !public && isDirectParent
-
+            boolean[] hasCstrAnnotations = new boolean[]{false};
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(fieldClass, (Predicate<java.lang.reflect.Field>) (java.lang.reflect.Field input) -> {
+                final boolean isCstrArg = input.getAnnotation(ConstructorArg.class)!=null;
                 //TODO check is not public
-                if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
+                if(isCstrArg && !Modifier.isStatic(input.getModifiers())){
+                    hasCstrAnnotations[0] = true;
+                    LOGGER.debug("field marked as constructor arg: {}", input.getName());
+                    LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
+                }else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
                     LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
                             input.getName(),
@@ -378,7 +393,7 @@ public class SimpleEventProcessorModel {
                             privateFields.add(collectionField);
                             LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
                         }
-                    } else if (MappedField.typeSupported(input)) {
+                    } else if (ClassUtils.typeSupported(input.getType())) {
                         LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
                         MappedField primitiveField = new MappedField(input.getName(), input.get(field));
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
@@ -390,7 +405,7 @@ public class SimpleEventProcessorModel {
                 return false;
             });
 
-            if (privateFields.isEmpty()) {
+            if (privateFields.isEmpty() & !hasCstrAnnotations[0]) {
                 LOGGER.debug("{}:default constructor applicable", f.name);
 //                continue;
             } else {
