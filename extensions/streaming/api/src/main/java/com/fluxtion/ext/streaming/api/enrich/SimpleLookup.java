@@ -27,7 +27,7 @@ import lombok.Data;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Data
-public class SimpleLookup<V> implements LookUp<String, V> {
+public class SimpleLookup<V> implements Lookup<String, V> {
     
     private final String[] keys;
     private final V[] values;
