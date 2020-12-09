@@ -7,11 +7,14 @@ import $import;
 /**
  * generated consumer wrapper for a reference type.
  *
- *<ul>
- * <li>input class       : {@link ${filterSubjectClass}}
- * <li>consumer function : {@link ${targetClass}#${targetMethod}}
- *</ul>
- * 
+ *<pre>
+ *  <ul>
+ *    <li>template file     : ${currentTemplate}
+ *    <li>input class       : {@link ${filterSubjectClass}}
+ *    <li>consumer function : {@link ${targetClass}#${targetMethod}}
+ *  </ul>
+ *</pre>
+ *  
  * @author Greg Higgins
  */
 public class ${functionClass} implements Wrapper<${filterSubjectClass}>{

@@ -222,8 +222,7 @@ public class StreamOperatorService implements StreamOperator {
         } else {
             builder = StreamFunctionCompiler.consume(consumer.captured()[0], consumerMethod, source);
         }
-        nodeId(builder.build(), consumerId);
-        return source;
+        return nodeId(builder.build(), consumerId);
     }
 
     @Override

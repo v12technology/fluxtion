@@ -100,7 +100,7 @@ public class StreamingMapTest extends StreamInprocessTest {
         private final String stringValue;
         private final double doubleValue;
     }
-
+    
     @Test
     public void mapStringFromPrimitive() {
 //        fixedPkg = true;

@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator.util;
 
+import com.fluxtion.api.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.Field;
 import java.beans.PropertyDescriptor;
@@ -86,7 +87,8 @@ public interface ClassUtils {
                 || type == Class.class
                 || type.isEnum()
                 || List.class.isAssignableFrom(type)
-                || type.isArray();
+                || type.isArray()
+                || MethodReferenceReflection.class.isAssignableFrom(type);
     }
 
     static String mapToJavaSource(Object primitiveVal, List<Field> nodeFields, Set<Class<?>> importList) {
@@ -146,6 +148,11 @@ public interface ClassUtils {
         if (clazz == Class.class) {
             importList.add((Class) primitiveVal);
             primitiveVal = ((Class) primitiveVal).getSimpleName() + ".class";
+        }
+        if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
+            MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
+            importList.add(ref.getContainingClass());
+            primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
         }
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {
