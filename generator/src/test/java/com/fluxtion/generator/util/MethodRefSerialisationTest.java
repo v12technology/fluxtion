@@ -34,11 +34,11 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
     public void testMethodRef() {
         sep((c) -> {
             Transform transform = c.addPublicNode(new Transform(), "transform");
-            transform.setF(String::strip);
+            transform.setF(MethodRefSerialisationTest::myUpperCase);
         });
         Transform transform = getField("transform");
-        onEvent("   my space   ");
-        assertThat(transform.out, is("my space"));
+        onEvent("hello");
+        assertThat(transform.out, is("HELLO"));
     }
     
     @Test
@@ -47,8 +47,8 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
             c.addPublicNode(new TransformFinal(String::strip), "transform");
         });
         TransformFinal transform = getField("transform");
-        onEvent("   my space   ");
-        assertThat(transform.out, is("my space"));
+        onEvent("hello");
+        assertThat(transform.out, is("HELLO"));
     }
 
     public static class Transform {
@@ -86,6 +86,10 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
             out = (String) f.apply(in);
         }
 
+    }
+    
+    public static String myUpperCase(String in){
+        return in.toUpperCase();
     }
 
     @Data
