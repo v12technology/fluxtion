@@ -44,7 +44,7 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
     @Test
     public void testMethodRefFinal() {
         sep((c) -> {
-            c.addPublicNode(new TransformFinal(String::strip), "transform");
+            c.addPublicNode(new TransformFinal(MethodRefSerialisationTest::myUpperCase), "transform");
         });
         TransformFinal transform = getField("transform");
         onEvent("hello");
