@@ -24,8 +24,10 @@ import java.net.URI;
 import java.util.*;
 import javax.tools.*;
 import javax.tools.JavaFileObject.Kind;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 class MyJavaFileManager implements JavaFileManager {
 
     /**
@@ -87,6 +89,7 @@ class MyJavaFileManager implements JavaFileManager {
 
     @Override
     public JavaFileObject getJavaFileForInput(Location location, String className, Kind kind) throws IOException {
+        log.trace("getJavaFileForInput location:{} className:{}", location, className);
         if (location == StandardLocation.CLASS_OUTPUT) {
             boolean success = false;
             final byte[] bytes;
@@ -105,13 +108,16 @@ class MyJavaFileManager implements JavaFileManager {
                 };
             }
         }
-        return fileManager.getJavaFileForInput(location, className, kind);
+        log.trace("end getJavaFileForInput");
+        final JavaFileObject javaFileForInput = fileManager.getJavaFileForInput(location, className, kind);
+        return javaFileForInput;
     }
 
     @NotNull
     @Override
     public JavaFileObject getJavaFileForOutput(Location location, final String className, Kind kind, FileObject sibling) {
-        return new SimpleJavaFileObject(URI.create(className), kind) {
+        log.trace("getJavaFileForOutput location:{} className:{}", location, className);
+        final SimpleJavaFileObject simpleJavaFileObject = new SimpleJavaFileObject(URI.create(className), kind) {
             @NotNull
             @Override
             public OutputStream openOutputStream() {
@@ -120,6 +126,8 @@ class MyJavaFileManager implements JavaFileManager {
                 return baos;
             }
         };
+        log.trace("end getJavaFileForOutput");
+        return simpleJavaFileObject;
     }
 
     @Override

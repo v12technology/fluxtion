@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Greg Higgins
  */
 @Data
+@Slf4j
 public class GenerationContext {
 
     public static GenerationContext SINGLETON;
@@ -208,8 +210,9 @@ public class GenerationContext {
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = DEFAULT_CLASSLOADER == null ? this.getClass().getClassLoader() : DEFAULT_CLASSLOADER;
-        javaCompiler = new CachedCompiler(null, buildOutputDirectory);
+        log.debug("built GenerationContext: {}", toString());
         cacheMap = new HashMap<>();
+        javaCompiler = new CachedCompiler(null, buildOutputDirectory);
     }
 
     private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
@@ -218,12 +221,13 @@ public class GenerationContext {
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = classLoasder;
+        cacheMap = new HashMap<>();
+        log.debug("built GenerationContext: {}", toString());
         if (cachedCompiler == null) {
             javaCompiler = new CachedCompiler(null, buildOutputDirectory);
         } else {
             javaCompiler = cachedCompiler;
         }
-        cacheMap = new HashMap<>();
     }
 
     private void createDirectories() {
