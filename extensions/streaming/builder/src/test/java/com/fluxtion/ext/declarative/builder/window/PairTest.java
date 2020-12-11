@@ -105,22 +105,14 @@ public class PairTest extends StreamInprocessTest {
         SerializableFunction<S, V> valueSupplier,
         LambdaReflection.SerializableBiFunction<? super V, ? super V, ? extends V> func
     ) {
-        GroupBy<Pair<K, V>> build = Group.groupBy(keySupplier, Pair.class)
+        GroupBy<Pair<K, V>>  build = Group.groupBy(keySupplier, Pair.class)
             .init(keySupplier, Pair::setKey)
-            .function(valueSupplier, Pair::setValue, func)
+            .mapPrimitiveNoType(valueSupplier, Pair::setValue, func)
             .build();
         return build;
 
     }
-
-    private <S, T extends Number> GroupBy<Pair> groupBySum(SerializableFunction<S, ?> key, SerializableFunction<S, T> supplier) {
-        GroupBy<Pair> build = Group.groupBy(key, Pair.class)
-            .init(key, Pair::setKey)
-            .sum(supplier, Pair::setValue)
-            .build();
-        return build;
-    }
-
+    
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

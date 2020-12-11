@@ -124,7 +124,7 @@ public class WindowBuilder {
     }
 
     // ==================================================
-    // TUMBLE FUNCTIONS - COLLECTING
+    // SLIDING FUNCTIONS - COLLECTING
     // ================================================== 
     /**
      * Creates an aggregated collection of data points as a WrappedList. The user specifies the number of counts in a

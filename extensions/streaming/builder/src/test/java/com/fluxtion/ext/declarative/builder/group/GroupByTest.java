@@ -25,6 +25,7 @@ import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Test;
 
 /**
  *
@@ -35,7 +36,7 @@ public class GroupByTest extends StreamInprocessTest {
     /**
      * Test an enriched data node
      */
-    @org.junit.Test
+    @Test
     public void testGroupByNonEvent() {
         sep((c) -> {
             EnrichedDeliveryItem enrichedDeliveryItem = c.addNode(new EnrichedDeliveryItem());
@@ -61,12 +62,12 @@ public class GroupByTest extends StreamInprocessTest {
         //tests
         GroupBy<DeliverySummary> summary = getField("deliverySummary");
         DeliverySummary euCustomer = summary.stream()
-                .filter(delivery -> delivery.getCustomerId().equals("EU-xxxx-01"))
-                .findFirst().get();
+            .filter(delivery -> delivery.getCustomerId().equals("EU-xxxx-01"))
+            .findFirst().get();
 
         DeliverySummary gb_ddfCustomer = summary.stream()
-                .filter(delivery -> delivery.getCustomerId().equals("GB-ddf-45"))
-                .findFirst().get();
+            .filter(delivery -> delivery.getCustomerId().equals("GB-ddf-45"))
+            .findFirst().get();
 
         assertThat(summary.size(), is(3));
         assertThat(euCustomer.getValueInLocalCcy(), is(8000.0));
@@ -74,13 +75,13 @@ public class GroupByTest extends StreamInprocessTest {
         assertThat(gb_ddfCustomer.getValueInDollars(), is(3375.0));
     }
 
-    @org.junit.Test
+    @Test
     public void testGroupByFunction() {
         sep((c) -> {
             groupBy(TradeEvent::getTradeId, TradeSummary.class)
-                    .function(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
-                    .build()
-                    .id("tradeSum");
+                .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
+                .build()
+                .id("tradeSum");
         });
 
         sep.onEvent(new TradeEvent(14, 1000));
@@ -91,7 +92,31 @@ public class GroupByTest extends StreamInprocessTest {
         assertThat(summary.value(2).getOutstandingVoulme(), is(300));
     }
 
-    @org.junit.Test
+    @Test
+    public void testGroupByRefFunction() {
+        sep((c) -> {
+            groupBy(TradeEvent::getTradeId, TradeSummary.class)
+                .map(TradeEvent::getTradeId, TradeSummary::setTraderIdString, GroupByTest::numberToString)
+                .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
+                .build()
+                .id("tradeSum");
+        });
+
+        sep.onEvent(new TradeEvent(14, 1000));
+        sep.onEvent(new TradeEvent(14, 2000));
+        sep.onEvent(new TradeEvent(2, 300));
+        GroupBy<TradeSummary> summary = getField("tradeSum");
+        assertThat(summary.value(14).getTraderIdString(), is("Number-val-" + 14));
+        assertThat(summary.value(2).getTraderIdString(), is("Number-val-" + 2));
+        assertThat(summary.value(14).getOutstandingVoulme(), is(3000));
+        assertThat(summary.value(2).getOutstandingVoulme(), is(300));
+    }
+
+    public static String numberToString(int in, String oldVal) {
+        return "Number-val-" + in;
+    }
+
+    @Test
     public void testGroupBy() {
         sep((c) -> {
             GroupByBuilder<TradeEvent, TradeSummary> trades = groupBy(TradeEvent::getTradeId, TradeSummary.class);
@@ -100,14 +125,14 @@ public class GroupByTest extends StreamInprocessTest {
             SerializableFunction<TradeEvent, ? extends Number> tradeVol = TradeEvent::getTradeVolume;
             SerializableFunction<DealEvent, ? extends Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
-            trades.function( tradeVol, TradeSummary::setTotalVolume, AggregateFunctions::calcSum);
-            trades.function( tradeVol, TradeSummary::setAveragOrderSize, AggregateFunctions.AggregateAverage::calcAverage);
-            trades.function(tradeVol, TradeSummary::setTradeCount, AggregateFunctions::count);
-            deals.function( dealVol, TradeSummary::setTotalConfirmedVolume, AggregateFunctions::calcSum);
-            deals.function(dealVol, TradeSummary::setDealCount, AggregateFunctions::count);
+            trades.mapPrimitive(tradeVol, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
+                .mapPrimitive(tradeVol, TradeSummary::setAveragOrderSize, AggregateFunctions.AggregateAverage::calcAverage)
+                .mapPrimitive(tradeVol, TradeSummary::setTradeCount, AggregateFunctions::count);
+            deals.mapPrimitive(dealVol, TradeSummary::setTotalConfirmedVolume, AggregateFunctions::calcSum)
+                .mapPrimitive(dealVol, TradeSummary::setDealCount, AggregateFunctions::count);
             stream(trades.build()::record)
-                    .filter(TradeSummary::getOutstandingVoulme, negative())
-                    .map(count()).id("badDealCount");
+                .filter(TradeSummary::getOutstandingVoulme, negative())
+                .map(count()).id("badDealCount");
 
         });
         //events

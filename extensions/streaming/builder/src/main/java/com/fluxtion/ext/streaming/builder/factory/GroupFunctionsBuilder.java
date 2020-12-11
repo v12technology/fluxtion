@@ -24,6 +24,7 @@ import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.ext.streaming.builder.group.Group;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 
 /**
  *
@@ -38,7 +39,7 @@ public class GroupFunctionsBuilder {
     ) {
         GroupBy<Tuple<K, V>> build = Group.groupBy(keySupplier, Tuple.class)
             .init(keySupplier, Tuple::setKey)
-            .function(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
             .build();
         return build;
     }
@@ -50,7 +51,7 @@ public class GroupFunctionsBuilder {
     ) {
         GroupBy<Tuple<K, V>> build = Group.groupBy(keySupplier, Tuple.class)
             .init(keySupplier, Tuple::setKey)
-            .function(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
             .build();
         return build;
     }    

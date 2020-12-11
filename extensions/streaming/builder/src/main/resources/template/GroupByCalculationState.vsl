@@ -6,11 +6,15 @@ import $import;
 #end
 
 /**
- * generated group by calculation state holder. This class holds the state of
- * a group by calculation.
+ * Generated group by calculation state holder.
  *
- * target class  : ${targetClass}
  * 
+ *<pre>
+ *  <ul>
+ *      <li>template file   : ${currentTemplate}
+ *      <li>input class     : target class  : ${targetClass}
+ *  </ul>
+ *</pre>
  * @author Greg Higgins
  */
 public final class ${functionClass} implements Wrapper<${targetClass}>{
@@ -23,7 +27,7 @@ public final class ${functionClass} implements Wrapper<${targetClass}>{
 #if (${source.stateful})
     public ${source.functionClassName} ${source.functionInstanceId}Function = new ${source.functionClassName}();
 #end
-    public ${source.functionCalcArgType} ${source.functionInstanceId};
+    public ${source.functionCalcReturnType} ${source.functionInstanceId};
 #end
 
     public ${functionClass}(){

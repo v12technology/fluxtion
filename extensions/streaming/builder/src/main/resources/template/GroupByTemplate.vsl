@@ -6,10 +6,14 @@ import $import;
 #end
 
 /**
- * generated group by holder.
+ * Generated group by aggregation
  *
- * target class  : ${targetClass}
- * 
+ *<pre>
+ *  <ul>
+ *      <li>template file   : ${currentTemplate}
+ *      <li>input class     : target class  : ${targetClass}
+ *  </ul>
+ *</pre>
  * @author Greg Higgins
  */
 public final class ${functionClass} implements GroupBy<${targetClass}>{

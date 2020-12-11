@@ -3,7 +3,6 @@ package com.fluxtion.ext.declarative.builder.group;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.junit.Categories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -17,25 +16,22 @@ public class ExpiringTest extends StreamInprocessTest {
 //    protected String testPackageID() {
 //        return "";
 //    }
-
     @Test
     @Category(Categories.FilterTest.class)
     public void test() {
-        sep(c ->{
-            GroupByBuilder<Order, OrderSummary> orders = groupBy(Order::getId, OrderSummary.class);
-            GroupByBuilder<Deal, OrderSummary> deals = orders.join(Deal.class, Deal::getOrderId);
+        sep(c -> {
             //set default vaules for a group by row
-            orders.init(Order::getCcyPair, OrderSummary::setCcyPair);
-            orders.init(Order::getId, OrderSummary::setOrderId);
-            //set last deal id
-            deals.init(Deal::getDealId, OrderSummary::setFirstDealId);
-            //aggregate function values
-            orders.sum(Order::getSize, OrderSummary::setOrderSize);
-            deals.count(OrderSummary::setDealCount);
-            deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);
-            deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);
-            deals.sum(Deal::getDealtSize, OrderSummary::setVolumeDealt);
-            orders.build().id("orderSummary");
+            groupBy(Order::getId, OrderSummary.class)
+                .init(Order::getCcyPair, OrderSummary::setCcyPair)
+                .init(Order::getId, OrderSummary::setOrderId)
+                .sum(Order::getSize, OrderSummary::setOrderSize)
+                .join(Deal.class, Deal::getOrderId)
+                .init(Deal::getDealId, OrderSummary::setFirstDealId)
+                .count(OrderSummary::setDealCount)
+                .set(Deal::getDealtSize, OrderSummary::setLastDealSize)
+                .avg(Deal::getDealtSize, OrderSummary::setAvgDealSize)
+                .sum(Deal::getDealtSize, OrderSummary::setVolumeDealt)
+                .build().id("orderSummary");
         });
         GroupBy<OrderSummary> summaryMap = getField("orderSummary");
 //        

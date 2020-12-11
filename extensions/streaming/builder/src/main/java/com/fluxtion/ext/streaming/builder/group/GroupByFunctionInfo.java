@@ -108,7 +108,7 @@ public class GroupByFunctionInfo {
         String a = "\t\t\t" + functionCalcReturnType + " value = instance." + functionInstanceId + ";\n";
         String b = "\t\t\tvalue = " + functionId + "." + functionCalcMethodName + "((" + functionCalcArgType + ")"
                 + source
-                + ", (" + functionCalcArgType + ")value"
+                + ", (" + functionCalcReturnType + ")value"
                 +    ");\n";
         String c = "\t\t\t" + targetInstanceId + "." + targetCalcMethodName + "((" + targetArgType + ")"
                 + "value);\n"

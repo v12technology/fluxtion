@@ -39,7 +39,7 @@ public class ComplexGroupByTest extends StreamInprocessTest {
             orders.init(Order::getId, OrderSummary::setOrderId);
             //set last deal id
             deals.init(Deal::getDealId, OrderSummary::setFirstDealId);
-            //aggregate function values
+            //aggregate mapPrimitive values
             orders.sum(Order::getSize, OrderSummary::setOrderSize);
             deals.count(OrderSummary::setDealCount);
             deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);

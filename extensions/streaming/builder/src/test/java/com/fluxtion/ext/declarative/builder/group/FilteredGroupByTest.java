@@ -76,7 +76,7 @@ public class FilteredGroupByTest extends StreamInprocessTest {
             //set default vaules for a group by row
             orders.init(Order::getCcyPair, OrderSummary::setCcyPair);
             orders.init(Order::getId, OrderSummary::setOrderId);
-            //aggregate function values
+            //aggregate mapPrimitive values
             orders.sum(Order::getSize, OrderSummary::setOrderSize);
             deals.count(OrderSummary::setDealCount);
             deals.avg(Deal::getDealtSize, OrderSummary::setAvgDealSize);

@@ -58,8 +58,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 
 /**
- * Builds a group by set of functions, each function built will push its calculated value into a target type, using a
- * mutator method on the target type to accept the value.
+ * Builds a group by set of functions, each mapPrimitive built will push its calculated value into a target type, using
+ * a mutator method on the target type to accept the value.
  *
  * @param <K> key provider
  * @param <T> the target class for the result of aggregate operations
@@ -162,6 +162,7 @@ public class GroupByContext<K, T> {
             genClassName = "GroupBy_" + GenerationContext.nextId();
             buildCalculationState();
             VelocityContext ctx = new VelocityContext();
+            ctx.put("currentTemplate", TEMPLATE);
             ctx.put(functionClass.name(), genClassName);
             if (mapPrimitiveToWrapper(primaryContext.getKeyMethodActual().getReturnType()) == void.class) {
                 if (primaryContext.isMultiKey()) {
@@ -220,6 +221,7 @@ public class GroupByContext<K, T> {
         try {
             VelocityContext ctx = new VelocityContext();
             calcStateClass = "CalculationState" + genClassName;
+            ctx.put("currentTemplate", TEMPLATE_CALC_STATE);
             ctx.put(functionClass.name(), calcStateClass);
             ctx.put(targetClass.name(), importMap.addImport(targetClazz));
             ctx.put(sourceMappingList.name(), functionSet);
