@@ -41,6 +41,7 @@ public class BaseSepInprocessTest {
 
     protected StaticEventProcessor sep;
     protected boolean fixedPkg = false;
+    protected boolean reuseSep = false;
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
 
@@ -69,7 +70,11 @@ public class BaseSepInprocessTest {
 
     protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
         try {
-            sep = sepTestInstance(cfgBuilder, pckName(), sepClassName());
+            if(reuseSep){
+                sep(cfgBuilder, fqn());
+            }else{
+                sep = sepTestInstance(cfgBuilder, pckName(), sepClassName());
+            }
             return sep;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -81,13 +86,16 @@ public class BaseSepInprocessTest {
      * loaded then a new SEP is generated and initialised, using the supplied builder.
      *
      * @param <T> The subclass of the generated StaticEventProcessor
-     * @param cfgBuilder The user supplied builder that adds nodes to the generation context 
+     * @param cfgBuilder The user supplied builder that adds nodes to the generation context
      * @param handlerClass The fqn of the SEP that will be generated if it cannot be loaded
      * @return The SEP that the user can interact with in the test
      */
     protected <T extends StaticEventProcessor> T sep(Consumer<SEPConfig> cfgBuilder, String handlerClass) {
         try {
             try {
+                GenerationContext.setupStaticContext("", "",
+                    new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                    new File(OutputRegistry.RESOURCE_TEST_DIR));
                 sep = (StaticEventProcessor) Class.forName(handlerClass).newInstance();
                 if (sep instanceof Lifecycle) {
                     ((Lifecycle) sep).init();
@@ -127,6 +135,10 @@ public class BaseSepInprocessTest {
         return "TestSep_" + testName.getMethodName();
     }
 
+    protected String fqn(){
+        return pckName() +"." + sepClassName();
+    }
+    
     protected <T> T getField(String name) {
         return (T) new Mirror().on(sep).get().field(name);
     }
@@ -178,11 +190,11 @@ public class BaseSepInprocessTest {
         onEvent(new Object());
     }
 
-    protected void tick(long newTime){
+    protected void tick(long newTime) {
         setTime(newTime);
         tick();
     }
-    
+
     public void addClock() {
         if (!timeAdded) {
             time = new TestMutableNumber();
