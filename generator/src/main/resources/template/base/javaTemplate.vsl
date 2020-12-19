@@ -34,9 +34,9 @@ ${MODEL.imports}
 * @author Greg Higgins 
 */
 @SuppressWarnings({"deprecation","unchecked"})
-#slf4j
 public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle {
 
+    #slf4j(${className})
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
