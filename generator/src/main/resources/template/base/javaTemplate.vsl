@@ -20,6 +20,7 @@ package ${package};
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+#importslf4j
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end
@@ -33,6 +34,7 @@ ${MODEL.imports}
 * @author Greg Higgins 
 */
 @SuppressWarnings({"deprecation","unchecked"})
+#slf4j
 public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle {
 
 //Node declarations
@@ -44,37 +46,44 @@ ${MODEL.filterConstantDeclarations}
 
     public ${className} () {
 ${MODEL.nodeMemberAssignments}
+        #loginfo(  "'constructor class:${className}'" )
     }
 
     @Override
     public void onEvent(Object event) {
+        #logdebug(  "'onEvent:{}',event" )
 ${MODEL.eventDispatch}
     }
 
 ${MODEL.eventHandlers}
 
     private void afterEvent() {
+        #logdebug(  "'afterEvent'" )
 ${MODEL.eventEndMethods}
 ${MODEL.resetDirtyFlags}
     }
 
     @Override
     public void init() {
+        #loginfo(  "'init'" )
 ${MODEL.initialiseMethods}
     }
 
     @Override
     public void tearDown() {
+        #loginfo(  "'teardown'" )
 ${MODEL.tearDownMethods}
     }
 
     @Override
     public void batchPause() {
+        #logdebug(  "'batchPause'" )
 ${MODEL.batchPauseMethods}
     }
 
     @Override
     public void batchEnd() {
+        #logdebug(  "'batchEnd'" )
 ${MODEL.batchEndMethods}
     }
 

@@ -1,0 +1,43 @@
+#macro( importslf4j)
+#if($logenabled)import lombok.extern.slf4j.Slf4j;#end
+#end
+
+#macro( slf4j)
+#if($logenabled)@Slf4j#end
+#end
+
+#macro( log $level $logMessage)
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.$level($stringAfter);
+#end
+#end
+
+#macro( loginfo $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.info($stringAfter);
+#end
+#end
+
+#macro( logdebug $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.debug($stringAfter);
+#end
+#end
+
+#macro( logdwarn $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.warn($stringAfter);
+#end
+#end
+
+#macro( logerror $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.error($stringAfter);
+#end
+#end
+
+#macro( logtrace $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.trace($stringAfter);
+#end
+#end

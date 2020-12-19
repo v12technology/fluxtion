@@ -21,8 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,11 +29,17 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ClassMappingTest extends BaseSepTest {
+public class ClassMappingTest extends BaseSepInprocessTest {
 
     @Test
     public void dirtyNoReferenceTest() {
-        buildAndInitSep(NoEventrefBuilder.class);
+        sep((c) -> {
+            ConfigCache cfgCache = c.addNode(new ConfigCache());
+            PriceFormer priceFormer = c.addPublicNode(new PriceFormer(cfgCache), "priceFormer");
+            RulesProcessor rulesProcessor = c.addPublicNode(new RulesProcessor(cfgCache), "rulesProcessor");
+            c.addPublicNode(new PricePublisher(priceFormer, rulesProcessor), "pricePublisher");
+            c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstiute.class.getCanonicalName());
+        });
         PricePublisher testHandler = getField("pricePublisher");
         RulesProcessor rulesProcessor = getField("rulesProcessor");
         PriceFormer priceFormer = getField("priceFormer");
@@ -43,19 +48,6 @@ public class ClassMappingTest extends BaseSepTest {
         Assert.assertEquals(2, testHandler.invokeCount);
         Assert.assertEquals(2, rulesProcessor.invokeCount);
         Assert.assertEquals(2, priceFormer.invokeCount);
-    }
-
-    public static class NoEventrefBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            ConfigCache cfgCache = addNode(new ConfigCache());
-            PriceFormer priceFormer = addPublicNode(new PriceFormer(cfgCache), "priceFormer");
-            RulesProcessor rulesProcessor = addPublicNode(new RulesProcessor(cfgCache), "rulesProcessor");
-            addPublicNode(new PricePublisher(priceFormer, rulesProcessor), "pricePublisher");
-            class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstiute.class.getCanonicalName());
-        }
-
     }
 
     public static class Config implements Event {

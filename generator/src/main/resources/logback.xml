@@ -27,7 +27,7 @@ along with this program.  If not, see
   </appender>
   <logger name="org.reflections.Reflections" level="warn"/>
 
-  <root level="info">
+  <root level="warn">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

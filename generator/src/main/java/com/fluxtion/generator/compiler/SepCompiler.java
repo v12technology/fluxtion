@@ -221,7 +221,8 @@ public class SepCompiler {
         }
         if(compilerConfig.isFormatSource()){
             LOG.debug("start formatting source");
-            new Thread(() -> Generator.formatSource(file)).start();
+            Generator.formatSource(file);
+//            new Thread(() -> Generator.formatSource(file)).start();
             LOG.debug("completed formatting source");
         }
         return returnClass;

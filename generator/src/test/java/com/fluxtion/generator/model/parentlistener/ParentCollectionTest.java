@@ -17,8 +17,7 @@
  */
 package com.fluxtion.generator.model.parentlistener;
 
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.NodeWithPrivateParentList;
@@ -30,11 +29,17 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentCollectionTest extends BaseSepTest {
+public class ParentCollectionTest extends BaseSepInprocessTest {
 
     @Test
     public void testParentList() {
-        com.fluxtion.api.StaticEventProcessor sep = buildAndInitSep(ParentListProcessorSep.class);
+        sep((c) -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
+        });
+
         NodeWithParentList root = getField("root");
         assertEquals(3, root.parents.size());
         sep.onEvent(new TestEvent());
@@ -47,7 +52,15 @@ public class ParentCollectionTest extends BaseSepTest {
 
     @Test
     public void testParentListNoTYpe() {
-        com.fluxtion.api.StaticEventProcessor sep = buildAndInitSep(ParentListNoTypeProcessorSep.class);
+        sep((c) -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            NodeWithParentList root = c.addPublicNode(new NodeWithParentList(), "root");
+            root.parentsNoType.add(e1);
+            root.parentsNoType.add(e2);
+            root.parentsNoType.add(e3);
+        });
         NodeWithParentList root = getField("root");
         assertEquals(3, root.parentsNoType.size());
         sep.onEvent(new TestEvent());
@@ -60,10 +73,16 @@ public class ParentCollectionTest extends BaseSepTest {
 
     @Test
     public void testPrivateListParents() {
-        //System.out.println("testPrivateListParents");
-//        com.fluxtion.generator.model.parentlistener.ParentCollectionTest1497363516748.TestProcessor processor = new com.fluxtion.generator.model.parentlistener.ParentCollectionTest1497363516748.TestProcessor();
-        compileCfg.setAssignNonPublicMembers(true);
-        com.fluxtion.api.StaticEventProcessor sep = buildAndInitSep(ParentPrivateListProcessorSep.class);
+        sep((c) -> {
+            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
+            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
+            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            NodeWithPrivateParentList root = c.addPublicNode(new NodeWithPrivateParentList(e1, e2, e3), "root");
+            root.intList.add(1);
+            root.stringList.add("test val");
+            root.stringList.add("another val");
+            c.assignPrivateMembers = true;
+        });
         NodeWithPrivateParentList root = getField("root");
         assertEquals(3, root.getParents().size());
         assertEquals(1, root.intList.size());
@@ -76,39 +95,4 @@ public class ParentCollectionTest extends BaseSepTest {
         assertEquals(1, root.onEventCount);
     }
 
-    public static class ParentListProcessorSep extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
-        }
-    }
-
-    public static class ParentListNoTypeProcessorSep extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            NodeWithParentList root = addPublicNode(new NodeWithParentList(), "root");
-            root.parentsNoType.add(e1);
-            root.parentsNoType.add(e2);
-            root.parentsNoType.add(e3);
-        }
-    }
-
-    public static class ParentPrivateListProcessorSep extends SEPConfig {
-
-        {
-            EventHandlerCb e1 = addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = addNode(new EventHandlerCb("3", 3));
-            NodeWithPrivateParentList root = addPublicNode(new NodeWithPrivateParentList(e1, e2, e3), "root");
-            root.intList.add(1);
-            root.stringList.add("test val");
-            root.stringList.add("another val");
-        }
-    }
 }

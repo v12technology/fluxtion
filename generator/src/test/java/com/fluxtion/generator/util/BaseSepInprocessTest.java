@@ -42,6 +42,7 @@ public class BaseSepInprocessTest {
     protected StaticEventProcessor sep;
     protected boolean fixedPkg = false;
     protected boolean reuseSep = false;
+    protected boolean generateLogging = false;
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
 

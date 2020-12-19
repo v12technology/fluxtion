@@ -23,7 +23,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,11 +31,15 @@ import org.junit.Test;
  *
  * @author gregp
  */
-public class NoPropagateTest extends BaseSepTest {
-
+public class NoPropagateTest extends BaseSepInprocessTest {
+    
     @Test
     public void testPush() {
-        buildAndInitSep(PriceBuilder.class);
+        sep((c) ->{
+            MarketHandler tickHandler = c.addPublicNode(new MarketHandler(), "marketHandler");
+            PricerFormer pricerFormer = c.addPublicNode(new PricerFormer(tickHandler), "priceFormer");
+            PricePublisher pricerPublisher = c.addPublicNode(new PricePublisher(pricerFormer), "pricerPublisher");
+        });
         PricePublisher pricerPublisher = getField("pricerPublisher");
         PricerFormer priceFormer = getField("priceFormer");
         MarketHandler tickHandler = getField("marketHandler");
@@ -49,18 +53,6 @@ public class NoPropagateTest extends BaseSepTest {
         Assert.assertEquals(0, pricerPublisher.eventCount);
         Assert.assertEquals(2, priceFormer.eventCount);
         Assert.assertEquals(2, tickHandler.eventCount);
-    }
-
-    public static class PriceBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            MarketHandler tickHandler = addPublicNode(new MarketHandler(), "marketHandler");
-            PricerFormer pricerFormer = addPublicNode(new PricerFormer(tickHandler), "priceFormer");
-            PricePublisher pricerPublisher = addPublicNode(new PricePublisher(pricerFormer), "pricerPublisher");
-
-        }
-
     }
 
     public static class MarketTickEvent implements Event {

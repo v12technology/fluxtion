@@ -16,7 +16,7 @@ along with this program.  If not, see
 <http://www.mongodb.com/licensing/server-side-public-license>.
 -->
 
-<configuration>
+<configuration debug="false">
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
@@ -30,7 +30,7 @@ along with this program.  If not, see
   <!-- the level of the root level is set to DEBUG by default.       -->
   <!--<root level="DEBUG">-->          
   <root level="WARN">          
-    <appender-ref ref="STDOUT" />
+    <!--<appender-ref ref="STDOUT" />-->
   </root>  
   
 </configuration>

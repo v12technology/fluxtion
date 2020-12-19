@@ -86,6 +86,10 @@ Copyright (C) 2018 V12 Technology Ltd.
     
     <dependencies>
         <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>logcaptor</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>fluxtion-api</artifactId>
         </dependency>

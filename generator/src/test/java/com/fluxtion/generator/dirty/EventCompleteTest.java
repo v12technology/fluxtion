@@ -19,23 +19,21 @@ package com.fluxtion.generator.dirty;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.dirty.DirtyElseTest.NumberEvent;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
  *
  * @author gregp
  */
-public class EventCompleteTest extends BaseSepTest{
-   
+public class EventCompleteTest extends BaseSepInprocessTest {
     
     @Test
     public void testComplete(){
-        buildAndInitSep(EventCompleteBuilder.class);
+        sep((c) -> c.addPublicNode(new HandlerWithComplete(10), "completeHandler"));
         HandlerWithComplete handler = getField("completeHandler");
         onEvent(new NumberEvent(100));
         assertThat(handler.completeCount, is(1));
@@ -43,18 +41,6 @@ public class EventCompleteTest extends BaseSepTest{
         onEvent(new NumberEvent(1));
         assertThat(handler.completeCount, is(1));
         assertThat(handler.eventCount, is(2));
-    }
-    
-    
-    
-    
-    public static class EventCompleteBuilder extends SEPConfig{
-
-        @Override
-        public void buildConfig() {
-            addPublicNode(new HandlerWithComplete(10), "completeHandler");
-        }
-        
     }
     
     public static class HandlerWithComplete{

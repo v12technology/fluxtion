@@ -21,7 +21,7 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,22 +30,41 @@ import org.hamcrest.generator.qdox.JavaDocBuilder;
 import org.hamcrest.generator.qdox.model.JavaClass;
 import org.hamcrest.generator.qdox.model.JavaField;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins
  */
-public class AveragingNodeFactoryTest extends BaseSepTest {
+//public class AveragingNodeFactoryTest extends BaseSepTest {
+public class AveragingNodeFactoryTest extends BaseSepInprocessTest {
 
     @Test
+    @Ignore
     public void newTest() {
-        try {
-            buildAndInitSep(AvgNodeConfig.class);
-        } catch (Exception e) {
-//        wont instantiate becuase the factory only generates and does not 
-//        compile and add to classpath
-        }
+        sep((c) ->{
+            SampleNode sampleNode = c.addNode(new SampleNode());
+            //factory config
+            Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+            factoryList.add(AveragingNodeFactory.class);
+            Map config = new HashMap();
+            config.put(AveragingNodeFactory.DATA_SOURCE, sampleNode);
+            config.put(AveragingNodeFactory.WINDOW_SIZE, 50);
+            config.put(AveragingNodeFactory.DATA_SOURCE_FIELD, "sampleValue");
+            //root nodes
+            Map<Class, String> rootNodeMappings = new HashMap<>();
+            rootNodeMappings.put(AveragingNode.class, "averagingNode");
+            c.declarativeConfig = new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config);
+        });
+        
+        
+//        try {
+//            buildAndInitSep(AvgNodeConfig.class);
+//        } catch (Exception e) {
+////        wont instantiate becuase the factory only generates and does not 
+////        compile and add to classpath
+//        }
         //load source file and validate
         JavaDocBuilder builder = new JavaDocBuilder();
         builder.addSourceTree(GenerationContext.SINGLETON.getPackageDirectory());

@@ -20,8 +20,7 @@ package com.fluxtion.generator.order;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.NodeNameProducer;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,31 +29,24 @@ import org.junit.Test;
 
 /**
  * Sort siblings alphabetically so generation order is deterministic.
- * 
+ *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class GenerationOrderTest extends BaseSepTest {
+public class GenerationOrderTest extends BaseSepInprocessTest {
 
     @Test
     public void testOrder() {
-        com.fluxtion.api.StaticEventProcessor handler1 = buildAndInitSep(NodeBuilder.class);
+        sep((c) -> {
+            Node root = c.addNode(new Node("root"));
+            c.addNode(new Node(root, "X"));
+            c.addNode(new Node(root, "A2"));
+            c.addNode(new Node(root, "Y"));
+            c.addNode(new Node(root, "A1"));
+        });
         OrderEvent oe = new OrderEvent();
-        handler1.onEvent(oe);
+        onEvent(oe);
         List<String> expected = Arrays.asList("root", "A1", "A2", "X", "Y");
         Assert.assertEquals(expected, oe.list);
-    }
-
-    public static class NodeBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            Node root = addNode(new Node("root"));
-            Node x1 = addNode(new Node(root, "X"));
-            Node a2 = addNode(new Node(root, "A2"));
-            Node y1 = addNode(new Node(root, "Y"));
-            Node a1 = addNode(new Node(root, "A1"));
-        }
-
     }
 
     public static class OrderEvent implements Event {
@@ -87,8 +79,8 @@ public class GenerationOrderTest extends BaseSepTest {
 
         @Override
         public String mappedNodeName(Object nodeToMap) {
-            if(nodeToMap instanceof Node){
-                return ((Node)nodeToMap).name;
+            if (nodeToMap instanceof Node) {
+                return ((Node) nodeToMap).name;
             }
             return null;
         }
