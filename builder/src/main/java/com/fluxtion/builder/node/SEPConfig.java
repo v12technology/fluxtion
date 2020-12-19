@@ -37,6 +37,10 @@ import java.util.Map;
  */
 public class SEPConfig {
 
+    public SEPConfig() {
+        setGenerateLogging(false);
+    }
+
     /**
      * Add a node to the SEP. The node will have private final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -235,6 +239,21 @@ public class SEPConfig {
 
     public boolean formatSource = true;
 
+    private boolean generateLogging = false;
+
+    public boolean isGenerateLogging() {
+        return generateLogging;
+    }
+
+    /**
+     * Sets a flag to add debug logging statements to generated artefacts. The generator may or may not ne implemented
+     * to change its output, there is no guarantee setting this flag will add debug logging.
+     * @param generateLogging 
+     */
+    public final void setGenerateLogging(boolean generateLogging) {
+        this.generateLogging = generateLogging;
+        System.setProperty("generateLogging", Boolean.toString(generateLogging));
+    }
     /**
      * The maximum number of filter branches inside an event handler before an
      * alternate map-dispatch strategy is employed.

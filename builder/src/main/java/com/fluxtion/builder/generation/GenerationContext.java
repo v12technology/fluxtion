@@ -199,7 +199,7 @@ public class GenerationContext {
     public File resourcesRootDirectory;
     public File resourcesOutputDirectory;
     private CachedCompiler javaCompiler;
-
+    
     public GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory) {
         this(packageName, sepClassName, outputDirectory, resourcesRootDirectory, null);
     }
