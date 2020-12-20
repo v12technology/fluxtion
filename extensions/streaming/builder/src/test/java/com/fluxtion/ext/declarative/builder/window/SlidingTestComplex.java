@@ -24,7 +24,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.CollectionFunctions;
 import static com.fluxtion.ext.streaming.api.util.NumberComparator.numberComparator;
-import com.fluxtion.ext.streaming.builder.factory.Duration;
+import com.fluxtion.ext.streaming.api.Duration;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
@@ -32,6 +32,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
+import java.util.Comparator;
 
 /**
  *
@@ -137,6 +138,15 @@ public class SlidingTestComplex extends StreamInprocessTest {
 
     }
 
+    public static class StringComparator implements Comparator<String>{
+
+        @Override
+        public int compare(String o1, String o2) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    
+    }
+    
     @Test
     public void comparatorFilteredTest() {
         sep(c -> {

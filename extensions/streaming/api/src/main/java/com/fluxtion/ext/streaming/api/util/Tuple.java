@@ -33,4 +33,23 @@ public class Tuple<K, V> {
     K key;
     V value;
 
+    public static void initCopy(Tuple source, Tuple target) {
+        target.key = source.key;
+    }
+
+    public Object myKey() {
+        return key;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Tuple> Class<T> generify() {
+        return (Class<T>) _generify(Tuple.class);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static  <T extends Tuple> Class<T> _generify(Class<?> cls) {
+        return (Class<T>) cls;
+    }
+    
+
 }

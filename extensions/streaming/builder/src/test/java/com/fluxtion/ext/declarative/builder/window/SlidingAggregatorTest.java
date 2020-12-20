@@ -59,7 +59,7 @@ public class SlidingAggregatorTest {
         LongestWord sum = new LongestWord();
         int size = 10;
 
-        SlidingAggregator aggregator = new SlidingAggregator(notifier, String.class, sum, size);
+        SlidingAggregator<LongestWord> aggregator = new SlidingAggregator(notifier, LongestWord.class, sum, size);
         aggregator.setTimeReset(timer);
         aggregator.init();
 
@@ -115,14 +115,14 @@ public class SlidingAggregatorTest {
 
 
         @Override
-        public void combine(Stateful<? extends LongestWord> other) {
+        public void combine(LongestWord other) {
             String otherWord = ((LongestWord)other).word;
             combined.add(otherWord);
             addValue(otherWord);
         }
 
         @Override
-        public void deduct(Stateful<? extends LongestWord> other) {
+        public void deduct(LongestWord other) {
             String otherWord = ((LongestWord)other).word;
             combined.remove(otherWord);
             if(combined.isEmpty()){

@@ -45,6 +45,10 @@ public class Order {
         return size;
     }
 
+    public double getSizeDouble() {
+        return size;
+    }
+
     @Override
     public String toString() {
         return "Order{" + "id=" + id + ", ccyPair=" + ccyPair + ", size=" + size + '}';

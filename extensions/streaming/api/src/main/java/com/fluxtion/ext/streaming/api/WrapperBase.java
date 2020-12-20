@@ -17,20 +17,16 @@
  */
 package com.fluxtion.ext.streaming.api;
 
-import com.fluxtion.api.SepContext;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import java.util.concurrent.atomic.LongAdder;
 
 /**
- *
+ * TODO refactor to combine Wrapper
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T> The wrapped type
  * @param <R> The type of the subclass that extends WrapperBase
  */
 public interface WrapperBase<T, R extends WrapperBase<T, R>> {
-
-    LongAdder counter = new LongAdder();
 
     /**
      * The wrapped node
@@ -50,8 +46,6 @@ public interface WrapperBase<T, R extends WrapperBase<T, R>> {
     Class<T> eventClass();
 
     /**
-     * dump this node to log, prefixed with the supplied
- message.{@link Object#toString()} will be invoked on the node instance.
      *
      * @param <S>
      * @param prefix String prefix for the log message
@@ -59,22 +53,10 @@ public interface WrapperBase<T, R extends WrapperBase<T, R>> {
      * @return The current node
      */
     default <S> R log(String prefix, LambdaReflection.SerializableFunction<T, S>... supplier) {
-        
         if(!prefix.contains("{}")){
             prefix += " {}";
         }
        StreamOperator.service().log(self(), prefix, supplier);
-//        
-//        
-//        StreamOperator.ConsoleLog consoleLog = new StreamOperator.ConsoleLog(this, prefix);
-//        counter.increment();
-//        if (supplier.length == 0 && Number.class.isAssignableFrom(eventClass())) {
-//            consoleLog.suppliers(Number::doubleValue);
-//        } else {
-//            consoleLog.suppliers(supplier);
-//        }
-//        String consoleId = "consoleMsg_" + counter.intValue();
-//        SepContext.service().add(consoleLog, consoleId);
         return self();
     }
     

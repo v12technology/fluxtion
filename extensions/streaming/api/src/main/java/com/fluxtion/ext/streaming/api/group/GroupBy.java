@@ -16,9 +16,13 @@
  */
 package com.fluxtion.ext.streaming.api.group;
 
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.Collection;
 import java.util.Map;
 
@@ -44,6 +48,35 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
         return this;
     }
 
+    @Override
+    default GroupBy<T> sliding(int itemsPerBucket, int numberOfBuckets){
+        GroupBy<T> sliding = WindowBuildOperations.service().sliding(self(), itemsPerBucket, numberOfBuckets);
+        return sliding;
+    }
+
+    @Override
+    default GroupBy<T> sliding(Duration timePerBucket, int numberOfBuckets) {
+        GroupBy<T> sliding = WindowBuildOperations.service().sliding(self(), timePerBucket, numberOfBuckets);
+        return sliding;
+    }
+
+    @Override
+    default GroupBy<T> tumbling(Duration time) {
+        GroupBy<T> sliding = WindowBuildOperations.service().tumbling(self(), time);
+        return sliding;
+    }
+
+    @Override
+    default GroupBy<T> tumbling(int itemCount) {
+        GroupBy<T> sliding = WindowBuildOperations.service().tumbling(self(), itemCount);
+        return sliding;
+    }
+
+    @Override
+    public default void reset() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * The last record that was updated as a wrapped node
      *
@@ -57,4 +90,13 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
      * @return wrapped node class
      */
     Class<T> recordClass();
+
+    /**
+     * Set the target collection for storing results of the groupBy operations. If no target is supplied then an internal
+     * list is used.
+     * 
+     * @param wrappedList 
+     */
+    default void setTargetCollecion(ArrayListWrappedCollection<T> wrappedList) {}
+
 }

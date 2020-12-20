@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
+import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.Stateful;
@@ -31,12 +32,13 @@ import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.window.SlidingAggregator;
 import com.fluxtion.ext.streaming.api.window.SlidingCollectionAggregator;
+import com.fluxtion.ext.streaming.api.window.SlidingGroupByAggregator;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class WindowBuilder {
+public class WindowBuilder{
 
     // ==================================================
     // SLIDING FUNCTIONS - REDUCING
@@ -68,7 +70,7 @@ public class WindowBuilder {
             return (Wrapper<R>) SepContext.service().addOrReuse(new SlidingNumberAggregator(tumble, (StatefulNumber) mappingInstance, numberOfBuckets));
         } else if (Stateful.class.isAssignableFrom(clazz)) {
             Class<R> returnType = (Class<R>) mapper.method().getReturnType();
-            return SepContext.service().addOrReuse(new SlidingAggregator<>(tumble, returnType, (Stateful) mappingInstance, numberOfBuckets));
+            return SepContext.service().addOrReuse(new SlidingAggregator(tumble, returnType, (Stateful) mappingInstance, numberOfBuckets));
         } else {
             throw new RuntimeException("unsupported type for aggregation function must implement Stateful or StatefulNumber, class:" + clazz);
         }
@@ -77,7 +79,7 @@ public class WindowBuilder {
     public static <R, S> Wrapper<R> sliding(Class<S> sourceClass, SerializableFunction<? extends S, R> mapper, int itemsPerBucket, int numberOfBuckets) {
         return sliding(EventSelect.select(sourceClass), mapper, itemsPerBucket, numberOfBuckets);
     }
-
+    
     /**
      * Creates a time based sliding window aggregating data into a single value using the supplied mapping function. The
      * user specifies the time in a bucket and the total number of buckets. The data is published at the bucket
@@ -111,7 +113,8 @@ public class WindowBuilder {
             return (Wrapper<R>) SepContext.service().addOrReuse(slidingNumberAggregator);
         } else if (Stateful.class.isAssignableFrom(clazz)) {
             Class<R> returnType = (Class<R>) mapper.method().getReturnType();
-            SlidingAggregator slidingAggregator = SepContext.service().addOrReuse(new SlidingAggregator<>(tumble, returnType, (Stateful) mappingInstance, numberOfBuckets));
+            SlidingAggregator aggregator = new SlidingAggregator(tumble, returnType, (Stateful) mappingInstance, numberOfBuckets);
+            SlidingAggregator slidingAggregator = SepContext.service().addOrReuse(aggregator);
             slidingAggregator.setTimeReset(timeReset);
             return slidingAggregator;
         } else {
@@ -124,7 +127,7 @@ public class WindowBuilder {
     }
 
     // ==================================================
-    // TUMBLE FUNCTIONS - COLLECTING
+    // SLIDING FUNCTIONS - COLLECTING
     // ================================================== 
     /**
      * Creates an aggregated collection of data points as a WrappedList. The user specifies the number of counts in a
@@ -138,7 +141,6 @@ public class WindowBuilder {
      * @return A WrappedList containing the union of all buckets within scope
      */
     public static <S, T extends WrappedCollection<S, ?, ?>> WrappedList<S> sliding(T source, int itemsPerBucket, int numberOfBuckets) {
-//        Wrapper<T> tumbleIncremental = tumbleIncremental(source, itemsPerBucket);
         CountReset tumble = new CountReset(source, itemsPerBucket);
         final SlidingCollectionAggregator slidingAggregator = SepContext.service().addOrReuse(new SlidingCollectionAggregator<>(tumble, (WrappedCollection) source, numberOfBuckets));
         return slidingAggregator.getTargetCollection();
@@ -148,6 +150,11 @@ public class WindowBuilder {
         return sliding(EventSelect.select(sourceClass).collect(), itemsPerBucket, numberOfBuckets);
     }
 
+    public static <S, T extends GroupBy<S>> GroupBy<S> sliding(T source, int itemsPerBucket, int numberOfBuckets) {
+        CountReset tumble = new CountReset(source, itemsPerBucket);
+        final SlidingGroupByAggregator<S, T> groupByAggregator = SepContext.service().addOrReuse(new SlidingGroupByAggregator<>(tumble,  source, numberOfBuckets));
+        return groupByAggregator;
+    }
     /**
      * Creates an aggregated collection of data points as a WrappedList. The user specifies the time duration of a
      * bucket and the total number of buckets. The WrappedList is published at the bucket intervals.
@@ -170,6 +177,13 @@ public class WindowBuilder {
         return sliding(EventSelect.select(sourceClass).collect(), time, numberOfBuckets);
     }
 
+    public static <S, T extends GroupBy<S>> GroupBy<S> sliding(T source,  Duration time, int numberOfBuckets) {
+        final TimeReset timeReset = new TimeReset(source, time.getMillis(), null);
+        final SlidingGroupByAggregator<S, T> groupByAggregator = SepContext.service().addOrReuse(new SlidingGroupByAggregator<>(source,  source, numberOfBuckets));
+        groupByAggregator.setTimeReset(timeReset);
+        return groupByAggregator;
+    }
+    
     // ==================================================
     // TUMBLE FUNCTIONS - REDUCING
     // ==================================================
@@ -251,6 +265,11 @@ public class WindowBuilder {
         return sliding(source, itemsPerBucket, 1);
     }
 
+    
+    public static <S, T extends GroupBy<S>> GroupBy<S> tumble(T source, int itemsPerBucket) {
+        return sliding(source, itemsPerBucket, 1);
+    } 
+    
     /**
      * A tumble window applied to a stream of events selected from Class type and aggregated into a collection. The
      * window size is based on count
@@ -275,6 +294,10 @@ public class WindowBuilder {
     public static <S, T extends WrappedCollection<S, ?, ?>> WrappedList<S> tumble(T source, Duration time){
         return sliding(source, time, 1);
     }
+    
+    public static <S, T extends GroupBy<S>> GroupBy<S> tumble(T source, Duration time) {
+        return sliding(source, time, 1);
+    } 
     
     /**
      * A tumble window applied to a stream of events selected from Class type and aggregated into a collection. The window size is based on time

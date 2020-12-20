@@ -18,17 +18,12 @@ package com.fluxtion.ext.streaming.builder.util;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.generator.Generator;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.openhft.compiler.CachedCompiler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -40,6 +35,7 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.slf4j.LoggerFactory;
 
 /**
  * various utility functions to help generate code for the SEP.
@@ -47,7 +43,8 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  * @author Greg Higgins
  */
 public interface FunctionGeneratorHelper {
-
+    static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FunctionGeneratorHelper.class);
+    
     static int intFromMap(Map<String, ?> configMap, String key, int defualtValue) {
         if (configMap.containsKey(key)) {
             try {
@@ -87,6 +84,7 @@ public interface FunctionGeneratorHelper {
     }
     
     static <T> Class<T> compile(Reader srcFile, String fqn, boolean isTest) throws IOException, ClassNotFoundException {
+        LOG.debug("start compile:{}", fqn);
         String packageName = ClassUtils.getPackageCanonicalName(fqn);
         String className = ClassUtils.getShortCanonicalName(fqn);
         String dir = System.getProperty("fluxtion.cacheDirectory");
@@ -98,34 +96,42 @@ public interface FunctionGeneratorHelper {
         GenerationContext.updateContext(packageName, className, sourcesDir, resourcesDir);
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, IOUtils.toString(srcFile));
+        LOG.debug("end compile:{}", fqn);
         return newClass;
     }
 
     static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
+        LOG.debug("start generateAndCompile:{}", templateFile);
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
+        Generator.formatSource(file);
+         
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
-        new Thread(() -> Generator.formatSource(file)).start();
+//        new Thread(() -> Generator.formatSource(file)).start();
+        LOG.debug("compiling phase generateAndCompile:{}", templateFile);
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
+        LOG.debug("end generateAndCompile:{}", templateFile);
         return newClass;
     }
 
     static String writeSourceFile(Object node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException {
+        LOG.debug("start writeSourceFile:{}", templateFile);
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
         initVelocity();
         Thread.currentThread().setContextClassLoader(originalClassLoader);
 //generates the actual class
         ctx.put(FunctionKeys.functionPackage.name(), generationConfig.getPackageName());
+        ctx.put("logenabled", Boolean.getBoolean("generateLogging"));
         String generatedClassName = (String) ctx.get(FunctionKeys.functionClass.name());
         generationConfig.getProxyClassMap().put(node, generatedClassName);
         Template template = null;
         try {
             template = Velocity.getTemplate(templateFile);
         } catch (Exception e) {
-            System.out.println("failed to load template, setting threadcontext class loader");
+            LOG.warn("failed to load template, setting threadcontext class loader");
             try {
                 Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
                 template = Velocity.getTemplate(templateFile);
@@ -138,25 +144,27 @@ public interface FunctionGeneratorHelper {
             template.merge(ctx, templateWriter);
             templateWriter.flush();
         }
+        LOG.debug("templating finished writeSourceFile:{} generated name:{}", templateFile, generatedClassName);
 
-        try {
-            while (true) {
-                if (outFile.exists() && outFile.length() > 1) {
-                    break;
-                } else {
-                    Thread.sleep(1);
-                }
-            }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FunctionGeneratorHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            while (true) {
+//                if (outFile.exists() && outFile.length() > 1) {
+//                    break;
+//                } else {
+//                    Thread.sleep(1);
+//                }
+//            }
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(FunctionGeneratorHelper.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        LOG.debug("end writeSourceFile:{} generated name:{}", templateFile, generatedClassName);
         return generatedClassName;
     }
 
     static void deleteGeneratedClass(GenerationContext generationConfig, String generatedClassName) {
         File outFile = new File(generationConfig.getPackageDirectory(), generatedClassName + ".java");
         if (!outFile.delete()) {
-            System.out.println("unable to delete file:" + outFile.getAbsolutePath());
+            LOG.warn("unable to delete file:" + outFile.getAbsolutePath());
         }
 
     }

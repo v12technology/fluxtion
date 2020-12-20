@@ -34,7 +34,6 @@ import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
-import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;

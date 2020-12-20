@@ -1,0 +1,46 @@
+#macro( importslf4j)
+#if($logenabled)import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;#end
+#end
+
+#macro( slf4j $loggeClass)
+#if($logenabled)
+private final Logger log = LoggerFactory.getLogger(${loggeClass}.class);
+#end
+#end
+
+#macro( log $level $logMessage)
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.$level($stringAfter);
+#end
+#end
+
+#macro( loginfo $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.info($stringAfter);
+#end
+#end
+
+#macro( logdebug $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.debug($stringAfter);
+#end
+#end
+
+#macro( logdwarn $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.warn($stringAfter);
+#end
+#end
+
+#macro( logerror $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.error($stringAfter);
+#end
+#end
+
+#macro( logtrace $logMessage )
+#if($logenabled)#set ( $d = '"') #set( $stringAfter = $logMessage.replaceAll("'","${d}") )
+log.trace($stringAfter);
+#end
+#end

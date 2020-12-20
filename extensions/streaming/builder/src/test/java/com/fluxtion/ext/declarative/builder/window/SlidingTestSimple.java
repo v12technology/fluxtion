@@ -20,7 +20,7 @@ package com.fluxtion.ext.declarative.builder.window;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
-import com.fluxtion.ext.streaming.builder.factory.Duration;
+import com.fluxtion.ext.streaming.api.Duration;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
@@ -152,9 +152,6 @@ public class SlidingTestSimple extends StreamInprocessTest {
     public void collectionSlidingTimeWrapper() {
         final int bucketSize = 500;
         final int bucketsPerPublish = 3;
-        GenerationContext.setupStaticContext("", "",
-            new File(OutputRegistry.JAVA_TESTGEN_DIR),
-            new File(OutputRegistry.RESOURCE_TEST_DIR));
 
         sep(c -> {
             sliding(select(Integer.class).collect(), Duration.millis(bucketSize), bucketsPerPublish).id("collection");
@@ -194,9 +191,6 @@ public class SlidingTestSimple extends StreamInprocessTest {
     public void collectionSlidingImpliedSelect() {
         final int bucketSize = 500;
         final int bucketsPerPublish = 3;
-        GenerationContext.setupStaticContext("", "",
-            new File(OutputRegistry.JAVA_TESTGEN_DIR),
-            new File(OutputRegistry.RESOURCE_TEST_DIR));
 
         sep(c -> {
             sliding(Integer.class, Duration.millis(bucketSize), bucketsPerPublish).id("collection");

@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * The main instance a user interacts with while building a group by function.
+ * The main instance a user interacts with while building a group by mapPrimitive.
  *
  * @author Greg Higgins
  * @param <K> Source type
@@ -83,6 +83,11 @@ public class GroupByBuilder<K, T> {
         }
         return this;
     }
+    
+    public GroupByBuilder<K, T> initCopy(SerializableBiConsumer<T, T> initCopy){
+        groupBy.setInitCopy(initCopy);
+        return this;
+    }
 
     public GroupByBuilder<K, T> initPrimitive(SerializableFunction<K, ? extends Number> valueFunction, SerializableBiConsumer<T, ? super Byte> tragetFunction) {
         Method sourceMethod = valueFunction.method();
@@ -101,44 +106,72 @@ public class GroupByBuilder<K, T> {
 
     public GroupByBuilder<K, T>
         avg(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(sourceFunction, target, AggregateFunctions.AggregateAverage::calcAverage);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions.AggregateAverage::calcAverage);
     }
 
     public GroupByBuilder<K, T>
         count(SerializableBiConsumer<T, ? super Byte> target) {
-        return function(target, AggregateFunctions::count);
+        return GroupByBuilder.this.mapPrimitive(target, AggregateFunctions::count);
     }
 
     public GroupByBuilder<K, T>
         set(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(sourceFunction, target, AggregateFunctions::set);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::set);
     }
 
     public GroupByBuilder<K, T>
         min(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(sourceFunction, target, AggregateFunctions::minimum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::minimum);
     }
 
     public GroupByBuilder<K, T>
         max(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(sourceFunction, target, AggregateFunctions::maximum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::maximum);
     }
 
     public GroupByBuilder<K, T>
         sum(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return function(sourceFunction, target, AggregateFunctions::calcSum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::calcSum);
     }
 
     public void optional(boolean optional) {
         sourceContext.setOptional(optional);
     }
 
-    public <S extends Number, G extends Number, R> GroupByBuilder function(
+    // ==================================================
+    // static mapping mapPrimitive
+    // ==================================================
+    public <S, R> GroupByBuilder<K, T> map(
+        SerializableFunction<K, ? extends S> supplier,
+        SerializableBiConsumer<T, ? super R> target,
+        SerializableBiFunction< ? super S, ? super R, ? extends R> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.getKeyProvider()).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.getGroup().getInputSource().getClass();
+        }
+        Method sourceMethod = supplier.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+
+    public <S extends Number, G extends Number, R> GroupByBuilder<K, T> mapPrimitive(
         SerializableFunction<K, ? extends S> supplier,
         SerializableBiConsumer<T, ? super Byte> target,
         SerializableBiFunction<? super G, ? super G, ? extends G> func) {
         Class calcFunctionClass = func.getContainingClass();
-        //set function
+        //set mapPrimitive
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
         info.setFunction(calcFunctionClass, func.method(), id);
@@ -158,12 +191,65 @@ public class GroupByBuilder<K, T> {
         return this;
     }
 
-    public <S extends Number, G extends Number, R, F> GroupByBuilder function(
+    public <S extends Number, G extends Number, R> GroupByBuilder mapPrimitiveNoType(
+        SerializableFunction<K, ? extends S> supplier,
+        SerializableBiConsumer<T, ? super Byte> target,
+        SerializableBiFunction<? super G, ? super G, ? extends G> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.getKeyProvider()).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.getGroup().getInputSource().getClass();
+        }
+        Method sourceMethod = supplier.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+
+    // ==================================================
+    // instance mapping mapPrimitive
+    // ==================================================
+    public <S, R, F> GroupByBuilder<K, T> map(
+        SerializableFunction<K, ? extends S> supplier,
+        SerializableBiConsumer<T, ? super R> target,
+        SerializableTriFunction<F, ? super S, ? super R, ? extends R> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.getKeyProvider()).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.getGroup().getInputSource().getClass();
+        }
+        Method sourceMethod = supplier.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+    
+    public <S extends Number, G extends Number, R, F> GroupByBuilder<K, T> mapPrimitive(
         SerializableFunction<K, ? extends S> supplier,
         SerializableBiConsumer<T, ? super Byte> target,
         SerializableTriFunction<F, ? super G, ? super G, ? extends G> func) {
         Class calcFunctionClass = func.getContainingClass();
-        //set function
+        //set mapPrimitive
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
         info.setFunction(calcFunctionClass, func.method(), id);
@@ -183,12 +269,37 @@ public class GroupByBuilder<K, T> {
         return this;
     }
 
-    public <G extends Number> GroupByBuilder
-        function(
+    public <S extends Number, G extends Number, R, F> GroupByBuilder mapPrimitiveNoType(
+        SerializableFunction<K, ? extends S> supplier,
+        SerializableBiConsumer<T, ? super Byte> target,
+        SerializableTriFunction<F, ? super G, ? super G, ? extends G> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.getKeyProvider()).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.getGroup().getInputSource().getClass();
+        }
+        Method sourceMethod = supplier.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+
+    public <G extends Number> GroupByBuilder<K, T>
+        mapPrimitive(
             SerializableBiConsumer<T, ? super Byte> target,
             SerializableBiFunction<? super G, ? super G, ? extends G> func) {
         Class calcFunctionClass = func.getContainingClass();
-        //set function
+        //set mapPrimitive
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
         info.setFunction(calcFunctionClass, func.method(), id);
@@ -199,12 +310,12 @@ public class GroupByBuilder<K, T> {
         return this;
     }
 
-    public <G extends Number, F> GroupByBuilder
-        function(
+    public <G extends Number, F> GroupByBuilder<K, T>
+        mapPrimitive(
             SerializableBiConsumer<T, ? super Byte> target,
             SerializableTriFunction<F, ? super G, ? super G, ? extends G> func) {
         Class calcFunctionClass = func.getContainingClass();
-        //set function
+        //set mapPrimitive
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
         String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
         info.setFunction(calcFunctionClass, func.method(), id);

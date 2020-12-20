@@ -26,6 +26,7 @@ import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
+import static com.fluxtion.ext.streaming.api.enrich.EventDrivenLookup.lookup;
 
 /**
  *
@@ -37,14 +38,32 @@ public class LookupTest extends StreamInprocessTest {
     public void testLookup(){
         sep((c) ->{
             select(MyNode.class)
-                .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookup);
+                .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookupValue);
         });
         
         MyNode nodeEvent = new MyNode();
         nodeEvent.setKey("hello");
         nodeEvent.setValue("nobody");
         
-        //seed a lookup value
+        //seed a lookupValue value
+        onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
+        assertThat(nodeEvent.getValue(), is("nobody"));
+        onEvent(nodeEvent);
+        assertThat(nodeEvent.getValue(), is("world"));
+    }
+    
+    @Test
+    public void testLookupFactory(){
+        sep((c) ->{
+            select(MyNode.class)
+                .forEach(lookup("mylookup", MyNode::getKey, MyNode::setValue));
+        });
+        
+        MyNode nodeEvent = new MyNode();
+        nodeEvent.setKey("hello");
+        nodeEvent.setValue("nobody");
+        
+        //seed a lookupValue value
         onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
         assertThat(nodeEvent.getValue(), is("nobody"));
         onEvent(nodeEvent);

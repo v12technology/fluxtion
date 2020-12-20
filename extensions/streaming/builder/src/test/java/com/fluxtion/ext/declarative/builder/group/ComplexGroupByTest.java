@@ -18,7 +18,7 @@ import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.junit.Categories;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -39,7 +39,7 @@ public class ComplexGroupByTest extends StreamInprocessTest {
             orders.init(Order::getId, OrderSummary::setOrderId);
             //set last deal id
             deals.init(Deal::getDealId, OrderSummary::setFirstDealId);
-            //aggregate function values
+            //aggregate mapPrimitive values
             orders.sum(Order::getSize, OrderSummary::setOrderSize);
             deals.count(OrderSummary::setDealCount);
             deals.set(Deal::getDealtSize, OrderSummary::setLastDealSize);

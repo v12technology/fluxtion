@@ -27,11 +27,13 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
+import lombok.extern.slf4j.Slf4j;
 import static net.openhft.compiler.CompilerUtils.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("StaticNonFinalField")
+@Slf4j
 public class CachedCompiler implements Closeable {
 
     private static final PrintWriter DEFAULT_WRITER = new PrintWriter(System.err);
@@ -48,6 +50,7 @@ public class CachedCompiler implements Closeable {
         this.javaFileObjects = new HashMap<>();
         this.sourceDir = sourceDir;
         this.classDir = classDir;
+        log.debug("sourceDir:{} classDir:{}", sourceDir, classDir);
     }
 
     public void close() {
@@ -81,6 +84,7 @@ public class CachedCompiler implements Closeable {
                                         final @NotNull PrintWriter writer,
                                         MyJavaFileManager fileManager) {
         Iterable<? extends JavaFileObject> compilationUnits;
+        log.debug("start compileFromJava");
         if (sourceDir != null) {
             String filename = className.replaceAll("\\.", '\\' + File.separator) + ".java";
             File file = new File(sourceDir, filename);
@@ -91,6 +95,8 @@ public class CachedCompiler implements Closeable {
             compilationUnits = javaFileObjects.values();
         }
         // reuse the same file manager to allow caching of jar files
+        
+        log.debug("submit compiler task compileFromJava");
         boolean ok = s_compiler.getTask(writer, fileManager, new DiagnosticListener<JavaFileObject>() {
             @Override
             public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
@@ -99,6 +105,7 @@ public class CachedCompiler implements Closeable {
                 }
             }
         }, null, null, compilationUnits).call();
+        log.debug("completed compiler task compileFromJava");
         Map<String, byte[]> result = fileManager.getAllBuffers();
         if (!ok) {
             // compilation error, so we want to exclude this file from future compilation passes
@@ -108,6 +115,7 @@ public class CachedCompiler implements Closeable {
             // nothing to return due to compiler error
             return Collections.emptyMap();
         }
+        log.debug("end compileFromJava");
         return result;
     }
     
@@ -120,6 +128,7 @@ public class CachedCompiler implements Closeable {
                               @NotNull String className,
                               @NotNull String javaCode,
                               @Nullable PrintWriter writer) throws ClassNotFoundException {
+        log.debug("start loadFromJava");
         Class clazz = null;
         Map<String, Class> loadedClasses;
         synchronized (loadedClassesMap) {
@@ -129,6 +138,7 @@ public class CachedCompiler implements Closeable {
             else
                 clazz = loadedClasses.get(className);
         }
+        log.debug("loaded classes map");
         PrintWriter printWriter = (writer == null ? DEFAULT_WRITER : writer);
         if (clazz != null)
             return clazz;
@@ -139,6 +149,7 @@ public class CachedCompiler implements Closeable {
             fileManager = new MyJavaFileManager(standardJavaFileManager);
             fileManagerMap.put(classLoader, fileManager);
         }
+        log.debug("loaded MyJavaFileManager");
         MyClassLoader myClassLoader = cl2MyCl.computeIfAbsent(classLoader, MyClassLoader::new);
         for (Map.Entry<String, byte[]> entry : compileFromJava(className, javaCode, printWriter, fileManager).entrySet()) {
             String className2 = entry.getKey();
@@ -148,11 +159,15 @@ public class CachedCompiler implements Closeable {
             }
             byte[] bytes = entry.getValue();
             if (classDir != null) {
+                log.debug("start writing class bytes");
                 String filename = className2.replaceAll("\\.", '\\' + File.separator) + ".class";
                 boolean changed = writeBytes(new File(classDir, filename), bytes);
                 if (changed) {
 //                    LOG.info("Updated {} in {}", className2, classDir);
                 }
+                log.debug("ended writing class bytes");
+            }else{
+                log.debug("no classes directory - not writing classes classDir:{}", classDir);
             }
             Class clazz2 = CompilerUtils.defineClass(myClassLoader, className2, bytes);
             synchronized (loadedClassesMap) {
@@ -162,6 +177,9 @@ public class CachedCompiler implements Closeable {
         synchronized (loadedClassesMap) {
             loadedClasses.put(className, clazz = myClassLoader.loadClass(className));
         }
+        log.debug("end loadFromJava");
         return clazz;
     }
+    
+    
 }

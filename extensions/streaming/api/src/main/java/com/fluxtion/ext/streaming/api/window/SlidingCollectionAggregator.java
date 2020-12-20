@@ -32,38 +32,39 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- *
+ * Applies a sliding window to a {@link WrappedCollection}
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
+@Slf4j
 public class SlidingCollectionAggregator<T extends WrappedCollection> {
 
     @SepNode
     private final Object notifier;
-    private Stateful currentWindow;
+    private WrappedCollection currentWindow;
     @NoEventReference
-    private final WrappedCollection<T, ?, ?> source;
-    
+    private final WrappedCollection source;
     private final int bucketCount;
     @PushReference
+    @SepNode
     private ArrayListWrappedCollection<T> targetCollection;
     private transient ArrayListWrappedCollection<T> primingCollection;
-    private ArrayDeque<Stateful> deque;
-//    @NoEventReference
+    private ArrayDeque<WrappedCollection> deque;
     @SepNode
     private TimeReset timeReset;
     private int publishCount;
-    private transient final boolean logging = false;
     private boolean addedToCurrentWindow;
     private boolean publish;
 
-    public SlidingCollectionAggregator(Object notifier, WrappedCollection<T, ?, ?> source, int bucketCount) {
+    public SlidingCollectionAggregator(Object notifier, T source, int bucketCount) {
         this.notifier = notifier;
         this.source = source;
         this.bucketCount = bucketCount;
-        targetCollection = SepContext.service().addOrReuse(new ArrayListWrappedCollection<>());
+        targetCollection = new ArrayListWrappedCollection<>();
     }
 
     public ArrayListWrappedCollection<T> getTargetCollection() {
@@ -91,22 +92,20 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
         int expiredBuckete = timeReset == null ? 1 : timeReset.getWindowsExpired();
         publishCount += expiredBuckete;
         publish |= publishCount >= bucketCount;
-//        publish |= publishCount + 1 >= bucketCount;
         ArrayListWrappedCollection collection = publish ? targetCollection : primingCollection;
         if (publish & !primingCollection.isEmpty()) {
-            log("switching to target collection");
+            log.debug("switching to target collection");
             targetCollection.combine(primingCollection);
             collection = targetCollection;
             primingCollection.reset();
         }
-        if (expiredBuckete == 0) {//in the same window
-//            currentWindow.reset();
+        if (expiredBuckete == 0) {
             currentWindow.combine(source);
             source.reset();
             addedToCurrentWindow = true;
-            log("0 expired current window:", currentWindow);
+            logCollection("0 expired current window:", currentWindow);
         } else {
-            log("expired: " + expiredBuckete);
+            log.debug("expired: " + expiredBuckete);
             if (!addedToCurrentWindow) {
                 addedToCurrentWindow = false;
                 currentWindow.reset();
@@ -115,62 +114,52 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
             source.deduct(currentWindow);
             deque.add(currentWindow);
             collection.combine(currentWindow);
-            log("multi expired added:", currentWindow);
-            log("multi expired source:", source);
+            logCollection("current window added:", currentWindow);
+            logCollection("expired source:", source);
             currentWindow = deque.pop();
             collection.deduct(currentWindow);
             currentWindow.reset();
             currentWindow.combine(source);
-            log("multi expired current window:", currentWindow);
+            logCollection("new current window:", currentWindow);
             for (int i = 1; i < expiredBuckete; i++) {
-                Stateful popped2 = deque.poll();
-                log("multi expired popped:", popped2);
+                WrappedCollection popped2 = deque.poll();
+                logCollection("popped:", popped2);
                 collection.deduct(popped2);
                 popped2.reset();
                 deque.add(popped2);
             }
-            log("multi expired collection:", collection);
+            logCollection("current collection:", collection);
         }
-        log("deque: ");
-        deque.forEach(c -> log("\t", c));
+        logDeque();
         if (publish) {
-            log("publishing");
+            log.debug("publishing");
         }
-        log("\n");
         return publish;
     }
 
-    private void log(String message) {
-        if (!logging) {
+    public void logDeque(){
+        if (!log.isDebugEnabled()) {
             return;
         }
-        System.out.println(message);
+        StringBuilder sb = new StringBuilder("deque:\n");
+        deque.forEach(c -> sb.append("\t").append(c.collection()).append("\n"));
+        log.debug(sb.toString());
     }
 
-    private void log(String prefix, Stateful holder) {
-        if (!logging) {
-            return;
-        }
-        log(prefix, holder, null);
+    private void logCollection(String prefix, Stateful holder) {
+        logCollection(prefix, holder, null);
     }
 
-    private void log(String prefix, Stateful holder, String suffix) {
-        if (!logging) {
+    private void logCollection(String prefix, Stateful holder, String suffix) {
+        if (!log.isDebugEnabled()) {
             return;
         }
-        if (holder instanceof ArrayListWrappedCollection) {
-            ArrayListWrappedCollection collection = (ArrayListWrappedCollection) holder;
-            System.out.println(prefix + " " + collection.collection() + (suffix == null ? "" : suffix));
-        } else if (holder instanceof WrappedCollection) {
+        StringBuilder sb = new StringBuilder();
+        if (holder instanceof WrappedCollection) {
             WrappedCollection collection = (WrappedCollection) holder;
-            System.out.println(prefix + " " + collection.collection() + (suffix == null ? "" : suffix));
-
+            sb.append(prefix).append(" ").append(collection.collection()).append((suffix == null ? "" : suffix));
         }
-        if (holder instanceof ArrayDeque) {
-            ArrayDeque dequeLocal = (ArrayDeque) holder;
-            System.out.println(prefix + " " + dequeLocal.toString() + (suffix == null ? "" : suffix));
-            dequeLocal.toString();
-        }
+        log.debug(sb.toString());
     }
 
     public WrappedList<T> comparator(Comparator comparator) {
@@ -187,12 +176,12 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
             deque = new ArrayDeque<>(bucketCount);
             primingCollection = new ArrayListWrappedCollection<>();
             targetCollection.reset();
-            primingCollection.reset();
+            primingCollection.reset();         
             currentWindow = new ArrayListWrappedCollection<>();
             for (int i = 0; i < bucketCount; i++) {
-                final Stateful function = new ArrayListWrappedCollection<>();
+                final WrappedCollection function = new ArrayListWrappedCollection<>();
                 function.reset();
-                deque.add(function);
+                deque.add((T) function);
             }
         } catch (Exception ex) {
             throw new RuntimeException("missing default constructor for:" + source.getClass());

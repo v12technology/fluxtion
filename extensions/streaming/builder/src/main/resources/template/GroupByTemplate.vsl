@@ -4,18 +4,33 @@ package ${functionPackage};
 #foreach( $import in $imports)
 import $import;
 #end
-
+#importslf4j
 /**
- * generated group by holder.
+ * Generated group by aggregation
  *
- * target class  : ${targetClass}
- * 
+ *<pre>
+ *  <ul>
+ *      <li>template file   : ${currentTemplate}
+ *      <li>target class    : {@link  ${targetClass}}
+#foreach( $source in $sourceMappingList)
+#if(${source.wrapped})
+ *      <li>input class     : {@link  ${source.sourceInfo.wrapperType}}
+#else
+ *      <li>input class     : {@link  ${source.sourceInfo.type}}
+#end
+#end
+ *  </ul>
+ *</pre>
  * @author Greg Higgins
  */
 public final class ${functionClass} implements GroupBy<${targetClass}>{
 
-  @NoEventReference public Object resetNotifier;
-  private ArrayListWrappedCollection<${targetClass}> wrappedList;
+  #slf4j(${functionClass})
+  @NoEventReference 
+  public Object resetNotifier;
+  @SepNode
+  @PushReference
+  public ArrayListWrappedCollection<${targetClass}> wrappedList;
   private boolean allMatched;
 #foreach( $source in $sourceMappingList)
 #if($!{source.eventClass})
@@ -40,7 +55,16 @@ public final class ${functionClass} implements GroupBy<${targetClass}>{
 #end
 #end
 #end
+    private SerializableBiConsumer<${targetClass},${targetClass}> initFromCopy;
 
+    public ${functionClass}(){
+        wrappedList = new ArrayListWrappedCollection<>();
+    }
+
+  @Override
+  public void setTargetCollecion(ArrayListWrappedCollection<${targetClass}> targetCollection) {
+        this.wrappedList = targetCollection;
+  }
 #foreach( $source in $sourceMappingList)
 #set( $id = ${source.sourceInfo.id} )
 #set( $type = ${source.sourceInfo.type} )
@@ -100,14 +124,15 @@ ${functionInfo.updateTarget}
 #if(${eventCompleteMethod})
     @OnEventComplete
     public void onEventComplete(){
-        target.${eventCompleteMethod}();
+        if (target != null) {
+            target.${eventCompleteMethod}();
+        }
     }
 
 #end
     @Initialise
     public void init(){
-        calcState = new GroupByTargetMap<>(${calcStateClass}.class);
-        wrappedList = new ArrayListWrappedCollection<>();
+        calcState = new GroupByTargetMap<>(${calcStateClass}::new);
         wrappedList.init();
         allMatched = false;
         target = null;
@@ -133,6 +158,7 @@ ${functionInfo.updateTarget}
 #end
 #end
 #end
+        initFromCopy = ${initCopy};
     }
 
 #if(${isMultiKey})
@@ -184,6 +210,7 @@ ${functionInfo.updateTarget}
         return ${targetClass}.class;
     }
 
+    @Override
     public ${functionClass} resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
@@ -198,4 +225,74 @@ ${functionInfo.updateTarget}
     public void reset() {
       init();
     }
+
+
+    @Override
+    public void combine(GroupBy<${targetClass}> other) {
+    #loginfo(  "'${functionClass} combining'" )
+    ${functionClass} otherGroupBy = (${functionClass}) other;
+    Map<${keyClass}, ${calcStateClass}> sourceMap = otherGroupBy.calcState.getInstanceMap();
+    Map<${keyClass}, ${calcStateClass}> targetMap = calcState.getInstanceMap();
+    sourceMap
+        .entrySet()
+        .forEach(
+            (Map.Entry<${keyClass}, ${calcStateClass} > e) -> {
+              if (targetMap.containsKey(e.getKey())) {
+                final ${calcStateClass}  sourceState = e.getValue();
+                ${calcStateClass}  newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.combine(sourceState);
+#foreach( $src in $functionSet )
+                $src.copyToTarget;
+#end
+              } else {
+                final ${calcStateClass}  sourceState = e.getValue();
+                ${calcStateClass}  newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.updateMap.clear();
+                newInstance.updateMap.or(sourceState.updateMap);
+                initFromCopy.accept(sourceState.target, newInstance.target);
+                newInstance.combine(sourceState);
+#foreach( $src in $functionSet )
+                $src.copyToTarget;
+#end
+                wrappedList.addItem(newInstance.target);
+              }
+            });
+        wrappedList.sort();
+    }
+
+    @Override
+    public void deduct(GroupBy<${targetClass}> other) {
+    #loginfo(  "'${functionClass} deduct'" )
+    ${functionClass} otherGroupBy = (${functionClass}) other;
+    Map<${keyClass}, ${calcStateClass}> sourceMap = otherGroupBy.calcState.getInstanceMap();
+    Map<${keyClass}, ${calcStateClass}> targetMap = calcState.getInstanceMap();
+    sourceMap
+        .entrySet()
+        .forEach(
+            (Map.Entry<${keyClass}, ${calcStateClass}> e) -> {
+              if (targetMap.containsKey(e.getKey())) {
+                final ${calcStateClass} sourceState = e.getValue();
+                ${calcStateClass} newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.deduct(sourceState);
+#foreach( $src in $functionSet )
+                $src.copyToTarget;
+#end
+                #loginfo(  "'deduct existing instance combinCount:{}',newInstance.getCombineCount()" )
+                if(newInstance.isExpired()){
+                    #loginfo(  "'expiring key:{} value:{}', e.getKey(), e.getValue()" )
+                    calcState.expireInstance(e.getKey());
+                    wrappedList.removeItem(newInstance.target);
+                }
+              } else {
+
+              }
+            });
+        wrappedList.sort();
+    }
+
+    @Override
+    public WrappedList<${targetClass}> comparator(Comparator comparator) {
+        return wrappedList.comparator(comparator);
+    }
+
 }

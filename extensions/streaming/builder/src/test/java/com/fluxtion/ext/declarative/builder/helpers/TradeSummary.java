@@ -26,7 +26,7 @@ public class TradeSummary {
     private int tradeCount;
     private double averagOrderSize;
 
-    public void setTraderId(String traderId) {
+    public void setTraderIdString(String traderId) {
         this.traderId = traderId;
     }
 
@@ -63,6 +63,10 @@ public class TradeSummary {
 
     public void setAveragOrderSize(double averagOrderSize) {
         this.averagOrderSize = averagOrderSize;
+    }
+
+    public String getTraderIdString() {
+        return traderId;
     }
     
     @Override

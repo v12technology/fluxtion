@@ -18,6 +18,9 @@ package com.fluxtion.generator.anyobjectasevent;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /**
  *
@@ -25,22 +28,26 @@ import com.fluxtion.generator.util.BaseSepInprocessTest;
  */
 public class TestAnyObjectAsEvent extends BaseSepInprocessTest {
 
-    
-//    @Test
-    public void testCombined(){
-//        fixedPkg = true;
-        sep((c) ->{
+    @Test
+    public void testCombined() {
+        sep((c) -> {
             c.addNode(new StringHandler(), "strHandler");
-            c.templateFile = "javaTemplateNoFluxtion.vsl";
         });
+        StringHandler strHandler = getField("strHandler");
+        assertFalse(strHandler.notified);
+        onEvent("hello world");
+        assertTrue(strHandler.notified);
     }
-    
-    public static class StringHandler{
-    
-         @EventHandler
-         public boolean newString(String s){
-             return true;
-         }
+
+    public static class StringHandler {
+
+        boolean notified = false;
+
+        @EventHandler
+        public boolean newString(String s) {
+            notified = true;
+            return true;
+        }
     }
-    
+
 }

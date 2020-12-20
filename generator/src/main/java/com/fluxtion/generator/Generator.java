@@ -137,8 +137,6 @@ public class Generator {
     private File templateJavaOutput() throws Exception {
         SepJavaSourceModelHugeFilter srcModelHuge = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
         SepJavaSourceModelHugeFilter srcModel = srcModelHuge;
-//        SepJavaSourceModel srcModelOriginal = new SepJavaSourceModel(sep, config.inlineEventHandling);
-//        SepJavaSourceModel srcModel = srcModelOriginal;
         LOG.debug("building source model");
         srcModel.buildSourceModel();
         //set up defaults
@@ -178,6 +176,7 @@ public class Generator {
         ctx.put("MODEL_EXTENSION", config.templateContextExtension);
         ctx.put("package", GenerationContext.SINGLETON.getPackageName());
         ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
+        ctx.put("logenabled", config.isGenerateLogging());
         File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
         FileWriter templateWriter = new FileWriter(outFile);
         template.merge(ctx, templateWriter);

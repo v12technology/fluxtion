@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.event.Signal;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import java.util.HashMap;
@@ -35,21 +36,28 @@ import java.util.Map;
  * The map is initially empty and is mutated using Signal events that contain Tuple's for key value pairs.<p>
  * 
  * The id of the map is the filter string used when sending signals so they are routed to the correct instance.<p>
- * <pre>
- *{@code
+ * <pre>{@code
+//registering lookupValue instance:
     sep((c) ->{
         select(MyNode.class)
-            .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookup);
+            .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookupValue);
     });
 
+//using the factory method:
+    sep((c) ->{
+        select(MyNode.class)
+            .forEach(lookupValue("mylookup", MyNode::getKey, MyNode::setValue));
+    });
+ 
+ 
     MyNode nodeEvent = new MyNode();
     nodeEvent.setKey("hello");
     nodeEvent.setValue("nobody");
 
-    //seed a lookup value
+    //seed a lookupValue value with an event
     onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
     assertThat(nodeEvent.getValue(), is("nobody"));
-    //send the event to the processor and the lookup will update MyNode::setValue with "world" for MyNode::getKey == "hello"
+    //send the event to the processor and the lookupValue will update MyNode::setValue with "world" for MyNode::getKey == "hello"
     onEvent(nodeEvent);
     assertThat(nodeEvent.getValue(), is("world"));
     }
@@ -66,6 +74,10 @@ public class EventDrivenLookup {
     private final SerializableBiConsumer setFunction;
     private Map lookupMap;
 
+    public static <T, S, K, V> SerializableConsumer<T> lookup(String id, SerializableFunction<S, K> keyFunction, SerializableBiConsumer<S, V> setFunction) {
+        return new EventDrivenLookup(id, keyFunction, setFunction)::lookupValue;
+    }
+    
     public <S, K, V> EventDrivenLookup(String id, SerializableFunction<S, K> keyFunction, SerializableBiConsumer<S, V> setFunction) {
         this.id = id;
         this.id_deleteEntry = id + "_deleteEntry";
@@ -86,7 +98,7 @@ public class EventDrivenLookup {
         this.lookupMap = lookupMap;
     }
 
-    public <T> void lookup(T target) {
+    public <T> void lookupValue(T target) {
         Object apply = keyFunction.apply(target);
         Object val = lookupMap.get(apply);
         if (val != null) {

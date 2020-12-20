@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.streaming.builder.factory;
+package com.fluxtion.ext.streaming.api;
 
 /**
  * Stores a duration in milliseconds

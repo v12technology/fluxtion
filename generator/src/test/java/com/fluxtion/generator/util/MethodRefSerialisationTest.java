@@ -19,6 +19,7 @@ package com.fluxtion.generator.util;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import java.util.Comparator;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

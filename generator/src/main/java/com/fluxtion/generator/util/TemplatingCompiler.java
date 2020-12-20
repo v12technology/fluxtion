@@ -81,18 +81,17 @@ public class TemplatingCompiler {
             template.merge(ctx, templateWriter);
             templateWriter.flush();
         }
-
-        try {
-            while (true) {
-                if (outFile.exists() && outFile.length() > 1) {
-                    break;
-                } else {
-                    Thread.sleep(1);
-                }
-            }
-        } catch (InterruptedException ex) {
-            LOG.info("interrupted while writing source file", ex);
-        }
+//        try {
+//            while (true) {
+//                if (outFile.exists() && outFile.length() > 1) {
+//                    break;
+//                } else {
+//                    Thread.sleep(1);
+//                }
+//            }
+//        } catch (InterruptedException ex) {
+//            LOG.info("interrupted while writing source file", ex);
+//        }
         return generatedClassName;
     }
 

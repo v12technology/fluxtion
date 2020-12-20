@@ -27,7 +27,7 @@ import java.util.ArrayDeque;
 import lombok.Data;
 
 /**
- *
+ * Applies a sliding window to a {@link Wrapped<Number>}
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @Data
@@ -39,7 +39,6 @@ public class SlidingNumberAggregator implements Wrapper<Number> {
     @SepNode
     private final StatefulNumber source;
     private final int size;
-    
     @NoEventReference
     @SepNode
     private TimeReset timeReset;
