@@ -23,14 +23,20 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.builder.Templates;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
@@ -47,6 +53,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -80,13 +87,15 @@ public class GroupByContext<K, T> {
         Wrapper.class, OnParentUpdate.class, OnEventComplete.class,
         Map.class, BitSet.class, GroupBy.class, EventHandler.class,
         GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
-        WrappedCollection.class, Collection.class,
-        ArrayListWrappedCollection.class, SepContext.class, Collections.class
+        WrappedCollection.class, Collection.class, Stateful.class, MutableNumber.class,
+        ArrayListWrappedCollection.class, SepContext.class, Collections.class, SerializableBiConsumer.class,
+        Comparator.class, WrappedList.class, SepNode.class, PushReference.class, lombok.extern.slf4j.Slf4j.class
     );
     private String genClassName;
     private String calcStateClass;
     private String eventCompleteMethod;
     private String eventMethod;
+    private SerializableBiConsumer<T, T> initCopy;
 
     public static <K, T> GroupByBuilder<K, T> builder(Group<K, T> group) {
         GroupByContext<K, T> ctxt = new GroupByContext<>(group);
@@ -134,6 +143,10 @@ public class GroupByContext<K, T> {
         return builder;
     }
 
+    public void setInitCopy(SerializableBiConsumer<T, T> initCopy) {
+        this.initCopy = initCopy;
+    }
+
     public ImportMap getImportMap() {
         return importMap;
     }
@@ -164,6 +177,10 @@ public class GroupByContext<K, T> {
             VelocityContext ctx = new VelocityContext();
             ctx.put("currentTemplate", TEMPLATE);
             ctx.put(functionClass.name(), genClassName);
+            Set<GroupByFunctionInfo> functionSet = new HashSet<>();
+            contexts.stream().forEach((context) -> {
+                functionSet.addAll(context.getFunctionSet());
+            });
             if (mapPrimitiveToWrapper(primaryContext.getKeyMethodActual().getReturnType()) == void.class) {
                 if (primaryContext.isMultiKey()) {
                     ctx.put(keyClass.name(), primaryContext.getMultiKeyClassName());
@@ -178,6 +195,7 @@ public class GroupByContext<K, T> {
             ctx.put("calcStateClass", calcStateClass);
             ctx.put("initialiserRequired", initialiserRequired);
             ctx.put("isMultiKey", primaryContext.isMultiKey());
+            ctx.put("functionSet", functionSet);
             if (primaryContext.isMultiKey()) {
                 ctx.put("multiKeyFunctionSet", primaryGroup.getMultiKeySourceMap());
                 ctx.put("multiKeyClassName", primaryContext.getMultiKeyClassName());
@@ -187,6 +205,13 @@ public class GroupByContext<K, T> {
             }
             if (eventMethod != null) {
                 ctx.put("eventMethod", eventMethod);
+            }
+            if(initCopy!=null){
+                Method method = initCopy.method();
+                String clazzName = importMap.addImport(method.getDeclaringClass());
+                ctx.put("initCopy", clazzName + "::" + method.getName());
+            }else{
+                ctx.put("initCopy", "(a, b) ->{}");
             }
             ctx.put(imports.name(), importMap.asString());
             ctx.put(sourceMappingList.name(), contexts);

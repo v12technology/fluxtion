@@ -17,22 +17,17 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.api.partition.LambdaReflection;
-import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
+import com.fluxtion.ext.streaming.api.util.Tuple;
+import com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
-import com.fluxtion.ext.streaming.builder.group.Group;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,21 +36,21 @@ import org.junit.Test;
  */
 public class PairTest extends StreamInprocessTest {
 
-    @Test
-    @Ignore
-    public void testpair() {
+//    @Test
+//    @Ignore
+//    public void testpair() {
+//        sep((c) -> {
+//            select(Pair.class).map(cumSum(), Pair::getValue).log("pair sum: '{}'", Number::intValue);
+//        });
+//        onEvent(new Pair<>("test", 10));
+//        onEvent(new Pair<>("test", 10));
+//        onEvent(new Pair<>("test", 10));
+//    }
 
-        sep((c) -> {
-            select(Pair.class).map(cumSum(), Pair::getValue).log("pair sum: '{}'", Number::intValue);
-        });
-        onEvent(new Pair<>("test", 10));
-        onEvent(new Pair<>("test", 10));
-        onEvent(new Pair<>("test", 10));
-    }
-
     @Test
-    @Ignore
     public void tumbleGroupBy() {
+        fixedPkg = true;
+        reuseSep = true;
         sep(PairTest::topTrades);
         for (int i = 0; i < 10; i++) {
             onEvent(new Trade("ORCL", i));
@@ -73,55 +68,59 @@ public class PairTest extends StreamInprocessTest {
     }
 
     public static void topTrades(SEPConfig cfg) {
-        tumble(groupBy(Trade::getSymbol, Trade::getVolume, AggregateFunctions::calcSum), 6)
-            .comparator(new PairValueNumberCompare())
-            .log()
+        cfg.setGenerateLogging(true);
+        tumble(GroupFunctionsBuilder.groupBy(Trade::getSymbol, Trade::getVolume, AggregateSum::calcCumSum), 6)
+            //            .comparing(Pair::getValue)
+            .comparator(new PairValueNumberCompare<String>())
             .top(2)
-            .log()
             .map(PairTest::formatMessage)
             .log();
     }
 
-    public static String formatMessage(List<Pair<String, Double>> t) {
+    public static String formatMessage(List<Tuple<String, Number>> t) {
         String ret = "Trade summary:\n";
         for (int i = 0; i < t.size(); i++) {
-            Pair<String, Double> pair = t.get(i);
-            ret += "\tpos[" + (1 + i) + "] symbol:" + pair.getKey() + " volume:" + pair.getValue() + "\n";
+            Tuple<String, Number> pair = t.get(i);
+            ret += "\tpos[" + (1 + i) + "] symbol:" + pair.getKey() + " cumulative volume:" + pair.getValue() + "\n";
         }
         return ret;
     }
 
-    public static class PairValueNumberCompare implements Comparator<Pair<?, Number>> {
+    public static class PairValueNumberCompare<K> implements Comparator<Tuple<K, Number>> {
 
         @Override
-        public int compare(Pair<?, Number> o1, Pair<?, Number> o2) {
+        public int compare(Tuple<K, Number> o1, Tuple<K, Number> o2) {
             return (int) (o2.getValue().doubleValue() - o1.getValue().doubleValue());
         }
 
     }
 
-    private static <S, K, V extends Number> GroupBy<Pair<K, V>> groupBy(
-        SerializableFunction<S, K> keySupplier,
-        SerializableFunction<S, V> valueSupplier,
-        LambdaReflection.SerializableBiFunction<? super V, ? super V, ? extends V> func
-    ) {
-        GroupBy<Pair<K, V>>  build = Group.groupBy(keySupplier, Pair.class)
-            .init(keySupplier, Pair::setKey)
-            .mapPrimitiveNoType(valueSupplier, Pair::setValue, func)
-            .build();
-        return build;
+//    private static <S, K, V extends Number> GroupBy<Pair<K, V>> groupBy(
+//        SerializableFunction<S, K> keySupplier,
+//        SerializableFunction<S, V> valueSupplier,
+//        LambdaReflection.SerializableBiFunction<? super V, ? super V, ? extends V> func
+//    ) {
+//        GroupBy<Pair<K, V>> build = Group.groupBy(keySupplier, Pair.class)
+//            .init(keySupplier, Pair::setKey)
+//            .mapPrimitiveNoType(valueSupplier, Pair::setValue, func)
+//            .build();
+//        return build;
+//
+//    }
 
-    }
-    
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Pair<K, V> {
-
-        K key;
-        V value;
-
-    }
+//    @Data
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+//    public static class Pair<K, V> {
+//
+//        K key;
+//        V value;
+//
+//        public static String hello() {
+//            return "hello";
+//        }
+//
+//    }
 
     @Data
     @AllArgsConstructor

@@ -22,15 +22,15 @@ along with this program.  If not, see
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
+  <logger name="org.reflections.Reflections" level="warn"/>
+  <logger name="com.fluxtion.generator" level="warn"/>
+  <logger name="net.openhft.compiler" level="warn"/>
 
-  <!-- Strictly speaking, the level attribute is not necessary since -->
-  <!-- the level of the root level is set to DEBUG by default.       -->
-  <!--<root level="DEBUG">-->          
-  <root level="WARN">          
+  <!--<root level="debug">-->
+  <root level="warn">
     <!--<appender-ref ref="STDOUT" />-->
-  </root>  
-  
+  </root>
 </configuration>

@@ -83,6 +83,11 @@ public class GroupByBuilder<K, T> {
         }
         return this;
     }
+    
+    public GroupByBuilder<K, T> initCopy(SerializableBiConsumer<T, T> initCopy){
+        groupBy.setInitCopy(initCopy);
+        return this;
+    }
 
     public GroupByBuilder<K, T> initPrimitive(SerializableFunction<K, ? extends Number> valueFunction, SerializableBiConsumer<T, ? super Byte> tragetFunction) {
         Method sourceMethod = valueFunction.method();

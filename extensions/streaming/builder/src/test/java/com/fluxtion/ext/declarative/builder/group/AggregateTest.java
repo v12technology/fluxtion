@@ -12,7 +12,7 @@
 package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.streaming.api.Stateful;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -22,10 +22,15 @@ import org.junit.Test;
  */
 public class AggregateTest {
 
-    public static class CumSum implements NumericFunctionStateful {
+    public static class CumSum implements Stateful {
 
         public double calc(double prevVal, double newVal) {
             return prevVal + newVal;
+        }
+
+        @Override
+        public void reset() {
+            //do nothing
         }
     }
 

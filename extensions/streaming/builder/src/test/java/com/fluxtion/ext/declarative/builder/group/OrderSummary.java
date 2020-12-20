@@ -121,6 +121,10 @@ public class OrderSummary {
         this.event = true;
     }
 
+    public static void initCopy(OrderSummary source, OrderSummary target){
+        target.ccyPair = source.ccyPair;
+    }
+    
     @Override
     public String toString() {
         return "OrderSummary{" + "orderId=" + orderId + ", orderSize=" + orderSize + ", firstDealId=" + firstDealId + ", dealCount=" + dealCount + ", lastDealSize=" + lastDealSize + ", volumeDealt=" + volumeDealt + ", avgDealSize=" + avgDealSize + ", ccyPair=" + ccyPair + ", event=" + event + ", eventComplete=" + eventComplete + '}';

@@ -18,7 +18,10 @@
 package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -30,15 +33,12 @@ import java.util.stream.Stream;
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T> The type held in this collection
  * @param <U> The underlying collection type
- * @param <C> The type of the subclass of WrappedCollection 
+ * @param <C> The type of the subclass of WrappedCollection
  */
-public interface WrappedCollection<T, U extends Collection<T>, C extends WrappedCollection<T, U, C>> extends Stateful<T>,  WrapperBase<Collection<T>, C> {
+public interface WrappedCollection<T, U extends Collection<T>, C extends WrappedCollection<T, U, C>>
+    extends Stateful<C>, WrapperBase<Collection<T>, C> {
 
-    default <I extends Integer> void comparing(LambdaReflection.SerializableBiFunction<T, T, I> func) {
-        throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");
-    }
-
-    default <R extends Comparable> void comparing(LambdaReflection.SerializableFunction<T, R> in) {
+    default <R extends Comparable> WrappedList<T> comparing(SerializableFunction<T, R> in) {
         throw new UnsupportedOperationException("comparing not implemented in WrappedCollection");
     }
 
@@ -47,28 +47,53 @@ public interface WrappedCollection<T, U extends Collection<T>, C extends Wrapped
     }
 
     U collection();
+    
+    default WrappedCollection<T, U, C>  sliding(int itemsPerBucket, int numberOfBuckets){
+        return null;
+    }
+    
+    default WrappedCollection<T, U, C>  sliding(Duration timePerBucket, int numberOfBuckets){
+        return null;
+    }
 
-    default <R> Wrapper<R> map(LambdaReflection.SerializableFunction<U, R> mapper) {
+    /**
+     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+     * @param time duration of the tumbling window
+     * @return The collection of events in sliding window
+     */
+    default WrappedCollection<T, U, C> tumbling(Duration time){
+        return null; 
+    }    
+    
+     /**
+     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+     * @param itemCount number of items in the tumbling window
+     * @return The collection of events in sliding window
+     */
+    default WrappedCollection<T, U, C> tumbling(int itemCount){
+        return null; 
+    }
+    
+    default <R> Wrapper<R> map(SerializableFunction<U, R> mapper) {
         return StreamOperator.service().map(mapper, asWrapper(), true);
-    } 
+    }
 
-    default Wrapper<U> asWrapper(){
+    default Wrapper<U> asWrapper() {
         return StreamOperator.service().streamInstance(this::collection);
     }
-    
+
     WrappedCollection<T, U, C> resetNotifier(Object resetNotifier);
 
-
     @Override
-    default U  event(){
+    default U event() {
         return collection();
     }
-    
+
     @Override
-    default Class<Collection<T>> eventClass(){
+    default Class<Collection<T>> eventClass() {
         return (Class<Collection<T>>) collection().getClass();
     }
-        
+
     default int size() {
         return collection().size();
     }

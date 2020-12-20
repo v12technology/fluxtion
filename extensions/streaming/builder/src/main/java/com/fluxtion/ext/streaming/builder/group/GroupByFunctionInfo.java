@@ -16,7 +16,8 @@
  */
 package com.fluxtion.ext.streaming.builder.group;
 
-import com.fluxtion.ext.streaming.api.numeric.NumericFunctionStateful;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -39,6 +40,8 @@ public class GroupByFunctionInfo {
     private String functionCalcMethodName;
     private String functionInstanceId;
     private boolean stateful;
+    private boolean statefulNonNumeric;
+    private boolean statefulNumeric;
     private boolean staticFunction;
     //Source
     private Class sourceClass;
@@ -68,7 +71,9 @@ public class GroupByFunctionInfo {
         functionCalcMethodName = method.getName();
         functionCalcArgType = method.getParameterTypes()[0].getName();
         functionCalcReturnType = method.getReturnType().getName();
-        stateful = NumericFunctionStateful.class.isAssignableFrom(clazz);
+        stateful = Stateful.class.isAssignableFrom(clazz);
+        statefulNumeric = StatefulNumber.class.isAssignableFrom(clazz);
+        statefulNonNumeric = stateful & !statefulNumeric;
         staticFunction = Modifier.isStatic(method.getModifiers());
     }
     
@@ -90,21 +95,13 @@ public class GroupByFunctionInfo {
     }
     
     public String getUpdateTarget(){
-        
-//            double value = instance.aggregateSum2;
-//            value = aggregateSum2.calcSum(event.getTradeVolume(), value);
-//            target.setTotalVolume((int)value);
-//            instance.aggregateSum2 = value;
         String functionId = functionInstanceId;
         if(staticFunction){
             functionId = functionClassName;
         }else if(stateful){
             functionId = "instance." + functionInstanceId+"Function";
         }
-//        functionReturnType = (stateful && )
-        
         String source = sourceInstanceId==null?"0":sourceInstanceId +  "." + sourceCalcMethodName + "()";
-
         String a = "\t\t\t" + functionCalcReturnType + " value = instance." + functionInstanceId + ";\n";
         String b = "\t\t\tvalue = " + functionId + "." + functionCalcMethodName + "((" + functionCalcArgType + ")"
                 + source
@@ -115,6 +112,12 @@ public class GroupByFunctionInfo {
                 ;
         String d = "\t\t\tinstance." + functionInstanceId + " = value;";
         return a + b + c + d;
+    }
+    
+    public String getCopyToTarget(){
+        String c =  "newInstance.target." + targetCalcMethodName + "((" + targetArgType + ")"
+                + "newInstance." + functionInstanceId + ")";
+        return c ;
     }
 
 }

@@ -86,5 +86,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     </dependencies>
     <properties>
         <netbeans.hint.license>fluxtion</netbeans.hint.license>
+        <maven.compiler.source>14</maven.compiler.source>
+        <maven.compiler.target>14</maven.compiler.target>
     </properties>
 </project>

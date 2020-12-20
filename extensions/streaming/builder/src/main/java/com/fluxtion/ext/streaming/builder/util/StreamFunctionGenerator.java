@@ -32,7 +32,6 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
-import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
 import com.fluxtion.generator.targets.JavaGenHelper;
 import java.io.File;
@@ -43,6 +42,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -54,6 +54,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  *
  * @author V12 Technology Ltd.
  */
+@Slf4j
 public class StreamFunctionGenerator {
 
     private final String templateFile = "/template/FunctionsTemplate.vsl";
@@ -130,7 +131,7 @@ public class StreamFunctionGenerator {
         File srcPackageDirectory = new File(SRC_DIR, packageName.replace(".", "/"));
         srcPackageDirectory.mkdirs();
         File outFile = new File(srcPackageDirectory, className + ".java");
-        System.out.println("writing file:" + outFile.getAbsolutePath());
+        log.info("writing file:{}", outFile.getAbsolutePath());
         FileWriter templateWriter = new FileWriter(outFile);
         template.merge(ctx, templateWriter);
         templateWriter.flush();

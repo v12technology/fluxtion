@@ -22,25 +22,27 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
+@Slf4j
 public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     private List<T> unmodifiableCollection;
     private final Wrapper<T> wrappedSource;
     @NoEventReference
     private Comparator comparator;
+    private SerializableFunction<T, ? extends Comparable> comparingFunction;
     private List<T> collection;
     private Object resetNotifier;
     private boolean reset;
@@ -66,9 +68,9 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         collection.clear();
         reset = true;
     }
-    
+
     @Override
-    public WrappedList<T> resetNotifier(Object resetNotifier){
+    public WrappedList<T> resetNotifier(Object resetNotifier) {
         this.resetNotifier = resetNotifier;
         return this;
     }
@@ -85,7 +87,11 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public final void init() {
         this.collection = new ArrayList<>();
         this.unmodifiableCollection = Collections.unmodifiableList(collection);
-        if(reversed){
+        if(comparingFunction!=null){
+            comparator = new FunctionComparator();
+            Comparator.comparing(comparingFunction);
+        }
+        if (reversed) {
             comparator = comparator.reversed();
             reversed = false;
         }
@@ -95,6 +101,15 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public WrappedList<T> reverse() {
         reversed = !reversed;
         return this;
+    }
+
+    public void sort() {
+        if (comparator != null) {
+            log.debug("sorting");
+            this.collection.sort(comparator);
+        }else{
+            log.debug("no sorting - comparator is null");
+        }
     }
 
     @Override
@@ -114,42 +129,63 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @OnEvent
     public boolean updated() {
-        if(!reset && wrappedSource!=null){
+        if (!reset && wrappedSource != null) {
             final T newItem = wrappedSource.event();
             addItem(newItem);
         }
         reset = false;
         return true;
     }
+
+    @Override
+    public WrappedList<T> sliding(int itemsPerBucket, int numberOfBuckets){
+        WrappedList<T> sliding = WindowBuildOperations.service().sliding(self(), itemsPerBucket, numberOfBuckets);
+        return sliding;
+    }
     
     @Override
-    public void combine(Stateful<? extends T> other) {
-        if (other instanceof WrappedCollection) {
-            WrappedCollection<T,?,?> wrappedCollection = (WrappedCollection<T,?,?>) other;
-            Collection<T> collection1 = wrappedCollection.collection();
-            if(collection1 == null)
-                return;
-            if (collection1 instanceof List) {
-                List<T> list = (List) collection1;
-                for (int i = 0; i < list.size(); i++) {
-                    this.addItem(list.get(i));
-                }
-            }else{
-               collection1.forEach(this::addItem);
+    public WrappedList<T> sliding(Duration timePerBucket, int numberOfBuckets) {
+        WrappedList<T> sliding = WindowBuildOperations.service().sliding(self(), timePerBucket, numberOfBuckets);
+        return sliding;
+    }
+
+    @Override
+    public WrappedList<T> tumbling(Duration time) {
+        WrappedList<T> sliding = WindowBuildOperations.service().tumbling(self(), time);
+        return sliding;
+    }
+
+    @Override
+    public WrappedList<T> tumbling(int itemCount) {
+        WrappedList<T> sliding = WindowBuildOperations.service().tumbling(self(), itemCount);
+        return sliding;
+    }
+    
+    @Override
+    public void combine(WrappedList<T> other) {
+        List<T> otherCollection = other.collection();
+        if (otherCollection == null) {
+            return;
+        }
+        if (otherCollection instanceof List) {
+            List<T> list = (List) otherCollection;
+            for (int i = 0; i < list.size(); i++) {
+                this.addItem(list.get(i));
             }
+        } else {
+            otherCollection.forEach(this::addItem);
         }
     }
 
     @Override
-    public void deduct(Stateful<? extends T> other) {
-        final WrappedList<T> otherList = (WrappedList<T>)other;
-        List<T> collection1 = otherList.collection();
+    public void deduct(WrappedList<T> other) {
+        List<T> collection1 = other.collection();
         for (int i = 0; i < collection1.size(); i++) {
             T get = collection1.get(i);
             this.collection.remove(get);
         }
     }
-    
+
     public ArrayListWrappedCollection<T> addItem(final T newItem) {
         if (comparator != null) {
             int index = Collections.binarySearch(collection, newItem, comparator);
@@ -160,6 +196,11 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         } else {
             collection.add(newItem);
         }
+        return this;
+    }
+
+    public ArrayListWrappedCollection<T> removeItem(final T newItem) {
+        this.collection.remove(newItem);
         return this;
     }
 
@@ -186,13 +227,13 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     }
 
     @Override
-    public < I extends Integer> void comparing(SerializableBiFunction<T, T, I> func) {
-        System.out.println("SETTING COMPARATOR STATIC FUNCTION " + func.method().getParameters()[0].getType());
+    public WrappedList<T> comparing(SerializableFunction comparingFunction) {
+        this.comparingFunction = comparingFunction;
+        return this;
     }
 
-    @Override
-    public <R extends Comparable> void comparing(SerializableFunction<T, R> in) {
-        System.out.println("SETTING COMPARATOR USING PROPERTY");
+    public SerializableFunction<T, ?> getComparingFunction() {
+        return comparingFunction;
     }
 
     @Override
@@ -209,6 +250,14 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     public String toString() {
         return "ArrayListWrappedCollection{" + "collection=" + collection + '}';
     }
+
     
-    
+    private class FunctionComparator implements Comparator<T>{
+
+        @Override
+        public int compare(T o1, T o2) {
+            return ((Comparable)comparingFunction.apply(o1)).compareTo(comparingFunction.apply(o2));
+        }
+
+    }
 }

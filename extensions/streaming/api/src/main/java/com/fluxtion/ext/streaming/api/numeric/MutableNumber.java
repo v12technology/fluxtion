@@ -104,12 +104,6 @@ public class MutableNumber extends Number {
         this.intValue = (int) doubleValue;
     }
     
-//    public void copyFrom(NumericValue source){
-//        intValue = source.intValue();
-//        longValue = source.longValue();
-//        doubleValue = source.doubleValue();
-//    }
-    
     public void copyFrom(Number source){
         intValue = source.intValue();
         longValue = source.longValue();

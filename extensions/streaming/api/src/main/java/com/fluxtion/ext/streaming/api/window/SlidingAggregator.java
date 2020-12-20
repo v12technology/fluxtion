@@ -27,26 +27,26 @@ import java.util.ArrayDeque;
 import lombok.Data;
 
 /**
- *
+ * Applies a sliding window to a {@link Stateful} input.
+ * 
  * @author Greg Higgins greg.higgins@v12technology.com
+ * @param <T>
  */
 @Data
-public class SlidingAggregator<T> implements Wrapper<T> {
+public class SlidingAggregator<T extends Stateful<T>> implements Wrapper<T> {
 
     @SepNode
     private final Object notifier;
     private final Class<T> clazz;
     @NoEventReference
     @SepNode
-    private final Stateful<T> source;
+    private final T source;
     @NoEventReference
     @SepNode
     private TimeReset timeReset;
-    
-    
     private final int size;
-    private Stateful<T> aggregator;
-    private ArrayDeque<Stateful> deque;
+    private T aggregator;
+    private ArrayDeque<T> deque;
     
     @OnEvent
     public void aggregate() {        
@@ -54,10 +54,10 @@ public class SlidingAggregator<T> implements Wrapper<T> {
         if(expiredBuckete==0){
             return;
         }
-        Stateful popped1 = deque.poll();
+        T popped1 = deque.poll();
         aggregator.deduct(popped1);
         for (int i = 1; i < expiredBuckete; i++) {
-            Stateful popped2 = deque.poll();
+            T popped2 = deque.poll();
             aggregator.deduct(popped2);
             popped2.reset();
             deque.add(popped2);
@@ -78,17 +78,17 @@ public class SlidingAggregator<T> implements Wrapper<T> {
 
     @Override
     public Class<T> eventClass() {
-        return clazz;
+        return (Class<T>)source.getClass();
     }
 
     @Initialise
     public void init() {
         try {
             deque = new ArrayDeque<>(size);
-            aggregator = source.getClass().getDeclaredConstructor().newInstance();
+            aggregator = (T)source.getClass().getDeclaredConstructor().newInstance();
             aggregator.reset();
             for (int i = 0; i < size; i++) {
-                final Stateful function = source.getClass().getDeclaredConstructor().newInstance();
+                final T function = (T)source.getClass().getDeclaredConstructor().newInstance();
                 function.reset();
                 deque.add(function);
             }

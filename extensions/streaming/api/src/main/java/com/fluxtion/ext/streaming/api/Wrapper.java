@@ -23,6 +23,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
@@ -128,17 +129,6 @@ public interface Wrapper<T> extends Stateful<T>{
         return StreamOperator.service().map((SerializableFunction) mapper, this, supplier.method(), true);
     }
 
-    /**
-     * maps a two arguments using a binary function.
-     *
-     * @param <R>
-     * @param <S>
-     * @param <U>
-     * @param mapper
-     * @param arg1
-     * @param arg2
-     * @return
-     */
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<U, S, R> mapper, Argument<S> arg1, Argument<U> arg2) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, arg1, arg2);
     }
@@ -184,6 +174,96 @@ public interface Wrapper<T> extends Stateful<T>{
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this), Argument.arg(arg1));
     }
 
+    //windows reducing
+    /**
+     * Create a time based tumbling window aggregate result expiring after a duration has passed. The window combines the results of the supplied
+     * function for all events that occur within the timed window
+     * @param <R> the result type of the function
+     * @param mapper The function to apply to each event in the window
+     * @param time The duration of the window
+     * @return A result that is updated at the window expiry
+     */
+    default <R> Wrapper<R> tumbling(SerializableFunction<T, R> mapper, Duration time) {
+        return WindowBuildOperations.service().tumbling(this, mapper, time); 
+    }
+    
+    /**
+     * Create a count based tumbling window aggregate result expiring after receiving a number of events. The window combines the results of the supplied
+     * function for all events that occur within the window
+     * @param <R> the result type of the function
+     * @param mapper The function to apply to each event in the window
+     * @param itemCount the number of events in a window
+     * @return A result that is updated at the window expiry
+     */
+    default <R> Wrapper<R> tumbling(SerializableFunction<T, R> mapper, int itemCount) {
+        return WindowBuildOperations.service().tumbling(this, mapper, itemCount); 
+    }
+    
+    /**
+     * Create a time based sliding window aggregate result publishing after a duration has passed. The window combines the results of the supplied
+     * function for all events that occur within the number of buckets. The total window time = time per bucket X number of buckets
+     * @param <R> the result type of the function
+     * @param mapper The function to apply to each event in the window
+     * @param time The duration of a bucket
+     * @param numberOfBuckets the number of buckets in the window 
+     * @return A result that is updated at the window expiry
+     */
+    default <R> Wrapper<R> sliding(SerializableFunction<T, R> mapper, Duration time,  int numberOfBuckets) {
+        return WindowBuildOperations.service().sliding(this, mapper, time, numberOfBuckets); 
+    }
+    
+    /**
+     * Create a count based sliding window aggregate result publishing after a count has passed. The window combines the results of the supplied
+     * function for all events that occur within the number of buckets. The total window count = the number of events per bucket X number of buckets
+     * @param <R> the result type of the function
+     * @param mapper The function to apply to each event in the window
+     * @param itemCountPerBuket the number of events per bucket
+     * @param numberOfBuckets the number of buckets in the window 
+     * @return A result that is updated at the window expiry
+     */
+    default <R> Wrapper<R> sliding(SerializableFunction<T, R> mapper, int itemCountPerBuket, int numberOfBuckets) {
+        return WindowBuildOperations.service().sliding(this, mapper, itemCountPerBuket, numberOfBuckets); 
+    }
+    
+    //window collecting
+    /**
+     * Collects the events into a WrappedList using a time based sliding window strategy. 
+     * @param timePerBucket  time per bucket
+     * @param numberOfBuckets number of buckets in sliding window
+     * @return The collection of events in sliding window
+     */
+    default WrappedList<T> sliding(Duration timePerBucket, int numberOfBuckets){
+        return WindowBuildOperations.service().sliding(collect(), timePerBucket, numberOfBuckets); 
+    }    
+    
+    /**
+     * Collects the events into a WrappedList using a count based sliding window strategy. 
+     * @param itemCount the count of events per bucket
+     * @param numberOfBuckets number of buckets in sliding window
+     * @return The collection of events in sliding window
+     */
+    default WrappedList<T> sliding(int itemCount, int numberOfBuckets){
+        return WindowBuildOperations.service().sliding(collect(), itemCount, numberOfBuckets); 
+    }  
+    
+    /**
+     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+     * @param time duration of the tumbling window
+     * @return The collection of events in sliding window
+     */
+    default WrappedList<T> tumbling(Duration time){
+        return WindowBuildOperations.service().tumbling(collect(), time); 
+    }    
+    
+     /**
+     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+     * @param itemCount number of items in the tumbling window
+     * @return The collection of events in sliding window
+     */
+    default WrappedList<T> tumbling(int itemCount){
+        return WindowBuildOperations.service().tumbling(collect(), itemCount); 
+    }    
+    
     /**
      * pushes a data item from the current node in the stream to any node.The
      * target node will become part of the same execution graph as the
@@ -194,7 +274,7 @@ public interface Wrapper<T> extends Stateful<T>{
      * @param <S>
      * @param supplier
      * @param mapper
-     * @return the com.fluxtion.ext.declarative.api.Wrapper<T>
+     * @return this
      */
     default <R, S extends R> Wrapper<T> push(SerializableFunction<T, S> supplier, SerializableConsumer<R> mapper) {
         StreamOperator.service().push(this, supplier.method(), mapper);

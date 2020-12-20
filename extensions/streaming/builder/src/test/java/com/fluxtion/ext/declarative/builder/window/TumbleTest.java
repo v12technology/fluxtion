@@ -25,7 +25,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static com.fluxtion.ext.streaming.api.stream.Argument.argInt;
-import com.fluxtion.ext.streaming.builder.factory.Duration;
+import com.fluxtion.ext.streaming.api.Duration;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;

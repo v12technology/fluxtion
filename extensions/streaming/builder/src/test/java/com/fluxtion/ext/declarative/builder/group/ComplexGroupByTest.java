@@ -18,7 +18,7 @@ import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.junit.Categories;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

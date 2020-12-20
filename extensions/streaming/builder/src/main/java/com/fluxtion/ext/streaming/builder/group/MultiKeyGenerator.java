@@ -17,7 +17,6 @@
 package com.fluxtion.ext.streaming.builder.group;
 
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.MultiKey;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import static com.fluxtion.ext.streaming.builder.util.FunctionKeys.functionClass;
@@ -51,7 +50,6 @@ public class MultiKeyGenerator {
             ctx.put(imports.name(), importMap.asString());
             Class<MultiKey<?>> aggClass = FunctionGeneratorHelper.generateAndCompile(null, TEMPLATE, GenerationContext.SINGLETON, ctx);
             MultiKey<?> multiKey = aggClass.newInstance();
-//            System.out.println("class:" + multiKey.getClass());
             return multiKey;
         } catch (Exception e) {
             throw new RuntimeException("could not buuld function " + e.getMessage(), e);

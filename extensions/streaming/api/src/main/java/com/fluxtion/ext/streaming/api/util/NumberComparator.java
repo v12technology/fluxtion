@@ -23,7 +23,7 @@ import java.util.Comparator;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class NumberComparator implements Comparator<Number> {
+public class NumberComparator<T extends Number> implements Comparator<T> {
 
     public static final NumberComparator numberComparator(){
         return new NumberComparator(); 

@@ -15,19 +15,15 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.ext.declarative.builder.window;
+package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Duration;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
-import com.fluxtion.generator.compiler.OutputRegistry;
-import java.io.File;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,14 +33,15 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingTestSimple extends StreamInprocessTest {
+public class StreamWindow extends StreamInprocessTest {
 
     @Test
     public void sumSlidingCountWrapper() {
         final int bucketSize = 5;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(select(Integer.class), cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
+            select(Integer.class)
+                .sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
         });
         testCumSum(0, 0, 0);
         testCumSum(2, 11, 0);
@@ -58,7 +55,8 @@ public class SlidingTestSimple extends StreamInprocessTest {
         final int bucketSize = 5;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(Integer.class, cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
+            select(Integer.class).
+                sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
         });
         testCumSum(0, 0, 0);
         testCumSum(2, 15, 30);
@@ -71,7 +69,8 @@ public class SlidingTestSimple extends StreamInprocessTest {
         final int bucketSize = 500;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(select(Integer.class), cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
+            select(Integer.class).
+                sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
         });//, "sumSlidingTimedWrapper.SumSlidingTimedWrapper");
         testCumSumTime(0, 0, 0, 0);
         testCumSumTime(2, 100, 15, 30);
@@ -84,7 +83,8 @@ public class SlidingTestSimple extends StreamInprocessTest {
         final int bucketSize = 500;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(Integer.class, cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
+            select(Integer.class).
+                sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
         });
         testCumSumTime(0, 0, 0, 0);
         testCumSumTime(2, 100, 15, 30);
@@ -97,7 +97,8 @@ public class SlidingTestSimple extends StreamInprocessTest {
         final int bucketSize = 5;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(select(Integer.class).collect(), bucketSize, bucketsPerPublish).id("collection");
+            select(Integer.class).
+                sliding(bucketSize, bucketsPerPublish).id("collection");
         });
 
         int i;
@@ -125,7 +126,8 @@ public class SlidingTestSimple extends StreamInprocessTest {
         final int bucketSize = 5;
         final int bucketsPerPublish = 3;
         sep(c -> {
-            sliding(Integer.class, bucketSize, bucketsPerPublish).id("collection");
+            select(Integer.class).
+                sliding(bucketSize, bucketsPerPublish).id("collection");
         });
 
         int i;
@@ -149,96 +151,18 @@ public class SlidingTestSimple extends StreamInprocessTest {
     }
 
     @Test
-    public void collectionSlidingTimeWrapper() {
-        final int bucketSize = 500;
-        final int bucketsPerPublish = 3;
-
-        sep(c -> {
-            sliding(select(Integer.class).collect(), Duration.millis(bucketSize), bucketsPerPublish).id("collection");
-        });
-        
-        setTime(0);
-        setTime(100);
-        onEvent(1);
-        onEvent(1);
-        setTime(600);
-        onEvent(2);
-        setTime(1100);
-        onEvent(3);
-        onEvent(3);
-        setTime(1200);
-        WrappedList<Number> collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList()));
-
-        tick(1200);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList()));
-        
-        tick(1600);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(1,1,2,3,3)));
-        
-        tick(2000);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(2,3,3)));
-        
-        tick(2500);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(3,3)));
-    }
-
-    @Test
-    public void collectionSlidingImpliedSelect() {
-        final int bucketSize = 500;
-        final int bucketsPerPublish = 3;
-
-        sep(c -> {
-            sliding(Integer.class, Duration.millis(bucketSize), bucketsPerPublish).id("collection");
-        });
-        
-        setTime(0);
-        setTime(100);
-        onEvent(1);
-        onEvent(1);
-        setTime(600);
-        onEvent(2);
-        setTime(1100);
-        onEvent(3);
-        onEvent(3);
-        setTime(1200);
-        WrappedList<Number> collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList()));
-
-        tick(1200);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList()));
-        
-        tick(1600);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(1,1,2,3,3)));
-        
-        tick(2000);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(2,3,3)));
-        
-        tick(2500);
-        collection = getField("collection");
-        assertThat(collection.collection(), is(Arrays.asList(3,3)));
-    }
-
-    public void collectionSlidingTimeSelect() {
-    }
-
-    @Test
     public void publishCount() {
         final int bucketSize = 5;
         final int bucketsPerPublish = 3;
         final int messageCount = 28;
         final int expectedPublishCount = 3;
         sep(c -> {
-            sliding(Double.class, avg(), bucketSize, bucketsPerPublish)
+            select(Double.class)
+                .sliding(avg(), bucketSize, bucketsPerPublish)
                 .map(count()).id("updatesAvg");
-            sliding(Double.class, cumSum(), bucketSize, bucketsPerPublish)
+
+            select(Double.class)
+                .sliding(cumSum(), bucketSize, bucketsPerPublish)
                 .map(count()).id("updatesCumSum");
         });
         for (int i = 1; i < messageCount; i++) {
@@ -250,6 +174,46 @@ public class SlidingTestSimple extends StreamInprocessTest {
         assertThat(updatesCumSum.intValue(), is(expectedPublishCount));
     }
 
+    @Test
+    public void collectionSlidingImpliedSelect() {
+        final int bucketSize = 500;
+        final int bucketsPerPublish = 3;
+
+        sep(c -> {
+            select(Integer.class)
+                .sliding(Duration.millis(bucketSize), bucketsPerPublish).id("collection");
+        });
+
+        setTime(0);
+        setTime(100);
+        onEvent(1);
+        onEvent(1);
+        setTime(600);
+        onEvent(2);
+        setTime(1100);
+        onEvent(3);
+        onEvent(3);
+        setTime(1200);
+        WrappedList<Number> collection = getField("collection");
+        assertThat(collection.collection(), is(Arrays.asList()));
+
+        tick(1200);
+        collection = getField("collection");
+        assertThat(collection.collection(), is(Arrays.asList()));
+
+        tick(1600);
+        collection = getField("collection");
+        assertThat(collection.collection(), is(Arrays.asList(1, 1, 2, 3, 3)));
+
+        tick(2000);
+        collection = getField("collection");
+        assertThat(collection.collection(), is(Arrays.asList(2, 3, 3)));
+
+        tick(2500);
+        collection = getField("collection");
+        assertThat(collection.collection(), is(Arrays.asList(3, 3)));
+    }
+
     public void testCumSum(int add, int loopCount, int expected) {
         for (int i = 0; i < loopCount; i++) {
             onEvent(add);
@@ -259,7 +223,7 @@ public class SlidingTestSimple extends StreamInprocessTest {
     }
 
     public void testCumSumTime(int add, int timeDelta, int loopCount, int expected) {
-        if(loopCount ==0){
+        if (loopCount == 0) {
             advanceTime(timeDelta);
         }
         for (int i = 0; i < loopCount; i++) {

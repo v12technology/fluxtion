@@ -24,7 +24,6 @@ import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
-import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import java.util.ArrayDeque;
 
@@ -121,16 +120,23 @@ public class StreamFunctions {
         }
 
         @Override
-        public void combine(Sum other, MutableNumber result) {
+        public Number combine(Sum other, MutableNumber result) {
             result.set(this.addValue(other.sum));
+            return result;
         }
 
         @Override
-        public void deduct(Sum other, MutableNumber result) {
+        public Number deduct(Sum other, MutableNumber result) {
             this.sum -= other.sum;
             result.set(this.sum);
+            return result;
         }
 
+        @Override
+        public Number currentValue(MutableNumber result) {
+            result.set(sum);
+            return result;
+        }
     }
 
     public static class Max implements Stateful {
@@ -154,7 +160,6 @@ public class StreamFunctions {
     public static class Min implements StatefulNumber<Min> {
 
         private double min = 0;
-        private int bucketCount;
         private transient ArrayDeque<MutableNumber> history;
         
         public double min(double val) {
@@ -164,30 +169,20 @@ public class StreamFunctions {
             return min;
         }
 
-        @Override
-        public void combine(Min other, MutableNumber result) {
-            StatefulNumber.super.combine(other, result); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void deduct(Min other, MutableNumber result) {
-            StatefulNumber.super.deduct(other, result); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setBucketCount(int count) {
-            this.bucketCount = count;
-        }
-
-        public int getBucketCount() {
-            return bucketCount;
-        }
+//        @Override
+//        public void combine(Min other, MutableNumber result) {
+//            StatefulNumber.super.combine(other, result); //To change body of generated methods, choose Tools | Templates.
+//        }
+//
+//        @Override
+//        public void deduct(Min other, MutableNumber result) {
+//            StatefulNumber.super.deduct(other, result); //To change body of generated methods, choose Tools | Templates.
+//        }
         
         @Override
         @Initialise
         public void reset() {
             min = 0;
-            history = new ArrayDeque<>(bucketCount);
         }
     }
 
@@ -209,19 +204,27 @@ public class StreamFunctions {
         public void reset() {
             sum = 0;
             count = 0;
-            average = 0;
+            average = Double.NaN;
         }
         
         @Override
-        public void combine(Average other, MutableNumber result) {
+        public Number combine(Average other, MutableNumber result) {
             count += other.count -1;
             result.set(this.addValue(other.sum));
+            return result;
         }
 
         @Override
-        public void deduct(Average other, MutableNumber result) {
+        public Number deduct(Average other, MutableNumber result) {
             count -= other.count  + 1;
             result.set(this.addValue(-other.sum));
+            return result;
+        }
+        
+        @Override
+        public Number currentValue(MutableNumber result) {
+            result.set(average);
+            return result;
         }
     }
 

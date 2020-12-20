@@ -20,7 +20,7 @@ package com.fluxtion.ext.declarative.builder.window;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
-import com.fluxtion.ext.streaming.builder.factory.Duration;
+import com.fluxtion.ext.streaming.api.Duration;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static org.hamcrest.CoreMatchers.is;

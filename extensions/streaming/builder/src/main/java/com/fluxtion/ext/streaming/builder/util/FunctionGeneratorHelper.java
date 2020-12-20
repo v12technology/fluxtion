@@ -24,9 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import lombok.extern.slf4j.Slf4j;
 import net.openhft.compiler.CachedCompiler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -108,9 +105,11 @@ public interface FunctionGeneratorHelper {
         String className = writeSourceFile(node, templateFile, generationConfig, ctx);
         String fqn = generationConfig.getPackageName() + "." + className;
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
+        Generator.formatSource(file);
+         
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
-        new Thread(() -> Generator.formatSource(file)).start();
+//        new Thread(() -> Generator.formatSource(file)).start();
         LOG.debug("compiling phase generateAndCompile:{}", templateFile);
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         LOG.debug("end generateAndCompile:{}", templateFile);
@@ -125,13 +124,14 @@ public interface FunctionGeneratorHelper {
         Thread.currentThread().setContextClassLoader(originalClassLoader);
 //generates the actual class
         ctx.put(FunctionKeys.functionPackage.name(), generationConfig.getPackageName());
+        ctx.put("logenabled", Boolean.getBoolean("generateLogging"));
         String generatedClassName = (String) ctx.get(FunctionKeys.functionClass.name());
         generationConfig.getProxyClassMap().put(node, generatedClassName);
         Template template = null;
         try {
             template = Velocity.getTemplate(templateFile);
         } catch (Exception e) {
-            System.out.println("failed to load template, setting threadcontext class loader");
+            LOG.warn("failed to load template, setting threadcontext class loader");
             try {
                 Thread.currentThread().setContextClassLoader(generationConfig.getClassLoader());
                 template = Velocity.getTemplate(templateFile);
@@ -146,17 +146,17 @@ public interface FunctionGeneratorHelper {
         }
         LOG.debug("templating finished writeSourceFile:{} generated name:{}", templateFile, generatedClassName);
 
-        try {
-            while (true) {
-                if (outFile.exists() && outFile.length() > 1) {
-                    break;
-                } else {
-                    Thread.sleep(1);
-                }
-            }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FunctionGeneratorHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            while (true) {
+//                if (outFile.exists() && outFile.length() > 1) {
+//                    break;
+//                } else {
+//                    Thread.sleep(1);
+//                }
+//            }
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(FunctionGeneratorHelper.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         LOG.debug("end writeSourceFile:{} generated name:{}", templateFile, generatedClassName);
         return generatedClassName;
     }
@@ -164,7 +164,7 @@ public interface FunctionGeneratorHelper {
     static void deleteGeneratedClass(GenerationContext generationConfig, String generatedClassName) {
         File outFile = new File(generationConfig.getPackageDirectory(), generatedClassName + ".java");
         if (!outFile.delete()) {
-            System.out.println("unable to delete file:" + outFile.getAbsolutePath());
+            LOG.warn("unable to delete file:" + outFile.getAbsolutePath());
         }
 
     }
