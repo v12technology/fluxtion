@@ -20,13 +20,13 @@ package com.fluxtion.ext.declarative.builder.lookup;
 import com.fluxtion.api.event.Signal;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.enrich.EventDrivenLookup;
-import static com.fluxtion.ext.streaming.api.enrich.EventDrivenLookup.lookup;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
+import static com.fluxtion.ext.streaming.api.enrich.EventDrivenLookup.lookup;
 
 /**
  *
@@ -38,14 +38,14 @@ public class LookupTest extends StreamInprocessTest {
     public void testLookup(){
         sep((c) ->{
             select(MyNode.class)
-                .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookup);
+                .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookupValue);
         });
         
         MyNode nodeEvent = new MyNode();
         nodeEvent.setKey("hello");
         nodeEvent.setValue("nobody");
         
-        //seed a lookup value
+        //seed a lookupValue value
         onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
         assertThat(nodeEvent.getValue(), is("nobody"));
         onEvent(nodeEvent);
@@ -63,7 +63,7 @@ public class LookupTest extends StreamInprocessTest {
         nodeEvent.setKey("hello");
         nodeEvent.setValue("nobody");
         
-        //seed a lookup value
+        //seed a lookupValue value
         onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
         assertThat(nodeEvent.getValue(), is("nobody"));
         onEvent(nodeEvent);
