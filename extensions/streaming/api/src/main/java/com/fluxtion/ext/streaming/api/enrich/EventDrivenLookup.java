@@ -37,16 +37,16 @@ import java.util.Map;
  * 
  * The id of the map is the filter string used when sending signals so they are routed to the correct instance.<p>
  * <pre>{@code
-//registering lookup instance:
+//registering lookupValue instance:
     sep((c) ->{
         select(MyNode.class)
-            .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookup);
+            .forEach(new EventDrivenLookup("mylookup", MyNode::getKey, MyNode::setValue)::lookupValue);
     });
 
 //using the factory method:
     sep((c) ->{
         select(MyNode.class)
-            .forEach(lookup("mylookup", MyNode::getKey, MyNode::setValue));
+            .forEach(lookupValue("mylookup", MyNode::getKey, MyNode::setValue));
     });
  
  
@@ -54,10 +54,10 @@ import java.util.Map;
     nodeEvent.setKey("hello");
     nodeEvent.setValue("nobody");
 
-    //seed a lookup value with an event
+    //seed a lookupValue value with an event
     onEvent(new Signal<Tuple>("mylookup", new Tuple<>("hello", "world")));
     assertThat(nodeEvent.getValue(), is("nobody"));
-    //send the event to the processor and the lookup will update MyNode::setValue with "world" for MyNode::getKey == "hello"
+    //send the event to the processor and the lookupValue will update MyNode::setValue with "world" for MyNode::getKey == "hello"
     onEvent(nodeEvent);
     assertThat(nodeEvent.getValue(), is("world"));
     }
@@ -75,7 +75,7 @@ public class EventDrivenLookup {
     private Map lookupMap;
 
     public static <T, S, K, V> SerializableConsumer<T> lookup(String id, SerializableFunction<S, K> keyFunction, SerializableBiConsumer<S, V> setFunction) {
-        return new EventDrivenLookup(id, keyFunction, setFunction)::lookup;
+        return new EventDrivenLookup(id, keyFunction, setFunction)::lookupValue;
     }
     
     public <S, K, V> EventDrivenLookup(String id, SerializableFunction<S, K> keyFunction, SerializableBiConsumer<S, V> setFunction) {
@@ -98,7 +98,7 @@ public class EventDrivenLookup {
         this.lookupMap = lookupMap;
     }
 
-    public <T> void lookup(T target) {
+    public <T> void lookupValue(T target) {
         Object apply = keyFunction.apply(target);
         Object val = lookupMap.get(apply);
         if (val != null) {
