@@ -295,4 +295,8 @@ ${functionInfo.updateTarget}
         return wrappedList.comparator(comparator);
     }
 
+    @Override
+    public WrappedList<Tuple> comparing(SerializableFunction comparingFunction) {
+          return wrappedList.comparing(comparingFunction);
+    }
 }

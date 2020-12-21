@@ -89,7 +89,8 @@ public class GroupByContext<K, T> {
         GroupByIniitialiser.class, GroupByTargetMap.class, NoEventReference.class,
         WrappedCollection.class, Collection.class, Stateful.class, MutableNumber.class,
         ArrayListWrappedCollection.class, SepContext.class, Collections.class, SerializableBiConsumer.class,
-        Comparator.class, WrappedList.class, SepNode.class, PushReference.class, lombok.extern.slf4j.Slf4j.class
+        SerializableFunction.class, Comparator.class, WrappedList.class, SepNode.class, 
+        PushReference.class, lombok.extern.slf4j.Slf4j.class
     );
     private String genClassName;
     private String calcStateClass;

@@ -17,6 +17,9 @@
  */
 package com.fluxtion.ext.streaming.api.util;
 
+import com.fluxtion.api.partition.LambdaReflection;
+import java.io.Serializable;
+import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,5 +54,29 @@ public class Tuple<K, V> {
         return (Class<T>) cls;
     }
     
+    public static NumberValueComparator numberValComparator(){
+        return new NumberValueComparator();
+    }
+    
+    public static ValueComparator valComparator(){
+        return new ValueComparator();
+    }
+    
+    public static class NumberValueComparator implements Comparator<Tuple<?, Number>> {
 
+        @Override
+        public int compare(Tuple<?, Number> o1, Tuple<?, Number> o2) {
+            return (int) (o1.getValue().doubleValue() - o2.getValue().doubleValue());
+        }
+
+    }
+    
+    public static class ValueComparator<C extends Comparable> implements Comparator<Tuple<?, C>> {
+
+        @Override
+        public int compare(Tuple<?, C> o1, Tuple<?, C> o2) {
+            return o1.getValue().compareTo(o2.getValue());
+        }
+
+    }
 }
