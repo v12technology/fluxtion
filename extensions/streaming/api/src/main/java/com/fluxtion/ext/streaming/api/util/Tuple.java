@@ -17,8 +17,6 @@
  */
 package com.fluxtion.ext.streaming.api.util;
 
-import com.fluxtion.api.partition.LambdaReflection;
-import java.io.Serializable;
 import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
