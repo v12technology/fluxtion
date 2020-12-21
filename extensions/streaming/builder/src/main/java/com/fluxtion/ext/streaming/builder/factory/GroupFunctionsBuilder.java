@@ -36,7 +36,7 @@ import com.fluxtion.ext.streaming.builder.group.Group;
  */
 public class GroupFunctionsBuilder {
 
-    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupBy(
+    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupByCalc(
         SerializableFunction<S, K> keySupplier,
         SerializableFunction<S, V> valueSupplier,
         SerializableBiFunction<? super R, ? super R, ? extends R> calcFunctionClass
@@ -49,7 +49,7 @@ public class GroupFunctionsBuilder {
         return build;
     }
 
-    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupBy(
+    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupByCalc(
         SerializableFunction<S, K> keySupplier,
         SerializableFunction<S, V> valueSupplier,
         SerializableTriFunction<F, ? super R, ? super R, ? extends R> calcFunctionClass
@@ -66,34 +66,34 @@ public class GroupFunctionsBuilder {
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions::calcSum);
+        return groupByCalc(key, supplier, AggregateFunctions.AggregateSum::calcCumSum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, Number>> groupByAvg(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions.AggregateAverage::calcAverage);
+        return GroupFunctionsBuilder.groupByCalc(key, supplier, AggregateFunctions.AggregateAverage::calcAverage);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, Number>> groupByMax(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions::maximum);
+        return groupByCalc(key, supplier, AggregateFunctions::maximum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, Number>> groupByMin(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions::minimum);
+        return groupByCalc(key, supplier, AggregateFunctions::minimum);
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, Number>> groupByCount(
         SerializableFunction<S, K> key,
         SerializableFunction<S, T> supplier
     ) {
-        return groupBy(key, supplier, AggregateFunctions::count);
+        return groupByCalc(key, supplier, AggregateFunctions::count);
     }
 }

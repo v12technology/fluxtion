@@ -29,6 +29,9 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 import lombok.Value;
 import org.junit.Test;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 
 /**
  *
