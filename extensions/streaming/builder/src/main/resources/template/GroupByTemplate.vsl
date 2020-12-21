@@ -296,7 +296,7 @@ ${functionInfo.updateTarget}
     }
 
     @Override
-    public WrappedList<Tuple> comparing(SerializableFunction comparingFunction) {
+    public WrappedList<${targetClass}> comparing(SerializableFunction comparingFunction) {
           return wrappedList.comparing(comparingFunction);
     }
 }
