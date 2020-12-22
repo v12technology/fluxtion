@@ -22,7 +22,9 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.ext.streaming.api.util.FunctionComparator;
 import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +43,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
     private List<T> unmodifiableCollection;
     private final Wrapper<T> wrappedSource;
     @NoEventReference
+    @SepNode
     private Comparator comparator;
     private SerializableFunction<T, ? extends Comparable> comparingFunction;
     private List<T> collection;
@@ -206,7 +209,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @Override
     public WrappedList<T> comparator(Comparator comparator) {
-        setComparator(SepContext.service().addOrReuse(comparator));
+        setComparator(comparator);
         return this;
     }
 
@@ -228,12 +231,8 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     @Override
     public WrappedList<T> comparing(SerializableFunction comparingFunction) {
-        this.comparingFunction = comparingFunction;
+        setComparator(new FunctionComparator(comparingFunction));
         return this;
-    }
-
-    public SerializableFunction<T, ?> getComparingFunction() {
-        return comparingFunction;
     }
 
     @Override
@@ -251,13 +250,4 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
         return "ArrayListWrappedCollection{" + "collection=" + collection + '}';
     }
 
-    
-    private class FunctionComparator implements Comparator<T>{
-
-        @Override
-        public int compare(T o1, T o2) {
-            return ((Comparable)comparingFunction.apply(o1)).compareTo(comparingFunction.apply(o2));
-        }
-
-    }
 }

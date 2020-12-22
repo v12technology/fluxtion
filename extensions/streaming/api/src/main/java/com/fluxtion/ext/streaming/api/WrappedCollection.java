@@ -17,11 +17,8 @@
  */
 package com.fluxtion.ext.streaming.api;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
-import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;

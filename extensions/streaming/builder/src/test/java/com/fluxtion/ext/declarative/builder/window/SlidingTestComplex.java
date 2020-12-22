@@ -17,14 +17,17 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.time.ClockStrategy;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.CollectionFunctions;
 import static com.fluxtion.ext.streaming.api.util.NumberComparator.numberComparator;
 import com.fluxtion.ext.streaming.api.Duration;
+import com.fluxtion.ext.streaming.api.util.FunctionComparator;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
@@ -32,7 +35,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.function.Function;
 
 /**
  *
@@ -153,6 +158,28 @@ public class SlidingTestComplex extends StreamInprocessTest {
             sliding(Integer.class, 6, 2).id("slidingWindow")
                 .comparator(numberComparator()).reverse().top(4).id("topFilteredWindow")
                 .map(CollectionFunctions::sumList).id("topFilteredSum");
+        });
+
+        Number topFilteredSum = getWrappedField("topFilteredSum");
+        WrappedList<Number> slidingWindow = getField("slidingWindow");
+        WrappedList<Number> topFilteredWindow = getField("topFilteredWindow");
+
+        for (int i = 0; i < 14; i++) {
+            onEvent(i);
+        }
+
+        assertEquals(38, topFilteredSum.doubleValue(), 0.001);
+        assertEquals(Arrays.asList(11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0), slidingWindow.collection());
+        assertEquals(Arrays.asList(11, 10, 9, 8), topFilteredWindow.collection());
+    }
+    
+    @Test
+    public void comparatorFunctionTest() {
+        sep(c -> {
+            select(Integer.class)
+                    .sliding(6, 2).id("slidingWindow")
+                    .comparing(Integer::intValue).reverse().top(4).id("topFilteredWindow")
+                    .map(CollectionFunctions::sumList).id("topFilteredSum");
         });
 
         Number topFilteredSum = getWrappedField("topFilteredSum");
