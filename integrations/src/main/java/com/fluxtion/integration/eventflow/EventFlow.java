@@ -18,7 +18,7 @@
 package com.fluxtion.integration.eventflow;
 
 import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
+import com.fluxtion.integration.eventflow.filters.SepStage;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import com.fluxtion.integration.eventflow.sources.AsynchEventSource;
 import java.util.ArrayList;
@@ -34,7 +34,6 @@ import lombok.extern.log4j.Log4j2;
  * Joins a {@link Pipeline} to {@link EventSource}'s and {@link EventSink}.
  *
  * An event flow can have multiple EventSources feeding into single pipeline.
- * The
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
@@ -122,7 +121,7 @@ public class EventFlow {
     }
 
     public <S extends StaticEventProcessor> PipelineBuilder first(S filter) {
-        return first(SepEventPublisher.of(filter));
+        return first(SepStage.of(filter));
     }
 
     public <S extends EventConsumer> PipelineBuilder peek(S filter) {
@@ -182,7 +181,7 @@ public class EventFlow {
         }
 
         public <S extends StaticEventProcessor> PipelineBuilder next(S filter) {
-            next(SepEventPublisher.of(filter));
+            next(SepStage.of(filter));
             return this;
         }
 

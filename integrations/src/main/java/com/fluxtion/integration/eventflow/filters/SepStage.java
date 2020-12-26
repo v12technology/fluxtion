@@ -20,6 +20,9 @@ package com.fluxtion.integration.eventflow.filters;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.builder.node.SEPConfig;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.reuseOrBuild;
 import com.fluxtion.integration.eventflow.EventSink;
 import com.fluxtion.integration.eventflow.PipelineFilter;
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Propagates events into a StaticEventProcessor as part of the pipeline. If the
@@ -42,7 +46,7 @@ import lombok.extern.log4j.Log4j2;
 @EqualsAndHashCode(callSuper = false)
 @Log4j2
 @Accessors(fluent = true, chain = true)
-public class SepEventPublisher extends PipelineFilter {
+public class SepStage extends PipelineFilter {
 
     private final StaticEventProcessor target;
     private boolean propagate = true;
@@ -53,6 +57,16 @@ public class SepEventPublisher extends PipelineFilter {
         target.onEvent(o);
     }
 
+    public static SepStage generate(SerializableConsumer<SEPConfig> builder) throws Exception {
+        String name = "Processor";
+        String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
+        return of(reuseOrBuild(name, pkg, builder));
+    }
+
+    public static SepStage generate(String name, String pkg, SerializableConsumer<SEPConfig> builder) throws Exception {
+        return of(reuseOrBuild(name, pkg, builder));
+    }
+
     @Override
     protected void stopHandler() {
         log.info("stop sep:'{}'", target.getClass().getSimpleName());
@@ -61,11 +75,11 @@ public class SepEventPublisher extends PipelineFilter {
         }
     }
 
-    public SepEventPublisher sink(EventSink sink) {
+    public SepStage sink(EventSink sink) {
         sinks.add(sink);
         return this;
     }
-    
+
     private void registeEventSink(EventSink sink) {
         log.info("registering none-piepline EventSink id:'{}' with sep:'{}'", sink.id(), target.getClass().getSimpleName());
         target.onEvent(new RegisterEventHandler(sink::publish));

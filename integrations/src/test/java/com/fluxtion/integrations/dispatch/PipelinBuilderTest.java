@@ -1,10 +1,9 @@
 package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.integration.eventflow.filters.ConsoleFilter;
-import com.fluxtion.integration.eventflow.PipelineFilter;
 import com.fluxtion.integration.eventflow.Pipeline;
 import com.fluxtion.integration.eventflow.filters.RowProcessorFilter;
-import com.fluxtion.integration.eventflow.filters.SepEventPublisher;
+import com.fluxtion.integration.eventflow.filters.SepStage;
 import org.junit.jupiter.api.Test;
 
 /*
@@ -36,7 +35,7 @@ public class PipelinBuilderTest {
         Pipeline pipeline = new Pipeline();
         pipeline
                 .entry(RowProcessorFilter.of(DataEventCsvDecoder0.class))
-                .next(SepEventPublisher.of(new ForwardingSep()))
+                .next(SepStage.of(new ForwardingSep()))
                 .next(new ConsoleFilter())
                 ;
         pipeline.start();
