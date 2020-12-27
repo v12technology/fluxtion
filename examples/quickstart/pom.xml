@@ -18,22 +18,19 @@ along with this program.  If not, see
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
-    <artifactId>core.master</artifactId>
+    <artifactId>quickstart</artifactId>
     <version>2.10.10-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>fluxtion :: examples</name>
+    <name>fluxtion :: quickstart</name>
     
     <modules>
-        <module>documentation-examples</module>
-        <module>futext-examples</module>
-        <module>quickstart</module>
+        <module>lesson-1</module>
+        <module>lesson-2</module>
     </modules>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
     </properties>
     
 </project>
