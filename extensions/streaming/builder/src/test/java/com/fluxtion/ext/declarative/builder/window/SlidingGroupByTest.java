@@ -23,7 +23,6 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByAvg;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,8 +30,6 @@ import lombok.NoArgsConstructor;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 
 /**
@@ -47,7 +44,7 @@ public class SlidingGroupByTest extends StreamInprocessTest {
         sep((c) -> {
             GroupBy<Tuple<String, Number>> orderSummary = groupBy(CcyPairOrder::getCcyPair, tupleClass)
                 .init(CcyPairOrder::getCcyPair, Tuple::setKey)
-                .initCopy(Tuple::initCopy)
+                .initCopy(Tuple::copyKey)
                 .avg(CcyPairOrder::getAmount, Tuple::setValue)
                 .build();
             sliding(orderSummary, 5, 3)
@@ -72,7 +69,7 @@ public class SlidingGroupByTest extends StreamInprocessTest {
         sep((c) -> {
             groupByAvg(CcyPairOrder::getCcyPair, CcyPairOrder::getAmount)
                 .sliding( 5, 3)
-                .comparator(new MyComparator3()).reverse()
+                .comparator(Tuple.numberValComparator()).reverse()
                 .top(4).id("topOrders");
         });
         validateSlidingCalc();
