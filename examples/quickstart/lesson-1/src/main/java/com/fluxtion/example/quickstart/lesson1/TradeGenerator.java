@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.articles.tutorial.quickstart;
+package com.fluxtion.example.quickstart.lesson1;
 
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import java.util.Random;

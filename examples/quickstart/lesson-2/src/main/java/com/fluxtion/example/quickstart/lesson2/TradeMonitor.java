@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.articles.tutorial.quickstart;
+package com.fluxtion.example.quickstart.lesson2;
 
 import com.fluxtion.builder.node.SEPConfig;
 import static com.fluxtion.ext.streaming.api.Duration.seconds;
@@ -51,7 +51,7 @@ public class TradeMonitor {
             .log();
     }
     
-    private static String formatTradeList(List<Tuple<String, Number>> trades){
+    public static String formatTradeList(List<Tuple<String, Number>> trades){
         StringBuilder sb = new StringBuilder("Most active ccy pairs in past 5 seconds:");
         for (int i = 0; i < trades.size(); i++) {
             Tuple<String, Number> result = trades.get(i);
