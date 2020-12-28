@@ -18,6 +18,8 @@
 package com.fluxtion.integration.eventflow;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.integration.eventflow.filters.SepStage;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import com.fluxtion.integration.eventflow.sources.AsynchEventSource;
@@ -28,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -108,8 +112,7 @@ public class EventFlow {
     }
 
     /**
-     * Set the thread dispatch strategy that routes events from sources to
-     * pipeline
+     * Set the thread dispatch strategy that routes events from sources to pipeline
      */
     public void setThreadDispatcher() {
         throw new UnsupportedOperationException("configurable dispatch strategy not supported");
@@ -118,6 +121,14 @@ public class EventFlow {
     public PipelineBuilder first(PipelineFilter firstFilter) {
         lastStage = dispatcherFilter.next(firstFilter);
         return pipelineBuilder;
+    }
+
+    public PipelineBuilder sep(LambdaReflection.SerializableConsumer<SEPConfig> filter) {
+        try {
+            return first(SepStage.buildSep(filter));
+        } catch (Exception ex) {
+            throw new RuntimeException("cannot build static event processor", ex);
+        }
     }
 
     public <S extends StaticEventProcessor> PipelineBuilder first(S filter) {
@@ -183,6 +194,15 @@ public class EventFlow {
         public <S extends StaticEventProcessor> PipelineBuilder next(S filter) {
             next(SepStage.of(filter));
             return this;
+        }
+
+        public PipelineBuilder sep(LambdaReflection.SerializableConsumer<SEPConfig> filter) {
+            try {
+                next(SepStage.buildSep(filter));
+                return this;
+            } catch (Exception ex) {
+                throw new RuntimeException("cannot build static event processor", ex);
+            }
         }
 
         public <S extends EventConsumer> PipelineBuilder peek(S filter) {
