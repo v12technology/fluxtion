@@ -32,7 +32,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Propagates events into a StaticEventProcessor as part of the pipeline. If the
