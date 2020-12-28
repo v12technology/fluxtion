@@ -56,13 +56,13 @@ public class SepStage extends PipelineFilter {
         target.onEvent(o);
     }
 
-    public static SepStage generate(SerializableConsumer<SEPConfig> builder) throws Exception {
+    public static SepStage buildSep(SerializableConsumer<SEPConfig> builder) throws Exception {
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
         return of(reuseOrBuild(name, pkg, builder));
     }
 
-    public static SepStage generate(String name, String pkg, SerializableConsumer<SEPConfig> builder) throws Exception {
+    public static SepStage buildSep(String name, String pkg, SerializableConsumer<SEPConfig> builder) throws Exception {
         return of(reuseOrBuild(name, pkg, builder));
     }
 
