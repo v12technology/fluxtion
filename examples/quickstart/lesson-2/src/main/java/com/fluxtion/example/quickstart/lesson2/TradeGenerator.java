@@ -18,6 +18,7 @@
 package com.fluxtion.example.quickstart.lesson2;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.example.quickstart.lesson2.TradeMonitor.Trade;
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import java.util.Random;
 
@@ -33,8 +34,9 @@ public class TradeGenerator {
 
     static void publishTestData(StaticEventProcessor processor) throws InterruptedException {
         Random random = new Random();
+        int numberPairs = ccyPairs.length;
         while (true) {
-            processor.onEvent(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
+            processor.onEvent(new Trade(ccyPairs[random.nextInt(numberPairs)], random.nextInt(100) + 10));
             Thread.sleep(random.nextInt(10) + 10);
         }
     }
