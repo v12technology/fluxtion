@@ -34,7 +34,7 @@ public class Tuple<K, V> {
     K key;
     V value;
 
-    public static void initCopy(Tuple source, Tuple target) {
+    public static void copyKey(Tuple source, Tuple target) {
         target.key = source.key;
     }
 

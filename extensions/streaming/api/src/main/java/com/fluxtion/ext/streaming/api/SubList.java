@@ -34,6 +34,7 @@ import lombok.Data;
 public class SubList<T> implements WrappedList<T> {
 
     private final WrappedList<T> parent;
+    private boolean recalculated;
     private final int start;
     private final int stop;
     private transient int sourceSize;
@@ -42,6 +43,7 @@ public class SubList<T> implements WrappedList<T> {
     @OnParentUpdate
     public void parentUpdate(WrappedList<T> parent) {
         updatePointers();
+        recalculated = true;
     }
 
     @OnEvent
@@ -51,7 +53,7 @@ public class SubList<T> implements WrappedList<T> {
     
     @Override
     public List<T> collection() {
-        if(unmodifiableCollection == null){
+        if(unmodifiableCollection == null | !recalculated){
            return Collections.EMPTY_LIST;
         }
         return unmodifiableCollection;
@@ -87,6 +89,7 @@ public class SubList<T> implements WrappedList<T> {
     @Initialise
     public void init() {
         sourceSize = -1;
+        recalculated = false;
         updatePointers();
     }
     
@@ -97,7 +100,7 @@ public class SubList<T> implements WrappedList<T> {
     
     private void updatePointers() {
         int size = parent.size();
-        if (sourceSize < 0 | size != sourceSize) {
+//        if (sourceSize < 0 | size != sourceSize) {
             if (start < 0) {
                 //last
                 unmodifiableCollection = parent.subList(Math.max((size+start), 0), size);
@@ -108,7 +111,7 @@ public class SubList<T> implements WrappedList<T> {
                 //normal list
                 unmodifiableCollection = parent.subList(0, Math.min(stop, size));
             }
-        }
+//        }
     }
 
 }

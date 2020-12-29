@@ -43,6 +43,7 @@ public class ConsoleLogTest extends StreamInprocessTest {
             select(DataEvent.class).log("intValue:{} eventTime:{}", DataEvent::getValue, DataEvent::getEventTime);
             select(MyEvent.class).log("");
         });
+        sysOut.clear();
         DataEvent de1 = new DataEvent();
         de1.value = 2;
         de1.setEventTime(300);
@@ -60,6 +61,7 @@ public class ConsoleLogTest extends StreamInprocessTest {
         sep(c ->{
             select(MyEvent.class).collect().log("size:{} collection:{}", Collection::size, Collection::toString);
         });
+        sysOut.clear();
         MyEvent evt = new MyEvent();
         sep.onEvent(evt);
         sep.onEvent(evt);

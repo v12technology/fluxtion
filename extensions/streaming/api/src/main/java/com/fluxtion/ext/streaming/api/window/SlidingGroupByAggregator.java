@@ -27,6 +27,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import lombok.Data;
@@ -47,7 +48,7 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
     @NoEventReference
     @SepNode
     private final T source;
-    @NoEventReference
+//    @NoEventReference
     @SepNode
     private TimeReset timeReset;
     private T aggregator;
@@ -136,7 +137,8 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
     @Override
     public Collection<S> collection() {
         //TODO add logic to return empty set until primed
-        return aggregator.collection();
+        return firstExpiry ? aggregator.collection() : Collections.emptyList();
+//      return aggregator.collection();
     }
 
     @Override

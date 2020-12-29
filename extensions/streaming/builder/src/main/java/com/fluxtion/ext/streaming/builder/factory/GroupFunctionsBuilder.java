@@ -43,7 +43,7 @@ public class GroupFunctionsBuilder {
     ) {
         GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, Tuple.class)
             .init(keySupplier, Tuple::setKey)
-            .initCopy(Tuple::initCopy)
+            .initCopy(Tuple::copyKey)
             .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
             .build();
         return build;
@@ -56,7 +56,7 @@ public class GroupFunctionsBuilder {
     ) {
         GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, Tuple.class)
             .init(keySupplier, Tuple::setKey)
-            .initCopy(Tuple::initCopy)
+            .initCopy(Tuple::copyKey)
             .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
             .build();
         return build;

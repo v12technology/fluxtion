@@ -315,7 +315,7 @@ public interface Wrapper<T> extends Stateful<T>{
      * @return The current node
      */
     default Wrapper<T> log(String prefix, SerializableFunction<T, ?>... supplier) {
-        if(!prefix.contains("{}")){
+        if (!prefix.contains("{}")) {
             prefix += " {}";
         }
         return (Wrapper<T>) StreamOperator.service().log(this, prefix, supplier);
