@@ -36,7 +36,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingGroupByTest extends StreamInprocessTest {
+public class SlidingCountGroupByTest extends StreamInprocessTest {
 
     @Test
     public void groupByFunctionSliding() {
@@ -66,6 +66,8 @@ public class SlidingGroupByTest extends StreamInprocessTest {
     
     @Test
     public void groupByAvgPostSliding() {
+//        reuseSep = true;
+//        fixedPkg = true;
         sep((c) -> {
             groupByAvg(CcyPairOrder::getCcyPair, CcyPairOrder::getAmount)
                 .sliding( 5, 3)
@@ -77,6 +79,7 @@ public class SlidingGroupByTest extends StreamInprocessTest {
 
     private void validateSlidingCalc() {
         WrappedList<Tuple<String, Number>> topOrders = getField("topOrders");
+        assertThat(topOrders.size(), is(0));
         for (int i = 0; i < 14; i++) {
             onEvent(new CcyPairOrder("EURUSD", 100));
         }
@@ -84,6 +87,7 @@ public class SlidingGroupByTest extends StreamInprocessTest {
         assertThat(topOrders.size(), is(1));
         for (int i = 0; i < 5; i++) {
             onEvent(new CcyPairOrder("EURUSD", 400));
+            assertThat(topOrders.size(), is(1));
         }
         assertThat(topOrders.size(), is(1));
         assertThat(topOrders.collection().get(0).getValue().intValue(), is(200));

@@ -17,6 +17,7 @@
  */
 package com.fluxtion.example.quickstart.lesson2;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import java.util.Random;
 
@@ -27,11 +28,13 @@ import java.util.Random;
  */
 public class TradeGenerator {
 
-    static void publishTestData(ManualEventSource<TradeMonitor.Trade> tradeSource) throws InterruptedException {
-        String[] ccyPairs = new String[]{"EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "EURJPY", "USDJPY", "USDMXN", "GBPCHF", "EURNOK", "EURSEK"};
+    private static final String[] ccyPairs = new String[]{"EURUSD", "EURCHF", "EURGBP", "GBPUSD",
+        "USDCHF", "EURJPY", "USDJPY", "USDMXN", "GBPCHF", "EURNOK", "EURSEK"};
+
+    static void publishTestData(StaticEventProcessor processor) throws InterruptedException {
         Random random = new Random();
         while (true) {
-            tradeSource.publishToFlow(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
+            processor.onEvent(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
             Thread.sleep(random.nextInt(10) + 10);
         }
     }

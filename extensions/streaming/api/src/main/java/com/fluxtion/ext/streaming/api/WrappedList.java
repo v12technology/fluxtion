@@ -34,6 +34,10 @@ public interface WrappedList<T> extends WrappedCollection<T, List<T>, WrappedLis
     WrappedList<T> skip(int n);
 
     WrappedList<T> reverse();
+    
+    default T get(int index){
+        return collection().get(index);
+    }
 
     default List<T> subList(int fromIndex, int toIndex) {
         return collection().subList(fromIndex, toIndex);

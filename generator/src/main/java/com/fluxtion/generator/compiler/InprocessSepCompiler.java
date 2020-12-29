@@ -19,6 +19,8 @@ package com.fluxtion.generator.compiler;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.builder.node.SEPConfig;
@@ -169,6 +171,12 @@ public class InprocessSepCompiler {
             }
         }
         return processor;
+    }
+    
+    public static StaticEventProcessor reuseOrBuild(SerializableConsumer<SEPConfig> builder) throws Exception {
+        String name = "Processor";
+        String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
+        return(reuseOrBuild(name, pkg, builder));
     }
 
     /**

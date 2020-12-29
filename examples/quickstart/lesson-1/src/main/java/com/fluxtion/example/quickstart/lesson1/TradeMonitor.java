@@ -16,13 +16,12 @@
  */
 package com.fluxtion.example.quickstart.lesson1;
 
-import com.fluxtion.builder.node.SEPConfig;
+import com.fluxtion.api.StaticEventProcessor;
 import static com.fluxtion.ext.streaming.api.Duration.seconds;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
 import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
-import static com.fluxtion.integration.eventflow.EventFlow.flow;
-import com.fluxtion.integration.eventflow.sources.ManualEventSource;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.reuseOrBuild;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,25 +32,20 @@ import lombok.NoArgsConstructor;
  * @author V12 Technology Ltd.
  */
 public class TradeMonitor {
-    
+
     public static void main(String[] args) throws Exception {
-        ManualEventSource<Trade> tradeInjector = new ManualEventSource<>("trade-source");
-        flow(tradeInjector)
-            .sep(TradeMonitor::build)
-            .start();
-        TradeGenerator.publishTestData(tradeInjector);
+        StaticEventProcessor processor = reuseOrBuild(c -> {
+            groupBySum(Trade::getSymbol, Trade::getAmount)
+                .sliding(seconds(1), 5)
+                .comparator(numberValComparator()).reverse()
+                .top(3)
+                .map(TradeMonitor::formatTradeList)
+                .log();
+        });
+        TradeGenerator.publishTestData(processor);
     }
 
-    public static void build(SEPConfig cfg) {
-        groupBySum(Trade::getSymbol, Trade::getAmount)
-            .sliding(seconds(1), 5)
-            .comparator(numberValComparator()).reverse()
-            .top(3)
-            .map(TradeMonitor::formatTradeList)
-            .log();
-    }
-    
-    public static String formatTradeList(List<Tuple<String, Number>> trades){
+    public static String formatTradeList(List<Tuple<String, Number>> trades) {
         StringBuilder sb = new StringBuilder("Most active ccy pairs in past 5 seconds:");
         for (int i = 0; i < trades.size(); i++) {
             Tuple<String, Number> result = trades.get(i);

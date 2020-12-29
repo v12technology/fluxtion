@@ -174,13 +174,23 @@ public class BaseSepInprocessTest {
         }
         return sep;
     }
-
+    
+    /**
+     * Sets the time in the clock. Does not fire an event into the SEP under test
+     * @param newTime
+     * @return 
+     */
     protected StaticEventProcessor setTime(long newTime) {
         addClock();
         time.set(newTime);
         return sep;
     }
 
+    /**
+     * Advances the time in the clock by delta. Does not fire an event into the SEP under test
+     * @param delta
+     * @return 
+     */
     protected StaticEventProcessor advanceTime(long delta) {
         addClock();
         time.set(time.longValue + delta);
@@ -191,8 +201,21 @@ public class BaseSepInprocessTest {
         onEvent(new Object());
     }
 
+    /**
+     * Sets the time and pushes an event to the SEP to force any nodes that depend on time to be updated
+     * @param newTime 
+     */
     protected void tick(long newTime) {
         setTime(newTime);
+        tick();
+    }
+
+    /**
+     * Advances the time by delta and pushes an event to the SEP to force any nodes that depend on time to be updated
+     * @param deltaTime 
+     */
+    protected void tickDelta(long deltaTime) {
+        advanceTime(deltaTime);
         tick();
     }
 
