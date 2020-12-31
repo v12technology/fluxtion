@@ -12,26 +12,86 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+
+    <build>
+        <plugins>
+            <!--removes builder from the final build artefact-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/TradeProcessorBuilder.*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>  
+            <!-- Maven Shade Plugin to create exectuable jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.fluxtion.example.quickstart.lesson3.TradeMonitor</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>fluxtion-generate</id>
+            <properties>
+                <!--<skipTests>true</skipTests>-->
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fluxtion</groupId>
+                        <artifactId>fluxtion-maven-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.fluxtion.integration</groupId>
-            <artifactId>fluxtion-integration</artifactId>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.13.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.13.3</version>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-builder</artifactId>
+            <scope>provided</scope>
+            <version>${project.version}</version>
         </dependency>
         <!--TEST dependencies START-->
         <dependency>

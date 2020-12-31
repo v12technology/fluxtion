@@ -19,7 +19,6 @@ package com.fluxtion.example.quickstart.lesson2;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.example.quickstart.lesson2.TradeMonitor.Trade;
-import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import java.util.Random;
 
 /**
