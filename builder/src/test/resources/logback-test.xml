@@ -16,7 +16,7 @@ along with this program.  If not, see
 <http://www.mongodb.com/licensing/server-side-public-license>.
 -->
 
-<configuration debug="false">
+<configuration>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
