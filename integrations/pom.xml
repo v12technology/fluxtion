@@ -86,7 +86,6 @@ along with this program.  If not, see
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.89</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
