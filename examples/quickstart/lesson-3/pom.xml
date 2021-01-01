@@ -15,7 +15,7 @@
 
     <build>
         <plugins>
-            <!--removes builder from the final build artefact-->
+            <!--removes builder from the final build artefact only required at runtime-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -26,27 +26,6 @@
                     </excludes>
                 </configuration>
             </plugin>  
-            <!-- Maven Shade Plugin to create exectuable jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.fluxtion.example.quickstart.lesson3.TradeMonitor</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> 
         </plugins>
     </build>
     
