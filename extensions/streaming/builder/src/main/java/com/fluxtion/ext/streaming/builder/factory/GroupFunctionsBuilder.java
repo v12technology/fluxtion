@@ -17,6 +17,7 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
@@ -24,6 +25,7 @@ import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.ext.streaming.builder.group.Group;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 
 /**
  * Shortcut functions to produce aggregate grouping functions on an event stream. Results are returned as a Tuple:
@@ -41,10 +43,37 @@ public class GroupFunctionsBuilder {
         SerializableFunction<S, V> valueSupplier,
         SerializableBiFunction<? super R, ? super R, ? extends R> calcFunctionClass
     ) {
-        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, Tuple.class)
+        Class<Tuple<K, Number>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, tupleClass)
             .init(keySupplier, Tuple::setKey)
             .initCopy(Tuple::copyKey)
-            .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .mapPrimitive(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .build();
+        return build;
+    }
+
+    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupByCalc(
+        SerializableFunction<S, K> keySupplier,
+        SerializableBiFunction<? super R, ? super R, ? extends R> calcFunctionClass
+    ) {
+        Class<Tuple<K, Number>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, tupleClass)
+            .init(keySupplier, Tuple::setKey)
+            .initCopy(Tuple::copyKey)
+            .mapPrimitive( Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .build();
+        return build;
+    }
+
+    public static <S, K, R, T > GroupBy<Tuple<K, R>> groupByCalcComplex(
+        SerializableFunction<S, K> keySupplier,
+        SerializableBiFunction<? super S, ? super R, ? extends R> calcFunctionClass
+    ) {
+        Class<Tuple<K, R>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, R>> build = Group.groupBy(keySupplier, tupleClass)
+            .init(keySupplier, Tuple::setKey)
+            .initCopy(Tuple::copyKey)
+            .map( Tuple::setValue, calcFunctionClass)
             .build();
         return build;
     }
@@ -54,10 +83,39 @@ public class GroupFunctionsBuilder {
         SerializableFunction<S, V> valueSupplier,
         SerializableTriFunction<F, ? super R, ? super R, ? extends R> calcFunctionClass
     ) {
-        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, Tuple.class)
+        Class<Tuple<K, Number>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, tupleClass)
             .init(keySupplier, Tuple::setKey)
             .initCopy(Tuple::copyKey)
-            .mapPrimitiveNoType(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .mapPrimitive(valueSupplier, Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .build();
+        return build;
+    }
+
+
+    public static <S, K, V extends Number, F, R extends Number> GroupBy<Tuple<K, Number>> groupByCalc(
+        SerializableFunction<S, K> keySupplier,
+        SerializableTriFunction<F, ? super R, ? super R, ? extends R> calcFunctionClass
+    ) {
+        Class<Tuple<K, Number>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, Number>> build = Group.groupBy(keySupplier, tupleClass)
+            .init(keySupplier, Tuple::setKey)
+            .initCopy(Tuple::copyKey)
+            .mapPrimitive( Tuple<K, ? super Byte>::setValue, calcFunctionClass)
+            .build();
+        return build;
+    }
+
+
+    public static <S, K, R, T, F> GroupBy<Tuple<K, R>> groupByCalcComplex(
+        SerializableFunction<S, K> keySupplier,
+        SerializableTriFunction<F, ? super S, ? super R, ? extends R> calcFunctionClass
+    ) {
+        Class<Tuple<K, R>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, R>> build = Group.groupBy(keySupplier, tupleClass)
+            .init(keySupplier, Tuple::setKey)
+            .initCopy(Tuple::copyKey)
+            .map( Tuple::setValue, calcFunctionClass)
             .build();
         return build;
     }
@@ -91,9 +149,8 @@ public class GroupFunctionsBuilder {
     }
 
     public static <K, S, T extends Number> GroupBy<Tuple<K, Number>> groupByCount(
-        SerializableFunction<S, K> key,
-        SerializableFunction<S, T> supplier
+        SerializableFunction<S, K> key
     ) {
-        return groupByCalc(key, supplier, AggregateFunctions::count);
+        return groupByCalc(key, AggregateFunctions::count);
     }
 }

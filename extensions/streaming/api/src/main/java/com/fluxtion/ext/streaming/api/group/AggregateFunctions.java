@@ -34,7 +34,12 @@ public class AggregateFunctions {
         return newValue;
     }
 
-    public static int count(int newValue, int oldValue) {
+//    public static int count(int newValue, int oldValue) {
+//        oldValue++;
+//        return oldValue;
+//    }
+
+    public static int count(Object newValue, int oldValue) {
         oldValue++;
         return oldValue;
     }
