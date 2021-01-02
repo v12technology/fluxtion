@@ -19,6 +19,7 @@ import com.fluxtion.junit.Categories;
 import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -58,16 +59,38 @@ public class ComplexGroupByTest extends StreamInprocessTest {
         GroupBy<OrderSummary> summaryMap = getField("orderSummary");
         assertThat(summaryMap.size(), is(2));
         Optional<OrderSummary> euOrders = summaryMap.stream()
-                .filter(summary -> summary.getCcyPair().equalsIgnoreCase("EURUSD"))
-                .findFirst();
-        assertThat(1_600_000, is((int)euOrders.get().getVolumeDealt()));
-        assertThat(100_000, is((int)euOrders.get().getLastDealSize()));
-        assertThat(800_000, is((int)euOrders.get().getAvgDealSize()));
-        assertThat(2, is((int)euOrders.get().getDealCount()));
-        assertThat(1003, is((int)euOrders.get().getFirstDealId()));
-        assertThat(1, is((int)euOrders.get().getOrderId()));
-        assertThat(2_000_000, is((int)euOrders.get().getOrderSize()));
+            .filter(summary -> summary.getCcyPair().equalsIgnoreCase("EURUSD"))
+            .findFirst();
+        assertThat(1_600_000, is((int) euOrders.get().getVolumeDealt()));
+        assertThat(100_000, is((int) euOrders.get().getLastDealSize()));
+        assertThat(800_000, is((int) euOrders.get().getAvgDealSize()));
+        assertThat(2, is((int) euOrders.get().getDealCount()));
+        assertThat(1003, is((int) euOrders.get().getFirstDealId()));
+        assertThat(1, is((int) euOrders.get().getOrderId()));
+        assertThat(2_000_000, is((int) euOrders.get().getOrderSize()));
         assertThat("EURUSD", is(euOrders.get().getCcyPair()));
     }
 
+    @Test
+    @Ignore
+    //TODO correct test
+    public void singleArgStatefulFunction() {
+        fixedPkg = true;
+        sep(c -> {
+            GroupBy<OrderSummary> orders = groupBy(Order::getId, OrderSummary.class)
+                .init(Order::getCcyPair, OrderSummary::setCcyPair)
+                .map(Order::getSize, OrderSummary::setDealCount, ComplexGroupByTest::randomCalc)
+                .map(Order::getSize, OrderSummary::setOrderSize, new ComplexGroupByTest()::randomCalc2)
+                .build();
+        });
+    }
+    
+    
+    public static int randomCalc(int in){
+        return in;
+    }
+    
+    public int randomCalc2(int in){
+        return in;
+    }
 }

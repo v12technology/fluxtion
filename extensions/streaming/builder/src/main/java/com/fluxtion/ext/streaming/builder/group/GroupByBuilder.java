@@ -139,7 +139,7 @@ public class GroupByBuilder<K, T> {
     }
 
     // ==================================================
-    // static mapping mapPrimitive
+    // static mapping 
     // ==================================================
     public <S, R> GroupByBuilder<K, T> map(
         SerializableFunction<K, ? extends S> supplier,
@@ -192,7 +192,7 @@ public class GroupByBuilder<K, T> {
     }
 
     // ==================================================
-    // instance mapping mapPrimitive
+    // instance mapping 
     // ==================================================
     public <S, R, F> GroupByBuilder<K, T> map(
         SerializableFunction<K, ? extends S> supplier,
@@ -243,10 +243,9 @@ public class GroupByBuilder<K, T> {
         sourceContext.addGroupByFunctionInfo(info);
         return this;
     }
-
     
     // ==================================================
-    // instance mapping mapPrimitive
+    // static mapping on whole event
     // ==================================================
     public <S, R> GroupByBuilder<K, T>
         map(
@@ -281,7 +280,10 @@ public class GroupByBuilder<K, T> {
         sourceContext.addGroupByFunctionInfo(info);
         return this;
     }
-
+        
+    // ==================================================
+    // instance mapping on event record
+    // ==================================================
     public <S, R, F> GroupByBuilder<K, T>
         map(
             SerializableBiConsumer<T, ? super R> target,
@@ -316,6 +318,34 @@ public class GroupByBuilder<K, T> {
         return this;
     }
 
+    // ==================================================
+    // instance mapping on event record
+    // ==================================================
+    public <S, R, F> GroupByBuilder<K, T> map(
+        SerializableFunction<K, ? extends S> supplier,
+        SerializableBiConsumer<T, ? super R> target,
+        SerializableFunction< ? super S, ? extends R> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        //set source
+        Class<K> sourceClass = null;
+        if (sourceContext.isWrapped()) {
+            sourceClass = (Class<K>) ((Wrapper) sourceContext.getKeyProvider()).eventClass();
+        } else {
+            sourceClass = (Class<K>) sourceContext.getGroup().getInputSource().getClass();
+        }
+        Method sourceMethod = supplier.method();//numericGetMethod(sourceClass, sourceFunction);
+        info.setSource(sourceClass, sourceMethod, "event");
+        //set source
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+    
     public GroupBy<T> build() {
         return groupBy.build();
     }
