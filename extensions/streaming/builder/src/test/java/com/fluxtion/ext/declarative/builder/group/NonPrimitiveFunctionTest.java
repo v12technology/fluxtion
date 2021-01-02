@@ -35,11 +35,9 @@ public class NonPrimitiveFunctionTest extends StreamInprocessTest{
     
     @Test
     public void nonPrimitive(){
-        fixedPkg = true;
        sep((c) -> {
             groupByCalcComplex(Deal::getCcyPair, NonPrimitiveFunctionTest::calcComplex).id("dealsByCcyPair");//.log("{}");
         }); 
-       
         Deal deal = new Deal();
         deal.setCcyPair("EURUSD");
         deal.setDealtSize(100);

@@ -17,7 +17,6 @@
  */
 package com.fluxtion.ext.streaming.builder.factory;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableTriFunction;
@@ -25,7 +24,6 @@ import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.ext.streaming.builder.group.Group;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 
 /**
  * Shortcut functions to produce aggregate grouping functions on an event stream. Results are returned as a Tuple:

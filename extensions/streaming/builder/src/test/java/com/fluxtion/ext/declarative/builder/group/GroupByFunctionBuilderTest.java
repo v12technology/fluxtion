@@ -78,4 +78,13 @@ public class GroupByFunctionBuilderTest extends StreamInprocessTest {
         assertThat(dealsByCcyPair.value("EURUSD").getValue(), is(3));
         assertThat(dealsByCcyPair.value("EURJPY").getValue(), is(2));
     }
+    
+    @Test
+    public void groupBySingleArgFunction(){
+        //TODO fill in test
+        fixedPkg = true;
+        sep((c) -> {
+            groupByCount(Deal::getCcyPair).id("dealsByCcyPair");//.log("{}");
+        });
+    }
 }
