@@ -61,8 +61,8 @@ public class ComplexGroupByTest extends StreamInprocessTest {
         GroupBy<OrderSummary> summaryMap = getField("orderSummary");
         assertThat(summaryMap.size(), is(2));
         Optional<OrderSummary> euOrders = summaryMap.stream()
-            .filter(summary -> summary.getCcyPair().equalsIgnoreCase("EURUSD"))
-            .findFirst();
+                .filter(summary -> summary.getCcyPair().equalsIgnoreCase("EURUSD"))
+                .findFirst();
         assertThat(1_600_000, is((int) euOrders.get().getVolumeDealt()));
         assertThat(100_000, is((int) euOrders.get().getLastDealSize()));
         assertThat(800_000, is((int) euOrders.get().getAvgDealSize()));
@@ -80,21 +80,34 @@ public class ComplexGroupByTest extends StreamInprocessTest {
         fixedPkg = true;
         sep(c -> {
             GroupBy<OrderSummary> orders = groupBy(Order::getId, OrderSummary.class)
-//                .init(Order::getCcyPair, OrderSummary::setCcyPair)
-//                .map(Order::getSize, OrderSummary::setDealCount, ComplexGroupByTest::randomCalc)
-                .map(Order::getSize, OrderSummary::setDealCount, new StreamFunctions.Sum()::addInt)
-                .mapPrimitive(Order::getSize, OrderSummary::setDealCount, new StreamFunctions.Sum()::addValue)
-//                .map(Order::getSize, OrderSummary::setOrderSize, new ComplexGroupByTest()::randomCalc2)
-                .build();
+                    .map(Order::getSize, OrderSummary::setDealCount, new StreamFunctions.Sum()::addInt)
+                    .mapPrimitive(Order::getSize, OrderSummary::setVolumeDealt, cumSum())
+                    .build().id("orderSummary");
         });
+        onEvent(new Order(2, "EURJPY", 100_000_000));
+        onEvent(new Order(2, "EURJPY", 100_000_000));
+        onEvent(new Order(3, "EURJPY", 100_000_000));
+        onEvent(new Order(3, "EURJPY", 100_000_000));
+        onEvent(new Order(3, "EURJPY", 100_000_000));
+        onEvent(new Order(1, "EURJPY", 100_000_000));
+
+        GroupBy<OrderSummary> summaryMap = getField("orderSummary");
+        assertThat(summaryMap.size(), is(3));
+
+        OrderSummary value = summaryMap.value(2);
+        assertThat(summaryMap.value(1).getDealCount(), is(100_000_000));
+        assertThat(summaryMap.value(1).getVolumeDealt(), is(100_000_000d));
+        assertThat(summaryMap.value(2).getDealCount(), is(200_000_000));
+        assertThat(summaryMap.value(2).getVolumeDealt(), is(200_000_000d));
+        assertThat(summaryMap.value(3).getDealCount(), is(300_000_000));
+        assertThat(summaryMap.value(3).getVolumeDealt(), is(300_000_000d));
     }
-    
-    
-    public static int randomCalc(int in){
+
+    public static int randomCalc(int in) {
         return in;
     }
-    
-    public int randomCalc2(int in){
+
+    public int randomCalc2(int in) {
         return in;
     }
 }

@@ -61,6 +61,7 @@ public class GroupByFunctionInfo {
     
     public final ImportMap importMap;
     private boolean functionSingleArg;
+    private boolean functionAcceptsNumber;
 
     public GroupByFunctionInfo(ImportMap importMap) {
         this.importMap = importMap;
@@ -74,6 +75,7 @@ public class GroupByFunctionInfo {
         functionClassName = importMap.addImport(clazz);
         functionCalcMethodName = method.getName();
         functionCalcArgType = method.getParameterTypes()[0].getName();
+        functionAcceptsNumber = Number.class.isAssignableFrom(method.getParameterTypes()[0]);
         functionSingleArg = (method.getParameterCount() == 1);
         functionCalcReturnType = method.getReturnType().getCanonicalName();
         stateful = Stateful.class.isAssignableFrom(clazz);
@@ -114,6 +116,9 @@ public class GroupByFunctionInfo {
         String source = sourceInstanceId==null?"0":sourceInstanceId +  "." + sourceCalcMethodName + "()";
         if(sourceThis){
             source = "event";
+        }
+        if(functionAcceptsNumber){
+            source = "number.set(" + source +")";
         }
         String a = "\t\t\t" + functionCalcReturnType + " value = instance." + functionInstanceId + ";\n";
         String b = "\t\t\tvalue = " + functionId + "." + functionCalcMethodName + "((" + functionCalcArgType + ")"

@@ -58,16 +58,19 @@ public class MutableNumber extends Number {
         return this;
     }
     
-    public void set(int value){
+    public MutableNumber set(int value){
         setIntValue(value);
+        return this;
     }
     
-    public void set(long value){
+    public MutableNumber set(long value){
         setLongValue(value);
+        return this;
     }
     
-    public void set(double value){
+    public MutableNumber set(double value){
         setDoubleValue(value);
+        return this;
     }
     
     public void setCharValue(char charValue){

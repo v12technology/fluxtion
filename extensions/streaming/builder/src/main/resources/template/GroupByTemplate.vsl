@@ -32,6 +32,7 @@ public final class ${functionClass} implements GroupBy<${targetClass}>{
   @PushReference
   public ArrayListWrappedCollection<${targetClass}> wrappedList;
   private boolean allMatched;
+  private MutableNumber number = new MutableNumber();
 #foreach( $source in $sourceMappingList)
 #if($!{source.eventClass})
 #elseif(${source.wrapped})
@@ -136,6 +137,7 @@ ${functionInfo.updateTarget}
         wrappedList.init();
         allMatched = false;
         target = null;
+        number.set(0);
 #if(${isMultiKey})
         multiKey = new ${multiKeyClassName}();
 #end
