@@ -112,7 +112,17 @@ public class StreamFunctions {
             sum += val.doubleValue();
             return sum;
         }
-
+        
+        public int addInt(int val){
+            sum+=val;
+            return (int) sum;
+        }
+        
+        public double addDouble(double val){
+            sum+=val;
+            return sum;
+        }
+        
         @Override
         @Initialise
         public void reset() {

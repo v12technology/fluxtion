@@ -108,7 +108,7 @@ public class GroupByFunctionInfo {
         String functionId = functionInstanceId;
         if(staticFunction){
             functionId = functionClassName;
-        }else if(stateful){
+        }else {
             functionId = "instance." + functionInstanceId+"Function";
         }
         String source = sourceInstanceId==null?"0":sourceInstanceId +  "." + sourceCalcMethodName + "()";

@@ -13,6 +13,8 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.junit.Categories;
@@ -72,15 +74,17 @@ public class ComplexGroupByTest extends StreamInprocessTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     //TODO correct test
     public void singleArgStatefulFunction() {
         fixedPkg = true;
         sep(c -> {
             GroupBy<OrderSummary> orders = groupBy(Order::getId, OrderSummary.class)
-                .init(Order::getCcyPair, OrderSummary::setCcyPair)
-                .map(Order::getSize, OrderSummary::setDealCount, ComplexGroupByTest::randomCalc)
-                .map(Order::getSize, OrderSummary::setOrderSize, new ComplexGroupByTest()::randomCalc2)
+//                .init(Order::getCcyPair, OrderSummary::setCcyPair)
+//                .map(Order::getSize, OrderSummary::setDealCount, ComplexGroupByTest::randomCalc)
+                .map(Order::getSize, OrderSummary::setDealCount, new StreamFunctions.Sum()::addInt)
+                .mapPrimitive(Order::getSize, OrderSummary::setDealCount, new StreamFunctions.Sum()::addValue)
+//                .map(Order::getSize, OrderSummary::setOrderSize, new ComplexGroupByTest()::randomCalc2)
                 .build();
         });
     }

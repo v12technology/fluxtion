@@ -25,7 +25,7 @@ public final class ${functionClass} implements Wrapper<${targetClass}>{
     private int combineCount;
     public ${targetClass} ${targetInstanceId};
 #foreach( $source in $sourceMappingList)
-#if (${source.stateful})
+#if (!${source.staticFunction})
     public ${source.functionClassName} ${source.functionInstanceId}Function = new ${source.functionClassName}();
 #end
     public ${source.functionCalcReturnType} ${source.functionInstanceId};
