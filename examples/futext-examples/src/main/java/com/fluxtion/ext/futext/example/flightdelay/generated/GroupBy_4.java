@@ -7,38 +7,66 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
 import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
 import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateAverage;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * generated group by holder.
+ * Generated group by aggregation
  *
- * <p>target class : CarrierDelay
+ * <pre>
+ *  <ul>
+ *      <li>template file   : template/GroupByTemplate.vsl
+ *      <li>target class    : {@link  CarrierDelay}
+ *      <li>input class     : {@link  Filter_getDelay_By_positiveInt0}
+ *  </ul>
+ * </pre>
  *
  * @author Greg Higgins
  */
 public final class GroupBy_4 implements GroupBy<CarrierDelay> {
 
   @NoEventReference public Object resetNotifier;
-  private ArrayListWrappedCollection<CarrierDelay> wrappedList;
+  @SepNode @PushReference public ArrayListWrappedCollection<CarrierDelay> wrappedList;
   private boolean allMatched;
+  private MutableNumber number = new MutableNumber();
   public Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt00;
   private CarrierDelay target;
   private GroupByTargetMap<String, CarrierDelay, CalculationStateGroupBy_4> calcState;
   private GroupByIniitialiser<FlightDetails, CarrierDelay>
       initialiserfilter_getDelay_By_positiveInt00;
+  private SerializableBiConsumer<CarrierDelay, CarrierDelay> initFromCopy;
+
+  public GroupBy_4() {
+    wrappedList = new ArrayListWrappedCollection<>();
+  }
+
+  @Override
+  public void setTargetCollecion(ArrayListWrappedCollection<CarrierDelay> targetCollection) {
+    this.wrappedList = targetCollection;
+  }
 
   @OnParentUpdate("filter_getDelay_By_positiveInt00")
   public boolean updatefilter_getDelay_By_positiveInt00(
@@ -50,23 +78,22 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
     allMatched = instance.allMatched();
     target = instance.target;
     {
-      double value = instance.aggregateFunctions3;
-      value = AggregateFunctions.calcSum((double) event.getDelay(), (double) value);
+      double value = instance.sum3;
+      value = instance.sum3Function.addValue((java.lang.Number) number.set(event.getDelay()));
       target.setTotalDelayMins((int) value);
-      instance.aggregateFunctions3 = value;
+      instance.sum3 = value;
     }
     {
-      double value = instance.aggregateAverage1;
-      value =
-          instance.aggregateAverage1Function.calcAverage((double) event.getDelay(), (double) value);
+      double value = instance.average1;
+      value = instance.average1Function.addValue((double) event.getDelay());
       target.setAvgDelay((int) value);
-      instance.aggregateAverage1 = value;
+      instance.average1 = value;
     }
     {
-      int value = instance.aggregateFunctions2;
-      value = AggregateFunctions.count((int) 0, (int) value);
+      int value = instance.count2;
+      value = instance.count2Function.increment((java.lang.Object) event);
       target.setTotalFlights((int) value);
-      instance.aggregateFunctions2 = value;
+      instance.count2 = value;
     }
     if (firstMatched) {
       wrappedList.addItem(target);
@@ -83,11 +110,11 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
 
   @Initialise
   public void init() {
-    calcState = new GroupByTargetMap<>(CalculationStateGroupBy_4.class);
-    wrappedList = new ArrayListWrappedCollection<>();
+    calcState = new GroupByTargetMap<>(CalculationStateGroupBy_4::new);
     wrappedList.init();
     allMatched = false;
     target = null;
+    number.set(0);
     initialiserfilter_getDelay_By_positiveInt00 =
         new GroupByIniitialiser<FlightDetails, CarrierDelay>() {
 
@@ -96,6 +123,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
             target.setCarrierId((java.lang.String) source.getCarrier());
           }
         };
+    initFromCopy = (a, b) -> {};
   }
 
   @Override
@@ -105,7 +133,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
 
   @Override
   public Collection<CarrierDelay> collection() {
-    return wrappedList.collection();
+    return wrappedList == null ? Collections.EMPTY_LIST : wrappedList.collection();
   }
 
   @Override
@@ -123,6 +151,7 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
     return CarrierDelay.class;
   }
 
+  @Override
   public GroupBy_4 resetNotifier(Object resetNotifier) {
     this.resetNotifier = resetNotifier;
     return this;
@@ -136,5 +165,74 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   @Override
   public void reset() {
     init();
+  }
+
+  @Override
+  public void combine(GroupBy<CarrierDelay> other) {
+    GroupBy_4 otherGroupBy = (GroupBy_4) other;
+    Map<String, CalculationStateGroupBy_4> sourceMap = otherGroupBy.calcState.getInstanceMap();
+    Map<String, CalculationStateGroupBy_4> targetMap = calcState.getInstanceMap();
+    sourceMap
+        .entrySet()
+        .forEach(
+            (Map.Entry<String, CalculationStateGroupBy_4> e) -> {
+              if (targetMap.containsKey(e.getKey())) {
+                final CalculationStateGroupBy_4 sourceState = e.getValue();
+                CalculationStateGroupBy_4 newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.combine(sourceState);
+                newInstance.target.setTotalDelayMins((int) newInstance.sum3);
+                newInstance.target.setAvgDelay((int) newInstance.average1);
+                newInstance.target.setTotalFlights((int) newInstance.count2);
+              } else {
+                final CalculationStateGroupBy_4 sourceState = e.getValue();
+                CalculationStateGroupBy_4 newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.updateMap.clear();
+                newInstance.updateMap.or(sourceState.updateMap);
+                initFromCopy.accept(sourceState.target, newInstance.target);
+                newInstance.combine(sourceState);
+                newInstance.target.setTotalDelayMins((int) newInstance.sum3);
+                newInstance.target.setAvgDelay((int) newInstance.average1);
+                newInstance.target.setTotalFlights((int) newInstance.count2);
+                wrappedList.addItem(newInstance.target);
+              }
+            });
+    wrappedList.sort();
+  }
+
+  @Override
+  public void deduct(GroupBy<CarrierDelay> other) {
+    GroupBy_4 otherGroupBy = (GroupBy_4) other;
+    Map<String, CalculationStateGroupBy_4> sourceMap = otherGroupBy.calcState.getInstanceMap();
+    Map<String, CalculationStateGroupBy_4> targetMap = calcState.getInstanceMap();
+    sourceMap
+        .entrySet()
+        .forEach(
+            (Map.Entry<String, CalculationStateGroupBy_4> e) -> {
+              if (targetMap.containsKey(e.getKey())) {
+                final CalculationStateGroupBy_4 sourceState = e.getValue();
+                CalculationStateGroupBy_4 newInstance = calcState.getOrCreateInstance(e.getKey());
+                newInstance.deduct(sourceState);
+                newInstance.target.setTotalDelayMins((int) newInstance.sum3);
+                newInstance.target.setAvgDelay((int) newInstance.average1);
+                newInstance.target.setTotalFlights((int) newInstance.count2);
+                if (newInstance.isExpired()) {
+                  calcState.expireInstance(e.getKey());
+                  wrappedList.removeItem(newInstance.target);
+                }
+              } else {
+
+              }
+            });
+    wrappedList.sort();
+  }
+
+  @Override
+  public WrappedList<CarrierDelay> comparator(Comparator comparator) {
+    return wrappedList.comparator(comparator);
+  }
+
+  @Override
+  public WrappedList<CarrierDelay> comparing(SerializableFunction comparingFunction) {
+    return wrappedList.comparing(comparingFunction);
   }
 }

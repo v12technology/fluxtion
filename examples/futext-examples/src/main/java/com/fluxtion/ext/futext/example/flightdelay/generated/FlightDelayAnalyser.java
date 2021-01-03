@@ -19,6 +19,8 @@ package com.fluxtion.ext.futext.example.flightdelay.generated;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 import com.fluxtion.ext.text.api.csv.ValidationLogSink;
@@ -28,13 +30,13 @@ import com.fluxtion.ext.text.api.event.EofEvent;
 
 /*
  * <pre>
- * generation time   : 2020-12-07T20:27:21.163666800
- * generator version : 2.9.1-SNAPSHOT
- * api version       : 2.9.1-SNAPSHOT
+ * generation time   : 2021-01-03T19:35:14.192842700
+ * generator version : 2.10.12-SNAPSHOT
+ * api version       : 2.10.12-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
-@SuppressWarnings({"deprecation", "unchecked"})
+@SuppressWarnings({"deprecation", "unchecked", "rawtypes"})
 public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, Lifecycle {
 
   //Node declarations
@@ -44,11 +46,14 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
   private final Filter_getDelay_By_positiveInt0 filter_getDelay_By_positiveInt0_1 =
       new Filter_getDelay_By_positiveInt0();
   public final GroupBy_4 carrierDelayMap = new GroupBy_4();
+  private final ArrayListWrappedCollection arrayListWrappedCollection_7 =
+      new ArrayListWrappedCollection();
   public final Map_FlightDetails_With_increment0 totalFlights =
       new Map_FlightDetails_With_increment0();
   private final ValidationLogger validationLogger_5 = new ValidationLogger("validationLog");
   private final ValidationLogSink validationLogSink_6 = new ValidationLogSink("validationLogSink");
   //Dirty flags
+  private boolean isDirty_carrierDelayMap = false;
   private boolean isDirty_filter_getDelay_By_positiveInt0_1 = false;
   private boolean isDirty_flightDetailsCsvDecoder0_0 = false;
   //Filter constants
@@ -59,11 +64,13 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
     filter_getDelay_By_positiveInt0_1.filterSubject = flightDetailsCsvDecoder0_0;
     filter_getDelay_By_positiveInt0_1.source_0 = flightDetailsCsvDecoder0_0;
     flightDetailsCsvDecoder0_0.errorLog = validationLogger_5;
+    carrierDelayMap.wrappedList = arrayListWrappedCollection_7;
     carrierDelayMap.filter_getDelay_By_positiveInt00 = filter_getDelay_By_positiveInt0_1;
     totalFlights.setNotifyOnChangeOnly(false);
     totalFlights.setValidOnStart(false);
     totalFlights.filterSubject = flightDetailsCsvDecoder0_0;
     totalFlights.f = count_3;
+    arrayListWrappedCollection_7.setReversed(false);
     validationLogSink_6.setPublishLogImmediately(true);
     validationLogger_5.logSink = validationLogSink_6;
   }
@@ -113,7 +120,10 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
       }
     }
     if (isDirty_filter_getDelay_By_positiveInt0_1) {
-      carrierDelayMap.updated();
+      isDirty_carrierDelayMap = carrierDelayMap.updated();
+    }
+    if (isDirty_carrierDelayMap) {
+      arrayListWrappedCollection_7.updated();
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
       totalFlights.onEvent();
@@ -132,7 +142,10 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
       }
     }
     if (isDirty_filter_getDelay_By_positiveInt0_1) {
-      carrierDelayMap.updated();
+      isDirty_carrierDelayMap = carrierDelayMap.updated();
+    }
+    if (isDirty_carrierDelayMap) {
+      arrayListWrappedCollection_7.updated();
     }
     if (isDirty_flightDetailsCsvDecoder0_0) {
       totalFlights.onEvent();
@@ -144,6 +157,7 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
   private void afterEvent() {
     totalFlights.resetAfterEvent();
     filter_getDelay_By_positiveInt0_1.resetAfterEvent();
+    isDirty_carrierDelayMap = false;
     isDirty_filter_getDelay_By_positiveInt0_1 = false;
     isDirty_flightDetailsCsvDecoder0_0 = false;
   }
@@ -156,6 +170,8 @@ public class FlightDelayAnalyser implements StaticEventProcessor, BatchHandler, 
     filter_getDelay_By_positiveInt0_1.reset();
     carrierDelayMap.init();
     carrierDelayMap.reset();
+    arrayListWrappedCollection_7.init();
+    arrayListWrappedCollection_7.reset();
     totalFlights.reset();
     validationLogSink_6.init();
   }

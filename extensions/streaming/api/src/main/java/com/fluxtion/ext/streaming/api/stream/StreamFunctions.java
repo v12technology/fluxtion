@@ -88,7 +88,7 @@ public class StreamFunctions {
 
     }
 
-    public static class Count implements Stateful {
+    public static class Count implements StatefulNumber<Count> {
 
         private int count;
 
@@ -102,6 +102,27 @@ public class StreamFunctions {
         public void reset() {
             count = 0;
         }
+
+        @Override
+        public Number deduct(Count other, MutableNumber result) {
+            this.count += other.count;
+            result.set(this.count);
+            return result;
+        }
+
+        @Override
+        public Number combine(Count other, MutableNumber result) {
+            this.count -= other.count;
+            result.set(this.count);
+            return result;
+        }
+
+        @Override
+        public Number currentValue(MutableNumber result) {
+            result.set(count);
+            return result;
+        }
+
     }
 
     public static class Sum implements StatefulNumber<Sum> {
@@ -110,6 +131,16 @@ public class StreamFunctions {
 
         public double addValue(Number val) {
             sum += val.doubleValue();
+            return sum;
+        }
+
+        public int addInt(int val) {
+            sum += val;
+            return (int) sum;
+        }
+
+        public double addDouble(double val) {
+            sum += val;
             return sum;
         }
 
@@ -161,7 +192,7 @@ public class StreamFunctions {
 
         private double min = 0;
         private transient ArrayDeque<MutableNumber> history;
-        
+
         public double min(double val) {
             if (min > val) {
                 min = val;
@@ -178,7 +209,6 @@ public class StreamFunctions {
 //        public void deduct(Min other, MutableNumber result) {
 //            StatefulNumber.super.deduct(other, result); //To change body of generated methods, choose Tools | Templates.
 //        }
-        
         @Override
         @Initialise
         public void reset() {
@@ -206,21 +236,21 @@ public class StreamFunctions {
             count = 0;
             average = Double.NaN;
         }
-        
+
         @Override
         public Number combine(Average other, MutableNumber result) {
-            count += other.count -1;
+            count += other.count - 1;
             result.set(this.addValue(other.sum));
             return result;
         }
 
         @Override
         public Number deduct(Average other, MutableNumber result) {
-            count -= other.count  + 1;
+            count -= other.count + 1;
             result.set(this.addValue(-other.sum));
             return result;
         }
-        
+
         @Override
         public Number currentValue(MutableNumber result) {
             result.set(average);

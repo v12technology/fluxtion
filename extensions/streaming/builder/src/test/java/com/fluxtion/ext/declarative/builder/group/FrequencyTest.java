@@ -38,6 +38,8 @@ public class FrequencyTest extends StreamInprocessTest {
     
     @Test
     public void testWc(){
+        fixedPkg = true;
+//        reuseSep = true;
         sep((c) -> frequency(String::toString).id("frequency"));
  
         //send events

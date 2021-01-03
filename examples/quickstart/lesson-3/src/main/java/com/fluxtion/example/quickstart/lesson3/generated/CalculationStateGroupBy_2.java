@@ -1,4 +1,4 @@
-package com.fluxtion.ext.futext.example.flightdelay.generated;
+package com.fluxtion.example.quickstart.lesson3.generated;
 
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.EventHandler;
@@ -11,9 +11,7 @@ import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.futext.example.flightdelay.CarrierDelay;
-import com.fluxtion.ext.futext.example.flightdelay.FlightDetails;
-import com.fluxtion.ext.futext.example.flightdelay.generated.Filter_getDelay_By_positiveInt0;
+import com.fluxtion.example.quickstart.lesson3.TradeMonitor.Trade;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
@@ -23,9 +21,8 @@ import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
+import com.fluxtion.ext.streaming.api.util.Tuple;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,28 +36,24 @@ import lombok.extern.slf4j.Slf4j;
  * <pre>
  *  <ul>
  *      <li>template file   : template/GroupByCalculationState.vsl
- *      <li>input class     : target class  : CarrierDelay
+ *      <li>input class     : target class  : Tuple
  *  </ul>
  * </pre>
  *
  * @author Greg Higgins
  */
-public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
+public final class CalculationStateGroupBy_2 implements Wrapper<Tuple> {
 
   private static final int SOURCE_COUNT = 1;
   final BitSet updateMap = new BitSet(SOURCE_COUNT);
   private final MutableNumber tempNumber = new MutableNumber();
   private int combineCount;
-  public CarrierDelay target;
-  public Sum sum3Function = new Sum();
-  public double sum3;
-  public Average average1Function = new Average();
-  public double average1;
-  public Count count2Function = new Count();
-  public int count2;
+  public Tuple target;
+  public Sum sum1Function = new Sum();
+  public double sum1;
 
-  public CalculationStateGroupBy_4() {
-    target = new CarrierDelay();
+  public CalculationStateGroupBy_2() {
+    target = new Tuple();
   }
 
   public boolean allMatched() {
@@ -94,13 +87,13 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
   }
 
   @Override
-  public CarrierDelay event() {
+  public Tuple event() {
     return target;
   }
 
   @Override
-  public Class<CarrierDelay> eventClass() {
-    return CarrierDelay.class;
+  public Class<Tuple> eventClass() {
+    return Tuple.class;
   }
 
   @Override
@@ -108,22 +101,18 @@ public final class CalculationStateGroupBy_4 implements Wrapper<CarrierDelay> {
     return event().toString();
   }
 
-  public void combine(CalculationStateGroupBy_4 other) {
+  public void combine(CalculationStateGroupBy_2 other) {
     //list the combining operations
     combineCount++;
-    sum3 = sum3Function.combine(other.sum3Function, tempNumber).doubleValue();
-    average1 = average1Function.combine(other.average1Function, tempNumber).doubleValue();
-    count2 = count2Function.combine(other.count2Function, tempNumber).intValue();
+    sum1 = sum1Function.combine(other.sum1Function, tempNumber).doubleValue();
   }
 
-  public void deduct(CalculationStateGroupBy_4 other) {
+  public void deduct(CalculationStateGroupBy_2 other) {
     combineCount--;
-    sum3 = sum3Function.deduct(other.sum3Function, tempNumber).doubleValue();
-    average1 = average1Function.deduct(other.average1Function, tempNumber).doubleValue();
-    count2 = count2Function.deduct(other.count2Function, tempNumber).intValue();
+    sum1 = sum1Function.deduct(other.sum1Function, tempNumber).doubleValue();
   }
 
-  public void aggregateNonStateful(Collection<CalculationStateGroupBy_4> states) {
+  public void aggregateNonStateful(Collection<CalculationStateGroupBy_2> states) {
     //TODO
   }
 

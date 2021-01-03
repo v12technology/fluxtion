@@ -16,7 +16,6 @@
  */
 package com.fluxtion.ext.declarative.builder.stream;
 
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +32,7 @@ public class StreamGroupByTest extends StreamInprocessTest {
     public void groupByStream() {
         sep((c) -> {
             select(StreamData.class)
-                .group(StreamData::getStringValue, StreamData::getIntValue, AggregateFunctions::calcSum)
+                .group(StreamData::getStringValue, StreamData::getIntValue, StreamGroupByTest::calcSum)
                 .id("group");//.log("groupBy Map -> ");
         });
         GroupBy<Number> group = getField("group");
@@ -46,6 +45,10 @@ public class StreamGroupByTest extends StreamInprocessTest {
 
         assertThat(group.value("one").intValue(), is(2700));
         assertThat(group.value("two").intValue(), is(200));
+    }
+
+    public static double calcSum(double newValue, double oldSum) {
+        return newValue + oldSum;
     }
 
 }

@@ -16,10 +16,12 @@ import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
+import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
@@ -62,12 +64,12 @@ public class GroupByTest extends StreamInprocessTest {
         //tests
         GroupBy<DeliverySummary> summary = getField("deliverySummary");
         DeliverySummary euCustomer = summary.stream()
-            .filter(delivery -> delivery.getCustomerId().equals("EU-xxxx-01"))
-            .findFirst().get();
+                .filter(delivery -> delivery.getCustomerId().equals("EU-xxxx-01"))
+                .findFirst().get();
 
         DeliverySummary gb_ddfCustomer = summary.stream()
-            .filter(delivery -> delivery.getCustomerId().equals("GB-ddf-45"))
-            .findFirst().get();
+                .filter(delivery -> delivery.getCustomerId().equals("GB-ddf-45"))
+                .findFirst().get();
 
         assertThat(summary.size(), is(3));
         assertThat(euCustomer.getValueInLocalCcy(), is(8000.0));
@@ -79,9 +81,9 @@ public class GroupByTest extends StreamInprocessTest {
     public void testGroupByFunction() {
         sep((c) -> {
             groupBy(TradeEvent::getTradeId, TradeSummary.class)
-                .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
-                .build()
-                .id("tradeSum");
+                    .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, cumSum())
+                    .build()
+                    .id("tradeSum");
         });
 
         sep.onEvent(new TradeEvent(14, 1000));
@@ -96,10 +98,10 @@ public class GroupByTest extends StreamInprocessTest {
     public void testGroupByRefFunction() {
         sep((c) -> {
             groupBy(TradeEvent::getTradeId, TradeSummary.class)
-                .map(TradeEvent::getTradeId, TradeSummary::setTraderIdString, GroupByTest::numberToString)
-                .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
-                .build()
-                .id("tradeSum");
+                    .map(TradeEvent::getTradeId, TradeSummary::setTraderIdString, GroupByTest::numberToString)
+                    .mapPrimitive(TradeEvent::getTradeVolume, TradeSummary::setTotalVolume, cumSum())
+                    .build()
+                    .id("tradeSum");
         });
 
         sep.onEvent(new TradeEvent(14, 1000));
@@ -125,14 +127,14 @@ public class GroupByTest extends StreamInprocessTest {
             SerializableFunction<TradeEvent, ? extends Number> tradeVol = TradeEvent::getTradeVolume;
             SerializableFunction<DealEvent, ? extends Number> dealVol = DealEvent::getTradeVolume;
             //aggregate calcualtions
-            trades.mapPrimitive(tradeVol, TradeSummary::setTotalVolume, AggregateFunctions::calcSum)
-                .mapPrimitive(tradeVol, TradeSummary::setAveragOrderSize, AggregateFunctions.AggregateAverage::calcAverage)
-                .mapPrimitive(tradeVol, TradeSummary::setTradeCount, AggregateFunctions::count);
-            deals.mapPrimitive(dealVol, TradeSummary::setTotalConfirmedVolume, AggregateFunctions::calcSum)
-                .mapPrimitive(dealVol, TradeSummary::setDealCount, AggregateFunctions::count);
+            trades.mapPrimitive(tradeVol, TradeSummary::setTotalVolume, GroupByTest::calcSum)
+                    .mapPrimitive(tradeVol, TradeSummary::setAveragOrderSize, GroupByTest.AggregateAverage::calcAverage)
+                    .mapPrimitive(tradeVol, TradeSummary::setTradeCount, GroupByTest::countLocal);
+            deals.mapPrimitive(dealVol, TradeSummary::setTotalConfirmedVolume, GroupByTest::calcSum)
+                    .mapPrimitive(dealVol, TradeSummary::setDealCount, GroupByTest::countLocal);
             stream(trades.build()::record)
-                .filter(TradeSummary::getOutstandingVoulme, negative())
-                .map(count()).id("badDealCount");
+                    .filter(TradeSummary::getOutstandingVoulme, negative())
+                    .map(count()).id("badDealCount");
 
         });
         //events
@@ -150,6 +152,108 @@ public class GroupByTest extends StreamInprocessTest {
         //tests
         Number badDealCount = getWrappedField("badDealCount");
         assertThat(badDealCount.intValue(), is(1));
+    }
+
+    public static double calcSum(double newValue, double oldSum) {
+        return newValue + oldSum;
+    }
+
+    public static double set(double newValue, double oldSum) {
+        return newValue;
+    }
+
+    public static int countLocal(Object newValue, int oldValue) {
+        oldValue++;
+        return oldValue;
+    }
+
+    public static double minimum(double newValue, double oldValue) {
+        return Math.min(newValue, oldValue);
+    }
+
+    public static double maximum(double newValue, double oldValue) {
+        return Math.max(newValue, oldValue);
+    }
+
+    public static class AggregateAverage implements Stateful.StatefulNumber<AggregateAverage> {
+
+        private int count;
+        private double sum;
+        private double currentValue;
+
+        public double calcAverage(double newValue, double oldAverage) {
+            count++;
+            sum += newValue;
+            currentValue = sum / count;
+            return currentValue;
+        }
+
+        @Override
+        public void reset() {
+            count = 0;
+            sum = 0;
+            currentValue = Double.NaN;
+        }
+
+        @Override
+        public Number combine(AggregateAverage other, MutableNumber result) {
+            count += other.count;
+            sum += other.sum;
+            currentValue = sum / count;
+            result.set(currentValue);
+            return result;
+        }
+
+        @Override
+        public Number deduct(AggregateAverage other, MutableNumber result) {
+            count -= other.count;
+            sum -= other.sum;
+            currentValue = sum / count;
+            result.set(currentValue);
+            return result;
+        }
+
+        @Override
+        public Number currentValue(MutableNumber result) {
+            result.set(currentValue);
+            return result;
+        }
+    }
+
+    public static class AggregateSum implements Stateful.StatefulNumber<AggregateSum> {
+
+        private double sum;
+
+        public double calcCumSum(double newValue, double oldAverage) {
+            sum += newValue;
+            return sum;
+        }
+
+        @Override
+        public void reset() {
+            sum = 0;
+        }
+
+        @Override
+        public Number combine(AggregateSum other, MutableNumber result) {
+            sum += other.sum;
+            result.set(sum);
+            return result;
+        }
+
+        @Override
+        public Number deduct(AggregateSum other, MutableNumber result) {
+            sum -= other.sum;
+            result.set(sum);
+            return result;
+        }
+
+        @Override
+        public Number currentValue(MutableNumber result) {
+            result.set(sum);
+            return result;
+        }
+
     }
 
 }

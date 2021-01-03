@@ -17,7 +17,8 @@
  */
 package com.fluxtion.example.quickstart.lesson2;
 
-import com.fluxtion.example.quickstart.lesson2.TradeMonitor.Trade;
+import com.fluxtion.example.quickstart.lesson3.TradeMonitor.Trade;
+import com.fluxtion.example.quickstart.lesson3.generated.TradeEventProcessor;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
@@ -47,10 +48,7 @@ public class TradeMonitorTest extends BaseSepInprocessTest {
     
     @Test
     public void testTradeMonitor() {
-//        uncomment two lines below to make debugging easier - package will be fixed and re-use previous genertion
-//        fixedPkg = true;
-//        reuseSep = true;
-        sep(TradeMonitor::build);
+        sep(TradeEventProcessor.class);
         sysOut.clear();
         tick(1);
         onEvent(new Trade("EURUSD", 5_000));

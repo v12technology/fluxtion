@@ -22,6 +22,7 @@ import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import lombok.Data;
+import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Meta data for a group by aggregate function.
@@ -49,6 +50,7 @@ public class GroupByFunctionInfo {
     private String sourceClassName;
     private String sourceCalcMethodName;
     private String sourceInstanceId;
+    private boolean sourceThis;//passing the whole event in to function
     //Target
     private Class targetClass;
     private Method targetMethod;
@@ -58,9 +60,12 @@ public class GroupByFunctionInfo {
     private String targetInstanceId;
     
     public final ImportMap importMap;
+    private boolean functionSingleArg;
+    private boolean functionAcceptsNumber;
 
     public GroupByFunctionInfo(ImportMap importMap) {
         this.importMap = importMap;
+        this.sourceThis = false;
     }
     
     public void setFunction(Class clazz, Method method, String id){
@@ -70,7 +75,9 @@ public class GroupByFunctionInfo {
         functionClassName = importMap.addImport(clazz);
         functionCalcMethodName = method.getName();
         functionCalcArgType = method.getParameterTypes()[0].getName();
-        functionCalcReturnType = method.getReturnType().getName();
+        functionAcceptsNumber = Number.class.isAssignableFrom(method.getParameterTypes()[0]);
+        functionSingleArg = (method.getParameterCount() == 1);
+        functionCalcReturnType = method.getReturnType().getCanonicalName();
         stateful = Stateful.class.isAssignableFrom(clazz);
         statefulNumeric = StatefulNumber.class.isAssignableFrom(clazz);
         statefulNonNumeric = stateful & !statefulNumeric;
@@ -78,11 +85,16 @@ public class GroupByFunctionInfo {
     }
     
     public void setSource(Class clazz, Method method, String id){
+        this.sourceThis = false;
         sourceClass = clazz;
         sourceMethod = method;
         sourceInstanceId = id;
         sourceClassName = importMap.addImport(clazz);
         sourceCalcMethodName = method.getName();
+    }
+
+    void setSourceThis() {
+        sourceThis = true;
     }
     
     public void setTarget(Class clazz, Method method, String id){
@@ -98,15 +110,26 @@ public class GroupByFunctionInfo {
         String functionId = functionInstanceId;
         if(staticFunction){
             functionId = functionClassName;
-        }else if(stateful){
+        }else {
             functionId = "instance." + functionInstanceId+"Function";
         }
         String source = sourceInstanceId==null?"0":sourceInstanceId +  "." + sourceCalcMethodName + "()";
+        if(sourceThis){
+            source = "event";
+        }
+        if(functionAcceptsNumber){
+            source = "number.set(" + source +")";
+        }
         String a = "\t\t\t" + functionCalcReturnType + " value = instance." + functionInstanceId + ";\n";
         String b = "\t\t\tvalue = " + functionId + "." + functionCalcMethodName + "((" + functionCalcArgType + ")"
                 + source
                 + ", (" + functionCalcReturnType + ")value"
                 +    ");\n";
+        if(functionSingleArg){
+            b = "\t\t\tvalue = " + functionId + "." + functionCalcMethodName + "((" + functionCalcArgType + ")"
+                + source
+                +    ");\n";
+        }
         String c = "\t\t\t" + targetInstanceId + "." + targetCalcMethodName + "((" + targetArgType + ")"
                 + "value);\n"
                 ;

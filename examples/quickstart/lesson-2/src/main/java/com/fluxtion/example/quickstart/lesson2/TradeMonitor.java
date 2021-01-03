@@ -51,7 +51,7 @@ public class TradeMonitor {
         StringBuilder sb = new StringBuilder("Most active ccy pairs in past 5 seconds:");
         for (int i = 0; i < trades.size(); i++) {
             Tuple<String, Number> result = trades.get(i);
-            sb.append(String.format("\n\t%2d. %5s - %d trades", i + 1, result.getKey(), result.getValue().intValue()));
+            sb.append(String.format("\n\t%2d. %5s - %.0f trades", i + 1, result.getKey(), result.getValue()));
         }
         return sb.toString();
     }
