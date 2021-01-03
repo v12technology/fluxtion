@@ -34,7 +34,7 @@ import com.fluxtion.ext.streaming.api.window.TimeReset;
 
 /*
  * <pre>
- * generation time   : 2020-12-31T15:36:00.853115600
+ * generation time   : 2021-01-03T19:47:33.842803600
  * generator version : 2.10.12-SNAPSHOT
  * api version       : 2.10.12-SNAPSHOT
  * </pre>

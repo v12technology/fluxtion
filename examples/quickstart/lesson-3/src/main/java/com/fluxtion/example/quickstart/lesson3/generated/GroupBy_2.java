@@ -17,11 +17,11 @@ import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import java.util.BitSet;
 import java.util.Collection;
@@ -48,6 +48,7 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
   @NoEventReference public Object resetNotifier;
   @SepNode @PushReference public ArrayListWrappedCollection<Tuple> wrappedList;
   private boolean allMatched;
+  private MutableNumber number = new MutableNumber();
   private Tuple target;
   private GroupByTargetMap<String, Tuple, CalculationStateGroupBy_2> calcState;
   private GroupByIniitialiser<Trade, Tuple> initialisertrade0;
@@ -69,10 +70,10 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
     allMatched = instance.allMatched();
     target = instance.target;
     {
-      double value = instance.aggregateSum1;
-      value = instance.aggregateSum1Function.calcCumSum((double) event.getAmount(), (double) value);
+      double value = instance.sum1;
+      value = instance.sum1Function.addValue((java.lang.Number) number.set(event.getAmount()));
       target.setValue((java.lang.Object) value);
-      instance.aggregateSum1 = value;
+      instance.sum1 = value;
     }
     //    updated();
     if (firstMatched) {
@@ -94,6 +95,7 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
     wrappedList.init();
     allMatched = false;
     target = null;
+    number.set(0);
     initialisertrade0 =
         new GroupByIniitialiser<Trade, Tuple>() {
 
@@ -159,7 +161,7 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
                 final CalculationStateGroupBy_2 sourceState = e.getValue();
                 CalculationStateGroupBy_2 newInstance = calcState.getOrCreateInstance(e.getKey());
                 newInstance.combine(sourceState);
-                newInstance.target.setValue((java.lang.Object) newInstance.aggregateSum1);
+                newInstance.target.setValue((java.lang.Object) newInstance.sum1);
               } else {
                 final CalculationStateGroupBy_2 sourceState = e.getValue();
                 CalculationStateGroupBy_2 newInstance = calcState.getOrCreateInstance(e.getKey());
@@ -167,7 +169,7 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
                 newInstance.updateMap.or(sourceState.updateMap);
                 initFromCopy.accept(sourceState.target, newInstance.target);
                 newInstance.combine(sourceState);
-                newInstance.target.setValue((java.lang.Object) newInstance.aggregateSum1);
+                newInstance.target.setValue((java.lang.Object) newInstance.sum1);
                 wrappedList.addItem(newInstance.target);
               }
             });
@@ -187,7 +189,7 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
                 final CalculationStateGroupBy_2 sourceState = e.getValue();
                 CalculationStateGroupBy_2 newInstance = calcState.getOrCreateInstance(e.getKey());
                 newInstance.deduct(sourceState);
-                newInstance.target.setValue((java.lang.Object) newInstance.aggregateSum1);
+                newInstance.target.setValue((java.lang.Object) newInstance.sum1);
                 if (newInstance.isExpired()) {
                   calcState.expireInstance(e.getKey());
                   wrappedList.removeItem(newInstance.target);

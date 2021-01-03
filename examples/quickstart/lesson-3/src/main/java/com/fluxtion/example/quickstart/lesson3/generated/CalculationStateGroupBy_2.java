@@ -17,11 +17,11 @@ import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import com.fluxtion.ext.streaming.api.group.AggregateFunctions.AggregateSum;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
 import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import java.util.BitSet;
 import java.util.Collection;
@@ -49,8 +49,8 @@ public final class CalculationStateGroupBy_2 implements Wrapper<Tuple> {
   private final MutableNumber tempNumber = new MutableNumber();
   private int combineCount;
   public Tuple target;
-  public AggregateSum aggregateSum1Function = new AggregateSum();
-  public double aggregateSum1;
+  public Sum sum1Function = new Sum();
+  public double sum1;
 
   public CalculationStateGroupBy_2() {
     target = new Tuple();
@@ -104,14 +104,12 @@ public final class CalculationStateGroupBy_2 implements Wrapper<Tuple> {
   public void combine(CalculationStateGroupBy_2 other) {
     //list the combining operations
     combineCount++;
-    aggregateSum1 =
-        aggregateSum1Function.combine(other.aggregateSum1Function, tempNumber).doubleValue();
+    sum1 = sum1Function.combine(other.sum1Function, tempNumber).doubleValue();
   }
 
   public void deduct(CalculationStateGroupBy_2 other) {
     combineCount--;
-    aggregateSum1 =
-        aggregateSum1Function.deduct(other.aggregateSum1Function, tempNumber).doubleValue();
+    sum1 = sum1Function.deduct(other.sum1Function, tempNumber).doubleValue();
   }
 
   public void aggregateNonStateful(Collection<CalculationStateGroupBy_2> states) {

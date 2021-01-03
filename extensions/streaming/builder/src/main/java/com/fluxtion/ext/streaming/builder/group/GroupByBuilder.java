@@ -24,7 +24,11 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
-import com.fluxtion.ext.streaming.api.util.Tuple;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
+import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 import com.fluxtion.ext.streaming.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
@@ -107,12 +111,12 @@ public class GroupByBuilder<K, T> {
 
     public GroupByBuilder<K, T>
         avg(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions.AggregateAverage::calcAverage);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, new Average()::addValue);
     }
 
     public GroupByBuilder<K, T>
         count(SerializableBiConsumer<T, ? super Byte> target) {
-        return GroupByBuilder.this.mapPrimitive(target, AggregateFunctions::count);
+        return GroupByBuilder.this.mapPrimitive(target, new Count()::increment);
     }
 
     public GroupByBuilder<K, T>
@@ -122,17 +126,17 @@ public class GroupByBuilder<K, T> {
 
     public GroupByBuilder<K, T>
         min(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::minimum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, new Min()::min);
     }
 
     public GroupByBuilder<K, T>
         max(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::maximum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, new Max()::max);
     }
 
     public GroupByBuilder<K, T>
         sum(SerializableFunction<K, ? extends Number> sourceFunction, SerializableBiConsumer<T, ? super Byte> target) {
-        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, AggregateFunctions::calcSum);
+        return GroupByBuilder.this.mapPrimitive(sourceFunction, target, cumSum());
     }
 
     public void optional(boolean optional) {
