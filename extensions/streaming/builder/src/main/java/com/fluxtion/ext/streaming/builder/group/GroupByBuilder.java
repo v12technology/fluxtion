@@ -24,6 +24,7 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.AggregateFunctions;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.ext.streaming.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;
@@ -346,10 +347,10 @@ public class GroupByBuilder<K, T> {
         return this;
     }
     
-    public <S, R, F> GroupByBuilder<K, T> mapPrimitive(
-        SerializableFunction<K, ? extends Number> supplier,
+    public <S, V extends Number, R extends Number> GroupByBuilder<K, T> mapPrimitive(
+        SerializableFunction<K, V> supplier,
         SerializableBiConsumer<T, ? super Byte> target,
-        SerializableFunction< ? super Number, ? extends Number> func) {
+        SerializableFunction< ? super R, ? extends R> func) {
         Class calcFunctionClass = func.getContainingClass();
         //set mapPrimitive
         GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
@@ -371,6 +372,40 @@ public class GroupByBuilder<K, T> {
         return this;
     }
     
+    public <G extends Number, F> GroupByBuilder<K, T>
+        mapPrimitive(
+            SerializableBiConsumer<T, ? super Byte> target,
+            SerializableFunction<? super G, ? extends G> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        info.setSourceThis();
+        //set target
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }
+    
+    public <S, R, F> GroupByBuilder<K, T>
+        map(
+            SerializableBiConsumer<T, ? super R> target,
+            SerializableFunction<? super S, ? extends R> func) {
+        Class calcFunctionClass = func.getContainingClass();
+        //set mapPrimitive
+        GroupByFunctionInfo info = new GroupByFunctionInfo(groupBy.getImportMap());
+        String id = StringUtils.uncapitalize(calcFunctionClass.getSimpleName() + GenerationContext.nextId());
+        info.setFunction(calcFunctionClass, func.method(), id);
+        info.setSourceThis();
+        //set target
+        info.setTarget(sourceContext.getTargetClass(), target.method(), "target");
+        //add to context
+        sourceContext.addGroupByFunctionInfo(info);
+        return this;
+    }  
+    
     public GroupBy<T> build() {
         return groupBy.build();
     }
@@ -378,5 +413,6 @@ public class GroupByBuilder<K, T> {
     public GroupBy<T> build(String publicName) {
         return groupBy.build();
     }
+
 
 }
