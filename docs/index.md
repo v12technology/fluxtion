@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+---
+title: Home
+has_children: false
+nav_order: 1
+published: true
+---
 
-You can use the [editor on GitHub](https://github.com/v12technology/fluxtion/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+# Introduction
+Welcome to Fluxtion streaming and thanks for coming, hope you enjoy exploring :) 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Fluxtion streaming builds event processing applications in Java that handle infinite streams of data. 
+Write simple clean Java code to create realtime applications, all the complex heavy lifting is taken care of by Fluxtion. 
+Programs are quick to build, test, deploy and debug.
 
-### Markdown
+Fluxtion focuses on the processing logic of event streams, independent of messaging system. Areas of good fit include:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+-  **Embedding realtime processing** within an existing system
+-  **Edge processing** executing on edge devices
+-  **No middleware vendor lock-in**, works with any messaging provider
+-  **Low latency** or high performance requirements
 
-```markdown
-Syntax highlighted code block
+Developers use a familiar stream like api to work with. Data streams can be merged, filtered, aggregated, joined, grouped and enriched. 
+Windowing of data is fully supported. User functions are easily integrated to directly execute actions in addition to real-time monitoring.
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/v12technology/fluxtion/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+A full set of tools for debugging, tracing, auding and visualisation are provided to reduce development and support costs.
