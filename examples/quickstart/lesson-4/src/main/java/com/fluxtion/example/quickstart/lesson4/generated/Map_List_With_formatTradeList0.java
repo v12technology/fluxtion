@@ -1,7 +1,15 @@
 package com.fluxtion.example.quickstart.lesson4.generated;
 
+import com.fluxtion.api.annotations.AfterEvent;
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.example.quickstart.lesson4.TradeMonitor;
+import com.fluxtion.example.quickstart.lesson4.generated.GetField_SubList_List0;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
+import com.fluxtion.ext.streaming.api.Test;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.AbstractFilterWrapper;
 import java.util.List;
 

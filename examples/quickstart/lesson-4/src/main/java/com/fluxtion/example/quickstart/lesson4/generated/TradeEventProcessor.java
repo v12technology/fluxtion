@@ -34,9 +34,9 @@ import com.fluxtion.ext.streaming.api.window.TimeReset;
 
 /*
  * <pre>
- * generation time   : 2021-01-03T19:47:33.842803600
- * generator version : 2.10.12-SNAPSHOT
- * api version       : 2.10.12-SNAPSHOT
+ * generation time   : 2021-01-12T20:30:05.345809900
+ * generator version : 2.10.14-SNAPSHOT
+ * api version       : 2.10.14-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */
@@ -103,7 +103,7 @@ public class TradeEventProcessor implements StaticEventProcessor, BatchHandler, 
           handleEvent(typedEvent);
           break;
         }
-      case ("com.fluxtion.example.quickstart.lesson3.TradeMonitor$Trade"):
+      case ("com.fluxtion.example.quickstart.lesson4.TradeMonitor$Trade"):
         {
           Trade typedEvent = (Trade) event;
           handleEvent(typedEvent);

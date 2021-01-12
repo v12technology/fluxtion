@@ -13,7 +13,7 @@ public class LogMsgBuilder4 extends LogMsgBuilder {
 
   //source operand inputs
   @NoEventReference
-  public Map_List_With_formatTradeList0
+  public com.fluxtion.example.quickstart.lesson4.generated.Map_List_With_formatTradeList0
       source_Map_List_With_formatTradeList0_3;
 
   public Object logNotifier;

@@ -1,12 +1,34 @@
 package com.fluxtion.example.quickstart.lesson4.generated;
 
+import com.fluxtion.api.SepContext;
+import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.PushReference;
+import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.partition.LambdaReflection.SerializableBiConsumer;
+import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.example.quickstart.lesson4.TradeMonitor.Trade;
+import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.streaming.api.Stateful;
+import com.fluxtion.ext.streaming.api.WrappedCollection;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.GroupByIniitialiser;
+import com.fluxtion.ext.streaming.api.group.GroupByTargetMap;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Generated group by calculation state holder.
