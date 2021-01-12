@@ -12,7 +12,8 @@ Unit testing of any system is critical. The previous example creates an event pr
 
 ## Testing process
 Fluxtion integrates unit testing into the developer workflow as follows:
-1. Add maven dependencies for testing and create a test class that extends the [BaseSeInprocessTest.java](https://github.com/v12technology/fluxtion/blob/2.10.9/generator/src/test/java/com/fluxtion/generator/util/BaseSepInprocessTest.java).
+1. Add maven dependencies for testing and create a test class that extends the 
+[BaseSeInprocessTest](//github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/generator/src/test/java/com/fluxtion/generator/util/BaseSepInprocessTest.java).
 1. Extract processor construction into a separate builder method for use in a unit test.   
 1. Write a test case that uses the builder method to create an event processor for testing. Send events into the generated processor and validate outputs or state of nodes using asserts/expectations. 
 
@@ -45,7 +46,8 @@ Add the fluxtion test jar to the project and Junit 4 dependency.
 
 ### 2. Introduce builder method
 The app is refactored to separate processor consruction logic into a builder method. The builder method can be tested directly in a unit test.
-To help testing a node can be given a unique identifier by appending  `.id("name")` during construction. The BaseSepInprocessTest provides helper methods to access a processor node by id, with `getField("name")`.
+To help testing a node can be given a unique identifier by appending  `.id("name")` during construction. 
+The BaseSepInprocessTest provides helper methods to access a processor node by id, with `getField("name")`.
 
 ```java
 public class TradeMonitor {
@@ -67,9 +69,11 @@ public class TradeMonitor {
 ```
 
 ### 3. Write Junit test case
-A complete unit test is shown below that validates the behaviour of the event processor. The processor is constructed by supplying the builder method to the test super class with `sep(TradeMonitor::build)`
+A complete unit test is shown below that validates the behaviour of the event processor. 
+The processor is constructed by supplying the builder method to the test super class with `sep(TradeMonitor::build)`
 
-Events are sent to the processor under test with the onEvent method e.g.`onEvent(new Trade("EURUSD", 5_000))`. A data driven clock can be adjusted in the test using the `tick("new time")` method to simulate the passing of time.
+Events are sent to the processor under test with the onEvent method e.g.`onEvent(new Trade("EURUSD", 5_000))`. 
+A data driven clock can be adjusted in the test using the `tick("new time")` method to simulate the passing of time.
 
 A reference to the "top3" node is gained using the id set in the bulder method, with: `WrappedList<Tuple<String, Number>> top3 = getField("top3")`. 
 
