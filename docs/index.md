@@ -1,5 +1,5 @@
 ---
-title: Home
+title: Introduction
 has_children: false
 nav_order: 1
 published: true

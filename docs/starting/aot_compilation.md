@@ -6,7 +6,7 @@ nav_order: 2
 published: true
 ---
 
-# Introduction
+# Buildtime generation
 Fluxtion provides a maven plugin that can generate an event processor as part of the build cycle. 
 This makes a system more predictable at runtime as the behaviour is statically generated before deployment and can be fully tested.
 The example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-3).
