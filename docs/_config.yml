@@ -3,8 +3,8 @@ title: Fluxtion streaming
 description: Documentation fpr Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "Fluxtion on github":
-    - "//github.com/v12technology/fluxtion"
+  "release 2.10.13":
+    - "//github.com/v12technology/fluxtion/tree/2.10.13"
 heading_anchors: true
 
 compress_html:
@@ -15,3 +15,5 @@ kramdown:
   syntax_highlighter_opts:
     block:
       line_numbers: true
+      
+fluxtion_version: 2.10.13
