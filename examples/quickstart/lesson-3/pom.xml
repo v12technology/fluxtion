@@ -13,22 +13,6 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <build>
-        <plugins>
-            <!--removes builder from the final build artefact only required at runtime-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/TradeProcessorBuilder.*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>  
-        </plugins>
-    </build>
-    
     <profiles>
         <profile>
             <id>fluxtion-generate</id>
@@ -63,13 +47,7 @@
         </dependency>
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-streaming-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-streaming-builder</artifactId>
-            <scope>provided</scope>
             <version>${project.version}</version>
         </dependency>
         <!--TEST dependencies START-->
