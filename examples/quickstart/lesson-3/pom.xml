@@ -17,7 +17,7 @@
         <profile>
             <id>fluxtion-generate</id>
             <properties>
-                <!--<skipTests>true</skipTests>-->
+                <skipTests>true</skipTests>
             </properties>
             <build>
                 <plugins>
