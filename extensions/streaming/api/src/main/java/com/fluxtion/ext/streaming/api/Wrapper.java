@@ -90,9 +90,9 @@ public interface Wrapper<T> extends Stateful<T>{
     }
 
     default <S extends Number, R extends Number> GroupBy<R> group(
-            SerializableFunction<T, S> supplier,
+            SerializableFunction<T, S> key,
             SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
-        return StreamOperator.service().group(this, supplier, functionClass);
+        return StreamOperator.service().group(this, key, functionClass);
     }
     
     default <K, S extends Number, R extends Number> GroupBy<R> group(
