@@ -6,7 +6,7 @@ nav_order: 1
 published: true
 ---
 
-# Introduction
+# Unit testing
 
 Unit testing of any system is critical. The previous example creates an event processor at runtime, but applies no tests. 
 This example demonstrates how to write unit tests that validate event processing logic. 

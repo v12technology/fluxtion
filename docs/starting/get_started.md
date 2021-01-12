@@ -1,10 +1,10 @@
 ---
-title: Getting started
+title: First Fluxtion application
 has_children: true
 nav_order: 2
 published: true
 ---
-# Introduction
+# First Fluxtion application
 This example processes a stream of trade events calculating statisitics in a 5 second sliding window. 
 Every second the three most active currency pairs by volume are logged to the screen. 
 An understanding of Java and maven is required to complete this tutorial. 
