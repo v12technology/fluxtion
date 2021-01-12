@@ -9,6 +9,7 @@ published: true
 # Introduction
 Fluxtion provides a maven plugin that can generate an event processor as part of the build cycle. 
 This makes a system more predictable at runtime as the behaviour is statically generated before deployment and can be fully tested.
+The example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-3).
 
 ## Development process
 To statically generate the event processor at buildtime three steps are required
@@ -71,7 +72,8 @@ mvn install -Pfluxtion-generate
 
 After the build completes generated artefacts are located in the package directory provided in the annotation. 
 See [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-3/src/main/java/com/fluxtion/example/quickstart/lesson3/generated) 
-for an example of the output.
+for an example of the output. Graphical representation of the processing graph is also generated
+by the plugin [here](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/examples/quickstart/lesson-3/src/main/resources/com/fluxtion/example/quickstart/lesson3/generated/TradeEventProcessor.png)
 
 ### 3. Use buildtime generated processor
 Update the main file to use the ahead of time generated processor, TradeEventProcessor.
@@ -106,3 +108,29 @@ public class TradeGenerator {
     }
 }
 ```
+
+Update the test case to use the statically generated event processor, by passing in the class name.
+
+```java
+    @Test
+    public void testTradeMonitor() {
+        sep(TradeEventProcessor.class);
+        //omitted
+    }
+```
+
+## Running the application
+
+run the application as before:
+
+{% highlight console %}
+mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMonitor"
+ Most active ccy pairs in past 5 seconds:
+         1. EURNOK - 2477 trades
+         2. GBPCHF - 2194 trades
+         3. EURCHF - 2191 trades
+ Most active ccy pairs in past 5 seconds:
+         1. EURNOK - 2985 trades
+         2. EURCHF - 2173 trades
+         3. USDMXN - 1992 trades
+{% endhighlight %}
