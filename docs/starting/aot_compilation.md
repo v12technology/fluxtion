@@ -1,6 +1,6 @@
 ---
 title: Buildtime generation
-parent: Getting started
+parent: First Fluxtion application
 has_children: false
 nav_order: 2
 published: true

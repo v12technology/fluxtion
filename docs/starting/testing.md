@@ -1,6 +1,6 @@
 ---
 title: Unit testing
-parent: Getting started
+parent: First Fluxtion application
 has_children: false
 nav_order: 1
 published: true
