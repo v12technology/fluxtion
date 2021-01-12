@@ -24,7 +24,7 @@ Building a Fluxtion application requires three steps
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.example</groupId>
     <artifactId>quickstart.lesson-1</artifactId>
-    <version>2.10.13-SNAPSHOT</version>
+    <version>{{site.fluxtion_version}}</version>
     <packaging>jar</packaging>
     <name>fluxtion :: quickstart :: lesson-1</name>
     <properties>
@@ -37,7 +37,7 @@ Building a Fluxtion application requires three steps
         <dependency>
             <groupId>com.fluxtion.extension</groupId>
             <artifactId>fluxtion-streaming-builder</artifactId>
-            <version>${project.version}</version>
+            <version>{{site.fluxtion_version}}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -96,7 +96,7 @@ public static class Trade {
 ### 3. Application integration
 
 An application feeds events into a Fluxtion generated event processor to execute business logic. 
-All Fluxtion event processors implement the [StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/develop/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
+All Fluxtion event processors implement the [StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
 To post an event the application invokes `processor.onEvent(event)` on the processor instance.
 
 ```java

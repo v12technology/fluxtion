@@ -7,7 +7,8 @@ published: true
 ---
 
 # Introduction
-Fluxtion provides a maven plugin that can generate an event processor as part of the build cycle. This makes a system more predictable at runtime as the behaviour is statically generated before deployment and can be fully tested.
+Fluxtion provides a maven plugin that can generate an event processor as part of the build cycle. 
+This makes a system more predictable at runtime as the behaviour is statically generated before deployment and can be fully tested.
 
 ## Development process
 To statically generate the event processor at buildtime three steps are required
@@ -16,7 +17,8 @@ To statically generate the event processor at buildtime three steps are required
 1. Remove any calls to dynamically build a processor at runtime and use the fqn above to instantiate a statically generated processor, including test cases.
 
 ### 1. Maven Build
-Add the fluxtion maven plugin using the scan goal. It is usally better to add the generation as a maven profile as once the solution is generated then the build should be stable. Skipping tests for the generation phase is usually preferable.
+Add the fluxtion maven plugin using the scan goal. It is usally better to add the generation as a maven profile 
+as once the solution is generated then the build should be stable. Skipping tests for the generation phase is usually preferable.
 
 ```xml
     <profiles>
@@ -30,7 +32,7 @@ Add the fluxtion maven plugin using the scan goal. It is usally better to add th
                     <plugin>
                         <groupId>com.fluxtion</groupId>
                         <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>${project.version}</version>
+                        <version>{{site.fluxtion_version}}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -46,7 +48,8 @@ Add the fluxtion maven plugin using the scan goal. It is usally better to add th
 ```
 
 ### 2. Annotate builder methods
-The scan goal searches the project code base for any builder methods that have the `@SepBuilder` annotation. The parameters for name and package name are combined to make the fully quaified name of the generated event processor.
+The scan goal searches the project code base for any builder methods that have the `@SepBuilder` annotation. 
+The parameters for name and package name are combined to make the fully quaified name of the generated event processor.
 
 ```java
     @SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
@@ -67,7 +70,7 @@ mvn install -Pfluxtion-generate
 {% endhighlight %}
 
 After the build completes generated artefacts are located in the package directory provided in the annotation. 
-See [here](https://github.com/v12technology/fluxtion/tree/master/examples/quickstart/lesson-3/src/main/java/com/fluxtion/example/quickstart/lesson3/generated) 
+See [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-3/src/main/java/com/fluxtion/example/quickstart/lesson3/generated) 
 for an example of the output.
 
 ### 3. Use buildtime generated processor
