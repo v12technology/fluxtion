@@ -8,7 +8,10 @@ published: true
 
 # Introduction
 
-Unit testing of any system is critical. The previous example creates an event processor at runtime, but applies no tests. This example demonstrates how to write unit tests that validate event processing logic. Fluxtion provides Junit utilities for generating and testing event processors. The example is located [here](https://github.com/v12technology/fluxtion/tree/master/examples/quickstart/lesson-2).
+Unit testing of any system is critical. The previous example creates an event processor at runtime, but applies no tests. 
+This example demonstrates how to write unit tests that validate event processing logic. 
+Fluxtion provides Junit utilities for generating and testing event processors. 
+The example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-2).
 
 ## Testing process
 Fluxtion integrates unit testing into the developer workflow as follows:

@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>text-pom</artifactId>
-    <version>2.10.13</version>
+    <version>2.10.14</version>
     <packaging>pom</packaging>
     <name>fluxtion :: ext :: text</name>
     <modules>

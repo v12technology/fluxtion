@@ -14,7 +14,7 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.quickstart.lesson3.generated;
+package com.fluxtion.example.quickstart.lesson4.generated;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
@@ -24,7 +24,7 @@ import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
-import com.fluxtion.example.quickstart.lesson3.TradeMonitor.Trade;
+import com.fluxtion.example.quickstart.lesson4.TradeMonitor.Trade;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.SubList;
 import com.fluxtion.ext.streaming.api.log.LogControlEvent;
@@ -34,7 +34,7 @@ import com.fluxtion.ext.streaming.api.window.TimeReset;
 
 /*
  * <pre>
- * generation time   : 2021-01-12T20:26:43.649793400
+ * generation time   : 2021-01-12T20:31:30.530360300
  * generator version : 2.10.14-SNAPSHOT
  * api version       : 2.10.14-SNAPSHOT
  * </pre>
@@ -103,7 +103,7 @@ public class TradeEventProcessor implements StaticEventProcessor, BatchHandler, 
           handleEvent(typedEvent);
           break;
         }
-      case ("com.fluxtion.example.quickstart.lesson3.TradeMonitor$Trade"):
+      case ("com.fluxtion.example.quickstart.lesson4.TradeMonitor$Trade"):
         {
           Trade typedEvent = (Trade) event;
           handleEvent(typedEvent);

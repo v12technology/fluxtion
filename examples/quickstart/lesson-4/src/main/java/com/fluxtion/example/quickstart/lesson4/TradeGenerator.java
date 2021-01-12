@@ -15,10 +15,9 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.quickstart.lesson2;
+package com.fluxtion.example.quickstart.lesson4;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.integration.eventflow.sources.ManualEventSource;
+import com.fluxtion.example.quickstart.lesson4.generated.TradeEventProcessor;
 import java.util.Random;
 
 /**
@@ -31,18 +30,11 @@ public class TradeGenerator {
     private static final String[] ccyPairs = new String[]{"EURUSD", "EURCHF", "EURGBP", "GBPUSD",
         "USDCHF", "EURJPY", "USDJPY", "USDMXN", "GBPCHF", "EURNOK", "EURSEK"};
 
-    static void publishTestData(ManualEventSource<TradeMonitor.Trade> tradeSource) throws InterruptedException {
+    static void publishTestData(TradeEventProcessor processor) throws InterruptedException {
+        processor.init();
         Random random = new Random();
         while (true) {
-            tradeSource.publishToFlow(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
-            Thread.sleep(random.nextInt(10) + 10);
-        }
-    }
-
-    static void publishTestData(StaticEventProcessor processor) throws InterruptedException {
-        Random random = new Random();
-        while (true) {
-            processor.onEvent(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
+            processor.handleEvent(new TradeMonitor.Trade(ccyPairs[random.nextInt(ccyPairs.length)], random.nextInt(100) + 10));
             Thread.sleep(random.nextInt(10) + 10);
         }
     }
