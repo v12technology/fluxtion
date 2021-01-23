@@ -29,14 +29,6 @@ import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.g
  */
 public class TradeProcessorBuilder {
 
-    @SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
-    public static void build(SEPConfig cfg) {
-        groupBySum(TradeMonitor.Trade::getSymbol, TradeMonitor.Trade::getAmount)
-            .sliding(seconds(1), 5)
-            .comparator(numberValComparator()).reverse()
-            .top(3).id("top3")
-            .map(TradeMonitor::formatTradeList)
-            .log();
-    }
+
     
 }
