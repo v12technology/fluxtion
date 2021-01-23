@@ -63,6 +63,8 @@ public @interface SepBuilder {
      * <li>target/generated-test-sources/fluxtion
      * <li>src/main/java
      * </ul>
+     * 
+     * default value = src/main/java
      *
      * @return overridden output directory
      */
@@ -89,13 +91,14 @@ public @interface SepBuilder {
      * same output directory, setting this option to true will have
      * unpredictable results.
      *
-     * @return
+     * @return flag to clean the output directory specified in {@link  #outputDir() }
      */
     boolean cleanOutputDir() default true;
     
     /**
      * call the lifecycle initialise method on the generated SEP
-     * @return 
+     * 
+     * @return flag to call initialise in generated event processor
      */
     boolean initialise() default true;
 }
