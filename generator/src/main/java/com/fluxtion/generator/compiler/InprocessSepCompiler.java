@@ -19,41 +19,46 @@ package com.fluxtion.generator.compiler;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.builder.node.SEPConfig;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
+import net.openhft.compiler.CompilerUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Generates and compiles a SEP for use by a caller in the same process. The
- * compilation is invoked programmatically removing the need to execute the
- * Fluxtion event stream compiler as an external process.<br><br>
+ * Generates and compiles a SEP for use by a caller in the same process. The compilation is invoked programmatically
+ * removing the need to execute the Fluxtion event stream compiler as an external process.<br><br>
  *
- * To generate a SEP the caller invokes one of the static compileSep methods. An
- * instance of {@link SEPConfig} is passed to the consumer to control the graph
- * construction, such as adding nodes and defining scopes or identifiers. Simple
+ * To generate a SEP the caller invokes one of the static compileSep methods. An instance of {@link SEPConfig} is passed
+ * to the consumer to control the graph construction, such as adding nodes and defining scopes or identifiers. Simple
  * example adding a single node:<br><br>
  *
  * {@code  sepTestInstance((c) -> c.addNode(new MyHandler(), "handler"), "com.fluxtion.examples.inprocess", "GenNode_1");}
  * <br><br>
  *
- * Optionally creates an instance of the compiled StaticEventProcessor with or
- * without calling the init method using one of {@link #sepInstance(Consumer, String, String, String, String, boolean)
+ * Optionally creates an instance of the compiled StaticEventProcessor with or without calling the init method using one
+ * of {@link #sepInstance(Consumer, String, String, String, String, boolean)
  * }.<br><br>
  *
- * <h2>>This is an experimental feature that needs to tested carefully. The
- * class loading for SEP generation was originally designed to be out of process
- * so there may be issues.</h2>
+ * <h2>>This is an experimental feature that needs to tested carefully. The class loading for SEP generation was
+ * originally designed to be out of process so there may be issues.</h2>
  *
  * @author V12 Technology Ltd.
  */
+@Slf4j
 public class InprocessSepCompiler {
 
     public enum InitOptions {
@@ -94,13 +99,11 @@ public class InprocessSepCompiler {
     }
 
     /**
-     * Build a static event processor using the supplied consumer to populate
-     * the SEPConfig. Will always build a new processor, supplying a newly
-     * created instance of the class to the caller.
-     * 
+     * Build a static event processor using the supplied consumer to populate the SEPConfig. Will always build a new
+     * processor, supplying a newly created instance of the class to the caller.
+     *
      * <p>
-     * Set the system property fluxtion.cacheDirectory and fluxtion will create the 
-     * following sub-directories:
+     * Set the system property fluxtion.cacheDirectory and fluxtion will create the following sub-directories:
      * <ul>
      * <li>classes - the compiled classes
      * <li>source - generated source files the classes are compiled from
@@ -115,29 +118,33 @@ public class InprocessSepCompiler {
      */
     public static StaticEventProcessor build(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
         String dir = System.getProperty("fluxtion.cacheDirectory");
+        buildClasspath();
         if (dir != null) {
             System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
             return InprocessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
-        } 
+        }
         return InprocessSepCompiler.sepInstance(builder, pkg, name);
     }
-
+    
+    public static StaticEventProcessor build(SerializableConsumer<SEPConfig> builder) throws Exception {
+        String name = "Processor";
+        String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
+        return (build(name, pkg, builder));
+    }
+    
     /**
-     * Returns an instance of a static event processor to the caller. Will only
-     * build a new processor if a class cannot be found on the classpath that
-     * matches the fqn name of the processor. Will generate a static event
-     * processor using the supplied consumer to populate the SEPConfig if an
-     * existing class cannot be found.
-     * 
+     * Returns an instance of a static event processor to the caller. Will only build a new processor if a class cannot
+     * be found on the classpath that matches the fqn name of the processor. Will generate a static event processor
+     * using the supplied consumer to populate the SEPConfig if an existing class cannot be found.
+     *
      * <p>
-     * Set the system property fluxtion.cacheDirectory and fluxtion will create the 
-     * following sub-directories:
+     * Set the system property fluxtion.cacheDirectory and fluxtion will create the following sub-directories:
      * <ul>
      * <li>classes - the compiled classes
      * <li>source - generated source files the classes are compiled from
      * <li>resources - any other resources generated by fluxtion, suchas meta-data
      * </ul>
-     * 
+     *
      * @param name The name of the generated static event processor
      * @param pkg The package name of the generated static event processor
      * @param builder The Consumer that populates the SEPConfig
@@ -163,6 +170,8 @@ public class InprocessSepCompiler {
                 lifecycle.init();
             }
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+            //build classpath here
+            buildClasspath();
             if (dir != null) {
                 System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
                 processor = InprocessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
@@ -172,16 +181,69 @@ public class InprocessSepCompiler {
         }
         return processor;
     }
-    
+
     public static StaticEventProcessor reuseOrBuild(SerializableConsumer<SEPConfig> builder) throws Exception {
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
-        return(reuseOrBuild(name, pkg, builder));
+        return (reuseOrBuild(name, pkg, builder));
+    }
+
+    private static URL[] urlsFromClassLoader(ClassLoader classLoader) {
+        if (classLoader instanceof URLClassLoader) {
+            return ((URLClassLoader) classLoader).getURLs();
+        }
+        return Stream
+            .of(ManagementFactory.getRuntimeMXBean().getClassPath()
+                .split(File.pathSeparator))
+            .map(InprocessSepCompiler::toURL).toArray(URL[]::new);
+    }
+
+    private static URL toURL(String classPathEntry) {
+        try {
+            return new File(classPathEntry).toURI().toURL();
+        } catch (MalformedURLException ex) {
+            throw new IllegalArgumentException(
+                "URL could not be created from '" + classPathEntry + "'", ex);
+        }
+    }
+
+    private static Pair<Boolean, String> buildClasspath() {
+        log.info("buildingClasspath");
+        MutablePair<Boolean, String> result = new MutablePair<>(Boolean.TRUE, "");
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        URL[] urls = urlsFromClassLoader(cl);
+        log.debug("classpath");
+        for (URL url : urls) {
+            log.info(url.getFile());
+            CompilerUtils.addClassPath(url.getFile());
+        }
+
+        
+//        String[] cpArray = new String[urls.length];
+//        for (int i = 0; i < cpArray.length; i++) {
+//            log.info(urls[i].getFile());
+//            try {
+//                File file = new File(cpArray[i]);
+//                if (file.isDirectory()) {
+//                    urls[i] = file.toURI().toURL();
+//                } else {
+//                    urls[i] = new URL("jar:" + new File(cpArray[i]).toURI().toURL() + "!/");
+//                }
+//            } catch (MalformedURLException ex) {
+//                log.error("error building classpath", ex);
+//                result.left = false;
+//                result.right = "could not load jar file:" + cpArray[i] + " error masg:" + ex.getMessage();
+//                return result;
+//            }
+//            CompilerUtils.addClassPath(cpArray[i]);
+//        }
+        log.info("user classpath URL list:" + Arrays.toString(urls));
+        return result;
     }
 
     /**
-     * Compiles and instantiates a SEP described with the provided
-     * {@link SEPConfig}, optionally initialising the SEP instance. See {@link #compileSep(Consumer, String, String, String, String)
+     * Compiles and instantiates a SEP described with the provided {@link SEPConfig}, optionally initialising the SEP
+     * instance. See {@link #compileSep(Consumer, String, String, String, String)
      * } for a description of compilation.
      *
      * @param cfgBuilder - A client consumer to buld sep using the provided
@@ -215,9 +277,8 @@ public class InprocessSepCompiler {
     }
 
     /**
-     * Compiles a SEP in the current process of the caller. The provided
-     * {@link SEPConfig} is used by the Fluxtion event stream compiler to build
-     * the SEP.
+     * Compiles a SEP in the current process of the caller. The provided {@link SEPConfig} is used by the Fluxtion event
+     * stream compiler to build the SEP.
      *
      * @param cfgBuilder - A client consumer to buld sep using the provided
      * @param pckg - output package of the generated class
