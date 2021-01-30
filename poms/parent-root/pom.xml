@@ -33,6 +33,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <next.release.version>2.10.20</next.release.version>
+        <next.development.version>2.10.21</next.development.version>
     </properties>   
     
     <description>Root build pom for use by non-pom projects</description>
@@ -149,6 +151,8 @@
                             <!--<noDeploy>true</noDeploy>-->
                             <username>${fluxtion.github.user}</username>
                             <password>${fluxtion.github.password}</password>
+                            <releaseVersion>${next.release.version}</releaseVersion>
+                            <developmentVersion>${next.development.version}</developmentVersion>
                         </configuration>
                     </plugin>  
                     <!--                    <plugin>
