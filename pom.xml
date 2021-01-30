@@ -41,6 +41,8 @@ along with this program.  If not, see
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <next.release.version>2.10.20</next.release.version>
+        <next.development.version>2.10.21</next.development.version>
     </properties>
     
     <licenses>
@@ -78,6 +80,8 @@ along with this program.  If not, see
                     <useReleaseProfile>false</useReleaseProfile>
                     <!--<noTag>true</noTag>-->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseVersion>${next.release.version}</releaseVersion>
+                    <developmentVersion>${next.development.version}</developmentVersion>
                     <!--<allowSnapshots>true</allowSnapshots>-->
                     <!-- see goals wiki page for configuration options -->
                 </configuration>
