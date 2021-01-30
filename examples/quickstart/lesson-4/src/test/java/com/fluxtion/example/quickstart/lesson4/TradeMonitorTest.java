@@ -15,10 +15,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.example.quickstart.lesson2;
+package com.fluxtion.example.quickstart.lesson4;
 
-import com.fluxtion.example.quickstart.lesson3.TradeMonitor.Trade;
-import com.fluxtion.example.quickstart.lesson3.generated.TradeEventProcessor;
+import com.fluxtion.example.quickstart.lesson4.TradeMonitor.Trade;
+import com.fluxtion.example.quickstart.lesson4.generated.TradeEventProcessor;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.generator.util.BaseSepInprocessTest;

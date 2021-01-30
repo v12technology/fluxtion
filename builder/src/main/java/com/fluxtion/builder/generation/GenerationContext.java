@@ -209,7 +209,14 @@ public class GenerationContext {
         this.sepClassName = sepClassName;
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
-        this.classLoader = DEFAULT_CLASSLOADER == null ? this.getClass().getClassLoader() : DEFAULT_CLASSLOADER;
+        if(DEFAULT_CLASSLOADER ==null){
+            log.debug("DEFAULT_CLASSLOADER is null using this classloader");
+            this.classLoader = this.getClass().getClassLoader();
+        }else{
+            log.debug("DEFAULT_CLASSLOADER is classloader");
+            this.classLoader = DEFAULT_CLASSLOADER;
+        }
+        log.info("classloader:{}", this.classLoader);
         log.debug("built GenerationContext: {}", toString());
         cacheMap = new HashMap<>();
         javaCompiler = new CachedCompiler(null, buildOutputDirectory);

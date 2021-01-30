@@ -34,6 +34,7 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.LoggerFactory;
 
@@ -95,9 +96,30 @@ public interface FunctionGeneratorHelper {
         }
         GenerationContext.updateContext(packageName, className, sourcesDir, resourcesDir);
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
+        testLoading();
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, IOUtils.toString(srcFile));
         LOG.debug("end compile:{}", fqn);
         return newClass;
+    }
+    
+    static void testLoading(){
+        return;
+//        try {
+//            LOG.info("this.getClassloader loading com.fluxtion.api.SepContext");
+//            Class.forName("com.fluxtion.api.SepContext");
+//            LOG.info("this.getClassloader loaded com.fluxtion.api.SepContext");
+//            //
+//            LOG.info("GenerationContext.SINGLETON.getClassLoader() loading com.fluxtion.api.SepContext");
+//            Class.forName("com.fluxtion.api.SepContext", true, GenerationContext.SINGLETON.getClassLoader());
+//            LOG.info("GenerationContext.SINGLETON.getClassLoader() loaded com.fluxtion.api.SepContext");
+//            
+//            LOG.info("TCCL loading com.fluxtion.api.SepContext");
+//            Class.forName("com.fluxtion.api.SepContext", true, Thread.currentThread().getContextClassLoader());
+//            LOG.info("TCCL loaded com.fluxtion.api.SepContext");
+//            
+//        } catch (ClassNotFoundException ex) {
+//            Logger.getLogger(FunctionGeneratorHelper.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
@@ -111,6 +133,7 @@ public interface FunctionGeneratorHelper {
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
 //        new Thread(() -> Generator.formatSource(file)).start();
         LOG.debug("compiling phase generateAndCompile:{}", templateFile);
+        testLoading();
         Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
         LOG.debug("end generateAndCompile:{}", templateFile);
         return newClass;
@@ -172,6 +195,7 @@ public interface FunctionGeneratorHelper {
     static void initVelocity() throws RuntimeException {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+        Velocity.setProperty("runtime.log.logsystem.class", NullLogChute.class.getName());
         Velocity.init();
     }
 

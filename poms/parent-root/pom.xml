@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>2.10.14</version>
+    <version>2.10.20</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
     
@@ -33,6 +33,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
+<!--        <next.release.version>2.10.20</next.release.version>
+        <next.development.version>2.10.21</next.development.version>-->
     </properties>   
     
     <description>Root build pom for use by non-pom projects</description>
@@ -118,6 +120,12 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <gpgArguments>
+                                <gpgArgument>--pinentry-mode</gpgArgument>
+                                <gpgArgument>loopback</gpgArgument>
+                            </gpgArguments>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
@@ -141,16 +149,18 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
+<!--                    <plugin>
                         <groupId>external.atlassian.jgitflow</groupId>
                         <artifactId>jgitflow-maven-plugin</artifactId>
                         <version>1.0-m5.1</version>
                         <configuration>
-                            <!--<noDeploy>true</noDeploy>-->
+                            <noDeploy>true</noDeploy>
                             <username>${fluxtion.github.user}</username>
                             <password>${fluxtion.github.password}</password>
+                            <releaseVersion>${next.release.version}</releaseVersion>
+                            <developmentVersion>${next.development.version}</developmentVersion>
                         </configuration>
-                    </plugin>  
+                    </plugin>  -->
                     <!--                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>

@@ -17,15 +17,17 @@
 package com.fluxtion.example.quickstart.lesson1;
 
 import com.fluxtion.api.StaticEventProcessor;
-import static com.fluxtion.ext.streaming.api.Duration.seconds;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.reuseOrBuild;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import static com.fluxtion.ext.streaming.api.Duration.seconds;
+import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
+import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
+import static com.fluxtion.generator.compiler.InprocessSepCompiler.reuseOrBuild;
 
 /**
  *
