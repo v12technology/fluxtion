@@ -24,4 +24,6 @@ jobs:
           restore-keys: ${{ runner.os }}-m2  
           
       - name: Build project with Maven
-        run: git push --all && git push --tags
+        run: |
+            git push --all && 
+            git push --tags
