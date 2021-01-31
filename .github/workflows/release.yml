@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+          
       - uses: actions/checkout@v2
       - name: Setup java 1.8
         uses: actions/setup-java@v1
@@ -23,9 +28,9 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2  
           
-      - name: Build project with Maven
-        run: |
-            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start -DpushReleases=false
-            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false			
-            git push --all && 
-            git push --tags
+#      - name: Build project with Maven
+#        run: |
+#            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start -DpushReleases=false
+#            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false			
+#            git push --all && 
+#            git push --tags
