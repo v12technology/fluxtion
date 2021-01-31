@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>2.10.29-SNAPSHOT</version>
+    <version>2.10.30-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
     
