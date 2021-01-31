@@ -37,8 +37,9 @@ jobs:
           
       - name: Build project with Maven
         run: |
+            cat /home/runner/.m2/settings.xml
             mvn --batch-mode external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start -DpushReleases=false -Dfluxtion.github.user=${{ secrets.FLUXTION_GITHUB_USER }} -Dfluxtion.github.password=${{ secrets.FLUXTION_GITHUB_TOKEN }} &&
-            mvn -X external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false -Dfluxtion.github.user=${{ secrets.FLUXTION_GITHUB_USER }} -Dfluxtion.github.password=${{ secrets.FLUXTION_GITHUB_TOKEN }} &&		
+            mvn --batch-mode -X -s /home/runner/.m2/settings.xml external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false -Dfluxtion.github.user=${{ secrets.FLUXTION_GITHUB_USER }} -Dfluxtion.github.password=${{ secrets.FLUXTION_GITHUB_TOKEN }} &&		
             git push --all && 
             git push --tags
         env:
