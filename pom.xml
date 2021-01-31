@@ -41,6 +41,7 @@ along with this program.  If not, see
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <pushReleases>true</pushReleases>
         <!--<next.release.version>2.10.20</next.release.version>-->
         <!--<next.development.version>2.10.24</next.development.version>-->
     </properties>
@@ -77,7 +78,7 @@ along with this program.  If not, see
                     <!--<noDeploy>true</noDeploy>-->
                     <username>${fluxtion.github.user}</username>
                     <password>${fluxtion.github.password}</password>
-                    <pushReleases>true</pushReleases>
+                    <pushReleases>${pushReleases}</pushReleases>
                     <!--<useReleaseProfile>false</useReleaseProfile>-->
                     <!--<noTag>true</noTag>-->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
