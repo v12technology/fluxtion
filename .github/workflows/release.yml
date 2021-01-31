@@ -33,8 +33,8 @@ jobs:
           
       - name: Build project with Maven
         run: |
-            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start -DpushReleases=false
-            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}			
+            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start -DpushReleases=false -Dfluxtion.github.user=${{ FLUXTION_GITHUB_USER }} -Dfluxtion.github.password=${{ FLUXTION_GITHUB_TOKEN }} &&
+            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false -DpushReleases=false -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -Dfluxtion.github.user=${{ FLUXTION_GITHUB_USER }} -Dfluxtion.github.password=${{ FLUXTION_GITHUB_TOKEN }} &&		
             git push --all && 
             git push --tags
         env:
