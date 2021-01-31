@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>2.10.20</version>
+    <version>2.10.21</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
     
@@ -149,30 +149,6 @@
                             </execution>
                         </executions>
                     </plugin>
-<!--                    <plugin>
-                        <groupId>external.atlassian.jgitflow</groupId>
-                        <artifactId>jgitflow-maven-plugin</artifactId>
-                        <version>1.0-m5.1</version>
-                        <configuration>
-                            <noDeploy>true</noDeploy>
-                            <username>${fluxtion.github.user}</username>
-                            <password>${fluxtion.github.password}</password>
-                            <releaseVersion>${next.release.version}</releaseVersion>
-                            <developmentVersion>${next.development.version}</developmentVersion>
-                        </configuration>
-                    </plugin>  -->
-                    <!--                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>license-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-license-description</id>
-                                <goals>
-                                    <goal>add-third-party</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin> -->
                 </plugins>
             </build>
         </profile>
