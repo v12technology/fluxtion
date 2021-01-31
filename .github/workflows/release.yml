@@ -25,5 +25,7 @@ jobs:
           
       - name: Build project with Maven
         run: |
+            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-start 
+            mvn --batch-mode  external.atlassian.jgitflow:jgitflow-maven-plugin:1.0-m5.1:release-finish -Prelease -Dmaven.javadoc.failOnError=false			
             git push --all && 
             git push --tags
