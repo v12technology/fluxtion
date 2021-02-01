@@ -20,7 +20,7 @@ Fluxtion focuses on the processing logic of event streams, independent of messag
 -  **No middleware vendor lock-in**, works with any messaging provider
 -  **Low latency** or high performance requirements
 
-Developers use a familiar stream like api to work with. Data streams can be merged, filtered, aggregated, joined, grouped and enriched. 
+Data streams can be merged, filtered, aggregated, joined, grouped and enriched. 
 Windowing of data is fully supported. User functions are easily integrated to directly execute actions in addition to real-time monitoring.
 
 A full set of tools for debugging, tracing, auding and visualisation are provided to reduce development and support costs.

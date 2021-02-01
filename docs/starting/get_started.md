@@ -52,8 +52,10 @@ Lombok reduces code noise in the example but is not required.
 
 ### 2. Fluxtion stream processing logic
 Procesing logic is expressed using Fluxtion streaming api. The `reuseOrBuild` method 
-accepts a Consumer that defines the processing. If an event processor is not found 
-in the cached then a new one is generated and passed to the application.
+accepts a Consumer that defines the processing behaviour. If an event processor is not found 
+in the cache then a new one is generated and passed to the application.
+
+The example is [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1/src/main/java/com/fluxtion/example/quickstart/lesson1/TradeMonitor.java)
 
 ```java
 public static void main(String[] args) throws Exception {
@@ -93,6 +95,7 @@ public static class Trade {
 - Line 6 Filters the list of trades to the top 3 by volume.
 - Line 7 Applies a user defined mapping function to pretty print the filtered list of trades.
 - Line 8 Logs the output of the pretty print function every second.
+- Line 10 Passes the event processor to the trade event generator.
 
 5 seconds must pass before the first log is printed.
 
