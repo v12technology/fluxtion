@@ -8,7 +8,8 @@ published: true
 # Introduction
 Welcome to Fluxtion streaming and thanks for coming, hope you enjoy exploring :) 
 
-Fluxtion streaming builds event processing applications in Java that handle infinite streams of data. 
+Fluxtion is a java utility that builds embeddable complex event processors. 
+The streaming api constructs processing logic with a functional programming approach. 
 Write simple clean Java code to create realtime applications, all the complex heavy lifting is taken care of by Fluxtion. 
 Programs are quick to build, test, deploy and debug.
 
