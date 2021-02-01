@@ -8,7 +8,7 @@ published: true
 This example processes a stream of trade events calculating statisitics in a 5 second sliding window. 
 Every second the three most active currency pairs by volume are logged to the screen. 
 An understanding of Java and maven is required to complete this tutorial. 
-The code for the example is located [here](https://github.com/v12technology/fluxtion/tree/2.10.11/examples/quickstart/lesson-1).
+The code for the example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1).
 
 ## Development process
 Building a Fluxtion application requires three steps
