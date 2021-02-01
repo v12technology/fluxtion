@@ -2,7 +2,7 @@
     <img width="270" height="200" src="images/Fluxtion_logo.png">
 </p>
 
-[![Github build](https://github.com/v12technology/fluxtion/workflows/.github/workflows/main.yml/badge.svg)]
+![Github build](https://github.com/v12technology/fluxtion/workflows/.github/workflows/Maven%20CI%2FCD/badge.svg)
 [![Build Status](https://travis-ci.org/v12technology/fluxtion.svg?branch=master)](https://travis-ci.org/v12technology/fluxtion)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
 # Lightweight event stream processor
