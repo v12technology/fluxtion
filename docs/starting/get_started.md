@@ -5,16 +5,17 @@ nav_order: 2
 published: true
 ---
 # First Fluxtion application
-This example processes a stream of trade events calculating statisitics in a 5 second sliding window. 
+This example processes a stream of trade events calculating statistics in a 5 second sliding window. 
 Every second the three most active currency pairs by volume are logged to the screen. 
+The code for the example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1).
+
 An understanding of Java and maven is required to complete this tutorial. 
-The code for the example is located [here](https://github.com/v12technology/fluxtion/tree/2.10.11/examples/quickstart/lesson-1).
 
 ## Development process
 Building a Fluxtion application requires three steps
 1. Create a maven project with the required dependencies. 
-1. Write processing logic using Fluxtion api's. 
-1. Integrate fluxtion generated processor into an application.
+1. Write processing logic using Fluxtion streaming api's. 
+1. Integrate generated processor into a user application.
 
 ### 1. Maven build
 
@@ -29,7 +30,6 @@ Building a Fluxtion application requires three steps
     <name>fluxtion :: quickstart :: lesson-1</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.deploy.skip>true</maven.deploy.skip>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -51,8 +51,9 @@ Building a Fluxtion application requires three steps
 Lombok reduces code noise in the example but is not required.
 
 ### 2. Fluxtion stream processing logic
-Procesing logic is expressed using Fluxtin streaming api. The building logic is passed to the `reuseOrBuild` method 
-which generates an event processor instance if one cannot be found in the local cache.
+Procesing logic is expressed using Fluxtion streaming api. The `reuseOrBuild` method 
+accepts a Consumer that defines the processing. If an event processor is not found 
+in the cached then a new one is generated and passed to the application.
 
 ```java
 public static void main(String[] args) throws Exception {
@@ -85,18 +86,22 @@ public static class Trade {
 }
 ```
 
-- Line 2 Creates an event processor if one cannot be found on the class path for this builder.
+- Line 2 Creates an event processor if one cannot be found in the cache.
 - Line 3 Creates an aggregate sum of the trade amount, grouped by symbol name.
 - Line 4 Defines a sliding window, publishing every second with a total window size of 5 seconds.
 - Line 5 Applies a comparator function to the cumulative sum and then reverses the sort order.
 - Line 6 Filters the list of trades to the top 3 by volume.
-- Line 7 Applies a mapping function to pretty print the filtered list of trades.
-- Line 8 Logs the pretty print function on every bucket expiry after first window, 5 seconds.
+- Line 7 Applies a user defined mapping function to pretty print the filtered list of trades.
+- Line 8 Logs the output of the pretty print function every second.
+
+5 seconds must pass before the first log is printed.
 
 ### 3. Application integration
 
-An application feeds events into a Fluxtion generated event processor to execute business logic. 
-All Fluxtion event processors implement the [StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
+An application feeds events into a Fluxtion generated complex event processor. 
+All Fluxtion event processors implement the 
+[StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
+
 To post an event the application invokes `processor.onEvent(event)` on the processor instance.
 
 ```java
@@ -116,12 +121,17 @@ public class TradeGenerator {
 }
 ```
 
-The `publishTestData` method generates random currency pair trade events and posts them to the supplied event processor.
+TradeGenerator acts as a simulated event source in this example. 
+The `publishTestData` method generates random currency pair trade events and 
+posts them to the supplied event processor.
 
 ## Running the application
 
-Running the application will generate the event processor and then publish Trade events to the processor instance. 
-After about 5 seconds output to the console will be similar to that below. After the first 5 seconds an update will be printed every second.
+Running the application will generate and instantiate an event processor instance. 
+The TradeGenerator publishes Trade events to the processor instance. 
+After about 5 seconds results are logged to console every second.
+
+An output to the console will be similar to that below. 
 
 {% highlight console %}
 mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson1.TradeMonitor"
