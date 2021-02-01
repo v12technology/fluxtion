@@ -137,7 +137,10 @@ After about 5 seconds results are logged to console every second.
 An output to the console will be similar to that below. 
 
 {% highlight console %}
-mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson1.TradeMonitor"
+mvn install
+java -jar lesson-1.jar
+..
+..
 Most active ccy pairs in past 5 seconds:
 	 1. EURGBP - 2390 trades
 	 2. USDMXN - 2164 trades
