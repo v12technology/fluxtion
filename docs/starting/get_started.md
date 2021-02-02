@@ -17,38 +17,19 @@ Building a Fluxtion application requires three steps
 1. Write processing logic using Fluxtion streaming api's. 
 1. Integrate generated processor into a user application.
 
-### 1. Maven build
+### 1. Maven dependencies
+Add the fluxtion-streaming-builder as a dependency to the project.
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.fluxtion.example</groupId>
-    <artifactId>quickstart.lesson-1</artifactId>
+<dependency>
+    <groupId>com.fluxtion.extension</groupId>
+    <artifactId>fluxtion-streaming-builder</artifactId>
     <version>{{site.fluxtion_version}}</version>
-    <packaging>jar</packaging>
-    <name>fluxtion :: quickstart :: lesson-1</name>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>com.fluxtion.extension</groupId>
-            <artifactId>fluxtion-streaming-builder</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-        </dependency>
-    </dependencies>
-</project>
+</dependency>
 ```
 
-Lombok reduces code noise in the example but is not required.
+See the project [pom.xml](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-2/pom.xml) 
+for this example. Lombok reduces code noise in the example but is not required.
 
 ### 2. Fluxtion stream processing logic
 Procesing logic is expressed using Fluxtion streaming api. The `reuseOrBuild` method 

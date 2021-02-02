@@ -22,30 +22,30 @@ Add the fluxtion maven plugin using the scan goal. It is usally better to add th
 as once the solution is generated then the build should be stable. Skipping tests for the generation phase is usually preferable.
 
 ```xml
-    <profiles>
-        <profile>
-            <id>fluxtion-generate</id>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.fluxtion</groupId>
-                        <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>{{site.fluxtion_version}}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>scan</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+<profiles>
+    <profile>
+        <id>fluxtion-generate</id>
+        <properties>
+            <skipTests>true</skipTests>
+        </properties>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>com.fluxtion</groupId>
+                    <artifactId>fluxtion-maven-plugin</artifactId>
+                    <version>{{site.fluxtion_version}}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>scan</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</profiles>
 ```
 
 ### 2. Annotate builder methods
@@ -53,15 +53,15 @@ The scan goal searches the project code base for any builder methods that have t
 The parameters for name and package name are combined to make the fully quaified name of the generated event processor.
 
 ```java
-    @SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
-    public static void build(SEPConfig cfg) {
-        groupBySum(TradeMonitor.Trade::getSymbol, TradeMonitor.Trade::getAmount)
-            .sliding(seconds(1), 5)
-            .comparator(numberValComparator()).reverse()
-            .top(3).id("top3")
-            .map(TradeMonitor::formatTradeList)
-            .log();
-    }
+@SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
+public static void build(SEPConfig cfg) {
+    groupBySum(TradeMonitor.Trade::getSymbol, TradeMonitor.Trade::getAmount)
+        .sliding(seconds(1), 5)
+        .comparator(numberValComparator()).reverse()
+        .top(3).id("top3")
+        .map(TradeMonitor::formatTradeList)
+        .log();
+}
 ```
 
 Running maven with the fluxtion plugin scan goal will generate the event processor at buildtime, with this command:
@@ -112,11 +112,11 @@ public class TradeGenerator {
 Update the test case to use the statically generated event processor, by passing in the class name.
 
 ```java
-    @Test
-    public void testTradeMonitor() {
-        sep(TradeEventProcessor.class);
-        //omitted
-    }
+@Test
+public void testTradeMonitor() {
+    sep(TradeEventProcessor.class);
+    //omitted
+}
 ```
 
 ## Running the application
