@@ -153,8 +153,8 @@ public class TradeMonitorTest extends BaseSepInprocessTest {
 
 Nodes in the generated event processor can be accessed with a call to `getField("name")`
 
-line 17 - instantiates the event processor, which is put under test
-lines 19-25 - move time and send events to the processor under test
-line 28 - accesses the field "top3" 
-line 29 - applies an assertion to the value of the field
-lines 32-61 move time and send events to the processor under test, applying assertions
+- line 17 - instantiates the event processor, which is put under test
+- lines 19-25 - move time and send events to the processor under test
+- line 28 - accesses the field "top3" 
+- line 29 - applies an assertion to the value of the field
+- lines 32-61 move time and send events to the processor under test, applying assertions
