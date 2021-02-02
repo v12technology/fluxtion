@@ -138,25 +138,17 @@ mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMon
 ## Sample tab control
 
 <div class="tab">
-  <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">London</button>
-  <button class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
-  <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
+  <button class="tablinks" onclick="openCity(event, 'Gradle')">Gradle</button>
+  <button class="tablinks" onclick="openCity(event, 'Maven')" id="defaultOpen">Maven</button>
 </div>
 
-<div id="London" class="tabcontent">
+<div id="Gradle" class="tabcontent">
   <h3>London</h3>
   <p>London is the capital city of England.</p>
 </div>
 
-<div id="Paris" class="tabcontent">
-  <h3>Paris</h3>
-  <p>Paris is the capital of France.</p> 
-</div>
 
-<div id="Tokyo" class="tabcontent">
-  <h3>Tokyo</h3>
-  <p>
-
+<div id="Maven" class="tabcontent">
 <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -168,8 +160,6 @@ mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMon
     <span class="nt">&lt;version&gt;</span>2.10.32<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></td></tr></tbody></table></div></code></pre></div></div>
-
-</p>
 </div>
 
 
