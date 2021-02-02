@@ -143,8 +143,17 @@ mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMon
 </div>
 
 <div id="Gradle" class="tabcontent">
-  <h3>London</h3>
-  <p>London is the capital city of England.</p>
+<div markdown="1">
+
+```java
+@Test
+public void testTradeMonitor() {
+    sep(TradeEventProcessor.class);
+    //omitted
+}
+```
+
+</div>
 </div>
 
 
