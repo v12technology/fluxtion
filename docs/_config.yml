@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
 title: Fluxtion streaming
-description: Documentation fpr Fluxtion event processor
+description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
   "release 2.10.32":
