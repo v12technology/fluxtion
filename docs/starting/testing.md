@@ -8,7 +8,8 @@ published: true
 
 # Unit testing
 
-Unit testing of any system is critical. The previous example creates an event processor at runtime, but applies no tests. 
+Unit testing of any system is critical. The [previous example](get_started.md) 
+creates an event processor at runtime, but applies no tests. 
 This example demonstrates how to write unit tests that validate event processing logic. 
 Fluxtion provides Junit utilities for generating and testing event processors. 
 The example is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-2).
@@ -48,9 +49,11 @@ Add the fluxtion test jar to the project and Junit 4 dependency.
 ```
 
 ### 2. Introduce builder method
-The app is refactored to separate processor consruction logic into a builder method. The builder method can be tested directly in a unit test.
+The app is refactored to separate processor construction logic into a builder method. 
+The builder method can be tested directly in a unit test.
+
 To help testing a node can be given a unique identifier by appending  `.id("name")` during construction. 
-The BaseSepInprocessTest provides helper methods to access a processor node by id, with `getField("name")`.
+BaseSepInprocessTest provides helper methods to access a processor node by id.
 
 ```java
 public class TradeMonitor {
@@ -147,3 +150,11 @@ public class TradeMonitorTest extends BaseSepInprocessTest {
   }
 }
 ```
+
+Nodes in the generated event processor can be accessed with a call to `getField("name")`
+
+- line 17 - instantiates the event processor, which is put under test
+- lines 19-25 - move time and send events to the processor under test
+- line 28 - accesses the field "top3" 
+- line 29 - applies an assertion to the value of the field
+- lines 32-61 move time and send events to the processor under test, applying assertions

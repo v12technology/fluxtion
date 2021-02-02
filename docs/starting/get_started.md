@@ -13,22 +13,37 @@ An understanding of Java and maven is required to complete this tutorial.
 
 ## Development process
 Building a Fluxtion application requires three steps
-1. Create a maven project with the required dependencies. 
+1. Create a maven/gradle project with the required dependencies. 
 1. Write processing logic using Fluxtion streaming api's. 
 1. Integrate generated processor into a user application.
 
-### 1. Maven dependencies
-Add the fluxtion-streaming-builder as a dependency to the project.
+### 1. Fluxtion dependencies
+Add fluxtion-streaming-builder as a dependency to the project.
 
-```xml
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
+</div>
+<div id="Maven" class="tabcontent">
+<div markdown="1">
+{% highlight xml %}
 <dependency>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>fluxtion-streaming-builder</artifactId>
     <version>{{site.fluxtion_version}}</version>
 </dependency>
-```
+{% endhighlight %}
+</div>
+</div>
+<div id="Gradle" class="tabcontent">
+<div markdown="1">
+{% highlight groovy %}
+implementation 'com.fluxtion.extension:fluxtion-streaming-builder:{{site.fluxtion_version}}'
+{% endhighlight %}
+</div>
+</div>
 
-See the project [pom.xml](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-2/pom.xml) 
+See the project [pom.xml](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1/pom.xml) 
 for this example. Lombok reduces code noise in the example but is not required.
 
 ### 2. Fluxtion stream processing logic
@@ -84,7 +99,7 @@ public static class Trade {
 
 An application feeds events into a Fluxtion generated complex event processor. 
 All Fluxtion event processors implement the 
-[StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
+[StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
 
 To post an event the application invokes `processor.onEvent(event)` on the processor instance.
 
@@ -135,3 +150,7 @@ Most active ccy pairs in past 5 seconds:
 	 2. EURGBP - 2018 trades
 	 3. EURUSD - 2002 trades
 {% endhighlight %}
+
+<script>
+document.getElementById("defaultOpen").click();
+</script>
