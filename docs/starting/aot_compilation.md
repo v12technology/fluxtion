@@ -124,7 +124,8 @@ public void testTradeMonitor() {
 run the application as before:
 
 {% highlight console %}
-mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMonitor"
+mvn install
+java -jar lesson-3.jar
  Most active ccy pairs in past 5 seconds:
          1. EURNOK - 2477 trades
          2. GBPCHF - 2194 trades
