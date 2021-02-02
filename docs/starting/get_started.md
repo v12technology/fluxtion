@@ -43,7 +43,7 @@ implementation 'com.fluxtion.extension:fluxtion-streaming-builder:{{site.fluxtio
 </div>
 </div>
 
-See the project [pom.xml](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-2/pom.xml) 
+See the project [pom.xml](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1/pom.xml) 
 for this example. Lombok reduces code noise in the example but is not required.
 
 ### 2. Fluxtion stream processing logic
