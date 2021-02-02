@@ -26,20 +26,20 @@ Add fluxtion-streaming-builder as a dependency to the project.
 </div>
 <div id="Maven" class="tabcontent">
 <div markdown="1">
-```xml
+{% highlight xml %}
 <dependency>
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>fluxtion-streaming-builder</artifactId>
     <version>{{site.fluxtion_version}}</version>
 </dependency>
-```
+{% endhighlight %}
 </div>
 </div>
 <div id="Gradle" class="tabcontent">
 <div markdown="1">
-```groovy
+{% highlight groovy %}
 implementation 'com.fluxtion.extension:fluxtion-streaming-builder:{{site.fluxtion_version}}'
-```
+{% endhighlight %}
 </div>
 </div>
 
@@ -99,7 +99,7 @@ public static class Trade {
 
 An application feeds events into a Fluxtion generated complex event processor. 
 All Fluxtion event processors implement the 
-[StaticEventProcessor](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
+[StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
 
 To post an event the application invokes `processor.onEvent(event)` on the processor instance.
 
