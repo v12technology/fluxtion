@@ -54,44 +54,47 @@ in the cache then a new one is generated and passed to the application.
 The example is [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-1/src/main/java/com/fluxtion/example/quickstart/lesson1/TradeMonitor.java)
 
 ```java
-public static void main(String[] args) throws Exception {
-  StaticEventProcessor processor = reuseOrBuild(c -> {
-    groupBySum(Trade::getSymbol, Trade::getAmount)
-      .sliding(seconds(1), 5)
-      .comparator(numberValComparator()).reverse()
-      .top(3)
-      .map(TradeMonitor::formatTradeList)
-      .log();
-  });
-  TradeGenerator.publishTestData(processor);
-}
+public class TradeMonitor {
 
-public static String formatTradeList(List<Tuple<String, Number>> trades) {
-  StringBuilder sb = new StringBuilder("Most active ccy pairs in past 5 seconds:");
-  for (int i = 0; i < trades.size(); i++) {
-    Tuple<String, Number> result = trades.get(i);
-    sb.append(String.format("\n\t%2d. %5s - %.0f trades", i + 1, result.getKey(), result.getValue()));
-  }
-  return sb.toString();
-}
+    public static void main(String[] args) throws Exception {
+        StaticEventProcessor processor = reuseOrBuild(c -> {
+            groupBySum(Trade::getSymbol, Trade::getAmount)
+                .sliding(seconds(1), 5)
+                .comparator(numberValComparator()).reverse()
+                .top(3)
+                .map(TradeMonitor::formatTradeList)
+                .log();
+        });
+        TradeGenerator.publishTestData(processor);
+    }
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public static class Trade {
-  private String symbol;
-  private double amount;
+    public static String formatTradeList(List<Tuple<String, Number>> trades) {
+        StringBuilder sb = new StringBuilder("Most active ccy pairs in past 5 seconds:");
+        for (int i = 0; i < trades.size(); i++) {
+            Tuple<String, Number> result = trades.get(i);
+            sb.append(String.format("\n\t%2d. %5s - %.0f trades", i + 1, result.getKey(), result.getValue()));
+        }
+        return sb.toString();
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Trade {
+        private String symbol;
+        private double amount;
+    }
 }
 ```
 
-- Line 2 Creates an event processor if one cannot be found in the cache.
-- Line 3 Creates an aggregate sum of the trade amount, grouped by symbol name.
-- Line 4 Defines a sliding window, publishing every second with a total window size of 5 seconds.
-- Line 5 Applies a comparator function to the cumulative sum and then reverses the sort order.
-- Line 6 Filters the list of trades to the top 3 by volume.
-- Line 7 Applies a user defined mapping function to pretty print the filtered list of trades.
-- Line 8 Logs the output of the pretty print function every second.
-- Line 10 Passes the event processor to the trade event generator.
+- Line 4 Creates an event processor if one cannot be found in the cache.
+- Line 5 Creates an aggregate sum of the trade amount, grouped by symbol name.
+- Line 6 Defines a sliding window, publishing every second with a total window size of 5 seconds.
+- Line 7 Applies a comparator function to the cumulative sum and then reverses the sort order.
+- Line 8 Filters the list of trades to the top 3 by volume.
+- Line 9 Applies a user defined mapping function to pretty print the filtered list of trades.
+- Line 10 Logs the output of the pretty print function every second.
+- Line 12 Passes the event processor to the trade event generator.
 
 5 seconds must pass before the first log is printed.
 
