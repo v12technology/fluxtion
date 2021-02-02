@@ -134,3 +134,41 @@ mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMon
          2. EURCHF - 2173 trades
          3. USDMXN - 1992 trades
 {% endhighlight %}
+
+## Sample tab control
+
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">London</button>
+  <button class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
+  <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
+</div>
+
+<div id="London" class="tabcontent">
+  <h3>London</h3>
+  <p>London is the capital city of England.</p>
+</div>
+
+<div id="Paris" class="tabcontent">
+  <h3>Paris</h3>
+  <p>Paris is the capital of France.</p> 
+</div>
+
+<div id="Tokyo" class="tabcontent">
+  <h3>Tokyo</h3>
+  <p>
+
+```java
+@Test
+public void testTradeMonitor() {
+    sep(TradeEventProcessor.class);
+    //omitted
+}
+```
+
+</p>
+</div>
+
+
+<script>
+document.getElementById("defaultOpen").click();
+</script>
