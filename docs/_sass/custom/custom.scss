@@ -1,13 +1,11 @@
 /* Style the tab */
 .tab {
   overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
 }
 
 /* Style the buttons inside the tab */
 .tab button {
-  background-color: inherit;
+  background-color: #f1f1f1;
   float: left;
   border: none;
   outline: none;
@@ -32,7 +30,6 @@
   display: none;
   padding: 0px 0px;
   border: 1px solid #ccc;
-  border-top: none;
   -webkit-animation: fadeEffect 1s;
   animation: fadeEffect 1s;
 }
