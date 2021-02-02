@@ -22,17 +22,20 @@ To generate an event processor with no builder dependencies at runtime four step
 1. Add the Fluxtion maven plugin to the build.
 1. Annotate any Fluxtion builder methods with `@SepBuilder` providing the fully qualified name of the generated processor as a parameter.
 1. Remove any calls to dynamically build a processor at runtime and use the fqn above to instantiate a statically generated processor, including test cases.
-1. Update the pom file to separate the scope of generation and runtime libraries.
+1. Update the pom file to exclude builder libraries as transitive dependencies.
 
 The first three steps are covered in the previous [buildtime generation example](aot_compilation.md).
 
 ### Build zero dependency artifact
-The pom is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-4/pom.xml), the relevant section are shown below.
-The builder libraries are compile time only and marked with provided scope, runtime apis's are declared with default scope. The provided 
-scope ensures builder libraries are not part of the projects transitive dependencies.
+The builder libraries are compile time only and marked 
+with [provided scope](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#dependency-scope), 
+runtime apis's are declared with default scope. The provided scope ensures builder 
+libraries are not part of the projects transitive dependencies.
 
 The maven jar plugin is configured to exclude the TradeProcessorBuilder from the final artifact.
 
+The maven pom file is located [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-4/pom.xml), 
+the relevant section are shown below.
 
 ```xml
 
@@ -94,13 +97,14 @@ The maven jar plugin is configured to exclude the TradeProcessorBuilder from the
 
 
 ## Artifact analysis
-As part of the build the maven shade plugin generates an uber jar that contains all the dependencies to run the application,
-this contains Fluxtion runtime libraries, application classes and slf4j interfaces. The table below shows a comparinson
-with the prevous example where the final artifact contains all the Fluxtion builders and their transitive dependencies.
+As part of the build the maven shade plugin generates an uber jar that contains all the dependencies to run the application.
+The uber jar contains Fluxtion runtime libraries, application classes and slf4j interfaces only. 
+The table below shows a comparinson with the [prevous example](aot_compilation.md) where the 
+final artifact contains all the Fluxtion builders and their transitive dependencies.
 
 | Fluxtion libraries   | Size              | External library count |
 |:---------------------|------------------:|-----------------------:|
 | builder + runtime    | 32,000 Kb         | 36  |
-| runtime(minimal jar) | 182Kb             | 1  <br/>slf4j api|
+| runtime(minimal jar) |    182 Kb         |  1  |
 
 
