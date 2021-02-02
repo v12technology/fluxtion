@@ -157,13 +157,17 @@ mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMon
   <h3>Tokyo</h3>
   <p>
 
-```java
-@Test
-public void testTradeMonitor() {
-    sep(TradeEventProcessor.class);
-    //omitted
-}
-```
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><div class="table-wrapper"><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.fluxtion.extension<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>fluxtion-streaming-builder<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.10.32<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></td></tr></tbody></table></div></code></pre></div></div>
 
 </p>
 </div>
