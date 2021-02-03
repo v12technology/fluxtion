@@ -159,27 +159,4 @@ Nodes in the generated event processor can be accessed with a call to `getField(
 - line 29 - applies an assertion to the value of the field
 - lines 32-61 move time and send events to the processor under test, applying assertions
 
-#### pagination 1
-{% if page.previous_in_category %}
-  <a href="{{ page.previous_in_category.url }}">{{ page.previous_in_category.title }}</a>
-{% endif %}
-
-{% if page.next_in_category %}
-  <a href="{{ page.next_in_category.url }}">{{ page.next_in_category.title }}</a>
-{% endif %}
-
-
-#### pagination 2
-<div >
-  {% if page.previous.url %}
-    <a class="prev" href="{{page.previous.url}}">&laquo; {{page.previous.title}}</a>
-  {% endif %}
-  {% if page.next.url %}
-    <a class="next" href="{{page.next.url}}">{{page.next.title}} &raquo;</a>
-  {% endif %}
-</div>
-
-- page.next.url {{page.next.url}}
-- page.next {{page.next}}
-- page.next.title {{page.next.title}}
 
