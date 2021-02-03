@@ -21,4 +21,4 @@ fluxtion_version: 2.10.32
 ga_tracking: G-NGDV621P1P
 ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)
 
-logo: "https://github.com/v12technology/fluxtion/tree/master/images/Fluxtion_logo.png"
+logo: "https://github.com/v12technology/fluxtion/tree/master/images/fluxtion_logo_small.png"
