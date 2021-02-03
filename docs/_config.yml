@@ -17,3 +17,6 @@ kramdown:
       line_numbers: true
       
 fluxtion_version: 2.10.32
+
+ga_tracking: G-NGDV621P1P
+ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)
