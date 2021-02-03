@@ -170,7 +170,7 @@ Nodes in the generated event processor can be accessed with a call to `getField(
 
 
 #### pagination 2
-<div class="PageNavigation">
+<div >
   {% if page.previous.url %}
     <a class="prev" href="{{page.previous.url}}">&laquo; {{page.previous.title}}</a>
   {% endif %}
@@ -178,3 +178,8 @@ Nodes in the generated event processor can be accessed with a call to `getField(
     <a class="next" href="{{page.next.url}}">{{page.next.title}} &raquo;</a>
   {% endif %}
 </div>
+
+- page.next.url {{page.next.url}}
+- page.next {{page.next}}
+- page.next.title {{page.next.title}}
+
