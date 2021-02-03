@@ -158,3 +158,5 @@ Nodes in the generated event processor can be accessed with a call to `getField(
 - line 28 - accesses the field "top3" 
 - line 29 - applies an assertion to the value of the field
 - lines 32-61 move time and send events to the processor under test, applying assertions
+
+
