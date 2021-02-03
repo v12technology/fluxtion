@@ -23,7 +23,7 @@ layer.
 
 Whether you need to process tens of millions of events per 
 second or write complex rule driven applications that make decisions in microseconds Fluxtion can help. 
-When you need to make decisions and not just calculate then you are in the right place.
+Built to embed within an applications, invoking user functions as well as publishing data results.
 
 Uniquely among stream processors Fluxtion employs ahead of time compilation to create a stream processing engine. 
 Describe your processing and Fluxtion tailors a solution to your needs at build time. 
