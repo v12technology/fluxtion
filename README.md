@@ -19,7 +19,7 @@ Thanks for dropping by, hope we can persuade you to donate your time to investig
 Fluxtion is a fully featured java based event stream processor that brings real-time data processing 
 inside your application. If you need to build applications that react to complex events and make 
 fast decisions then Fluxtion is for you. We build stream processing logic free from any messaging 
-layer, there is no lock-in with Fluxtion.
+layer.
 
 Whether you need to process tens of millions of events per 
 second or write complex rule driven applications that make decisions in microseconds Fluxtion can help. 
@@ -55,10 +55,11 @@ you want to concentrate on writing the logic.
 
 ## Example
 We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master).  
-A client written instance that controls an external system is integrated 
-directly into the generated processor. 
 
-## Code sample
+The sample below demonstrates the fluent functional api Fluxtion provides to 
+describe data processing logic. The strong typing makes the logic easier to read, maintain and refactor.
+
+### Code sample
 ```java
 public static void buildSensorProcessor(SEPConfig cfg) {
     //merge csv marshller and SensorReading instance events
@@ -79,11 +80,9 @@ public static void buildSensorProcessor(SEPConfig cfg) {
             .push(new TempertureController()::investigateSensors);
 }
 ```
-From our [five minute tutorial](https://github.com/v12technology/fluxtion-quickstart/tree/master). 
-Method references are used throughout, no positional parameters or generic tuples are required. 
-The strongly typing makes the code easier to read, maintain and refactor. 
-See the [generated code and images](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated) from the ahead of time compiler.
-
+ 
+See the [generated code and images](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated) 
+from the ahead of time compiler.
 
 ## Highlights
 ### Ahead of time compiler
