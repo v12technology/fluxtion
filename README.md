@@ -110,7 +110,7 @@ own advantages. The following descriptions are supported:
  - Dependency injection based
 
 ## Documentation
-Check out [documentation]((https://v12technology.github.io/fluxtion/)) that is still evolving :)
+Check out [documentation](https://v12technology.github.io/fluxtion/) that is still evolving :)
 This is undergoing active development so please check regularly.
 ## Contributing
 We welcome contributions to the project. Detailed information on our ways of working will 
