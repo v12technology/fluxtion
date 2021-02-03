@@ -159,7 +159,7 @@ Nodes in the generated event processor can be accessed with a call to `getField(
 - line 29 - applies an assertion to the value of the field
 - lines 32-61 move time and send events to the processor under test, applying assertions
 
-#### psgination 1
+#### pagination 1
 {% if page.previous_in_category %}
   <a href="{{ page.previous_in_category.url }}">{{ page.previous_in_category.title }}</a>
 {% endif %}
