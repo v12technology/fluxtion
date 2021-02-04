@@ -210,4 +210,9 @@ public final class GroupBy_2 implements GroupBy<Tuple> {
   public WrappedList<Tuple> comparing(SerializableFunction comparingFunction) {
     return wrappedList.comparing(comparingFunction);
   }
+
+  @Override
+  public GroupBy_2 newInstance() {
+    return new GroupBy_2();
+  }
 }
