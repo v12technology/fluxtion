@@ -26,6 +26,6 @@ Windowing of data is fully supported. User functions are easily integrated to di
 
 A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
 
-## Fluxtion application fit
-
+## Fluxtion application integration
+---
 ![](images/integration-overview.png)
