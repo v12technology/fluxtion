@@ -25,3 +25,7 @@ Data streams can be merged, filtered, aggregated, joined, grouped and enriched.
 Windowing of data is fully supported. User functions are easily integrated to directly execute actions in addition to real-time monitoring.
 
 A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
+
+## Fluxtion application fit
+
+![](images/integration-overview.png)
