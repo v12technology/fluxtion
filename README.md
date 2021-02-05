@@ -40,6 +40,9 @@ Ahead of time compilation offers several critical advantages over existing produ
  - Low response time requirements
  - IoT processing
 
+## Fluxtion application integration
+![](docs/images/integration-overview.png)
+
 ## Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a 
 clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the 
