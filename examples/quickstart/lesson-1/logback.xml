@@ -28,7 +28,7 @@ along with this program.  If not, see
   <!--<logger name="net.openhft.compiler" level="warn"/>-->
 
   <!--<root level="debug">-->
-  <root level="info">
+  <root level="warn">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

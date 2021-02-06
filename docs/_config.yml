@@ -1,10 +1,10 @@
 theme: jekyll-theme-cayman
 title: Fluxtion streaming
-description: Documentation fpr Fluxtion event processor
+description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 2.10.14":
-    - "//github.com/v12technology/fluxtion/tree/2.10.14"
+  "release 2.10.32":
+    - "//github.com/v12technology/fluxtion/tree/2.10.32"
 heading_anchors: true
 
 compress_html:
@@ -16,4 +16,9 @@ kramdown:
     block:
       line_numbers: true
       
-fluxtion_version: 2.10.14
+fluxtion_version: 2.10.32
+
+ga_tracking: G-NGDV621P1P
+ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)
+
+logo: "/images/fluxtion_logo_small.png"

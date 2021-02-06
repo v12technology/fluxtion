@@ -235,4 +235,9 @@ public final class GroupBy_4 implements GroupBy<CarrierDelay> {
   public WrappedList<CarrierDelay> comparing(SerializableFunction comparingFunction) {
     return wrappedList.comparing(comparingFunction);
   }
+
+    @Override
+    public GroupBy<CarrierDelay> newInstance() {
+        return new GroupBy_4();
+    }
 }

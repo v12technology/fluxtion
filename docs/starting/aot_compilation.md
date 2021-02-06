@@ -22,30 +22,30 @@ Add the fluxtion maven plugin using the scan goal. It is usally better to add th
 as once the solution is generated then the build should be stable. Skipping tests for the generation phase is usually preferable.
 
 ```xml
-    <profiles>
-        <profile>
-            <id>fluxtion-generate</id>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.fluxtion</groupId>
-                        <artifactId>fluxtion-maven-plugin</artifactId>
-                        <version>{{site.fluxtion_version}}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>scan</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+<profiles>
+    <profile>
+        <id>fluxtion-generate</id>
+        <properties>
+            <skipTests>true</skipTests>
+        </properties>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>com.fluxtion</groupId>
+                    <artifactId>fluxtion-maven-plugin</artifactId>
+                    <version>{{site.fluxtion_version}}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>scan</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</profiles>
 ```
 
 ### 2. Annotate builder methods
@@ -53,15 +53,15 @@ The scan goal searches the project code base for any builder methods that have t
 The parameters for name and package name are combined to make the fully quaified name of the generated event processor.
 
 ```java
-    @SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
-    public static void build(SEPConfig cfg) {
-        groupBySum(TradeMonitor.Trade::getSymbol, TradeMonitor.Trade::getAmount)
-            .sliding(seconds(1), 5)
-            .comparator(numberValComparator()).reverse()
-            .top(3).id("top3")
-            .map(TradeMonitor::formatTradeList)
-            .log();
-    }
+@SepBuilder(name = "TradeEventProcessor", packageName = "com.fluxtion.example.quickstart.lesson3.generated")
+public static void build(SEPConfig cfg) {
+    groupBySum(TradeMonitor.Trade::getSymbol, TradeMonitor.Trade::getAmount)
+        .sliding(seconds(1), 5)
+        .comparator(numberValComparator()).reverse()
+        .top(3).id("top3")
+        .map(TradeMonitor::formatTradeList)
+        .log();
+}
 ```
 
 Running maven with the fluxtion plugin scan goal will generate the event processor at buildtime, with this command:
@@ -70,7 +70,7 @@ Running maven with the fluxtion plugin scan goal will generate the event process
 mvn install -Pfluxtion-generate
 {% endhighlight %}
 
-After the build completes generated artefacts are located in the package directory provided in the annotation. 
+After the build completes generated artifacts are located in the package directory provided in the annotation. 
 See [here](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/examples/quickstart/lesson-3/src/main/java/com/fluxtion/example/quickstart/lesson3/generated) 
 for an example of the output. Graphical representation of the processing graph is also generated
 by the plugin [here](https://github.com/v12technology/fluxtion/blob/{{site.fluxtion_version}}/examples/quickstart/lesson-3/src/main/resources/com/fluxtion/example/quickstart/lesson3/generated/TradeEventProcessor.png)
@@ -112,11 +112,11 @@ public class TradeGenerator {
 Update the test case to use the statically generated event processor, by passing in the class name.
 
 ```java
-    @Test
-    public void testTradeMonitor() {
-        sep(TradeEventProcessor.class);
-        //omitted
-    }
+@Test
+public void testTradeMonitor() {
+    sep(TradeEventProcessor.class);
+    //omitted
+}
 ```
 
 ## Running the application
@@ -124,7 +124,8 @@ Update the test case to use the statically generated event processor, by passing
 run the application as before:
 
 {% highlight console %}
-mvn exec:java -Dexec.mainClass="com.fluxtion.example.quickstart.lesson3.TradeMonitor"
+mvn install
+java -jar lesson-3.jar
  Most active ccy pairs in past 5 seconds:
          1. EURNOK - 2477 trades
          2. GBPCHF - 2194 trades

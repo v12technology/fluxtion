@@ -34,9 +34,9 @@ import com.fluxtion.ext.streaming.api.window.TimeReset;
 
 /*
  * <pre>
- * generation time   : 2021-01-30T14:31:48.769980500
- * generator version : 2.10.15-SNAPSHOT
- * api version       : 2.10.15-SNAPSHOT
+ * generation time   : 2021-02-04T21:21:54.054366300
+ * generator version : 2.10.33-SNAPSHOT
+ * api version       : 2.10.33-SNAPSHOT
  * </pre>
  * @author Greg Higgins
  */

@@ -64,8 +64,7 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
             this.source = source;
             this.numberOfBuckets = numberOfBuckets;
             collection = new ArrayListWrappedCollection<>();
-            //TODO pass in a factory Supplier
-            aggregator = (T) source.getClass().getDeclaredConstructor().newInstance();
+            aggregator = (T) source.newInstance();
             aggregator.setTargetCollecion(collection);
         } catch (Exception ex) {
             throw new RuntimeException("Cannot instantiate SlidingGroupByAggregator", ex);
@@ -104,7 +103,7 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
             aggregator.setTargetCollecion(collection);
             aggregator.reset();
             for (int i = 0; i < numberOfBuckets; i++) {
-                final T function = (T) source.getClass().getDeclaredConstructor().newInstance();
+                final T function = (T) aggregator.newInstance();
                 function.reset();
                 deque.add(function);
             }
@@ -154,12 +153,17 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
     //TODO for chaining 
     @Override
     public void deduct(GroupBy<S> other) {
-        GroupBy.super.deduct(other); //To change body of generated methods, choose Tools | Templates.
+        GroupBy.super.deduct(other); 
     }
 
     @Override
     public void combine(GroupBy<S> other) {
-        GroupBy.super.combine(other); //To change body of generated methods, choose Tools | Templates.
+        GroupBy.super.combine(other); 
+    }
+
+    @Override
+    public GroupBy<S> newInstance() {
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
 }
