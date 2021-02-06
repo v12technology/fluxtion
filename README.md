@@ -7,7 +7,7 @@
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
 
-### [Documentation](https://v12technology.github.io/fluxtion/)
+### [Official documentation](https://v12technology.github.io/fluxtion/)
 # Lightweight event stream processor
  - Pure java in memory complex event processing 
  - Ultra fast [sub-microsecond response times](http://fluxtion.com/solutions/high-performance-flight-analysis/)
