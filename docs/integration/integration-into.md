@@ -1,8 +1,8 @@
 ---
 title: Integration
-has_children: true
+has_children: false
 nav_order: 6
-published: false
+published: true
 ---
 
 # Introduction
