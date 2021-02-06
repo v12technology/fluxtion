@@ -25,3 +25,13 @@ Data streams can be merged, filtered, aggregated, joined, grouped and enriched.
 Windowing of data is fully supported. User functions are easily integrated to directly execute actions in addition to real-time monitoring.
 
 A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
+
+## Fluxtion application integration
+---
+
+![](images/integration-overview.png)
+
+A Fluxtion event processor embeds within a user application, processing events, 
+publishing events to sinks or interacting with user classes. Events are feed from 
+the application directly into the processor or into a pipeline. A pipeline provides 
+additional capabilities such as threading, scheduling, auditing, access control

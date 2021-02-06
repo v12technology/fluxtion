@@ -7,7 +7,7 @@
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
 
-### [Documentation](https://v12technology.github.io/fluxtion/)
+### [Official documentation](https://v12technology.github.io/fluxtion/)
 # Lightweight event stream processor
  - Pure java in memory complex event processing 
  - Ultra fast [sub-microsecond response times](http://fluxtion.com/solutions/high-performance-flight-analysis/)
@@ -39,6 +39,14 @@ Ahead of time compilation offers several critical advantages over existing produ
  - Rules engines
  - Low response time requirements
  - IoT processing
+
+## Fluxtion application integration
+![](docs/images/integration-overview.png)
+
+A Fluxtion event processor embeds within a user application, processing events, 
+publishing events to sinks or interacting with user classes. Events are feed from 
+the application directly into the processor or into a pipeline. A pipeline provides 
+additional capabilities such as threading, scheduling, auditing, access control
 
 ## Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a 
