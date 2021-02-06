@@ -43,6 +43,11 @@ Ahead of time compilation offers several critical advantages over existing produ
 ## Fluxtion application integration
 ![](docs/images/integration-overview.png)
 
+A Fluxtion event processor embeds within a user application, processing events, 
+publishing events to sinks or interacting with user classes. Events are feed from 
+the application directly into the processor or into a pipeline. A pipeline provides 
+additional capabilities such as threading, scheduling, auditing, access control
+
 ## Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a 
 clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the 

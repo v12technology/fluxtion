@@ -28,4 +28,10 @@ A full set of tools for debugging, tracing, auditing and visualisation are provi
 
 ## Fluxtion application integration
 ---
+
 ![](images/integration-overview.png)
+
+A Fluxtion event processor embeds within a user application, processing events, 
+publishing events to sinks or interacting with user classes. Events are feed from 
+the application directly into the processor or into a pipeline. A pipeline provides 
+additional capabilities such as threading, scheduling, auditing, access control
