@@ -301,4 +301,9 @@ ${functionInfo.updateTarget}
     public WrappedList<${targetClass}> comparing(SerializableFunction comparingFunction) {
           return wrappedList.comparing(comparingFunction);
     }
+
+  @Override
+  public ${functionClass} newInstance(){
+      return new ${functionClass}();
+  }
 }

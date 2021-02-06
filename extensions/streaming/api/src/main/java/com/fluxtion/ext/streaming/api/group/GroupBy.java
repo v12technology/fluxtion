@@ -98,5 +98,7 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
      * @param wrappedList 
      */
     default void setTargetCollecion(ArrayListWrappedCollection<T> wrappedList) {}
+    
+    GroupBy<T> newInstance();
 
 }
