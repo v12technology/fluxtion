@@ -58,7 +58,7 @@ public class SepJavaSourceModelHugeFilter {
     /**
      * max number of cases statements to generate before using a dispatch map.
      */
-    private int maxFilterBranches = 2;
+    private int maxFilterBranches = 5;
 
     /**
      * String representation of life-cycle callback methods for initialise,
@@ -224,6 +224,8 @@ public class SepJavaSourceModelHugeFilter {
     private boolean auditingEvent;
     private boolean auditingInvocations;
     private String auditMethodString;
+    
+    private String additionalInterfaces;
 
     public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model) {
         this(model, false);
@@ -347,6 +349,10 @@ public class SepJavaSourceModelHugeFilter {
     private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
     private HashMap<String, String> importMap = new HashMap<>();
 
+    private String getClassName(Class clazzName) {
+        return getClassName(clazzName.getCanonicalName());
+    }
+    
     private String getClassName(String clazzName) {
         clazzName = model.getMappedClass(clazzName);
         String[] split = clazzName.split("\\.");
@@ -1111,6 +1117,10 @@ public class SepJavaSourceModelHugeFilter {
         return filterConstantDeclarations;
     }
 
+    public String getAdditionalInterfaces() {
+        return additionalInterfaces==null?"":additionalInterfaces;
+    }
+
 //    public ArrayList<String> getImportList() {
 //        return importList;
 //    }
@@ -1269,6 +1279,14 @@ public class SepJavaSourceModelHugeFilter {
 
     private void addDefacultImports() {
         model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
+    }
+
+    public void additonalInterfacesToImplement(Set<Class> interfacesToImplement) {
+        if(!interfacesToImplement.isEmpty()){
+            additionalInterfaces = interfacesToImplement.stream()
+                    .map(this::getClassName)
+                    .collect(Collectors.joining(", ", ", ", ""));
+        }
     }
 
 }

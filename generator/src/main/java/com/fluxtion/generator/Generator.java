@@ -137,6 +137,7 @@ public class Generator {
     private File templateJavaOutput() throws Exception {
         SepJavaSourceModelHugeFilter srcModelHuge = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
         SepJavaSourceModelHugeFilter srcModel = srcModelHuge;
+        srcModel.additonalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();
         //set up defaults

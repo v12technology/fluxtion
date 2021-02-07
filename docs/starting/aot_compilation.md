@@ -1,5 +1,5 @@
 ---
-title: Buildtime generation
+title: AOT compilation
 parent: First Fluxtion application
 has_children: false
 nav_order: 2
