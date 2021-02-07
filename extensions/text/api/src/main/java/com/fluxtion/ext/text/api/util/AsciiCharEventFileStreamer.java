@@ -12,6 +12,7 @@
 package com.fluxtion.ext.text.api.util;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.event.Signal;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
@@ -21,15 +22,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Synchronous char streamer, reads bytes from a file and pushes CharEvent for
  * each byte read into a registered EventHandler. An EofEvent is published when
  * the end of the file is reached.
  *
+ * 
+ *
  * @author Greg Higgins
  */
 public class AsciiCharEventFileStreamer {
+
+    public static final String CLOSESTREAMACTION_KEY = "AsciiCharEventFileStreamer.closeStreamAction";
 
     public static void streamFromFile(File file, CharSink sink) throws FileNotFoundException, IOException {
         streamFromFile(file, sink, true);
@@ -67,18 +73,52 @@ public class AsciiCharEventFileStreamer {
     }
 
     public static void streamFromFile(File file, StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException {
+
         if (callLifeCycleMethods) {
             initSep(eventHandler);
         }
         if (file.exists() && file.isFile()) {
-            FileChannel fileChannel = new FileInputStream(file).getChannel();
-            long size = file.length();
-            MappedByteBuffer buffer = fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY, 0, size);
-            CharEvent charEvent = new CharEvent(' ');
-            while (buffer.hasRemaining()) {
-                charEvent.setCharacter((char) buffer.get());
-                eventHandler.onEvent(charEvent);
+            final AtomicBoolean closeStreamFlag = new AtomicBoolean(false);
+            Signal<Runnable> closeStreamSignal = new Signal<>(CLOSESTREAMACTION_KEY, () -> {
+                closeStreamFlag.set(true);
+            });
+            try (FileChannel fileChannel = new FileInputStream(file).getChannel()) {
+                long size = file.length();
+                MappedByteBuffer buffer = fileChannel.map(
+                        FileChannel.MapMode.READ_ONLY, 0, size);
+                CharEvent charEvent = new CharEvent(' ');
+                eventHandler.onEvent(closeStreamSignal);
+                while (buffer.hasRemaining()) {
+                    charEvent.setCharacter((char) buffer.get());
+                    eventHandler.onEvent(charEvent);
+                    if (closeStreamFlag.get()) {
+                        break;
+                    }
+                }
+            }
+        }
+        eventHandler.onEvent(EofEvent.EOF);
+        if (callLifeCycleMethods) {
+            tearDownSep(eventHandler);
+        }
+    }
+
+    public static void streamFromBuffer(MappedByteBuffer buffer, StaticEventProcessor eventHandler, boolean callLifeCycleMethods) throws FileNotFoundException, IOException {
+
+        if (callLifeCycleMethods) {
+            initSep(eventHandler);
+        }
+        final AtomicBoolean closeStreamFlag = new AtomicBoolean(false);
+        Signal<Runnable> closeStreamSignal = new Signal<>(CLOSESTREAMACTION_KEY, () -> {
+            closeStreamFlag.set(true);
+        });
+        CharEvent charEvent = new CharEvent(' ');
+        eventHandler.onEvent(closeStreamSignal);
+        while (buffer.hasRemaining()) {
+            charEvent.setCharacter((char) buffer.get());
+            eventHandler.onEvent(charEvent);
+            if (closeStreamFlag.get()) {
+                break;
             }
         }
         eventHandler.onEvent(EofEvent.EOF);

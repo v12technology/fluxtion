@@ -26,6 +26,7 @@ import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.builder.generation.GenerationContext;
 import static com.fluxtion.builder.generation.GenerationContext.SINGLETON;
+import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.util.CharArrayCharSequence;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.streaming.builder.util.FunctionKeys;
@@ -39,6 +40,7 @@ import com.fluxtion.ext.text.api.csv.ValidationLogger;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import com.fluxtion.ext.text.api.util.EventPublsher;
+import com.fluxtion.ext.text.api.util.marshaller.CharProcessor;
 import static com.fluxtion.ext.text.builder.Templates.CSV_MARSHALLER;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -274,6 +276,11 @@ public class RecordParserBuilder<P extends RecordParserBuilder<P, T>, T> {
         return id;
     }
 
+    public RowProcessor<T> build(SEPConfig cfg) {
+        cfg.addInterfaceImplementation(CharProcessor.class);
+        return build();
+    }
+    
     public RowProcessor<T> build() {
         try {
             VelocityContext ctx = new VelocityContext();

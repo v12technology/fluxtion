@@ -34,7 +34,7 @@ ${MODEL.imports}
 * @author Greg Higgins 
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle {
+public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
     #slf4j(${className})
 //Node declarations

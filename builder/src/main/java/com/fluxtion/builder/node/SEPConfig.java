@@ -24,8 +24,10 @@ import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.time.ClockFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
@@ -149,6 +151,16 @@ public class SEPConfig {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
+    private final Set<Class> interfaces = new HashSet<>();
+    
+    public void addInterfaceImplementation(Class clazz){
+        interfaces.add(clazz);
+    }
+    
+    public Set<Class> interfacesToImplement(){
+        return interfaces;
+    }
+    
     /**
      * Users can override this method and add SEP description logic here. The
      * buildConfig method will be called by the Fluxtion generator at build
