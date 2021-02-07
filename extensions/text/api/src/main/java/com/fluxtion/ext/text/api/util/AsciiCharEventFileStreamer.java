@@ -91,7 +91,7 @@ public class AsciiCharEventFileStreamer {
                 while (buffer.hasRemaining()) {
                     charEvent.setCharacter((char) buffer.get());
                     eventHandler.onEvent(charEvent);
-                    if (closeStreamFlag.getPlain()) {
+                    if (closeStreamFlag.get()) {
                         break;
                     }
                 }
