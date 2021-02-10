@@ -182,10 +182,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Sum#addValue
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Sum#addValue}
      */
-    public static <T> Wrapper<Number> cumSum(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> cumSum(SerializableFunction<T, S> supplier) {
         return map(cumSum(), arg(supplier));
     }
 
@@ -236,10 +237,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Average#addValue
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Average#addValue}
      */
-    public static <T> Wrapper<Number> avg(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> avg(SerializableFunction<T, S> supplier) {
         return map(avg(), arg(supplier));
     }
 
@@ -290,10 +292,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Max#max
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Max#max}
      */
-    public static <T> Wrapper<Number> max(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> max(SerializableFunction<T, S> supplier) {
         return map(max(), arg(supplier));
     }
 
@@ -344,10 +347,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Min#min
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Min#min}
      */
-    public static <T> Wrapper<Number> min(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> min(SerializableFunction<T, S> supplier) {
         return map(min(), arg(supplier));
     }
 
@@ -398,10 +402,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link PercentDelta#value
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link PercentDelta#value}
      */
-    public static <T> Wrapper<Number> percentChange(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> percentChange(SerializableFunction<T, S> supplier) {
         return map(percentChange(), arg(supplier));
     }
 
@@ -452,10 +457,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Delta#value
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Delta#value}
      */
-    public static <T> Wrapper<Number> delta(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> delta(SerializableFunction<T, S> supplier) {
         return map(delta(), arg(supplier));
     }
 
@@ -499,48 +505,6 @@ public class LibraryFunctionsBuilder  {
     }
 
     /**
-     * Performs a {@link StreamFunctions#asDouble} function as a map operation on a stream.
-     * The stream is automatically created by subscribing to the {@link Event}
-     * and wrapping the supplier function with {@link Wrapper&lt;Number&gt;}. 
-     * The wrapper is the input to the mapping function. The mapped value is available as
-     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
-     *
-     * @param <T> The input event stream
-     * @param supplier The input value to the function {@link StreamFunctions#asDouble
-     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
-     */
-    public static <T> Wrapper<Number> double2Num(SerializableFunction<T, Number> supplier) {
-        return map(LibraryFunctionsBuilder.double2Num(), arg(supplier));
-    }
-
-    public static <T extends Number> Wrapper<Number> double2Num(Argument<T> arg) {
-        return map(LibraryFunctionsBuilder.double2Num(), arg);
-    }
-
-    /**
-     * Performs a {@link StreamFunctions#asDouble} function as a map operation on a stream.
-     * The stream is automatically created by wrapping the supplier instance function in a
-     * {@link Wrapper&lt;Number&gt;}, the wrapper is the input 
-     * to the mapping function. The mapped value is available as
-     * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
-     *
-     * @param <T> The input type required by {@link StreamFunctions#asDouble}
-     * @param supplier The wrapped instance supplying values to the function {@link StreamFunctions#asDouble
-     * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
-     */
-    public static <T extends Number> Wrapper<Number> double2Num(SerializableSupplier<T> supplier) {
-        return map(LibraryFunctionsBuilder.double2Num(), arg(supplier));
-    }
-
-    public static <T, S extends Number> Wrapper<Number> double2Num(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return map(LibraryFunctionsBuilder.double2Num(),  arg(wrapper, supplier));
-    }
-
-    public static <T extends Number> Wrapper<Number> double2Num(Wrapper<T> wrapper) {
-        return map(LibraryFunctionsBuilder.double2Num(),  arg(wrapper));
-    }
-
-    /**
      * Wrap {@link Math#ceil } function for use as a map operation in an existing
      * stream. {@link Wrapper#map(SerializableFunction) }
      * requires a {@link SerializableFunction} to map input values.
@@ -560,10 +524,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Math#ceil
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#ceil}
      */
-    public static <T> Wrapper<Number> ceil(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> ceil(SerializableFunction<T, S> supplier) {
         return map(ceil(), arg(supplier));
     }
 
@@ -614,10 +579,11 @@ public class LibraryFunctionsBuilder  {
      * a {@link Wrapper&lt;Number&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link Math#floor
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link Math#floor}
      */
-    public static <T> Wrapper<Number> floor(SerializableFunction<T, Number> supplier) {
+    public static <T, S extends Number> Wrapper<Number> floor(SerializableFunction<T, S> supplier) {
         return map(floor(), arg(supplier));
     }
 
