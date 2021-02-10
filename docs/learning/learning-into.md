@@ -15,8 +15,7 @@ application.
 
 In order to subscribe to a set of events, declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
 The select statement creates a [Wrapper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/Wrapper.java) 
-that acts as a monad. 
-
+that acts as a monad. With a select the wrapper will hold the latest event that is received by the processor.
 
 ```java
 select(MyDataType.class);
@@ -31,9 +30,9 @@ select(MyDataType.class)
     .log("received:");
 ```
 
-Build statements are invoked by calling one of the build methods in process or
-annotating a method and using the maven plugin to generate the event processor.
-This example is using inprocess generation:
+Build statements are invoked by calling one of the in-process [build methods](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/generator/src/main/java/com/fluxtion/generator/compiler/InprocessSepCompiler.java#L154)
+or annotating a method and using the maven plugin to generate the event processor.
+This example uses inprocess generation:
 
 ```java
 public class TradeMonitor {
@@ -48,7 +47,9 @@ public class TradeMonitor {
 }
 ```
 
-Placeholder for:
+
+
+### Placeholder for:
 - streaming api (declarative coding)
 - user code integration (imperative coding)
 - Monitoring
