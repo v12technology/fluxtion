@@ -9,12 +9,14 @@ published: true
 
 ## Streaming api
 
-Fluxtion offers a declarative coding style to create event processing logic. The build
-statements create a class that extends StaticEventProcessor, which can be used in the
-application. Declarative logic describes, the real-time complex event processing needs of the
-application.
+Fluxtion offers a declarative coding style to express event processing logic, describing 
+the real-time complex event processing needs of the application. The build
+statements are used to generate a class that extends StaticEventProcessor and encapsulates
+the required behaviour. A generated StaticEventProcessor is embedded in the application to 
+process an event stream.
 
-This guide is focused on the logic construction, integration is covered elsewhere (link to be provided when written).
+This guide is focused on the logical construction of processing. Integration 
+of event streams is covered elsewhere (link to be provided when written).
 
 ### Select
 In order to subscribe to a stream of events, declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
