@@ -11,7 +11,10 @@ published: true
 
 Fluxtion offers a declarative coding style to create event processing logic. The build
 statements create a class that extends StaticEventProcessor, which can be used in the
+application. Declarative logic describes, the real-time complex event processing needs of the
 application.
+
+This guide is focused on the logic construction, integration is covered elsewhere (link to be provided when written).
 
 ### Select
 In order to subscribe to a set of events, declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
