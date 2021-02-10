@@ -20,7 +20,7 @@ package com.fluxtion.ext.futext.builder.csv;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
 import com.fluxtion.ext.text.api.annotation.ColumnName;
-import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertFromCharSeq;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
@@ -200,7 +200,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
     @Data
     public static class ConverterSample {
 
-        @ConvertField("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#convert")
+        @ConvertFromCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#convert")
         protected String stringValue;
 
     }
@@ -229,7 +229,7 @@ public class AnnotatedBeanCsvTest extends TextInprocessTest {
         @TrimField(false)
         protected String stringValue;
 
-        @ConvertField("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#times10")
+        @ConvertFromCharSeq("com.fluxtion.ext.futext.builder.csv.AnnotatedBeanCsvTest#times10")
         @DefaultFieldValue("-1")
         protected int intValue;
         

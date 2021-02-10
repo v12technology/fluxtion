@@ -26,29 +26,37 @@ import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
 
 /**
- *
+ * Utility functions to construct windowed functions using pre-existing functions
+ * supplied by Fluxtion.
  * @author gregp
  */
 public interface WindowFunctionsBuilder {
 
     /**
-     * Calculates a moving average
+     * Calculates a moving average using a count based window.
+     * 
+     * Window size = itemsPerBucket * numberOfBuckets
+     * Publish rate = itemsPerBucket
      * @param <T>
-     * @param supplier
+     * @param supplier 
      * @param itemsPerBucket
      * @param numberOfBuckets
      * @return 
      */
-    public static <T extends Number> Wrapper<Number> movingAvg(SerializableFunction<T, Number> supplier, int itemsPerBucket, int numberOfBuckets) {
+    public static <T> Wrapper<Number> movingAvg(SerializableFunction<T, Number> supplier, int itemsPerBucket, int numberOfBuckets) {
         return movingAvg(select(supplier), itemsPerBucket, numberOfBuckets);
     }
     
-    public static Wrapper<Number> movingAvg(Wrapper<? super Number> source, int itemsPerBucket, int numberOfBuckets){
+    public static Wrapper<Number> movingAvg(Wrapper<? extends Number> source, int itemsPerBucket, int numberOfBuckets){
         return service().sliding(source, avg(), itemsPerBucket, numberOfBuckets);
+    }
+ 
+    public static <T extends Number> Wrapper<Number> movingAvg(Class<T> supplier, int itemsPerBucket, int numberOfBuckets) {
+        return movingAvg(EventSelect.select(supplier), itemsPerBucket, numberOfBuckets);
     }
     
     //
-    public static <T extends Number> Wrapper<Number> movingCumSum(SerializableFunction<T, Number> supplier, int itemsPerBucket, int numberOfBuckets) {
+    public static <T> Wrapper<Number> movingCumSum(SerializableFunction<T, Number> supplier, int itemsPerBucket, int numberOfBuckets) {
         return WindowBuildOperations.service().sliding(select(supplier), cumSum(), itemsPerBucket, numberOfBuckets);
     }
     

@@ -20,10 +20,12 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.selectNumber;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
+import static com.fluxtion.ext.streaming.builder.factory.WindowFunctionsBuilder.movingAvg;
+import static com.fluxtion.ext.streaming.builder.factory.WindowFunctionsBuilder.movingCumSum;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +35,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamWindow extends StreamInprocessTest {
+public class StreamWindowTest extends StreamInprocessTest {
 
     @Test
     public void sumSlidingCountWrapper() {
@@ -41,7 +43,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class)
-                .sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
+                    .sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
         });
         testCumSum(0, 0, 0);
         testCumSum(2, 11, 0);
@@ -56,7 +58,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class).
-                sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
+                    sliding(cumSum(), bucketSize, bucketsPerPublish).id("cumSum");
         });
         testCumSum(0, 0, 0);
         testCumSum(2, 15, 30);
@@ -70,7 +72,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class).
-                sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
+                    sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
         });//, "sumSlidingTimedWrapper.SumSlidingTimedWrapper");
         testCumSumTime(0, 0, 0, 0);
         testCumSumTime(2, 100, 15, 30);
@@ -84,7 +86,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class).
-                sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
+                    sliding(cumSum(), Duration.millis(bucketSize), bucketsPerPublish).id("cumSum");
         });
         testCumSumTime(0, 0, 0, 0);
         testCumSumTime(2, 100, 15, 30);
@@ -98,7 +100,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class).
-                sliding(bucketSize, bucketsPerPublish).id("collection");
+                    sliding(bucketSize, bucketsPerPublish).id("collection");
         });
 
         int i;
@@ -127,7 +129,7 @@ public class StreamWindow extends StreamInprocessTest {
         final int bucketsPerPublish = 3;
         sep(c -> {
             select(Integer.class).
-                sliding(bucketSize, bucketsPerPublish).id("collection");
+                    sliding(bucketSize, bucketsPerPublish).id("collection");
         });
 
         int i;
@@ -152,18 +154,18 @@ public class StreamWindow extends StreamInprocessTest {
 
     @Test
     public void publishCount() {
-        final int bucketSize = 5;
+        final int itemsPerBuket = 5;
         final int bucketsPerPublish = 3;
         final int messageCount = 28;
         final int expectedPublishCount = 3;
         sep(c -> {
             select(Double.class)
-                .sliding(avg(), bucketSize, bucketsPerPublish)
-                .map(count()).id("updatesAvg");
+                    .sliding(avg(), itemsPerBuket, bucketsPerPublish)
+                    .map(count()).id("updatesAvg");
 
             select(Double.class)
-                .sliding(cumSum(), bucketSize, bucketsPerPublish)
-                .map(count()).id("updatesCumSum");
+                    .sliding(cumSum(), itemsPerBuket, bucketsPerPublish)
+                    .map(count()).id("updatesCumSum");
         });
         for (int i = 1; i < messageCount; i++) {
             onEvent((double) i);
@@ -174,6 +176,55 @@ public class StreamWindow extends StreamInprocessTest {
         assertThat(updatesCumSum.intValue(), is(expectedPublishCount));
     }
 
+
+
+    @Test
+    public void movingAverageTest() {
+        final int itemsPerBuket = 1;
+        final int bucketsInWindow = 3;
+//        fixedPkg = true;
+//        reuseSep = true;
+        sep(c -> {
+            movingAvg(Double::doubleValue, itemsPerBuket, bucketsInWindow)
+                    .id("movAvgDouble");
+//                    .log("movAvgDouble:", Number::doubleValue);
+            
+            
+//            movingAvg(Double::intValue,itemsPerBuket, bucketsInWindow )
+//                    .id("movAvgInt")
+//                    .log("movAvgInt   :", Number::doubleValue);
+//            
+//            
+//            movingCumSum(Double.class,itemsPerBuket, bucketsInWindow )
+//                    .id("movSumDouble")
+//                    .log("movSumDouble:", Number::doubleValue);
+//            
+//            movingCumSum(select(Double::intValue),itemsPerBuket, bucketsInWindow )
+//                    .id("movSumInt")
+//                    .log("movSumInt   :", Number::doubleValue);
+
+            
+        });
+        Number updatesAvg = getWrappedField("movAvgDouble");
+        onEvent((double) 3);
+        assertThat(updatesAvg.intValue(), is(0));    
+        onEvent((double) 4);
+        assertThat(updatesAvg.intValue(), is(0));    
+        onEvent((double) 5);
+        updatesAvg = getWrappedField("movAvgDouble");
+//        assertThat(updatesAvg.intValue(), is(4));    
+        onEvent((double) 6);
+        assertThat(updatesAvg.intValue(), is(5));    
+        onEvent((double) 10);
+        assertThat(updatesAvg.intValue(), is(7));    
+        onEvent((double) 20);
+        assertThat(updatesAvg.intValue(), is(12));    
+        onEvent((double) 30);
+        onEvent((double) 40.6);
+        onEvent((double) 400);
+
+    }
+
     @Test
     public void collectionSlidingImpliedSelect() {
         final int bucketSize = 500;
@@ -181,7 +232,7 @@ public class StreamWindow extends StreamInprocessTest {
 
         sep(c -> {
             select(Integer.class)
-                .sliding(Duration.millis(bucketSize), bucketsPerPublish).id("collection");
+                    .sliding(Duration.millis(bucketSize), bucketsPerPublish).id("collection");
         });
 
         setTime(0);

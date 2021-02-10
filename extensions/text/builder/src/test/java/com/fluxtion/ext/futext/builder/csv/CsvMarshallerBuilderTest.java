@@ -303,7 +303,7 @@ public class CsvMarshallerBuilderTest extends BaseSepTest {
         String dataCsh = "country,city,accent city,region,population,longitude,latitude\n"
                 + "mexico,aixirivali,Aixirivali,06,,25.19,1.5\n"
                 + "brazil,santiago,Aixirivall,06,,130,1.5\n"
-                + "#next line fails validation\n"
+                + "#next line fails validation - missing population\n"
                 + "GB,trax,Aixirivall,06,,-130,1.5\n";
         WorldCityOnEvent city = ((Wrapper<WorldCityOnEvent>) getField("city")).event();
         StringDriver.streamChars(dataCsh, sep, false);

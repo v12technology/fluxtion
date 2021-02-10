@@ -26,7 +26,7 @@ import com.fluxtion.ext.streaming.api.log.LogControlEvent;
 import com.fluxtion.ext.streaming.api.log.LogService;
 import com.fluxtion.ext.text.api.annotation.CheckSum;
 import com.fluxtion.ext.text.api.annotation.ColumnName;
-import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertFromCharSeq;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.annotation.DefaultFieldValue;
@@ -256,7 +256,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
                     if (trim != null) {
                         colInfo(fieldName).setTrim(trim.value());
                     }
-                    final ConvertField converter = field.getAnnotation(ConvertField.class);
+                    final ConvertFromCharSeq converter = field.getAnnotation(ConvertFromCharSeq.class);
                     if (converter != null && converter.value().contains("#")) {
                         String[] converterString = converter.value().split("#");
                         MethodReflector method = m.on(converterString[0]).reflect().method(converterString[1]);

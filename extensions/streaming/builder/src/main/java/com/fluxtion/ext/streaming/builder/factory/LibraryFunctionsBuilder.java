@@ -225,7 +225,7 @@ public class LibraryFunctionsBuilder  {
      * @param <T> input to {@link Average#addValue }
      * @return {@link SerializableFunction} of {@link Average#addValue }
      */
-    public static <T extends Double> SerializableFunction<T, Number> avg() {
+    public static <T extends Number> SerializableFunction<T, Number> avg() {
         return new Average()::addValue;
     }
 
@@ -490,18 +490,6 @@ public class LibraryFunctionsBuilder  {
 
     public static <T extends Number> Wrapper<Number> delta(Wrapper<T> wrapper) {
         return map(delta(),  arg(wrapper));
-    }
-
-    /**
-     * Wrap {@link StreamFunctions#asDouble } function for use as a map operation in an existing
-     * stream. {@link Wrapper#map(SerializableFunction) }
-     * requires a {@link SerializableFunction} to map input values.
-     *
-     * @param <T> input to {@link StreamFunctions#asDouble }
-     * @return {@link SerializableFunction} of {@link StreamFunctions#asDouble }
-     */
-    public static <T extends Double> SerializableFunction<T, Number> double2Num() {
-        return StreamFunctions::asDouble;
     }
 
     /**

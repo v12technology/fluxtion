@@ -35,7 +35,7 @@ public class StreamFunctions {
     public static <T> SerializableFunction<T, WrappedList<T>> collect() {
         return new ArrayListWrappedCollection<T>()::addItem;
     }
-
+     
     public static double add(double a, double b) {
         return a + b;
     }
@@ -55,7 +55,7 @@ public class StreamFunctions {
     public static double asDouble(double d) {
         return d;
     }
-
+    
     public static int asInt(int d) {
         return d;
     }
@@ -202,8 +202,8 @@ public class StreamFunctions {
         private double count;
         private double average = 0;
 
-        public double addValue(double val) {
-            sum += val;
+        public double addValue(Number val) {
+            sum += val.doubleValue();
             count++;
             average = (sum / count);
             return average;
@@ -273,19 +273,6 @@ public class StreamFunctions {
         public void reset() {
             previous = 0;
             result = 0;
-        }
-    }
-
-    public static class Message {
-
-        private final String outputMessage;
-
-        public Message(String outputMessage) {
-            this.outputMessage = outputMessage;
-        }
-
-        public String publishMessage(Object o) {
-            return outputMessage;
         }
     }
 
