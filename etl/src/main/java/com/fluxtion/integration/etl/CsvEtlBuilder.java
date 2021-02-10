@@ -22,7 +22,7 @@ import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.ext.streaming.builder.util.FunctionGeneratorHelper;
 import com.fluxtion.ext.text.api.annotation.ColumnName;
-import com.fluxtion.ext.text.api.annotation.ConvertField;
+import com.fluxtion.ext.text.api.annotation.ConvertFromCharSeq;
 import com.fluxtion.ext.text.api.annotation.OptionalField;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
@@ -130,7 +130,7 @@ public class CsvEtlBuilder implements Lifecycle {
         }
         if (column.getFunction() != null) {
             String funName = "fun_" + column.getName();
-            field.addAnnotation(AnnotationSpec.builder(ConvertField.class).addMember("value", "$S", funName).build());
+            field.addAnnotation(AnnotationSpec.builder(ConvertFromCharSeq.class).addMember("value", "$S", funName).build());
             MethodSpec.Builder funSpec = MethodSpec.methodBuilder(funName)
                     .addParameter(ClassName.get(CharSequence.class), "input")
                     .returns(column.typeName())
@@ -165,7 +165,7 @@ public class CsvEtlBuilder implements Lifecycle {
                 .addModifiers(Modifier.PRIVATE);
         field.addAnnotation(AnnotationSpec.builder(OptionalField.class).build());
         String funName = "fun_" + column.getName();
-        field.addAnnotation(AnnotationSpec.builder(ConvertField.class).addMember("value", "$S", funName).build());
+        field.addAnnotation(AnnotationSpec.builder(ConvertFromCharSeq.class).addMember("value", "$S", funName).build());
         field.addJavadoc("derived field\n");
         csvProcessorBuilder.addField(field.build());
         //now add a method

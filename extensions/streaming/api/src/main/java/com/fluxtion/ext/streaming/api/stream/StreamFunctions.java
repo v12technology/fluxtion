@@ -18,7 +18,6 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Stateful;
@@ -33,22 +32,10 @@ import java.util.ArrayDeque;
  */
 public class StreamFunctions {
 
-    public static <T> LambdaReflection.SerializableFunction<T, String> message(String message) {
-        return new Message(message)::publishMessage;
-    }
-
-    public static <T extends Double> SerializableFunction<T, Number> toDouble() {
-        return StreamFunctions::asDouble;
-    }
-
-    public static <T> SerializableFunction<T, T> toReference() {
-        return StreamFunctions::asReference;
-    }
-
     public static <T> SerializableFunction<T, WrappedList<T>> collect() {
         return new ArrayListWrappedCollection<T>()::addItem;
     }
-
+     
     public static double add(double a, double b) {
         return a + b;
     }
@@ -68,24 +55,17 @@ public class StreamFunctions {
     public static double asDouble(double d) {
         return d;
     }
-
-    public static <S> S asReference(S d) {
+    
+    public static int asInt(int d) {
         return d;
     }
 
-    public static class IntCount implements Stateful {
+    public static long asLong(long d) {
+        return d;
+    }
 
-        private int count = 0;
-
-        @Override
-        public void reset() {
-            count = 0;
-        }
-
-        public int increment(Object o) {
-            return ++count;
-        }
-
+    public static <S> S asReference(S d) {
+        return d;
     }
 
     public static class Count implements StatefulNumber<Count> {
@@ -222,8 +202,8 @@ public class StreamFunctions {
         private double count;
         private double average = 0;
 
-        public double addValue(double val) {
-            sum += val;
+        public double addValue(Number val) {
+            sum += val.doubleValue();
             count++;
             average = (sum / count);
             return average;
@@ -293,19 +273,6 @@ public class StreamFunctions {
         public void reset() {
             previous = 0;
             result = 0;
-        }
-    }
-
-    public static class Message {
-
-        private final String outputMessage;
-
-        public Message(String outputMessage) {
-            this.outputMessage = outputMessage;
-        }
-
-        public String publishMessage(Object o) {
-            return outputMessage;
         }
     }
 

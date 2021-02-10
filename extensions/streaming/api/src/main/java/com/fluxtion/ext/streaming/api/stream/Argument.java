@@ -22,11 +22,11 @@ public class Argument<T> {
     public Object source;
     public Method accessor;
     public boolean cast;
-    
+
     public static <T, S> Argument<S> arg(SerializableFunction<T, S> supplier) {
         final Class containingClass = supplier.getContainingClass();
         return new Argument(StreamOperator.service().select(containingClass), supplier.method(), true);
-    }    
+    }
 
     public static <T extends Number> Argument<T> arg(Double d) {
         SerializableFunction<Number, Double> s = Number::doubleValue;
@@ -66,40 +66,40 @@ public class Argument<T> {
         return new Argument<>(supplier.captured()[0], method, true);
     }
 
-    public static <T> Argument<T> arg(Class<T> clazz){
+    public static <T> Argument<T> arg(Class<T> clazz) {
         Wrapper<T> select = StreamOperator.service().select(clazz);
         return arg(select);
     }
-    
+
     public static <T> Argument<T> arg(Object supplier) {
         return new Argument(supplier, null, true);
     }
-    
+
     public static <T extends Number> Argument<T> argInt(T i) {
         SerializableFunction<Number, Integer> s = Number::intValue;
         return new Argument<>(i, s.method(), true);
     }
-    
+
     public static <T extends Number> Argument<T> argInt(Wrapper<T> i) {
         SerializableFunction<Number, Integer> s = Number::intValue;
         return new Argument<>(i, s.method(), true);
     }
-    
+
     public static <T extends Number> Argument<T> argLong(T i) {
         SerializableFunction<Number, Long> s = Number::longValue;
         return new Argument<>(i, s.method(), true);
     }
-    
+
     public static <T extends Number> Argument<T> argLong(Wrapper<T> i) {
         SerializableFunction<Number, Long> s = Number::longValue;
         return new Argument<>(i, s.method(), true);
     }
-    
+
     public static <T extends Number> Argument<T> argDouble(T i) {
         SerializableFunction<Number, Double> s = Number::doubleValue;
         return new Argument<>(i, s.method(), true);
     }
-    
+
     public static <T extends Number> Argument<T> argDouble(Wrapper<T> i) {
         SerializableFunction<Number, Double> s = Number::doubleValue;
         return new Argument<>(i, s.method(), true);
@@ -110,12 +110,12 @@ public class Argument<T> {
         this.accessor = accessor;
         this.cast = cast;
     }
-    
-    public boolean isWrapper(){
+
+    public boolean isWrapper() {
         return source instanceof Wrapper;
     }
-    
-    public boolean isWrapperBase(){
+
+    public boolean isWrapperBase() {
         return source instanceof WrapperBase;
     }
 }

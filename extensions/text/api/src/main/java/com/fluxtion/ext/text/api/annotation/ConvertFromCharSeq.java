@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConvertField {
+public @interface ConvertFromCharSeq {
 
     /**
      * The static method that will convert this {@link CharSequence} into some

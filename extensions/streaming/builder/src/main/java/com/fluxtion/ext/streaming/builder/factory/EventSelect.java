@@ -22,6 +22,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.IntFilterEventHandler;
 import com.fluxtion.ext.streaming.api.StringFilterEventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import static com.fluxtion.ext.streaming.builder.factory.Primitive2NumberStreamBuilder.primitive2Num;
 
 /**
  * Utility functions for selecting and creating a stream from incoming
@@ -39,6 +40,14 @@ public interface EventSelect {
     static <T , S> Wrapper<S> select(SerializableFunction<T, S> supplier) {
         Class<T> eventClazz = supplier.getContainingClass();
         return select(eventClazz).get(supplier);
+    }
+
+    static <T extends Number> Wrapper<Number> selectNumber(Class<T> eventClaz) {
+        return primitive2Num(select(eventClaz));
+    }
+
+    static <T , S extends Number> Wrapper<Number> selectNumber(SerializableFunction<T, S> supplier) {
+        return primitive2Num(supplier);
     }
 
     static <T extends Event> Wrapper<T>[] select(Class<T> eventClazz, int... filterId) {
