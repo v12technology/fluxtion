@@ -72,7 +72,9 @@ public class SlidingGroupByTest extends StreamInprocessTest {
             sliding(groupByAvg(Order::getCcyPair, Order::getSizeDouble), 5, 3)
                 .comparator(new MyComparator3()).reverse()
                 .top(4)
-                .map(new MapTupleToString("ccyPair:", " avgDealSize:")::collAsString);
+//                .map(new MapTupleToString("ccyPair:", " avgDealSize:")::collAsString)
+//                .log()
+                    ;
         });
         sendSampleData();
     }
@@ -137,9 +139,9 @@ public class SlidingGroupByTest extends StreamInprocessTest {
         String valuePrefix;
 
         public <K, V> String collAsString(Collection<Tuple<K, V>> tuples) {
-            return tuples.stream()
+            return (tuples.stream()
                 .map(this::asString)
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining("\n")));
         }
 
         public <K, V> String asString(Tuple<K, V> tuple) {

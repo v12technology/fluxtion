@@ -83,10 +83,11 @@ public class ${className}  {
      * a {@link Wrapper&lt;${FunctionInfo.returnType}&gt;} instance for further stream operations.
      *
      * @param <T> The input event stream
+     * @param <S> The function return type
      * @param supplier The input value to the function {@link ${FunctionInfo.methodName}
      * @return {@link  Wrapper&lt;${FunctionInfo.returnType}&gt;} wrapping the result of {@link ${FunctionInfo.methodName}}
      */
-    public static <T> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, ${FunctionInfo.inputType}> supplier) {
+    public static <T, S extends ${FunctionInfo.inputType}> Wrapper<${FunctionInfo.returnType}> ${FunctionInfo.functionName}(SerializableFunction<T, S> supplier) {
         return map(${FunctionInfo.functionName}(), arg(supplier));
     }
 
