@@ -494,7 +494,7 @@ public class LibraryFunctionsBuilder  {
      * @param <T> input to {@link StreamFunctions#asDouble }
      * @return {@link SerializableFunction} of {@link StreamFunctions#asDouble }
      */
-    public static <T extends Double> SerializableFunction<T, Number> toDouble() {
+    public static <T extends Double> SerializableFunction<T, Number> double2Num() {
         return StreamFunctions::asDouble;
     }
 
@@ -509,12 +509,12 @@ public class LibraryFunctionsBuilder  {
      * @param supplier The input value to the function {@link StreamFunctions#asDouble
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
      */
-    public static <T> Wrapper<Number> toDouble(SerializableFunction<T, Number> supplier) {
-        return map(toDouble(), arg(supplier));
+    public static <T> Wrapper<Number> double2Num(SerializableFunction<T, Number> supplier) {
+        return map(LibraryFunctionsBuilder.double2Num(), arg(supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> toDouble(Argument<T> arg) {
-        return map(toDouble(), arg);
+    public static <T extends Number> Wrapper<Number> double2Num(Argument<T> arg) {
+        return map(LibraryFunctionsBuilder.double2Num(), arg);
     }
 
     /**
@@ -528,16 +528,16 @@ public class LibraryFunctionsBuilder  {
      * @param supplier The wrapped instance supplying values to the function {@link StreamFunctions#asDouble
      * @return {@link  Wrapper&lt;Number&gt;} wrapping the result of {@link StreamFunctions#asDouble}
      */
-    public static <T extends Number> Wrapper<Number> toDouble(SerializableSupplier<T> supplier) {
-        return map(toDouble(), arg(supplier));
+    public static <T extends Number> Wrapper<Number> double2Num(SerializableSupplier<T> supplier) {
+        return map(LibraryFunctionsBuilder.double2Num(), arg(supplier));
     }
 
-    public static <T, S extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
-        return map(toDouble(),  arg(wrapper, supplier));
+    public static <T, S extends Number> Wrapper<Number> double2Num(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return map(LibraryFunctionsBuilder.double2Num(),  arg(wrapper, supplier));
     }
 
-    public static <T extends Number> Wrapper<Number> toDouble(Wrapper<T> wrapper) {
-        return map(toDouble(),  arg(wrapper));
+    public static <T extends Number> Wrapper<Number> double2Num(Wrapper<T> wrapper) {
+        return map(LibraryFunctionsBuilder.double2Num(),  arg(wrapper));
     }
 
     /**

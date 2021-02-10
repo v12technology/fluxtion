@@ -18,7 +18,6 @@
 package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Stateful;
@@ -32,18 +31,6 @@ import java.util.ArrayDeque;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class StreamFunctions {
-
-    public static <T> LambdaReflection.SerializableFunction<T, String> message(String message) {
-        return new Message(message)::publishMessage;
-    }
-
-    public static <T extends Double> SerializableFunction<T, Number> toDouble() {
-        return StreamFunctions::asDouble;
-    }
-
-    public static <T> SerializableFunction<T, T> toReference() {
-        return StreamFunctions::asReference;
-    }
 
     public static <T> SerializableFunction<T, WrappedList<T>> collect() {
         return new ArrayListWrappedCollection<T>()::addItem;
@@ -69,23 +56,16 @@ public class StreamFunctions {
         return d;
     }
 
-    public static <S> S asReference(S d) {
+    public static int asInt(int d) {
         return d;
     }
 
-    public static class IntCount implements Stateful {
+    public static long asLong(long d) {
+        return d;
+    }
 
-        private int count = 0;
-
-        @Override
-        public void reset() {
-            count = 0;
-        }
-
-        public int increment(Object o) {
-            return ++count;
-        }
-
+    public static <S> S asReference(S d) {
+        return d;
     }
 
     public static class Count implements StatefulNumber<Count> {
