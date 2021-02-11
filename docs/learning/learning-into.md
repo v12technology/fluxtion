@@ -81,7 +81,7 @@ public class TradeMonitor {
 ```
 
 ## Filtering
-After subscribing to a stream, filtering can be applied to only propagate events that match a predicate. The wrapper
+After subscribing to a stream filtering only event that match the predicate are propagated. The wrapper
 interface provides in place filtering methods.
 
 ```java
@@ -141,6 +141,28 @@ select(Double.class)
     .log("input {} > 60")
     .elseStream().log("input {} between 10 -> 60 ");
 ```
+
+### Dynamic filtering
+Filters are nodes on the graph and can process events. This allows the predicate to be updated in 
+real-time. Fluxtion provides pre-built filters that can be dynamically controlled. In the example
+below a greater than test has an initial value of 10 and is updated with FilterConfig event. Fluxtion
+pre-built predicates are discussed later.
+
+```java
+sep(c -> {
+    select(Double.class)
+        .filter(gt(10, "configKey"))
+        .log("dynamic filter exceeded");
+});   
+onEvent("world");
+onEvent(8.0);
+onEvent(20.0);
+onEvent(50.0);
+onEvent(new FilterConfig("configKey", 25));
+onEvent(20.0);
+onEvent(50.0);
+```
+
 ### Placeholder for:
 - streaming api (declarative coding)
 - user code integration (imperative coding)
