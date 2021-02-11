@@ -27,7 +27,7 @@ that acts as a monad. With a select the wrapper will hold the latest event that 
 select(MyDataType.class);
 ```
 
-### Log events
+### Logging events
 Wrappers can be filtered, mapped, collected, grouped, windowed as desired by the user.
 In addition a Wrapper provides a log() function, that logs the contents of the Wrapper 
 when an update is received. Log actions are not mutative and can be added anywhere in the
@@ -38,12 +38,12 @@ select(MyDataType.class)
     .log("received:");
 ```
 
-### Log individual values
+### Logging individual values
 The log method can accept method references to extract individual values for logging
 
 ```java
 select(MyDataType.class)
-    .log("received key:", MyDataType::getKey);
+    .log("received key:{} value:{}", MyDataType::getKey, MyDataType::getValue);
 ```
 
 ### Selecting multiple streams
