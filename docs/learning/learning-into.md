@@ -5,9 +5,7 @@ nav_order: 4
 published: true
 ---
 
-# Introduction
-
-## Streaming api
+# Streaming api introduction
 
 Fluxtion offers a declarative coding style to express event processing logic, describing 
 the real-time complex event processing needs of the application. The build
@@ -18,13 +16,20 @@ process an event stream.
 This guide is focused on the logical construction of processing. Integration 
 of event streams is covered elsewhere (link to be provided when written).
 
-### Select
-In order to subscribe to a stream of events, declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
+| Term      | Description |
+| ----------- | ----------- |
+| Event    | An event is any valid java class that is submitted to the event processor |
+| Stream   | A stream is a set of events. An event can only appear once in a stream    |
+
+
+## Select - subscribing to a stream
+To subscribe to a stream of events declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
 The select statement creates a [Wrapper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/Wrapper.java) 
 that acts as a monad. With a select the wrapper will hold the latest event that is received by the processor that matches the java type.
-
+See [SelectTest.java](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/SelectTest.java)
+for code samples.
 ```java
-select(MyDataType.class);
+Wrapper<MyDataType> dataStream = select(MyDataType.class);
 ```
 
 ### Logging events
@@ -34,7 +39,7 @@ when an update is received. Log actions are not mutative and can be added anywhe
 graph
 
 ```java
-select(MyDataType.class)
+Wrapper<MyDataType> dataStream = select(MyDataType.class)
     .log("received:");
 ```
 
@@ -75,8 +80,67 @@ public class TradeMonitor {
 }
 ```
 
+## Filtering
+After subscribing to a stream, filtering can be applied to only propagate events that match a predicate. The wrapper
+interface provides in place filtering methods.
 
+```java
+select(String.class)
+    .filter("warning"::equalsIgnoreCase)
+    .log("warning received");
+```
 
+### Filtering with lambdas
+lambdas can be used for filtering.
+
+```java
+select(Double.class)
+    .filter(d -> d > 10)
+    .log("double {} gt 10");
+```
+
+### Filtering with method references
+Method references can be used to apply more complex filtering rules, both static and instance methods are 
+allowed.
+
+```java
+    @Test
+    public void filterMethodRef(){
+        sep(c -> {
+            select(MyDataType.class)
+                .filter(FilterTest::isValid)
+                .log("warning received");
+        });
+        onEvent("world");
+        onEvent("warning");
+    }
+
+    public static boolean isValid(MyDataType myDataType){
+        return myDataType.getKey().equals("hello") && myDataType.getValue().equals("world");
+    }
+```
+### Filter chains
+Filters can be chained in a fluent style to produce more complex criteria
+
+```java
+select(Double.class)
+    .filter(d -> d > 10)
+    .log("input {} > 10")
+    .filter(d -> d > 60)
+    .log("input {} > 60")
+    ;
+```
+
+### Else filter
+A filter operation returns a [FilterWarpper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/FilterWrapper.java)
+that gives access to an else branch for failed predicate processing via ```elseStream()``` 
+```java
+select(Double.class)
+    .filter(d -> d > 10)
+    .filter(d -> d > 60)
+    .log("input {} > 60")
+    .elseStream().log("input {} between 10 -> 60 ");
+```
 ### Placeholder for:
 - streaming api (declarative coding)
 - user code integration (imperative coding)
