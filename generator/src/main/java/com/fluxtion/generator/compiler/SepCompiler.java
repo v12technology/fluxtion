@@ -213,17 +213,17 @@ public class SepCompiler {
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         LOG.info("generated sep: " + file.getCanonicalPath());
-        if (compilerConfig.isCompileSource()) {
-            LOG.debug("start compiling source");
-            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
-            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
-            LOG.debug("completed compiling source");
-        }
         if(compilerConfig.isFormatSource()){
             LOG.debug("start formatting source");
             Generator.formatSource(file);
 //            new Thread(() -> Generator.formatSource(file)).start();
             LOG.debug("completed formatting source");
+        }
+        if (compilerConfig.isCompileSource()) {
+            LOG.debug("start compiling source");
+            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
+            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
+            LOG.debug("completed compiling source");
         }
         return returnClass;
 //        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());

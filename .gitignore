@@ -39,3 +39,6 @@
 /examples/quickstart/lesson-1/lesson-1.jar
 /examples/quickstart/lesson-3/lesson-3.jar
 /examples/quickstart/lesson-2/lesson-2.jar
+/examples/learning-streaming/target/
+/.idea/
+**/*.iml
