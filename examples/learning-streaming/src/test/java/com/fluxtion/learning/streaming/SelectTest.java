@@ -56,7 +56,6 @@ public class SelectTest extends BaseSepInprocessTest {
         onEvent(new MyDataType("hello", "world"));
         onEvent(42.0);
         onEvent(42);
-
     }
 
     @Data
