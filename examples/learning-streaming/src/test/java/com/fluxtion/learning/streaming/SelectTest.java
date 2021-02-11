@@ -5,6 +5,7 @@
  */
 package com.fluxtion.learning.streaming;
 
+import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,8 @@ import lombok.NoArgsConstructor;
 import org.junit.Test;
 
 /**
- *
+ * Tests demonstrating the use of {@link EventSelect#select(java.lang.Class) } methods. These examples should be read in 
+ * conjunction with <a href="https://v12technology.github.io/fluxtion/learning/learning-into.html">https://v12technology.github.io/fluxtion/learning/learning-into.html</a>
  * @author gregp
  */
 public class SelectTest extends BaseSepInprocessTest {
