@@ -26,7 +26,7 @@ of event streams is covered elsewhere (link to be provided when written).
 To subscribe to a stream of events declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
 The select statement creates a [Wrapper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/Wrapper.java) 
 that acts as a monad. With a select the wrapper will hold the latest event that is received by the processor that matches the java type.
-See [SelectTest.java](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/SelectTest.java)
+See [SelectTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/SelectTest.java)
 for code samples.
 ```java
 Wrapper<MyDataType> dataStream = select(MyDataType.class);
@@ -82,8 +82,8 @@ public class TradeMonitor {
 
 ## Filtering
 After subscribing to a stream filtering only event that match the predicate are propagated. The wrapper
-interface provides in place filtering methods.
-
+interface provides in place filtering methods. See [FilterTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/FilterTest.java)
+for examples.
 ```java
 select(String.class)
     .filter("warning"::equalsIgnoreCase)
