@@ -5,6 +5,9 @@
  */
 package com.fluxtion.learning.streaming;
 
+import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
+import com.fluxtion.ext.streaming.api.stream.NumericPredicates.FilterConfig;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.learning.streaming.SelectTest.MyDataType;
@@ -88,6 +91,24 @@ public class FilterTest extends BaseSepInprocessTest {
         onEvent(92.0);
         onEvent("warning");
         onEvent(42);
+    }
+    
+    @Test
+    public void dynamicFiltering(){
+//        fixedPkg = true;
+//        reuseSep = true;
+        sep(c -> {
+            select(Double.class)
+                .filter(gt(10, "configKey"))
+                .log("dynamic filter exceeded");
+        });   
+        onEvent("world");
+        onEvent(8.0);
+        onEvent(20.0);
+        onEvent(50.0);
+        onEvent(new FilterConfig("configKey", 25));
+        onEvent(20.0);
+        onEvent(50.0);
     }
 
 }
