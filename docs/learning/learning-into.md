@@ -31,7 +31,6 @@ for code samples.
 
 ```java
 Wrapper<MyDataType> dataStream = select(MyDataType.class);
-
 ```
 
 ### Logging events
