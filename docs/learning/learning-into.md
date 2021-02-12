@@ -7,10 +7,10 @@ published: true
 
 # Streaming api 
 
-Fluxtion offers a declarative coding style to express event processing logic, describing 
+Fluxtion offers a declarative coding api to express event processing logic that describes 
 the real-time complex event processing needs of the application. The build
-statements are used to generate a class that extends [StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) 
-that encapsulates the required behaviour. A generated StaticEventProcessor is embedded in the application to 
+statements generate a class that extends [StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) 
+encapsulating the required behaviour. A generated StaticEventProcessor is embedded in the application to 
 process an event stream.
 
 This guide is focused on the logical construction of processing. Integration 
@@ -18,7 +18,7 @@ of event streams is covered elsewhere (link to be provided when written).
 
 | Term      | Description |
 | ----------- | ----------- |
-| Event    | An event is any valid java class that is submitted to the event processor |
+| Event    | An event is any valid java instance that is submitted to the event processor |
 | Stream   | A stream is a set of events. An event instance can only appear once in a stream    |
 
 
@@ -64,7 +64,7 @@ Wrapper<Double> doubleStream = select(Double.class)
 
 ### Executing a processor
 Build statements are invoked by calling one of the in-process [build methods](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/generator/src/main/java/com/fluxtion/generator/compiler/InprocessSepCompiler.java#L154)
-or annotating a method and using the maven plugin to generate the event processor.
+or [annotating a method](../starting/aot_compilation.md) and using the maven plugin to generate the event processor.
 This example uses inprocess generation:
 
 ```java
@@ -81,7 +81,7 @@ public class TradeMonitor {
 ```
 
 ## Filtering
-After subscribing to a stream filtering only event that match the predicate are propagated. The wrapper
+A stream can be filtered. A filtered stream only propagates events that match the predicate. The wrapper
 interface provides in place filtering methods. See [FilterTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/FilterTest.java)
 for examples.
 ```java
@@ -91,7 +91,6 @@ select(String.class)
 ```
 
 ### Filtering with lambdas
-lambdas can be used for filtering.
 
 ```java
 select(Double.class)
