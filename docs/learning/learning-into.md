@@ -217,6 +217,19 @@ dynamic filter exceeded val:50
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.76 sec
 {% endhighlight %}
 
+## Filter builder  
+Filters can be constructed from higher order functions in the [FilterBuilder](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/FilterBuilder.java)
+class. Implicitly Subscription and wrappers are created removing the need to explicitly declare a subscription. The 
+previous filtering examples can be constructed more simply:
+
+```java
+FilterWrapper<String>     filter  = FilterBuilder.filter("warning"::equalsIgnoreCase);
+FilterWrapper<Double>     filter1 = FilterBuilder.filter(Double.class, d -> d>10);
+FilterWrapper<MyDataType> filter2 = FilterBuilder.filter(MyDataType.class, FilterTest::isValid);
+FilterWrapper<Double>     filter3 = FilterBuilder.filter(Double.class, gt(10, "configKey"));
+```
+
+
 ### Placeholder for:
 - streaming api (declarative coding)
 - user code integration (imperative coding)
