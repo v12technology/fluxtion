@@ -18,6 +18,7 @@ package com.fluxtion.ext.streaming.api.test;
 
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
@@ -36,6 +37,7 @@ public class BooleanFilter<T> implements FilterWrapper<T> {
     private final T tracked;
     @NoEventReference
     private final Wrapper<T> trackedWrapper;
+    private boolean trackedUpdate;
 
     public BooleanFilter(Wrapper<T> trackedWrapper, Object notifier) {
         this.notifier = notifier;
@@ -49,14 +51,24 @@ public class BooleanFilter<T> implements FilterWrapper<T> {
         this.trackedWrapper = null;
     }
     
+    @OnParentUpdate("tracked")
+    public void trackedUpdated(T tracked){
+        trackedUpdate = true;
+    } 
+    
+    @OnParentUpdate("trackedWrapper")
+    public void trackedWrapperUpdated(Wrapper<T> tracked){
+        trackedUpdate = true;
+    } 
+    
     @OnEvent
     public boolean updated(){
-        return true;
+        return trackedUpdate;
     }
 
-    public boolean filteredUpdate() {
-        return true;
-    }
+//    public boolean filteredUpdate() {
+//        return true;
+//    }
 
     @Override
     public T event() {
@@ -68,4 +80,10 @@ public class BooleanFilter<T> implements FilterWrapper<T> {
         return (Class<T>) (tracked == null ? trackedWrapper.eventClass() : tracked.getClass());
     }
 
+    @Override
+    public void reset() {
+        trackedUpdate = false;
+    }
+
+    
 }

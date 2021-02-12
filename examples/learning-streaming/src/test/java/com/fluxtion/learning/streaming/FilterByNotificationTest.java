@@ -8,8 +8,8 @@ package com.fluxtion.learning.streaming;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Test;
-import com.fluxtion.ext.streaming.builder.factory.FilterBuilder;
-import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
 
 /**
  *
@@ -19,8 +19,10 @@ public class FilterByNotificationTest extends BaseSepInprocessTest {
 
     @Test
     public void filterEvent() {
+        reuseSep = true;
+        fixedPkg = true;
         sep(c -> {
-            FilterByNotificationBuilder.filterOnNotify(select(Double.class), FilterBuilder.filter("tick"::equalsIgnoreCase))
+            filterOnNotify(select(Double.class), filter("tick"::equalsIgnoreCase))
                 .log("update:");
         });
         onEvent("tick");
