@@ -149,16 +149,59 @@ below a greater than test has an initial value of 10 and is updated with FilterC
 pre-built predicates are discussed later.
 
 ```java
-sep(c -> {
+@Test
+public void dynamicFiltering(){
+    sep(c -> {
     select(Double.class)
-        .filter(gt(10, "configKey"))
-        .log("dynamic filter exceeded");
-});   
-onEvent("world");
-onEvent(8.0);
+    .filter(gt(10, "configKey"))
+    .log("dynamic filter exceeded");
+    });
+    onEvent("world");
+    onEvent(8.0);
+    onEvent(20.0);
+    onEvent(50.0);
+    onEvent(new FilterConfig("configKey", 25));
+    onEvent(20.0);
+    onEvent(50.0);
+}
+```
+
+### Dynamic filtering with user function
+
+User functions can provide dynamic filtering. The example below integrate an instance function as a filter and applies 
+it to the event stream. A FilterGT instance is updated with a [Signal](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/event/Signal.java) 
+event, that is filtered using key "myConfigKey".
+The `@EventHandler` annotation routes events to the FilterGT instance in tha event processor. 
+
+```java
+@Test
+public void dynamicUserFiltering(){
+    sep(c -> {
+        select(Double.class)
+            .filter(new FilterGT(10)::gt)
+            .log("dynamic filter exceeded val:{}", Double::intValue);
+    });
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public static class FilterGT{
+    private int minValue;
+    
+    public boolean gt(Number n){
+        return n.longValue() > minValue;
+    }
+    
+    @EventHandler(filterString = "myConfigKey", propagate = false)
+    public void updateFilter(Signal<Number> filterSignal){
+        minValue = filterSignal.getValue().intValue();
+    } 
+}
+
 onEvent(20.0);
 onEvent(50.0);
-onEvent(new FilterConfig("configKey", 25));
+onEvent(new Signal("myConfigKey", 25));
 onEvent(20.0);
 onEvent(50.0);
 ```
