@@ -42,7 +42,6 @@ graph
 ```java
 Wrapper<MyDataType> dataStream = select(MyDataType.class)
     .log("received:");
-
 ```
 
 ### Logging individual values
@@ -51,7 +50,6 @@ The log method can accept method references to extract individual values for log
 ```java
 select(MyDataType.class)
     .log("received key:{} value:{}", MyDataType::getKey, MyDataType::getValue);
-
 ```
 
 ### Selecting multiple streams
@@ -63,7 +61,6 @@ Wrapper<MyDataType> myDataStream = select(MyDataType.class)
     .log("myDataStream received:");
 Wrapper<Double> doubleStream = select(Double.class)
     .log("doubleStream received:");
-
 ```
 
 
@@ -73,17 +70,13 @@ or [annotating a method](../starting/aot_compilation.md) and using the maven plu
 This example uses inprocess generation:
 
 ```java
-public class TradeMonitor {
-
-    public static void main(String[] args) throws Exception {
-        StaticEventProcessor processor = reuseOrBuild(c -> {
-            select(MyDataType.class)
-                .log("received:");
-        });
-        processor.onEvent(new MyDataType("hello", "world");
-    }
+public static void main(String[] args) throws Exception {
+    StaticEventProcessor processor = reuseOrBuild(c -> {
+        select(MyDataType.class)
+            .log("received:");
+    });
+    processor.onEvent(new MyDataType("hello", "world");
 }
-
 ```
 
 ## Filtering
@@ -95,7 +88,6 @@ for examples.
 select(String.class)
     .filter("warning"::equalsIgnoreCase)
     .log("warning received");
-
 ```
 
 ### Filtering with lambdas
@@ -104,7 +96,6 @@ select(String.class)
 select(Double.class)
     .filter(d -> d > 10)
     .log("double {} gt 10");
-
 ```
 
 ### Filtering with method references
@@ -112,21 +103,20 @@ Method references can be used to apply more complex filtering rules, both static
 allowed.
 
 ```java
-    @Test
-    public void filterMethodRef(){
-        sep(c -> {
-            select(MyDataType.class)
-                .filter(FilterTest::isValid)
-                .log("warning received");
-        });
-        onEvent("world");
-        onEvent("warning");
-    }
+@Test
+public void filterMethodRef(){
+    sep(c -> {
+        select(MyDataType.class)
+            .filter(FilterTest::isValid)
+            .log("warning received");
+    });
+    onEvent("world");
+    onEvent("warning");
+}
 
-    public static boolean isValid(MyDataType myDataType){
-        return myDataType.getKey().equals("hello") && myDataType.getValue().equals("world");
-    }
-    
+public static boolean isValid(MyDataType myDataType){
+    return myDataType.getKey().equals("hello") && myDataType.getValue().equals("world");
+}
 ```
 
 ### Filter chains
@@ -138,7 +128,6 @@ select(Double.class)
     .log("input {} > 10")
     .filter(d -> d > 60)
     .log("input {} > 60");
-
 ```
 
 ### Else filter
@@ -151,7 +140,6 @@ select(Double.class)
     .filter(d -> d > 60)
     .log("input {} > 60")
     .elseStream().log("input {} between 10 -> 60 ");
-
 ```
 
 ### Dynamic filtering
@@ -176,7 +164,6 @@ public void dynamicFiltering(){
     onEvent(20.0);
     onEvent(50.0);
 }
-
 ```
 
 ### Dynamic filtering with user function
@@ -216,7 +203,6 @@ public static class FilterGT{
         minValue = filterSignal.getValue().intValue();
     } 
 }
-
 ```
 The output for the test:
 
