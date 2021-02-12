@@ -25,7 +25,7 @@ public class WithinTest extends StreamInprocessTest {
                     .filter(MyTimer::getVal, gt(200));
             
             Within within = within(filteredTime, 1000, MyTimer::getTime);
-            FilterByNotificationBuilder.filter(select(MyTimer.class), within)
+            FilterByNotificationBuilder.filterOnNotify(select(MyTimer.class), within)
                     .map(count()).id("count");
 
         });

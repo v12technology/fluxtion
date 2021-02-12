@@ -27,7 +27,6 @@ import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.and;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.nand;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.not;
 import static com.fluxtion.ext.streaming.builder.factory.BooleanBuilder.or;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filter;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
 import com.fluxtion.ext.text.api.csv.ColumnName;
 import com.fluxtion.ext.text.api.csv.RowExceptionNotifier;
@@ -38,6 +37,8 @@ import com.fluxtion.ext.text.api.util.EventPublsher;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
+import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
 
 /**
  * A RulesEvaluator aggregates a set of rules and reports success if all rules
@@ -80,14 +81,14 @@ public class RulesEvaluatorBuilder<T> {
         }
 
         public <R> RulesEvaluator<T> build() {
-            //and all rules and pass through boolean filter
+            //and all rules and pass through boolean filterOnNotify
             RowExceptionNotifier notifier = SINGLETON.addOrUseExistingNode(
                     new RowExceptionNotifier(monitoredWrapped));
             RulesEvaluator<T> evaluator = null;
             if (ruleList.isEmpty()) {
                 evaluator = new RulesEvaluator<>(
                         monitoredWrapped,
-                        filter(monitoredWrapped, notifier)
+                        filterOnNotify(monitoredWrapped, notifier)
                 );
             } else {
                 List testList = new ArrayList();
@@ -99,8 +100,8 @@ public class RulesEvaluatorBuilder<T> {
                 }
 
                 evaluator = new RulesEvaluator<>(
-                        filter(monitoredWrapped, and(testList.toArray())),
-                        filter(monitoredWrapped, or(notifier, nand(testList.toArray()))
+                        filterOnNotify(monitoredWrapped, and(testList.toArray())),
+                        filterOnNotify(monitoredWrapped, or(notifier, nand(testList.toArray()))
                         )
                 );
             }
@@ -137,12 +138,12 @@ public class RulesEvaluatorBuilder<T> {
 
         public <R> RulesEvaluator<T> build() {
             //TODO add logic for node validators
-            //and all rules and pass through boolean filter
+            //and all rules and pass through boolean filterOnNotify
             RulesEvaluator<T> evaluator = null;
             if (ruleList.isEmpty()) {
                 evaluator = new RulesEvaluator<>(
                         monitoredWrapped,
-                        filter(monitoredWrapped, not(monitoredWrapped))
+                        filterOnNotify(monitoredWrapped, not(monitoredWrapped))
                 );
             } else {
                 List testList = new ArrayList();
@@ -154,8 +155,8 @@ public class RulesEvaluatorBuilder<T> {
                     
                 }
                 evaluator = new RulesEvaluator<>(
-                        filter(monitoredWrapped, and(testList.toArray())),
-                        filter(monitoredWrapped, nand(testList.toArray()))
+                        filterOnNotify(monitoredWrapped, and(testList.toArray())),
+                        filterOnNotify(monitoredWrapped, nand(testList.toArray()))
                 );
             }
 
@@ -193,8 +194,8 @@ public class RulesEvaluatorBuilder<T> {
             RulesEvaluator<T> evaluator = null;
             if (ruleList.isEmpty()) {
                 evaluator = new RulesEvaluator<>(
-                        filter(monitored, monitored),
-                        filter(monitored, not(monitored))
+                        filterOnNotify(monitored, monitored),
+                        filterOnNotify(monitored, not(monitored))
                 );
             } else {
                 List testList = new ArrayList();
@@ -205,8 +206,8 @@ public class RulesEvaluatorBuilder<T> {
                     );
                 }
                 evaluator = new RulesEvaluator<>(
-                        filter(monitored, and(testList.toArray())),
-                        filter(monitored, nand(testList.toArray()))
+                        filterOnNotify(monitored, and(testList.toArray())),
+                        filterOnNotify(monitored, nand(testList.toArray()))
                 );
             }
             EventPublsher publisher = new EventPublsher();

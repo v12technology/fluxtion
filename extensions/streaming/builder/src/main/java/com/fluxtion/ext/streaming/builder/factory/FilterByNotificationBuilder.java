@@ -26,8 +26,8 @@ import com.fluxtion.ext.streaming.api.test.BooleanFilter;
 import com.fluxtion.ext.streaming.api.test.BooleanMatchFilter;
 
 /**
- * A set of utility functions that filter the subject dependent upon
- * notifications processed.
+ * A set of utility functions that filterOnNotify the subject dependent upon
+ notifications processed.
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
@@ -44,7 +44,7 @@ public class FilterByNotificationBuilder {
      * @param notifier The triggering instance
      * @return The tracked instance as a FilterWrapper
      */
-    public static <T> FilterWrapper<T> filter(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> FilterWrapper<T> filterOnNotify(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(trackedWrapped), service().addOrReuse(notifier));
         SepContext.service().addOrReuse(filter);
         return filter;
@@ -61,31 +61,31 @@ public class FilterByNotificationBuilder {
      * @param notifier The triggering instance
      * @return The tracked instance as a FilterWrapper
      */
-    public static <T> FilterWrapper<T> filter(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filterOnNotify(T tracked, Object notifier) {
         BooleanFilter<T> filter = new BooleanFilter<>(service().addOrReuse(tracked), service().addOrReuse(notifier));
         service().addOrReuse(filter);
         return filter;
     }
 
-    public static <T> FilterWrapper<T> filterEither(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> FilterWrapper<T> filterEitherNotify(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(trackedWrapped, notifier);
         service().addOrReuse(filter);
         return filter;
     }
 
-    public static <T> FilterWrapper<T> filterEither(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filterEitherNotify(T tracked, Object notifier) {
         BooleanEitherFilter<T> filter = new BooleanEitherFilter<>(service().addOrReuse(tracked), SepContext.service().addOrReuse(notifier));
         service().addOrReuse(filter);
         return filter;
     }
 
-    public static <T> Wrapper<T> filterMatch(Wrapper<T> trackedWrapped, Object notifier) {
+    public static <T> Wrapper<T> filterBothNotify(Wrapper<T> trackedWrapped, Object notifier) {
         BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(service().addOrReuse(trackedWrapped), service().addOrReuse(notifier));;
         service().addOrReuse(filter);
         return filter;
     }
 
-    public static <T> FilterWrapper<T> filterMatch(T tracked, Object notifier) {
+    public static <T> FilterWrapper<T> filterBothMatch(T tracked, Object notifier) {
         BooleanMatchFilter<T> filter = new BooleanMatchFilter<>(service().addOrReuse(tracked), service().addOrReuse(notifier));
         service().addOrReuse(filter);
         return filter;
