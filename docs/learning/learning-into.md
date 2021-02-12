@@ -205,6 +205,18 @@ onEvent(new Signal("myConfigKey", 25));
 onEvent(20.0);
 onEvent(50.0);
 ```
+The output for the test:
+
+{% highlight console %}
+-------------------------------------------------------
+T E S T S
+-------------------------------------------------------
+Running com.fluxtion.learning.streaming.FilterTest
+dynamic filter exceeded val:20
+dynamic filter exceeded val:50
+dynamic filter exceeded val:50
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.76 sec
+{% endhighlight %}
 
 ### Placeholder for:
 - streaming api (declarative coding)
