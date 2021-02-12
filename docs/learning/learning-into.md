@@ -28,8 +28,10 @@ The select statement creates a [Wrapper](https://github.com/v12technology/fluxti
 that acts as a monad. With a select the wrapper will hold the latest event that is received by the processor that matches the java type.
 See [SelectTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/SelectTest.java)
 for code samples.
+
 ```java
 Wrapper<MyDataType> dataStream = select(MyDataType.class);
+
 ```
 
 ### Logging events
@@ -41,6 +43,7 @@ graph
 ```java
 Wrapper<MyDataType> dataStream = select(MyDataType.class)
     .log("received:");
+
 ```
 
 ### Logging individual values
@@ -49,16 +52,19 @@ The log method can accept method references to extract individual values for log
 ```java
 select(MyDataType.class)
     .log("received key:{} value:{}", MyDataType::getKey, MyDataType::getValue);
+
 ```
 
 ### Selecting multiple streams
 There are no limits on the number of streams subscribed to, each wrapper will hold
 the latest value of that stream. Streams can be processed separately or merged as desired, see later notes.
+
 ```java
 Wrapper<MyDataType> myDataStream = select(MyDataType.class)
     .log("myDataStream received:");
 Wrapper<Double> doubleStream = select(Double.class)
     .log("doubleStream received:");
+
 ```
 
 
@@ -78,16 +84,19 @@ public class TradeMonitor {
         processor.onEvent(new MyDataType("hello", "world");
     }
 }
+
 ```
 
 ## Filtering
 A stream can be filtered. A filtered stream only propagates events that match the predicate. The wrapper
 interface provides in place filtering methods. See [FilterTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/FilterTest.java)
 for examples.
+
 ```java
 select(String.class)
     .filter("warning"::equalsIgnoreCase)
     .log("warning received");
+
 ```
 
 ### Filtering with lambdas
@@ -96,6 +105,7 @@ select(String.class)
 select(Double.class)
     .filter(d -> d > 10)
     .log("double {} gt 10");
+
 ```
 
 ### Filtering with method references
@@ -117,7 +127,9 @@ allowed.
     public static boolean isValid(MyDataType myDataType){
         return myDataType.getKey().equals("hello") && myDataType.getValue().equals("world");
     }
+    
 ```
+
 ### Filter chains
 Filters can be chained in a fluent style to produce more complex criteria
 
@@ -126,19 +138,21 @@ select(Double.class)
     .filter(d -> d > 10)
     .log("input {} > 10")
     .filter(d -> d > 60)
-    .log("input {} > 60")
-    ;
+    .log("input {} > 60");
+
 ```
 
 ### Else filter
 A filter operation returns a [FilterWarpper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/FilterWrapper.java)
 that gives access to an else branch for failed predicate processing via ```elseStream()``` 
+
 ```java
 select(Double.class)
     .filter(d -> d > 10)
     .filter(d -> d > 60)
     .log("input {} > 60")
     .elseStream().log("input {} between 10 -> 60 ");
+
 ```
 
 ### Dynamic filtering
@@ -163,6 +177,7 @@ public void dynamicFiltering(){
     onEvent(20.0);
     onEvent(50.0);
 }
+
 ```
 
 ### Dynamic filtering with user function
@@ -202,8 +217,6 @@ public static class FilterGT{
         minValue = filterSignal.getValue().intValue();
     } 
 }
-
-
 
 ```
 The output for the test:
