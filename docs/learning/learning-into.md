@@ -5,12 +5,12 @@ nav_order: 4
 published: true
 ---
 
-# Streaming api introduction
+# Streaming api 
 
 Fluxtion offers a declarative coding style to express event processing logic, describing 
 the real-time complex event processing needs of the application. The build
-statements are used to generate a class that extends StaticEventProcessor and encapsulates
-the required behaviour. A generated StaticEventProcessor is embedded in the application to 
+statements are used to generate a class that extends [StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) 
+that encapsulates the required behaviour. A generated StaticEventProcessor is embedded in the application to 
 process an event stream.
 
 This guide is focused on the logical construction of processing. Integration 
@@ -19,7 +19,7 @@ of event streams is covered elsewhere (link to be provided when written).
 | Term      | Description |
 | ----------- | ----------- |
 | Event    | An event is any valid java class that is submitted to the event processor |
-| Stream   | A stream is a set of events. An event can only appear once in a stream    |
+| Stream   | A stream is a set of events. An event instance can only appear once in a stream    |
 
 
 ## Select - subscribing to a stream
@@ -153,8 +153,8 @@ pre-built predicates are discussed later.
 public void dynamicFiltering(){
     sep(c -> {
     select(Double.class)
-    .filter(gt(10, "configKey"))
-    .log("dynamic filter exceeded");
+        .filter(gt(10, "configKey"))
+        .log("dynamic filter exceeded");
     });
     onEvent("world");
     onEvent(8.0);
@@ -181,8 +181,13 @@ public void dynamicUserFiltering(){
             .filter(new FilterGT(10)::gt)
             .log("dynamic filter exceeded val:{}", Double::intValue);
     });
+    onEvent(20.0);
+    onEvent(50.0);
+    onEvent(new Signal("myConfigKey", 25));
+    onEvent(20.0);
+    onEvent(50.0);
 }
-
+    
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -199,11 +204,8 @@ public static class FilterGT{
     } 
 }
 
-onEvent(20.0);
-onEvent(50.0);
-onEvent(new Signal("myConfigKey", 25));
-onEvent(20.0);
-onEvent(50.0);
+
+
 ```
 The output for the test:
 
