@@ -217,7 +217,7 @@ FilterWrapper<Double>     filter4 = filter(Double.class, new FilterGT(10)::gt);
 ### Filtering with tests
 Filters can apply predicates that reference multiple streams and not solely the current event. A test is any function
 that returns a boolean. Inputs to the test function are streams, only when the test is valid will the event being filtered
-propogate. In the example below only when the time is between min and max will MyDataType events be filtered. Tests are
+propagate. In the example below only when the time is between min and max will MyDataType events be filtered. Tests are
 built with utility functions provided by [TestBuilder](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/TestBuilder.java)
 
 ```java
@@ -248,6 +248,39 @@ public static class MaxAge{
     int max;
 }
 ```
+
+## Filtering from external notification
+Events can be propagated when a notification is received from an independent stream. The [FilterByNotificationBuilder](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/FilterByNotificationBuilder.java)
+provides several utility methods to support this. An example below demonstrates event propagation of the 
+Doble occurs when a string event is processed that equals "tick". See [FilterByNotificationTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/FilterByNotificationTest.java)
+
+```java
+@Test
+public void filterEvent() {
+    sep(c -> {
+        filterOnNotify(select(Double.class), filter("tick"::equalsIgnoreCase))
+            .log("update:");
+    });
+    onEvent(1.0);
+    onEvent(2.0);
+    onEvent(3.0);
+    onEvent("tick");
+    onEvent(4.0);
+}
+```
+
+Output for the test:
+
+{% highlight console %}
+Running com.fluxtion.learning.streaming.FilterByNotificationTest
+update: 3.0
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.528 sec
+{% endhighlight %}
+
+FilterByNotificationBuilder supports the following patterns:
+- Propagate filter subject when both update in the same cycle
+- Propagate filter subject when either update in the same cycle
+
 
 ### Placeholder for:
 - streaming api (declarative coding)
