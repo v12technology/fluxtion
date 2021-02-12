@@ -75,7 +75,7 @@ public static void main(String[] args) throws Exception {
         select(MyDataType.class)
             .log("received:");
     });
-    processor.onEvent(new MyDataType("hello", "world");
+    processor.onEvent(new MyDataType("hello", "world"));
 }
 ```
 
