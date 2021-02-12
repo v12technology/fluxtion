@@ -25,7 +25,7 @@ of event streams is covered elsewhere (link to be provided when written).
 ## Select - subscribing to a stream
 To subscribe to a stream of events declare a java type and issue a [select](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/EventSelect.java#L35) statement.
 The select statement creates a [Wrapper](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/api/src/main/java/com/fluxtion/ext/streaming/api/Wrapper.java) 
-that acts as a monad. With a select the wrapper will hold the latest event that is received by the processor that matches the java type.
+that acts as a monad. With a select the wrapper will hold the latest event received by the processor that matches the java type.
 See [SelectTest](https://github.com/v12technology/fluxtion/blob/develop/examples/learning-streaming/src/test/java/com/fluxtion/learning/streaming/SelectTest.java)
 for code samples.
 
@@ -110,8 +110,6 @@ public void filterMethodRef(){
             .filter(FilterTest::isValid)
             .log("warning received");
     });
-    onEvent("world");
-    onEvent("warning");
 }
 
 public static boolean isValid(MyDataType myDataType){
@@ -149,21 +147,11 @@ below a greater than test has an initial value of 10 and is updated with FilterC
 pre-built predicates are discussed later.
 
 ```java
-@Test
-public void dynamicFiltering(){
-    sep(c -> {
-    select(Double.class)
-        .filter(gt(10, "configKey"))
-        .log("dynamic filter exceeded");
-    });
-    onEvent("world");
-    onEvent(8.0);
-    onEvent(20.0);
-    onEvent(50.0);
-    onEvent(new FilterConfig("configKey", 25));
-    onEvent(20.0);
-    onEvent(50.0);
-}
+sep(c -> {
+select(Double.class)
+    .filter(gt(10, "configKey"))
+    .log("dynamic filter exceeded");
+});
 ```
 
 ### Dynamic filtering with user function
@@ -204,17 +192,12 @@ public static class FilterGT{
     } 
 }
 ```
-The output for the test:
+Output for the test:
 
 {% highlight console %}
--------------------------------------------------------
-T E S T S
--------------------------------------------------------
-Running com.fluxtion.learning.streaming.FilterTest
 dynamic filter exceeded val:20
 dynamic filter exceeded val:50
 dynamic filter exceeded val:50
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.76 sec
 {% endhighlight %}
 
 ## Filter builder  
@@ -223,12 +206,48 @@ class. Implicitly Subscription and wrappers are created removing the need to exp
 previous filtering examples can be constructed more simply:
 
 ```java
-FilterWrapper<String>     filter  = FilterBuilder.filter("warning"::equalsIgnoreCase);
-FilterWrapper<Double>     filter1 = FilterBuilder.filter(Double.class, d -> d>10);
-FilterWrapper<MyDataType> filter2 = FilterBuilder.filter(MyDataType.class, FilterTest::isValid);
-FilterWrapper<Double>     filter3 = FilterBuilder.filter(Double.class, gt(10, "configKey"));
+import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
+...
+FilterWrapper<String>     filter  = filter("warning"::equalsIgnoreCase);
+FilterWrapper<Double>     filter1 = filter(Double.class, d -> d > 10);
+FilterWrapper<MyDataType> filter2 = filter(MyDataType.class, FilterTest::isValid);
+FilterWrapper<Double>     filter3 = filter(Double.class, gt(10, "configKey"));
+FilterWrapper<Double>     filter4 = filter(Double.class, new FilterGT(10)::gt);
 ```
+### Filtering with tests
+Filters can apply predicates that reference multiple streams and not solely the current event. A test is any function
+that returns a boolean. Inputs to the test function are streams, only when the test is valid will the event being filtered
+propogate. In the example below only when the time is between min and max will MyDataType events be filtered. Tests are
+built with utility functions provided by [TestBuilder](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/extensions/streaming/builder/src/main/java/com/fluxtion/ext/streaming/builder/factory/TestBuilder.java)
 
+```java
+@Test
+public void filterBuilderTest() {
+    sep((c) -> {
+        filter(MyDataType.class,
+            test(FilterTest::withinRange, TimeEvent::getTime, MinAge::getMin, MaxAge::getMax));
+    });
+}
+
+public static boolean withinRange(int test, int min, int max) {
+    return min < test && test < max;
+}
+
+@Data
+public static class TimeEvent{
+    int time;
+}
+
+@Data
+public static class MinAge{
+    int min;
+}
+
+@Data
+public static class MaxAge{
+    int max;
+}
+```
 
 ### Placeholder for:
 - streaming api (declarative coding)
