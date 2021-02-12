@@ -86,16 +86,16 @@ for examples.
 
 ```java
 select(String.class)
-  .filter("warning"::equalsIgnoreCase)
-  .log("warning received");
+    .filter("warning"::equalsIgnoreCase)
+    .log("warning received");
 ```
 
 ### Filtering with lambdas
 
 ```java
 select(Double.class)
-  .filter(d -> d > 10)
-  .log("double {} gt 10");
+    .filter(d -> d > 10)
+    .log("double {} gt 10");
 ```
 
 ### Filtering with method references
