@@ -10,13 +10,12 @@ import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
-import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
 
 /**
  *
  * @author gregp
  */
-public class FilterByNotificationTest extends BaseSepInprocessTest {
+public class NotifierBuilderTest extends BaseSepInprocessTest {
 
     @Test
     public void filterEvent() {
