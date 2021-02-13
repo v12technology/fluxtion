@@ -9,7 +9,8 @@ import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
 
 /**
  *
@@ -22,7 +23,7 @@ public class FilterByNotificationTest extends BaseSepInprocessTest {
         reuseSep = true;
         fixedPkg = true;
         sep(c -> {
-            filterOnNotify(select(Double.class), filter("tick"::equalsIgnoreCase))
+            notifierOverride(select(Double.class), filter("tick"::equalsIgnoreCase))
                 .log("update:");
         });
         onEvent("tick");

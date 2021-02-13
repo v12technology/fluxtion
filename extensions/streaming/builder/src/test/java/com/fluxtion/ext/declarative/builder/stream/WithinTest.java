@@ -5,7 +5,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.test.Within;
 import static com.fluxtion.ext.streaming.api.test.Within.within;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
+import com.fluxtion.ext.streaming.builder.factory.NotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,7 +25,7 @@ public class WithinTest extends StreamInprocessTest {
                     .filter(MyTimer::getVal, gt(200));
             
             Within within = within(filteredTime, 1000, MyTimer::getTime);
-            FilterByNotificationBuilder.filterOnNotify(select(MyTimer.class), within)
+            NotificationBuilder.notifierOverride(select(MyTimer.class), within)
                     .map(count()).id("count");
 
         });

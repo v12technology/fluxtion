@@ -32,14 +32,22 @@ import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.window.SlidingAggregator;
 import com.fluxtion.ext.streaming.api.window.SlidingCollectionAggregator;
 import com.fluxtion.ext.streaming.api.window.SlidingGroupByAggregator;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterOnNotify;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
 
 /**
  *
@@ -112,7 +120,7 @@ public class WindowBuilder{
         Class clazz = mappingInstance.getClass();
         final TimeReset timeReset = new TimeReset(source, time.getMillis(), null);
         Wrapper<R> tumble = source.map(mapper);
-//        Wrapper<T> tumbleIncremental = filterOnNotify((Wrapper<T>) source.map(mapper), timeReset);
+//        Wrapper<T> tumbleIncremental = notifierOverride((Wrapper<T>) source.map(mapper), timeReset);
 //        Wrapper<R> tumbleIncremental = tumbleIncremental(source.map(mapper), time);
         if (StatefulNumber.class.isAssignableFrom(clazz)) {
             final SlidingNumberAggregator slidingNumberAggregator = new SlidingNumberAggregator(tumble, (StatefulNumber) mappingInstance, numberOfBuckets);
@@ -321,28 +329,28 @@ public class WindowBuilder{
     // TUMBLE FUNCTIONS - INCREMENTAL
     // ================================================== 
     public static <S extends WrappedCollection> Wrapper<S> tumbleIncremental(S source, int count) {
-        return filterOnNotify(source, new CountReset(source, count));
+        return notifierOverride(source, new CountReset(source, count));
     }
 
     public static <S, T extends Wrapper<S>> Wrapper<S> tumbleIncremental(T source, int count) {
-        return filterOnNotify(source, new CountReset(source, count));
+        return notifierOverride(source, new CountReset(source, count));
     }
 
     public static <S, T extends GroupBy<S>> Wrapper<T> tumbleIncremental(T source, int count) {
         CountReset countBucketNotifier = new CountReset(source, count);
-        return filterOnNotify(source, countBucketNotifier);
+        return notifierOverride(source, countBucketNotifier);
     }
 
     public static <S extends WrappedCollection> Wrapper<S> tumbleIncremental(S source, Duration time) {
-        return filterOnNotify(source, new TimeReset(source, time.getMillis(), null));
+        return notifierOverride(source, new TimeReset(source, time.getMillis(), null));
     }
 
     public static <S, T extends Wrapper<S>> Wrapper<S> tumbleIncremental(T source, Duration time) {
-        return filterOnNotify(source, new TimeReset(source, time.getMillis(), null));
+        return notifierOverride(source, new TimeReset(source, time.getMillis(), null));
     }
 
     public static <S, T extends GroupBy<S>> Wrapper<T> tumbleIncremental(T source, Duration time) {
-        return filterOnNotify(source, new TimeReset(source, time.getMillis(), null));
+        return notifierOverride(source, new TimeReset(source, time.getMillis(), null));
     }
 
 }
