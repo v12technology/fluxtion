@@ -43,7 +43,7 @@ import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
  *
  * @author Greg Higgins
  */
-public class LibraryFunctionsBuilder  {
+public class StreamFunctionsLibrary  {
 
 
     public static <T extends Double, S extends Double> SerializableBiFunction<T, S, Number> add() {

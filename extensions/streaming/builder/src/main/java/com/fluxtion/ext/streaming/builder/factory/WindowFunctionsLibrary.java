@@ -22,15 +22,15 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import static com.fluxtion.ext.streaming.api.window.WindowBuildOperations.service;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.avg;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
 
 /**
  * Utility functions to construct windowed functions using pre-existing functions
  * supplied by Fluxtion.
  * @author gregp
  */
-public interface WindowFunctionsBuilder {
+public interface WindowFunctionsLibrary {
 
     /**
      * Calculates a moving average using a count based window.
