@@ -24,14 +24,14 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.outsideBand;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.ceil;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.divide;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.multiply;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.subtract;
+import com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.avg;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.ceil;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.divide;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.multiply;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.subtract;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
@@ -62,7 +62,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     @Test
     public void generateProcessor() throws Exception {
         sep((SEPConfig c) -> {
-            LibraryFunctionsBuilder.add(DataEvent::getValue, Data1::getVal);
+            StreamFunctionsLibrary.add(DataEvent::getValue, Data1::getVal);
             multiply(
 //                    select(DataEvent.class, "temp").get(DataEvent::getValue), 
                     select(DataEvent::getValue, "temp"), 
@@ -139,13 +139,13 @@ public class MathFunctionTest extends StreamInprocessTest {
                     .map(Math::rint).id("random")
                     .map(cumSum()).log("sum:").id("add")
                     .map(count()).id("intCount")
-                    .map(LibraryFunctionsBuilder.ceil(), Number::doubleValue)
+                    .map(StreamFunctionsLibrary.ceil(), Number::doubleValue)
                     .map(avg());
             ceil(Data1::getVal).id("celiFromEvent").map(cumSum()).id("cumSum");
             ceil(Data1Handler::val).id("ceilFromHandler");
             ceil(new Data1Handler()::val).id("ceilFromInstanceHandler");
             ceil(sum).id("ceilFromWrapper");
-            LibraryFunctionsBuilder.add(Data1::getVal, Data2::getVal).id("adding");
+            StreamFunctionsLibrary.add(Data1::getVal, Data2::getVal).id("adding");
         });
         //TODO write tests
     }
@@ -156,7 +156,7 @@ public class MathFunctionTest extends StreamInprocessTest {
             MappingBuilder.map(this::add, Data1::getVal, Data2::getVal)
                     .notifyOnChange(true).id("addInstance").log("[addInstance]");
 
-            LibraryFunctionsBuilder.add(Data1::getVal, Data2::getVal).map(cumSum()).log("sum:");
+            StreamFunctionsLibrary.add(Data1::getVal, Data2::getVal).map(cumSum()).log("sum:");
 
             MappingBuilder.map(MathFunctionTest::addStatic, Data1::getVal, Data2::getVal)
                     .notifyOnChange(true).id("addStatic").log("[addStatic] = ", Number::intValue);
@@ -320,7 +320,7 @@ public class MathFunctionTest extends StreamInprocessTest {
     @Test
     public void chainedFunctions() {
         sep((c) -> {
-            Wrapper<Number> add = LibraryFunctionsBuilder.add(arg(25), arg(DataEvent::getValue));
+            Wrapper<Number> add = StreamFunctionsLibrary.add(arg(25), arg(DataEvent::getValue));
             multiply(arg(0.5), arg(add)).id("result");
         });
         DataEvent event = new DataEvent();
