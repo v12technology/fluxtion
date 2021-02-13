@@ -29,12 +29,12 @@ import static com.fluxtion.ext.streaming.api.util.NumberComparator.numberCompara
 import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.util.FunctionComparator;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
 import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.avg;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.avg;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;

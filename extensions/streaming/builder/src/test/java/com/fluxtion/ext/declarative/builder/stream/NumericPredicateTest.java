@@ -21,7 +21,7 @@ import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.stream.NumericPredicates;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.selectNumber;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;

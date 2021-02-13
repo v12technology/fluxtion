@@ -44,6 +44,20 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
     default FilterWrapper<T> forEach(SerializableConsumer<T> consumer, String consumerId) {
         return (FilterWrapper<T>) StreamOperator.service().forEach(consumer, this, consumerId);
     }
+    
+    
+    @Override
+    default FilterWrapper<T> log(String prefix, SerializableFunction<T, ?>... supplier) {
+        if (!prefix.contains("{}")) {
+            prefix += " {}";
+        }
+        return (FilterWrapper<T>) StreamOperator.service().log(this, prefix, supplier);
+    }
+    
+    @Override
+    default FilterWrapper<T> log() {
+        return log("");
+    }  
 
 //    @Override
 //    <S> FilterWrapper<T> console(String prefix, SerializableFunction<T, S>... supplier);

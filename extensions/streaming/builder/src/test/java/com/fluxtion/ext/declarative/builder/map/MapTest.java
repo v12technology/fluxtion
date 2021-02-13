@@ -19,7 +19,7 @@ package com.fluxtion.ext.declarative.builder.map;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.LibraryFunctionsBuilder.add;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.add;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import lombok.Data;

@@ -33,8 +33,7 @@ import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper.LambdaFunc
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
-import com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.FilterByNotificationBuilder.filterEither;
+import com.fluxtion.ext.streaming.builder.factory.NotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.PushBuilder.unWrap;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
@@ -47,6 +46,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierMerge;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierMerge;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierMerge;
+import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierMerge;
 
 /**
  *
@@ -257,12 +260,12 @@ public class StreamOperatorService implements StreamOperator {
 
     @Override
     public <T> Wrapper<T> notiferMerge(Wrapper<T> source, Object notifier) {
-        return filterEither(source, notifier);
+        return notifierMerge(source, notifier);
     }
 
     @Override
     public <T> Wrapper<T> notifierOverride(Wrapper<T> source, Object notifier) {
-        return FilterByNotificationBuilder.filter(source, notifier);
+        return NotificationBuilder.notifierOverride(source, notifier);
     }
 
     @Override

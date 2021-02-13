@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2018 V12 Technology Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Server Side Public License, version 1,
+as published by MongoDB, Inc.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Server Side Public License for more details.
+
+You should have received a copy of the Server Side Public License
+along with this program.  If not, see 
+<http://www.mongodb.com/licensing/server-side-public-license>.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.fluxtion.example</groupId>
+    <artifactId>learning-streaming</artifactId>
+    <version>2.10.36-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>fluxtion :: learning :: streaming</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.extension</groupId>
+            <artifactId>fluxtion-streaming-builder</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--TEST dependencies START-->
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>generator</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+        <!--TEST dependencies END-->
+    </dependencies>
+    
+</project>
