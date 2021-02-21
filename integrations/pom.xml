@@ -35,8 +35,8 @@ along with this program.  If not, see
     </properties>
 
     <groupId>com.fluxtion.integration</groupId>
-    <artifactId>fluxtion-integration</artifactId>
-    <name>fluxtion :: integration</name>
+    <artifactId>fluxtion-pipeline</artifactId>
+    <name>fluxtion :: integration :: pipeline</name>
     <packaging>jar</packaging>
 
 
