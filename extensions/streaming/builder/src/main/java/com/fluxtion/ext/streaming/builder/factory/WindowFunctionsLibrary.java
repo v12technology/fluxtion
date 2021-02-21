@@ -22,8 +22,8 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import static com.fluxtion.ext.streaming.api.window.WindowBuildOperations.service;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.avg;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.avg;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 
 /**
  * Utility functions to construct windowed functions using pre-existing functions

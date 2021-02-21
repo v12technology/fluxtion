@@ -125,7 +125,7 @@ public class CharStreamer {
         terminateAtEof();
         if (!stopLatch.await(5, TimeUnit.SECONDS)) {
             System.err.println("CharStreamer problem shutting down the input source within 5 seconds");
-        };
+        }
     }
 
     public void stream() throws IOException {

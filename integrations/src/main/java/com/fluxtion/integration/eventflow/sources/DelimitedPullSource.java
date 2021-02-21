@@ -23,6 +23,7 @@ import com.fluxtion.ext.text.api.event.RegisterEventHandler;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
 import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventQueueSource;
+import com.fluxtion.integration.eventflow.MarshallerRegistry;
 import java.io.IOException;
 import java.io.Reader;
 import lombok.extern.log4j.Log4j2;
@@ -39,6 +40,15 @@ public class DelimitedPullSource<T> implements EventQueueSource<T> {
     private char[] readBuffer;
     private final CharEvent charEvent;
     private final Reader reader;
+
+    public <T> DelimitedPullSource(Class<T> csvTarget, Reader reader, String id) {
+        RowProcessor<T> processor = MarshallerRegistry.INSTANCE.getRowProcessor(csvTarget);
+        this.marshaller = new CsvRecordMarshaller(processor);
+        this.id = id;
+        this.reader = reader;
+        readBuffer = new char[4096];
+        charEvent = new CharEvent(' ');
+    }
 
     public DelimitedPullSource(RowProcessor<T> processor, Reader reader, String id) {
         this.marshaller = new CsvRecordMarshaller(processor);

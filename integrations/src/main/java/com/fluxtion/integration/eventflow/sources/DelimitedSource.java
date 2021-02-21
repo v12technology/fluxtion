@@ -25,6 +25,7 @@ import com.fluxtion.ext.text.api.util.CharStreamer;
 import com.fluxtion.ext.text.api.util.marshaller.CsvRecordMarshaller;
 import com.fluxtion.integration.eventflow.EventConsumer;
 import com.fluxtion.integration.eventflow.EventSource;
+import com.fluxtion.integration.eventflow.MarshallerRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -60,6 +61,10 @@ public class DelimitedSource<T> implements EventSource<T> {
         this.id = id;
         this.marshaller = new CsvRecordMarshaller(processor);
         this.streamer = CharStreamer.stream(reader, marshaller);
+    }
+
+    public DelimitedSource(Class<T> csvTarget, Reader reader, Writer errorLog, String id) {
+        this(MarshallerRegistry.INSTANCE.getRowProcessor(csvTarget) , reader, errorLog, id);
     }
 
     public DelimitedSource<T> pollForever() {

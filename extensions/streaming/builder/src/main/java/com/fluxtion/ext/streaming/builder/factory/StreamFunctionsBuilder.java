@@ -21,6 +21,9 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.Argument;
+import com.fluxtion.ext.streaming.api.stream.DateFunctions.DateRange;
+import com.fluxtion.ext.streaming.api.stream.DateFunctions.MaxDate;
+import com.fluxtion.ext.streaming.api.stream.DateFunctions.MinDate;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -30,6 +33,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import com.fluxtion.ext.streaming.builder.util.StreamFunctionGenerator;
+import java.time.LocalDate;
 import static com.fluxtion.ext.streaming.api.stream.Argument.*;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.*;
 import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.*;
@@ -43,7 +47,7 @@ import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.*;
  *
  * @author Greg Higgins
  */
-public class StreamFunctionsLibrary  {
+public class StreamFunctionsBuilder  {
 
 
     public static <T extends Double, S extends Double> SerializableBiFunction<T, S, Number> add() {
@@ -600,6 +604,171 @@ public class StreamFunctionsLibrary  {
 
     public static <T extends Number> Wrapper<Number> floor(Wrapper<T> wrapper) {
         return map(floor(),  arg(wrapper));
+    }
+
+    /**
+     * Wrap {@link MaxDate#check } function for use as a map operation in an existing
+     * stream. {@link Wrapper#map(SerializableFunction) }
+     * requires a {@link SerializableFunction} to map input values.
+     *
+     * @param <T> input to {@link MaxDate#check }
+     * @return {@link SerializableFunction} of {@link MaxDate#check }
+     */
+    public static <T extends LocalDate> SerializableFunction<T, LocalDate> maxDate() {
+        return new MaxDate()::check;
+    }
+
+    /**
+     * Performs a {@link MaxDate#check} function as a map operation on a stream.
+     * The stream is automatically created by subscribing to the {@link Event}
+     * and wrapping the supplier function with {@link Wrapper&lt;LocalDate&gt;}. 
+     * The wrapper is the input to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;LocalDate&gt;} instance for further stream operations.
+     *
+     * @param <T> The input event stream
+     * @param <S> The function return type
+     * @param supplier The input value to the function {@link MaxDate#check
+     * @return {@link  Wrapper&lt;LocalDate&gt;} wrapping the result of {@link MaxDate#check}
+     */
+    public static <T, S extends LocalDate> Wrapper<LocalDate> maxDate(SerializableFunction<T, S> supplier) {
+        return map(maxDate(), arg(supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<LocalDate> maxDate(Argument<T> arg) {
+        return map(maxDate(), arg);
+    }
+
+    /**
+     * Performs a {@link MaxDate#check} function as a map operation on a stream.
+     * The stream is automatically created by wrapping the supplier instance function in a
+     * {@link Wrapper&lt;LocalDate&gt;}, the wrapper is the input 
+     * to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;LocalDate&gt;} instance for further stream operations.
+     *
+     * @param <T> The input type required by {@link MaxDate#check}
+     * @param supplier The wrapped instance supplying values to the function {@link MaxDate#check
+     * @return {@link  Wrapper&lt;LocalDate&gt;} wrapping the result of {@link MaxDate#check}
+     */
+    public static <T extends LocalDate> Wrapper<LocalDate> maxDate(SerializableSupplier<T> supplier) {
+        return map(maxDate(), arg(supplier));
+    }
+
+    public static <T, S extends LocalDate> Wrapper<LocalDate> maxDate(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return map(maxDate(),  arg(wrapper, supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<LocalDate> maxDate(Wrapper<T> wrapper) {
+        return map(maxDate(),  arg(wrapper));
+    }
+
+    /**
+     * Wrap {@link MinDate#check } function for use as a map operation in an existing
+     * stream. {@link Wrapper#map(SerializableFunction) }
+     * requires a {@link SerializableFunction} to map input values.
+     *
+     * @param <T> input to {@link MinDate#check }
+     * @return {@link SerializableFunction} of {@link MinDate#check }
+     */
+    public static <T extends LocalDate> SerializableFunction<T, LocalDate> minDate() {
+        return new MinDate()::check;
+    }
+
+    /**
+     * Performs a {@link MinDate#check} function as a map operation on a stream.
+     * The stream is automatically created by subscribing to the {@link Event}
+     * and wrapping the supplier function with {@link Wrapper&lt;LocalDate&gt;}. 
+     * The wrapper is the input to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;LocalDate&gt;} instance for further stream operations.
+     *
+     * @param <T> The input event stream
+     * @param <S> The function return type
+     * @param supplier The input value to the function {@link MinDate#check
+     * @return {@link  Wrapper&lt;LocalDate&gt;} wrapping the result of {@link MinDate#check}
+     */
+    public static <T, S extends LocalDate> Wrapper<LocalDate> minDate(SerializableFunction<T, S> supplier) {
+        return map(minDate(), arg(supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<LocalDate> minDate(Argument<T> arg) {
+        return map(minDate(), arg);
+    }
+
+    /**
+     * Performs a {@link MinDate#check} function as a map operation on a stream.
+     * The stream is automatically created by wrapping the supplier instance function in a
+     * {@link Wrapper&lt;LocalDate&gt;}, the wrapper is the input 
+     * to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;LocalDate&gt;} instance for further stream operations.
+     *
+     * @param <T> The input type required by {@link MinDate#check}
+     * @param supplier The wrapped instance supplying values to the function {@link MinDate#check
+     * @return {@link  Wrapper&lt;LocalDate&gt;} wrapping the result of {@link MinDate#check}
+     */
+    public static <T extends LocalDate> Wrapper<LocalDate> minDate(SerializableSupplier<T> supplier) {
+        return map(minDate(), arg(supplier));
+    }
+
+    public static <T, S extends LocalDate> Wrapper<LocalDate> minDate(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return map(minDate(),  arg(wrapper, supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<LocalDate> minDate(Wrapper<T> wrapper) {
+        return map(minDate(),  arg(wrapper));
+    }
+
+    /**
+     * Wrap {@link DateRange#check } function for use as a map operation in an existing
+     * stream. {@link Wrapper#map(SerializableFunction) }
+     * requires a {@link SerializableFunction} to map input values.
+     *
+     * @param <T> input to {@link DateRange#check }
+     * @return {@link SerializableFunction} of {@link DateRange#check }
+     */
+    public static <T extends LocalDate> SerializableFunction<T, DateRange> dateRange() {
+        return new DateRange()::check;
+    }
+
+    /**
+     * Performs a {@link DateRange#check} function as a map operation on a stream.
+     * The stream is automatically created by subscribing to the {@link Event}
+     * and wrapping the supplier function with {@link Wrapper&lt;LocalDate&gt;}. 
+     * The wrapper is the input to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;DateRange&gt;} instance for further stream operations.
+     *
+     * @param <T> The input event stream
+     * @param <S> The function return type
+     * @param supplier The input value to the function {@link DateRange#check
+     * @return {@link  Wrapper&lt;DateRange&gt;} wrapping the result of {@link DateRange#check}
+     */
+    public static <T, S extends LocalDate> Wrapper<DateRange> dateRange(SerializableFunction<T, S> supplier) {
+        return map(dateRange(), arg(supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<DateRange> dateRange(Argument<T> arg) {
+        return map(dateRange(), arg);
+    }
+
+    /**
+     * Performs a {@link DateRange#check} function as a map operation on a stream.
+     * The stream is automatically created by wrapping the supplier instance function in a
+     * {@link Wrapper&lt;LocalDate&gt;}, the wrapper is the input 
+     * to the mapping function. The mapped value is available as
+     * a {@link Wrapper&lt;DateRange&gt;} instance for further stream operations.
+     *
+     * @param <T> The input type required by {@link DateRange#check}
+     * @param supplier The wrapped instance supplying values to the function {@link DateRange#check
+     * @return {@link  Wrapper&lt;DateRange&gt;} wrapping the result of {@link DateRange#check}
+     */
+    public static <T extends LocalDate> Wrapper<DateRange> dateRange(SerializableSupplier<T> supplier) {
+        return map(dateRange(), arg(supplier));
+    }
+
+    public static <T, S extends LocalDate> Wrapper<DateRange> dateRange(Wrapper<T> wrapper, SerializableFunction<T, S> supplier) {
+        return map(dateRange(),  arg(wrapper, supplier));
+    }
+
+    public static <T extends LocalDate> Wrapper<DateRange> dateRange(Wrapper<T> wrapper) {
+        return map(dateRange(),  arg(wrapper));
     }
 
 

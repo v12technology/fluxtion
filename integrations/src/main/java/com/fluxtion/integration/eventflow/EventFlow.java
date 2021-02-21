@@ -93,8 +93,7 @@ public class EventFlow {
         return this;
     }
 
-    public EventFlow stop() {
-
+    public EventFlow stop(Object finalMessage) {
         switch (currentState) {
             case STOPPED:
                 log.error("Cannot stop already in stopped state");
@@ -104,11 +103,18 @@ public class EventFlow {
                 break;
             default: {
                 teardownSources();
+                if (finalMessage != null) {
+                    defaultDispatcher.processEvent(finalMessage);
+                }
                 teardownPipeline();
                 currentState = State.STOPPED;
             }
         }
         return this;
+    }
+
+    public EventFlow stop() {
+        return stop(null);
     }
 
     /**
@@ -231,6 +237,10 @@ public class EventFlow {
 
         public EventFlow stop() {
             return EventFlow.this.stop();
+        }
+        
+        public EventFlow flow(){
+            return EventFlow.this;
         }
 
     }

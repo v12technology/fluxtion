@@ -6,7 +6,7 @@ import com.fluxtion.ext.streaming.api.test.Within;
 import static com.fluxtion.ext.streaming.api.test.Within.within;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.builder.factory.NotificationBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;

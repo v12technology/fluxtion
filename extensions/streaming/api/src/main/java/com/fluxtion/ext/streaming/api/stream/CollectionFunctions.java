@@ -19,6 +19,8 @@ package com.fluxtion.ext.streaming.api.stream;
 
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.WrappedList;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,6 +29,10 @@ import java.util.List;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class CollectionFunctions {
+
+    public static <T> List<T> toList(Collection<T> collection) {
+        return new ArrayList<>(collection);
+    }
 
     public static <I extends Number> SerializableFunction<List<I>, Number> listSum() {
         return CollectionFunctions::sumList;
