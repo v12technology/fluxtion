@@ -2,8 +2,8 @@ package com.fluxtion.ext.futext.builder.ascii;
 
 import com.fluxtion.ext.futext.builder.test.helpers.SoldAggregator;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.multiply;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.multiply;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.api.ascii.Ascii2DoubleFixedLength;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntFixedLength;

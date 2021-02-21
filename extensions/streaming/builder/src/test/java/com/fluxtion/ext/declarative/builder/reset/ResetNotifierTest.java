@@ -25,7 +25,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultVal;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

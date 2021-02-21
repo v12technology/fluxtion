@@ -39,6 +39,10 @@ public class MarshallerRegistry implements Lifecycle {
     private HashSet<Class> blackList;
     private static int count;
     private final int myCount;
+    public static final MarshallerRegistry INSTANCE = new MarshallerRegistry();
+    static{
+        INSTANCE.init();
+    }
 
     public MarshallerRegistry() {
         myCount = count++;
@@ -46,7 +50,7 @@ public class MarshallerRegistry implements Lifecycle {
     }
 
     public RowProcessor getRowProcessor(Object o) {
-        final Class<? extends Object> clazz = o.getClass();
+        final Class<? extends Object> clazz = (o instanceof Class)?(Class)o:o.getClass();
         RowProcessor processor = null;
         if (!blackList.contains(clazz)) {
             processor = marshallerMap.computeIfAbsent(clazz, (c) -> {

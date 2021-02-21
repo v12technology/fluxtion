@@ -68,6 +68,13 @@ public class MappingBuilder {
     }
     
     public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, ? super S, R> mapper,
+            Wrapper<? extends U> arg1,
+            Wrapper<? extends S> arg2
+            ) {
+        return map((MethodReferenceReflection) mapper, arg(arg1), arg(arg2));
+    } 
+    
+    public static <R, S, U> Wrapper<R> map(SerializableBiFunction<? super U, ? super S, R> mapper,
             Argument<? extends U> arg1,
             Argument<? extends S> arg2) {
         return map((MethodReferenceReflection) mapper, arg1, arg2);
@@ -78,7 +85,14 @@ public class MappingBuilder {
             SerializableFunction<E2, ? extends S> supplier2) {
         return map((MethodReferenceReflection) mapper, arg(supplier1), arg(supplier2));
     }
-
+    
+    public static <R, S, U, T> Wrapper<R> map(SerializableTriFunction<? super U, ? super S,? super T, R> mapper,
+            Wrapper<? extends U> arg1,
+            Wrapper<? extends S> arg2,
+            Wrapper<? extends T> arg3
+            ) {
+        return map((MethodReferenceReflection) mapper, arg(arg1), arg(arg2), arg(arg3));
+    } 
     
     public static <R, S, U, T> Wrapper<R> map(SerializableTriFunction<? super U, ? super S,? super T, R> mapper,
             Argument<? extends U> arg1,
@@ -103,6 +117,15 @@ public class MappingBuilder {
             Argument<? extends T> arg4
             ) {
         return map((MethodReferenceReflection) mapper, arg1, arg2, arg3, arg4);
+    } 
+    
+    public static <R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? super U, ? super S,? super T, ? super V, R> mapper,
+            Wrapper<? extends U> arg1,
+            Wrapper<? extends S> arg2,
+            Wrapper<? extends S> arg3,
+            Wrapper<? extends T> arg4
+            ) {
+        return map((MethodReferenceReflection) mapper, arg(arg1), arg(arg2), arg(arg3), arg(arg4));
     } 
     
     public static <E1, E2, E3, E4, R, S, U, T, V> Wrapper<R> map(SerializableQuadFunction<? super U, ? super S,? super T, ? super V, R> mapper,

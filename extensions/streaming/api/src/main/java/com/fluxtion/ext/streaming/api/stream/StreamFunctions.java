@@ -25,6 +25,8 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.Stateful.StatefulNumber;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -35,7 +37,7 @@ public class StreamFunctions {
     public static <T> SerializableFunction<T, WrappedList<T>> collect() {
         return new ArrayListWrappedCollection<T>()::addItem;
     }
-     
+
     public static double add(double a, double b) {
         return a + b;
     }
@@ -55,7 +57,7 @@ public class StreamFunctions {
     public static double asDouble(double d) {
         return d;
     }
-    
+
     public static int asInt(int d) {
         return d;
     }
@@ -276,4 +278,19 @@ public class StreamFunctions {
         }
     }
 
+    public static class Unique<K> implements Stateful {
+
+        private Set<K> map;
+
+        public Set<K> addUnique(K k) {
+            map.add(k);
+            return map;
+        }
+
+        @Override
+        public void reset() {
+            map = new HashSet<>();
+        }
+
+    }
 }

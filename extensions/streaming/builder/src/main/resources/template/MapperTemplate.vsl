@@ -46,7 +46,6 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
             ${outputClass} oldValue = result;
 #if(${newFunction})
 #if(${multiArgFunc})
-            result = ${targetClass}.${targetMethod}(${input});
             if(allSourcesUpdated()){
                 result = ${targetClass}.${targetMethod}(${input});
             }
@@ -67,7 +66,7 @@ public class ${functionClass} extends AbstractFilterWrapper<${outputClass}> {
             }
 #end
 #end
-            return #if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly || (!result.equals(oldValue));
+            return result!=null && (#if(${multiArgFunc})allSourcesUpdated() & #end!notifyOnChangeOnly || (!result.equals(oldValue)));
         }
         recalculate = true;
         return updated;  

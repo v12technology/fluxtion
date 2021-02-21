@@ -4,7 +4,7 @@ import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

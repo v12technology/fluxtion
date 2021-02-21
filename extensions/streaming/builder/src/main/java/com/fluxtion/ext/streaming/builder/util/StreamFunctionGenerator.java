@@ -22,6 +22,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.DateFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
@@ -30,6 +31,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
+import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Unique;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
@@ -59,7 +61,7 @@ public class StreamFunctionGenerator {
 
     private final String templateFile = "/template/FunctionsTemplate.vsl";
     private final String packageName = "com.fluxtion.ext.streaming.builder.factory";
-    private final String className = "LibraryFunctionsBuilder";
+    private final String className = "StreamFunctionsBuilder";
     private final ImportMap imports = ImportMap.newMap();
     private static final String SRC_DIR = "src/main/java";
     private List<FunctionInfo> functionList = new ArrayList<>();
@@ -82,8 +84,14 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(new Delta()::value, "delta");
         gen.addUnaryFunction(Math::ceil, "ceil");
         gen.addUnaryFunction(Math::floor, "floor");
+        //unary date functions
+        gen.addUnaryFunction(new DateFunctions.MaxDate()::check, "maxDate");
+        gen.addUnaryFunction(new DateFunctions.MinDate()::check, "minDate");
+        gen.addUnaryFunction(new DateFunctions.DateRange()::check, "dateRange");
+        
         //consumer
         gen.addConsumerFunction(new Count()::increment, "count");
+        
         gen.generate();
     }
 

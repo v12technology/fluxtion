@@ -20,7 +20,7 @@ import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.numeric.NumericSignal;
 import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultVal;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.subtract;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.subtract;
 import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

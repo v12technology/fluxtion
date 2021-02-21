@@ -20,7 +20,7 @@ import com.fluxtion.builder.annotation.SepBuilder;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.streaming.builder.group.Group;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
