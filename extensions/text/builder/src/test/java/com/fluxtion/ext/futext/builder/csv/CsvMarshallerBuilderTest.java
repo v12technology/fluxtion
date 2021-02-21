@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.csv;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import com.fluxtion.ext.streaming.builder.log.LogBuilder;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import com.fluxtion.ext.text.api.csv.RulesEvaluator;

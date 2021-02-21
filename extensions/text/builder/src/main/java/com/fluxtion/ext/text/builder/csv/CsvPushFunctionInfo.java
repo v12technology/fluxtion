@@ -19,6 +19,7 @@ package com.fluxtion.ext.text.builder.csv;
 import com.fluxtion.ext.streaming.builder.util.ImportMap;
 import com.fluxtion.ext.text.api.ascii.Conversion;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -189,6 +190,10 @@ public class CsvPushFunctionInfo {
                     break;
                 case "boolean":
                     conversion = "atobool(" + defaultMethodCalc + ")";
+                    break;
+                case "LocalDate":
+                    conversion = "LocalDate.parse(" + defaultMethodCalc + ")";
+                    addConversion = false;
                     break;
             }
             if (addConversion) {
