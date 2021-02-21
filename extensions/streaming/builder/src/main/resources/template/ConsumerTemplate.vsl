@@ -17,7 +17,8 @@ import $import;
  *  
  * @author Greg Higgins
  */
-public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
+//public class ${functionClass} implements Wrapper<${filterSubjectClass}>{
+public class ${functionClass} extends AbstractFilterWrapper<${filterSubjectClass}>{
 
     public ${sourceClass} filterSubject;
 #if(!${newFunction})

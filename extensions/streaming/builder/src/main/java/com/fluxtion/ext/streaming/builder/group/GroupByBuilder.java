@@ -28,7 +28,7 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Count;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import com.fluxtion.ext.streaming.builder.group.GroupByContext.SourceContext;
 import java.lang.reflect.Method;
 import org.apache.commons.lang.StringUtils;

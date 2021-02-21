@@ -26,8 +26,8 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.count;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsLibrary.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import com.fluxtion.ext.streaming.builder.group.Group;
 
 /**

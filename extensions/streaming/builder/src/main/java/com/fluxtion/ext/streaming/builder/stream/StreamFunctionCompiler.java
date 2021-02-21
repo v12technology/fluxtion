@@ -487,6 +487,7 @@ public class StreamFunctionCompiler<T, F> {
      * @param cast
      * @return
      */
+    //TODO update this method to handle a Number 
     public static <T, R extends Boolean, S, F> StreamFunctionCompiler filter(F filter, Method filterMethod, S source, Method accessor, boolean cast) {
         GenerationContext.SINGLETON.addOrUseExistingNode(filter);
         StreamFunctionCompiler filterBuilder = new StreamFunctionCompiler(filter);
