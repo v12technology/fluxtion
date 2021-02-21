@@ -228,8 +228,7 @@ along with this program.  If not, see
         </dependency>
         <dependency>
             <groupId>com.fluxtion.integration</groupId>
-            <artifactId>fluxtion-integration</artifactId>
-            <version>${project.version}</version>
+            <artifactId>fluxtion-pipeline</artifactId>
             <type>jar</type>
         </dependency>
         <dependency>

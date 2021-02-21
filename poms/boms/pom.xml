@@ -166,7 +166,12 @@ along with this program.  If not, see
                 <artifactId>fluxtion-text-builder</artifactId>
                 <version>2.10.37-SNAPSHOT</version>
             </dependency>
-            
+            <!--integration pipeline-->
+            <dependency>
+                <groupId>com.fluxtion.integration</groupId>
+                <artifactId>fluxtion-pipeline</artifactId>
+                <version>2.10.37-SNAPSHOT</version>
+            </dependency>
             <!--            
              state machine 
             <dependency>
@@ -175,12 +180,6 @@ along with this program.  If not, see
                 <version>0.1.37-SNAPSHOT</version>
             </dependency>           
             -->
-            <!-- utils -->
-            <!--            <dependency>
-                <groupId>com.fluxtion.extension</groupId>
-                <artifactId>runtime-plugins</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
-            </dependency>            -->
             <!-- runtime dependency -->
             <dependency>
                 <groupId>it.unimi.dsi</groupId>
