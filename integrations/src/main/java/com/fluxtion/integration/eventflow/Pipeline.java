@@ -39,7 +39,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class Pipeline {
 
-    private final PipelineStatge root = new PipelineStatge(new RootNode());
+    private final RootNode rootNode = new RootNode();
+    private final PipelineStatge root = new PipelineStatge(rootNode);
     private final List<PipelineFilter> sortedFilters = new ArrayList<>();
     private List<PipelineFilter> reversedFilters;
 
