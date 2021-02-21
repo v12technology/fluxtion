@@ -84,7 +84,6 @@ public class StreamFunctionGenerator {
         gen.addUnaryFunction(new Delta()::value, "delta");
         gen.addUnaryFunction(Math::ceil, "ceil");
         gen.addUnaryFunction(Math::floor, "floor");
-        gen.addUnaryFunction(new Unique()::addUnique, "unique");
         //unary date functions
         gen.addUnaryFunction(new DateFunctions.MaxDate()::check, "maxDate");
         gen.addUnaryFunction(new DateFunctions.MinDate()::check, "minDate");
