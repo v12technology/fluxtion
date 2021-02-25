@@ -326,6 +326,21 @@ public class GroupFunctionsBuilder {
         return build;
     }
     
+    
+    public static <S, K, V, R > GroupBy<Tuple<K, R>> groupByCalcComplex(
+            SerializableFunction<S, K> keySupplier,
+            SerializableFunction<S, V> valueSupplier,
+            SerializableFunction<? super V, ? extends R> func
+    ) {
+        Class<Tuple<K, R>> tupleClass = Tuple.generify();
+        GroupBy<Tuple<K, R>> build = Group.groupBy(keySupplier, tupleClass)
+                .init(keySupplier, Tuple::setKey)
+                .initCopy(Tuple::copyKey)
+                .map(valueSupplier, Tuple::setValue, func )
+                .build();
+        return build;
+    } 
+    
     private static <K, R> SerializableBiConsumer<K, R> tupleSetRef(SerializableBiConsumer<K, R> c) {
         return (SerializableBiConsumer<K, R>) c;
     }
