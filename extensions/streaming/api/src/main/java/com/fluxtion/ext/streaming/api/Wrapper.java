@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * @author Greg Higgins
  * @param <T>
  */
-public interface Wrapper<T> extends Stateful<T>{
+ public interface Wrapper<T> extends Stateful<T>{
 
     /**
      * The wrapped node
@@ -298,10 +298,6 @@ public interface Wrapper<T> extends Stateful<T>{
      */
     default Wrapper<T> forEach(SerializableConsumer<T> consumer) {
         return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, null);
-    }
-
-    default Wrapper<T> forEach(SerializableConsumer<T> consumer, String consumerId) {
-        return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, consumerId);
     }
 
     LongAdder counter = new LongAdder();

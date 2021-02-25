@@ -19,6 +19,8 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.ext.streaming.api.Stateful;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  *
@@ -36,12 +38,12 @@ public class DateFunctions {
             maxDate.check(val);
             return this;
         }
-        
-        public LocalDate maxDate(){
+
+        public LocalDate maxDate() {
             return maxDate.max;
         }
-        
-        public LocalDate minDate(){
+
+        public LocalDate minDate() {
             return minDate.min;
         }
 
@@ -50,6 +52,20 @@ public class DateFunctions {
         public void reset() {
             minDate.reset();
             maxDate.reset();
+        }
+
+        public Set<Integer> yearMonths() {
+            int start = minDate().getYear() * 100 + minDate().getMonth().getValue();
+            int end = maxDate().getYear() * 100 + maxDate().getMonth().getValue();
+            Set<Integer> set = new LinkedHashSet<>();
+            for (int i = start; i < end; i++) {
+                int monthCount = i % 100;
+                if (monthCount == 0 | monthCount > 12) {
+                   continue;
+                }
+                set.add(i);
+            }
+            return set;
         }
 
     }
