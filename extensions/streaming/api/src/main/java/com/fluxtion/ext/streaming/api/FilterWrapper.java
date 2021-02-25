@@ -39,12 +39,6 @@ public interface FilterWrapper<T> extends Wrapper<T>, Test {
     default FilterWrapper<T> forEach(SerializableConsumer<T> consumer) {
         return (FilterWrapper<T>) StreamOperator.service().forEach(consumer, this, null);
     }
-
-    @Override
-    default FilterWrapper<T> forEach(SerializableConsumer<T> consumer, String consumerId) {
-        return (FilterWrapper<T>) StreamOperator.service().forEach(consumer, this, consumerId);
-    }
-    
     
     @Override
     default FilterWrapper<T> log(String prefix, SerializableFunction<T, ?>... supplier) {

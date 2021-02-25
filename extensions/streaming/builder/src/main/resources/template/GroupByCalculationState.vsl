@@ -92,7 +92,7 @@ public final class ${functionClass} implements Wrapper<${targetClass}>{
 #if (${source.statefulNumeric})
         ${source.functionInstanceId} = ${source.functionInstanceId}Function.combine(other.${source.functionInstanceId}Function, tempNumber).${source.functionCalcReturnType}Value();
 #elseif (${source.stateful})
-        ${source.functionInstanceId}Function.combine(other.${source.functionInstanceId}Function, tempNumber);
+        ${source.functionInstanceId}Function.combine(other.${source.functionInstanceId}Function);
 #end
 #end
 
@@ -104,7 +104,7 @@ public final class ${functionClass} implements Wrapper<${targetClass}>{
 #if (${source.statefulNumeric})
         ${source.functionInstanceId} = ${source.functionInstanceId}Function.deduct(other.${source.functionInstanceId}Function, tempNumber).${source.functionCalcReturnType}Value();
 #elseif (${source.stateful})
-        ${source.functionInstanceId}Function.deduct(other.${source.functionInstanceId}Function, tempNumber);
+        ${source.functionInstanceId}Function.deduct(other.${source.functionInstanceId}Function);
 #end
 #end
     }
