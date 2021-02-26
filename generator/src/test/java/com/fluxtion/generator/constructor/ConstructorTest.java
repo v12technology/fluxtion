@@ -20,8 +20,7 @@ package com.fluxtion.generator.constructor;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepTest;
+import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -30,30 +29,64 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ConstructorTest extends BaseSepTest {
+public class ConstructorTest extends BaseSepInprocessTest {
 
     @Test
     public void testConstructorSimple() {
-        buildAndInitSep(ConstructorBuilder.class);
-        //TODO - actually add some asserts!!
+        fixedPkg = true;
+        sep(c -> {
+            ConfigPublisher publisher = c.addPublicNode(new ConfigPublisher(
+                    c.addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.0567f)),
+                    c.addNode(new ConfigHandler("config_1")),
+                    c.addNode(new ConfigHandler("config_2"))), "publisher");
+            publisher.publicHandler = c.addNode(new ConfigHandler("config_public_1"));
+        });
     }
 
     @Test
     public void testConstructorWithCollection() {
-        buildAndInitSep(ConstructorCollectionBuilder.class);
-        //TODO - actually add some asserts!!
+        fixedPkg = true;
+        sep(c -> {
+            List<OrderHandler> orderhandlerList = Arrays.asList(
+                    c.addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.2f)),
+                    c.addNode(new OrderHandler("orderHandler_2", 400_000_000, 1.4f)),
+                    c.addNode(new OrderHandler("orderHandler_3", 600_000_000, 1.6f))
+            );
+
+            ConfigPublisher publisher = c.addPublicNode(new ConfigPublisher(
+                    "MyOrderManager",
+                    55,
+                    orderhandlerList,
+                    c.addNode(new OrderHandler("orderHandler_11", 200_000_000, 1.0567f)),
+                    c.addNode(new ConfigHandler("config_1")),
+                    c.addNode(new ConfigHandler("config_2"))), "publisher");
+            final NameHolder nameHolder = c.addNode(new NameHolder("nameHolder", publisher));
+
+            nameHolder.setOrderHandler(orderhandlerList.get(1));
+            nameHolder.setId(NameHolder.NAMES.WAY);
+            nameHolder.setHandlerList(Arrays.asList(orderhandlerList.get(1), orderhandlerList.get(2)));
+            nameHolder.setMatchingRegex("reerer", "lkdjf", "ldkljflkj");
+        });
     }
-    
 
     @Test
     public void testConstructorForClass() {
-        buildAndInitSep(ClassHolderBuilder.class);
-        //TODO - actually add some asserts!!
+        fixedPkg = true;
+        sep(c -> {
+            c.addNode(new MyClassHolder(String.class));
+        });
     }
 
     @Test
     public void testPrimitiveCollection() {
-        buildAndInitSep(PrimitiveCollectionsBuilder.class);
+        fixedPkg = true;
+        sep(c -> {
+            c.addNode(new PrimitiveCollections(
+                    new boolean[]{true, true, false},
+                    Arrays.asList(1, 2, 3, 4, 5),
+                    new String[]{"one", "two"}
+            ));
+        });
     }
 
     public static final class ConfigEvent implements Event {
@@ -300,82 +333,19 @@ public class ConstructorTest extends BaseSepTest {
             return handlers.stream().filter(o -> o.name.equals(name)).findAny().get();
         }
     }
-    
-    
-    public static class MyClassHolder{
+
+    public static class MyClassHolder {
+
         private final Class clazz;
 
         public MyClassHolder(Class clazz) {
             this.clazz = clazz;
         }
-        
-        
+
         @EventHandler
         public void newOrderEvent(NewOrderEvent configEvent) {
 
         }
     }
 
-    
-    
-    
-    public static final class ClassHolderBuilder extends SEPConfig {
-        @Override
-        public void buildConfig() {
-            addNode(new MyClassHolder(String.class));
-        }
-        
-    }
-    public static final class PrimitiveCollectionsBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            addNode(new PrimitiveCollections(
-                    new boolean[]{true, true, false},
-                    Arrays.asList(1, 2, 3, 4, 5),
-                    new String[]{"one", "two"}
-            ));
-        }
-
-    }
-
-    public static final class ConstructorBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            ConfigPublisher publisher = addPublicNode(new ConfigPublisher(
-                    addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.0567f)),
-                    addNode(new ConfigHandler("config_1")),
-                    addNode(new ConfigHandler("config_2"))), "publisher");
-            publisher.publicHandler = addNode(new ConfigHandler("config_public_1"));
-        }
-
-    }
-
-    public static final class ConstructorCollectionBuilder extends SEPConfig {
-
-        @Override
-        public void buildConfig() {
-            List<OrderHandler> orderhandlerList = Arrays.asList(
-                    addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.2f)),
-                    addNode(new OrderHandler("orderHandler_2", 400_000_000, 1.4f)),
-                    addNode(new OrderHandler("orderHandler_3", 600_000_000, 1.6f))
-            );
-
-            ConfigPublisher publisher = addPublicNode(new ConfigPublisher(
-                    "MyOrderManager",
-                    55,
-                    orderhandlerList,
-                    addNode(new OrderHandler("orderHandler_11", 200_000_000, 1.0567f)),
-                    addNode(new ConfigHandler("config_1")),
-                    addNode(new ConfigHandler("config_2"))), "publisher");
-            final NameHolder nameHolder = addNode(new NameHolder("nameHolder", publisher));
-
-            nameHolder.setOrderHandler(orderhandlerList.get(1));
-            nameHolder.setId(NameHolder.NAMES.WAY);
-            nameHolder.setHandlerList(Arrays.asList(orderhandlerList.get(1), orderhandlerList.get(2)));
-            nameHolder.setMatchingRegex("reerer", "lkdjf", "ldkljflkj");
-        }
-
-    }
 }
