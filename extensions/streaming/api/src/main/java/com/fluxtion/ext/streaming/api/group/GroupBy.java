@@ -16,12 +16,15 @@
  */
 package com.fluxtion.ext.streaming.api.group;
 
+import static com.fluxtion.api.SepContext.service;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Duration;
+import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
+import com.fluxtion.ext.streaming.api.test.BooleanFilter;
 import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.Collection;
 import java.util.Map;
@@ -49,7 +52,7 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
     }
 
     @Override
-    default GroupBy<T> sliding(int itemsPerBucket, int numberOfBuckets){
+    default GroupBy<T> sliding(int itemsPerBucket, int numberOfBuckets) {
         GroupBy<T> sliding = WindowBuildOperations.service().sliding(self(), itemsPerBucket, numberOfBuckets);
         return sliding;
     }
@@ -92,13 +95,30 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
     Class<T> recordClass();
 
     /**
-     * Set the target collection for storing results of the groupBy operations. If no target is supplied then an internal
+     * Set the target collection for storing results of the groupBy operations. If no target is supplied then an
+     * internal
      * list is used.
-     * 
-     * @param wrappedList 
+     *
+     * @param wrappedList
      */
-    default void setTargetCollecion(ArrayListWrappedCollection<T> wrappedList) {}
-    
+    default void setTargetCollecion(ArrayListWrappedCollection<T> wrappedList) {
+    }
+
     GroupBy<T> newInstance();
 
+    /**
+     * Attaches an event notification instance to the current stream node,
+     * overriding the execution path of the current stream.Only when the
+     * notifier updates will the child nodes of this stream node be on the
+     * execution path.
+     *
+     * @param notifier
+     * @param eventNotifier external event notifier
+     * @return
+     */
+    default Wrapper<GroupBy<T>> notifierOverride(Object notifier) {
+        BooleanFilter<GroupBy<T>> filter = new BooleanFilter<>(service().addOrReuse(self()), service().addOrReuse(notifier));
+        service().addOrReuse(filter);
+        return filter;
+    }
 }

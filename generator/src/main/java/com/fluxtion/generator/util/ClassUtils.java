@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -82,19 +83,26 @@ public interface ClassUtils {
     }
 
     static boolean typeSupported(Class<?> type) {
+        boolean zeroArg = false;
+        try {
+            type.getDeclaredConstructor();
+            zeroArg = true;
+        } catch (NoSuchMethodException | SecurityException ex) {}
         return type.isPrimitive()
                 || type == String.class
                 || type == Class.class
                 || type.isEnum()
                 || List.class.isAssignableFrom(type)
                 || type.isArray()
-                || MethodReferenceReflection.class.isAssignableFrom(type);
+                || MethodReferenceReflection.class.isAssignableFrom(type)
+                || zeroArg;
     }
 
     static String mapToJavaSource(Object primitiveVal, List<Field> nodeFields, Set<Class<?>> importList) {
         Class clazz = primitiveVal.getClass();
         String primitiveSuffix = "";
         String primitivePrefix = "";
+        Object original = primitiveVal;
         if (List.class.isAssignableFrom(clazz)) {
             importList.add(Arrays.class);
             List values = (List) primitiveVal;
@@ -154,11 +162,18 @@ public interface ClassUtils {
             importList.add(ref.getContainingClass());
             primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
         }
+        boolean foundMatch = false;
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {
                 primitiveVal = nodeField.name;
+                foundMatch = true;
                 break;
             }
+        }
+        
+        if(!foundMatch && original==primitiveVal && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(clazz)){
+            importList.add(clazz);
+            primitiveVal = "new " + (clazz).getSimpleName() + "()";  
         }
         return primitivePrefix + primitiveVal.toString() + primitiveSuffix;
     }
