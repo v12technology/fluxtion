@@ -48,6 +48,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.Checksum;
 import net.vidageek.mirror.dsl.Mirror;
@@ -357,6 +358,7 @@ public class CsvMarshallerBuilder<T> extends RecordParserBuilder<CsvMarshallerBu
         ctx.put("asciiOnlyHeader", asciiOnlyHeader);
         importMap.addImport(LogService.class);
         importMap.addImport(LogControlEvent.class);
+        importMap.addImport(Collection.class);
         if (checkSumField != null) {
             ctx.put("checksum", true);
             ctx.put("checksumField", checkSumField);

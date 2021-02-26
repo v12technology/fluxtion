@@ -20,6 +20,7 @@ import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.event.CharEvent;
 import com.fluxtion.ext.text.api.event.EofEvent;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Interface implemented by nodes processing delimited or fixed length records
@@ -61,5 +62,8 @@ public interface RowProcessor<T> extends Wrapper<T> {
         return target;
     }
     
+    default Appendable toCsv(Collection<T> src, Appendable target) throws IOException {
+        return target;
+    }    
 
 }

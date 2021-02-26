@@ -398,6 +398,11 @@ public class SimpleEventProcessorModel {
                         MappedField primitiveField = new MappedField(input.getName(), input.get(field));
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
+                    } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
+                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
+                        MappedField primitiveField = new MappedField(input.getName(), input.get(field));
+                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        privateFields.add(primitiveField);
                     }
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
                     java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);

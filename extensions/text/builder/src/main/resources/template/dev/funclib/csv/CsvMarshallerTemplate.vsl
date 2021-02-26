@@ -397,7 +397,18 @@ public class ${functionClass} implements RowProcessor<${targetClass}> {
         target.append(msgSink);
         msgSink.setLength(0);
         return target;
-  }
+    }
+
+    @Override
+    public Appendable toCsv(Collection<${targetClass}> src, Appendable target) throws IOException {
+        target.append(csvHeaders());
+        target.append('\n');
+        for (${targetClass} record : src) {
+            toCsv(record, target);
+            target.append('\n');   
+        }
+        return target;
+    }
 #end
 
 
