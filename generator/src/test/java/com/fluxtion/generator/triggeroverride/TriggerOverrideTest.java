@@ -34,7 +34,7 @@ import org.junit.Test;
 public class TriggerOverrideTest extends BaseSepInprocessTest {
 
     @Test
-    public void testCombined() {
+    public void triggerOverride() {
         fixedPkg = true;
         sep((c) -> {
             c.addNode(new TriggerinOverride(new StringHandler(), new NumberHandler()), "strHandler");
@@ -45,6 +45,22 @@ public class TriggerOverrideTest extends BaseSepInprocessTest {
         assertThat(trigger.getCount(), is(0));
         onEvent(1);
         assertThat(trigger.getCount(), is(1));
+    }
+    
+    @Test
+    public void triggerNoOverride() {
+        fixedPkg = true;
+        sep((c) -> {
+            c.addNode(new TriggerinNoOverride(new StringHandler()), "strHandler");
+        });
+        TriggerinNoOverride trigger = getField("strHandler");
+        assertThat(trigger.getCount(), is(0));
+        onEvent("hello world");
+        assertThat(trigger.getCount(), is(1));
+        onEvent("hello world");
+        assertThat(trigger.getCount(), is(2));
+        onEvent(1);
+        assertThat(trigger.getCount(), is(2));
     }
 
     public static class StringHandler {
@@ -77,6 +93,23 @@ public class TriggerOverrideTest extends BaseSepInprocessTest {
         @SepNode
         @TriggerEventOverride
         private final NumberHandler numberHandler;
+        private int count;
+
+        @OnEvent
+        public void update() {
+            count++;
+        }
+
+    }
+    
+    @Data
+    public static class TriggerinNoOverride {
+
+        @SepNode
+        private final StringHandler stringHandler;
+        @SepNode
+        @TriggerEventOverride
+        private NumberHandler numberHandler;
         private int count;
 
         @OnEvent

@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
@@ -132,7 +133,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
 
     /**
      * Create a new TopologicallySortedDependecyGraph
-     * 
+     *
      * @param nodes The set of nodes that will be sorted as a list.
      * @param publicNodes Map of public available instances, the value is the
      * unique name of each instance. The names will override existing instances
@@ -171,7 +172,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
 
         //override node names
         publicNodeList = new ArrayList<>();
-        if(context!=null && context.getPublicNodes()!=null){
+        if (context != null && context.getPublicNodes() != null) {
             inst2Name.putAll(context.getPublicNodes());
             publicNodeList.addAll(context.getPublicNodes().keySet());
         }
@@ -339,8 +340,8 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     public <T> T registerPublicNode(T node, String variableName) {
         return registerNode(node, variableName, true);
     }
-    
-    public <T extends Auditor> T registerAuditor(T node, String auditorName){
+
+    public <T extends Auditor> T registerAuditor(T node, String auditorName) {
         T registerNode = registerNode(node, auditorName, true);
         registrationListenerMap.put(auditorName, registerNode);
         return registerNode;
@@ -475,7 +476,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (handle != null) {
                 NodeFactory factory = (NodeFactory) handle.instance;
                 if (isPublic) {
-                    
+
                     publicNodeList.add(newNode);
                 }
                 factory.postInstanceRegistration(config, this, newNode);
@@ -592,8 +593,18 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         Set<Field> s = getAllFields(clazz);
         Field[] fields = new Field[s.size()];
 
-        boolean overideEventTrigger = !getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).isEmpty();
-        
+//        boolean overideEventTrigger = !getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).isEmpty();
+        boolean overideEventTrigger = getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).stream()
+                .filter(f -> {
+                    try {
+                        f.setAccessible(true);
+                        return f.get(object) != null;
+                    } catch (IllegalArgumentException | IllegalAccessException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .findAny()
+                .isPresent();
 //        Field[] fields = object.getClass().getDeclaredFields();
 //        Set<Field> s = new HashSet<>();
 //        s.addAll(Arrays.asList(fields));
@@ -608,7 +619,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             if (field.getAnnotation(NoEventReference.class) != null) {
                 continue;
             }
-            if(overideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
+            if (overideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
                 continue;
             }
             if (field.getType().isArray()) {
@@ -637,9 +648,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                     if (inst2Name.containsKey(parent)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(parent);
-                        if(pushCollection){
-                            eventGraph.addEdge( object, parent);
-                        }else{
+                        if (pushCollection) {
+                            eventGraph.addEdge(object, parent);
+                        } else {
                             eventGraph.addEdge(parent, object);
                             walkDependenciesForEventHandling(parent);
                         }
@@ -657,13 +668,13 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             }
         }
     }
-    
+
     private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
         field.setAccessible(true);
         Object refField = field.get(node);
         String refName = inst2Name.get(refField);
         boolean addNode = field.getAnnotation(SepNode.class) != null;
-        if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField!=null) {
+        if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
             refName = nameNode(refField);
             if (LOGGER.isDebugEnabled()) {
@@ -729,10 +740,10 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                     if (inst2Name.containsKey(parent)) {
                         graph.addVertex(object);
                         graph.addVertex(parent);
-                        
-                        if(pushCollection){
-                            graph.addEdge( object, parent);
-                        }else{
+
+                        if (pushCollection) {
+                            graph.addEdge(object, parent);
+                        } else {
                             graph.addEdge(parent, object);
                             walkDependencies(parent);
                         }
@@ -752,7 +763,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             }
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
-            if (injecting != null & refName == null & field.get(object)==null) {
+            if (injecting != null & refName == null & field.get(object) == null) {
                 HashMap map = new HashMap();
                 HashMap overrideMap = new HashMap();
 
@@ -779,13 +790,13 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                 BiMap<Object, String> oldMap = inst2Name;
                 inst2Name = inst2NameTemp;
                 Object newNode = null;
-                if(injecting.singleton()){
+                if (injecting.singleton()) {
                     newNode = inst2Name.keySet().stream()
-                            .filter(o -> o.getClass()==field.getType())
+                            .filter(o -> o.getClass() == field.getType())
                             .findFirst().orElse(null);
-                
+
                 }
-                if(newNode == null){
+                if (newNode == null) {
                     newNode = findOrCreateNode(field.getType(), map, injecting.singletonName(), false, true);
                 }
                 inst2Name = oldMap;
@@ -814,7 +825,7 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                     return -1;
                 } else if (!handle0.isEventHandler && handle1.isEventHandler) {
                     return +1;
-                } else{
+                } else {
                     return handle0.method.getName().compareTo(handle1.method.getName());
                 }
             }
@@ -855,10 +866,10 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventTypeClass, t);
                     }
                 }
-                if(t instanceof FilteredEventHandler){
-                    FilteredEventHandler eh = (FilteredEventHandler)t;
+                if (t instanceof FilteredEventHandler) {
+                    FilteredEventHandler eh = (FilteredEventHandler) t;
                     Class eventClass = eh.eventClass();
-                    if(eventClass!=null){
+                    if (eventClass != null) {
                         exportGraph.addVertex(eventClass);
                         exportGraph.addEdge(eventClass, t);
                     }
