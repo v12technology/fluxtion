@@ -50,7 +50,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -77,6 +76,8 @@ import static org.reflections.ReflectionUtils.withParametersCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fluxtion.api.annotations.ConstructorArg;
+import static com.fluxtion.generator.model.ConstructorMatcherPredicate.matchConstructorNameAndType;
+import static com.fluxtion.generator.model.ConstructorMatcherPredicate.matchConstructorType;
 
 /**
  * A class defining the meta-data for the SEP.This class can be introspected
@@ -296,13 +297,13 @@ public class SimpleEventProcessorModel {
         Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
             int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
             int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
-            if(o1.instance instanceof Clock){
+            if (o1.instance instanceof Clock) {
                 idx1 = Integer.MAX_VALUE;
             }
-            if(o2.instance instanceof Clock){
+            if (o2.instance instanceof Clock) {
                 idx1 = Integer.MAX_VALUE;
             }
-            if(idx1>-1 || idx2>-1){
+            if (idx1 > -1 || idx2 > -1) {
                 return idx2 - idx1;
             }
             return comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name));
@@ -323,7 +324,7 @@ public class SimpleEventProcessorModel {
                             .filter(p -> {
                                 boolean isConstructorArg = false;
                                 try {
-                                    isConstructorArg  = null != ClassUtils.getReflectField(field.getClass(), p.getName()).getAnnotation(ConstructorArg.class);
+                                    isConstructorArg = null != ClassUtils.getReflectField(field.getClass(), p.getName()).getAnnotation(ConstructorArg.class);
                                 } catch (NoSuchFieldException ex) {
                                     LOGGER.warn("cannot process field for ConstructorArg annotation", ex);
                                 }
@@ -343,161 +344,90 @@ public class SimpleEventProcessorModel {
     }
 
     private void generateComplexConstructors() {
-        nodeFields.forEach(f -> {
-            HashSet<MappedField> privateFields = new HashSet<>();
+        nodeFields.forEach(new Consumer<Field>() {
+            @Override
+            public void accept(Field f) {
+                HashSet<MappedField> privateFields = new HashSet<>();
 //            HashSet<MappedField> privateCollections = new HashSet<>();
-            final Object field = f.instance;
-            LOGGER.debug("mapping constructor for var:{}", f.name);
-            List<?> directParents = dependencyGraph.getDirectParents(field);
-            MappedField[] cstrArgList = new MappedField[(directParents.size()) + 200];
-            Class<?> fieldClass = field.getClass();
-            //is !public && isDirectParent
-            boolean[] hasCstrAnnotations = new boolean[]{false};
-            Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(fieldClass, (Predicate<java.lang.reflect.Field>) (java.lang.reflect.Field input) -> {
-                final boolean isCstrArg = input.getAnnotation(ConstructorArg.class)!=null;
-                //TODO check is not public
-                if(isCstrArg && !Modifier.isStatic(input.getModifiers())){
-                    hasCstrAnnotations[0] = true;
-                    LOGGER.debug("field marked as constructor arg: {}", input.getName());
-                    LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
-                }else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
+                final Object field = f.instance;
+                LOGGER.debug("mapping constructor for var:{}", f.name);
+                List<?> directParents = dependencyGraph.getDirectParents(field);
+                MappedField[] cstrArgList = new MappedField[(directParents.size()) + 200];
+                Class<?> fieldClass = field.getClass();
+//is !public && isDirectParent
+                boolean[] hasCstrAnnotations = new boolean[]{false};
+                Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(fieldClass, (Predicate<java.lang.reflect.Field>) (java.lang.reflect.Field input) -> {
+                    final boolean isCstrArg = input.getAnnotation(ConstructorArg.class) != null;
+                    //TODO check is not public
+                    if (isCstrArg && !Modifier.isStatic(input.getModifiers())) {
+                        hasCstrAnnotations[0] = true;
+                        LOGGER.debug("field marked as constructor arg: {}", input.getName());
+                        LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
+                    } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
-                    LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
-                            input.getName(),
-                            Modifier.isPublic(input.getModifiers()),
-                            Modifier.isFinal(input.getModifiers()),
-                            Modifier.isTransient(input.getModifiers()),
-                            Modifier.isStatic(input.getModifiers())
-                    );
+                        LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
+                                input.getName(),
+                                Modifier.isPublic(input.getModifiers()),
+                                Modifier.isFinal(input.getModifiers()),
+                                Modifier.isTransient(input.getModifiers()),
+                                Modifier.isStatic(input.getModifiers())
+                        );
+                        return false;
+                    }
+                    try {
+                        input.setAccessible(true);
+                        final Object parent = input.get(field);
+                        if (parent == null) {
+                            return false;
+                        }
+                        if (directParents.contains(parent)) {
+                            final MappedField mappedField = new MappedField(input.getName(), getFieldForInstance(parent));
+                            mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                            privateFields.add(mappedField);
+                        } else if (List.class.isAssignableFrom(parent.getClass())) {
+                            //
+                            MappedField collectionField = new MappedField(input.getName());
+                            List collection = (List) parent;
+                            for (Object element : collection) {
+                                collectionField.addField(getFieldForInstance(element));
+                            }
+                            collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
+                            if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
+                                privateFields.add(collectionField);
+                                LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
+                            }
+                        } else if (ClassUtils.typeSupported(input.getType())) {
+                            LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
+                            MappedField primitiveField = new MappedField(input.getName(), input.get(field));
+                            primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                            privateFields.add(primitiveField);
+                        } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
+                            LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
+                            MappedField primitiveField = new MappedField(input.getName(), input.get(field));
+                            primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                            privateFields.add(primitiveField);
+                        }
+                    } catch (IllegalArgumentException | IllegalAccessException ex) {
+                        java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     return false;
-                }
-                try {
-                    input.setAccessible(true);
-                    final Object parent = input.get(field);
-                    if (parent == null) {
-                        return false;
-                    }
-                    if (directParents.contains(parent)) {
-                        final MappedField mappedField = new MappedField(input.getName(), getFieldForInstance(parent));
-                        mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                        privateFields.add(mappedField);
-                    } else if (List.class.isAssignableFrom(parent.getClass())) {
-                        //
-                        MappedField collectionField = new MappedField(input.getName());
-                        List collection = (List) parent;
-                        for (Object element : collection) {
-                            collectionField.addField(getFieldForInstance(element));
-                        }
-                        collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
-                        if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
-                            privateFields.add(collectionField);
-                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
-                        }
-                    } else if (ClassUtils.typeSupported(input.getType())) {
-                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                        MappedField primitiveField = new MappedField(input.getName(), input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                        privateFields.add(primitiveField);
-                    } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
-                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                        MappedField primitiveField = new MappedField(input.getName(), input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                        privateFields.add(primitiveField);
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return false;
-            });
-
-            if (privateFields.isEmpty() & !hasCstrAnnotations[0]) {
-                LOGGER.debug("{}:default constructor applicable", f.name);
-//                continue;
-            } else {
-                LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
-                boolean[] matched = new boolean[]{false};
-//                Set<Constructor> allConstructors = getAllConstructors(fieldClass, input -> {
-                Set<Constructor> allConstructors = getConstructors(fieldClass, input -> {
-//                    Class[] parameterTypes = input.getParameterTypes();
-                    boolean match = matched[0];
-                    if (match) {
-                        LOGGER.debug("already matched constructor, ignoring");
-                        return false;
-                    } else {
-                        LOGGER.debug("unmatched constructor, reset construtorArgs");
-                        Arrays.fill(cstrArgList, null);
-                    }
-                    Parameter[] parameters = input.getParameters();
-                    int parameterCount = parameters.length;
-                    if (parameterCount == 0 || parameterCount != privateFields.size()) {
-                        LOGGER.debug("parameterCount:{} privateFieldsCoumt:{} mismatch reject consturtcor",
-                                parameterCount, privateFields.size());
-                    } else {
-                        //possible match
-                        int matchCount = 0;
-                        for (MappedField mappedInstance : privateFields) {
-                            Object parentInstance = mappedInstance.instance;
-                            String varName = mappedInstance.mappedName;
-                            Class<?> parentClass = mappedInstance.parentClass();
-                            LOGGER.debug("match field var:{}, type:{}", varName, parentClass);
-//                            Class<?> parentClass = mappedInstance.collection?List.class:parentInstance.getClass();
-                            boolean matchOnName = false;
-                            LOGGER.debug("matching contructor by type and name");
-                            //match array
-                            for (int i = 0; i < parameters.length; i++) {
-                                if (parameters[i] == null) {
-                                    continue;
-                                }
-                                String paramName = parameters[i].getName();
-                                Class parameterType = parameters[i].getType();
-                                LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}",
-                                        parameterType, paramName, varName);
-                                if (parameterType != null && parameterType.isAssignableFrom(parentClass) && paramName.equals(varName)) {
-                                    matchCount++;
-                                    parameters[i] = null;
-                                    cstrArgList[i] = mappedInstance;
-                                    matchOnName = true;
-                                    LOGGER.debug("matched constructor arg:{}, by type and name", paramName);
-                                    break;
-                                }
-                            }
-                            if (!matchOnName) {
-                                LOGGER.debug("no match, matching contructor by type only");
-                                for (int i = 0; i < parameters.length; i++) {
-                                    if (parameters[i] == null) {
-                                        continue;
-                                    }
-                                    Class parameterType = parameters[i].getType();
-                                    String paramName = parameters[i].getName();
-                                    LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}",
-                                            parameterType, paramName, varName);
-                                    if (parameterType != null && parameterType.isAssignableFrom(parentClass)) {
-                                        matchCount++;
-                                        parameters[i] = null;
-                                        cstrArgList[i] = mappedInstance;
-                                        matchOnName = true;
-                                        LOGGER.debug("matched constructor arg:{}, by type only", paramName);
-                                        break;
-                                    }
-                                }
-                                if (!matchOnName) {
-                                    LOGGER.debug("no match for varName:{}", varName);
-                                    break;
-                                }
-                            }
-                        }
-                        if (matchCount == parameterCount) {
-                            LOGGER.debug("matched constructor:{}", input);
-                            matched[0] = true;
-                        } else {
-                            LOGGER.debug("unmatched constructor:{}", input);
-                        }
-                    }
-                    return matched[0];
                 });
-                List<MappedField> collect = Arrays.stream(cstrArgList).filter(f1 -> f1 != null).collect(Collectors.toList());
-                constructorArgdMap.put(field, collect);
+
+                if (privateFields.isEmpty() & !hasCstrAnnotations[0]) {
+                    LOGGER.debug("{}:default constructor applicable", f.name);
+//                continue;
+                } else {
+                    LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
+//                Set<Constructor> allConstructors = getAllConstructors(fieldClass, input -> {
+                    Set<Constructor> allConstructors = getConstructors(fieldClass, matchConstructorNameAndType( cstrArgList, privateFields));
+                    if(allConstructors.isEmpty()){
+                        getConstructors(fieldClass, matchConstructorType( cstrArgList, privateFields));
+                    }
+                    List<MappedField> collect = Arrays.stream(cstrArgList).filter(f1 -> f1 != null).collect(Collectors.toList());
+                    constructorArgdMap.put(field, collect);
+                }
             }
+
         });
     }
 
@@ -908,8 +838,8 @@ public class SimpleEventProcessorModel {
     }
 
     private boolean noDirtyFlagNeeded(Field node) {
-        boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty() && 
-            parentUpdateListenerMethodMap.get(node.instance).isEmpty();
+        boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty()
+                && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
         Method[] methodList = node.instance.getClass().getDeclaredMethods();
         for (Method method : methodList) {
             if (annotationInHierarchy(method, OnEventComplete.class)) {
@@ -1224,7 +1154,7 @@ public class SimpleEventProcessorModel {
                 Method[] methodList = object.getClass().getMethods();
 
                 for (Method method : methodList) {
-                    if (annotationInHierarchy(method, OnEvent.class)){
+                    if (annotationInHierarchy(method, OnEvent.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
                     if (annotationInHierarchy(method, OnEventComplete.class)) {
@@ -1233,7 +1163,7 @@ public class SimpleEventProcessorModel {
                 }
             }
             filterString = eh.filterString();
-            boolean isStrFilter = filterString!=null && !filterString.isEmpty();
+            boolean isStrFilter = filterString != null && !filterString.isEmpty();
             isIntFilter = filterId != Event.NO_INT_FILTER;
 //            isFiltered = true;
             isFiltered = filterId != Event.NO_INT_FILTER || isStrFilter;
@@ -1279,7 +1209,7 @@ public class SimpleEventProcessorModel {
                     } else if (f.getType().equals(short.class)) {
                         filterIdOverride = f.getShort(instance);
                         //                    filterIdOverride = instance.getClass().getField(annotation.filterVariable()).getInt(instance);
-                    } else{
+                    } else {
                         filterStringOverride = f.get(instance).toString();
                     }
                 }
@@ -1335,7 +1265,7 @@ public class SimpleEventProcessorModel {
             //check for @OnEventComplete on the root of the event tree
             Method[] methodList = instance.getClass().getMethods();
             for (Method method : methodList) {
-                if (annotationInHierarchy(method,OnEventComplete.class)) {
+                if (annotationInHierarchy(method, OnEventComplete.class)) {
                     postDispatchMethods.add(new CbMethodHandle(method, instance, name));
                 }
             }
@@ -1347,7 +1277,7 @@ public class SimpleEventProcessorModel {
                 for (Method method : methodList) {
                     if (annotationInHierarchy(method, OnEvent.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
-                    }               
+                    }
                     if (annotationInHierarchy(method, OnEventComplete.class) && i > 0) {
                         postDispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
@@ -1361,4 +1291,5 @@ public class SimpleEventProcessorModel {
         }
 
     }
+
 }
