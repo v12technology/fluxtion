@@ -24,6 +24,7 @@ import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.annotations.TriggerEventOverride;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.GenerationContext;
@@ -42,7 +43,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +67,8 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.reflections.ReflectionUtils;
+import static org.reflections.ReflectionUtils.getAllFields;
+import static org.reflections.ReflectionUtils.withAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -585,10 +587,13 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
     }
 
     private void walkDependenciesForEventHandling(Object object) throws IllegalArgumentException, IllegalAccessException {
+        final Class<? extends Object> clazz = object.getClass();
 
-        Set<Field> s = ReflectionUtils.getAllFields(object.getClass());
+        Set<Field> s = getAllFields(clazz);
         Field[] fields = new Field[s.size()];
 
+        boolean overideEventTrigger = !getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).isEmpty();
+        
 //        Field[] fields = object.getClass().getDeclaredFields();
 //        Set<Field> s = new HashSet<>();
 //        s.addAll(Arrays.asList(fields));
@@ -601,6 +606,9 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             String refName = inst2Name.get(refField);
 
             if (field.getAnnotation(NoEventReference.class) != null) {
+                continue;
+            }
+            if(overideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
                 continue;
             }
             if (field.getType().isArray()) {
