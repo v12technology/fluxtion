@@ -36,21 +36,21 @@ import org.junit.Test;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ResetNotifierTest extends StreamInprocessTest {
-
+    
     @Test
+    //to be reinstated
     public void resetModes() {
         sep(c -> {
             Wrapper<Number> cumSum = cumSum(Sale::getAmountSold)
-                .id("soldCumSum")
-//                .log("amountSold:", Number::intValue)
-                .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
-                .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
-                .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"));
+                    .id("soldCumSum")
+                    //                .log("amountSold:", Number::intValue)
+                    .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
+                    .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
+                    .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"));
             c.addPublicNode(new Receiver(cumSum), "target");
             cumSum.map(ResetNotifierTest::x10).id("x10");
         });//, "com.fluxtion.ext.declarative.builder.reset.generated_nodefault.ResetProcessor");
 
-        
         Number soldCumSum = getWrappedField("soldCumSum");
         Number x10 = getWrappedField("x10");
         Receiver target = getField("target");
@@ -85,12 +85,12 @@ public class ResetNotifierTest extends StreamInprocessTest {
         assertThat(soldCumSum.intValue(), is(5));
         assertThat(x10.intValue(), is(50));
         assertThat(target.updatedCount, is(6));
-
+        
         onEvent("publishReset_signal");
         assertThat(soldCumSum.intValue(), is(0));
         assertThat(x10.intValue(), is(50));
         assertThat(target.updatedCount, is(7));
-
+        
         onEvent(new Sale(40));
         assertThat(soldCumSum.intValue(), is(40));
         assertThat(x10.intValue(), is(400));
@@ -101,17 +101,15 @@ public class ResetNotifierTest extends StreamInprocessTest {
     public void resetModesDefaultNumber() {
         sep(c -> {
             Wrapper<Number> cumSum = defaultVal(0, cumSum(Sale::getAmountSold))
-                .id("soldCumSum")
-//                .log("amountSold:", Number::intValue)
-                .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
-                .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
-                .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"))
-                ;
+                    .id("soldCumSum")
+                    //                .log("amountSold:", Number::intValue)
+                    .resetNoPublish(filter("reset_signal"::equalsIgnoreCase).id("resetSignal"))
+                    .publishAndReset(filter("publishReset_signal"::equalsIgnoreCase).id("publishReset_signal"))
+                    .resetAndPublish(filter("resetPublish_signal"::equalsIgnoreCase).id("resetPublishSignal"));
             c.addPublicNode(new Receiver(cumSum), "target");
             cumSum.map(ResetNotifierTest::x10).id("x10");
         });//, "com.fluxtion.ext.declarative.builder.reset.generated_default.ResetProcessor");
 
-        
         Number soldCumSum = getWrappedField("soldCumSum");
         Number x10 = getWrappedField("x10");
         Receiver target = getField("target");
@@ -146,26 +144,25 @@ public class ResetNotifierTest extends StreamInprocessTest {
         assertThat(soldCumSum.intValue(), is(5));
         assertThat(x10.intValue(), is(50));
         assertThat(target.updatedCount, is(6));
-
+        
         onEvent("publishReset_signal");
         assertThat(soldCumSum.intValue(), is(0));
         assertThat(x10.intValue(), is(50));
         assertThat(target.updatedCount, is(7));
-
+        
         onEvent(new Sale(40));
         assertThat(soldCumSum.intValue(), is(40));
         assertThat(x10.intValue(), is(400));
         assertThat(target.updatedCount, is(8));
     }
-
-        
+    
     @Test
     public void resetStatefulRef2Ref() {
         sep((c) -> {
             Wrapper<StreamData> in = select(StreamData.class);
             in.map(new MapFunctions.MapStringCount()::stringCount, StreamData::getStringValue)
-                .resetAndPublish(select(String.class))
-                .id("result");
+                    .resetAndPublish(select(String.class))
+                    .id("result");
         });
         onEvent(new StreamData("1"));
         onEvent(new StreamData("1"));
@@ -177,12 +174,12 @@ public class ResetNotifierTest extends StreamInprocessTest {
     }
     
     @Test
-    public void resetBooleanLatch(){
+    public void resetBooleanLatch() {
         sep((c) -> {
             Wrapper<String> in = select(String.class);
             in.map(new MapFunctions.MapBooleanSwitch()::stringLatch)
-                .resetAndPublish(filter("reset"::equalsIgnoreCase))
-                .id("result");
+                    .resetAndPublish(filter("reset"::equalsIgnoreCase))
+                    .id("result");
         });
         assertThat(getWrappedField("result"), is(false));
         onEvent("hi");
@@ -195,34 +192,74 @@ public class ResetNotifierTest extends StreamInprocessTest {
         assertThat(getWrappedField("result"), is(false));
     }
     
-    @Value
-    public static class Sale { int amountSold; }
-
-    @Value
-    public static class Delivery { int amountDelivered;}
-
-    @Value
-    public static class Price { int customerPrice;}
-
-    @Value
-    public static class ItemCost { int amount; }
+//    @Test
+    public void resetBooleanLatchTriggerOverride() {
+        fixedPkg = true;
+        sep((c) -> {
+            Wrapper<String> in = select(String.class);
+            in.map(new MapFunctions.MapBooleanSwitch()::stringLatch)
+                    .resetAndPublish(filter("reset"::equalsIgnoreCase))
+                    .triggerOverride(filter("calculate"::equalsIgnoreCase))
+                    .id("result");
+        });
+        assertThat(getWrappedField("result"), is(false));
+        onEvent("hi");
+        assertThat(getWrappedField("result"), is(false));
+        onEvent("on");
+        assertThat(getWrappedField("result"), is(false));
+        //trigger
+        onEvent("calculate");
+        assertThat(getWrappedField("result"), is(true));
+//        assertThat(getWrappedField("result"), is(false));
+//        
+//        
+//        
+//        onEvent("hi");
+//        assertThat(getWrappedField("result"), is(true));
+//        onEvent("reset");
+//        assertThat(getWrappedField("result"), is(false));
+    }
     
-    public static class Receiver{
-            
+    @Value
+    public static class Sale {
+
+        int amountSold;
+    }
+    
+    @Value
+    public static class Delivery {
+
+        int amountDelivered;
+    }
+    
+    @Value
+    public static class Price {
+
+        int customerPrice;
+    }
+    
+    @Value
+    public static class ItemCost {
+
+        int amount;
+    }
+    
+    public static class Receiver {
+        
         final Wrapper<Number> cumSum;
         int updatedCount;
-
+        
         public Receiver(Wrapper<Number> cumSum) {
             this.cumSum = cumSum;
         }
-         
+        
         @OnEvent
-        public void updated(){
+        public void updated() {
             updatedCount++;
         }
     }
     
-    public static int x10(int number){
+    public static int x10(int number) {
         return 10 * number;
     }
 }

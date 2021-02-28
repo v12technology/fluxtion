@@ -139,4 +139,10 @@ public abstract class DefaultNumberWrapper extends AbstractFilterWrapper<Number>
         return super.resetAndPublish(notifier);
     }
 
+    @Override
+    public FilterWrapper<Number> triggerOverride(Object triggerOverride) {
+        parent.triggerOverride(triggerOverride);
+        return super.triggerOverride(triggerOverride); 
+    }   
+
 }
