@@ -372,6 +372,10 @@ import java.util.function.Consumer;
     default Wrapper<T> resetNoPublish(Object notifier){
         return this;
     }
+    
+    default Wrapper<T> triggerOverride(Object triggerOverride){
+        return this;
+    }
 
     /**
      * Resets the stateful node and publishes the current value by notifying child nodes. The reset is
