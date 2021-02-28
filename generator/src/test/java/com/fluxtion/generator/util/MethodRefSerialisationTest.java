@@ -18,11 +18,13 @@
 package com.fluxtion.generator.util;
 
 import com.fluxtion.api.annotations.EventHandler;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import java.util.Comparator;
 import lombok.Data;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -50,6 +52,17 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         TransformFinal transform = getField("transform");
         onEvent("hello");
         assertThat(transform.out, is("HELLO"));
+    }
+    
+    @Test
+    public void testConstructor(){
+        sep(c ->{
+            c.addNode(new FactoryGeneraor(MyTarget::new), "factory");
+        });
+        FactoryGeneraor transform = getField("factory");
+        assertNull(transform.getInstance());
+        onEvent("hello");
+        assertNotNull(transform.getInstance());
     }
 
     public static class Transform {
@@ -87,6 +100,25 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
             out = (String) f.apply(in);
         }
 
+    }
+    
+    public static class FactoryGeneraor<R>{
+
+        private final LambdaReflection.SerializableSupplier<R> factory;
+        private R instance;
+        
+        public FactoryGeneraor(LambdaReflection.SerializableSupplier<R> factory){
+            this.factory = factory;
+        }
+        
+        @EventHandler
+        public void handleString(String in){
+            instance = factory.get();
+        }
+        
+        public R getInstance(){
+            return instance;
+        }
     }
     
     public static String myUpperCase(String in){

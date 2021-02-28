@@ -18,6 +18,7 @@ package com.fluxtion.api.partition;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import static java.util.Arrays.asList;
 import java.util.Objects;
@@ -83,6 +84,10 @@ public interface LambdaReflection {
                     .orElseThrow(UnableToGuessMethodException::new);
         }
         
+        default boolean isDefaultConstructor(){
+            return serialized().getImplMethodName().equalsIgnoreCase("<init>");
+        }
+        
         default Method method() {
             SerializedLambda lambda = serialized();
             Class containingClass = getContainingClass();
@@ -92,7 +97,7 @@ public interface LambdaReflection {
                     .findFirst()
                     .orElseThrow(UnableToGuessMethodException::new);
         }
-
+        
         class UnableToGuessMethodException extends RuntimeException {
         }
     }
