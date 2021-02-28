@@ -37,7 +37,7 @@ import org.junit.Test;
  */
 public class ResetNotifierTest extends StreamInprocessTest {
     
-//    @Test
+    @Test
     //to be reinstated
     public void resetModes() {
         sep(c -> {
@@ -192,7 +192,7 @@ public class ResetNotifierTest extends StreamInprocessTest {
         assertThat(getWrappedField("result"), is(false));
     }
     
-    @Test
+//    @Test
     public void resetBooleanLatchTriggerOverride() {
         fixedPkg = true;
         sep((c) -> {
