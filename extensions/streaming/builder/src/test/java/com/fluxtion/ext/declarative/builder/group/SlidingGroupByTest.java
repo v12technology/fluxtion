@@ -72,8 +72,8 @@ public class SlidingGroupByTest extends StreamInprocessTest {
             sliding(groupByAvg(Order::getCcyPair, Order::getSizeDouble), 5, 3)
                 .comparator(new MyComparator3()).reverse()
                 .top(4)
-//                .map(new MapTupleToString("ccyPair:", " avgDealSize:")::collAsString)
-//                .log()
+                .map(new MapTupleToString("ccyPair:", " avgDealSize:")::collAsString)
+                .log()
                     ;
         });
         sendSampleData();
