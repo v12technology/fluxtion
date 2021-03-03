@@ -19,9 +19,7 @@ package com.fluxtion.ext.streaming.api.group;
 import static com.fluxtion.api.SepContext.service;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.Duration;
-import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.test.BooleanFilter;
@@ -112,8 +110,7 @@ public interface GroupBy<T> extends WrappedCollection<T, Collection<T>, GroupBy<
      * notifier updates will the child nodes of this stream node be on the
      * execution path.
      *
-     * @param notifier
-     * @param eventNotifier external event notifier
+     * @param notifier external event notifier
      * @return
      */
     default Wrapper<GroupBy<T>> notifierOverride(Object notifier) {

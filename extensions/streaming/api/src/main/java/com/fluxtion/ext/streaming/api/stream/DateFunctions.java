@@ -58,7 +58,7 @@ public class DateFunctions {
             int start = minDate().getYear() * 100 + minDate().getMonth().getValue();
             int end = maxDate().getYear() * 100 + maxDate().getMonth().getValue();
             Set<Integer> set = new LinkedHashSet<>();
-            for (int i = start; i < end; i++) {
+            for (int i = start; i <= end; i++) {
                 int monthCount = i % 100;
                 if (monthCount == 0 | monthCount > 12) {
                    continue;

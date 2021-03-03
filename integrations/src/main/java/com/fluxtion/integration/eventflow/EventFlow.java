@@ -23,6 +23,7 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.integration.eventflow.filters.SepStage;
 import com.fluxtion.integration.eventflow.filters.SynchronizedFilter;
 import com.fluxtion.integration.eventflow.sources.AsynchEventSource;
+import com.fluxtion.integration.eventflow.sources.ManualEventSource;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +56,7 @@ public class EventFlow {
     private final AtomicBoolean runReaderThread;
     private ReaderThread readerThread;
     private static final LongAdder count = new LongAdder();
+    private final ManualEventSource eventInjector = new ManualEventSource("flow-eventinjector");
 
     private enum State {
         STARTED, STOPPED, INIT
@@ -71,12 +73,17 @@ public class EventFlow {
         pipeline = new Pipeline();
         dispatcherFilter = pipeline.entry(defaultDispatcher);
         runReaderThread = new AtomicBoolean(false);
+        source(eventInjector, "flow-injector");
     }
 
     public static EventFlow flow(EventSource source) {
         return new EventFlow().source(source);
     }
 
+    public void publishEvent(Object event){
+        eventInjector.publishToFlow(event);
+    }
+    
     public EventFlow start() {
         switch (currentState) {
             case STARTED:
@@ -157,7 +164,7 @@ public class EventFlow {
         return first(new PipelineFilter.SinkStage(publisher));
     }
 
-    public EventFlow source(EventSource source, String identifier) {
+    public final EventFlow source(EventSource source, String identifier) {
         String id = identifier == null ? source.id() : identifier;
         sourceMap.put(id, source);
         return this;

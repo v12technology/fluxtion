@@ -103,7 +103,7 @@ public class GroupByFunctionInfo {
         targetInstanceId = id;
         targetClassName = importMap.addImport(clazz);
         targetCalcMethodName = method.getName();
-        targetArgType = method.getParameterTypes()[0].getName();
+        targetArgType = importMap.addImport(method.getParameterTypes()[0]);//.getName().replace("$", ".");
     }
     
     public String getUpdateTarget(){
