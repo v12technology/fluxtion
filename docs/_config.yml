@@ -3,7 +3,7 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 2.10.35":
+  "release 2.10.43":
     - "//github.com/v12technology/fluxtion/tree/2.10.35"
 heading_anchors: true
 
@@ -16,7 +16,7 @@ kramdown:
     block:
       line_numbers: true
       
-fluxtion_version: 2.10.35
+fluxtion_version: 2.10.43
 
 ga_tracking: G-NGDV621P1P
 ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)

@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
  */
 public class ImportMap {
 
-    private Set<Class> importedClassSet;
-    private Set<Class> staticImportedClassSet;
+    private final Set<Class> importedClassSet;
+    private final Set<Class> staticImportedClassSet;
 
     private ImportMap() {
         importedClassSet = new HashSet<>();
