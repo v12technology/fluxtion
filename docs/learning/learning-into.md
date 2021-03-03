@@ -284,6 +284,28 @@ FilterByNotificationBuilder supports the following patterns:
 
 ### Placeholder for:
 - streaming api (declarative coding)
+  - select
+  - filter
+  - dynamic filters  
+  - map
+    - stateful functions
+    - stateless  
+    - reset  
+  - test and conditional logic    
+  - wrapper
+    - foreach
+    - reset and publish
+    - valid on start
+    - default value
+    - id  
+  - notification override
+  - push to user nodes
+  - stateful  
+  - window functions  
+    - sliding
+    - tumbling
+  - Library functions
+  - window functions library  
 - user code integration (imperative coding)
 - Monitoring
 - Auditing
