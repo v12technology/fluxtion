@@ -188,7 +188,8 @@ ${functionInfo.updateTarget}
 #else
     @Override
     public ${targetClass} value(Object key) {
-        return calcState.getInstance((${keyClass})key).target;
+        ${calcStateClass} instance = calcState.getInstance((${keyClass})key);
+        return instance==null?null:instance.target;
     }
 #end
 
