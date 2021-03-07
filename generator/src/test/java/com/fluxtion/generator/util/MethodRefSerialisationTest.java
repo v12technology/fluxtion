@@ -43,7 +43,18 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         onEvent("hello");
         assertThat(transform.out, is("HELLO"));
     }
-    
+
+    @Test
+    public void testInstanceMethodRef() {
+        sep((c) -> {
+            Transform transform = c.addPublicNode(new Transform(), "transform");
+            transform.setF(new InstanceFunction()::myUpperCase);
+        });
+        Transform transform = getField("transform");
+        onEvent("hello");
+        assertThat(transform.out, is("HELLO"));
+    }
+
     @Test
     public void testMethodRefFinal() {
         sep((c) -> {
@@ -53,10 +64,10 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         onEvent("hello");
         assertThat(transform.out, is("HELLO"));
     }
-    
+
     @Test
-    public void testConstructor(){
-        sep(c ->{
+    public void testConstructor() {
+        sep(c -> {
             c.addNode(new FactoryGeneraor(MyTarget::new), "factory");
         });
         FactoryGeneraor transform = getField("factory");
@@ -70,7 +81,6 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         private SerializableFunction f;
         private String out;
 
-
         public <T, R> SerializableFunction<T, R> getF() {
             return f;
         }
@@ -78,9 +88,9 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         public <T, R> void setF(SerializableFunction<T, R> f) {
             this.f = f;
         }
-        
+
         @EventHandler
-        public void handleString(String in){
+        public void handleString(String in) {
             out = (String) f.apply(in);
         }
 
@@ -96,32 +106,32 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         }
 
         @EventHandler
-        public void handleString(String in){
+        public void handleString(String in) {
             out = (String) f.apply(in);
         }
 
     }
-    
-    public static class FactoryGeneraor<R>{
+
+    public static class FactoryGeneraor<R> {
 
         private final LambdaReflection.SerializableSupplier<R> factory;
         private R instance;
-        
-        public FactoryGeneraor(LambdaReflection.SerializableSupplier<R> factory){
+
+        public FactoryGeneraor(LambdaReflection.SerializableSupplier<R> factory) {
             this.factory = factory;
         }
-        
+
         @EventHandler
-        public void handleString(String in){
+        public void handleString(String in) {
             instance = factory.get();
         }
-        
-        public R getInstance(){
+
+        public R getInstance() {
             return instance;
         }
     }
-    
-    public static String myUpperCase(String in){
+
+    public static String myUpperCase(String in) {
         return in.toUpperCase();
     }
 
@@ -129,5 +139,12 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
     public static class MyTarget {
 
         String myName;
+    }
+
+    public static class InstanceFunction {
+
+        public String myUpperCase(String in) {
+            return in.toUpperCase();
+        }
     }
 }
