@@ -160,8 +160,11 @@ public interface ClassUtils {
         if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
             MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
             importList.add(ref.getContainingClass());
+            
             if(ref.isDefaultConstructor()){
                 primitiveVal = ref.getContainingClass().getSimpleName() + "::new";
+            }else if(ref.captured().length>0){
+                primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
             }else{
                 primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
             }
