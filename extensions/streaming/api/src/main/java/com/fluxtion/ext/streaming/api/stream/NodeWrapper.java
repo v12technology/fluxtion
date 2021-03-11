@@ -1,5 +1,6 @@
 package com.fluxtion.ext.streaming.api.stream;
 
+import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import lombok.EqualsAndHashCode;
@@ -20,6 +21,10 @@ public class NodeWrapper<T> implements Wrapper<T> {
         this.node = node;
     }
 
+    public static <T>  NodeWrapper<T> wrap(T node){
+        return SepContext.service().addOrReuse(new NodeWrapper(node));
+    }
+    
     @OnEvent
     public boolean onEvent() {
         return true;

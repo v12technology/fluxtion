@@ -17,11 +17,13 @@
 package com.fluxtion.ext.streaming.api;
 
 import com.fluxtion.api.SepContext;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.Argument;
+import com.fluxtion.ext.streaming.api.stream.FieldMapper;
 import com.fluxtion.ext.streaming.api.stream.StreamOperator;
 import com.fluxtion.ext.streaming.api.window.WindowBuildOperations;
 import java.util.concurrent.atomic.LongAdder;
@@ -299,7 +301,14 @@ import java.util.function.Consumer;
     default Wrapper<T> forEach(SerializableConsumer<T> consumer) {
         return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, null);
     }
-
+    
+    default <R, S> Wrapper<T> mapField(
+        LambdaReflection.SerializableFunction<T, R> readField,
+        LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper){
+        return FieldMapper.setField( this, readField, writeField, mapper); 
+    }
+    
     LongAdder counter = new LongAdder();
 
     /**

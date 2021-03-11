@@ -19,7 +19,8 @@ package com.fluxtion.api;
 import java.util.ServiceLoader;
 
 /**
- * Service providing buildtime access to constructing a SEP.
+ * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the 
+ * context.
  *
  * @author V12 Technology Ltd.
  */
