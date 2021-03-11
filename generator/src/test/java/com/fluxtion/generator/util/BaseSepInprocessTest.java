@@ -40,7 +40,7 @@ import org.junit.rules.TestName;
 public class BaseSepInprocessTest {
 
     protected StaticEventProcessor sep;
-    protected boolean fixedPkg = false;
+    protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
     protected TestMutableNumber time;
@@ -51,7 +51,7 @@ public class BaseSepInprocessTest {
 
     @Before
     public void beforeTest() {
-        fixedPkg = false;
+        fixedPkg = true;
     }
 
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
