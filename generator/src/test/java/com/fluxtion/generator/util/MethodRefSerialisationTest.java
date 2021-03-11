@@ -54,6 +54,19 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         onEvent("hello");
         assertThat(transform.out, is("HELLO"));
     }
+    
+    @Test
+    public void testNodeInstanceMethdRef(){
+        sep((c) -> {
+            Transform transform = c.addPublicNode(new Transform(), "transform");
+            final InstanceFunction instanceFunction = c.addNode(new InstanceFunction());
+            instanceFunction.setPrefix("prefix");
+            transform.setF(instanceFunction::prefixString);
+        });
+        Transform transform = getField("transform");
+        onEvent("hello");
+        assertThat(transform.out, is("prefixhello"));
+    }
 
     @Test
     public void testMethodRefFinal() {
@@ -141,10 +154,17 @@ public class MethodRefSerialisationTest extends BaseSepInprocessTest {
         String myName;
     }
 
+    @Data
     public static class InstanceFunction {
 
+        private String prefix;
+        
         public String myUpperCase(String in) {
             return in.toUpperCase();
+        }
+        
+        public String prefixString(String in){
+            return prefix + in;
         }
     }
 }

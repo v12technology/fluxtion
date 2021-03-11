@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -157,6 +156,7 @@ public interface ClassUtils {
             importList.add((Class) primitiveVal);
             primitiveVal = ((Class) primitiveVal).getSimpleName() + ".class";
         }
+        boolean foundMatch = false;
         if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
             MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
             importList.add(ref.getContainingClass());
@@ -164,12 +164,22 @@ public interface ClassUtils {
             if(ref.isDefaultConstructor()){
                 primitiveVal = ref.getContainingClass().getSimpleName() + "::new";
             }else if(ref.captured().length>0){
-                primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
+                //see if we can find the reference and set the instance
+                Object functionInstance = ref.captured()[0];
+                for (Field nodeField : nodeFields) {
+                    if (nodeField.instance == functionInstance) {
+                        primitiveVal = nodeField.name + "::" + ref.method().getName();
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if(!foundMatch){
+                    primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
+                }
             }else{
                 primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
             }
         }
-        boolean foundMatch = false;
         for (Field nodeField : nodeFields) {
             if (nodeField.instance == primitiveVal) {
                 primitiveVal = nodeField.name;
