@@ -20,6 +20,7 @@ package com.fluxtion.generator.model;
 import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.ConfigVariable;
+import com.fluxtion.api.annotations.ExcludeNode;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.PushReference;
@@ -554,6 +555,10 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
             }
         }
 
+        topologicalHandlers.removeIf(o -> {
+            return o.getClass().getAnnotation(ExcludeNode.class)!=null;
+        });
+        
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("GRAPH:" + graph);
         }

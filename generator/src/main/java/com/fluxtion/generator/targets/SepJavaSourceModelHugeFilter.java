@@ -236,7 +236,7 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers) {
-        this(model, inlineEventHandling, assignPrivateMembers, 2);
+        this(model, inlineEventHandling, assignPrivateMembers, 5);
     }
     
     public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers, int maxFilterBranches) {
