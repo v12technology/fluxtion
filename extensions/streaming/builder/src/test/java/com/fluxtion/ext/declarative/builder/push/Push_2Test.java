@@ -1,5 +1,6 @@
 package com.fluxtion.ext.declarative.builder.push;
 
+import com.fluxtion.api.Anchor;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
@@ -57,7 +58,7 @@ public class Push_2Test extends StreamInprocessTest {
             track_2.setSecondParent(select(String.class));
             track_1.setRecorder(list);
             track_2.setRecorder(list);
-            PushBuilder.anchor(track_1, track_2);
+            Anchor.anchor(track_1, track_2);
         });
         List<String> list = getField("recorder");
         assertThat(list, empty());

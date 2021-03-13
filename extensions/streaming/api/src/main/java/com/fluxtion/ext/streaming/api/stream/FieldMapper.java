@@ -20,37 +20,43 @@ package com.fluxtion.ext.streaming.api.stream;
 import com.fluxtion.api.SepContext;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.partition.LambdaReflection;
+import com.fluxtion.api.Anchor;
 import com.fluxtion.ext.streaming.api.Wrapper;
 
 /**
  *
  * @author gregp
  */
-public class FieldMapper extends AbstractFilterWrapper{
+public class FieldMapper extends AbstractFilterWrapper {
 
     private final Wrapper targetInstance;
     private final LambdaReflection.SerializableFunction readField;
     private final LambdaReflection.SerializableBiConsumer writeField;
     private final LambdaReflection.SerializableFunction mapper;
-    
-    public static <T, R, S> FieldMapper setField(Wrapper<T> targetInstance,
+
+    public static <T, R, S> Wrapper<T> setField(Wrapper<T> targetInstance,
         LambdaReflection.SerializableFunction<T, R> readField,
         LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
-        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper){
-        return SepContext.service().add(new FieldMapper(targetInstance, readField, writeField, mapper));
+        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
+        final Wrapper wrapper = SepContext.service().add(new FieldMapper(targetInstance, readField, writeField, mapper));
+        return wrapper;
     }
-    
-    public static <T, R, S> FieldMapper setField(T targetInstance,
+
+    public static <T, R, S> Wrapper<T> setField(T targetInstance,
         LambdaReflection.SerializableFunction<T, R> readField,
         LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
-        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper){
+        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
         return SepContext.service().add(new FieldMapper(NodeWrapper.wrap(targetInstance), readField, writeField, mapper));
     }
 
-    public <T, R, S> FieldMapper(Wrapper targetInstance,
+    public <T, R, S> FieldMapper(Wrapper<T> targetInstance,
         LambdaReflection.SerializableFunction<T, R> readField,
         LambdaReflection.SerializableBiConsumer<T, S> writeField,
         LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
+        if(mapper.captured().length > 0){
+            Object add = SepContext.service().add(mapper.captured()[0]);
+            SepContext.service().addOrReuse(new Anchor( add, this));
+        }
         this.targetInstance = targetInstance;
         this.readField = readField;
         this.writeField = writeField;
@@ -66,7 +72,7 @@ public class FieldMapper extends AbstractFilterWrapper{
 
     @Override
     public Object event() {
-        return targetInstance.event();
+        return  targetInstance.event();
     }
 
     @Override

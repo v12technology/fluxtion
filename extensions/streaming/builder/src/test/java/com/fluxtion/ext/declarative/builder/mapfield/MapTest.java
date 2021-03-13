@@ -21,6 +21,7 @@ import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import com.fluxtion.ext.streaming.api.stream.FieldMapper;
 import lombok.Data;
+import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
@@ -52,6 +53,37 @@ public class MapTest extends StreamInprocessTest {
         onEvent(new DataEvent(30));
         dataEvent = getWrappedField("dataEvent");
         assertThat(dataEvent.getDoubleVal(), is(300d));
+    }
+
+    @Test
+    public void testFieldSetInstanceFunction() {
+//        reuseSep = true;
+        fixedPkg = true;
+        sep(c -> {
+            FieldMapper.setField(
+                    select(DataEvent.class).id("dataEvent"),
+                    DataEvent::getIntVal,
+                    DataEvent::setDoubleVal,
+                    new MyMapper(-6)::multiply
+            )
+                .map(Math::abs, DataEvent::getDoubleVal).id("absValue");             
+        });
+        onEvent(new DataEvent(10));
+        DataEvent dataEvent = getWrappedField("dataEvent");
+        Number absValue = getWrappedField("absValue");
+        assertThat(dataEvent.getDoubleVal(), is(-60d));
+        assertThat(absValue.intValue(), is(60));
+        
+        onEvent(new DataEvent(20));
+        dataEvent = getWrappedField("dataEvent");
+        assertThat(dataEvent.getDoubleVal(), is(-120d));
+        assertThat(absValue.intValue(), is(120));
+        
+        
+        onEvent(new DataEvent(30));
+        dataEvent = getWrappedField("dataEvent");
+        assertThat(dataEvent.getDoubleVal(), is(-180d));
+        assertThat(absValue.intValue(), is(180));
     }
 
     @Test
@@ -91,6 +123,16 @@ public class MapTest extends StreamInprocessTest {
         private double doubleVal;
         private int calcIntVal;
         private final int intVal;
+    }
+
+    @Value
+    public static class MyMapper {
+
+        int multiplier;
+
+        public double multiply(int number) {
+            return (number * multiplier);
+        }
     }
 
 }
