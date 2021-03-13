@@ -5,7 +5,6 @@ import com.fluxtion.api.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.ext.streaming.api.Anchor;
 import com.fluxtion.ext.streaming.api.PushNotifier;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -31,28 +30,6 @@ public class PushBuilder {
     public static <S, T> S pushNotification(S source, T target) {
         PushNotifier p = SepContext.service().addOrReuse(new PushNotifier(source, target));
         return source;
-    }
-
-    /**
-     * Creates a happens before relationship between two nodes even though there is no dependency relationship
-     * between the nodes. This can happen if both nodes are siblings depending upon a common parent.
-     *
-     * @param <S> The type of the happens after node
-     * @param <T> The type of the happens before node
-     * @param anchor The anchor node that will be invoked first
-     * @param afterAnchor The node that will be notified after the anchor node
-     * @return The after anchor node
-     */
-    public static <S, T> S anchor(T anchor, S afterAnchor) {
-        SepContext.service().addOrReuse(new Anchor( anchor, afterAnchor));
-        return afterAnchor;
-    }
-    
-    public static void anchor(Object anchor, Object... afterAnchors) {
-        for (Object afterAnchor : afterAnchors) {
-            anchor(anchor, afterAnchor);
-            anchor = afterAnchor;
-        }
     }
 
     public static <S extends T, T> void pushSource(T source, SerializableConsumer<S> consumer) {
