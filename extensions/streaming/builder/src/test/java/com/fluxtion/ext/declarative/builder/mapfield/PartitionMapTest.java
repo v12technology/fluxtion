@@ -16,8 +16,13 @@
  */
 package com.fluxtion.ext.declarative.builder.mapfield;
 
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.PartitioningFieldMapper;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Value;
 import org.junit.Test;
 
@@ -25,22 +30,61 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class PartitionMapTest extends StreamInprocessTest{
-    
+public class PartitionMapTest extends StreamInprocessTest {
+
     @Test
-    public void partioniningTest(){
-        sep(c ->{
-            c.addNode(new PartitioningFieldMapper(new MyFunctionFactory("hello")::buildFunction));
+    public void partioniningTest() {
+
+        sep(c -> {
+            Wrapper<DataToBeMapped> source = select(DataToBeMapped.class).log("input");
+            
+            Wrapper result = c.addNode(new PartitioningFieldMapper(
+                source,
+                DataToBeMapped::getKey,
+                DataToBeMapped::getValue,
+                DataToBeMapped::setCumSum,
+                new MyFunctionFactory(5)::buildFunction
+            )
+            ).log("after mapping");
         });
-    }
-    
-    @Value
-    public static class MyFunctionFactory{
-    
-        String name;
         
-        public String buildFunction(){
-            return name;
+        onEvent(new DataToBeMapped("eu", 10, 0));
+        onEvent(new DataToBeMapped("eu", 10, 0));
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        onEvent(new DataToBeMapped("eu", 10, 0));
+    }
+
+    @Value
+    public static class MyFunctionFactory {
+
+        int multiplier;
+
+        public LambdaReflection.SerializableFunction<Integer, Integer> buildFunction() {
+            return new CumSum(multiplier)::cumSum;
         }
     }
+
+    @Data
+    public static class CumSum {
+
+        private final int multiplier;
+        private transient int sum;
+
+        public int cumSum(int add) {
+            sum += add * multiplier;
+            return sum;
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class DataToBeMapped {
+
+        String key;
+        int value;
+        int cumSum;
+    }
+
 }
