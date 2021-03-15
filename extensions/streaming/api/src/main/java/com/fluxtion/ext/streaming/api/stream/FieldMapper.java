@@ -48,7 +48,28 @@ public class FieldMapper extends AbstractFilterWrapper {
         LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
         return SepContext.service().add(new FieldMapper(NodeWrapper.wrap(targetInstance), readField, writeField, mapper));
     }
-
+    
+    public static <T, K, R, S> Wrapper<T> setField(Wrapper<T> targetInstance,
+            LambdaReflection.SerializableFunction<T, K> keySupplier,
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapperFactory) {
+        final Wrapper wrapper = SepContext.service().add(
+                new PartitioningFieldMapper(targetInstance, keySupplier, readField, writeField, mapperFactory));
+        return wrapper;
+    }
+    
+    public static <T, K, R, S> Wrapper<T> setField(T targetInstance,
+            LambdaReflection.SerializableFunction<T, K> keySupplier,
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapperFactory,
+            LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
+        final Wrapper wrapper = SepContext.service().add(
+                new PartitioningFieldMapper(NodeWrapper.wrap(targetInstance), keySupplier, readField, writeField, mapperFactory));
+        return wrapper;
+    }
+    
     public <T, R, S> FieldMapper(Wrapper<T> targetInstance,
         LambdaReflection.SerializableFunction<T, R> readField,
         LambdaReflection.SerializableBiConsumer<T, S> writeField,

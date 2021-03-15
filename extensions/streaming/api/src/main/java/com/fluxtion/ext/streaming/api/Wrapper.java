@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * @author Greg Higgins
  * @param <T>
  */
- public interface Wrapper<T> extends Stateful<T>{
+public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * The wrapped node
@@ -52,29 +52,30 @@ import java.util.function.Consumer;
      * @return wrapped node class
      */
     Class<T> eventClass();
-    
-    @Override
-    default void reset(){}
 
-    default <S> Argument<S> arg(SerializableFunction<T, S> supplier){
+    @Override
+    default void reset() {
+    }
+
+    default <S> Argument<S> arg(SerializableFunction<T, S> supplier) {
         return Argument.arg(this, supplier);
     }
 
-    default <S> Argument<S> arg(){
+    default <S> Argument<S> arg() {
         return Argument.arg(this);
     }
-    
+
     /**
-     * Set the default value for this instance. The default value will be set when any call to reset is made. Having a 
+     * Set the default value for this instance. The default value will be set when any call to reset is made. Having a
      * default value allows an instance to be used by its children before an event has been processed.
-     * 
+     *
      * @param defaultValue the default value to use
-     * @return 
+     * @return
      */
-    default Wrapper<T> defaultVal(T defaultValue){
-        return  StreamOperator.service().defaultVal(this, defaultValue);
+    default Wrapper<T> defaultVal(T defaultValue) {
+        return StreamOperator.service().defaultVal(this, defaultValue);
     }
-    
+
     default <S extends T> FilterWrapper<T> filter(SerializableFunction<S, Boolean> filter) {
         return StreamOperator.service().filter(filter, this, true);
     }
@@ -86,9 +87,9 @@ import java.util.function.Consumer;
     default <S> Wrapper<S> get(SerializableFunction<T, S> supplier) {
         return StreamOperator.service().get(supplier, this);
     }
-    
-    default  WrappedList<T> collect(){
-       return  SepContext.service().add(new ArrayListWrappedCollection<>(this));
+
+    default WrappedList<T> collect() {
+        return SepContext.service().add(new ArrayListWrappedCollection<>(this));
     }
 
     default <S extends Number, R extends Number> GroupBy<R> group(
@@ -96,14 +97,14 @@ import java.util.function.Consumer;
             SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, key, functionClass);
     }
-    
+
     default <K, S extends Number, R extends Number> GroupBy<R> group(
             SerializableFunction<T, K> key,
             SerializableFunction<T, S> supplier,
             SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, key, supplier, functionClass);
     }
-    
+
     /**
      * Maps a value using the provided mapping function.The input is the
      * wrapped instance inside this {@link Wrapper}.
@@ -178,94 +179,108 @@ import java.util.function.Consumer;
 
     //windows reducing
     /**
-     * Create a time based tumbling window aggregate result expiring after a duration has passed. The window combines the results of the supplied
+     * Create a time based tumbling window aggregate result expiring after a duration has passed. The window combines
+     * the results of the supplied
      * function for all events that occur within the timed window
+     *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
      * @param time The duration of the window
      * @return A result that is updated at the window expiry
      */
     default <R> Wrapper<R> tumbling(SerializableFunction<T, R> mapper, Duration time) {
-        return WindowBuildOperations.service().tumbling(this, mapper, time); 
+        return WindowBuildOperations.service().tumbling(this, mapper, time);
     }
-    
+
     /**
-     * Create a count based tumbling window aggregate result expiring after receiving a number of events. The window combines the results of the supplied
+     * Create a count based tumbling window aggregate result expiring after receiving a number of events. The window
+     * combines the results of the supplied
      * function for all events that occur within the window
+     *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
      * @param itemCount the number of events in a window
      * @return A result that is updated at the window expiry
      */
     default <R> Wrapper<R> tumbling(SerializableFunction<T, R> mapper, int itemCount) {
-        return WindowBuildOperations.service().tumbling(this, mapper, itemCount); 
+        return WindowBuildOperations.service().tumbling(this, mapper, itemCount);
     }
-    
+
     /**
-     * Create a time based sliding window aggregate result publishing after a duration has passed. The window combines the results of the supplied
-     * function for all events that occur within the number of buckets. The total window time = time per bucket X number of buckets
+     * Create a time based sliding window aggregate result publishing after a duration has passed. The window combines
+     * the results of the supplied
+     * function for all events that occur within the number of buckets. The total window time = time per bucket X number
+     * of buckets
+     *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
      * @param time The duration of a bucket
-     * @param numberOfBuckets the number of buckets in the window 
+     * @param numberOfBuckets the number of buckets in the window
      * @return A result that is updated at the window expiry
      */
-    default <R> Wrapper<R> sliding(SerializableFunction<T, R> mapper, Duration time,  int numberOfBuckets) {
-        return WindowBuildOperations.service().sliding(this, mapper, time, numberOfBuckets); 
+    default <R> Wrapper<R> sliding(SerializableFunction<T, R> mapper, Duration time, int numberOfBuckets) {
+        return WindowBuildOperations.service().sliding(this, mapper, time, numberOfBuckets);
     }
-    
+
     /**
-     * Create a count based sliding window aggregate result publishing after a count has passed. The window combines the results of the supplied
-     * function for all events that occur within the number of buckets. The total window count = the number of events per bucket X number of buckets
+     * Create a count based sliding window aggregate result publishing after a count has passed. The window combines the
+     * results of the supplied
+     * function for all events that occur within the number of buckets. The total window count = the number of events
+     * per bucket X number of buckets
+     *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
      * @param itemCountPerBuket the number of events per bucket
-     * @param numberOfBuckets the number of buckets in the window 
+     * @param numberOfBuckets the number of buckets in the window
      * @return A result that is updated at the window expiry
      */
     default <R> Wrapper<R> sliding(SerializableFunction<T, R> mapper, int itemCountPerBuket, int numberOfBuckets) {
-        return WindowBuildOperations.service().sliding(this, mapper, itemCountPerBuket, numberOfBuckets); 
+        return WindowBuildOperations.service().sliding(this, mapper, itemCountPerBuket, numberOfBuckets);
     }
-    
+
     //window collecting
     /**
-     * Collects the events into a WrappedList using a time based sliding window strategy. 
-     * @param timePerBucket  time per bucket
+     * Collects the events into a WrappedList using a time based sliding window strategy.
+     *
+     * @param timePerBucket time per bucket
      * @param numberOfBuckets number of buckets in sliding window
      * @return The collection of events in sliding window
      */
-    default WrappedList<T> sliding(Duration timePerBucket, int numberOfBuckets){
-        return WindowBuildOperations.service().sliding(collect(), timePerBucket, numberOfBuckets); 
-    }    
-    
+    default WrappedList<T> sliding(Duration timePerBucket, int numberOfBuckets) {
+        return WindowBuildOperations.service().sliding(collect(), timePerBucket, numberOfBuckets);
+    }
+
     /**
-     * Collects the events into a WrappedList using a count based sliding window strategy. 
+     * Collects the events into a WrappedList using a count based sliding window strategy.
+     *
      * @param itemCount the count of events per bucket
      * @param numberOfBuckets number of buckets in sliding window
      * @return The collection of events in sliding window
      */
-    default WrappedList<T> sliding(int itemCount, int numberOfBuckets){
-        return WindowBuildOperations.service().sliding(collect(), itemCount, numberOfBuckets); 
-    }  
-    
+    default WrappedList<T> sliding(int itemCount, int numberOfBuckets) {
+        return WindowBuildOperations.service().sliding(collect(), itemCount, numberOfBuckets);
+    }
+
     /**
-     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+     * Collects the events into a WrappedList using a time based tumbling window strategy.
+     *
      * @param time duration of the tumbling window
      * @return The collection of events in sliding window
      */
-    default WrappedList<T> tumbling(Duration time){
-        return WindowBuildOperations.service().tumbling(collect(), time); 
-    }    
-    
-     /**
-     * Collects the events into a WrappedList using a time based tumbling window strategy. 
+    default WrappedList<T> tumbling(Duration time) {
+        return WindowBuildOperations.service().tumbling(collect(), time);
+    }
+
+    /**
+     * Collects the events into a WrappedList using a time based tumbling window strategy.
+     *
      * @param itemCount number of items in the tumbling window
      * @return The collection of events in sliding window
      */
-    default WrappedList<T> tumbling(int itemCount){
-        return WindowBuildOperations.service().tumbling(collect(), itemCount); 
-    }    
-    
+    default WrappedList<T> tumbling(int itemCount) {
+        return WindowBuildOperations.service().tumbling(collect(), itemCount);
+    }
+
     /**
      * pushes a data item from the current node in the stream to any node.The
      * target node will become part of the same execution graph as the
@@ -301,19 +316,27 @@ import java.util.function.Consumer;
     default Wrapper<T> forEach(SerializableConsumer<T> consumer) {
         return (Wrapper<T>) StreamOperator.service().forEach(consumer, this, null);
     }
-    
+
     default <R, S> Wrapper<T> mapField(
-        LambdaReflection.SerializableFunction<T, R> readField,
-        LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
-        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper){
-        return FieldMapper.setField( this, readField, writeField, mapper); 
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+            LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
+        return FieldMapper.setField(this, readField, writeField, mapper);
     }
-    
+
+    default <K, R, S> Wrapper<T> mapField(
+            LambdaReflection.SerializableFunction<T, K> keySupplier,
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapper) {
+        return FieldMapper.setField(this, keySupplier, readField, writeField, mapper);
+    }
+
     LongAdder counter = new LongAdder();
 
     /**
      * dump this node to log, prefixed with the supplied
- message.{@link Object#toString()} will be invoked on the node instance.
+     * message.{@link Object#toString()} will be invoked on the node instance.
      *
      * @param prefix String prefix for the log message
      * @param supplier
@@ -325,7 +348,7 @@ import java.util.function.Consumer;
         }
         return (Wrapper<T>) StreamOperator.service().log(this, prefix, supplier);
     }
-    
+
     default Wrapper<T> log() {
         return log("");
     }
@@ -360,7 +383,8 @@ import java.util.function.Consumer;
     }
 
     /**
-     * Publishes the current value to all child dependencies and then resets. After all children have processed the trigger a reset is 
+     * Publishes the current value to all child dependencies and then resets. After all children have processed the
+     * trigger a reset is
      * invoked on the wrapped instance. The publish and reset is triggered when the supplied notifier triggers in the
      * execution graph.
      *
@@ -370,25 +394,27 @@ import java.util.function.Consumer;
     default Wrapper<T> publishAndReset(Object notifier) {
         return this;
     }
-    
+
     /**
-     * Resets the current value without notifying children of a change. The reset is triggered when the supplied notifier triggers in the
+     * Resets the current value without notifying children of a change. The reset is triggered when the supplied
+     * notifier triggers in the
      * execution graph.
      *
      * @param notifier trigger for reset
      * @return
      */
-    default Wrapper<T> resetNoPublish(Object notifier){
+    default Wrapper<T> resetNoPublish(Object notifier) {
         return this;
     }
-    
-    default Wrapper<T> triggerOverride(Object triggerOverride){
+
+    default Wrapper<T> triggerOverride(Object triggerOverride) {
         return this;
     }
 
     /**
      * Resets the stateful node and publishes the current value by notifying child nodes. The reset is
-     * before the notification is broadcast. The reset and publish is triggered when the supplied notifier triggers in the
+     * before the notification is broadcast. The reset and publish is triggered when the supplied notifier triggers in
+     * the
      * execution graph.
      *
      * @param notifier trigger for reset and publish
@@ -418,11 +444,11 @@ import java.util.function.Consumer;
     }
 
     /**
-     * Set this property to signal the wrapper has a valid value and child nodes do not have to wait for a trigger 
+     * Set this property to signal the wrapper has a valid value and child nodes do not have to wait for a trigger
      * notification before using the data from this instance.
-     * 
+     *
      * @param validOnStart
-     * @return 
+     * @return
      */
     default Wrapper<T> validOnStart(boolean validOnStart) {
         return this;

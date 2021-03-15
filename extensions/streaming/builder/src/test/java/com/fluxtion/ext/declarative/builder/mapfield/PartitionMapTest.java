@@ -19,11 +19,14 @@ package com.fluxtion.ext.declarative.builder.mapfield;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.FieldMapper;
 import com.fluxtion.ext.streaming.api.stream.PartitioningFieldMapper;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Value;
+import static org.hamcrest.CoreMatchers.is;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 /**
@@ -36,24 +39,58 @@ public class PartitionMapTest extends StreamInprocessTest {
     public void partioniningTest() {
 
         sep(c -> {
-            Wrapper<DataToBeMapped> source = select(DataToBeMapped.class).log("input");
-            
-            Wrapper result = c.addNode(new PartitioningFieldMapper(
-                source,
-                DataToBeMapped::getKey,
-                DataToBeMapped::getValue,
-                DataToBeMapped::setCumSum,
-                new MyFunctionFactory(5)::buildFunction
+            FieldMapper.setField(
+                    select(DataToBeMapped.class),
+                    DataToBeMapped::getKey,
+                    DataToBeMapped::getValue,
+                    DataToBeMapped::setCumSum,
+                    new MyFunctionFactory(5)::buildFunction
             )
-            ).log("after mapping");
+                    .id("data");
         });
-        
+
         onEvent(new DataToBeMapped("eu", 10, 0));
         onEvent(new DataToBeMapped("eu", 10, 0));
+        DataToBeMapped data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(100));
+
         onEvent(new DataToBeMapped("uc", 50, 0));
         onEvent(new DataToBeMapped("uc", 50, 0));
         onEvent(new DataToBeMapped("uc", 50, 0));
+        data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(750));
+
         onEvent(new DataToBeMapped("eu", 10, 0));
+        data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(150));
+    }
+
+    @Test
+    public void partioniningWrapperTest() {
+        sep(c -> {
+            select(DataToBeMapped.class).mapField(
+                    DataToBeMapped::getKey,
+                    DataToBeMapped::getValue,
+                    DataToBeMapped::setCumSum,
+                    new MyFunctionFactory(5)::buildFunction
+            )
+                    .id("data");
+        });
+
+        onEvent(new DataToBeMapped("eu", 10, 0));
+        onEvent(new DataToBeMapped("eu", 10, 0));
+        DataToBeMapped data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(100));
+
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        onEvent(new DataToBeMapped("uc", 50, 0));
+        data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(750));
+
+        onEvent(new DataToBeMapped("eu", 10, 0));
+        data = getWrappedField("data");
+        MatcherAssert.assertThat(data.cumSum, is(150));
     }
 
     @Value

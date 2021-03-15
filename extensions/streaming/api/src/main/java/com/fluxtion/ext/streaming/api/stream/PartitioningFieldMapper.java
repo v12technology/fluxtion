@@ -30,40 +30,39 @@ import java.util.Map;
  *
  * @author V12 Technology Ltd.
  */
-public class PartitioningFieldMapper extends AbstractFilterWrapper{
+public class PartitioningFieldMapper extends AbstractFilterWrapper {
 
     private final Wrapper targetInstance;
-    private final LambdaReflection.SerializableFunction  keySupplier;
+    private final LambdaReflection.SerializableFunction keySupplier;
     private final LambdaReflection.SerializableFunction readField;
     private final LambdaReflection.SerializableBiConsumer writeField;
     @NoEventReference
-    private final LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapperFactory;
+    private final LambdaReflection.SerializableSupplier< LambdaReflection.SerializableFunction> mapperFactory;
     private transient final Map<? super Object, LambdaReflection.SerializableFunction> functionMap;
     
-
     public <T, K, R, S> PartitioningFieldMapper(Wrapper<T> targetInstance,
-        LambdaReflection.SerializableFunction<T, K>  keySupplier,
-        LambdaReflection.SerializableFunction<T, R> readField,
-        LambdaReflection.SerializableBiConsumer<T, S> writeField,
-        LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapper) {
-        if (mapper.captured().length > 0) {
-            Object add = SepContext.service().add(mapper.captured()[0]);
+            LambdaReflection.SerializableFunction<T, K> keySupplier,
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, S> writeField,
+            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapperFactory) {
+        if (mapperFactory.captured().length > 0) {
+            Object add = SepContext.service().add(mapperFactory.captured()[0]);
             SepContext.service().addOrReuse(new Anchor(add, this));
         }
         this.targetInstance = targetInstance;
         this.keySupplier = keySupplier;
         this.readField = readField;
         this.writeField = writeField;
-        this.mapperFactory = mapper;
+        this.mapperFactory = mapperFactory;
         this.functionMap = new HashMap<>();
     }
 
     @OnEvent
-    public boolean mapPartitionedField(){
+    public boolean mapPartitionedField() {
         final Object event = targetInstance.event();
         Object key = keySupplier.apply(event);
         LambdaReflection.SerializableFunction mappingFunction = functionMap.get(key);
-        if(mappingFunction == null){
+        if (mappingFunction == null) {
             mappingFunction = mapperFactory.get();
             functionMap.put(key, mappingFunction);
         }
@@ -71,10 +70,10 @@ public class PartitioningFieldMapper extends AbstractFilterWrapper{
         writeField.accept(event, mapResult);
         return true;
     }
-    
+
     @Initialise
     @Override
-    public void reset(){
+    public void reset() {
         functionMap.clear();
     }
 
