@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
 /**
- * A wrapper class that holds a reference to a node in the SEP. Any node in SEP
- * can be a source of a stream of values.<p>
+ * A wrapper class that holds a reference to a node in the SEP. Any node in SEP can be a source of a stream of
+ * values.<p>
  * Stream operations are provided to filter and map the underlying wrapped type.
  *
  * @author Greg Higgins
@@ -93,21 +93,20 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     default <S extends Number, R extends Number> GroupBy<R> group(
-            SerializableFunction<T, S> key,
-            SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
+        SerializableFunction<T, S> key,
+        SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, key, functionClass);
     }
 
     default <K, S extends Number, R extends Number> GroupBy<R> group(
-            SerializableFunction<T, K> key,
-            SerializableFunction<T, S> supplier,
-            SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
+        SerializableFunction<T, K> key,
+        SerializableFunction<T, S> supplier,
+        SerializableBiFunction<? super R, ? super R, ? extends R> functionClass) {
         return StreamOperator.service().group(this, key, supplier, functionClass);
     }
 
     /**
-     * Maps a value using the provided mapping function.The input is the
-     * wrapped instance inside this {@link Wrapper}.
+     * Maps a value using the provided mapping function.The input is the wrapped instance inside this {@link Wrapper}.
      *
      * @param <R> The return type of the mapping function
      * @param <S>
@@ -119,8 +118,8 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Maps a value using the provided mapping function. The input is the return
-     * value of the supplier function invoked on the wrapped instance.
+     * Maps a value using the provided mapping function. The input is the return value of the supplier function invoked
+     * on the wrapped instance.
      *
      * @param <R> The return type of the mapping function
      * @param <S> The input type required by the mapping function
@@ -137,7 +136,7 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     default <R, S, U> Wrapper<R> map(SerializableBiFunction<? extends U, ? extends S, R> mapper,
-            SerializableFunction<T, S> supplier1, SerializableFunction<T, U> supplier2) {
+        SerializableFunction<T, S> supplier1, SerializableFunction<T, U> supplier2) {
         return (Wrapper<R>) StreamOperator.service().map((SerializableBiFunction) mapper, Argument.arg(this, supplier1), Argument.arg(this, supplier2));
     }
 
@@ -158,8 +157,7 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Maps a binary function using the wrapped instance as the first argument
-     * to the binary function.
+     * Maps a binary function using the wrapped instance as the first argument to the binary function.
      *
      * @param <R> The result type of the mapping function
      * @param <S> The type of the supplied argument
@@ -180,8 +178,7 @@ public interface Wrapper<T> extends Stateful<T> {
     //windows reducing
     /**
      * Create a time based tumbling window aggregate result expiring after a duration has passed. The window combines
-     * the results of the supplied
-     * function for all events that occur within the timed window
+     * the results of the supplied function for all events that occur within the timed window
      *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
@@ -194,8 +191,7 @@ public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * Create a count based tumbling window aggregate result expiring after receiving a number of events. The window
-     * combines the results of the supplied
-     * function for all events that occur within the window
+     * combines the results of the supplied function for all events that occur within the window
      *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
@@ -208,9 +204,8 @@ public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * Create a time based sliding window aggregate result publishing after a duration has passed. The window combines
-     * the results of the supplied
-     * function for all events that occur within the number of buckets. The total window time = time per bucket X number
-     * of buckets
+     * the results of the supplied function for all events that occur within the number of buckets. The total window
+     * time = time per bucket X number of buckets
      *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
@@ -224,9 +219,8 @@ public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * Create a count based sliding window aggregate result publishing after a count has passed. The window combines the
-     * results of the supplied
-     * function for all events that occur within the number of buckets. The total window count = the number of events
-     * per bucket X number of buckets
+     * results of the supplied function for all events that occur within the number of buckets. The total window count =
+     * the number of events per bucket X number of buckets
      *
      * @param <R> the result type of the function
      * @param mapper The function to apply to each event in the window
@@ -282,9 +276,8 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * pushes a data item from the current node in the stream to any node.The
-     * target node will become part of the same execution graph as the
-     * source.<p>
+     * pushes a data item from the current node in the stream to any node.The target node will become part of the same
+     * execution graph as the source.<p>
      * The returned node is the current node in the stream.
      *
      * @param <R>
@@ -304,11 +297,9 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Registers a {@link Consumer} to operate on the current node when an event
-     * wave is passing through this node. The consumer can perform any operation
-     * on the node including mutations. This node, possibly mutated, is passed
-     * as a reference to child nodes. No new nodes are created in the stream as
-     * a side-effect of this processing.
+     * Registers a {@link Consumer} to operate on the current node when an event wave is passing through this node. The
+     * consumer can perform any operation on the node including mutations. This node, possibly mutated, is passed as a
+     * reference to child nodes. No new nodes are created in the stream as a side-effect of this processing.
      *
      * @param consumer {@link Consumer} of this node
      * @return The current node
@@ -318,25 +309,25 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     default <R, S> Wrapper<T> mapField(
-            LambdaReflection.SerializableFunction<T, R> readField,
-            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
-            LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
+        LambdaReflection.SerializableFunction<T, R> readField,
+        LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+        LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
         return FieldMapper.setField(this, readField, writeField, mapper);
     }
 
     default <K, R, S> Wrapper<T> mapField(
-            LambdaReflection.SerializableFunction<T, K> keySupplier,
-            LambdaReflection.SerializableFunction<T, R> readField,
-            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
-            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapper) {
+        LambdaReflection.SerializableFunction<T, K> keySupplier,
+        LambdaReflection.SerializableFunction<T, R> readField,
+        LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+        LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapper) {
         return FieldMapper.setField(this, keySupplier, readField, writeField, mapper);
     }
 
     LongAdder counter = new LongAdder();
 
     /**
-     * dump this node to log, prefixed with the supplied
-     * message.{@link Object#toString()} will be invoked on the node instance.
+     * dump this node to log, prefixed with the supplied message.{@link Object#toString()} will be invoked on the node
+     * instance.
      *
      * @param prefix String prefix for the log message
      * @param supplier
@@ -354,13 +345,11 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Attaches an event notification instance to the current stream node. When
-     * the notifier updates all the child nodes of this stream node will be on
-     * the execution path and invoked following normal SEP rules.
+     * Attaches an event notification instance to the current stream node. When the notifier updates all the child nodes
+     * of this stream node will be on the execution path and invoked following normal SEP rules.
      *
-     * The existing execution path will be unaltered if either the parent
-     * wrapped node or the eventNotifier updates then the execution path will
-     * progress.
+     * The existing execution path will be unaltered if either the parent wrapped node or the eventNotifier updates then
+     * the execution path will progress.
      *
      * @param eventNotifier external event notifier
      * @return
@@ -370,10 +359,8 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Attaches an event notification instance to the current stream node,
-     * overriding the execution path of the current stream. Only when the
-     * notifier updates will the child nodes of this stream node be on the
-     * execution path.
+     * Attaches an event notification instance to the current stream node, overriding the execution path of the current
+     * stream. Only when the notifier updates will the child nodes of this stream node be on the execution path.
      *
      * @param eventNotifier external event notifier
      * @return
@@ -384,9 +371,8 @@ public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * Publishes the current value to all child dependencies and then resets. After all children have processed the
-     * trigger a reset is
-     * invoked on the wrapped instance. The publish and reset is triggered when the supplied notifier triggers in the
-     * execution graph.
+     * trigger a reset is invoked on the wrapped instance. The publish and reset is triggered when the supplied notifier
+     * triggers in the execution graph.
      *
      * @param notifier trigger for publish and reset
      * @return
@@ -397,8 +383,7 @@ public interface Wrapper<T> extends Stateful<T> {
 
     /**
      * Resets the current value without notifying children of a change. The reset is triggered when the supplied
-     * notifier triggers in the
-     * execution graph.
+     * notifier triggers in the execution graph.
      *
      * @param notifier trigger for reset
      * @return
@@ -412,9 +397,8 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Resets the stateful node and publishes the current value by notifying child nodes. The reset is
-     * before the notification is broadcast. The reset and publish is triggered when the supplied notifier triggers in
-     * the
+     * Resets the stateful node and publishes the current value by notifying child nodes. The reset is before the
+     * notification is broadcast. The reset and publish is triggered when the supplied notifier triggers in the
      * execution graph.
      *
      * @param notifier trigger for reset and publish
@@ -425,16 +409,13 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Controls the notification policy of event notification to child nodes for
-     * this stream node. The default policy is to invoke child nodes when the
-     * return of the parent event method is true. NotifyOnChange notifies the
-     * child only when the parent node return of the previous cycle is false and
-     * this one is true.
+     * Controls the notification policy of event notification to child nodes for this stream node. The default policy is
+     * to invoke child nodes when the return of the parent event method is true. NotifyOnChange notifies the child only
+     * when the parent node return of the previous cycle is false and this one is true.
      * <p>
      *
-     * This can be useful if a single notification of a breach is required and
-     * subsequent continued breaches are swallowed, for example this can prevent
-     * logging spamming when combined with filters.
+     * This can be useful if a single notification of a breach is required and subsequent continued breaches are
+     * swallowed, for example this can prevent logging spamming when combined with filters.
      *
      * @param notifyOnChange false = notify always. true = notify on change only
      * @return The current node
@@ -459,9 +440,8 @@ public interface Wrapper<T> extends Stateful<T> {
     }
 
     /**
-     * Set the node id for this node within the generated SEP. This is the
-     * variable name of the node in a Java SEP. The id must be unique for the
-     * SEP.
+     * Set the node id for this node within the generated SEP. This is the variable name of the node in a Java SEP. The
+     * id must be unique for the SEP.
      *
      * @param id the unique id of the node in the SEP
      * @return The current node

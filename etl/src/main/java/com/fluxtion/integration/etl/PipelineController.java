@@ -64,7 +64,7 @@ public class PipelineController implements Lifecycle {
         CsvEtlPipeline pipeline = pipelineRegistry.getPipelines().get(id);
         if (pipeline != null) {
             EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
-                    .first(System.out::println)
+                    .peek(System.out::println)
                     .start();
         }
     }

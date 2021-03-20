@@ -83,7 +83,7 @@ public class EtlCsvTest {
                 + "80,mary,blythe,true\n"
         );
         EventFlow.flow(new DelimitedSource(pipeline.getCsvProcessor(), reader, "limitFromCsv"))
-                .first(System.out::println)
+                .peek(System.out::println)
                 .start();
         
         Thread.sleep(1000);

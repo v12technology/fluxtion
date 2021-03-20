@@ -22,6 +22,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.Anchor;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import java.util.Collection;
 
 /**
  *
@@ -67,6 +68,16 @@ public class FieldMapper extends AbstractFilterWrapper {
             LambdaReflection.SerializableFunction<? super R, ? extends S> mapper) {
         final Wrapper wrapper = SepContext.service().add(
                 new PartitioningFieldMapper(NodeWrapper.wrap(targetInstance), keySupplier, readField, writeField, mapperFactory));
+        return wrapper;
+    }
+    
+    public static <T, K, R, S> Wrapper<Collection<T>> setFieldInCollection(Wrapper<Collection<T>> targetInstance,
+            LambdaReflection.SerializableFunction<T, K> keySupplier,
+            LambdaReflection.SerializableFunction<T, R> readField,
+            LambdaReflection.SerializableBiConsumer<T, ? super S> writeField,
+            LambdaReflection.SerializableSupplier<LambdaReflection.SerializableFunction> mapperFactory) {
+        final Wrapper wrapper = SepContext.service().add(
+                new PartitioningCollectionFieldMapper(targetInstance, keySupplier, readField, writeField, mapperFactory));
         return wrapper;
     }
     

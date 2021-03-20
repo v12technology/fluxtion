@@ -26,7 +26,10 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
 
 /**
  *
@@ -112,6 +115,12 @@ public interface LambdaReflection {
     }
 
     interface SerializableFunction<t, r> extends Function<t, r>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableToIntFunction<t> extends ToIntFunction<t>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableToDoubleFunction<t> extends ToDoubleFunction<t>, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {
