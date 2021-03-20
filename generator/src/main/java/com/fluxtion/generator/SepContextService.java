@@ -84,4 +84,10 @@ public class SepContextService implements SepContext {
         return node;
     }
 
+    @Override
+    public boolean buildTime() {
+        return  GenerationContext.SINGLETON != null;
+    }
+
+    
 }

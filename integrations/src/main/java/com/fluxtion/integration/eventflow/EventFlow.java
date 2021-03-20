@@ -144,7 +144,7 @@ public class EventFlow {
         }
     }
 
-    public <S extends StaticEventProcessor> PipelineBuilder first(S filter) {
+    public <S extends StaticEventProcessor> PipelineBuilder sep(S filter) {
         return first(SepStage.of(filter));
     }
 

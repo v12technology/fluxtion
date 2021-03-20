@@ -41,6 +41,10 @@ public interface SepContext {
     <T> T addOrReuse(T node, String privateId);
 
     <T> T addPublicOrReuse(T node, String publicId);
+    
+    default boolean buildTime(){
+        return false;
+    }
 
     SepContext NULL_CONTEXT = new SepContext() {
         @Override
@@ -87,12 +91,15 @@ public interface SepContext {
 
     static SepContext service() {
         ServiceLoader<SepContext> load = ServiceLoader.load(SepContext.class, SepContext.class.getClassLoader());
+        SepContext service = NULL_CONTEXT;
         if (load.iterator().hasNext()) {
-            return load.iterator().next();
+            service = load.iterator().next();
+            return service.buildTime()?service:NULL_CONTEXT;
         } else {
             load = ServiceLoader.load(SepContext.class);
             if (load.iterator().hasNext()) {
-                return load.iterator().next();
+                service = load.iterator().next();
+                return service.buildTime()?service:NULL_CONTEXT;
             } else {
                 return NULL_CONTEXT;
             }
