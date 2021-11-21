@@ -17,10 +17,7 @@
  */
 package com.fluxtion.ext.streaming.api.window;
 
-import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.PushReference;
-import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
@@ -30,7 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 /**
  * Applies a sliding window to a {@link GroupBy}
@@ -51,7 +51,9 @@ public class SlidingGroupByAggregator<S, T extends GroupBy<S>> implements GroupB
 //    @NoEventReference
     @SepNode
     private TimeReset timeReset;
-    private T aggregator;
+    @Setter(AccessLevel.NONE)
+    @ExcludeNode
+    private transient  T aggregator;
     private transient T primingAggregator;
     private final int numberOfBuckets;
     private ArrayDeque<T> deque;
