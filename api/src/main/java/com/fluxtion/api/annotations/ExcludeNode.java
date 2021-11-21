@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(value={ElementType.TYPE, ElementType.FIELD})
 public @interface ExcludeNode {
 
 }
