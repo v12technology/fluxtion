@@ -30,14 +30,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
-@Slf4j
 public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     private List<T> unmodifiableCollection;
@@ -108,10 +106,7 @@ public class ArrayListWrappedCollection<T> implements WrappedList<T> {
 
     public void sort() {
         if (comparator != null) {
-            log.debug("sorting");
             this.collection.sort(comparator);
-        }else{
-            log.debug("no sorting - comparator is null");
         }
     }
 

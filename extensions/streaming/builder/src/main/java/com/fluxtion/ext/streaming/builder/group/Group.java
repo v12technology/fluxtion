@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A class defining the grouping key used in aggregate processing of events.
@@ -35,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
  * @param <S> source data provider
  * @param <T> target type
  */
-@Slf4j
 public class Group <S, T> {
 
     /**
@@ -233,7 +231,6 @@ public class Group <S, T> {
             multiKeySourceMap.put(multiKeyImportMap.addImport(secondInput), keyList);
             String multiKeyClassName = "MultiKeyFor_" + target.getSimpleName() + "_" + GenerationContext.nextId();
             MultiKey<?> multiKey = MultiKeyGenerator.generate(keyList, secondInput, multiKeySourceMap, multiKeyImportMap, multiKeyClassName);
-            log.debug("joining with multikey:{}", multiKey);
             final Group group = new Group(secondInput.newInstance(), multiKey, getTargetClass());
             group.multiKeyList = keyList;
             group.eventClass = true;
@@ -263,7 +260,6 @@ public class Group <S, T> {
             multiKeySourceMap.put(multiKeyImportMap.addImport(k), keyList);
             String multiKeyClassName = "MultiKeyFor_" + target.getSimpleName() + "_" + GenerationContext.nextId();
             MultiKey<?> multiKey = MultiKeyGenerator.generate(keyList, k, multiKeySourceMap, multiKeyImportMap, multiKeyClassName);
-            log.debug("joining with multikey:{}", multiKey);
             final Group group = new Group(secondInput, multiKey, getTargetClass());
             group.multiKeyList = keyList;
             group.wrapped = true;

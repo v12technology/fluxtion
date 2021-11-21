@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.generator.implicitAddNode;
+package com.fluxtion.generator.implicitnodeadd;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.ExcludeNode;

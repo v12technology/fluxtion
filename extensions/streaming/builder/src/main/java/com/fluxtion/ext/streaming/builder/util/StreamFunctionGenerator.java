@@ -16,12 +16,12 @@
  */
 package com.fluxtion.ext.streaming.builder.util;
 
-import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.streaming.api.stream.Argument;
 import com.fluxtion.ext.streaming.api.stream.DateFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Average;
@@ -31,7 +31,6 @@ import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Max;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Min;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.PercentDelta;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Unique;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
