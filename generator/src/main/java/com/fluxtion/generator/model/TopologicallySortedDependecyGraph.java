@@ -18,13 +18,21 @@
 package com.fluxtion.generator.model;
 
 import com.fluxtion.api.FilteredEventHandler;
+import com.fluxtion.api.annotations.AfterEvent;
 import com.fluxtion.api.annotations.Config;
 import com.fluxtion.api.annotations.ConfigVariable;
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.ExcludeNode;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
+import com.fluxtion.api.annotations.OnBatchEnd;
+import com.fluxtion.api.annotations.OnBatchPause;
+import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.api.annotations.TriggerEventOverride;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
@@ -36,6 +44,7 @@ import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.exporter.JgraphGraphMLExporter;
 import com.fluxtion.generator.util.NaturalOrderComparator;
+import com.google.common.base.Predicates;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.googlecode.gentyref.GenericTypeReflector;
@@ -55,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
@@ -679,6 +687,24 @@ public class TopologicallySortedDependecyGraph implements NodeRegistry {
         Object refField = field.get(node);
         String refName = inst2Name.get(refField);
         boolean addNode = field.getAnnotation(SepNode.class) != null;
+        if (refField != null && field.getAnnotation(ExcludeNode.class)==null) {
+            addNode |= !ReflectionUtils.getAllMethods(
+                    refField.getClass(),
+                    Predicates.or(
+                            ReflectionUtils.withAnnotation(AfterEvent.class),
+                            ReflectionUtils.withAnnotation(EventHandler.class),
+                            ReflectionUtils.withAnnotation(Inject.class),
+                            ReflectionUtils.withAnnotation(OnBatchEnd.class),
+                            ReflectionUtils.withAnnotation(OnBatchPause.class),
+                            ReflectionUtils.withAnnotation(OnEvent.class),
+                            ReflectionUtils.withAnnotation(OnEventComplete.class),
+                            ReflectionUtils.withAnnotation(OnParentUpdate.class),
+                            ReflectionUtils.withAnnotation(TearDown.class),
+                            ReflectionUtils.withAnnotation(TriggerEventOverride.class)
+                    )
+            ).isEmpty();
+            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
+        }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
             refName = nameNode(refField);
