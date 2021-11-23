@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.constructor;
@@ -21,12 +21,13 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.Test;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class ConstructorTest extends BaseSepInprocessTest {
@@ -35,11 +36,13 @@ public class ConstructorTest extends BaseSepInprocessTest {
     public void testConstructorSimple() {
         fixedPkg = true;
         sep(c -> {
-            ConfigPublisher publisher = c.addPublicNode(new ConfigPublisher(
-                    c.addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.0567f)),
-                    c.addNode(new ConfigHandler("config_1")),
-                    c.addNode(new ConfigHandler("config_2"))), "publisher");
-            publisher.publicHandler = c.addNode(new ConfigHandler("config_public_1"));
+            c.addNode(
+                    new ConfigPublisher(
+                            new OrderHandler("orderHandler_1", 200_000_000, 1.0567f),
+                            new ConfigHandler("config_1"),
+                            new ConfigHandler("config_2"))
+            );
+            c.addNode(new ConfigHandler("config_public_1"));
         });
     }
 
@@ -132,6 +135,7 @@ public class ConstructorTest extends BaseSepInprocessTest {
         public enum NAMES {
             TEST, WAY
         }
+
         public final String name;
         private final ConfigPublisher publisher;
         private OrderHandler orderHandler;

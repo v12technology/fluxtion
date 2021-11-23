@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,19 +12,17 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.generator.util.ClassUtils;
-import java.lang.reflect.Modifier;
-import static java.lang.reflect.Modifier.isFinal;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- *
  * @author Greg Higgins
  */
 public class Field {
@@ -39,6 +37,11 @@ public class Field {
         this.name = name;
         this.instance = instance;
         this.publicAccess = publicAccess;
+    }
+
+    public boolean isGeneric() {
+        TypeVariable<? extends Class<?>>[] typeParameters = instance.getClass().getTypeParameters();
+        return typeParameters.length > 0;
     }
 
     @Override
@@ -60,8 +63,8 @@ public class Field {
         public ArrayList<Field> elements;
         private String primitivePrefix = "";
         private String primitiveSuffix = "";
-        
-        
+
+
         public String derivedVal;
 
         public MappedField(String mappedName, Field f) {
@@ -174,15 +177,6 @@ public class Field {
                     + '}';
         }
 
-        public static boolean typeSupported(java.lang.reflect.Field input) {
-            final int modifiers = input.getModifiers();
-//                    && (isPrivate(modifiers) || isProtected(modifiers))
-            
-            return isFinal(modifiers)
-                    && !Modifier.isStatic(modifiers)
-                    && ClassUtils.typeSupported(input.getType());
-//                    && (input.getType().isPrimitive() || input.getType() == String.class);
-        }
 
     }
 

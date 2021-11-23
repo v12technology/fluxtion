@@ -410,9 +410,10 @@ public class SepJavaSourceModelHugeFilter {
                             .append(escapeJava((String) field.instance))
                             .append("\";");
                 }else{
+                    String generic = field.isGeneric()?"<>":"";
                     args = constructorArgs.stream().map(f -> f.value()).collect(Collectors.joining(", "));
                     declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
-                            .append(" = new ").append(fqnBuilder).append("(" + args + ");");
+                            .append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
             }
 
