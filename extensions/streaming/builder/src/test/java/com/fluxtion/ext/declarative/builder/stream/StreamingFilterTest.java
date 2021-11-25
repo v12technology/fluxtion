@@ -20,17 +20,16 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.stream.SerialisedFunctionHelper;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.multiply;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

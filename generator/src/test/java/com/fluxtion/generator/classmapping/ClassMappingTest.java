@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.classmapping;
@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class ClassMappingTest extends BaseSepInprocessTest {
@@ -34,15 +33,16 @@ public class ClassMappingTest extends BaseSepInprocessTest {
     @Test
     public void dirtyNoReferenceTest() {
         sep((c) -> {
-            ConfigCache cfgCache = c.addNode(new ConfigCache());
-            PriceFormer priceFormer = c.addPublicNode(new PriceFormer(cfgCache), "priceFormer");
-            RulesProcessor rulesProcessor = c.addPublicNode(new RulesProcessor(cfgCache), "rulesProcessor");
-            c.addPublicNode(new PricePublisher(priceFormer, rulesProcessor), "pricePublisher");
-            c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstiute.class.getCanonicalName());
+            ConfigCache cfgCache = new ConfigCache();
+            c.addPublicNode(
+                    new PricePublisher(new PriceFormer(cfgCache), new RulesProcessor(cfgCache)),
+                    "pricePublisher"
+            );
+            c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
         });
         PricePublisher testHandler = getField("pricePublisher");
-        RulesProcessor rulesProcessor = getField("rulesProcessor");
-        PriceFormer priceFormer = getField("priceFormer");
+        RulesProcessor rulesProcessor = testHandler.rulesProcessor;
+        PriceFormer priceFormer = testHandler.priceFormer;
         onEvent(new Config());
         onEvent(new Config());
         Assert.assertEquals(2, testHandler.invokeCount);
@@ -103,14 +103,13 @@ public class ClassMappingTest extends BaseSepInprocessTest {
         }
     }
 
-    public static class RulesProcessorSubstiute extends RulesProcessor{
+    public static class RulesProcessorSubstitute extends RulesProcessor {
 
 
-        public RulesProcessorSubstiute(ConfigCache configCache) {
+        public RulesProcessorSubstitute(ConfigCache configCache) {
             super(configCache);
         }
 
-//        @OnEvent
         @Override
         public boolean onEvent() {
             invokeCount++;
@@ -122,7 +121,6 @@ public class ClassMappingTest extends BaseSepInprocessTest {
 
         @NoEventReference
         public final PriceFormer priceFormer;
-
         public final RulesProcessor rulesProcessor;
         public int invokeCount;
 

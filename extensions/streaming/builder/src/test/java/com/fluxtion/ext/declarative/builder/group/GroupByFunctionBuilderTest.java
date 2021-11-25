@@ -20,13 +20,12 @@ package com.fluxtion.ext.declarative.builder.group;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByCount;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByCalc;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.*;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

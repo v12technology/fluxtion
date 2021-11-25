@@ -11,28 +11,21 @@
  */
 package com.fluxtion.ext.declarative.builder.test;
 
-import com.fluxtion.ext.declarative.builder.helpers.FilterResultListener;
-import com.fluxtion.ext.declarative.builder.helpers.MyData;
-import com.fluxtion.ext.declarative.builder.helpers.MyDataChildNode;
-import com.fluxtion.ext.declarative.builder.helpers.MyDataHandler;
-import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
+import com.fluxtion.ext.declarative.builder.helpers.*;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
 import com.fluxtion.ext.streaming.api.MergingWrapper;
-import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.stream.StringPredicates;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
+import net.vidageek.mirror.dsl.Mirror;
+import org.junit.Assert;
+
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
-import net.vidageek.mirror.dsl.Mirror;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *

@@ -21,22 +21,17 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
-import com.fluxtion.generator.model.parentlistener.EventListeners.ChildConfigEventListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.ConfigEventListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.Node1Parent1ObjectListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.Node1ParentListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.Node2ArrayParentListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.NodeNameFilterListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.TestEventListener;
-import com.fluxtion.generator.model.parentlistener.EventListeners.UnknownTestEventListener;
+import com.fluxtion.generator.model.parentlistener.EventListeners.*;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *

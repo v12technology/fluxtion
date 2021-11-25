@@ -19,51 +19,20 @@ package com.fluxtion.generator.model;
 
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
-import com.fluxtion.test.event.AnnotatedEventHandlerWithOverrideFilter;
-import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
-import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
-import com.fluxtion.test.event.AnnotatedOnCompleteTestEventHandler;
-import com.fluxtion.test.event.AnnotatedTestEventHandler;
-import com.fluxtion.test.event.AnnotatedTestEventHandlerNoFilter;
-import com.fluxtion.test.event.AnnotatedTimeHandler;
-import com.fluxtion.test.event.AnnotatedTimeHandlerInverseFilter;
-import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
-import com.fluxtion.test.event.DirtyNotifierNode;
-import com.fluxtion.test.event.EventHandlerCb;
-import com.fluxtion.test.event.InitCB;
-import com.fluxtion.test.event.NodeWithParentList;
-import com.fluxtion.test.event.OnEventCompleteHandler;
-import com.fluxtion.test.event.ParentUpdateListener;
-import com.fluxtion.test.event.RootCB;
-import com.fluxtion.test.event.TestEvent;
-import com.fluxtion.test.event.TimeEvent;
-import com.fluxtion.test.event.TimeHandlerExtends;
-import com.fluxtion.test.event.TimeHandlerImpl;
-import com.fluxtion.test.event.TimerHandler2Removed;
+import com.fluxtion.test.event.*;
 import com.google.common.base.Predicates;
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import static org.reflections.ReflectionUtils.getAllMethods;
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withParametersCount;
+import static org.junit.Assert.*;
+import static org.reflections.ReflectionUtils.*;
 
 /**
  *

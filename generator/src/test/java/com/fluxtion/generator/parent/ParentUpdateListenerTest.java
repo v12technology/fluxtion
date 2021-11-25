@@ -17,22 +17,17 @@
  */
 package com.fluxtion.generator.parent;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.ArrayList;
 import lombok.Value;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 /**
  *

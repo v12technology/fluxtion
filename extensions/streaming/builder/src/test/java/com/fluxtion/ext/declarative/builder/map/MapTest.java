@@ -18,14 +18,15 @@
 package com.fluxtion.ext.declarative.builder.map;
 
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.add;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import lombok.Data;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.add;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

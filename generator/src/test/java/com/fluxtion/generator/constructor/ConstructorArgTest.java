@@ -17,15 +17,15 @@
  */
 package com.fluxtion.generator.constructor;
 
+import com.fluxtion.api.annotations.ConstructorArg;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import com.fluxtion.api.annotations.ConstructorArg;
 
 /**
  *

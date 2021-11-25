@@ -17,12 +17,13 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
+import org.junit.Test;
+
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.ceil;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

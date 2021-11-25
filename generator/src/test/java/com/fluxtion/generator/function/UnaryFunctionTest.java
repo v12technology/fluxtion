@@ -4,8 +4,8 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnaryFunctionTest extends BaseSepInprocessTest {
 

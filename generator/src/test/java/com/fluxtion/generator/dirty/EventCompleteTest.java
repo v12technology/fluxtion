@@ -21,9 +21,10 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.generator.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

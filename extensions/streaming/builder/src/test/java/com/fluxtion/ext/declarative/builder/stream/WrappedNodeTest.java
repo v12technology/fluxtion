@@ -3,9 +3,10 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

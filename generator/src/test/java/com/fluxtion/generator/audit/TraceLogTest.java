@@ -28,10 +28,12 @@ import com.fluxtion.api.audit.StructuredLogRecord;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.generator.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
-import java.util.List;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

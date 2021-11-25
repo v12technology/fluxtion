@@ -23,10 +23,11 @@ import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.junit.SystemOutResource;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

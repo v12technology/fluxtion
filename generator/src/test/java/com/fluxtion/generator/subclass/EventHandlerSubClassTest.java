@@ -17,18 +17,13 @@
  */
 package com.fluxtion.generator.subclass;
 
-import com.fluxtion.api.annotations.AfterEvent;
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.api.annotations.OnBatchPause;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.SepNode;
-import com.fluxtion.api.annotations.TearDown;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

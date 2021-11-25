@@ -18,25 +18,16 @@
 package com.fluxtion.generator.model;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.test.event.AnnotatedTimeHandler;
-import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
-import com.fluxtion.test.event.DependencyChild;
-import com.fluxtion.test.event.EventHandlerCb;
-import com.fluxtion.test.event.InitCB;
-import com.fluxtion.test.event.NodeWithParentList;
-import com.fluxtion.test.event.RootCB;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import com.fluxtion.test.event.*;
 import org.hamcrest.collection.IsIterableContainingInOrder;
+import org.junit.Test;
+
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
 
 /**
  *

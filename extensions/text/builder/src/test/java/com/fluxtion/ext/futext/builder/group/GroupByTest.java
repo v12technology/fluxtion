@@ -16,24 +16,22 @@
  */
 package com.fluxtion.ext.futext.builder.group;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.ext.futext.builder.test.helpers.LeaguePosition;
 import com.fluxtion.ext.futext.builder.test.helpers.MatchResult;
 import com.fluxtion.ext.futext.builder.test.helpers.TradeDetails;
-import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
-import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readBytesCsv;
-import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readInt;
-import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
 import com.fluxtion.ext.text.api.util.StringDriver;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
+
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 

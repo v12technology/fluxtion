@@ -19,17 +19,19 @@ package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Duration;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
+import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.generator.compiler.OutputRegistry;
+import org.junit.Test;
+
 import java.io.File;
 import java.util.Arrays;
+
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 /**

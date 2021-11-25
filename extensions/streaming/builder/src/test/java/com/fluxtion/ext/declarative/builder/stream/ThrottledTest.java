@@ -18,14 +18,14 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
-import com.fluxtion.ext.declarative.builder.stream.ThrottledTest.MyEvent;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import org.junit.Test;
+
 import static com.fluxtion.ext.streaming.api.stream.TimerFilter.throttle;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

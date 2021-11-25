@@ -25,10 +25,11 @@ import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import com.fluxtion.api.time.Tick;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

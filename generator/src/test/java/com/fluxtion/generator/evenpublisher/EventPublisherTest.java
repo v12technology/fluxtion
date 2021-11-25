@@ -10,10 +10,12 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.event.EventPublsher;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.concurrent.atomic.LongAdder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.LongAdder;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

@@ -20,9 +20,10 @@ package com.fluxtion.generator.filter;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

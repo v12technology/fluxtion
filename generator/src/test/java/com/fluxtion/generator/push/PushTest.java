@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.push;
@@ -22,14 +22,14 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- *
  * @author gregp
  */
 public class PushTest extends BaseSepInprocessTest {
@@ -40,15 +40,13 @@ public class PushTest extends BaseSepInprocessTest {
             MarketHandler tickHandler = cfg.addPublicNode(new MarketHandler(), "marketHandler");
             PricerFormer pricerFormer = cfg.addPublicNode(new PricerFormer(), "priceFormer");
             Push push = cfg.addPublicNode(new Push(), "pusher");
-            push.marketHanlder = tickHandler;
+            push.marketHandler = tickHandler;
             push.priceFormer = pricerFormer;
         });
-        
+
         PricerFormer priceFormer = getField("priceFormer");
-        MarketHandler tickHandler = getField("marketHandler");
         //
         Assert.assertEquals(0, priceFormer.eventCount);
-        //
         onEvent(new MarketTickEvent("EURUSD"));
         Assert.assertEquals(1, priceFormer.eventCount);
         onEvent(new MarketTickEvent("EURUSD"));
@@ -56,26 +54,24 @@ public class PushTest extends BaseSepInprocessTest {
         onEvent(new MarketTickEvent("USDJPY"));
         Assert.assertEquals(2, priceFormer.eventCount);
     }
-    
-    
-      @Test
+
+
+    @Test
     public void testPushCollection() {
         sep(cfg -> {
             MarketHandler tickHandler = cfg.addPublicNode(new MarketHandler(), "marketHandler");
             PricerFormer pricerFormer1 = cfg.addPublicNode(new PricerFormer(), "priceFormer1");
             PricerFormer pricerFormer2 = cfg.addPublicNode(new PricerFormer(), "priceFormer2");
             PushCollection push = cfg.addPublicNode(new PushCollection(), "pusher");
-            push.marketHanlder = tickHandler;
+            push.marketHandler = tickHandler;
             push.priceFormer = Arrays.asList(pricerFormer1, pricerFormer2);
         });
-        
-        
+
+
         PricerFormer priceFormer1 = getField("priceFormer1");
         PricerFormer priceFormer2 = getField("priceFormer2");
-        MarketHandler tickHandler = getField("marketHandler");
         //
         Assert.assertEquals(0, priceFormer1.eventCount);
-        //
         onEvent(new MarketTickEvent("EURUSD"));
         Assert.assertEquals(1, priceFormer1.eventCount);
         Assert.assertEquals(1, priceFormer2.eventCount);
@@ -85,8 +81,8 @@ public class PushTest extends BaseSepInprocessTest {
         onEvent(new MarketTickEvent("USDJPY"));
         Assert.assertEquals(2, priceFormer1.eventCount);
         Assert.assertEquals(2, priceFormer2.eventCount);
-    }  
-    
+    }
+
 
     public static class MarketTickEvent implements Event {
 
@@ -103,14 +99,11 @@ public class PushTest extends BaseSepInprocessTest {
         @PushReference
         public PricerFormer priceFormer;
 
-        public MarketHandler marketHanlder;
+        public MarketHandler marketHandler;
 
         @OnEvent
         public boolean pushData() {
-            if (marketHanlder.ccyPair.equals("EURUSD")) {
-                return true;
-            }
-            return false;
+            return marketHandler.ccyPair.equals("EURUSD");
         }
     }
 
@@ -119,14 +112,11 @@ public class PushTest extends BaseSepInprocessTest {
         @PushReference
         public List<PricerFormer> priceFormer = new ArrayList<>();
 
-        public MarketHandler marketHanlder;
+        public MarketHandler marketHandler;
 
         @OnEvent
         public boolean pushData() {
-            if (marketHanlder.ccyPair.equals("EURUSD")) {
-                return true;
-            }
-            return false;
+            return marketHandler.ccyPair.equals("EURUSD");
         }
     }
 
@@ -144,7 +134,6 @@ public class PushTest extends BaseSepInprocessTest {
 
     public static class PricerFormer {
 
-        public MarketHandler marketHanlder;
         int eventCount;
 
         @OnEvent

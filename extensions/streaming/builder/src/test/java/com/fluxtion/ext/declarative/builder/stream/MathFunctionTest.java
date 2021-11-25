@@ -19,31 +19,27 @@ package com.fluxtion.ext.declarative.builder.stream;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.builder.node.SEPConfig;
-import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import com.fluxtion.ext.streaming.api.Wrapper;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.outsideBand;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.avg;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.ceil;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.divide;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.multiply;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.subtract;
 import com.fluxtion.ext.streaming.builder.factory.MappingBuilder;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
+import com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamFunctionCompiler;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
-import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.inBand;
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.outsideBand;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.mapSet;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.*;
+import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *

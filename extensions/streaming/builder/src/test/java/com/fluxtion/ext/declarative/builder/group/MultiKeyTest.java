@@ -11,18 +11,20 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
+import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
 import static com.fluxtion.ext.declarative.builder.group.MaxCcyTraderPosConfig.TRADER_POS_CFG;
 import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import java.util.List;
-import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
