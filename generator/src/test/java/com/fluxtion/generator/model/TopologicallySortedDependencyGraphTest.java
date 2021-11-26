@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Greg Higgins
  */
-public class TopologicallySortedDependecyGraphTest {
+public class TopologicallySortedDependencyGraphTest {
 
     /**
      * Test of getSortedDependents method, of class
@@ -57,7 +57,7 @@ public class TopologicallySortedDependecyGraphTest {
             prevChild = child;
         }
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
 
         for (int i = 1; i < allNumbers.length; i++) {
@@ -88,7 +88,7 @@ public class TopologicallySortedDependecyGraphTest {
             prevChild = child;
         }
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeMap);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeMap);
         graph.generateDependencyTree();
 
         for (int i = 1; i < allNumbers.length; i++) {
@@ -139,7 +139,7 @@ public class TopologicallySortedDependecyGraphTest {
         nodeList.add(odds);
         nodeList.add(root);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
 
         assertThat(instance.getSortedDependents(allNumbers[0]),
@@ -196,7 +196,7 @@ public class TopologicallySortedDependecyGraphTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
         //
         assertThat(instance.getDirectChildren(i3),
@@ -215,7 +215,7 @@ public class TopologicallySortedDependecyGraphTest {
         RootCB eRoot = new RootCB("eRoot", noFilterEh);
         List<Object> nodeList = Arrays.asList(eRoot, e1, noFilterEh, th, eRoot);
         //generate model
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
         //
         assertEquals(4, instance.getSortedDependents().size());
@@ -241,7 +241,7 @@ public class TopologicallySortedDependecyGraphTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
         //
         assertThat(instance.getDirectParents(i2),
@@ -268,7 +268,7 @@ public class TopologicallySortedDependecyGraphTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e3, eshared);
         //generate model
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
         //
         assertThat(instance.getDirectParents(i1),
@@ -300,7 +300,7 @@ public class TopologicallySortedDependecyGraphTest {
         
 //        GenerationContext context = new GenerationContext(config);
         //generate model
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         //
         assertThat(instance.getDirectParents(i1),
@@ -322,7 +322,7 @@ public class TopologicallySortedDependecyGraphTest {
         EventHandlerCb e3 = config.addNode(new EventHandlerCb("e3", 3));
         NodeWithParentList eRoot = config.addNode(new NodeWithParentList(e1,eshared, e3));
         
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         assertThat(instance.getDirectParents(eRoot),
                 containsInAnyOrder(e1, eshared, e3));

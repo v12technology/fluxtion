@@ -43,7 +43,7 @@ public class JavaGenHelperTest {
         //System.out.println("testNullInvokerList");
         ArrayList<InvokerFilterTarget> filteredInvokerList = null;
         String expResult = "";
-        String result = JavaGenHelper.generateMapDisaptch(filteredInvokerList, new ArrayList());
+        String result = JavaGenHelper.generateMapDispatch(filteredInvokerList, new ArrayList());
         assertEquals(expResult, result);
     }
 
@@ -84,7 +84,7 @@ public class JavaGenHelperTest {
         filteredInvokerList.add(target2);
         filteredInvokerList.add(targetTime);
 
-        String expResult = JavaGenHelper.generateMapDisaptch(filteredInvokerList, new ArrayList<>());
+        String expResult = JavaGenHelper.generateMapDispatch(filteredInvokerList, new ArrayList<>());
 
         //System.out.println("expResult:\n" + expResult);
 //        //System.out.println("result:\n" + result);

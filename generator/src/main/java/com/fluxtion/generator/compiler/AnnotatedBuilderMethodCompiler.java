@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @AutoService(ClassProcessor.class)
 public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AnnotatedBuilderMethodCompiler.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotatedBuilderMethodCompiler.class.getName());
     private File generatedDir;
     private File resourceDir;
     private File rootDir;
@@ -74,22 +74,17 @@ public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
                         .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()));
                 for (ClassInfo csvClassInfo : csvList) {
 
-                    csvClassInfo.getMethodInfo().filter((methodInfo) -> {
-                        return methodInfo.hasAnnotation(SepBuilder.class.getCanonicalName())
-                                && !methodInfo.hasAnnotation(Disabled.class.getCanonicalName());
-                    }).forEach((method) -> {
+                    csvClassInfo.getMethodInfo().filter((methodInfo) -> methodInfo.hasAnnotation(SepBuilder.class.getCanonicalName())
+                            && !methodInfo.hasAnnotation(Disabled.class.getCanonicalName())).forEach((method) -> {
                         try {
                             LOGGER.info("sep builder method:" + method);
-                            final Object newInstance = csvClassInfo.loadClass().newInstance();
+                            final Object newInstance = csvClassInfo.loadClass().getDeclaredConstructor().newInstance();
 
-                            Consumer<SEPConfig> consumer = new Consumer<SEPConfig>() {
-                                @Override
-                                public void accept(SEPConfig cfg) {
-                                    try {
-                                        method.loadClassAndGetMethod().invoke(newInstance, cfg);
-                                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                                        LOGGER.error("problem executing SepConfig builder method", ex);
-                                    }
+                            Consumer<SEPConfig> consumer = cfg -> {
+                                try {
+                                    method.loadClassAndGetMethod().invoke(newInstance, cfg);
+                                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                                    LOGGER.error("problem executing SepConfig builder method", ex);
                                 }
                             };
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();

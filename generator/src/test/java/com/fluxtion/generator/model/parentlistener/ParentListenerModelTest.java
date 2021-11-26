@@ -20,7 +20,7 @@ package com.fluxtion.generator.model.parentlistener;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.model.CbMethodHandle;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
-import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
+import com.fluxtion.generator.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.generator.model.parentlistener.EventListeners.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 public class ParentListenerModelTest {
 
     private SimpleEventProcessorModel sep;
-    private TopologicallySortedDependecyGraph graph;
+    private TopologicallySortedDependencyGraph graph;
 
     @Before
     public void before() {
@@ -284,7 +284,7 @@ public class ParentListenerModelTest {
     }
 
     private Map<Object, List<CbMethodHandle>> generateListnerMap(SEPConfig config) throws Exception {
-        graph = new TopologicallySortedDependecyGraph(config);
+        graph = new TopologicallySortedDependencyGraph(config);
         sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         return sep.getParentUpdateListenerMethodMap();

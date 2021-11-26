@@ -44,7 +44,7 @@ public class CbMethodHandle {
     /**
      * the parameter type of the callback - can be null
      */
-    public final Class parameterClass;
+    public final Class<?> parameterClass;
     
     /**
      * indicates is an eventhandler method
@@ -59,7 +59,7 @@ public class CbMethodHandle {
         this(method, instance, variableName, null, false);
     }
 
-    public CbMethodHandle(Method method, Object instance, String variableName, Class parameterClass, boolean isEventHandler) {
+    public CbMethodHandle(Method method, Object instance, String variableName, Class<?> parameterClass, boolean isEventHandler) {
         this.method = method;
         this.instance = instance;
         this.variableName = variableName;
@@ -67,13 +67,6 @@ public class CbMethodHandle {
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
         this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
-    }
-    
-    public boolean isInvertedDirtyHandler(){
-        if(isPostEventHandler || isEventHandler){
-            return false;
-        }
-        return method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
     }
 
     @Override

@@ -66,7 +66,12 @@ public class InprocessSepCompiler {
         NO_INIT
     }
 
-    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, DirOptions dirOptions, InitOptions initOptions) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstance(
+            Consumer<SEPConfig> cfgBuilder,
+            String packageName,
+            String sepName,
+            DirOptions dirOptions,
+            InitOptions initOptions) throws Exception {
         String genDir = OutputRegistry.JAVA_GEN_DIR;
         String resDir = OutputRegistry.RESOURCE_DIR;
         switch (dirOptions) {
@@ -79,22 +84,22 @@ public class InprocessSepCompiler {
                 resDir = OutputRegistry.RESOURCE_TEST_DIR;
         }
         boolean init = initOptions == InitOptions.INIT;
-        return sepInstance(cfgBuilder, pckg, sepName, genDir, resDir, init);
+        return sepInstance(cfgBuilder, packageName, sepName, genDir, resDir, init);
     }
 
-    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
     }
 
-    public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, true);
     }
 
-    public static StaticEventProcessor sepInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, false);
     }
 
-    public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws InstantiationException, IllegalAccessException, Exception {
+    public static StaticEventProcessor sepTestInstanceNoInit(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, false);
     }
 
@@ -217,26 +222,6 @@ public class InprocessSepCompiler {
             log.info(url.getFile());
             CompilerUtils.addClassPath(url.getFile());
         }
-
-        
-//        String[] cpArray = new String[urls.length];
-//        for (int i = 0; i < cpArray.length; i++) {
-//            log.info(urls[i].getFile());
-//            try {
-//                File file = new File(cpArray[i]);
-//                if (file.isDirectory()) {
-//                    urls[i] = file.toURI().toURL();
-//                } else {
-//                    urls[i] = new URL("jar:" + new File(cpArray[i]).toURI().toURL() + "!/");
-//                }
-//            } catch (MalformedURLException ex) {
-//                log.error("error building classpath", ex);
-//                result.left = false;
-//                result.right = "could not load jar file:" + cpArray[i] + " error masg:" + ex.getMessage();
-//                return result;
-//            }
-//            CompilerUtils.addClassPath(cpArray[i]);
-//        }
         log.info("user classpath URL list:" + Arrays.toString(urls));
         return result;
     }
@@ -259,7 +244,7 @@ public class InprocessSepCompiler {
      */
     public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
         Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
-        StaticEventProcessor sep = sepClass.newInstance();
+        StaticEventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
         if (initialise) {
             if (sep instanceof Lifecycle) {
                 ((Lifecycle) sep).init();
@@ -268,11 +253,11 @@ public class InprocessSepCompiler {
         return sep;
     }
 
-    public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR);
     }
 
-    public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR);
     }
 
@@ -291,6 +276,7 @@ public class InprocessSepCompiler {
      * @throws IllegalAccessException
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
         final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);

@@ -19,7 +19,6 @@ package com.fluxtion.generator.model;
 
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,14 +56,10 @@ public class Field {
     public static class MappedField extends Field {
 
         public final String mappedName;
-        public boolean collection = false;
+        public boolean collection;
         public boolean primitive = false;
         public Object primitiveVal;
         public ArrayList<Field> elements;
-        private String primitivePrefix = "";
-        private String primitiveSuffix = "";
-
-
         public String derivedVal;
 
         public MappedField(String mappedName, Field f) {
@@ -88,29 +83,9 @@ public class Field {
             collection = false;
             primitive = true;
             primitiveVal = primitiveValue;
-            if (primitiveVal.getClass() == Float.class) {
-                primitiveSuffix = "f";
-            }
-            if (primitiveVal.getClass() == Byte.class) {
-                primitivePrefix = "(byte)";
-            }
-            if (primitiveVal.getClass() == Short.class) {
-                primitivePrefix = "(short)";
-            }
-            if (primitiveVal.getClass() == Long.class) {
-                primitiveSuffix = "L";
-            }
-            if (primitiveVal.getClass() == Character.class) {
-                primitivePrefix = "'";
-                primitiveSuffix = "'";
-            }
-            if (primitiveVal.getClass() == String.class) {
-                primitivePrefix = "\"";
-                primitiveSuffix = "\"";
-            }
         }
 
-        public Class parentClass() {
+        public Class<?> parentClass() {
             if (collection) {
                 return List.class;
             } else if (primitive) {
@@ -146,13 +121,6 @@ public class Field {
 
         public String value() {
             return derivedVal;
-//            String val = name;
-//            if (collection) {
-//                val = elements.stream().map(f -> f.name).collect(Collectors.joining(", ", "Arrays.asList(", ")"));
-//            } else if (primitive) {
-//                val = primitivePrefix + primitiveVal.toString() + primitiveSuffix;
-//            }
-//            return val;
         }
 
         public void addField(Field field) {

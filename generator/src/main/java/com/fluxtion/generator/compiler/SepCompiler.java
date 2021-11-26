@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -59,7 +60,7 @@ public class SepCompiler {
     private SepCompilerConfig compilerConfig;
     private SEPConfig builderConfig;
 
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public static void main(String[] args) throws Exception {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         // print logback's internal status
         StatusPrinter.print(lc);
@@ -83,7 +84,7 @@ public class SepCompiler {
      * @throws IllegalAccessException exception during compile
      * @throws Exception exception during compile
      */
-    public Class compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class<?> compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
         return compile(SepCompilerConfig.initFromSystemProperties());
     }
 
@@ -96,23 +97,23 @@ public class SepCompiler {
      * @throws IllegalAccessException exception during compile
      * @throws Exception exception during compile
      */
-    public Class compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class<?> compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
         return compile(compilerConfig, null);
     }
 
-    public Class compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class<?> compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws Exception {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
         locateFactories();
         processYamlConfig();
         processRootFactoryConfig();
-        Class returnClass = generateSep();
+        Class<?> returnClass = generateSep();
         LOG.debug("finished SEP compiler");
         return returnClass;
     }
 
-    private void initialiseGenerator(SEPConfig configOverride) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void initialiseGenerator(SEPConfig configOverride) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         LOG.debug("initialiseGenerator");
         LOG.debug(compilerConfig.toString());
         File buildDir = compilerConfig.getBuildOutputdirectory() == null ? null : new File(compilerConfig.getBuildOutputdirectory());
@@ -126,14 +127,14 @@ public class SepCompiler {
                 compilerConfig.getCachedCompiler());
         //compiler
         if (configOverride == null) {
-            Class rootClazz = null;
+            Class<?> rootClazz;
             try{
                 rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
             }catch(Exception e){
                 LOG.info("loading class from cached compiler");
                 rootClazz = compilerConfig.getCachedCompiler().forName(compilerConfig.getConfigClass(), compilerConfig.getClassLoader());
             }
-            builderConfig = (SEPConfig) rootClazz.newInstance();
+            builderConfig = (SEPConfig) rootClazz.getDeclaredConstructor().newInstance();
         } else {
             builderConfig = configOverride;
         }
@@ -147,7 +148,7 @@ public class SepCompiler {
         builderConfig.assignPrivateMembers = compilerConfig.isAssignNonPublicMembers();
     }
 
-    private void processYamlConfig() throws IOException, ClassNotFoundException, Exception {
+    private void processYamlConfig() throws Exception {
         LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
             File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
@@ -159,7 +160,7 @@ public class SepCompiler {
             LOG.debug("DeclarativeNodeConiguration load");
             DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
             LOG.debug("searching for NodeFactory's");
-            Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+            Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.declarativeConfig = cfgActual;
             LOG.debug("completed :: processYamlConfig ");
@@ -168,7 +169,7 @@ public class SepCompiler {
         }
     }
 
-    private void processRootFactoryConfig() throws ClassNotFoundException, Exception {
+    private void processRootFactoryConfig() throws Exception {
         LOG.debug("processRootFactoryConfig");
         if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
             if (builderConfig.declarativeConfig == null) {
@@ -176,9 +177,9 @@ public class SepCompiler {
                 rootNodeMappings.put(compilerConfig.getRootFactoryClass(), "root");
                 SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
                 loadedConfig.setRootNodeMappings(rootNodeMappings);
-                loadedConfig.setConfig(new HashMap());
+                loadedConfig.setConfig(new HashMap<>());
                 DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
-                Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
                 builderConfig.declarativeConfig = cfgActual;
             } else {
@@ -190,8 +191,8 @@ public class SepCompiler {
     private void locateFactories() throws Exception {
         LOG.debug("locateFactories");
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        loadedConfig.setConfig(new HashMap());
+        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+        loadedConfig.setConfig(new HashMap<>());
         DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
         if (builderConfig == null || builderConfig.declarativeConfig==null) {
             cfgActual.factoryClassSet.addAll(class2Factory);
@@ -199,13 +200,11 @@ public class SepCompiler {
         } else {
             builderConfig.declarativeConfig.factoryClassSet.addAll(class2Factory);
         }
-//        cfgActual.factoryClassSet.addAll(class2Factory);
-//        builderConfig.declarativeConfig = cfgActual;
     }
 
-    private Class generateSep() throws Exception {
+    private Class<?> generateSep() throws Exception {
         LOG.debug("generateSep");
-        Class returnClass = null;
+        Class<?> returnClass = null;
         Generator generator = new Generator();
         builderConfig.formatSource = compilerConfig.isFormatSource();
         generator.templateSep(builderConfig);
@@ -226,10 +225,9 @@ public class SepCompiler {
             LOG.debug("completed compiling source");
         }
         return returnClass;
-//        Class newClass = CompilerUtils.loadFromResource(fqn, file.getCanonicalPath());
     }
 
-    public static Class loadFromResource(@NotNull String className, @NotNull String resourceName) throws IOException, ClassNotFoundException {
+    public static Class<?> loadFromResource(@NotNull String className, @NotNull String resourceName) throws IOException, ClassNotFoundException {
         return GenerationContext.SINGLETON.getJavaCompiler().loadFromJava(GenerationContext.SINGLETON.getClassLoader(), className, readText(resourceName));
     }
 

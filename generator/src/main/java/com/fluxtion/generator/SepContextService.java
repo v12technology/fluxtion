@@ -29,14 +29,16 @@ import java.util.ArrayList;
 public class SepContextService implements SepContext {
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T add(T node) {
         GenerationContext.SINGLETON.getNodeList().add(node);
         return node;
     }
 
+    @SafeVarargs
     @Override
-    public <T> T[] add(T... nodes) {
-        ArrayList<T> out = new ArrayList();
+    public final <T> T[] add(T... nodes) {
+        ArrayList<T> out = new ArrayList<>();
         for (T node : nodes) {
             out.add(add(node));
         }
@@ -50,6 +52,7 @@ public class SepContextService implements SepContext {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T add(T node, String privateId) {
         GenerationContext.SINGLETON.getNodeList().add(node);
         GenerationContext.SINGLETON.nameNode(node, privateId);
@@ -61,9 +64,10 @@ public class SepContextService implements SepContext {
         return GenerationContext.SINGLETON.addOrUseExistingNode(node);
     }
 
+    @SafeVarargs
     @Override
-    public <T> T[] addOrReuse(T... nodes) {
-        ArrayList<T> out = new ArrayList();
+    public final <T> T[] addOrReuse(T... nodes) {
+        ArrayList<T> out = new ArrayList<>();
         for (T node : nodes) {
             out.add(addOrReuse(node));
         }

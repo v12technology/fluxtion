@@ -386,7 +386,7 @@ public class SepJavaSourceModelHugeFilter {
         if (assignPrivateMembers) {
             declarationBuilder.append(s4).append("final net.vidageek.mirror.dsl.Mirror constructor = new net.vidageek.mirror.dsl.Mirror();\n");
         }
-        for (Field field : model.getTopologigcallySortedNodeFields()) {
+        for (Field field : model.getTopologicallySortedNodeFields()) {
             final String access = field.publicAccess ? "public" : "private";
 
             fqnBuilder.append(getClassName(field.fqn));
@@ -473,8 +473,8 @@ public class SepJavaSourceModelHugeFilter {
         //filter for debug and non-debug
         if (!isInlineEventHandling) {
             List<Class<?>> importClassList = new ArrayList<>();
-            eventHandlers += JavaGenHelper.generateMapDisaptch(filteredInvokerList, importClassList);
-            debugEventHandlers += JavaGenHelper.generateMapDisaptch(filteredInvokerListDebug, importClassList);
+            eventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerList, importClassList);
+            debugEventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerListDebug, importClassList);
             if(importClassList.size()>0){
                 //bit of a hack, need to remove
                 getClassName("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap");
@@ -501,9 +501,9 @@ public class SepJavaSourceModelHugeFilter {
         boolean idDispatch = false;
         boolean noIdDispatch = false;
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
-        Set<Class> keySet = dispatchMap.keySet();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
+        Set<Class<?>> keySet = dispatchMap.keySet();
         HashSet<Class> classSet = new HashSet<>(keySet);
         classSet.addAll(postDispatchMap.keySet());
         ArrayList<Class> clazzList = new ArrayList<>(classSet);
@@ -1147,7 +1147,7 @@ public class SepJavaSourceModelHugeFilter {
      * String representation of java code handling subclass of
      * {@link com.fluxtion.api.event.Event Event}, with support for specific
      * dispatch based upon
-     * {@linkplain  com.fluxtion.runtime.event.Event#filterId() filterID}. If
+     * {@linkplain  Event#filterId()}  filterID. If
      * inlining is false the following output will be produced:
      * <p>
      * <code>

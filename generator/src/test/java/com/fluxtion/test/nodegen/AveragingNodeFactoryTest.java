@@ -46,14 +46,14 @@ public class AveragingNodeFactoryTest extends BaseSepInprocessTest {
         sep((c) ->{
             SampleNode sampleNode = c.addNode(new SampleNode());
             //factory config
-            Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+            Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
             factoryList.add(AveragingNodeFactory.class);
-            Map config = new HashMap();
+            Map<Object, Object> config = new HashMap<>();
             config.put(AveragingNodeFactory.DATA_SOURCE, sampleNode);
             config.put(AveragingNodeFactory.WINDOW_SIZE, 50);
             config.put(AveragingNodeFactory.DATA_SOURCE_FIELD, "sampleValue");
             //root nodes
-            Map<Class, String> rootNodeMappings = new HashMap<>();
+            Map<Class<?>, String> rootNodeMappings = new HashMap<>();
             rootNodeMappings.put(AveragingNode.class, "averagingNode");
             c.declarativeConfig = new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config);
         });
@@ -88,14 +88,14 @@ public class AveragingNodeFactoryTest extends BaseSepInprocessTest {
         {
             SampleNode sampleNode = addNode(new SampleNode());
             //factory config
-            Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+            Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
             factoryList.add(AveragingNodeFactory.class);
-            Map config = new HashMap();
+            HashMap<Object, Object> config = new HashMap<>();
             config.put(AveragingNodeFactory.DATA_SOURCE, sampleNode);
             config.put(AveragingNodeFactory.WINDOW_SIZE, 50);
             config.put(AveragingNodeFactory.DATA_SOURCE_FIELD, "sampleValue");
             //root nodes
-            Map<Class, String> rootNodeMappings = new HashMap<>();
+            Map<Class<?>, String> rootNodeMappings = new HashMap<>();
             rootNodeMappings.put(AveragingNode.class, "averagingNode");
 
             declarativeConfig = new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config);

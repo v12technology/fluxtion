@@ -25,16 +25,16 @@ import java.util.Map;
  *
  * @author Greg Higgins
  */
-public class NaturalOrderComparator implements Comparator {
+public class NaturalOrderComparator<T>  implements Comparator<T> {
 
-    private Map<Object, String> inst2Name;
+    private final Map<Object, String> inst2Name;
 
     public NaturalOrderComparator(Map<Object, String> inst2Name) {
         this.inst2Name = inst2Name;
     }
 
     public NaturalOrderComparator() {
-        this(Collections.EMPTY_MAP);
+        this(Collections.emptyMap());
     }
 
     int compareRight(String a, String b) {

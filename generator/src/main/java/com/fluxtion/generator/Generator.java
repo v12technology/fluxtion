@@ -26,7 +26,7 @@ import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEST_DECORATOR_TEMPLATE;
 import com.fluxtion.generator.exporter.PngGenerator;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
-import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
+import com.fluxtion.generator.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
@@ -72,7 +72,7 @@ public class Generator {
         LOG.debug("start graph calc");
         GenerationContext context = GenerationContext.SINGLETON;
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
                 config.nodeList,
                 config.publicNodes,
                 config.declarativeConfig,
@@ -93,7 +93,7 @@ public class Generator {
             LOG.debug("finished generating SEP");
         });
         LOG.debug("start template output");
-        final File outFile = templateJavaOutput();
+        templateJavaOutput();
         LOG.debug("completed template output");
         execSvc.shutdown();
     }
@@ -125,7 +125,7 @@ public class Generator {
         }
     }
 
-    private static void initVelocity() throws Exception {
+    private static void initVelocity() {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
@@ -135,8 +135,7 @@ public class Generator {
     }
 
     private File templateJavaOutput() throws Exception {
-        SepJavaSourceModelHugeFilter srcModelHuge = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
-        SepJavaSourceModelHugeFilter srcModel = srcModelHuge;
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
         srcModel.additonalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();
@@ -251,7 +250,7 @@ public class Generator {
         }
     }
 
-    private void exportGraphMl(TopologicallySortedDependecyGraph graph) {
+    private void exportGraphMl(TopologicallySortedDependencyGraph graph) {
         if (config.generateDescription) {
             try {
                 LOG.debug("generating event images and graphml");
