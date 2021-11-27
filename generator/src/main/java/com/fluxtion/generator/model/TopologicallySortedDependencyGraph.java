@@ -421,8 +421,12 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 ReflectionUtils.getFields(clazz).forEach(f -> f.setAccessible(true));
                 //set none string properties
                 entrySet.stream()
-                        .filter((Map.Entry<String, ?> map) -> reflect.field(map.getKey()).getType() != String.class
-                        && map.getValue().getClass() != String.class)
+                        .filter((Map.Entry<String, ?> map) -> {
+                            Field field = reflect.field(map.getKey());
+                            System.out.println("field for:" + map.getKey() + " field:" + field);
+                            return field.getType() != String.class
+                                    && map.getValue().getClass() != String.class;
+                        })
                         .forEach((Map.Entry<String, ?> map) -> mirror.set().field(map.getKey()).withValue(map.getValue()));
                 //set where source and target are string
                 entrySet.stream()

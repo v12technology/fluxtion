@@ -47,7 +47,7 @@ public class CbMethodHandle {
     public final Class<?> parameterClass;
     
     /**
-     * indicates is an eventhandler method
+     * indicates is an {@link com.fluxtion.api.annotations.EventHandler} method
      */
     public final boolean isEventHandler;
     
@@ -67,6 +67,34 @@ public class CbMethodHandle {
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
         this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public Object getInstance() {
+        return instance;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public Class<?> getParameterClass() {
+        return parameterClass;
+    }
+
+    public boolean isEventHandler() {
+        return isEventHandler;
+    }
+
+    public boolean isPostEventHandler() {
+        return isPostEventHandler;
+    }
+
+    public boolean isInvertedDirtyHandler() {
+        return isInvertedDirtyHandler;
     }
 
     @Override

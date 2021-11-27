@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,35 +12,46 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.builder.generation.GenerationContext;
+import com.fluxtion.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
+
 import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_INTROSPECTOR_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEST_DECORATOR_TEMPLATE;
+
+import com.fluxtion.generator.compiler.SepFactoryConfigBean;
 import com.fluxtion.generator.exporter.PngGenerator;
+import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.model.TopologicallySortedDependencyGraph;
+import com.fluxtion.generator.targets.InMemoryEventProcessor;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.xml.transform.TransformerConfigurationException;
+
 import net.openhft.compiler.CachedCompiler;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -53,7 +64,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
- *
  * @author Greg Higgins
  */
 public class Generator {
@@ -61,6 +71,35 @@ public class Generator {
     private SEPConfig config;
     private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
     private SimpleEventProcessorModel sep;
+
+    public InMemoryEventProcessor inMemoryProcessor(SEPConfig config) throws Exception {
+        config.buildConfig();
+
+        //Loading factories
+        LOG.debug("locateFactories");
+        SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+        loadedConfig.setConfig(new HashMap<>());
+        DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+        cfgActual.factoryClassSet.addAll(class2Factory);
+        config.declarativeConfig = cfgActual;
+        config.declarativeConfig.factoryClassSet.addAll(class2Factory);
+        //Loading factories
+
+        this.config = config;
+        GenerationContext.setupStaticContext("", "", null, null);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
+                config.nodeList,
+                config.publicNodes,
+                config.declarativeConfig,
+                GenerationContext.SINGLETON,
+                config.auditorMap,
+                config
+        );
+        sep = new SimpleEventProcessorModel(graph, config.filterMap, GenerationContext.SINGLETON.getProxyClassMap());
+        sep.generateMetaModel(config.supportDirtyFiltering);
+        return new InMemoryEventProcessor(sep);
+    }
 
     public void templateSep(SEPConfig config) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
@@ -104,20 +143,20 @@ public class Generator {
             CachedCompiler c = new CachedCompiler(null, null);
             c.loadFromJava("com.fluxtion.compiler.WarmupSample",
                     "package com.fluxtion.compiler;\n"
-                    + "\n"
-                    + "public class WarmupSample {\n"
-                    + "\n"
-                    + "    public String test;\n"
-                    + "\n"
-                    + "    public String getTest() {\n"
-                    + "        return test;\n"
-                    + "    }\n"
-                    + "    \n"
-                    + "}");
+                            + "\n"
+                            + "public class WarmupSample {\n"
+                            + "\n"
+                            + "    public String test;\n"
+                            + "\n"
+                            + "    public String getTest() {\n"
+                            + "        return test;\n"
+                            + "    }\n"
+                            + "    \n"
+                            + "}");
         } catch (Exception ex) {
-            if(LOG.isDebugEnabled()){
+            if (LOG.isDebugEnabled()) {
                 LOG.debug("problem running warmup compile", ex);
-            }else{
+            } else {
                 LOG.warn("problem running warmup compile");
             }
         } finally {
@@ -230,12 +269,12 @@ public class Generator {
         return outFile;
     }
 
-    private void addVersionInformation(Context ctx){
+    private void addVersionInformation(Context ctx) {
         ctx.put("generator_version_information", this.getClass().getPackage().getImplementationVersion());
-        ctx.put("api_version_information",  EventHandler.class.getPackage().getImplementationVersion());   
+        ctx.put("api_version_information", EventHandler.class.getPackage().getImplementationVersion());
         ctx.put("build_time", LocalDateTime.now());
     }
-    
+
     public static void formatSource(File outFile) {
 
         try {

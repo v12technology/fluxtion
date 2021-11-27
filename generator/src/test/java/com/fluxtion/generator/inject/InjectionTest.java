@@ -27,27 +27,35 @@ import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
+import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import java.util.Map;
+
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class InjectionTest extends BaseSepInprocessTest {
+public class InjectionTest extends MultipleSepTargetInProcessTest {
+
+    public InjectionTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
+    @Ignore("Filtering not supported with inMemory processor")
     public void testInjectionTree() {
-        sep(cfg -> {
-            cfg.addPublicNode(new WordProcessor(), "wordProcessor");
-        });
+        sep(cfg -> cfg.addPublicNode(new WordProcessor(), "wordProcessor"));
         WordProcessor processor = getField("wordProcessor");
         sep.onEvent(new CharEvent('c'));
         assertTrue(processor.testAndClear(0, 'c'));
@@ -63,9 +71,7 @@ public class InjectionTest extends BaseSepInprocessTest {
 
     @Test
     public void testInjectionNoFactoryTree() {
-        sep(cfg -> {
-            cfg.addPublicNode(new WordProcessorNoFactory(), "wordProcessor");
-        });
+        sep(cfg -> cfg.addPublicNode(new WordProcessorNoFactory(), "wordProcessor"));
         WordProcessorNoFactory processor = getField("wordProcessor");
         Assert.assertEquals(34, processor.handler.intVal);
         Assert.assertEquals("someName", processor.handler.stringVal);
@@ -73,9 +79,7 @@ public class InjectionTest extends BaseSepInprocessTest {
 
     @Test
     public void testInjectionNoFactoryVariablConfigTree() {
-        sep(cfg -> {
-            cfg.addPublicNode(new WordProcessorNoFactoryVariableConfig(), "wordProcessor");
-        });
+        sep(cfg -> cfg.addPublicNode(new WordProcessorNoFactoryVariableConfig(), "wordProcessor"));
         WordProcessorNoFactoryVariableConfig processor = getField("wordProcessor");
         Assert.assertEquals(10, processor.handler.intVal);
         Assert.assertEquals("variable val", processor.handler.stringVal);
@@ -83,9 +87,7 @@ public class InjectionTest extends BaseSepInprocessTest {
 
     @Test
     public void injectFinalField() {
-        sep(cfg -> {
-            cfg.addPublicNode(new InjectClockWithSetter(), "injectedClock");
-        });
+        sep(cfg -> cfg.addPublicNode(new InjectClockWithSetter(), "injectedClock"));
         InjectClockWithSetter inj = getField("injectedClock");
         Assert.assertNotNull(inj.getClock());
     }
@@ -261,7 +263,7 @@ public class InjectionTest extends BaseSepInprocessTest {
     public static class Char2IntFactory implements NodeFactory<Char2Int> {
 
         @Override
-        public Char2Int createNode(Map arg0, NodeRegistry arg1) {
+        public Char2Int createNode(Map<?,?> arg0, NodeRegistry arg1) {
             return new Char2Int();
         }
 
@@ -270,7 +272,7 @@ public class InjectionTest extends BaseSepInprocessTest {
     public static class CharHandlerFactory implements NodeFactory<CharHandler> {
 
         @Override
-        public CharHandler createNode(Map arg0, NodeRegistry arg1) {
+        public CharHandler createNode(Map<?,?> arg0, NodeRegistry arg1) {
             if (arg0.containsKey("char")) {
                 return new CharHandler(((String) arg0.get("char")).charAt(0));
             }

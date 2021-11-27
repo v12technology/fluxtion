@@ -24,29 +24,20 @@ import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.generator.model.CbMethodHandle;
-import com.fluxtion.generator.model.DirtyFlag;
-import com.fluxtion.generator.model.Field;
-import com.fluxtion.generator.model.InvokerFilterTarget;
-import com.fluxtion.generator.model.SimpleEventProcessorModel;
-import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
+import com.fluxtion.generator.model.*;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import java.lang.reflect.Array;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.fluxtion.generator.targets.JavaGenHelper.mapWrapperToPrimitive;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
 /**
@@ -58,7 +49,7 @@ public class SepJavaSourceModelHugeFilter {
     /**
      * max number of cases statements to generate before using a dispatch map.
      */
-    private int maxFilterBranches = 5;
+    private final int maxFilterBranches;
 
     /**
      * String representation of life-cycle callback methods for initialise,
@@ -178,8 +169,8 @@ public class SepJavaSourceModelHugeFilter {
      * dispatch method is not inlined 30% degradation bytes > approx 8k bytes
      * the dispatch method is not compiled 800% degradation, yes 8 times slower
      */
-    private ArrayList<InvokerFilterTarget> filteredInvokerList;
-    private ArrayList<InvokerFilterTarget> filteredInvokerListDebug;
+    private final ArrayList<InvokerFilterTarget> filteredInvokerList;
+    private final ArrayList<InvokerFilterTarget> filteredInvokerListDebug;
 
     /**
      * A string representing the delegated event handling methods
@@ -216,7 +207,7 @@ public class SepJavaSourceModelHugeFilter {
     /**
      * use reflection to assign private members
      */
-    private boolean assignPrivateMembers;
+    private final boolean assignPrivateMembers;
     
     /**
      * are any auditors registered for this SEP
@@ -319,7 +310,7 @@ public class SepJavaSourceModelHugeFilter {
         nodeMemberAssignments = memberAssignments.toString();
     }
 
-    private void buildMethodSource(List<CbMethodHandle> methodList, List methodSourceList) {
+    private void buildMethodSource(List<CbMethodHandle> methodList, List<String> methodSourceList) {
         for (CbMethodHandle method : methodList) {
             final String methodString = String.format("%8s%s.%s();", "", method.variableName, method.method.getName());
             methodSourceList.add(methodString);
@@ -329,9 +320,9 @@ public class SepJavaSourceModelHugeFilter {
     private void buildDirtyFlags() {
         dirtyFlagDeclarations = "";
         resetDirtyFlags = "";
-        final ArrayList<DirtyFlag> values = new ArrayList(model.getDirtyFieldMap().values());
-        NaturalOrderComparator comparator = new NaturalOrderComparator();
-        Collections.sort(values, (o1, o2) -> comparator.compare(o1.name, o2.name));
+        final ArrayList<DirtyFlag> values = new ArrayList<>(model.getDirtyFieldMap().values());
+        NaturalOrderComparator<DirtyFlag> comparator = new NaturalOrderComparator<>();
+        values.sort((o1, o2) -> comparator.compare(o1.name, o2.name));
         for (DirtyFlag flag : values) {
             dirtyFlagDeclarations += String.format("%4sprivate boolean %s = false;%n", "", flag.name);
             resetDirtyFlags += String.format("%8s%s = false;%n", "", flag.name);
@@ -347,9 +338,9 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
-    private HashMap<String, String> importMap = new HashMap<>();
+    private final HashMap<String, String> importMap = new HashMap<>();
 
-    private String getClassName(Class clazzName) {
+    private String getClassName(Class<?> clazzName) {
         return getClassName(clazzName.getCanonicalName());
     }
     
@@ -359,19 +350,18 @@ public class SepJavaSourceModelHugeFilter {
         String ret = clazzName;
         if (split.length > 1) {
             String simpleName = split[split.length - 1];
-            String fqnName = clazzName;
-            String pkgName = fqnName.replace("." + simpleName, "");
+            String pkgName = clazzName.replace("." + simpleName, "");
             ret = simpleName;
-            if(fqnName.startsWith("java.lang") 
+            if(clazzName.startsWith("java.lang")
                     || GenerationContext.SINGLETON.getPackageName().equals(pkgName)){
                 //ignore java.lang
             }else if (importMap.containsKey(simpleName)) {
-                if (!importMap.get(simpleName).equalsIgnoreCase(fqnName)) {
-                    ret = fqnName;
+                if (!importMap.get(simpleName).equalsIgnoreCase(clazzName)) {
+                    ret = clazzName;
                 }
             } else {
-                importMap.put(simpleName, fqnName);
-                importList.add(fqnName);
+                importMap.put(simpleName, clazzName);
+                importList.add(clazzName);
             }
         }
         return ret;
@@ -390,19 +380,17 @@ public class SepJavaSourceModelHugeFilter {
             final String access = field.publicAccess ? "public" : "private";
 
             fqnBuilder.append(getClassName(field.fqn));
-            boolean syntheticConstructor = true;
+            boolean syntheticConstructor = false;
             try {
                 field.instance.getClass().getConstructor();
-                syntheticConstructor = false;
             } catch (Exception e) {
-                
+                syntheticConstructor = true;
             }
             if (assignPrivateMembers && syntheticConstructor) {
                 //new constructor.on(clazz).invoke().constructor().bypasser();
                 declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
                         .append(" = constructor.on(").append(fqnBuilder).append(".class).invoke().constructor().bypasser();");
             } else {
-                String args = "";
                 List<Field.MappedField> constructorArgs = model.constructorArgs(field.instance);
                 if(String.class.isAssignableFrom(field.instance.getClass())){
                     declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
@@ -411,7 +399,7 @@ public class SepJavaSourceModelHugeFilter {
                             .append("\";");
                 }else{
                     String generic = field.isGeneric()?"<>":"";
-                    args = constructorArgs.stream().map(f -> f.value()).collect(Collectors.joining(", "));
+                    String args = constructorArgs.stream().map(Field.MappedField::value).collect(Collectors.joining(", "));
                     declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
                             .append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
@@ -437,7 +425,7 @@ public class SepJavaSourceModelHugeFilter {
     private void buildFilterConstantDeclarations() {
         filterConstantDeclarations = "";
         boolean firstLine = true;
-        ArrayList<FilterDescription> tmp = new ArrayList(model.getFilterDescriptionList());
+        ArrayList<FilterDescription> tmp = new ArrayList<>(model.getFilterDescriptionList());
         tmp.sort((FilterDescription o1, FilterDescription o2) -> {
             return o1.value - o2.value;
         });
@@ -467,8 +455,8 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     private void buildEventDispatch() {
-        generateClassBasedDipsatcher(false);
-        generateClassBasedDipsatcher(true);
+        generateClassBasedDispatcher(false);
+        generateClassBasedDispatcher(true);
         //eventHandlers += tmpEventHandlersAsMethods;
         //filter for debug and non-debug
         if (!isInlineEventHandling) {
@@ -496,7 +484,7 @@ public class SepJavaSourceModelHugeFilter {
      *
      * @param isDebug
      */
-    private void generateClassBasedDipsatcher(boolean isDebug) {
+    private void generateClassBasedDispatcher(boolean isDebug) {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
         boolean idDispatch = false;
         boolean noIdDispatch = false;
@@ -504,12 +492,12 @@ public class SepJavaSourceModelHugeFilter {
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
         Set<Class<?>> keySet = dispatchMap.keySet();
-        HashSet<Class> classSet = new HashSet<>(keySet);
+        HashSet<Class<?>> classSet = new HashSet<>(keySet);
         classSet.addAll(postDispatchMap.keySet());
-        ArrayList<Class> clazzList = new ArrayList<>(classSet);
-        Collections.sort(clazzList, (Class o1, Class o2) -> o1.getName().compareTo(o2.getName()));
+        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
+        clazzList.sort(Comparator.comparing(Class::getName));
 
-        for (Class eventId : clazzList) {
+        for (Class<?> eventId : clazzList) {
             String className = getClassName(eventId.getCanonicalName());
             dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
             dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
@@ -518,7 +506,7 @@ public class SepJavaSourceModelHugeFilter {
             }
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
-            dispatchStringNoId += buildFiteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
+            dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
             dispatchStringNoId += String.format("%16sbreak;%n", "");
             dispatchStringNoId += String.format("%12s}%n", "");
             noIdDispatch = true;
@@ -558,7 +546,7 @@ public class SepJavaSourceModelHugeFilter {
         //TODO produce combined list of cbMap and cbMapPostEvent
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
         int caseCount = Math.max(cbMap.size(), cbMapPostEvent.size());
-        Collections.sort(clazzList, (FilterDescription o1, FilterDescription o2) -> {
+        clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
             int ret = o1.value - o2.value;
             if (!o1.isIntFilter && !o2.isIntFilter) {
                 ret = o1.stringValue.compareTo(o2.stringValue);
@@ -570,11 +558,10 @@ public class SepJavaSourceModelHugeFilter {
             return ret;
         });
 
-        String switchFilter = "";
         switchF.delete(0, switchF.length());
         for (FilterDescription filterDescription : clazzList) {
 
-            //INVOKETARGET
+            //INVOKE TARGET
             InvokerFilterTarget invokerTarget = new InvokerFilterTarget();
             invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(filterDescription);
             invokerTarget.filterDescription = filterDescription;
@@ -589,40 +576,29 @@ public class SepJavaSourceModelHugeFilter {
                 List<CbMethodHandle> cbList = cbMap.get(filterDescription);
                 if (noFilter && isDefaultFilter) {
                     //progress without header
-//                    if(filterDescription.eventClass!=null)
                     invokerTarget.filterDescription = new FilterDescription(eventClass);
                     invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(invokerTarget.filterDescription);
                     invokerTarget.stringMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
                     invokerTarget.intMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
-//                            + filterDescription.eventClass.getSimpleName() + "_"
-//                            + "(" + filterDescription.eventClass.getCanonicalName() + " typedEvent ){\n";
                 } else if (noFilter || isNoFilter || isDefaultFilter) {
                     //ignore the NO_FILTER
                     continue;
                 } else {
                     //build switch header
                     if (filterDescription.comment != null) {
-                        //Filter comment
-//                        switchFilter += String.format("%-20s%s%n", "//", filterDescription.comment);
                         switchF.append(s20).append("//").append(filterDescription.comment).append("\n");
                     }
                     if (filterVariable == null) {
-//                        switchFilter += String.format("%20scase (%s):%n", "", filterValue);
                         switchF.append(s20).append("case(").append(filterValue).append("):\n");
 
                     } else {
-//                        switchFilter += String.format("%20scase (%s):%n", "", filterVariable);
                         switchF.append(s20).append("case(").append(filterVariable).append("):\n");
                     }
                 }
                 //TODO check for null here on cblist
                 cbList = cbList == null ? Collections.EMPTY_LIST : cbList;
-                //String callTree = "";
-
                 ct.delete(0, ct.length());
                 for (CbMethodHandle method : cbList) {
-//METHOD BREAK UP HERE                    ct.append("//ct callback - forward").append('\n');
-                    //does cb support dirty
                     DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
                     String dirtyAssignment = "";
                     if (dirtyFlagForUpdateCb != null) {
@@ -692,8 +668,6 @@ public class SepJavaSourceModelHugeFilter {
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
                     final EventHandler handlerAnnotation = method.method.getAnnotation(EventHandler.class);
                     if (handlerAnnotation != null && (!handlerAnnotation.propagate() )) {
-//                        String format = String.format("should clear!!: event[%s] updateList[%s]\n",eventClass, updateListenerCbList);
-//                        ct.append("//" + format);
                     } else {
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
@@ -778,24 +752,18 @@ public class SepJavaSourceModelHugeFilter {
                 }
 
                 if (!noFilter) {
-                    //callTree += String.format("%24sbreak;%n", "");
-//                    ct.append(s24 + "break;\n");
                     ct.append(s24 + "afterEvent();\n");
                     ct.append(s24 + "return;\n");
                 }
-//                switchFilter += //callTree;
-//                switchFilter += ct.toString();
                 switchF.append(ct);
             }
         }
-        //switchFilter += "        //dispatchIntMapTestEvent.get(typedEvent.filterId()).invoke(typedEvent);\n";
-//        return switchFilter.length() == 0 ? null : switchFilter;
         return switchF.length() == 0 ? null : switchF.toString();
     }
 
-    private String buildFiteredDispatch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
-            Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent,
-            boolean isDebug, Class eventClass) {
+    private String buildFilteredDispatch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
+                                         Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent,
+                                         boolean isDebug, Class eventClass) {
         String dispatchString = "";
         String eventHandlerString = "";
         String intFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, isDebug, true, false);
@@ -1121,10 +1089,6 @@ public class SepJavaSourceModelHugeFilter {
     public String getAdditionalInterfaces() {
         return additionalInterfaces==null?"":additionalInterfaces;
     }
-
-//    public ArrayList<String> getImportList() {
-//        return importList;
-//    }
 
     /**
      * String representation of top level event dispatch

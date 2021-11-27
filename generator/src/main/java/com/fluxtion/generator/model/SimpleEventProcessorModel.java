@@ -107,7 +107,7 @@ public class SimpleEventProcessorModel {
     /**
      * Map of constructor argument lists for a node.
      */
-    private final Map<Object, List<MappedField>> constructorArgdMap;
+    private final Map<Object, List<MappedField>> constructorArgumentMap;
 
     /**
      * Map of bean property mutators for a node.
@@ -117,9 +117,15 @@ public class SimpleEventProcessorModel {
     private final Set<Class<?>> importClasses;
 
     /**
+     * A topologically sorted list of all {@link CbMethodHandle} in this graph. These methods are
+     * annotated with {@link OnEvent} or {@link EventHandler}
+     */
+    private List<CbMethodHandle> allEventCallBacks;
+
+    /**
      * The dispatch map for event handling, grouped by event filter id's. Class
      * is the class of the Event. Integer is the filter Id. These methods are
-     * annotated with {@link OnEvent}
+     * annotated with {@link OnEvent} or {@link EventHandler}
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap;
 
@@ -144,7 +150,7 @@ public class SimpleEventProcessorModel {
 
     private final ArrayList<FilterDescription> filterDescriptionList;
 
-    private final FilterDescriptionProducer flterProducer;
+    private final FilterDescriptionProducer filterProducer;
 
     /**
      * Map of a sep node fields to dirty field. Mappings only exist when dirty
@@ -194,9 +200,9 @@ public class SimpleEventProcessorModel {
         this.dependencyGraph = dependencyGraph;
         this.dependencyGraph.generateDependencyTree();
         this.filterMap = filterMap == null ? new HashMap<>() : filterMap;
-        this.flterProducer = new DefaultFilterDescriptionProducer();
+        this.filterProducer = new DefaultFilterDescriptionProducer();
         this.nodeClassMap = nodeClassMap == null ? Collections.emptyMap() : nodeClassMap;
-        constructorArgdMap = new HashMap<>();
+        constructorArgumentMap = new HashMap<>();
         beanPropertyMap = new HashMap<>();
         initialiseMethods = new ArrayList<>();
         tearDownMethods = new ArrayList<>();
@@ -380,13 +386,13 @@ public class SimpleEventProcessorModel {
                     getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                 }
                 List<MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
-                constructorArgdMap.put(field, collect);
+                constructorArgumentMap.put(field, collect);
             }
         });
     }
 
     public List<MappedField> constructorArgs(Object field) {
-        List<MappedField> args = constructorArgdMap.get(field);
+        List<MappedField> args = constructorArgumentMap.get(field);
         return args == null ? Collections.emptyList() : args;
     }
 
@@ -645,9 +651,9 @@ public class SimpleEventProcessorModel {
             @SuppressWarnings("unchecked") Class<? extends Event> eventClass = (Class<? extends Event>) eventCb.eventTypeClass;
             final FilterDescription filterDescription;
             if (isIntFilter && isFiltering) {
-                filterDescription = flterProducer.getFilterDescription(eventClass, filterId);
+                filterDescription = filterProducer.getFilterDescription(eventClass, filterId);
             } else if (isFiltering) {
-                filterDescription = flterProducer.getFilterDescription(eventClass, filterString);
+                filterDescription = filterProducer.getFilterDescription(eventClass, filterString);
             } else {
                 //Ignore as this non-filtered dispatch - already resolved
                 continue;
@@ -710,9 +716,22 @@ public class SimpleEventProcessorModel {
             Collections.reverse(postCallList);
         }
         buildSubClassHandlers();
+        buildGlobalDispatchList();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(dispatchMapToString());
         }
+    }
+
+    private void buildGlobalDispatchList() {
+        allEventCallBacks = dispatchMap.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .flatMap(List::stream).distinct().collect(Collectors.toList());
+        dependencyGraph.sortNodeList(allEventCallBacks);
+    }
+
+    public List<?> getDirectChildrenListeningForEvent(Object parent) {
+        return dependencyGraph.getDirectChildrenListeningForEvent(parent);
     }
 
     @SuppressWarnings("unchecked")
@@ -905,6 +924,10 @@ public class SimpleEventProcessorModel {
         return ret;
     }
 
+    public Field getFieldForName(String name){
+        return nodeFields.stream().filter(f -> f.name.equals(name)).findFirst().orElse(null);
+    }
+
     public String getMappedClass(String className) {
         if (dependencyGraph == null || dependencyGraph.getConfig() == null) {
             return className;
@@ -946,6 +969,10 @@ public class SimpleEventProcessorModel {
 
     public List<CbMethodHandle> getEventEndMethods() {
         return Collections.unmodifiableList(eventEndMethods);
+    }
+
+    public List<CbMethodHandle> getDispatchMapForGraph() {
+        return  Collections.unmodifiableList(allEventCallBacks);
     }
 
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {

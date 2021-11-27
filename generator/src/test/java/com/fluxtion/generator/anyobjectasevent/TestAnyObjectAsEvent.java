@@ -20,19 +20,23 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class TestAnyObjectAsEvent extends BaseSepInprocessTest {
+public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
+
+    public TestAnyObjectAsEvent(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testCombined() {
-        sep((c) -> {
-            c.addNode(new StringHandler(), "strHandler");
-        });
+        sep((c) -> c.addNode(new StringHandler(), "strHandler"));
         StringHandler strHandler = getField("strHandler");
         assertFalse(strHandler.notified);
         onEvent("hello world");
