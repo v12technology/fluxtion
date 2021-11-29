@@ -29,6 +29,7 @@ import com.fluxtion.generator.util.NaturalOrderComparator;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.extern.slf4j.Slf4j;
 import net.jodah.typetools.TypeResolver;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ import static org.reflections.ReflectionUtils.*;
  *
  * @author Greg Higgins
  */
+@Slf4j
 public class SimpleEventProcessorModel {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SimpleEventProcessorModel.class);
@@ -926,6 +928,18 @@ public class SimpleEventProcessorModel {
 
     public Field getFieldForName(String name){
         return nodeFields.stream().filter(f -> f.name.equals(name)).findFirst().orElse(null);
+    }
+
+    /**
+     * returns all the {@link OnEvent} {@link CbMethodHandle}'s that depend upon this node.
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Set<Object> getOnEventDependenciesForNode(Object instance){
+        return getDirectChildrenListeningForEvent(instance).stream()
+                .peek(o -> log.debug("checking for OnEvent instance:{}", o))
+                .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnEvent.class)).isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public String getMappedClass(String className) {

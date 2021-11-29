@@ -121,7 +121,7 @@ public class NoPropogationTest {
     public static class EventFilteringLogBuilder extends SEPConfig {
 
         {
-            TimeProcessr timeNode = addNode(new TimeProcessr());
+            TimeProcessor timeNode = addNode(new TimeProcessor());
             LogNotifier logNotifer = addNode(new LogNotifier());
             MsgBuilder msgBuilder = addPublicNode(new MsgBuilder(timeNode, logNotifer), "msgBuilder");
             NoEventFilterMsg msgBuilder2 = addPublicNode(new NoEventFilterMsg(timeNode, logNotifer), "msgBuilder2");
@@ -141,7 +141,7 @@ public class NoPropogationTest {
     public static class LogToConsole implements Event {
     }
 
-    public static class TimeProcessr {
+    public static class TimeProcessor {
 
         @com.fluxtion.api.annotations.EventHandler
         public boolean handleTimeUpdate(TimeEvent event) {
@@ -157,7 +157,7 @@ public class NoPropogationTest {
         }
     }
 
-    public static class MsgBuulderBase {
+    public static class MsgBuilderBase {
 
         @com.fluxtion.api.annotations.EventHandler(filterString = "level", propagate = false)
         public boolean controlLevel(LogControlEvent lc) {
@@ -171,12 +171,12 @@ public class NoPropogationTest {
 
     }
 
-    public static class MsgBuilder extends MsgBuulderBase {
+    public static class MsgBuilder extends MsgBuilderBase {
 
         private boolean timeprocessorUpdated;
 
-        public MsgBuilder(TimeProcessr timeProcessr, LogNotifier notifier) {
-            this.timeProcessr = timeProcessr;
+        public MsgBuilder(TimeProcessor timeProcessor, LogNotifier notifier) {
+            this.timeProcessor = timeProcessor;
             this.notifier = notifier;
         }
 
@@ -184,12 +184,12 @@ public class NoPropogationTest {
         }
 
         @NoEventReference
-        public TimeProcessr timeProcessr;
+        public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
         
         @OnParentUpdate
-        public void timeUpdated(TimeProcessr processor){
+        public void timeUpdated(TimeProcessor processor){
             this.timeprocessorUpdated = true;
         }
 
@@ -204,8 +204,8 @@ public class NoPropogationTest {
 
         private boolean timeprocessorUpdated;
 
-        public NoEventFilterMsg(TimeProcessr timeProcessr, LogNotifier notifier) {
-            this.timeProcessor = timeProcessr;
+        public NoEventFilterMsg(TimeProcessor timeProcessor, LogNotifier notifier) {
+            this.timeProcessor = timeProcessor;
             this.notifier = notifier;
         }
 
@@ -213,12 +213,12 @@ public class NoPropogationTest {
         }
 
         @NoEventReference
-        public TimeProcessr timeProcessor;
+        public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
         
         @OnParentUpdate("timeProcessor")
-        public void timeUpdated(TimeProcessr processor){
+        public void timeUpdated(TimeProcessor processor){
             this.timeprocessorUpdated = true;
         }
 

@@ -26,7 +26,7 @@ import lombok.EqualsAndHashCode;
  * forward events it produces to another SEP, this event is used to register the
  * target SEP.<br>
  *
- * {@link EventPublsher} is a node that forwards events to registered
+ * {@link EventPublisher} is a node that forwards events to registered
  * EventHandlers.
  *
  * @author V12 Technology Ltd.

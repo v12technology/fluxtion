@@ -595,8 +595,7 @@ public class SepJavaSourceModelHugeFilter {
                         switchF.append(s20).append("case(").append(filterVariable).append("):\n");
                     }
                 }
-                //TODO check for null here on cblist
-                cbList = cbList == null ? Collections.EMPTY_LIST : cbList;
+                cbList = cbList == null ? Collections.emptyList() : cbList;
                 ct.delete(0, ct.length());
                 for (CbMethodHandle method : cbList) {
                     DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);

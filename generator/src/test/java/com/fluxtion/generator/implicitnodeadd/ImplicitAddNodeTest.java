@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.ExcludeNode;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;
 
@@ -33,8 +34,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ImplicitAddNodeTest extends BaseSepInprocessTest {
-    
+public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
+
+    public ImplicitAddNodeTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testAddNodeByAnnotation() {
         sep(cfg -> {

@@ -27,7 +27,9 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class CombinedHandlerAndOnEventTest extends BaseSepInprocessTest {
+public class
+
+CombinedHandlerAndOnEventTest extends BaseSepInprocessTest {
 
     
     @Test

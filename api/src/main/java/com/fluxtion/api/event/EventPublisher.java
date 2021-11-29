@@ -29,23 +29,23 @@ import java.util.Arrays;
  *
  * @author V12 Technology Ltd.
  */
-public class EventPublsher<T> {
+public class EventPublisher<T> {
 
-    public T[] nodeSource = (T[]) new Object[0];
+    @SuppressWarnings("unchecked") public T[] nodeSource = (T[]) new Object[0];
     private StaticEventProcessor[] handlers;
 
-    public EventPublsher() {
+    public EventPublisher() {
         init();
     }
     
     @OnParentUpdate("nodeSource")
-    public void nodeUpdate(T source) {
+    public void nodeUpdate(Object source) {
         for (int i = 0; i < handlers.length; i++) {
             handlers[i].onEvent(source);
         }
     }
 
-    public EventPublsher<T> addEventSource(T node) {
+    public EventPublisher<T> addEventSource(T node) {
         ArrayList<T> nodes = new ArrayList<>(Arrays.asList(nodeSource));
         nodes.add(node);
         nodeSource = nodes.toArray(nodeSource);
@@ -92,7 +92,7 @@ public class EventPublsher<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EventPublsher<?> other = (EventPublsher<?>) obj;
+        final EventPublisher<?> other = (EventPublisher<?>) obj;
         if (!Arrays.deepEquals(this.nodeSource, other.nodeSource)) {
             return false;
         }

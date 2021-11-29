@@ -70,7 +70,7 @@ public class Generator {
 
     private SEPConfig config;
     private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
-    private SimpleEventProcessorModel sep;
+    private SimpleEventProcessorModel simpleEventProcessorModel;
 
     public InMemoryEventProcessor inMemoryProcessor(SEPConfig config) throws Exception {
         config.buildConfig();
@@ -96,9 +96,9 @@ public class Generator {
                 config.auditorMap,
                 config
         );
-        sep = new SimpleEventProcessorModel(graph, config.filterMap, GenerationContext.SINGLETON.getProxyClassMap());
-        sep.generateMetaModel(config.supportDirtyFiltering);
-        return new InMemoryEventProcessor(sep);
+        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.filterMap, GenerationContext.SINGLETON.getProxyClassMap());
+        simpleEventProcessorModel.generateMetaModel(config.supportDirtyFiltering);
+        return new InMemoryEventProcessor(simpleEventProcessorModel);
     }
 
     public void templateSep(SEPConfig config) throws Exception {
@@ -121,8 +121,8 @@ public class Generator {
         );
 //        graph.registrationListenerMap = config.auditorMap;
         LOG.debug("start model gen");
-        sep = new SimpleEventProcessorModel(graph, config.filterMap, context.getProxyClassMap());
-        sep.generateMetaModel(config.supportDirtyFiltering);
+        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.filterMap, context.getProxyClassMap());
+        simpleEventProcessorModel.generateMetaModel(config.supportDirtyFiltering);
         //TODO add conditionality for different target languages
         //buildJava output
         execSvc.submit(() -> {
@@ -135,6 +135,10 @@ public class Generator {
         templateJavaOutput();
         LOG.debug("completed template output");
         execSvc.shutdown();
+    }
+
+    public SimpleEventProcessorModel getSimpleEventProcessorModel() {
+        return simpleEventProcessorModel;
     }
 
     public static void warmupCompiler() {
@@ -174,7 +178,7 @@ public class Generator {
     }
 
     private File templateJavaOutput() throws Exception {
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(simpleEventProcessorModel, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
         srcModel.additonalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();

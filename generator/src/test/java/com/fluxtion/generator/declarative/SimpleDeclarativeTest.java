@@ -45,17 +45,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import static org.junit.Assert.assertTrue;
+
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -153,7 +153,7 @@ public class SimpleDeclarativeTest {
         instance.generateDependencyTree();
 
         Object x = instance.getSortedDependents().get(0);
-        Map classMap = new HashMap();
+        Map<Object, String> classMap = new HashMap<>();
         classMap.put(x, "MyMadeUpClass");
 
         SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, classMap);
@@ -189,7 +189,7 @@ public class SimpleDeclarativeTest {
         instance.generateDependencyTree();
         //override the EindowNode class with DynamicallyGeneratedWindowNode
         Object x = instance.getSortedDependents().get(0);
-        Map classMap = new HashMap();
+        HashMap<Object, String> classMap = new HashMap<>();
 
         classMap.put(x, DynamicallyGeneratedWindowNode.class.getCanonicalName());
         //build model

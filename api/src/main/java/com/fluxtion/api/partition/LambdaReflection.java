@@ -50,7 +50,7 @@ public interface LambdaReflection {
             }
         }
         
-        default Class getContainingClass(ClassLoader loader) {
+        default Class<?> getContainingClass(ClassLoader loader) {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
                 return Class.forName(className, true,  loader);
@@ -59,7 +59,7 @@ public interface LambdaReflection {
             }
         }
         
-        default Class getContainingClass() {
+        default Class<?> getContainingClass() {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
                 return Class.forName(className );
@@ -79,7 +79,7 @@ public interface LambdaReflection {
         
         default Method method(ClassLoader loader) {
             SerializedLambda lambda = serialized();
-            Class containingClass = getContainingClass(loader);
+            Class<?> containingClass = getContainingClass(loader);
             return asList(containingClass.getDeclaredMethods())
                     .stream()
                     .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
@@ -93,7 +93,7 @@ public interface LambdaReflection {
         
         default Method method() {
             SerializedLambda lambda = serialized();
-            Class containingClass = getContainingClass();
+            Class<?> containingClass = getContainingClass();
             return asList(containingClass.getDeclaredMethods())
                     .stream()
                     .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
@@ -139,6 +139,18 @@ public interface LambdaReflection {
     @FunctionalInterface
     interface QuadFunction<F, T, U, V, R> {
         R apply(F f, T t, U u, V v);
+    }
+
+    static <T> Method getMethod(LambdaReflection.SerializableConsumer<T> supplier){
+        return supplier.method();
+    }
+
+    static <T, R> Method getMethod(LambdaReflection.SerializableFunction<T, R> supplier){
+        return supplier.method();
+    }
+
+    static <T, I, R> Method getMethod(LambdaReflection.SerializableBiFunction<T, I, R> supplier){
+        return supplier.method();
     }
 
 }

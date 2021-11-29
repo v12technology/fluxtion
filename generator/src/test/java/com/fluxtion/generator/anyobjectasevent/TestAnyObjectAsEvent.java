@@ -17,12 +17,11 @@
 package com.fluxtion.generator.anyobjectasevent;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -35,12 +34,25 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testCombined() {
+    public void onlyMappedEventTypes() {
         sep((c) -> c.addNode(new StringHandler(), "strHandler"));
         StringHandler strHandler = getField("strHandler");
         assertFalse(strHandler.notified);
         onEvent("hello world");
         assertTrue(strHandler.notified);
+    }
+
+
+    @Test
+    public void mappedAndUnMappedEventTypes() {
+        sep((c) -> c.addNode(new StringHandler(), "strHandler"));
+        StringHandler strHandler = getField("strHandler");
+        assertFalse(strHandler.notified);
+        onEvent("hello world");
+        assertTrue(strHandler.notified);
+        strHandler.notified = false;
+        onEvent(111);
+        assertFalse(strHandler.notified);
     }
 
     public static class StringHandler {

@@ -18,7 +18,7 @@
 package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.event.EventPublsher;
+import com.fluxtion.api.event.EventPublisher;
 import com.fluxtion.api.event.RegisterEventHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import lombok.extern.log4j.Log4j2;
@@ -30,12 +30,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ForwardingSep implements StaticEventProcessor, Lifecycle{
 
-    private EventPublsher publisher;
+    private EventPublisher<?> publisher;
 
     @Override
     public void init() {
         log.info("init forwarding SEP");
-        publisher = new EventPublsher();
+        publisher = new EventPublisher<>();
         publisher.init();
     }
     

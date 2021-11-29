@@ -20,10 +20,12 @@ package com.fluxtion.generator.util;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.compiler.OutputRegistry;
+import com.fluxtion.generator.model.SimpleEventProcessorModel;
 import com.fluxtion.generator.targets.InMemoryEventProcessor;
 import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Before;
@@ -34,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -59,6 +62,7 @@ public class MultipleSepTargetInProcessTest {
     //parametrized test config
     private final boolean compiledSep;
     private InMemoryEventProcessor inMemorySep;
+    protected SimpleEventProcessorModel simpleEventProcessorModel;
 
     public MultipleSepTargetInProcessTest(boolean compiledSep) {
         this.compiledSep = compiledSep;
@@ -96,11 +100,13 @@ public class MultipleSepTargetInProcessTest {
         try {
             if(!compiledSep){
                 SEPConfig cfg = new SEPConfig();
+                cfg.supportDirtyFiltering = true;
                 cfgBuilder.accept(cfg);
                 Generator generator = new Generator();
                 inMemorySep = generator.inMemoryProcessor(cfg);
                 inMemorySep.init();
                 sep = inMemorySep;
+                simpleEventProcessorModel = generator.getSimpleEventProcessorModel();
             }
             else {
                 if (reuseSep) {
