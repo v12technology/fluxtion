@@ -19,14 +19,14 @@ package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.text.api.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import net.vidageek.mirror.dsl.Mirror;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class TextInprocessTest extends BaseSepInprocessTest {
+public class TextInProcessTest extends BaseSepInProcessTest {
 
     protected <T> T getWrappedField(String name) {
         Wrapper<T> wrapped = (Wrapper<T>) new Mirror().on(sep).get().field(name);

@@ -17,7 +17,7 @@
  */
 package com.fluxtion.generator.model.parentlistener;
 
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.NodeWithPrivateParentList;
@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentCollectionTest extends BaseSepInprocessTest {
+public class ParentCollectionTest extends BaseSepInProcessTest {
 
     @Test
     public void testParentList() {

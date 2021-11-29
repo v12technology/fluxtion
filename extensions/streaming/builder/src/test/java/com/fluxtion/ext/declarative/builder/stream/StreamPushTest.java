@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamPushTest extends StreamInprocessTest {
+public class StreamPushTest extends StreamInProcessTest {
 
     @Test
     public void mapRef2Ref() {

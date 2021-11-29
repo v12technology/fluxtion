@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import lombok.Data;
@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class NonPrimitiveFunctionTest extends StreamInprocessTest{
+public class NonPrimitiveFunctionTest extends StreamInProcessTest {
     
     
     @Test

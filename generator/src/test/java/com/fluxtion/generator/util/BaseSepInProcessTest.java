@@ -37,7 +37,7 @@ import org.junit.rules.TestName;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class BaseSepInprocessTest {
+public class BaseSepInProcessTest {
 
     protected StaticEventProcessor sep;
     protected boolean fixedPkg = true;

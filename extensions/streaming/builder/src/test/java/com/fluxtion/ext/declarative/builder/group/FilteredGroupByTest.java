@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Greg Higgins
  */
-public class FilteredGroupByTest extends StreamInprocessTest {
+public class FilteredGroupByTest extends StreamInProcessTest {
 
     @Test
     @Category(Categories.FilterTest.class)

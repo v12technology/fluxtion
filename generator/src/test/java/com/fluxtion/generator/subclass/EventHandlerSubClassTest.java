@@ -18,7 +18,7 @@
 package com.fluxtion.generator.subclass;
 
 import com.fluxtion.api.annotations.*;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
 import org.junit.Test;
 
@@ -29,10 +29,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventHandlerSubClassTest extends BaseSepInprocessTest {
+public class EventHandlerSubClassTest extends BaseSepInProcessTest {
 
     @Test
-    public void testSubclasOnEvent() {
+    public void testSubClassOnEvent() {
 
         sep((c) -> {
             c.addPublicNode(new SubclassHandler(new DefaultFilteredEventHandler<>(String.class)), "node");
@@ -103,8 +103,6 @@ public class EventHandlerSubClassTest extends BaseSepInprocessTest {
         
         @OnBatchPause
         public void batchPause(){}
-        
-        
         
     }
 

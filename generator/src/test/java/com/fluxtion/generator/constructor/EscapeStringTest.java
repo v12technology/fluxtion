@@ -17,26 +17,32 @@
  */
 package com.fluxtion.generator.constructor;
 
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 
 /**
  *
  * @author gregp
  */
-public class EscapeStringTest extends BaseSepInprocessTest {
+public class EscapeStringTest extends MultipleSepTargetInProcessTest {
 
-    private static String c1 = "\"t\t";
-    private static String pubString = "''t\t\n\"\\";
-    private static String propString = "''t\t\n\"\"£";
+    private static final String c1 = "\"t\t";
+    private static final String pubString = "''t\t\n\"\\";
+    private static final String propString = "''t\t\n\"\"£";
     private static final List<String> STRING_LIST = Arrays.asList("fhfh", "\"", "\t{}@~\\");
     private static final List<String> stringListProp = Arrays.asList("\"\\", "\t%\n");
     private static final String[] arrVals = new String[]{"\"", "e", "'#g\\£"};
+
+    public EscapeStringTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void escapeTest() {

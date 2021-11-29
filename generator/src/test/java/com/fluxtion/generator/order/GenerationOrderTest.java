@@ -20,10 +20,12 @@ package com.fluxtion.generator.order;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.generation.NodeNameProducer;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +34,11 @@ import org.junit.Test;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class GenerationOrderTest extends BaseSepInprocessTest {
+public class GenerationOrderTest extends MultipleSepTargetInProcessTest {
+
+    public GenerationOrderTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testOrder() {

@@ -20,7 +20,7 @@ package com.fluxtion.generator.sepnode;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.SepNode;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,8 +30,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class AddSepNodeTest extends BaseSepInprocessTest {
-    
+public class AddSepNodeTest extends MultipleSepTargetInProcessTest {
+
+    public AddSepNodeTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testAddNodeByAnnotation() {
         sep(cfg -> {

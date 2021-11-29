@@ -12,7 +12,7 @@
 package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.ext.declarative.builder.helpers.*;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.MergingWrapper;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.stream.StringPredicates;
@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
  *
  * @author Greg Higgins
  */
-public class ConditionalTestTest extends StreamInprocessTest {
+public class ConditionalTestTest extends StreamInProcessTest {
 
     public int zero(CharSequence f) {
         return 0;

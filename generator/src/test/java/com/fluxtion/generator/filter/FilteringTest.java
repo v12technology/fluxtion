@@ -19,7 +19,7 @@ package com.fluxtion.generator.filter;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class FIlteringTest extends BaseSepInprocessTest {
+public class FilteringTest extends BaseSepInProcessTest {
 
     @Test
     public void testClassFilter() {

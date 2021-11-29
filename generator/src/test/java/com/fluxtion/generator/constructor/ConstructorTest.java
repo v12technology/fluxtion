@@ -20,17 +20,21 @@ package com.fluxtion.generator.constructor;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
 
 import java.util.Arrays;
 import java.util.List;
 
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ConstructorTest extends BaseSepInprocessTest {
+public class ConstructorTest extends MultipleSepTargetInProcessTest {
+
+    public ConstructorTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testConstructorSimple() {

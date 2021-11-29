@@ -17,30 +17,22 @@
  */
 package com.fluxtion.generator.inject;
 
-import com.fluxtion.api.annotations.Config;
-import com.fluxtion.api.annotations.ConfigVariable;
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.FilterId;
-import com.fluxtion.api.annotations.Inject;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
-import com.fluxtion.builder.annotation.Disabled;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.Map;
-
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  *

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.function;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.numeric.NumericSignal;
 import lombok.Value;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class DefaultNumberTest extends StreamInprocessTest {
+public class DefaultNumberTest extends StreamInProcessTest {
 
     @Test
     public void defaultNumber() {

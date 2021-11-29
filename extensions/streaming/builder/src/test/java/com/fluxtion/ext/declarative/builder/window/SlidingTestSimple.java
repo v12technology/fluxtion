@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingTestSimple extends StreamInprocessTest {
+public class SlidingTestSimple extends StreamInProcessTest {
 
     @Test
     public void sumSlidingCountWrapper() {

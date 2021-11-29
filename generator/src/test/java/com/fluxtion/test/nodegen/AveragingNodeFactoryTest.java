@@ -21,7 +21,7 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,7 +38,7 @@ import org.junit.Test;
  * @author Greg Higgins
  */
 //public class AveragingNodeFactoryTest extends BaseSepTest {
-public class AveragingNodeFactoryTest extends BaseSepInprocessTest {
+public class AveragingNodeFactoryTest extends BaseSepInProcessTest {
 
     @Test
     @Ignore

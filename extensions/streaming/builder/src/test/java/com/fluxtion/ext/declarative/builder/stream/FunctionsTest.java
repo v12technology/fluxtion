@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class FunctionsTest extends StreamInprocessTest {
+public class FunctionsTest extends StreamInProcessTest {
 
     @Test
     public void mapRef2Ref() {

@@ -18,7 +18,7 @@
 package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.generator.compiler.OutputRegistry;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class TumbleTestSimple extends StreamInprocessTest {
+public class TumbleTestSimple extends StreamInProcessTest {
 
     @Test
     public void sumTumbleCountWrapper() {

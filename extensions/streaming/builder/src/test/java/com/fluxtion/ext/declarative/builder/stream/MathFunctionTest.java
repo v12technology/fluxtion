@@ -45,7 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins
  */
-public class MathFunctionTest extends StreamInprocessTest {
+public class MathFunctionTest extends StreamInProcessTest {
 
     public static int intFun(int a, int b) {
         return a + b;

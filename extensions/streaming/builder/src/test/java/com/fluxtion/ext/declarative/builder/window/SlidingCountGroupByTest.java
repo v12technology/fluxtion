@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingCountGroupByTest extends StreamInprocessTest {
+public class SlidingCountGroupByTest extends StreamInProcessTest {
 
     @Test
     public void groupByFunctionSliding() {

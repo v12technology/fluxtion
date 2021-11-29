@@ -11,7 +11,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins
  */
-public class ComplexGroupByTest extends StreamInprocessTest {
+public class ComplexGroupByTest extends StreamInProcessTest {
 
     @Test
     @Category(Categories.FilterTest.class)

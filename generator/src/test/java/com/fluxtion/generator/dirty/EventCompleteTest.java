@@ -20,7 +20,7 @@ package com.fluxtion.generator.dirty;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.generator.dirty.DirtyElseTest.NumberEvent;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author gregp
  */
-public class EventCompleteTest extends BaseSepInprocessTest {
+public class EventCompleteTest extends BaseSepInProcessTest {
     
     @Test
     public void testComplete(){

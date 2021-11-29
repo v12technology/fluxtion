@@ -18,7 +18,7 @@
 package com.fluxtion.ext.declarative.builder.filter;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author V12 Technology Ltd.
  */
 @Slf4j
-public class FilterTest extends StreamInprocessTest {
+public class FilterTest extends StreamInProcessTest {
 
     @Test
     public void testOnNotifyControl() {

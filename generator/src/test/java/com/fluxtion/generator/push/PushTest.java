@@ -21,7 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.PushReference;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +32,11 @@ import java.util.List;
 /**
  * @author gregp
  */
-public class PushTest extends BaseSepInprocessTest {
+public class PushTest extends MultipleSepTargetInProcessTest {
+
+    public PushTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testPush() {

@@ -20,7 +20,7 @@ package com.fluxtion.ext.declarative.builder.reset;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.builder.stream.MapFunctions;
 import com.fluxtion.ext.declarative.builder.stream.StreamData;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import lombok.Value;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ResetNotifierTest extends StreamInprocessTest {
+public class ResetNotifierTest extends StreamInProcessTest {
     
     @Test
     //to be reinstated

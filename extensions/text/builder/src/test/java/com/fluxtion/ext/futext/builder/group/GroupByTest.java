@@ -24,7 +24,7 @@ import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.ext.text.api.ascii.Ascii2IntTerminator;
 import com.fluxtion.ext.text.api.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author greg
  */
-public class GroupByTest extends BaseSepInprocessTest {
+public class GroupByTest extends BaseSepInProcessTest {
 
     public static final String VAR_TRADE_DEIAILS = "tradeDetails";
     public static final String VAR_TRADE_SUMMARY = "tradeSummary";

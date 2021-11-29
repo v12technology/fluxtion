@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamNotifierTest  extends StreamInprocessTest {
+public class StreamNotifierTest  extends StreamInProcessTest {
 
     @Test
     public void testOnNotifyControl(){

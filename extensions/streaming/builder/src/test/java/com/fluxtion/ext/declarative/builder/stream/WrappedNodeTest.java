@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class WrappedNodeTest extends StreamInprocessTest {
+public class WrappedNodeTest extends StreamInProcessTest {
 
     @Test
     public void mapPrimitiveFromString() {

@@ -30,7 +30,11 @@ import static org.junit.Assert.*;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class MethodRefSerialisationTest extends BaseSepInprocessTest {
+public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
+
+    public MethodRefSerialisationTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testMethodRef() {

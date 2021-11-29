@@ -19,7 +19,7 @@ package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.junit.SystemOutResource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingTimeGroupByTest extends BaseSepInprocessTest {
+public class SlidingTimeGroupByTest extends BaseSepInProcessTest {
 
     @Rule
     public SystemOutResource sysOut = new SystemOutResource();

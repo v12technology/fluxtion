@@ -17,8 +17,11 @@
  */
 package com.fluxtion.generator.model;
 
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -55,6 +58,10 @@ public class CbMethodHandle {
     
     public final boolean isInvertedDirtyHandler;
 
+    private final boolean isGuardedParent;
+
+    private final boolean isNoPropagateEventHandler;
+
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
     }
@@ -67,6 +74,8 @@ public class CbMethodHandle {
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
         this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+        this.isGuardedParent = method.getAnnotation(OnParentUpdate.class)!=null && method.getAnnotation(OnParentUpdate.class).guarded();
+        this.isNoPropagateEventHandler = method.getAnnotation(EventHandler.class)!=null && !method.getAnnotation(EventHandler.class).propagate();
     }
 
     public Method getMethod() {
@@ -89,12 +98,20 @@ public class CbMethodHandle {
         return isEventHandler;
     }
 
+    public boolean isNoPropagateEventHandler() {
+        return isNoPropagateEventHandler;
+    }
+
     public boolean isPostEventHandler() {
         return isPostEventHandler;
     }
 
     public boolean isInvertedDirtyHandler() {
         return isInvertedDirtyHandler;
+    }
+
+    public boolean isGuardedParent() {
+        return isGuardedParent;
     }
 
     @Override

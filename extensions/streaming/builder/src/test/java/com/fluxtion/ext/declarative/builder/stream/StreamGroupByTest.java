@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamGroupByTest extends StreamInprocessTest {
+public class StreamGroupByTest extends StreamInProcessTest {
 
     @Test
     public void groupByStream() {

@@ -20,7 +20,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.SepNode;
 import com.fluxtion.api.annotations.TriggerEventOverride;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
 
@@ -31,7 +31,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class TriggerOverrideTest extends BaseSepInprocessTest {
+public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
+
+    public TriggerOverrideTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void triggerOverride() {

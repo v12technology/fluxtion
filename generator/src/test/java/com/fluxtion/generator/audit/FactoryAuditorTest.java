@@ -10,7 +10,7 @@ import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.test.event.CharEvent;
 import java.util.Map;
 import org.junit.Assert;
@@ -20,7 +20,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class FactoryAuditorTest extends BaseSepInprocessTest {
+public class FactoryAuditorTest extends BaseSepInProcessTest {
 
     @Test
     public void test() {

@@ -37,8 +37,6 @@ public class PropagationTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    @Ignore
-    //TODO fails because InMemoryEventProcessor cannot handle multiple event handlers in a class
     public void onlyMappedEventTypes() {
         sep((c) -> c.addNode(new Child(new MyHandler()), "child"));
         Child child = getField("child");
@@ -47,18 +45,17 @@ public class PropagationTest extends MultipleSepTargetInProcessTest {
         assertTrue(child.notified);
     }
 
-
-//    @Test
-//    public void mappedAndUnMappedEventTypes() {
-//        sep((c) -> c.addNode(new MyHandler(), "strHandler"));
-//        MyHandler strHandler = getField("strHandler");
-//        assertFalse(strHandler.notified);
-//        onEvent("hello world");
-//        assertTrue(strHandler.notified);
-//        strHandler.notified = false;
-//        onEvent(111);
-//        assertFalse(strHandler.notified);
-//    }
+    @Test
+    public void mappedAndUnMappedEventTypes() {
+        sep((c) -> c.addNode(new MyHandler(), "strHandler"));
+        MyHandler strHandler = getField("strHandler");
+        assertFalse(strHandler.notified);
+        onEvent("hello world");
+        assertTrue(strHandler.notified);
+        strHandler.notified = false;
+        onEvent(111);
+        assertFalse(strHandler.notified);
+    }
 
     public static class MyHandler {
 

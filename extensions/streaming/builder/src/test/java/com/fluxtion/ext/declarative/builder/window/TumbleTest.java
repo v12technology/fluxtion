@@ -18,9 +18,8 @@
 package com.fluxtion.ext.declarative.builder.window;
 
 import com.fluxtion.api.time.ClockStrategy;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedCollection;
-import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
@@ -37,17 +36,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumbleIncremental;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.tumble;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class TumbleTest extends StreamInprocessTest {
+public class TumbleTest extends StreamInProcessTest {
 
 
 

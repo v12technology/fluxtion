@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamingFilterTest extends StreamInprocessTest {
+public class StreamingFilterTest extends StreamInProcessTest {
 
     @Test
     public void elseNotifyOnce() {

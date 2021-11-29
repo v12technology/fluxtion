@@ -46,12 +46,6 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
         super(compiledSep);
     }
 
-    @Parameterized.Parameters
-    public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(false);
-    }
-
-
     @Test
     public void testModel() throws Exception {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
@@ -73,6 +67,9 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
     @Test
     public void noHandlerAsDependency() {
         sep((c) -> c.addNode(new ChildNoEventHandler(new StringHandler()), "intHandler"));
+        if(simpleEventProcessorModel==null){
+            return;
+        }
         assertThat(
                 simpleEventProcessorModel.getDispatchMapForGraph().stream()
                         .map(CbMethodHandle::getMethod)
@@ -115,11 +112,16 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
         assertFalse(intHandler.notified);
         //int
         onEvent(1);
-        assertTrue(intHandler.notified);
+        assertTrue(intHandler.isIntEventNotified());
+        assertFalse(intHandler.isNotified());
         assertFalse(intHandler.parent.isNotified());
+        //reset
+        intHandler.setIntEventNotified(false);
+        intHandler.setNotified(false);
         //string
         onEvent("hello world");
-        assertTrue(intHandler.notified);
+        assertFalse(intHandler.isIntEventNotified());
+        assertTrue(intHandler.isNotified());
         assertTrue(intHandler.parent.isNotified());
     }
 
@@ -153,10 +155,11 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
     public static class IntegerHandler {
         final StringHandler parent;
         boolean notified = false;
+        boolean intEventNotified = false;
 
         @EventHandler
         public boolean newInt(Integer s) {
-            notified = true;
+            intEventNotified = true;
             return true;
         }
 

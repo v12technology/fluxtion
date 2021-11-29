@@ -15,7 +15,7 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins
  */
-public class GroupByTest extends StreamInprocessTest {
+public class GroupByTest extends StreamInProcessTest {
 
     /**
      * Test an enriched data node

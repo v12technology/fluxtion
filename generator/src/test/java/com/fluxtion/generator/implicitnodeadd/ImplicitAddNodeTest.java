@@ -20,7 +20,6 @@ package com.fluxtion.generator.implicitnodeadd;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.ExcludeNode;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;

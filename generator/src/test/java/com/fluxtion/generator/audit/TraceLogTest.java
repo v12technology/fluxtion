@@ -25,7 +25,7 @@ import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.audit.EventLogNode;
 import com.fluxtion.api.audit.StructuredLogRecord;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.generator.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class TraceLogTest extends BaseSepInprocessTest {
+public class TraceLogTest extends BaseSepInProcessTest {
 
     @Test
     public void testNoTrace() {

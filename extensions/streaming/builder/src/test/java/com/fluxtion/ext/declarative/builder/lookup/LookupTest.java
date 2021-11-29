@@ -18,7 +18,7 @@
 package com.fluxtion.ext.declarative.builder.lookup;
 
 import com.fluxtion.api.event.Signal;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.enrich.EventDrivenLookup;
 import com.fluxtion.ext.streaming.api.util.Tuple;
 import lombok.Data;
@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class LookupTest extends StreamInprocessTest {
+public class LookupTest extends StreamInProcessTest {
     
     @Test
     public void testLookup(){

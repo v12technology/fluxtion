@@ -16,7 +16,7 @@ import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntCsv;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntDelimited;
 import static com.fluxtion.ext.text.builder.ascii.AsciiHelper.readIntFixedLength;
 import com.fluxtion.ext.text.api.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class AsciiMathTest extends BaseSepInprocessTest {
+public class AsciiMathTest extends BaseSepInProcessTest {
 
     public static final String INT_VARIABLE_NAME = "intParser";
     public static final String INT_CUMSUM_VARIABLE_NAME = "intCumSum";

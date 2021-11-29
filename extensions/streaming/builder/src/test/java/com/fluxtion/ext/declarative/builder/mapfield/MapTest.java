@@ -18,7 +18,7 @@
 package com.fluxtion.ext.declarative.builder.mapfield;
 
 import com.fluxtion.api.partition.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.stream.FieldMapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
 import lombok.Data;
@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class MapTest extends StreamInprocessTest {
+public class MapTest extends StreamInProcessTest {
 
     @Test
     public void testFieldSet() {

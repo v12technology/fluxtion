@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.notifier;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import org.junit.Test;
 
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author gregp
  */
-public class NotifierBuilderTest extends StreamInprocessTest {
+public class NotifierBuilderTest extends StreamInProcessTest {
 
     @Test
     public void filterEvent() {

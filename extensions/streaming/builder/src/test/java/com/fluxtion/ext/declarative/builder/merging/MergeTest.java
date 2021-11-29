@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.merging;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import org.junit.Test;
 
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class MergeTest extends StreamInprocessTest {
+public class MergeTest extends StreamInProcessTest {
 
     @Test
     public void mapRef2Ref() {

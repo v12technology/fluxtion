@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author V12 Technology Ltd.
  */
-public class StreamingBooleanTest extends StreamInprocessTest{
+public class StreamingBooleanTest extends StreamInProcessTest {
     
     @Test
     public void statefulAnd(){

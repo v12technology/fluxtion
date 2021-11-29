@@ -21,7 +21,7 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.api.audit.Auditor;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.TestEvent;
@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class RegistrationListenerTest extends BaseSepInprocessTest {
+public class RegistrationListenerTest extends BaseSepInProcessTest {
 
     @Test
     public void testAudit() {

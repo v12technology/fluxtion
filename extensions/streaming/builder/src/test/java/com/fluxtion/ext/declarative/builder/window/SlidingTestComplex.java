@@ -17,17 +17,15 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.time.ClockStrategy;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.ArrayListWrappedCollection;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.stream.CollectionFunctions;
 import static com.fluxtion.ext.streaming.api.util.NumberComparator.numberComparator;
 import com.fluxtion.ext.streaming.api.Duration;
-import com.fluxtion.ext.streaming.api.util.FunctionComparator;
+
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
@@ -35,15 +33,14 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.avg;
-import java.util.ArrayList;
+
 import java.util.Comparator;
-import java.util.function.Function;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingTestComplex extends StreamInprocessTest {
+public class SlidingTestComplex extends StreamInProcessTest {
 
     @Test
     public void countSliding() {

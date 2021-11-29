@@ -5,7 +5,7 @@ import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.factory.PushBuilder;
 import com.fluxtion.ext.streaming.builder.stream.StreamOperatorService;
@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.empty;
  *
  * @author V12 Technology Ltd.
  */
-public class Push_2Test extends StreamInprocessTest {
+public class Push_2Test extends StreamInProcessTest {
 
     @Test
     public void pushNotification() {

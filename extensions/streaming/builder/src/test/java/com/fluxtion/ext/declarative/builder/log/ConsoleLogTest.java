@@ -12,7 +12,7 @@
 package com.fluxtion.ext.declarative.builder.log;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.junit.SystemOutResource;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author greg
  */
-public class ConsoleLogTest extends StreamInprocessTest {
+public class ConsoleLogTest extends StreamInProcessTest {
 
     @Rule
     public SystemOutResource sysOut = new SystemOutResource();

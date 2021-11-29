@@ -17,7 +17,8 @@
 package com.fluxtion.test.enums;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +26,11 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class EnumTest extends BaseSepInprocessTest {
+public class EnumTest extends MultipleSepTargetInProcessTest {
+
+    public EnumTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testEnum() {

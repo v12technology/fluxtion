@@ -17,7 +17,7 @@
 package com.fluxtion.generator.logging;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import nl.altindag.log.LogCaptor;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class TestGenerateInjectedLogMessages extends BaseSepInprocessTest {
+public class TestGenerateInjectedLogMessages extends BaseSepInProcessTest {
     
     @Test
     public void testCombined() {

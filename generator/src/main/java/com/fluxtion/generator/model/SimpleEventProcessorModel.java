@@ -932,8 +932,15 @@ public class SimpleEventProcessorModel {
 
     /**
      * returns all the {@link OnEvent} {@link CbMethodHandle}'s that depend upon this node.
-     * @return
+     * @return dependents that will be notified with methods @{@link OnEvent}
      */
+    public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
+        if(callSource.isNoPropagateEventHandler()){
+            return Collections.emptySet();
+        }
+        return getOnEventDependenciesForNode(callSource.getInstance());
+    }
+
     @SuppressWarnings("unchecked")
     public Set<Object> getOnEventDependenciesForNode(Object instance){
         return getDirectChildrenListeningForEvent(instance).stream()

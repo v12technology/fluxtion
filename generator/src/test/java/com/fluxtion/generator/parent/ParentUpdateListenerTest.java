@@ -20,7 +20,8 @@ package com.fluxtion.generator.parent;
 import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ import static org.junit.Assert.*;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentUpdateListenerTest extends BaseSepInprocessTest {
+public class ParentUpdateListenerTest extends BaseSepInProcessTest {
 
     @Test
     public void testClassFilter() {

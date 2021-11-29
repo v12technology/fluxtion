@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,11 +29,7 @@ import org.junit.Test;
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ClassMappingTest extends MultipleSepTargetInProcessTest {
-
-    public ClassMappingTest(boolean compiledSep) {
-        super(compiledSep);
-    }
+public class ClassMappingTest extends BaseSepInProcessTest {
 
     @Test
     public void dirtyNoReferenceTest() {

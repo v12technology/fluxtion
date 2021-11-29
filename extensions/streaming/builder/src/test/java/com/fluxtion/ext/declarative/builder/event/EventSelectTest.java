@@ -12,7 +12,7 @@
 package com.fluxtion.ext.declarative.builder.event;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -28,7 +28,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins
  */
-public class EventSelectTest extends StreamInprocessTest {
+public class EventSelectTest extends StreamInProcessTest {
 
     @Test
     public void testSimpleSelect() throws Exception {

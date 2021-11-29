@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
@@ -34,7 +34,7 @@ import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingGroupByTest extends StreamInprocessTest {
+public class SlidingGroupByTest extends StreamInProcessTest {
 
     @Test
     public void slideTest() throws Exception {

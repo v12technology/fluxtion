@@ -19,8 +19,7 @@ package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
 import com.fluxtion.generator.compiler.DirOptions;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import lombok.Data;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class FileDispatchTest extends BaseSepInprocessTest {
+public class FileDispatchTest extends BaseSepInProcessTest {
     
     @Test
     @Ignore
