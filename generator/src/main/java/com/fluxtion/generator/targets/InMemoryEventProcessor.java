@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
-//TODO - partial implementation. Additionally many optimisations are missing. Caching the
+//TODO - eventComplete is missing
 public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
@@ -38,7 +38,6 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
                a.eventReceived(event);
            }
         });
-        //find index and then dispatch using bitset
         noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
         filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
 
@@ -123,7 +122,7 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
                     .filter(Objects::nonNull)
                     .forEach(handler::addDependent);
         }
-        //
+        //calculate event handler bitset id's for an event with filtering
         simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
                 filterDescriptionListMap.forEach((filterDescription, cbMethodHandles) -> {
                             if (!filterDescription.equals(FilterDescription.NO_FILTER)
@@ -140,7 +139,7 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
                 )
         );
 
-        //calculate event handler bitset id's for an event
+        //calculate event handler bitset id's for an event without filtering
         simpleEventProcessorModel.getDispatchMap().forEach((key, value) ->
                 noFilterEventHandlerToBitsetMap.put(
                         key,
