@@ -31,14 +31,16 @@ import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
 import com.fluxtion.test.event.RootCB;
 import com.fluxtion.test.event.TestEvent;
 import com.fluxtion.test.event.TimeEvent;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  * @author Greg Higgins
  */
-public class NoPropogationTest {
+public class NoPropagationTest {
 
     @Test
     public void testComplexNoPropogate() throws Exception {
@@ -78,11 +80,11 @@ public class NoPropogationTest {
         ((Lifecycle) sep).init();
         assertFalse(root.invoked);
         assertFalse(msgBuilder.timeprocessorUpdated);
-        assertFalse(msgBuilder2.timeprocessorUpdated);
+        assertFalse(msgBuilder2.timeProcessorUpdated);
         sep.onEvent(new TimeEvent());
         assertFalse(root.invoked);
         assertTrue(msgBuilder.timeprocessorUpdated);
-        assertTrue(msgBuilder2.timeprocessorUpdated);
+        assertTrue(msgBuilder2.timeProcessorUpdated);
         sep.onEvent(new LogControlEvent("filter"));
         assertFalse(root.invoked);
         sep.onEvent(new LogControlEvent("level"));
@@ -111,7 +113,6 @@ public class NoPropogationTest {
     public static class LogBuilder1 extends SEPConfig {
 
         public LogBuilder1() {
-//
             AnnotatedHandlerNoPropogate noPropHandler = addNode(new AnnotatedHandlerNoPropogate());
             addPublicNode(new RootCB("root", noPropHandler), "root");
 
@@ -202,7 +203,7 @@ public class NoPropogationTest {
     
     public static class NoEventFilterMsg{
 
-        private boolean timeprocessorUpdated;
+        private boolean timeProcessorUpdated;
 
         public NoEventFilterMsg(TimeProcessor timeProcessor, LogNotifier notifier) {
             this.timeProcessor = timeProcessor;
@@ -219,7 +220,7 @@ public class NoPropogationTest {
         
         @OnParentUpdate("timeProcessor")
         public void timeUpdated(TimeProcessor processor){
-            this.timeprocessorUpdated = true;
+            this.timeProcessorUpdated = true;
         }
 
         @OnEvent

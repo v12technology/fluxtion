@@ -25,7 +25,7 @@ import com.fluxtion.api.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.audit.EventLogNode;
 import com.fluxtion.api.audit.StructuredLogRecord;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.generator.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
 import org.junit.Test;
@@ -39,7 +39,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class TraceLogTest extends BaseSepInProcessTest {
+public class TraceLogTest extends MultipleSepTargetInProcessTest {
+
+    public TraceLogTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testNoTrace() {
@@ -58,7 +62,7 @@ public class TraceLogTest extends BaseSepInProcessTest {
         onEvent(new CharEvent('a'));
 
         List<StructuredLogRecord> eventList = yamlRecord.getEventList();
-        assertThat(1, is(eventList.size()));
+        assertThat(eventList.size(), is(1));
         assertThat("CharEvent", is(eventList.get(0).getEventType()));
         final List<StructuredLogRecord.AuditRecord> auditLogs = eventList.get(0).getAuditLogs();
         assertThat(2, is(auditLogs.size()));

@@ -1,6 +1,7 @@
 package com.fluxtion.generator.targets;
 
 import com.fluxtion.api.StaticEventProcessor;
+import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.lifecycle.Lifecycle;
 import com.fluxtion.builder.generation.FilterDescription;
@@ -23,17 +24,24 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
     private final SimpleEventProcessorModel simpleEventProcessorModel;
     private final BitSet dirtyBitset = new BitSet();
     private final List<Node> eventHandlers = new ArrayList<>();
-    private final Map<Class<?>, List<Integer>> eventHandlerToBitsetMap = new HashMap<>();
-
-    public void onEvent(Event event) {
-
-    }
+    private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
+    private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
+    private final List<Auditor> auditors = new ArrayList<>();
 
     @Override
     public void onEvent(Object event) {
         log.debug("dirtyBitset, before:{}", dirtyBitset);
+        auditors.forEach(a -> {
+           if(Event.class.isAssignableFrom(event.getClass())){
+               a.eventReceived((Event) event);
+           }else{
+               a.eventReceived(event);
+           }
+        });
         //find index and then dispatch using bitset
-        eventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
+        noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
+        filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
+
         //now actually dispatch
         log.debug("dirtyBitset, after:{}", dirtyBitset);
         log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
@@ -46,6 +54,7 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
             eventHandlers.get(i).onEvent(event);
         }
         log.debug("======== GRAPH CYCLE END   EVENT:[{}] ========", event);
+        auditors.forEach(Auditor::processingComplete);
         dirtyBitset.clear();
         log.debug("dirtyBitset, afterClear:{}", dirtyBitset);
     }
@@ -100,7 +109,7 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
             Node node = new Node(
                     i,
                     cbMethodHandle,
-                    parentUpdateListenerMethodMap.getOrDefault(cbMethodHandle.instance, Collections.emptyList())
+                    new ArrayList<>(parentUpdateListenerMethodMap.getOrDefault(cbMethodHandle.instance, Collections.emptyList()))
             );
             eventHandlers.add(node);
             instance2NodeMap.put(node.callbackHandle.instance, node);
@@ -114,18 +123,52 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
                     .filter(Objects::nonNull)
                     .forEach(handler::addDependent);
         }
+        //
+        simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
+                filterDescriptionListMap.forEach((filterDescription, cbMethodHandles) -> {
+                            if (!filterDescription.equals(FilterDescription.NO_FILTER)
+                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)) {
+                                filteredEventHandlerToBitsetMap.put(
+                                        filterDescription,
+                                        cbMethodHandles.stream()
+                                                .filter(CbMethodHandle::isEventHandler)
+                                                .map(InMemoryEventProcessor.this::nodeIndex)
+                                                .collect(Collectors.toList())
+                                );
+                            }
+                        }
+                )
+        );
+
         //calculate event handler bitset id's for an event
-        simpleEventProcessorModel.getDispatchMap()
-                .forEach((key, value) ->
-                        eventHandlerToBitsetMap.put(
-                                key,
-                                value.get(FilterDescription.DEFAULT_FILTER).stream()
-                                        .filter(Objects::nonNull)
-                                        .filter(CbMethodHandle::isEventHandler)
-                                        .map(InMemoryEventProcessor.this::nodeIndex)
-                                        .collect(Collectors.toList())
-                        ));
+        simpleEventProcessorModel.getDispatchMap().forEach((key, value) ->
+                noFilterEventHandlerToBitsetMap.put(
+                        key,
+                        value.getOrDefault(FilterDescription.DEFAULT_FILTER, Collections.emptyList()).stream()
+                                .filter(Objects::nonNull)
+                                .filter(CbMethodHandle::isEventHandler)
+                                .map(InMemoryEventProcessor.this::nodeIndex)
+                                .collect(Collectors.toList())
+                )
+        );
         eventHandlers.forEach(Node::init);
+        registerAuditors();
+    }
+
+    private void registerAuditors(){
+        //register auditors
+        List<Object> auditorFields = simpleEventProcessorModel.getNodeRegistrationListenerFields().stream()
+                .map(Field::getInstance).collect(Collectors.toList());
+        auditors.clear();
+        auditors.addAll(simpleEventProcessorModel.getNodeRegistrationListenerFields().stream()
+                .map(Field::getInstance)
+                .map(Auditor.class::cast)
+                .collect(Collectors.toList())
+        );
+        auditors.forEach(Auditor::init);
+        simpleEventProcessorModel.getNodeFields().stream()
+                .filter(f -> !auditorFields.contains(f.getInstance()))
+                .forEach(f -> auditors.forEach(a -> a.nodeRegistered(f.getInstance(), f.getName())));
     }
 
     private int nodeIndex(CbMethodHandle nodeInstance) {
@@ -148,6 +191,13 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
         public void onEvent(Object e) {
             final Object result;
             final boolean dirty;
+
+            auditors.stream()
+                    .filter(Auditor::auditInvocations)
+                    .forEachOrdered(a -> a.nodeInvoked(
+                            callbackHandle.instance, callbackHandle.getVariableName(), callbackHandle.getMethod().getName(), e
+                    ));
+
             if (callbackHandle.isEventHandler) {
                 result = callbackHandle.method.invoke(callbackHandle.instance, e);
             } else {
@@ -157,7 +207,7 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
             dependents.forEach(n -> n.parentUpdated(dirty));
 
             for (CbMethodHandle cb : parentListeners) {
-                if (cb.isGuardedParent() & dirty || (!cb.isGuardedParent() & dirty)) {
+                if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent() ) {
                     cb.method.invoke(cb.instance, callbackHandle.instance);
                 }
             }
@@ -168,14 +218,14 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
             this.dependents.add(dependent);
         }
 
-        private void parentUpdated(boolean parentDirty){
-            if(callbackHandle.isInvertedDirtyHandler){
+        private void parentUpdated(boolean parentDirty) {
+            if (callbackHandle.isInvertedDirtyHandler) {
                 parentDirty = !parentDirty;
             }
-            if(parentDirty){
+            if (parentDirty) {
                 log.debug("mark dirty:{}", callbackHandle.getVariableName());
                 dirtyBitset.set(position);
-            }else{
+            } else {
                 log.debug("mark clean:{}", callbackHandle.getVariableName());
             }
         }
@@ -184,16 +234,16 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle {
         public void init() {
             dirtyBitset.clear(position);
             callbackHandle.method.setAccessible(true);
-            parentListeners.forEach(cb -> cb.method.setAccessible(true));
+            if(callbackHandle.isNoPropagateEventHandler()){
+                parentListeners.clear();
+            }else{
+                parentListeners.forEach(cb -> cb.method.setAccessible(true));
+            }
         }
 
         @Override
         public void tearDown() {
             dirtyBitset.clear(position);
-        }
-
-        boolean sameInstance(Object other) {
-            return Objects.equals(callbackHandle.instance, other);
         }
 
         boolean sameCallback(CbMethodHandle other) {

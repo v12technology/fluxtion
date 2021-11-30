@@ -21,10 +21,11 @@ import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.api.audit.Auditor;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.TestEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -36,7 +37,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class RegistrationListenerTest extends BaseSepInProcessTest {
+@Slf4j
+public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
+
+    public RegistrationListenerTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testAudit() {
@@ -66,8 +72,6 @@ public class RegistrationListenerTest extends BaseSepInProcessTest {
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor");
-            //inline
-            c.inlineEventHandling = true;
         });
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
@@ -76,7 +80,7 @@ public class RegistrationListenerTest extends BaseSepInProcessTest {
     }
 
     @Test
-    public void testNoAuditInline() {
+    public void testNoInvocationAuditInline() {
         sep(c -> {
             EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
             EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
@@ -85,8 +89,6 @@ public class RegistrationListenerTest extends BaseSepInProcessTest {
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor").audit = false;
-            //inline
-            c.inlineEventHandling = true;
         });
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
@@ -112,6 +114,7 @@ public class RegistrationListenerTest extends BaseSepInProcessTest {
 
         @Override
         public void nodeInvoked(Object node, String nodeName, String methodName, Object typedEvent) {
+            log.debug("node:{} nodeName:{} methodName:{} event:{}", node, nodeName, methodName, typedEvent);
             invokeCount++;
         }
 

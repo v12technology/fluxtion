@@ -24,7 +24,7 @@ import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
 import com.fluxtion.api.time.Tick;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +35,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ClockTest extends BaseSepInProcessTest {
+public class ClockTest extends MultipleSepTargetInProcessTest {
+
+    public ClockTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testClock() {

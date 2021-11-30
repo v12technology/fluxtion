@@ -21,7 +21,6 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +28,29 @@ import org.junit.Test;
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ClassMappingTest extends BaseSepInProcessTest {
+public class ClassMappingTest extends MultipleSepTargetInProcessTest {
+
+    public ClassMappingTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+    @Test
+    public void noSubstituteTest() {
+        sep((c) -> {
+            ConfigCache cfgCache = new ConfigCache();
+            c.addPublicNode(
+                    new PricePublisher(new PriceFormer(cfgCache), new RulesProcessorSubstitute(cfgCache)),
+                    "pricePublisher"
+            );
+        });
+        PricePublisher testHandler = getField("pricePublisher");
+        RulesProcessor rulesProcessor = testHandler.rulesProcessor;
+        PriceFormer priceFormer = testHandler.priceFormer;
+        onEvent(new Config());
+        onEvent(new Config());
+        Assert.assertEquals(2, testHandler.invokeCount);
+        Assert.assertEquals(2, rulesProcessor.invokeCount);
+        Assert.assertEquals(2, priceFormer.invokeCount);
+    }
 
     @Test
     public void dirtyNoReferenceTest() {
@@ -41,6 +62,10 @@ public class ClassMappingTest extends BaseSepInProcessTest {
             );
             c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
         });
+        //cannot work with InMemoryEventProcessor, replacement map is too late to process
+        if(simpleEventProcessorModel!=null){
+            return;
+        }
         PricePublisher testHandler = getField("pricePublisher");
         RulesProcessor rulesProcessor = testHandler.rulesProcessor;
         PriceFormer priceFormer = testHandler.priceFormer;

@@ -102,8 +102,6 @@ public interface Auditor extends Lifecycle {
     default void tearDown() {
     }
 
-//    default void nodeInvoked(Object node, String nodeName, String methodName, Event typedEvent) {
-//    }
     /**
      * Callback method received by the auditor due to processing an event. This
      * method is invoked before the node in the execution path receives a

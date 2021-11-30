@@ -17,6 +17,8 @@
  */
 package com.fluxtion.generator.model;
 
+import lombok.Getter;
+
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 /**
  * @author Greg Higgins
  */
+@Getter
 public class Field {
 
     public final String name;

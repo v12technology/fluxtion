@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,29 +12,45 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.filter;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.DefaultEvent;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
+import lombok.Data;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class FilteringTest extends BaseSepInProcessTest {
+public class FilteringTest extends MultipleSepTargetInProcessTest {
+
+    public FilteringTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
+    @Test
+    public void singleFilterTest() {
+        sep(cfg -> {
+            cfg.addPublicNode(new SingleFilteredHandler(), "handler");
+        });
+        SingleFilteredHandler handler = getField("handler");
+        assertThat(handler.getWordACount(), is(0));
+        onEvent(new WordEvent("A"));
+        assertThat(handler.getWordACount(), is(1));
+    }
+
 
     @Test
     public void testClassFilter() {
-        sep(cfg ->{
-             cfg.addPublicNode(new TestHandler(), "handler");
+        sep(cfg -> {
+            cfg.addPublicNode(new TestHandler(), "handler");
         });
         TestHandler testHandler = getField("handler");
         onEvent(new ClassFilterEvent(String.class));
@@ -55,19 +71,28 @@ public class FilteringTest extends BaseSepInProcessTest {
     public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {
-            filterString = clazz.getCanonicalName(); 
+            filterString = clazz.getCanonicalName();
         }
     }
-    
 
-    public static class WordEvent extends DefaultEvent{
-        public WordEvent(String word){
+
+    public static class WordEvent extends DefaultEvent {
+        public WordEvent(String word) {
             super();
             filterString = word;
-            
         }
     }
-    
+
+    @Data
+    public static class SingleFilteredHandler {
+        private int wordACount;
+
+        @EventHandler(filterString = "A")
+        public void processWordA(WordEvent wordA) {
+            wordACount++;
+        }
+    }
+
     public static class TestHandler {
 
         public int count = 0;
@@ -75,24 +100,21 @@ public class FilteringTest extends BaseSepInProcessTest {
         public int wordBCount = 0;
         public transient String filterA = "A";
         public transient String filterB = "B";
-        
-        
+
         @EventHandler(filterStringFromClass = String.class)
         public void handleEvent(ClassFilterEvent event) {
             count++;
         }
-        
+
         @EventHandler(filterVariable = "filterA")
-        public void processWordA(WordEvent wordA){
+        public void processWordA(WordEvent wordA) {
             wordACount++;
         }
-        
+
         @EventHandler(filterVariable = "filterB")
-        public void processWordB(WordEvent wordB){
+        public void processWordB(WordEvent wordB) {
             wordBCount++;
         }
-        
-
     }
 
 }
