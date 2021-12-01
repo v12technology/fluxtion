@@ -699,6 +699,33 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return refName;
     }
 
+    private void implicitAddVectorMember(Object refField) throws IllegalAccessException {
+        boolean addNode = false;
+        if (refField != null && !inst2Name.containsKey(refField) && !inst2NameTemp.containsKey(refField)) {
+            addNode |= !ReflectionUtils.getAllMethods(
+                    refField.getClass(),
+                    Predicates.or(
+                            ReflectionUtils.withAnnotation(AfterEvent.class),
+                            ReflectionUtils.withAnnotation(EventHandler.class),
+                            ReflectionUtils.withAnnotation(Inject.class),
+                            ReflectionUtils.withAnnotation(OnBatchEnd.class),
+                            ReflectionUtils.withAnnotation(OnBatchPause.class),
+                            ReflectionUtils.withAnnotation(OnEvent.class),
+                            ReflectionUtils.withAnnotation(OnEventComplete.class),
+                            ReflectionUtils.withAnnotation(OnParentUpdate.class),
+                            ReflectionUtils.withAnnotation(TearDown.class),
+                            ReflectionUtils.withAnnotation(TriggerEventOverride.class)
+                    )
+            ).isEmpty();
+            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
+            if(addNode){
+                inst2NameTemp.put(refField, nameNode(refField));
+//                walkDependencies(refField);
+            }
+        }
+
+    }
+
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
         walkDependenciesForEventHandling(object);
         @SuppressWarnings("unchecked") Set<Field> s = ReflectionUtils.getAllFields(object.getClass());
@@ -716,7 +743,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    if (inst2Name.containsKey(refField)) {
+                    implicitAddVectorMember(refField);
+                    if (inst2Name.containsKey(refField) || inst2NameTemp.containsKey(refField)) {
                         graph.addVertex(object);
                         graph.addVertex(refField);
                         graph.addEdge(refField, object);
@@ -729,7 +757,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                                 LOGGER.debug("obj.equals(refField)" + obj.equals(refField));
                                 LOGGER.debug("match value from map refField:" + inst2Name.get(refField));
                                 LOGGER.debug("match value from map obj:" + inst2Name.get(obj));
-
                             }
                         }
                     }
@@ -742,7 +769,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    if (inst2Name.containsKey(parent)) {
+                    implicitAddVectorMember(parent);
+                    if (inst2Name.containsKey(parent) || inst2NameTemp.containsKey(parent)) {
                         graph.addVertex(object);
                         graph.addVertex(parent);
 
@@ -780,8 +808,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     overrideMap.put(key, value);
                 }
                 //inject config from annotations over global
-                Config[] configArray = field.getAnnotationsByType(Config.class
-                );
+                Config[] configArray = field.getAnnotationsByType(Config.class);
                 for (Config config : configArray) {
                     map.put(config.key(), config.value());
                 }

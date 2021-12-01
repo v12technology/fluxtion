@@ -132,4 +132,13 @@ public interface Auditor extends Lifecycle {
     default boolean auditInvocations() {
         return false;
     }
+
+    /**
+     * An Auditor marked with this interface will have {@link #processingComplete()}
+     * called before the event nodes {@link com.fluxtion.api.annotations.AfterEvent}'s are processed
+     * <p>
+     * Normally the {@link #processingComplete()} will be called following all the nodes
+     * annotated with {@link com.fluxtion.api.annotations.AfterEvent} have been invoked.
+     */
+    interface FirstAfterEvent{}
 }

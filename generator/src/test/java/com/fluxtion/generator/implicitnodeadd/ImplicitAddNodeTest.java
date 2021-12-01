@@ -20,11 +20,15 @@ package com.fluxtion.generator.implicitnodeadd;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.ExcludeNode;
 import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.api.audit.EventLogControlEvent;
+import com.fluxtion.generator.util.InMemoryOnlySepTest;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,9 +44,9 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testAddNodeByAnnotation() {
+    public void testScalarImplicitAdd() {
         sep(cfg -> {
-            Counter counter = new Counter(new Stringhandler());
+            Counter counter = new Counter(new StringHandler());
             counter.intermediateNode = new IntermediateNode(new DoubleHandler());
             counter.dateHandler = new DateHandler();
             cfg.addPublicNode(counter, "counter");
@@ -63,7 +67,24 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
         assertThat(processor.count, is(5));
     }
 
-    public static class Stringhandler{
+    @Test
+    public void testCollectionImplicitAdd(){
+        sep(cfg ->{
+            VectorCounter vectorCounter = new VectorCounter();
+            vectorCounter.parents.add(new StringHandler());
+            vectorCounter.parents.add(new DoubleHandler());
+            cfg.addNode(vectorCounter, "vectorCounter");
+        });
+        VectorCounter vectorCounter = getField("vectorCounter");
+        onEvent("hello");
+        assertThat(vectorCounter.counter, is(1));
+        onEvent(25.7);
+        assertThat(vectorCounter.counter, is(2));
+        onEvent(25);
+        assertThat(vectorCounter.counter, is(2));
+    }
+
+    public static class StringHandler {
     
         @EventHandler
         public void stringUpdate(String s){
@@ -90,12 +111,12 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     public static class Counter{
 
         private int count;
-        private final Stringhandler myHandler;
+        private final StringHandler myHandler;
         IntermediateNode intermediateNode;
         @ExcludeNode
         DateHandler dateHandler;
 
-        public Counter(Stringhandler myHandler) {
+        public Counter(StringHandler myHandler) {
             this.myHandler = myHandler;
         }
         
@@ -104,6 +125,16 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
             count++;
         }
     
+    }
+
+    public static class VectorCounter{
+        List<Object> parents = new ArrayList<>();
+        int counter;
+
+        @OnEvent
+        public void onEvent(){
+            counter++;
+        }
     }
     
     @Value

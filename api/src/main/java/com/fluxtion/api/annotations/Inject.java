@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a reference as an injection point for an instance. An injected instance
- * is created using a NodeFactory, see Fluxion builder module.
+ * is created using a NodeFactory, see Fluxtion builder module.
  * <p>
  *
  * If no NodeFactory is implemented for this type then a zero argument

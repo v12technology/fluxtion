@@ -152,7 +152,6 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
 
         @OnEvent(dirty = false)
         public void publishFail() {
-            log.warn("failed");
             count++;
         }
 

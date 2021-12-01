@@ -27,6 +27,8 @@ along with this program.  If not, see
   </appender>
 
 <!--  <logger name="com.fluxtion.generator.targets.InMemoryEventProcessor" level="DEBUG"/>-->
+<!--  <logger name="com.fluxtion.generator.afterevent" level="DEBUG"/>-->
+<!--  <logger name="com.fluxtion.generator.audit" level="DEBUG"/>-->
 <!--  <logger name="com.fluxtion.generator.model.SimpleEventProcessorModel" level="DEBUG"/>-->
 
   <!-- Strictly speaking, the level attribute is not necessary since -->

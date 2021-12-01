@@ -7,12 +7,24 @@ import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.targets.InMemoryEventProcessor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public class InMemoryTest {
+
+    private Recorder recorder;
+
+    @Before
+    public void initTest() {
+        recorder = new Recorder();
+    }
 
     @Test
     public void test1() throws Exception {
@@ -20,50 +32,89 @@ public class InMemoryTest {
         cfg.addNode(new ChildNode(new StringHandler()));
         Generator generator = new Generator();
         InMemoryEventProcessor inMemoryEventProcessor = generator.inMemoryProcessor(cfg);
+        assertTrue(recorder.allFalse());
+
         inMemoryEventProcessor.init();
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertFalse(recorder.isChildUpdated());
+        assertFalse(recorder.isParentUpdated());
+        assertFalse(recorder.isChildTeardown());
+        assertFalse(recorder.isParentTeardown());
 
         inMemoryEventProcessor.onEvent("HelloWorld");
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertTrue(recorder.isChildUpdated());
+        assertTrue(recorder.isParentUpdated());
+        assertFalse(recorder.isChildTeardown());
+        assertFalse(recorder.isParentTeardown());
 
         inMemoryEventProcessor.tearDown();
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertTrue(recorder.isChildUpdated());
+        assertTrue(recorder.isParentUpdated());
+        assertTrue(recorder.isChildTeardown());
+        assertTrue(recorder.isParentTeardown());
     }
 
-    static class StringHandler{
+    class StringHandler {
 
         @Initialise
-        public void init(){
-            log.warn("StringHandler::init");
+        public void init() {
+            recorder.setParentInit(true);
         }
 
         @TearDown
-        public void tearDown(){
-            log.warn("StringHandler::tearDown");
+        public void tearDown() {
+            recorder.setParentTeardown(true);
         }
 
         @EventHandler
-        public void inString(String in){
-            log.warn("StringHandler::invoke - {}", in);
+        public void inString(String in) {
+            recorder.setParentUpdated(true);
         }
     }
 
     @RequiredArgsConstructor
-    static class ChildNode{
+    class ChildNode {
         final StringHandler stringHandler;
 
         @Initialise
-        public void init(){
-            log.warn("ChildNode::init");
+        public void init() {
+            recorder.setChildInit(true);
         }
 
         @TearDown
-        public void tearDown(){
-            log.warn("ChildNode::tearDown");
+        public void tearDown() {
+            recorder.setChildTeardown(true);
         }
 
         @OnEvent
-        public void updated(){
-            log.warn("ChildNode::updated");
+        public void updated() {
+            recorder.setChildUpdated(true);
         }
 
+    }
 
+    @Data
+    static class Recorder {
+        boolean childInit;
+        boolean childTeardown;
+        boolean childUpdated;
+
+        boolean parentInit;
+        boolean parentTeardown;
+        boolean parentUpdated;
+
+        boolean allFalse(){
+            return !childInit &&
+                    !childTeardown &&
+                    !childUpdated &&
+                    !parentInit &&
+                    !parentTeardown &&
+                    !parentUpdated;
+        }
     }
 }

@@ -60,7 +60,7 @@ public class Group <S, T> {
 
     public static <S, T> GroupByBuilder<S, T> groupBy(SerializableFunction<S, ?> f, Class<T> target){
         try {
-            Class<S> k = f.getContainingClass();
+            Class<S> k = (Class<S>) f.getContainingClass();
             k.newInstance();
             final Group group = new Group(k.newInstance(), f, target);
             group.eventClass = true;

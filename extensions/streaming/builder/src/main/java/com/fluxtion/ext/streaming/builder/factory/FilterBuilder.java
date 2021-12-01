@@ -18,6 +18,7 @@
 package com.fluxtion.ext.streaming.builder.factory;
 
 import com.fluxtion.api.SepContext;
+import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.api.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.ext.streaming.api.FilterWrapper;
@@ -94,7 +95,7 @@ public class FilterBuilder {
      * @return The filtered stream
      */
     public static <T> FilterWrapper<T> filter(SerializableFunction<? extends T, Boolean> filter) {
-        Class<T> clazz = filter.getContainingClass();
+        Class<T> clazz = (Class<T>) filter.getContainingClass();
         return select(clazz).filter(filter);
     }
 

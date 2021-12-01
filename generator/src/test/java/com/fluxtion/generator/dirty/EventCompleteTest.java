@@ -21,6 +21,7 @@ import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEventComplete;
 import com.fluxtion.generator.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,8 +31,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author gregp
  */
-public class EventCompleteTest extends BaseSepInProcessTest {
-    
+public class EventCompleteTest extends MultipleSepTargetInProcessTest {
+
+    public EventCompleteTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testComplete(){
         sep((c) -> c.addPublicNode(new HandlerWithComplete(10), "completeHandler"));
@@ -59,7 +64,7 @@ public class EventCompleteTest extends BaseSepInProcessTest {
             eventCount++;
             return event.value > barrier;
         }
-        
+
         @OnEventComplete
         public void eventComplete(){
             completeCount++;

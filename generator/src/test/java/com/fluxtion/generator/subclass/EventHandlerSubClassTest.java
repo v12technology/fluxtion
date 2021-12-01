@@ -19,6 +19,7 @@ package com.fluxtion.generator.subclass;
 
 import com.fluxtion.api.annotations.*;
 import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
 import org.junit.Test;
 
@@ -29,7 +30,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventHandlerSubClassTest extends BaseSepInProcessTest {
+public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
+
+    public EventHandlerSubClassTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testSubClassOnEvent() {
