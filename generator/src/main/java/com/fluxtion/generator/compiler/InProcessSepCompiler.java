@@ -33,6 +33,10 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import com.fluxtion.generator.Generator;
+import com.fluxtion.generator.targets.InMemoryEventProcessor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.openhft.compiler.CompilerUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -59,7 +63,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * @author V12 Technology Ltd.
  */
 @Slf4j
-public class InprocessSepCompiler {
+public class InProcessSepCompiler {
 
     public enum InitOptions {
         INIT,
@@ -104,6 +108,21 @@ public class InprocessSepCompiler {
     }
 
     /**
+     * Builds an interpreted version of a {@link StaticEventProcessor}
+     * @param cfgBuilder
+     * @return
+     */
+    @SneakyThrows
+    public static InMemoryEventProcessor interpreted(Consumer<SEPConfig> cfgBuilder){
+        SEPConfig cfg = new SEPConfig();
+        cfg.supportDirtyFiltering = true;
+        cfgBuilder.accept(cfg);
+        Generator generator = new Generator();
+        InMemoryEventProcessor inMemorySep = generator.inMemoryProcessor(cfg);
+        return inMemorySep;
+    }
+
+    /**
      * Build a static event processor using the supplied consumer to populate the SEPConfig. Will always build a new
      * processor, supplying a newly created instance of the class to the caller.
      *
@@ -121,20 +140,20 @@ public class InprocessSepCompiler {
      * @return An instance of the newly generated static event processor
      * @throws Exception
      */
-    public static StaticEventProcessor build(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
+    public static StaticEventProcessor compile(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
         String dir = System.getProperty("fluxtion.cacheDirectory");
         buildClasspath();
         if (dir != null) {
             System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
-            return InprocessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
+            return InProcessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
         }
-        return InprocessSepCompiler.sepInstance(builder, pkg, name);
+        return InProcessSepCompiler.sepInstance(builder, pkg, name);
     }
     
-    public static StaticEventProcessor build(SerializableConsumer<SEPConfig> builder) throws Exception {
+    public static StaticEventProcessor compile(SerializableConsumer<SEPConfig> builder) throws Exception {
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
-        return (build(name, pkg, builder));
+        return (compile(name, pkg, builder));
     }
     
     /**
@@ -156,7 +175,7 @@ public class InprocessSepCompiler {
      * @return An instance of the newly generated static event processor
      * @throws Exception
      */
-    public static StaticEventProcessor reuseOrBuild(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
+    public static StaticEventProcessor compileIfMissing(String name, String pkg, Consumer<SEPConfig> builder) throws Exception {
         StaticEventProcessor processor;
         String dir = System.getProperty("fluxtion.cacheDirectory");
         Class<? extends StaticEventProcessor> processorClass;
@@ -179,18 +198,18 @@ public class InprocessSepCompiler {
             buildClasspath();
             if (dir != null) {
                 System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
-                processor = InprocessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
+                processor = InProcessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
             } else {
-                processor = InprocessSepCompiler.sepInstance(builder, pkg, name);
+                processor = InProcessSepCompiler.sepInstance(builder, pkg, name);
             }
         }
         return processor;
     }
 
-    public static StaticEventProcessor reuseOrBuild(SerializableConsumer<SEPConfig> builder) throws Exception {
+    public static StaticEventProcessor compileIfMissing(SerializableConsumer<SEPConfig> builder) throws Exception {
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
-        return (reuseOrBuild(name, pkg, builder));
+        return (compileIfMissing(name, pkg, builder));
     }
 
     private static URL[] urlsFromClassLoader(ClassLoader classLoader) {
@@ -200,7 +219,7 @@ public class InprocessSepCompiler {
         return Stream
             .of(ManagementFactory.getRuntimeMXBean().getClassPath()
                 .split(File.pathSeparator))
-            .map(InprocessSepCompiler::toURL).toArray(URL[]::new);
+            .map(InProcessSepCompiler::toURL).toArray(URL[]::new);
     }
 
     private static URL toURL(String classPathEntry) {

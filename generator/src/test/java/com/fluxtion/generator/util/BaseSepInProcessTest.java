@@ -23,7 +23,7 @@ import com.fluxtion.api.lifecycle.Lifecycle;
 import static com.fluxtion.api.time.ClockStrategy.registerClockEvent;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import static com.fluxtion.generator.compiler.InProcessSepCompiler.sepTestInstance;
 import com.fluxtion.generator.compiler.OutputRegistry;
 import java.io.File;
 import java.util.function.Consumer;

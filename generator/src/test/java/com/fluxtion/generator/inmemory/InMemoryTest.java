@@ -1,11 +1,13 @@
 package com.fluxtion.generator.inmemory;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Initialise;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.TearDown;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
+import com.fluxtion.generator.compiler.InProcessSepCompiler;
 import com.fluxtion.generator.targets.InMemoryEventProcessor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,39 @@ public class InMemoryTest {
         assertFalse(recorder.isParentTeardown());
 
         inMemoryEventProcessor.tearDown();
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertTrue(recorder.isChildUpdated());
+        assertTrue(recorder.isParentUpdated());
+        assertTrue(recorder.isChildTeardown());
+        assertTrue(recorder.isParentTeardown());
+    }
+
+    @Test
+    public void testInterpretedBuilder() {
+        InMemoryEventProcessor interpreted = InProcessSepCompiler.interpreted(
+                cfg -> cfg.addNode(new ChildNode(new StringHandler()))
+        );
+
+        assertTrue(recorder.allFalse());
+
+        interpreted.init();
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertFalse(recorder.isChildUpdated());
+        assertFalse(recorder.isParentUpdated());
+        assertFalse(recorder.isChildTeardown());
+        assertFalse(recorder.isParentTeardown());
+
+        interpreted.onEvent("HelloWorld");
+        assertTrue(recorder.isChildInit());
+        assertTrue(recorder.isParentInit());
+        assertTrue(recorder.isChildUpdated());
+        assertTrue(recorder.isParentUpdated());
+        assertFalse(recorder.isChildTeardown());
+        assertFalse(recorder.isParentTeardown());
+
+        interpreted.tearDown();
         assertTrue(recorder.isChildInit());
         assertTrue(recorder.isParentInit());
         assertTrue(recorder.isChildUpdated());
@@ -108,7 +143,7 @@ public class InMemoryTest {
         boolean parentTeardown;
         boolean parentUpdated;
 
-        boolean allFalse(){
+        boolean allFalse() {
             return !childInit &&
                     !childTeardown &&
                     !childUpdated &&

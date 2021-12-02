@@ -20,7 +20,6 @@ package com.fluxtion.generator.util;
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.BatchHandler;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
@@ -36,13 +35,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import static com.fluxtion.api.time.ClockStrategy.registerClockEvent;
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import static com.fluxtion.generator.compiler.InProcessSepCompiler.sepTestInstance;
 
 /**
  * Test class utility for building a SEP in process

@@ -22,7 +22,7 @@ import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.test.event.TimeEvent;
 import org.junit.Test;
 
-import static com.fluxtion.generator.compiler.InprocessSepCompiler.sepTestInstance;
+import static com.fluxtion.generator.compiler.InProcessSepCompiler.sepTestInstance;
 import static com.fluxtion.generator.util.ClassUtils.getField;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

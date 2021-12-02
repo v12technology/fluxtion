@@ -78,7 +78,7 @@ public class AnnotatedClassCompiler implements ClassProcessor {
                         AnnotationParameterValueList params = csvClassInfo.getAnnotationInfo(SepInstance.class.getCanonicalName()).getParameterValues();
                         boolean init = (params.get("initialise") == null || (Boolean) params.get("initialise"));
                         ClassProcessorDispatcher.DirectoryNames dirNames = standardParamsHelper(params, rootDir, generatedDir, resourceDir);
-                        InprocessSepCompiler.sepInstance((cfg) -> {
+                        InProcessSepCompiler.sepInstance((cfg) -> {
                             cfg.addPublicNode(newInstance, "processor");
                             boolean supportDirtyFiltering = true;
                             if (params.get("supportDirtyFiltering") != null) {
