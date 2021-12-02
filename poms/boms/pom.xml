@@ -144,34 +144,34 @@ along with this program.  If not, see
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
-            <!--declarative fluxtion--> 
-            <dependency>
-                <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-streaming-api</artifactId>
-                <version>2.10.51-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-streaming-builder</artifactId>
-                <version>2.10.51-SNAPSHOT</version>
-            </dependency>
-            <!--declarative-extended fluxtion--> 
-            <dependency>
-                <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-text-api</artifactId>
-                <version>2.10.51-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fluxtion.extension</groupId>
-                <artifactId>fluxtion-text-builder</artifactId>
-                <version>2.10.51-SNAPSHOT</version>
-            </dependency>
-            <!--integration pipeline-->
-            <dependency>
-                <groupId>com.fluxtion.integration</groupId>
-                <artifactId>fluxtion-pipeline</artifactId>
-                <version>2.10.51-SNAPSHOT</version>
-            </dependency>
+<!--            &lt;!&ndash;declarative fluxtion&ndash;&gt; -->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.extension</groupId>-->
+<!--                <artifactId>fluxtion-streaming-api</artifactId>-->
+<!--                <version>2.10.51-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.extension</groupId>-->
+<!--                <artifactId>fluxtion-streaming-builder</artifactId>-->
+<!--                <version>2.10.51-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            &lt;!&ndash;declarative-extended fluxtion&ndash;&gt; -->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.extension</groupId>-->
+<!--                <artifactId>fluxtion-text-api</artifactId>-->
+<!--                <version>2.10.51-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.extension</groupId>-->
+<!--                <artifactId>fluxtion-text-builder</artifactId>-->
+<!--                <version>2.10.51-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            &lt;!&ndash;integration pipeline&ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.integration</groupId>-->
+<!--                <artifactId>fluxtion-pipeline</artifactId>-->
+<!--                <version>2.10.51-SNAPSHOT</version>-->
+<!--            </dependency>-->
             <!--            
              state machine 
             <dependency>
