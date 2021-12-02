@@ -45,7 +45,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    @Ignore("Filtering not supported with inMemory processor")
+//    @Ignore("Filtering not supported with inMemory processor")
     public void testInjectionTree() {
         sep(cfg -> cfg.addPublicNode(new WordProcessor(), "wordProcessor"));
         WordProcessor processor = getField("wordProcessor");

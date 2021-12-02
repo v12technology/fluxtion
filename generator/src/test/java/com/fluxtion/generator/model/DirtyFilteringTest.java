@@ -66,13 +66,6 @@ public class DirtyFilteringTest {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
-        //
-        //System.out.println(sep.getDirtyFieldMap());
-
-        sep.getFieldForInstance(dirty_1);
-
-        System.out.println("flags:" + sep.getDirtyFieldMap().keySet());
-        sep.getDirtyFieldMap().keySet().stream().map((Field c) -> c.name).forEach(System.out::println);
         assertThat(sep.getDirtyFieldMap().keySet(), containsInAnyOrder(
                 sep.getFieldForInstance(e1),
                 sep.getFieldForInstance(e2),

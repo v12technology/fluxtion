@@ -423,7 +423,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 entrySet.stream()
                         .filter((Map.Entry<String, ?> map) -> {
                             Field field = reflect.field(map.getKey());
-                            System.out.println("field for:" + map.getKey() + " field:" + field);
                             return field.getType() != String.class
                                     && map.getValue().getClass() != String.class;
                         })
@@ -699,10 +698,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return refName;
     }
 
-    private void implicitAddVectorMember(Object refField) throws IllegalAccessException {
-        boolean addNode = false;
+    @SuppressWarnings("unchecked")
+    private void implicitAddVectorMember(Object refField) {
+        boolean addNode;
         if (refField != null && !inst2Name.containsKey(refField) && !inst2NameTemp.containsKey(refField)) {
-            addNode |= !ReflectionUtils.getAllMethods(
+            addNode = !ReflectionUtils.getAllMethods(
                     refField.getClass(),
                     Predicates.or(
                             ReflectionUtils.withAnnotation(AfterEvent.class),
@@ -720,10 +720,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
             if(addNode){
                 inst2NameTemp.put(refField, nameNode(refField));
-//                walkDependencies(refField);
             }
         }
-
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
