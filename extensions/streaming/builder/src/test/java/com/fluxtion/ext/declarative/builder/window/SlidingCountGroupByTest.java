@@ -17,26 +17,28 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByAvg;
-import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
-import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.Test;
+
+import java.util.Comparator;
+
+import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByAvg;
+import static com.fluxtion.ext.streaming.builder.factory.WindowBuilder.sliding;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingCountGroupByTest extends StreamInprocessTest {
+public class SlidingCountGroupByTest extends StreamInProcessTest {
 
     @Test
     public void groupByFunctionSliding() {

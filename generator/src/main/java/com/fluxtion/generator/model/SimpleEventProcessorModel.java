@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,25 +12,13 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.model;
 
 import com.fluxtion.api.FilteredEventHandler;
-import com.fluxtion.api.annotations.AfterEvent;
-import com.fluxtion.api.annotations.FilterId;
-import com.fluxtion.api.annotations.FilterType;
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.api.annotations.OnBatchPause;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnEventComplete;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.annotations.PushReference;
-import com.fluxtion.api.annotations.TearDown;
-import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.generation.FilterDescription;
@@ -38,46 +26,28 @@ import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.generator.model.Field.MappedField;
 import com.fluxtion.generator.util.ClassUtils;
 import com.fluxtion.generator.util.NaturalOrderComparator;
-import static com.fluxtion.generator.util.SuperMethodAnnotationScanner.annotationInHierarchy;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.extern.slf4j.Slf4j;
+import net.jodah.typetools.TypeResolver;
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import static java.util.Arrays.stream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import net.jodah.typetools.TypeResolver;
-import org.reflections.ReflectionUtils;
-import static org.reflections.ReflectionUtils.getConstructors;
-import static org.reflections.ReflectionUtils.withAnnotation;
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withParametersCount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.fluxtion.api.annotations.ConstructorArg;
+
 import static com.fluxtion.generator.model.ConstructorMatcherPredicate.matchConstructorNameAndType;
 import static com.fluxtion.generator.model.ConstructorMatcherPredicate.matchConstructorType;
+import static com.fluxtion.generator.util.SuperMethodAnnotationScanner.annotationInHierarchy;
+import static java.util.Arrays.stream;
+import static org.reflections.ReflectionUtils.*;
 
 /**
  * A class defining the meta-data for the SEP.This class can be introspected
@@ -85,6 +55,7 @@ import static com.fluxtion.generator.model.ConstructorMatcherPredicate.matchCons
  *
  * @author Greg Higgins
  */
+@Slf4j
 public class SimpleEventProcessorModel {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SimpleEventProcessorModel.class);
@@ -133,63 +104,67 @@ public class SimpleEventProcessorModel {
     /**
      * The dependency model for this SEP
      */
-    private final TopologicallySortedDependecyGraph dependencyGraph;
+    private final TopologicallySortedDependencyGraph dependencyGraph;
 
     /**
      * Map of constructor argument lists for a node.
      */
-    private Map<Object, List<MappedField>> constructorArgdMap;
+    private final Map<Object, List<MappedField>> constructorArgumentMap;
 
     /**
      * Map of bean property mutators for a node.
      */
-    private Map<Object, List<String>> beanPropertyMap;
+    private final Map<Object, List<String>> beanPropertyMap;
 
-    private Set<Class<?>> importClasses;
+    private final Set<Class<?>> importClasses;
 
-    private Map<String, String> mappedClasses;
+    /**
+     * A topologically sorted list of all {@link CbMethodHandle} in this graph. These methods are
+     * annotated with {@link OnEvent} or {@link EventHandler}
+     */
+    private List<CbMethodHandle> allEventCallBacks;
 
     /**
      * The dispatch map for event handling, grouped by event filter id's. Class
      * is the class of the Event. Integer is the filter Id. These methods are
-     * annotated with {@link OnEvent}
+     * annotated with {@link OnEvent} or {@link EventHandler}
      */
-    private final Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap;
+    private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap;
 
     /**
      * The dispatch map for post event handling, grouped by event filter id's.
      * Class is the class of the Event. Integer is the filter Id. These methods
      * are annotated with {@link OnEventComplete}
      */
-    private final Map<Class, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
+    private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
 
     /**
      * Map of callback methods of a node's direct dependents that will be
      * notified when the dependency changes.
      */
-    private Map<Object, List<CbMethodHandle>> parentUpdateListenerMethodMap;
+    private final Map<Object, List<CbMethodHandle>> parentUpdateListenerMethodMap;
 
     /**
      * Map of update callbacks, object is the node in the SEP, the value is the
      * update method.
      */
-    private Map<Object, CbMethodHandle> node2UpdateMethodMap;
+    private final Map<Object, CbMethodHandle> node2UpdateMethodMap;
 
     private final ArrayList<FilterDescription> filterDescriptionList;
 
-    private FilterDescriptionProducer flterProducer;
+    private final FilterDescriptionProducer filterProducer;
 
     /**
      * Map of a sep node fields to dirty field. Mappings only exist when dirty
      * support is configured for the whole SEP and the node supports dirty
      * notification.
      */
-    private Map<Field, DirtyFlag> dirtyFieldMap;
+    private final Map<Field, DirtyFlag> dirtyFieldMap;
 
     /**
      * Multimap of the guard conditions protecting a node
      */
-    private Multimap<Object, DirtyFlag> nodeGuardMap;
+    private final Multimap<Object, DirtyFlag> nodeGuardMap;
     /**
      * Filter map, override filter mapping for an instance, the String
      * represents the fqn the instance should be mapped to.
@@ -205,7 +180,7 @@ public class SimpleEventProcessorModel {
      * Comparator for alphanumeric support, where integers are sorted by value
      * not alphabetically.
      */
-    private NaturalOrderComparator comparator;
+    private final NaturalOrderComparator<?> comparator;
 
     /**
      * Is this model configured to generate support for dirty notifications and
@@ -213,23 +188,23 @@ public class SimpleEventProcessorModel {
      */
     private boolean supportDirtyFiltering;
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph) throws Exception {
-        this(dependencyGraph, new HashMap());
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph) throws Exception {
+        this(dependencyGraph, new HashMap<>());
     }
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph, Map<Object, Integer> filterMap) throws Exception {
         this(dependencyGraph, filterMap, null);
     }
 
-    public SimpleEventProcessorModel(TopologicallySortedDependecyGraph dependencyGraph,
-            Map<Object, Integer> filterMap,
-            Map<Object, String> nodeClassMap) throws Exception {
+    public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph,
+                                     Map<Object, Integer> filterMap,
+                                     Map<Object, String> nodeClassMap) throws Exception {
         this.dependencyGraph = dependencyGraph;
         this.dependencyGraph.generateDependencyTree();
         this.filterMap = filterMap == null ? new HashMap<>() : filterMap;
-        this.flterProducer = new DefaultFilterDescriptionProducer();
-        this.nodeClassMap = nodeClassMap == null ? Collections.EMPTY_MAP : nodeClassMap;
-        constructorArgdMap = new HashMap<>();
+        this.filterProducer = new DefaultFilterDescriptionProducer();
+        this.nodeClassMap = nodeClassMap == null ? Collections.emptyMap() : nodeClassMap;
+        constructorArgumentMap = new HashMap<>();
         beanPropertyMap = new HashMap<>();
         initialiseMethods = new ArrayList<>();
         tearDownMethods = new ArrayList<>();
@@ -240,12 +215,11 @@ public class SimpleEventProcessorModel {
         postDispatchMap = new HashMap<>();
         filterDescriptionList = new ArrayList<>();
         parentUpdateListenerMethodMap = new HashMap<>();
-        comparator = new NaturalOrderComparator();
+        comparator = new NaturalOrderComparator<>();
         dirtyFieldMap = new HashMap<>();
         nodeGuardMap = HashMultimap.create();
         node2UpdateMethodMap = new HashMap<>();
         importClasses = new HashSet<>();
-        mappedClasses = new HashMap<>();
     }
 
     /**
@@ -277,24 +251,23 @@ public class SimpleEventProcessorModel {
         for (Object object : dependencyGraph.getSortedDependents()) {
             final String name = dependencyGraph.variableName(object);
             //TODO - map the class name to another class that will be provided later
-            final String overridenClassName = nodeClassMap.get(object);
+            final String classNameOverride = nodeClassMap.get(object);
             final String defaultClassName = object.getClass().getCanonicalName();
-            final String className = overridenClassName == null ? defaultClassName : overridenClassName;
+            final String className = classNameOverride == null ? defaultClassName : classNameOverride;
             final boolean isPublic = dependencyGraph.isPublicNode(object);
             nodeFields.add(new Field(className, name, object, isPublic));
             nodeFieldsSortedTopologically.add(new Field(className, name, object, isPublic));
 
         }
         //add the audit listeners
-        dependencyGraph.getRegistrationListenerMap().entrySet().stream().forEach((Map.Entry<String, Auditor> t) -> {
-            String name = t.getKey();
-            Object instance = t.getValue();
-            //nodeFields.add(new Field(instance.getClass().getCanonicalName(), name, instance, true));
-            registrationListenerFields.add(new Field(instance.getClass().getCanonicalName(), name, instance, true));
-        });
-        Collections.sort(nodeFields, (Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
+        dependencyGraph.getRegistrationListenerMap().forEach((name, value) ->
+                registrationListenerFields.add(
+                        new Field(value.getClass().getCanonicalName(), name, value, true)
+                )
+        );
+        nodeFields.sort((Field o1, Field o2) -> comparator.compare((o1.fqn + o1.name), (o2.fqn + o2.name)));
         //sort by topological order
-        Collections.sort(registrationListenerFields, (Field o1, Field o2) -> {
+        registrationListenerFields.sort((Field o1, Field o2) -> {
             int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
             int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
             if (o1.instance instanceof Clock) {
@@ -311,134 +284,123 @@ public class SimpleEventProcessorModel {
     }
 
     private void generatePropertyAssignments() {
+        nodeFields.forEach(f -> {
+            try {
+                final Object field = f.instance;
+                LOGGER.debug("mapping property mutators for var:{}", f.name);
+                List<String> properties = stream(Introspector.getBeanInfo(f.instance.getClass()).getPropertyDescriptors())
+                        .filter((PropertyDescriptor p) -> p.getWriteMethod() != null)
+                        .filter((PropertyDescriptor p) -> ClassUtils.propertySupported(p, f, nodeFields))
+                        .filter(p -> {
+                            boolean isConstructorArg = false;
+                            try {
+                                isConstructorArg = null != ClassUtils.getReflectField(field.getClass(), p.getName()).getAnnotation(ConstructorArg.class);
+                            } catch (NoSuchFieldException ex) {
+                                LOGGER.warn("cannot process field for ConstructorArg annotation", ex);
+                            }
+                            return !isConstructorArg;
+                        })
+                        .map(p -> ClassUtils.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
 
-        nodeFields.forEach(new Consumer<Field>() {
-            @Override
-            public void accept(Field f) {
-                try {
-                    final Object field = f.instance;
-                    LOGGER.debug("mapping property mutators for var:{}", f.name);
-                    List<String> properties = stream(Introspector.getBeanInfo(f.instance.getClass()).getPropertyDescriptors())
-                            .filter((PropertyDescriptor p) -> p.getWriteMethod() != null)
-                            .filter((PropertyDescriptor p) -> ClassUtils.propertySupported(p, f, nodeFields))
-                            .filter(p -> {
-                                boolean isConstructorArg = false;
-                                try {
-                                    isConstructorArg = null != ClassUtils.getReflectField(field.getClass(), p.getName()).getAnnotation(ConstructorArg.class);
-                                } catch (NoSuchFieldException ex) {
-                                    LOGGER.warn("cannot process field for ConstructorArg annotation", ex);
-                                }
-                                return !isConstructorArg;
-                            })
-                            .map(p -> ClassUtils.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
-                            .filter(s -> s != null)
-                            .collect(Collectors.toList());
-
-                    LOGGER.debug("{} properties:{}", f.name, properties);
-                    beanPropertyMap.put(field, properties);
-                } catch (IntrospectionException ex) {
-                    LOGGER.warn("could not process bean properties", ex);
-                }
+                LOGGER.debug("{} properties:{}", f.name, properties);
+                beanPropertyMap.put(field, properties);
+            } catch (IntrospectionException ex) {
+                LOGGER.warn("could not process bean properties", ex);
             }
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void generateComplexConstructors() {
-        nodeFields.forEach(new Consumer<Field>() {
-            @Override
-            public void accept(Field f) {
-                HashSet<MappedField> privateFields = new HashSet<>();
-//            HashSet<MappedField> privateCollections = new HashSet<>();
-                final Object field = f.instance;
-                LOGGER.debug("mapping constructor for var:{}", f.name);
-                List<?> directParents = dependencyGraph.getDirectParents(field);
-                MappedField[] cstrArgList = new MappedField[(directParents.size()) + 200];
-                Class<?> fieldClass = field.getClass();
-//is !public && isDirectParent
-                boolean[] hasCstrAnnotations = new boolean[]{false};
-                Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(fieldClass, (Predicate<java.lang.reflect.Field>) (java.lang.reflect.Field input) -> {
-                    final boolean isCstrArg = input.getAnnotation(ConstructorArg.class) != null;
-                    //TODO check is not public
-                    if (isCstrArg && !Modifier.isStatic(input.getModifiers())) {
-                        hasCstrAnnotations[0] = true;
-                        LOGGER.debug("field marked as constructor arg: {}", input.getName());
-                        LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
-                    } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
+        nodeFields.forEach(f -> {
+            HashSet<MappedField> privateFields = new HashSet<>();
+            final Object field = f.instance;
+            LOGGER.debug("mapping constructor for var:{}", f.name);
+            List<?> directParents = dependencyGraph.getDirectParents(field);
+            MappedField[] cstrArgList = new MappedField[(directParents.size()) + 200];
+            Class<?> fieldClass = field.getClass();
+            boolean[] hasCstrAnnotations = new boolean[]{false};
+            ReflectionUtils.getAllFields(fieldClass, (java.lang.reflect.Field input) -> {
+                final boolean isCstrArg = Objects.requireNonNull(input).getAnnotation(ConstructorArg.class) != null;
+                //TODO check is not public
+                if (isCstrArg && !Modifier.isStatic(input.getModifiers())) {
+                    hasCstrAnnotations[0] = true;
+                    LOGGER.debug("field marked as constructor arg: {}", input.getName());
+                    LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
+                } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
-                        LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
-                                input.getName(),
-                                Modifier.isPublic(input.getModifiers()),
-                                Modifier.isFinal(input.getModifiers()),
-                                Modifier.isTransient(input.getModifiers()),
-                                Modifier.isStatic(input.getModifiers())
-                        );
+                    LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
+                            input.getName(),
+                            Modifier.isPublic(input.getModifiers()),
+                            Modifier.isFinal(input.getModifiers()),
+                            Modifier.isTransient(input.getModifiers()),
+                            Modifier.isStatic(input.getModifiers())
+                    );
+                    return false;
+                }
+                try {
+                    input.setAccessible(true);
+                    final Object parent = input.get(field);
+                    if (parent == null) {
                         return false;
                     }
-                    try {
-                        input.setAccessible(true);
-                        final Object parent = input.get(field);
-                        if (parent == null) {
-                            return false;
+                    if (directParents.contains(parent)) {
+                        final MappedField mappedField = new MappedField(input.getName(), getFieldForInstance(parent));
+                        mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        privateFields.add(mappedField);
+                    } else if (List.class.isAssignableFrom(parent.getClass())) {
+                        //
+                        MappedField collectionField = new MappedField(input.getName());
+                        List<?> collection = (List<?>) parent;
+                        for (Object element : collection) {
+                            collectionField.addField(getFieldForInstance(element));
                         }
-                        if (directParents.contains(parent)) {
-                            final MappedField mappedField = new MappedField(input.getName(), getFieldForInstance(parent));
-                            mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                            privateFields.add(mappedField);
-                        } else if (List.class.isAssignableFrom(parent.getClass())) {
-                            //
-                            MappedField collectionField = new MappedField(input.getName());
-                            List collection = (List) parent;
-                            for (Object element : collection) {
-                                collectionField.addField(getFieldForInstance(element));
-                            }
-                            collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
-                            if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
-                                privateFields.add(collectionField);
-                                LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
-                            }
-                        } else if (ClassUtils.typeSupported(input.getType())) {
-                            LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                            MappedField primitiveField = new MappedField(input.getName(), input.get(field));
-                            primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                            privateFields.add(primitiveField);
-                        } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
-                            LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                            MappedField primitiveField = new MappedField(input.getName(), input.get(field));
-                            primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
-                            privateFields.add(primitiveField);
+                        collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
+                        if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
+                            privateFields.add(collectionField);
+                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
                         }
-                    } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
+                    } else if (ClassUtils.typeSupported(input.getType())) {
+                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
+                        MappedField primitiveField = new MappedField(input.getName(), input.get(field));
+                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        privateFields.add(primitiveField);
+                    } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
+                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
+                        MappedField primitiveField = new MappedField(input.getName(), input.get(field));
+                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        privateFields.add(primitiveField);
                     }
-                    return false;
-                });
-
-                if (privateFields.isEmpty() & !hasCstrAnnotations[0]) {
-                    LOGGER.debug("{}:default constructor applicable", f.name);
-//                continue;
-                } else {
-                    LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
-//                Set<Constructor> allConstructors = getAllConstructors(fieldClass, input -> {
-                    Set<Constructor> allConstructors = getConstructors(fieldClass, matchConstructorNameAndType( cstrArgList, privateFields));
-                    if(allConstructors.isEmpty()){
-                        getConstructors(fieldClass, matchConstructorType( cstrArgList, privateFields));
-                    }
-                    List<MappedField> collect = Arrays.stream(cstrArgList).filter(f1 -> f1 != null).collect(Collectors.toList());
-                    constructorArgdMap.put(field, collect);
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+                return false;
+            });
 
+            if (privateFields.isEmpty() & !hasCstrAnnotations[0]) {
+                LOGGER.debug("{}:default constructor applicable", f.name);
+//                continue;
+            } else {
+                LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
+                if (getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
+                    getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
+                }
+                List<MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
+                constructorArgumentMap.put(field, collect);
+            }
         });
     }
 
     public List<MappedField> constructorArgs(Object field) {
-        List<MappedField> args = constructorArgdMap.get(field);
-        return args == null ? Collections.EMPTY_LIST : args;
+        List<MappedField> args = constructorArgumentMap.get(field);
+        return args == null ? Collections.emptyList() : args;
     }
 
     public List<String> beanProperties(Object field) {
         List<String> args = beanPropertyMap.get(field);
-        return args == null ? Collections.EMPTY_LIST : args;
+        return args == null ? Collections.emptyList() : args;
     }
 
     private void lifeCycleHandlers() throws Exception {
@@ -447,17 +409,18 @@ public class SimpleEventProcessorModel {
         Multimap<Object, CbMethodHandle> parentListenerMultiMap = HashMultimap.create();
         Multimap<Object, CbMethodHandle> parentListenerMultiMapUnmatched = HashMultimap.create();
 
-        for (Iterator<Object> it = topologicalHandlers.iterator(); it.hasNext();) {
-            Object object = it.next();
+        /*
+          Add inexact match
+         */
+        for (Object object : topologicalHandlers) {
             String name = inst2Name.get(object);
-//            Method[] methodList = object.getClass().getDeclaredMethods();
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
                 if (annotationInHierarchy(method, Initialise.class)) {
                     initialiseMethods.add(new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
-                        LOGGER.debug("initialse call back : " + validCb);
+                        LOGGER.debug("initialise call back : " + validCb);
                     }
                 }
                 if (annotationInHierarchy(method, TearDown.class)) {
@@ -496,14 +459,14 @@ public class SimpleEventProcessorModel {
                     node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                 }
 
-                if (method.getAnnotation(com.fluxtion.api.annotations.EventHandler.class) != null) {
+                if (method.getAnnotation(EventHandler.class) != null) {
                     node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                 }
 
                 if (method.getAnnotation(OnParentUpdate.class) != null) {
                     final CbMethodHandle cbMethodHandle = new CbMethodHandle(method, object, name);
                     String val = method.getAnnotation(OnParentUpdate.class).value();
-                    if (method.getParameterTypes() == null || method.getParameterTypes().length != 1) {
+                    if (method.getParameterTypes().length != 1) {
                         final String errorMsg = "Cannot create OnParentUpdate callback method must have a single parameter "
                                 + cbMethodHandle;
                         LOGGER.error(errorMsg);
@@ -512,18 +475,18 @@ public class SimpleEventProcessorModel {
                     ParentFilter filter = new ParentFilter(method.getParameterTypes()[0], val, cbMethodHandle);
 
                     if (val != null && val.length() > 0) {
-                        java.lang.reflect.Field field = null;
+                        java.lang.reflect.Field field;
                         field = ClassUtils.getReflectField(object.getClass(), val);
                         field.setAccessible(true);
-                        if (field != null && field.getAnnotation(NoEventReference.class) != null || field.getAnnotation(PushReference.class) != null) {
-//                            System.out.println("IGNORING NoEventReference for parentUpdate");
+                        if (field.getAnnotation(NoEventReference.class) != null || field.getAnnotation(PushReference.class) != null) {
+                            LOGGER.debug("IGNORING NoEventReference for parentUpdate");
                             //continue;
                         }
-                        if (field != null && field.get(object) != null) {
+                        if (field.get(object) != null) {
                             Object parent = field.get(object);
                             //array
                             if (field.getType().isArray()) {
-                                final Class classType = field.getType().getComponentType();
+                                final Class<?> classType = field.getType().getComponentType();
                                 int length = Array.getLength(parent);
                                 for (int i = 0; i < length; i++) {
                                     ParentFilter testFilter = new ParentFilter(classType, val, null);
@@ -541,7 +504,7 @@ public class SimpleEventProcessorModel {
                                     classTypeX = (Class<?>) integerListType.getActualTypeArguments()[0];
                                 }
                                 final Class<?> classType = classTypeX;
-                                Collection list = (Collection) field.get(object);
+                                @SuppressWarnings("unchecked") Collection<Object> list = (Collection<Object>) field.get(object);
                                 list.forEach((parent1) -> {
                                     ParentFilter testFilter = new ParentFilter(classType, val, null);
                                     if (testFilter.exactmatch(filter)) {
@@ -554,13 +517,11 @@ public class SimpleEventProcessorModel {
                             if (testFilter.exactmatch(filter)) {
                                 //store in exact match map for merging later
                                 parentListenerMultiMap.put(parent, cbMethodHandle);
-                            } /**
-                             * Add inexact match
-                             */
-                            else if (testFilter.match(filter)) {
+                            } /*
+                              Add inexact match
+                             */ else if (testFilter.match(filter)) {
                                 parentListenerMultiMap.put(parent, cbMethodHandle);
                             }
-
                         } else {
                             LOGGER.debug("Cannot create OnParentUpdate callback" + cbMethodHandle
                                     + " no parent field matches:'" + val + "'");
@@ -578,49 +539,35 @@ public class SimpleEventProcessorModel {
 
     private void createParentCallBacks(Multimap<Object, CbMethodHandle> parentListenerMultiMap, Multimap<Object, CbMethodHandle> parentListenerMultiMapUnmatched) throws Exception {
         List<Object> topologicalHandlers = dependencyGraph.getSortedDependents();
-        for (Iterator<Object> it = topologicalHandlers.iterator(); it.hasNext();) {
-            Object parent = it.next();
-            parentUpdateListenerMethodMap.put(parent, new ArrayList());
-//            List<?> directChildren = dependencyGraph.getDirectChildrenListeningForEvent(parent);
+        for (Object parent : topologicalHandlers) {
+            parentUpdateListenerMethodMap.put(parent, new ArrayList<>());
             List<?> directChildren = dependencyGraph.getDirectChildren(parent);
-
             Collection<CbMethodHandle> childCbList = parentListenerMultiMap.get(parent);
-
             Set<Object> mappedCbs = childCbList.stream().map(cb -> cb.instance).collect(Collectors.toSet());
-
             directChildren.stream()
                     .filter((child) -> !mappedCbs.contains(child))
-                    .map((child) -> parentListenerMultiMapUnmatched.get(child))
+                    .map(parentListenerMultiMapUnmatched::get)
                     .map((cbs) -> ClassUtils.findBestParentCB(parent, cbs))
-                    .filter((bestParentCB) -> (bestParentCB != null))
-                    .forEach((bestParentCB) -> {
-                        parentListenerMultiMap.put(parent, bestParentCB);
-                    });
+                    .filter(Objects::nonNull)
+                    .forEach((bestParentCB) -> parentListenerMultiMap.put(parent, bestParentCB));
         }
-        parentListenerMultiMap.keySet().stream().forEach((parent) -> {
-            parentUpdateListenerMethodMap.put(parent, new ArrayList(parentListenerMultiMap.get(parent)));
-        });
+        parentListenerMultiMap.keySet().forEach((parent) ->
+                parentUpdateListenerMethodMap.put(parent, new ArrayList<>(parentListenerMultiMap.get(parent)))
+        );
         parentUpdateListenerMethodMap.values().forEach(dependencyGraph::sortNodeList);
     }
 
     private void eventHandlers() throws Exception {
-
         List<Object> topologicalHandlers = dependencyGraph.getSortedDependents();
         List<EventCallList> eventCbList = new ArrayList<>();
-        //TEMP storage for the root event handlers
-        Set<Object> TEMP_EH_SET = new HashSet<>();
-        for (Iterator<Object> it = topologicalHandlers.iterator(); it.hasNext();) {
-            Object object = it.next();
+        for (Object object : topologicalHandlers) {
             if (object instanceof FilteredEventHandler) {
-                eventCbList.add(new EventCallList((FilteredEventHandler) object));
-                TEMP_EH_SET.add(object);
+                eventCbList.add(new EventCallList((FilteredEventHandler<?>) object));
             }
-            //if(object.getClass().get)
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
-                if (method.getAnnotation(com.fluxtion.api.annotations.EventHandler.class) != null) {
+                if (method.getAnnotation(EventHandler.class) != null) {
                     eventCbList.add(new EventCallList(object, method));
-                    TEMP_EH_SET.add(object);
                 }
             }
         }
@@ -629,7 +576,7 @@ public class SimpleEventProcessorModel {
             if (eventCb.isFiltered) {
                 continue;
             }
-            Class eventClass = eventCb.eventTypeClass;
+            Class<?> eventClass = eventCb.eventTypeClass;
             //onEvent handlers
             Map<FilterDescription, List<CbMethodHandle>> handlerMap = getHandlerMap(eventClass);
             List<CbMethodHandle> callList = new ArrayList<>(eventCb.dispatchMethods);
@@ -668,11 +615,13 @@ public class SimpleEventProcessorModel {
         }
 
         //merge inverse and no filter to default
-        Set<Class> eventClassSet = dispatchMap.keySet();
-        for (Class eventClass : eventClassSet) {
+        Set<Class<?>> eventClassSet = dispatchMap.keySet();
+        for (Class<?> eventClass : eventClassSet) {
             Map<FilterDescription, List<CbMethodHandle>> handlerMap = getHandlerMap(eventClass);
-            List<CbMethodHandle> noFilterList = handlerMap.get(FilterDescription.NO_FILTER) == null ? Collections.EMPTY_LIST : handlerMap.get(FilterDescription.NO_FILTER);
-            List<CbMethodHandle> inverseList = handlerMap.get(FilterDescription.INVERSE_FILTER) == null ? Collections.EMPTY_LIST : handlerMap.get(FilterDescription.INVERSE_FILTER);
+            List<CbMethodHandle> noFilterList = handlerMap.get(FilterDescription.NO_FILTER) == null ?
+                    Collections.emptyList() : handlerMap.get(FilterDescription.NO_FILTER);
+            List<CbMethodHandle> inverseList = handlerMap.get(FilterDescription.INVERSE_FILTER) == null ?
+                    Collections.emptyList() : handlerMap.get(FilterDescription.INVERSE_FILTER);
             HashSet<CbMethodHandle> set = new HashSet<>(inverseList);
             set.addAll(noFilterList);
             if (set.size() > 0) {
@@ -680,10 +629,12 @@ public class SimpleEventProcessorModel {
                 dependencyGraph.sortNodeList(callList);
                 handlerMap.put(FilterDescription.DEFAULT_FILTER, callList);
             }
-            //posthandler
+            //postHandler
             handlerMap = getPostHandlerMap(eventClass);
-            noFilterList = handlerMap.get(FilterDescription.NO_FILTER) == null ? Collections.EMPTY_LIST : handlerMap.get(FilterDescription.NO_FILTER);
-            inverseList = handlerMap.get(FilterDescription.INVERSE_FILTER) == null ? Collections.EMPTY_LIST : handlerMap.get(FilterDescription.INVERSE_FILTER);
+            noFilterList = handlerMap.get(FilterDescription.NO_FILTER) == null ?
+                    Collections.emptyList() : handlerMap.get(FilterDescription.NO_FILTER);
+            inverseList = handlerMap.get(FilterDescription.INVERSE_FILTER) == null ?
+                    Collections.emptyList() : handlerMap.get(FilterDescription.INVERSE_FILTER);
             set = new HashSet<>(inverseList);
             set.addAll(noFilterList);
             if (set.size() > 0) {
@@ -699,12 +650,12 @@ public class SimpleEventProcessorModel {
             String filterString = eventCb.filterString;
             boolean isIntFilter = eventCb.isIntFilter;
             boolean isFiltering = eventCb.isFiltered;
-            Class eventClass = eventCb.eventTypeClass;
-            FilterDescription filterDescription = FilterDescription.NO_FILTER;
+            @SuppressWarnings("unchecked") Class<? extends Event> eventClass = (Class<? extends Event>) eventCb.eventTypeClass;
+            final FilterDescription filterDescription;
             if (isIntFilter && isFiltering) {
-                filterDescription = flterProducer.getFilterDescription(eventClass, filterId);
+                filterDescription = filterProducer.getFilterDescription(eventClass, filterId);
             } else if (isFiltering) {
-                filterDescription = flterProducer.getFilterDescription(eventClass, filterString);
+                filterDescription = filterProducer.getFilterDescription(eventClass, filterString);
             } else {
                 //Ignore as this non-filtered dispatch - already resolved
                 continue;
@@ -767,74 +718,66 @@ public class SimpleEventProcessorModel {
             Collections.reverse(postCallList);
         }
         buildSubClassHandlers();
+        buildGlobalDispatchList();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(dispatchMapToString());
         }
-
     }
 
+    private void buildGlobalDispatchList() {
+        allEventCallBacks = dispatchMap.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .flatMap(List::stream).distinct().collect(Collectors.toList());
+        dependencyGraph.sortNodeList(allEventCallBacks);
+    }
+
+    public List<?> getDirectChildrenListeningForEvent(Object parent) {
+        return dependencyGraph.getDirectChildrenListeningForEvent(parent);
+    }
+
+    @SuppressWarnings("unchecked")
     private void buildSubClassHandlers() {
-        Set<Class> eventClassSet = dispatchMap.keySet();
-        for (Class eventClass : eventClassSet) {
+        Set<Class<?>> eventClassSet = dispatchMap.keySet();
+        for (Class<?> eventClass : eventClassSet) {
             LOGGER.debug("------- START superclass merge Class:" + eventClass.getSimpleName() + " START -----------");
             Map<FilterDescription, List<CbMethodHandle>> targetHandlerMap = getHandlerMap(eventClass);
             LOGGER.debug("targetHandlerMap before merge:{}", targetHandlerMap);
-            dispatchMap.entrySet().stream().filter((Map.Entry<Class, Map<FilterDescription, List<CbMethodHandle>>> e) -> {
-                Class key = e.getKey();
-                final boolean match = key.isAssignableFrom(eventClass) && eventClass != key;
-                if (match) {
-                    LOGGER.debug(key.getSimpleName() + " IS superclass of:" + eventClass.getSimpleName());
-                } else {
-                    LOGGER.debug(key.getSimpleName() + " NOT superclass of:" + eventClass.getSimpleName());
-                }
-                return match;
-            })
+            dispatchMap.entrySet().stream().filter((Map.Entry<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> e) -> {
+                        Class<?> key = e.getKey();
+                        final boolean match = key.isAssignableFrom(eventClass) && eventClass != key;
+                        if (match) {
+                            LOGGER.debug(key.getSimpleName() + " IS superclass of:" + eventClass.getSimpleName());
+                        } else {
+                            LOGGER.debug(key.getSimpleName() + " NOT superclass of:" + eventClass.getSimpleName());
+                        }
+                        return match;
+                    })
                     .map(Map.Entry::getValue)
                     .map((Map<FilterDescription, List<CbMethodHandle>> e) -> {
                         HashMap<FilterDescription, List<CbMethodHandle>> newMap = new HashMap<>();
-                        e.entrySet().stream().forEach(en -> {
-                            newMap.put(en.getKey().changeClass(eventClass), en.getValue());
-                        });
+                        e.forEach((key, value) -> newMap.put(key.changeClass((Class<? extends Event>) eventClass), value));
                         return newMap;
                     })
-                    .forEach(new Consumer<HashMap<FilterDescription, List<CbMethodHandle>>>() {
-                        @Override
-                        public void accept(HashMap<FilterDescription, List<CbMethodHandle>> fd) {
-                            fd.entrySet().stream().forEach(me -> {
-                                FilterDescription key = me.getKey();
-                                List<CbMethodHandle> callList = me.getValue();
-                                targetHandlerMap.merge(key, callList, (List<CbMethodHandle> t, List<CbMethodHandle> u) -> {
-                                    LOGGER.debug("merging:{}", u);
-                                    t.removeAll(u);
-                                    t.addAll(u);
-                                    dependencyGraph.sortNodeList(t);
-                                    return t;
-                                });
-                            });
-                        }
-                    });
+                    .forEach(fd -> fd.forEach((key, callList) -> targetHandlerMap.merge(key, callList, (List<CbMethodHandle> t, List<CbMethodHandle> u) -> {
+                        LOGGER.debug("merging:{}", u);
+                        t.removeAll(u);
+                        t.addAll(u);
+                        dependencyGraph.sortNodeList(t);
+                        return t;
+                    })));
             LOGGER.debug("targetHandlerMap after merge:{}", targetHandlerMap);
             LOGGER.debug("------- END superclass merge Class:" + eventClass.getSimpleName() + " END -----------\n");
         }
 
     }
 
-    private Map<FilterDescription, List<CbMethodHandle>> getHandlerMap(Class eventClass) {
-        Map<FilterDescription, List<CbMethodHandle>> handlerMap = dispatchMap.get(eventClass);
-        if (handlerMap == null) {
-            handlerMap = new HashMap<>();
-            dispatchMap.put(eventClass, handlerMap);
-        }
-        return handlerMap;
+    private Map<FilterDescription, List<CbMethodHandle>> getHandlerMap(Class<?> eventClass) {
+        return dispatchMap.computeIfAbsent(eventClass, k -> new HashMap<>());
     }
 
-    private Map<FilterDescription, List<CbMethodHandle>> getPostHandlerMap(Class eventClass) {
-        Map<FilterDescription, List<CbMethodHandle>> handlerMap = postDispatchMap.get(eventClass);
-        if (handlerMap == null) {
-            handlerMap = new HashMap<>();
-            postDispatchMap.put(eventClass, handlerMap);
-        }
-        return handlerMap;
+    private Map<FilterDescription, List<CbMethodHandle>> getPostHandlerMap(Class<?> eventClass) {
+        return postDispatchMap.computeIfAbsent(eventClass, k -> new HashMap<>());
     }
 
     private boolean noDirtyFlagNeeded(Field node) {
@@ -875,7 +818,6 @@ public class SimpleEventProcessorModel {
                 }
                 //get parents of node and loop through
                 Set<DirtyFlag> guardSet = new HashSet<>();
-                parentLoop:
                 for (Object parent : directParents) {
                     //get dirty field for node 
                     DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
@@ -895,9 +837,9 @@ public class SimpleEventProcessorModel {
                 }
                 CbMethodHandle cb = node2UpdateMethodMap.get(node);
                 final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
-                guardSet.stream().forEach(d -> {
+                for (DirtyFlag d : guardSet) {
                     d.requiresInvert |= invertedDirtyHandler;
-                });
+                }
                 nodeGuardMap.putAll(node, guardSet);
                 //
             }
@@ -907,19 +849,11 @@ public class SimpleEventProcessorModel {
 
     private void filterList() {
         Set<FilterDescription> uniqueFilterSet = new HashSet<>();
-        Collection<Map<FilterDescription, List<CbMethodHandle>>> values = dispatchMap.values();
-        for (Map<FilterDescription, List<CbMethodHandle>> value : values) {
-            Set<FilterDescription> keySet = value.keySet();
-            for (FilterDescription filterDescription : keySet) {
-                uniqueFilterSet.add(filterDescription);
-            }
+        for (Map<FilterDescription, List<CbMethodHandle>> value : dispatchMap.values()) {
+            uniqueFilterSet.addAll(value.keySet());
         }
-        values = postDispatchMap.values();
-        for (Map<FilterDescription, List<CbMethodHandle>> value : values) {
-            Set<FilterDescription> keySet = value.keySet();
-            for (FilterDescription filterDescription : keySet) {
-                uniqueFilterSet.add(filterDescription);
-            }
+        for (Map<FilterDescription, List<CbMethodHandle>> value : postDispatchMap.values()) {
+            uniqueFilterSet.addAll(value.keySet());
         }
         filterDescriptionList.addAll(uniqueFilterSet);
         filterDescriptionList.remove(FilterDescription.NO_FILTER);
@@ -936,7 +870,7 @@ public class SimpleEventProcessorModel {
      * support the dirty flag. If any parent, direct or indirect does not
      * support the dirty flag then the node updated method will always be called
      * after a parent has been notified of an event.
-     *
+     * <p>
      * Parents can be traced all the way to the root for dirty support,
      * effectively inheriting dirty support down the call tree.
      *
@@ -945,7 +879,7 @@ public class SimpleEventProcessorModel {
      */
     public Collection<DirtyFlag> getNodeGuardConditions(Object node) {
         final ArrayList<DirtyFlag> guards = new ArrayList<>(nodeGuardMap.get(node));
-        Collections.sort(guards, (DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
+        guards.sort((DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
         return guards;
     }
 
@@ -956,17 +890,16 @@ public class SimpleEventProcessorModel {
      * the node updated method will always be called after a parent has been
      * notified of an event.
      *
-     * @param cb
+     * @param cb method callback
      * @return collection of dirty flags that guard the node
      */
     public Collection<DirtyFlag> getNodeGuardConditions(CbMethodHandle cb) {
         if (cb.isPostEventHandler && dependencyGraph.getDirectParents(cb.instance).isEmpty()) {
-            final DirtyFlag dirtyFlagForNode = getDirtyFlagForNode(cb.instance);
-            List<DirtyFlag> flags = dirtyFlagForNode == null ? Collections.EMPTY_LIST : Arrays.asList(dirtyFlagForNode);
-            Collections.sort(flags, (DirtyFlag o1, DirtyFlag o2) -> comparator.compare(o1.name, o2.name));
-            return flags;
+            return getDirtyFlagForNode(cb.instance) == null
+                    ? Collections.emptyList()
+                    : Collections.singletonList(getDirtyFlagForNode(cb.instance));
         }
-        return cb.isEventHandler ? Collections.EMPTY_SET : getNodeGuardConditions(cb.instance);
+        return cb.isEventHandler ? Collections.emptySet() : getNodeGuardConditions(cb.instance);
     }
 
     public DirtyFlag getDirtyFlagForUpdateCb(CbMethodHandle cbHandle) {
@@ -974,7 +907,7 @@ public class SimpleEventProcessorModel {
         if (supportDirtyFiltering() && cbHandle != null) {
             flag = dirtyFieldMap.get(getFieldForInstance(cbHandle.instance));
             if (cbHandle.method.getReturnType() != boolean.class && flag != null) {
-                //trap the case where evemthandler and onEvent in same class
+                //trap the case where eventhandler and onEvent in same class
                 //and onEvent does not return true
                 flag.alwaysDirty = true;
             }
@@ -993,6 +926,29 @@ public class SimpleEventProcessorModel {
         return ret;
     }
 
+    public Field getFieldForName(String name){
+        return nodeFields.stream().filter(f -> f.name.equals(name)).findFirst().orElse(null);
+    }
+
+    /**
+     * returns all the {@link OnEvent} {@link CbMethodHandle}'s that depend upon this node.
+     * @return dependents that will be notified with methods @{@link OnEvent}
+     */
+    public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
+        if(callSource.isNoPropagateEventHandler()){
+            return Collections.emptySet();
+        }
+        return getOnEventDependenciesForNode(callSource.getInstance());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<Object> getOnEventDependenciesForNode(Object instance){
+        return getDirectChildrenListeningForEvent(instance).stream()
+                .peek(o -> log.debug("checking for OnEvent instance:{}", o))
+                .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnEvent.class)).isEmpty())
+                .collect(Collectors.toSet());
+    }
+
     public String getMappedClass(String className) {
         if (dependencyGraph == null || dependencyGraph.getConfig() == null) {
             return className;
@@ -1008,7 +964,7 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(nodeFields);
     }
 
-    public List<Field> getTopologigcallySortedNodeFields() {
+    public List<Field> getTopologicallySortedNodeFields() {
         return Collections.unmodifiableList(nodeFieldsSortedTopologically);
     }
 
@@ -1036,11 +992,15 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(eventEndMethods);
     }
 
-    public Map<Class, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
+    public List<CbMethodHandle> getDispatchMapForGraph() {
+        return  Collections.unmodifiableList(allEventCallBacks);
+    }
+
+    public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
         return Collections.unmodifiableMap(dispatchMap);
     }
 
-    public Map<Class, Map<FilterDescription, List<CbMethodHandle>>> getPostDispatchMap() {
+    public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getPostDispatchMap() {
         return Collections.unmodifiableMap(postDispatchMap);
     }
 
@@ -1061,42 +1021,42 @@ public class SimpleEventProcessorModel {
     }
 
     private String dispatchMapToString() {
-        String result = "DispatchMap[\n";
+        StringBuilder result = new StringBuilder("DispatchMap[\n");
 
-        Set<Class> keySet = dispatchMap.keySet();
-        for (Class eventId : keySet) {
-            result += "\tEvent Id:" + eventId + "\n";
+        Set<Class<?>> keySet = dispatchMap.keySet();
+        for (Class<?> eventId : keySet) {
+            result.append("\tEvent Id:").append(eventId).append("\n");
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Set<FilterDescription> filterIdSet = cbMap.keySet();
             for (FilterDescription filterDescription : filterIdSet) {
                 int filterId = filterDescription.value;
-                result += "\t\tFilter Id:" + filterId + "\n";
+                result.append("\t\tFilter Id:").append(filterId).append("\n");
                 List<CbMethodHandle> cbList = cbMap.get(filterDescription);
                 for (CbMethodHandle cbMethod : cbList) {
-                    result += "\t\t\t" + cbMethod + "\n";
+                    result.append("\t\t\t").append(cbMethod).append("\n");
                 }
             }
         }
-        result += "]\n";
+        result.append("]\n");
 
         //post dispatch
-        result += "PostDispatchMap[\n";
+        result.append("PostDispatchMap[\n");
         keySet = postDispatchMap.keySet();
-        for (Class eventId : keySet) {
-            result += "\tEvent Id:" + eventId + "\n";
+        for (Class<?> eventId : keySet) {
+            result.append("\tEvent Id:").append(eventId).append("\n");
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Set<FilterDescription> filterIdSet = cbMap.keySet();
             for (FilterDescription filterDescription : filterIdSet) {
                 int filterId = filterDescription.value;
-                result += "\t\tFilter Id:" + filterId + "\n";
+                result.append("\t\tFilter Id:").append(filterId).append("\n");
                 List<CbMethodHandle> cbList = cbMap.get(filterDescription);
                 for (CbMethodHandle cbMethod : cbList) {
-                    result += "\t\t\t" + cbMethod + "\n";
+                    result.append("\t\t\t").append(cbMethod).append("\n");
                 }
             }
         }
-        result += "]";
-        return result;
+        result.append("]");
+        return result.toString();
     }
 
     /**
@@ -1109,41 +1069,36 @@ public class SimpleEventProcessorModel {
         final boolean isIntFilter;
         final boolean isFiltered;
         final boolean isInverseFiltered;
-        final Class eventTypeClass;
-        private final List sortedDependents;
+        final Class<?> eventTypeClass;
+        private final List<?> sortedDependents;
         private final List<CbMethodHandle> dispatchMethods;
         /**
          * the set of methods to be called on a unwind of an event annotated
          * with {@link OnEventComplete}
          */
-        private List<CbMethodHandle> postDispatchMethods;
+        private final List<CbMethodHandle> postDispatchMethods;
 
-        EventCallList(FilteredEventHandler eh) throws Exception {
+        EventCallList(FilteredEventHandler<?> eh) throws Exception {
             if (filterMap.containsKey(eh)) {
                 filterId = filterMap.get(eh);
             } else {
                 filterId = eh.filterId();
             }
-//            sortedDependents = dependencyGraph.getSortedDependents(eh);
             sortedDependents = dependencyGraph.getEventSortedDependents(eh);
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
-            Class searchClass = Event.class;
             if (eh.eventClass() == null) {
                 eventTypeClass = (TypeResolver.resolveRawArguments(FilteredEventHandler.class, eh.getClass()))[0];
-                searchClass = eventTypeClass;
             } else {
                 eventTypeClass = eh.eventClass();
             }
-
-            Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
+            @SuppressWarnings("unchecked") Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
                     Predicates.and(
                             withModifier(Modifier.PUBLIC),
                             withName("onEvent"),
                             withParametersCount(1))
             );
             Method onEventMethod = ehMethodList.iterator().next();
-
             String name = dependencyGraph.variableName(eh);
             final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true);
             dispatchMethods.add(cbMethodHandle);
@@ -1152,7 +1107,6 @@ public class SimpleEventProcessorModel {
                 Object object = sortedDependents.get(i);
                 name = dependencyGraph.variableName(object);
                 Method[] methodList = object.getClass().getMethods();
-
                 for (Method method : methodList) {
                     if (annotationInHierarchy(method, OnEvent.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
@@ -1165,11 +1119,11 @@ public class SimpleEventProcessorModel {
             filterString = eh.filterString();
             boolean isStrFilter = filterString != null && !filterString.isEmpty();
             isIntFilter = filterId != Event.NO_INT_FILTER;
-//            isFiltered = true;
             isFiltered = filterId != Event.NO_INT_FILTER || isStrFilter;
             isInverseFiltered = false;
         }
 
+        @SuppressWarnings("unchecked")
         EventCallList(Object instance, Method onEventMethod) throws Exception {
             String tmpFilterString = null;
             int tmpFilterId = 0;
@@ -1185,7 +1139,7 @@ public class SimpleEventProcessorModel {
             if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
                 final Type actualType = pt.getActualTypeArguments()[0];
-                genericFilter = actualType instanceof Class ? ((Class) actualType).getCanonicalName() : actualType.getTypeName();
+                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
             }
             String filterStringOverride = annotation.filterStringFromClass() != void.class ? annotation.filterStringFromClass().getCanonicalName() : annotation.filterString();
             filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
@@ -1232,7 +1186,7 @@ public class SimpleEventProcessorModel {
             } else {
                 java.lang.reflect.Field field = fields.iterator().next();
                 field.setAccessible(true);
-                Class type = field.getType();
+                Class<?> type = field.getType();
                 if (type == int.class) {
                     tmpFilterId = field.getInt(instance);
                     tmpIsFiltered = tmpFilterId != Event.NO_INT_FILTER;
@@ -1247,19 +1201,14 @@ public class SimpleEventProcessorModel {
                     throw new IllegalArgumentException("the annotation filter can only annotate int or String fields");
                 }
             }
-
             if (annotation.propagate()) {
-//                sortedDependents = dependencyGraph.getSortedDependents(instance);
                 sortedDependents = dependencyGraph.getEventSortedDependents(instance);
             } else {
                 sortedDependents = Collections.EMPTY_LIST;
             }
-
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
-
             eventTypeClass = onEventMethod.getParameterTypes()[0];
-
             String name = dependencyGraph.variableName(instance);
             dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true));
             //check for @OnEventComplete on the root of the event tree
@@ -1289,7 +1238,5 @@ public class SimpleEventProcessorModel {
             isFiltered = tmpIsFiltered;
             isInverseFiltered = tmpIsInverseFiltered;
         }
-
     }
-
 }

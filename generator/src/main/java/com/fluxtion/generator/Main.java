@@ -109,7 +109,7 @@ public class Main {
             //  
         }
         if(extendedptions!=null){
-            extendedptions.getOptions().stream().forEach(o -> options.addOption(o));
+            extendedptions.getOptions().forEach(o -> options.addOption(o));
         }
         return options;
     }

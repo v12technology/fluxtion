@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,21 +12,21 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.generator.model;
 
-import com.fluxtion.generator.util.ClassUtils;
-import java.lang.reflect.Modifier;
-import static java.lang.reflect.Modifier.isFinal;
+import lombok.Getter;
+
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Greg Higgins
  */
+@Getter
 public class Field {
 
     public final String name;
@@ -39,6 +39,11 @@ public class Field {
         this.name = name;
         this.instance = instance;
         this.publicAccess = publicAccess;
+    }
+
+    public boolean isGeneric() {
+        TypeVariable<? extends Class<?>>[] typeParameters = instance.getClass().getTypeParameters();
+        return typeParameters.length > 0;
     }
 
     @Override
@@ -54,14 +59,10 @@ public class Field {
     public static class MappedField extends Field {
 
         public final String mappedName;
-        public boolean collection = false;
+        public boolean collection;
         public boolean primitive = false;
         public Object primitiveVal;
         public ArrayList<Field> elements;
-        private String primitivePrefix = "";
-        private String primitiveSuffix = "";
-        
-        
         public String derivedVal;
 
         public MappedField(String mappedName, Field f) {
@@ -85,29 +86,9 @@ public class Field {
             collection = false;
             primitive = true;
             primitiveVal = primitiveValue;
-            if (primitiveVal.getClass() == Float.class) {
-                primitiveSuffix = "f";
-            }
-            if (primitiveVal.getClass() == Byte.class) {
-                primitivePrefix = "(byte)";
-            }
-            if (primitiveVal.getClass() == Short.class) {
-                primitivePrefix = "(short)";
-            }
-            if (primitiveVal.getClass() == Long.class) {
-                primitiveSuffix = "L";
-            }
-            if (primitiveVal.getClass() == Character.class) {
-                primitivePrefix = "'";
-                primitiveSuffix = "'";
-            }
-            if (primitiveVal.getClass() == String.class) {
-                primitivePrefix = "\"";
-                primitiveSuffix = "\"";
-            }
         }
 
-        public Class parentClass() {
+        public Class<?> parentClass() {
             if (collection) {
                 return List.class;
             } else if (primitive) {
@@ -143,13 +124,6 @@ public class Field {
 
         public String value() {
             return derivedVal;
-//            String val = name;
-//            if (collection) {
-//                val = elements.stream().map(f -> f.name).collect(Collectors.joining(", ", "Arrays.asList(", ")"));
-//            } else if (primitive) {
-//                val = primitivePrefix + primitiveVal.toString() + primitiveSuffix;
-//            }
-//            return val;
         }
 
         public void addField(Field field) {
@@ -174,15 +148,6 @@ public class Field {
                     + '}';
         }
 
-        public static boolean typeSupported(java.lang.reflect.Field input) {
-            final int modifiers = input.getModifiers();
-//                    && (isPrivate(modifiers) || isProtected(modifiers))
-            
-            return isFinal(modifiers)
-                    && !Modifier.isStatic(modifiers)
-                    && ClassUtils.typeSupported(input.getType());
-//                    && (input.getType().isPrimitive() || input.getType() == String.class);
-        }
 
     }
 

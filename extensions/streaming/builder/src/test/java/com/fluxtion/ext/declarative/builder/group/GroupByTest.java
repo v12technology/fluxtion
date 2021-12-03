@@ -15,25 +15,26 @@ import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.ext.declarative.builder.helpers.DealEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeEvent;
 import com.fluxtion.ext.declarative.builder.helpers.TradeSummary;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import org.junit.Test;
+
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.negative;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins
  */
-public class GroupByTest extends StreamInprocessTest {
+public class GroupByTest extends StreamInProcessTest {
 
     /**
      * Test an enriched data node

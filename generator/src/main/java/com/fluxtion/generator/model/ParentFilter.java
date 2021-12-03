@@ -25,11 +25,11 @@ package com.fluxtion.generator.model;
  */
 public class ParentFilter {
     
-    public Class parentType;
+    public Class<?> parentType;
     public String parentName;
     public CbMethodHandle callBack;
 
-    public ParentFilter(Class parentType, String parentName, CbMethodHandle callBack) {
+    public ParentFilter(Class<?> parentType, String parentName, CbMethodHandle callBack) {
         this.parentType = parentType;
         this.parentName = parentName;
         this.callBack = callBack;
@@ -39,11 +39,7 @@ public class ParentFilter {
         if(other.parentName==null || parentName==null || other.parentName.length()==0 || parentName.length()==0){
             return parentType.isAssignableFrom(other.parentType);
         }
-        
-        if(other.parentName!=null & parentName!=null){
-            return other.parentName.equals(parentName) && other.parentType.isAssignableFrom(parentType);
-        }
-        return false;
+        return other.parentName.equals(parentName) && other.parentType.isAssignableFrom(parentType);
     }
     public boolean exactmatch(ParentFilter other){
         if(other.parentName==null & parentName==null){

@@ -17,28 +17,31 @@
  */
 package com.fluxtion.generator.parent;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.NoEventReference;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
-import com.fluxtion.api.annotations.SepNode;
+import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.ArrayList;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
+import lombok.ToString;
 import lombok.Value;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentUpdateListenerTest extends BaseSepInprocessTest {
+public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
+
+    public ParentUpdateListenerTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testClassFilter() {
@@ -135,7 +138,7 @@ public class ParentUpdateListenerTest extends BaseSepInprocessTest {
         String matchKey2 = "match_2";
         sep(cfg -> {
             cfg.addPublicNode(new NoEventHandler(new FilterHandler(matchKey), new FilterHandler(matchKey2)), "test");
-        }, "com.test.noEventGuardedParent.GuardForNoEventReference");
+        });
         NoEventHandler handler = getField("test");
 //      
         onEvent(matchKey2);
@@ -156,6 +159,7 @@ public class ParentUpdateListenerTest extends BaseSepInprocessTest {
         assertFalse(handler.onEvent);
     }
 
+    @ToString
     public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {

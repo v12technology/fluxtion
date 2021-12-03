@@ -11,25 +11,26 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import com.fluxtion.junit.Categories;
-import java.util.Optional;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Optional;
+
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins
  */
-public class ComplexGroupByTest extends StreamInprocessTest {
+public class ComplexGroupByTest extends StreamInProcessTest {
 
     @Test
     @Category(Categories.FilterTest.class)

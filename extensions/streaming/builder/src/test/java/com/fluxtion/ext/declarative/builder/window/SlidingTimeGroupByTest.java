@@ -17,27 +17,29 @@
  */
 package com.fluxtion.ext.declarative.builder.window;
 
-import static com.fluxtion.ext.streaming.api.Duration.seconds;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.junit.SystemOutResource;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.List;
+
+import static com.fluxtion.ext.streaming.api.Duration.seconds;
+import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
+import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupBySum;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SlidingTimeGroupByTest extends BaseSepInprocessTest {
+public class SlidingTimeGroupByTest extends BaseSepInProcessTest {
 
     @Rule
     public SystemOutResource sysOut = new SystemOutResource();

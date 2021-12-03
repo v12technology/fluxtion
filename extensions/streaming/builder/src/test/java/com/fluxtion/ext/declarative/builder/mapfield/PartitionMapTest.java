@@ -17,10 +17,9 @@
 package com.fluxtion.ext.declarative.builder.mapfield;
 
 import com.fluxtion.api.partition.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import com.fluxtion.ext.streaming.api.Wrapper;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.stream.FieldMapper;
-import com.fluxtion.ext.streaming.api.stream.PartitioningFieldMapper;
+
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,7 +32,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class PartitionMapTest extends StreamInprocessTest {
+public class PartitionMapTest extends StreamInProcessTest {
 
     @Test
     public void partioniningTest() {

@@ -1,7 +1,7 @@
 package com.fluxtion.ext.declarative.builder.function;
 
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.MergingWrapper;
 import static com.fluxtion.ext.streaming.api.MergingWrapper.merge;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
@@ -16,7 +16,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class NumericFunctionTest extends StreamInprocessTest {
+public class NumericFunctionTest extends StreamInProcessTest {
 
     @Test
     public void complexFilterTest() {

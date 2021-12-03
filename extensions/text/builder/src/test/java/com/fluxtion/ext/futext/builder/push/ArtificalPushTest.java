@@ -19,7 +19,7 @@ package com.fluxtion.ext.futext.builder.push;
 import static com.fluxtion.ext.streaming.builder.stream.StreamOperatorService.stream;
 import com.fluxtion.ext.text.builder.ascii.AsciiHelper;
 import com.fluxtion.ext.text.api.util.StringDriver;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import org.junit.Test;
  *
  * @author greg
  */
-public class ArtificalPushTest extends BaseSepInprocessTest {
+public class ArtificalPushTest extends BaseSepInProcessTest {
 
     @Test
     public void generateProcessor() throws Exception {

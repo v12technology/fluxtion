@@ -46,7 +46,7 @@ public class InjectedFactoryTest {
         //add nodes
         cfg.addPublicNode(new KeyTracker(), "keyTracker1");
         //Factories
-        Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
         cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
         //generate
@@ -62,7 +62,7 @@ public class InjectedFactoryTest {
         //add nodes
         cfg.addPublicNode(new KeyTrackerWithVariableConfig(), "keyTracker1");
         //Factories
-        Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
         cfg.maxFiltersInline = 10;
         cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);

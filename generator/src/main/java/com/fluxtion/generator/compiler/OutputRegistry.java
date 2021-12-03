@@ -17,14 +17,14 @@
  */
 package com.fluxtion.generator.compiler;
 
+import lombok.extern.java.Log;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import lombok.extern.java.Log;
-import org.apache.commons.io.FileUtils;
 
 /**
  * A registry that stores the output destinations for use by the

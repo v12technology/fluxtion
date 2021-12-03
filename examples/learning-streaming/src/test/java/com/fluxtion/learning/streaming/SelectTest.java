@@ -9,7 +9,7 @@ import com.fluxtion.ext.streaming.builder.factory.EventSelect;
 
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * @author gregp
  */
 @SuppressWarnings("unchecked")
-public class SelectTest extends BaseSepInprocessTest {
+public class SelectTest extends BaseSepInProcessTest {
 
     @Test
     public void selectOnly() {

@@ -24,8 +24,11 @@ import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 /**
@@ -60,16 +63,9 @@ public class DirtyFilteringTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, e2, dirty_1, dirty_2, dirty_3, i1, i2, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
-        //
-        //System.out.println(sep.getDirtyFieldMap());
-
-        sep.getFieldForInstance(dirty_1);
-
-        System.out.println("flags:" + sep.getDirtyFieldMap().keySet());
-        sep.getDirtyFieldMap().keySet().stream().map((Field c) -> c.name).forEach(System.out::println);
         assertThat(sep.getDirtyFieldMap().keySet(), containsInAnyOrder(
                 sep.getFieldForInstance(e1),
                 sep.getFieldForInstance(e2),
@@ -141,7 +137,7 @@ public class DirtyFilteringTest {
                 dirty_1, dirty_2,
                 i1, i2, i3, i4, i5, i6);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
 
@@ -160,7 +156,7 @@ public class DirtyFilteringTest {
         DirtyNotifierNode dirty_1 = new DirtyNotifierNode("dirty_1", eh);
         
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(Arrays.asList(eh, dirty_1));
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(Arrays.asList(eh, dirty_1));
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
         

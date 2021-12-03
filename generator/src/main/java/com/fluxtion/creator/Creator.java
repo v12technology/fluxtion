@@ -230,7 +230,6 @@ public class Creator {
             LOG.debug("compiling event:{}", fqn);
             try {
                 final String className = eventDefinition.getClassName();
-                System.out.println("building event:" + className + " fqn:" + fqn);
                 final TypeSpec.Builder nodeBuilder = TypeSpec.classBuilder(className)
                         .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                         .superclass(ClassName.get(DefaultEvent.class));
@@ -320,8 +319,6 @@ public class Creator {
                     } catch (InstantiationException | IllegalAccessException ex) {
                         throw new RuntimeException("problem generating SEP config", ex);
                     }
-
-                    System.out.println("factory created");
                 } else if (node.isPublicAccess()) {
                     initHandler.addStatement("$1T $2L = addPublicNode(new $1T(), $2S)",
                             node.getNodeClass(), node.getId());

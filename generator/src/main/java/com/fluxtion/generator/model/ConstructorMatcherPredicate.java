@@ -28,8 +28,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author V12 Technology Ltd.
  */
+@SuppressWarnings("rawtypes")
 class ConstructorMatcherPredicate implements Predicate<Constructor> {
-    
+
     private final Logger LOGGER = LoggerFactory.getLogger(ConstructorMatcherPredicate.class);
     private final Field.MappedField[] cstrArgList;
     private final HashSet<Field.MappedField> privateFields;
@@ -73,7 +74,6 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
             //possible match
             int matchCount = 0;
             for (Field.MappedField mappedInstance : privateFields) {
-                Object parentInstance = mappedInstance.instance;
                 String varName = mappedInstance.mappedName;
                 Class<?> parentClass = mappedInstance.parentClass();
                 LOGGER.debug("match field var:{}, type:{}", varName, parentClass);
@@ -86,7 +86,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                         continue;
                     }
                     String paramName = parameters[i].getName();
-                    Class parameterType = parameters[i].getType();
+                    Class<?> parameterType = parameters[i].getType();
                     LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
                     if (parameterType != null && parameterType.isAssignableFrom(parentClass) && paramName.equals(varName)) {
                         matchCount++;
@@ -103,7 +103,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                         if (parameters[i] == null) {
                             continue;
                         }
-                        Class parameterType = parameters[i].getType();
+                        Class<?> parameterType = parameters[i].getType();
                         String paramName = parameters[i].getName();
                         LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
                         if (parameterType != null && parameterType.isAssignableFrom(parentClass)) {

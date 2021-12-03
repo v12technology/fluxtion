@@ -47,7 +47,7 @@ public class AccumulatorFactory implements NodeFactory<Accumulator> {
     }
 
     @Override
-    public void postInstanceRegistration(Map config, NodeRegistry registry, Accumulator instance) {
+    public void postInstanceRegistration(Map<? super Object, ? super Object> config, NodeRegistry registry, Accumulator instance) {
         LOG.info("postInstanceRegistration");
         if (!createdKeys) {
             createdKeys = true;
@@ -61,7 +61,7 @@ public class AccumulatorFactory implements NodeFactory<Accumulator> {
                 config.put(KeyProcessorFactory.KEY_CHAR, operation);
                 config.put(KeyProcessorFactory.KEY_NOTIFY_ACCUM, "true");
                 registry.findOrCreateNode(KeyProcessor.class, config, null);
-                
+
             }
         }
 

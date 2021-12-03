@@ -17,8 +17,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
+import com.fluxtion.ext.futext.builder.util.TextInProcessTest;
 import com.fluxtion.ext.text.api.annotation.ColumnName;
 import com.fluxtion.ext.text.api.annotation.ConvertFromCharSeq;
 import com.fluxtion.ext.text.api.annotation.ConvertToCharSeq;
@@ -30,9 +29,9 @@ import static com.fluxtion.ext.text.api.ascii.Conversion.atoi;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
 import static com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder.buildRowProcessor;
-import com.fluxtion.generator.compiler.InprocessSepCompiler;
+
 import com.fluxtion.generator.compiler.DirOptions;
-import java.io.File;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +44,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class AnnotatedBeanCsvTest extends TextInprocessTest {
+public class AnnotatedBeanCsvTest extends TextInProcessTest {
 
     @Test
     public void testDefaultValue() {

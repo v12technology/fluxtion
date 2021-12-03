@@ -17,24 +17,26 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.WrappedList;
 import com.fluxtion.ext.streaming.api.util.Tuple;
-import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
-import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByAvg;
-import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.Test;
+
+import java.util.Comparator;
+
+import static com.fluxtion.ext.streaming.api.util.Tuple.numberValComparator;
+import static com.fluxtion.ext.streaming.builder.factory.GroupFunctionsBuilder.groupByAvg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SortedGroupByTest extends StreamInprocessTest {
+public class SortedGroupByTest extends StreamInProcessTest {
 
     @Test
     public void sortGroupBy() {

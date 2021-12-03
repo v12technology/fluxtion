@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @AutoService(ClassProcessor.class)
 public class AnnotatedClassCompiler implements ClassProcessor {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AnnotatedClassCompiler.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotatedClassCompiler.class.getName());
     private File generatedDir;
     private File resourceDir;
     private File rootDir;
@@ -71,14 +71,14 @@ public class AnnotatedClassCompiler implements ClassProcessor {
                         .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()));
                 for (ClassInfo csvClassInfo : csvList) {
                     final Class<?> csvClass = csvClassInfo.loadClass();
-                    Object newInstance = csvClass.newInstance();
+                    Object newInstance = csvClass.getDeclaredConstructor().newInstance();
                     AnnotationInfo annotationInfo = csvClassInfo.getAnnotationInfo(Disabled.class.getCanonicalName());
                     if (annotationInfo == null) {
                         LOGGER.info("Adding instance to Sep class:" + csvClass.getCanonicalName());
                         AnnotationParameterValueList params = csvClassInfo.getAnnotationInfo(SepInstance.class.getCanonicalName()).getParameterValues();
                         boolean init = (params.get("initialise") == null || (Boolean) params.get("initialise"));
                         ClassProcessorDispatcher.DirectoryNames dirNames = standardParamsHelper(params, rootDir, generatedDir, resourceDir);
-                        InprocessSepCompiler.sepInstance((cfg) -> {
+                        InProcessSepCompiler.sepInstance((cfg) -> {
                             cfg.addPublicNode(newInstance, "processor");
                             boolean supportDirtyFiltering = true;
                             if (params.get("supportDirtyFiltering") != null) {

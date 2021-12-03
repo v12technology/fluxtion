@@ -17,9 +17,8 @@
 package com.fluxtion.ext.declarative.builder.filter;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.partition.LambdaReflection;
 import com.fluxtion.api.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.num;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
@@ -36,7 +35,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class NumberFilterTest extends StreamInprocessTest {
+public class NumberFilterTest extends StreamInProcessTest {
 
     public static void main(String[] args) throws Exception {
         InprocessSepCompiler.reuseOrBuild(c ->{

@@ -17,19 +17,24 @@
  */
 package com.fluxtion.generator.model.parentlistener;
 
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.NodeWithPrivateParentList;
 import com.fluxtion.test.event.TestEvent;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ParentCollectionTest extends BaseSepInprocessTest {
+public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
+
+    public ParentCollectionTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testParentList() {
@@ -51,7 +56,7 @@ public class ParentCollectionTest extends BaseSepInprocessTest {
     }
 
     @Test
-    public void testParentListNoTYpe() {
+    public void testParentListNoType() {
         sep((c) -> {
             EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
             EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));

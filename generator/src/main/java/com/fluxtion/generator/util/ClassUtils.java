@@ -115,7 +115,6 @@ public interface ClassUtils {
             int length = Array.getLength(primitiveVal);
             for (int i = 0; i < length; i++) {
                 Object arrayElement = Array.get(primitiveVal, i);
-//                System.out.println(arrayElement);
                 strings.add(mapToJavaSource(arrayElement, nodeFields, importList));
             }
 //            Object[] values = (Object[]) primitiveVal;

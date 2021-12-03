@@ -1,21 +1,22 @@
 package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.FilterWrapper;
-import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import com.fluxtion.ext.streaming.api.test.Within;
+import com.fluxtion.ext.streaming.builder.factory.NotificationBuilder;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.test.Within.within;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.ext.streaming.builder.factory.NotificationBuilder;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class WithinTest extends StreamInprocessTest {
+public class WithinTest extends StreamInProcessTest {
 
     @Test
     public void withinWindow() {

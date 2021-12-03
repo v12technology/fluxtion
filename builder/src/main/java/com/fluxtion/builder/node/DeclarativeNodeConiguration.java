@@ -34,7 +34,7 @@ public final class DeclarativeNodeConiguration {
      * The root nodes to create and the variable names they should be mapped to.
      * 
      */
-    public final Map<Class, String> rootNodeMappings;
+    public final Map<Class<?>, String> rootNodeMappings;
 
     /**
      * The set of factory classes used for node creation, each factory must
@@ -42,7 +42,7 @@ public final class DeclarativeNodeConiguration {
      * The classes in factoryClassSet are instantiated and merged into the 
      * factorySet instances.
      */
-    public final Set<Class<? extends NodeFactory>> factoryClassSet;
+    public final Set<Class<? extends NodeFactory<?>>> factoryClassSet;
 
     /**
      * The factory instances registered that can create new new instances of
@@ -63,7 +63,7 @@ public final class DeclarativeNodeConiguration {
      */
     public final Map config;
 
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config) {
+    public DeclarativeNodeConiguration(Map<Class<?>, String> rootNodeMappings, Set<Class<? extends NodeFactory<?>>> factoryList, Map config) {
         this(rootNodeMappings, factoryList, config, null);
     }
 
@@ -75,7 +75,7 @@ public final class DeclarativeNodeConiguration {
      * @param factorySet 
      */
     @SuppressWarnings("unchecked")
-    public DeclarativeNodeConiguration(Map<Class, String> rootNodeMappings, Set<Class<? extends NodeFactory>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
+    public DeclarativeNodeConiguration(Map<Class<?>, String> rootNodeMappings, Set<Class<? extends NodeFactory<?>>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
         this.rootNodeMappings = rootNodeMappings == null ? Collections.EMPTY_MAP : rootNodeMappings;
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;

@@ -58,7 +58,7 @@ public interface NodeFactory<T> {
      * @param registry The node registry of the current generation context
      * @return The newly created node instance
      */
-    T createNode(Map config, NodeRegistry registry);
+    T createNode(Map<?,?> config, NodeRegistry registry);
 
     /**
      * Callback invoked by Fluxtion generator after the generated SEP has been
@@ -68,7 +68,7 @@ public interface NodeFactory<T> {
      * @param registry The node registry of the current generation context
      * @param instance the newly created instance
      */
-    default void postInstanceRegistration(Map config, NodeRegistry registry, T instance) {
+    default void postInstanceRegistration(Map<? super Object, ? super Object> config, NodeRegistry registry, T instance) {
     }
 
     /**
