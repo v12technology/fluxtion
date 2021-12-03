@@ -205,6 +205,8 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle, 
                 )
         );
         eventHandlers.forEach(Node::init);
+        Set<Object> duplicatesOnEventComplete = new HashSet<>();
+        eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
     }
 
@@ -262,6 +264,12 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle, 
 
             for (CbMethodHandle cb : parentListeners) {
                 if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent() ) {
+                    //audit
+                    auditors.stream()
+                            .filter(Auditor::auditInvocations)
+                            .forEachOrdered(a -> a.nodeInvoked(
+                                    cb.instance, cb.getVariableName(), cb.getMethod().getName(), e
+                            ));
                     cb.method.invoke(cb.instance, callbackHandle.instance);
                 }
             }
@@ -314,6 +322,15 @@ public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle, 
             if(onEventCompleteMethod!=null){
                 onEventCompleteMethod.setAccessible(true);
             }
+        }
+
+        private void deDuplicateOnEventComplete(Set<Object> onCompleteCallbackSet){
+            if(onCompleteCallbackSet.contains(callbackHandle.getInstance())){
+                onEventCompleteMethod = null;
+            }else{
+                onCompleteCallbackSet.add(callbackHandle.getInstance());
+            }
+
         }
 
         @Override

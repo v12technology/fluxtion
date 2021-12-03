@@ -63,7 +63,7 @@ public class InMemoryTest {
 
     @Test
     public void testInterpretedBuilder() {
-        InMemoryEventProcessor interpreted = InProcessSepCompiler.interpreted(
+        InMemoryEventProcessor interpreted = InProcessSepCompiler.interpretedTest(
                 cfg -> cfg.addNode(new ChildNode(new StringHandler()))
         );
 

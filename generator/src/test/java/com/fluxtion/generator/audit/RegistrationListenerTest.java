@@ -59,7 +59,11 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
-        assertThat(auditNode.invokeCount, is(2));
+        if (compiledSep) {
+            assertThat(auditNode.invokeCount, is(2));
+        } else {
+            assertThat(auditNode.invokeCount, is(3));
+        }
     }
 
     @Test
@@ -76,7 +80,11 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
         MyNodeAudit auditNode = getField("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
-        assertThat(auditNode.invokeCount, is(2));
+        if (compiledSep) {
+            assertThat(auditNode.invokeCount, is(2));
+        } else {
+            assertThat(auditNode.invokeCount, is(3));
+        }
     }
 
     @Test

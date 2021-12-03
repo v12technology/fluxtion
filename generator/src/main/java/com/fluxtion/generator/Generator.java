@@ -22,12 +22,6 @@ import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-
-import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
-import static com.fluxtion.generator.Templates.JAVA_INTROSPECTOR_TEMPLATE;
-import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;
-import static com.fluxtion.generator.Templates.JAVA_TEST_DECORATOR_TEMPLATE;
-
 import com.fluxtion.generator.compiler.SepFactoryConfigBean;
 import com.fluxtion.generator.exporter.PngGenerator;
 import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
@@ -40,18 +34,6 @@ import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.xml.transform.TransformerConfigurationException;
-
 import net.openhft.compiler.CachedCompiler;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -62,6 +44,19 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static com.fluxtion.generator.Templates.*;
 
 /**
  * @author Greg Higgins
@@ -87,7 +82,9 @@ public class Generator {
         //Loading factories
 
         this.config = config;
-        GenerationContext.setupStaticContext("", "", null, null);
+        if( GenerationContext.SINGLETON==null){
+            GenerationContext.setupStaticContext("", "", null, null);
+        }
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
                 config.nodeList,
                 config.publicNodes,
@@ -98,6 +95,9 @@ public class Generator {
         );
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.filterMap, GenerationContext.SINGLETON.getProxyClassMap());
         simpleEventProcessorModel.generateMetaModel(config.supportDirtyFiltering);
+        if(config.generateDescription || GenerationContext.SINGLETON.getPackageName().isEmpty()){
+            exportGraphMl(graph);
+        }
         return new InMemoryEventProcessor(simpleEventProcessorModel);
     }
 
