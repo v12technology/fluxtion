@@ -22,8 +22,7 @@ import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnParentUpdate;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,8 +30,12 @@ import org.junit.Test;
  *
  * @author gregp
  */
-public class NoPropagateTest extends BaseSepInprocessTest {
-    
+public class NoPropagateTest extends MultipleSepTargetInProcessTest {
+
+    public NoPropagateTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testPush() {
         sep((c) ->{

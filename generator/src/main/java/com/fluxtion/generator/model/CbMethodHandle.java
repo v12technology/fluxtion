@@ -17,8 +17,11 @@
  */
 package com.fluxtion.generator.model;
 
+import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.api.annotations.OnParentUpdate;
+
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -44,10 +47,10 @@ public class CbMethodHandle {
     /**
      * the parameter type of the callback - can be null
      */
-    public final Class parameterClass;
+    public final Class<?> parameterClass;
     
     /**
-     * indicates is an eventhandler method
+     * indicates is an {@link com.fluxtion.api.annotations.EventHandler} method
      */
     public final boolean isEventHandler;
     
@@ -55,11 +58,15 @@ public class CbMethodHandle {
     
     public final boolean isInvertedDirtyHandler;
 
+    private final boolean isGuardedParent;
+
+    private final boolean isNoPropagateEventHandler;
+
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
     }
 
-    public CbMethodHandle(Method method, Object instance, String variableName, Class parameterClass, boolean isEventHandler) {
+    public CbMethodHandle(Method method, Object instance, String variableName, Class<?> parameterClass, boolean isEventHandler) {
         this.method = method;
         this.instance = instance;
         this.variableName = variableName;
@@ -67,13 +74,44 @@ public class CbMethodHandle {
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
         this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+        this.isGuardedParent = method.getAnnotation(OnParentUpdate.class)!=null && method.getAnnotation(OnParentUpdate.class).guarded();
+        this.isNoPropagateEventHandler = method.getAnnotation(EventHandler.class)!=null && !method.getAnnotation(EventHandler.class).propagate();
     }
-    
-    public boolean isInvertedDirtyHandler(){
-        if(isPostEventHandler || isEventHandler){
-            return false;
-        }
-        return method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public Object getInstance() {
+        return instance;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public Class<?> getParameterClass() {
+        return parameterClass;
+    }
+
+    public boolean isEventHandler() {
+        return isEventHandler;
+    }
+
+    public boolean isNoPropagateEventHandler() {
+        return isNoPropagateEventHandler;
+    }
+
+    public boolean isPostEventHandler() {
+        return isPostEventHandler;
+    }
+
+    public boolean isInvertedDirtyHandler() {
+        return isInvertedDirtyHandler;
+    }
+
+    public boolean isGuardedParent() {
+        return isGuardedParent;
     }
 
     @Override

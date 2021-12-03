@@ -8,25 +8,36 @@ package com.fluxtion.generator.audit;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.Inject;
 import com.fluxtion.api.audit.Auditor;
+import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.CharEvent;
-import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class FactoryAuditorTest extends BaseSepInprocessTest {
+public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
+
+    public FactoryAuditorTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void test() {
         sep(c ->c.addNode(new ParentNode()));
         MyNode myNode = getField("myNode");
         Assert.assertTrue(myNode.registerCalled);
+        onEvent(new CharEvent('a'));
+        assertThat(myNode.eventAuditCount, is(1));
     }
 
     public static class ParentNode {
@@ -43,6 +54,17 @@ public class FactoryAuditorTest extends BaseSepInprocessTest {
     public static class MyNode implements Auditor {
 
         public boolean registerCalled = false;
+        int eventAuditCount;
+
+        @Override
+        public void eventReceived(Object event) {
+            eventAuditCount++;
+        }
+
+        @Override
+        public void eventReceived(Event event) {
+            eventAuditCount++;
+        }
 
         @Override
         public void nodeRegistered(Object node, String nodeName) {

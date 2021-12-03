@@ -24,12 +24,14 @@ import com.fluxtion.ext.streaming.api.Stateful;
 import com.fluxtion.ext.streaming.api.numeric.MutableNumber;
 import com.fluxtion.ext.streaming.api.window.SlidingAggregator;
 import com.fluxtion.ext.streaming.api.window.TimeReset;
-import java.util.ArrayList;
-import java.util.Comparator;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *

@@ -17,7 +17,7 @@
 package com.fluxtion.generator.constructor;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,8 +26,12 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class ConstructorComplexTest extends BaseSepInprocessTest{
-    
+public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
+
+    public ConstructorComplexTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testArgs(){
     

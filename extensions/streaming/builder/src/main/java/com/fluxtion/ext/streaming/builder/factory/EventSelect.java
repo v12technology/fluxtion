@@ -38,7 +38,7 @@ public interface EventSelect {
     }
 
     static <T , S> Wrapper<S> select(SerializableFunction<T, S> supplier) {
-        Class<T> eventClazz = supplier.getContainingClass();
+        Class<T> eventClazz = (Class<T>) supplier.getContainingClass();
         return select(eventClazz).get(supplier);
     }
 

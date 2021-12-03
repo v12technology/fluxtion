@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.triggeroverride;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import static com.fluxtion.ext.streaming.api.stream.Argument.argDouble;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
@@ -31,7 +31,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class TriggerOverrideWrapperTest extends StreamInprocessTest {
+public class TriggerOverrideWrapperTest extends StreamInProcessTest {
     
     
     @Test

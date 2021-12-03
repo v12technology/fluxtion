@@ -20,13 +20,15 @@ import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.partition.Partitioner;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.LongAdder;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *

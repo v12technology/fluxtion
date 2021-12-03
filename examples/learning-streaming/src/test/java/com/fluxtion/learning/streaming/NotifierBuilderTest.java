@@ -6,7 +6,7 @@
 package com.fluxtion.learning.streaming;
 
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import org.junit.Test;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.notifierOverride;
@@ -15,7 +15,7 @@ import static com.fluxtion.ext.streaming.builder.factory.NotificationBuilder.not
  *
  * @author gregp
  */
-public class NotifierBuilderTest extends BaseSepInprocessTest {
+public class NotifierBuilderTest extends BaseSepInProcessTest {
 
     @Test
     public void filterEvent() {

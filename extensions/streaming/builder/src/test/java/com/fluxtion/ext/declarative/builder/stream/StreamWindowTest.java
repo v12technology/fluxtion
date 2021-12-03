@@ -19,23 +19,21 @@ package com.fluxtion.ext.declarative.builder.stream;
 
 import com.fluxtion.ext.streaming.api.Duration;
 import com.fluxtion.ext.streaming.api.WrappedList;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.selectNumber;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.avg;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.count;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import static com.fluxtion.ext.streaming.builder.factory.WindowFunctionsLibrary.movingAvg;
-import static com.fluxtion.ext.streaming.builder.factory.WindowFunctionsLibrary.movingCumSum;
+import org.junit.Test;
+
 import java.util.Arrays;
+
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.*;
+import static com.fluxtion.ext.streaming.builder.factory.WindowFunctionsLibrary.movingAvg;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class StreamWindowTest extends StreamInprocessTest {
+public class StreamWindowTest extends StreamInProcessTest {
 
     @Test
     public void sumSlidingCountWrapper() {

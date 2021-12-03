@@ -35,7 +35,7 @@ import com.fluxtion.api.time.ClockStrategy.ClockStrategyEvent;
  *
  * @author V12 Technology Ltd.
  */
-public class Clock implements Auditor {
+public class Clock implements Auditor, Auditor.FirstAfterEvent {
 
     private long eventTime;
     private long processTime;

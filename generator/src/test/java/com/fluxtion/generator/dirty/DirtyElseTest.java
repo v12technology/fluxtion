@@ -20,30 +20,53 @@ package com.fluxtion.generator.dirty;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class DirtyElseTest extends BaseSepInprocessTest {
+@Slf4j
+public class DirtyElseTest extends MultipleSepTargetInProcessTest {
+
+    public DirtyElseTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
+    @Test
+    public void simpleDirtyInvert(){
+        sep((c) -> {
+            GreaterThan gt_10 = new GreaterThan(10);
+            c.addPublicNode(new PassTest(gt_10), "passCount");
+            c.addPublicNode(new FailsTest(gt_10), "invertCount");
+        });
+        PassTest pass = getField("passCount");
+        FailsTest invert = getField("invertCount");
+
+        sep.onEvent(new NumberEvent(12));
+        assertThat(pass.count, is(1));
+        assertThat(invert.count, is(0));
+
+        sep.onEvent(new NumberEvent(3));
+        assertThat(pass.count, is(1));
+        assertThat(invert.count, is(1));
+    }
 
     @Test
     public void testAudit() {
-//        com.fluxtion.api.lifecycle.StaticEventProcessor handler = buildAndInitSep(DirtyBuilder.class);
-//        fixedPkg = true;
-        
         sep((c) -> {
-            GreaterThan gt_10 = c.addNode(new GreaterThan(10));
+            GreaterThan gt_10 = new GreaterThan(10);
+            IntermediateNode intermediate = new IntermediateNode(gt_10);
+
             c.addPublicNode(new PassTest(gt_10), "passCount");
             c.addPublicNode(new FailsTest(gt_10), "failCount");
-            IntermediateNode intermediate = c.addPublicNode(new IntermediateNode(gt_10), "intermediate");
             c.addPublicNode(new PassTest(intermediate), "intermedaitePassCount");
             c.addPublicNode(new FailsTest(intermediate), "intermedaiteFailCount");
-            c.formatSource = true;
         });
 
         PassTest pass = getField("passCount");
@@ -85,7 +108,6 @@ public class DirtyElseTest extends BaseSepInprocessTest {
 
         @EventHandler
         public boolean isGreaterThan(NumberEvent number) {
-            //System.out.println("number:" + number.value);
             return number.value > barrier;
         }
     }
@@ -115,7 +137,6 @@ public class DirtyElseTest extends BaseSepInprocessTest {
         @OnEvent
         public void publishPass() {
             count++;
-            //System.out.println("passed");
         }
 
     }
@@ -132,7 +153,6 @@ public class DirtyElseTest extends BaseSepInprocessTest {
         @OnEvent(dirty = false)
         public void publishFail() {
             count++;
-            //System.out.println("failed");
         }
 
     }

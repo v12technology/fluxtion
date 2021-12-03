@@ -13,7 +13,7 @@ import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.TestBuilder.test;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
 import com.fluxtion.learning.streaming.SelectTest.MyDataType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  * @author gregp
  */
-public class FilterTest extends BaseSepInprocessTest {
+public class FilterTest extends BaseSepInProcessTest {
 
     @Test
     public void filterEvent() {

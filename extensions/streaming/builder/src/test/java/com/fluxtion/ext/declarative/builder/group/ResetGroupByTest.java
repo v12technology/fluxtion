@@ -16,24 +16,26 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import org.junit.Test;
+
+import java.util.HashMap;
+
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import java.util.HashMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
-import org.junit.Test;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-public class ResetGroupByTest extends StreamInprocessTest{
+public class ResetGroupByTest extends StreamInProcessTest {
 
     @Test
     public void resetGroup(){

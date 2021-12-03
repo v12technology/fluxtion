@@ -18,24 +18,22 @@
 package com.fluxtion.ext.declarative.builder.mapfield;
 
 import com.fluxtion.api.partition.LambdaReflection;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.stream.FieldMapper;
 import com.fluxtion.ext.streaming.api.stream.StreamFunctions.Sum;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.Value;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class MapTest extends StreamInprocessTest {
+public class MapTest extends StreamInProcessTest {
 
     @Test
     public void testFieldSet() {

@@ -63,11 +63,11 @@ public class CachedCompiler implements Closeable {
         }
     }
 
-    public Class loadFromJava(@NotNull String className, @NotNull String javaCode) throws ClassNotFoundException {
+    public <T> Class<T>  loadFromJava(@NotNull String className, @NotNull String javaCode) throws ClassNotFoundException {
         return loadFromJava(getClass().getClassLoader(), className, javaCode, DEFAULT_WRITER);
     }
 
-    public Class loadFromJava(@NotNull ClassLoader classLoader,
+    public <T> Class<T> loadFromJava(@NotNull ClassLoader classLoader,
                               @NotNull String className,
                               @NotNull String javaCode) throws ClassNotFoundException {
         return loadFromJava(classLoader, className, javaCode, DEFAULT_WRITER);
@@ -124,12 +124,12 @@ public class CachedCompiler implements Closeable {
         return loadedClasses.get(className);
     }
 
-    public Class loadFromJava(@NotNull ClassLoader classLoader,
+    public <T>  Class<T>  loadFromJava(@NotNull ClassLoader classLoader,
                               @NotNull String className,
                               @NotNull String javaCode,
                               @Nullable PrintWriter writer) throws ClassNotFoundException {
         log.debug("start loadFromJava");
-        Class clazz = null;
+        Class<T>  clazz = null;
         Map<String, Class> loadedClasses;
         synchronized (loadedClassesMap) {
             loadedClasses = loadedClassesMap.get(classLoader);
@@ -175,7 +175,7 @@ public class CachedCompiler implements Closeable {
             }
         }
         synchronized (loadedClassesMap) {
-            loadedClasses.put(className, clazz = myClassLoader.loadClass(className));
+            loadedClasses.put(className, clazz = (Class<T>) myClassLoader.loadClass(className));
         }
         log.debug("end loadFromJava");
         return clazz;

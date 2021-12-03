@@ -39,11 +39,11 @@ public class JavaGenHelperTest {
      */
     @Test
     @Ignore
-    public void testNullInvokwerList() {
+    public void testNullInvokerList() {
         //System.out.println("testNullInvokerList");
         ArrayList<InvokerFilterTarget> filteredInvokerList = null;
         String expResult = "";
-        String result = JavaGenHelper.generateMapDisaptch(filteredInvokerList, new ArrayList());
+        String result = JavaGenHelper.generateMapDispatch(filteredInvokerList, new ArrayList());
         assertEquals(expResult, result);
     }
 
@@ -59,7 +59,6 @@ public class JavaGenHelperTest {
         FilterDescription filterDescriptionStr = new FilterDescription(CharEvent.class, "fred");
         FilterDescription filterDescriptionTime = new FilterDescription(TimeEvent.class, "time");
 
-        //System.out.println("generateMapDisaptch");
         ArrayList<InvokerFilterTarget> filteredInvokerList = new ArrayList<>();
 
         InvokerFilterTarget target = new InvokerFilterTarget();
@@ -84,11 +83,7 @@ public class JavaGenHelperTest {
         filteredInvokerList.add(target2);
         filteredInvokerList.add(targetTime);
 
-        String expResult = JavaGenHelper.generateMapDisaptch(filteredInvokerList, new ArrayList<>());
-
-        //System.out.println("expResult:\n" + expResult);
-//        //System.out.println("result:\n" + result);
-        
+        String expResult = JavaGenHelper.generateMapDispatch(filteredInvokerList, new ArrayList<>());
 //        assertEquals(expResult, result);
 
     }
@@ -104,8 +99,6 @@ public class JavaGenHelperTest {
         for (int i = 1; i < 100; i++) {
             AnnotatedTestEventHandler th = cfg.addNode(new AnnotatedTestEventHandler(i));
         }
-//        InitCB i1 = cfg.addNode(new InitCB("i1", e1, th));
-//        RootCB eRoot = cfg.addPublicNode( new RootCB("eRoot", i1, th, noFilterEh), "root");
         RootCB eRoot = cfg.addPublicNode( new RootCB("eRoot", noFilterEh), "root");
 
         cfg.templateFile = "javaTemplate.vsl";

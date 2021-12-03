@@ -56,9 +56,7 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
             LOGGER.debug("loading services through class loader for this class");
             loadServices = ServiceLoader.load(ClassProcessor.class, this.getClass().getClassLoader());
         }
-        loadServices.forEach((t) -> {
-            subTypes.add(t.getClass());
-        });
+        loadServices.forEach((t) -> subTypes.add(t.getClass()));
         LOGGER.debug("loaded AnnotationProcessors: {}", subTypes);
         final File outDir;
         final File resDir;
@@ -72,15 +70,12 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
         } else {
             resDir = new File(baseDir, "src/main/resources");
         }
-        loadServices.forEach(new Consumer<ClassProcessor>() {
-            @Override
-            public void accept(ClassProcessor t) {
-                try {
-                    t.outputDirectories(baseDir, outDir, resDir);
-                    t.process(url);
-                } catch (Exception e) {
-                    LOGGER.warn("problem executing processor : '" + t + "'", e);
-                }
+        loadServices.forEach(t -> {
+            try {
+                t.outputDirectories(baseDir, outDir, resDir);
+                t.process(url);
+            } catch (Exception e) {
+                LOGGER.warn("problem executing processor : '" + t + "'", e);
             }
         });
     }

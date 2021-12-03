@@ -78,7 +78,7 @@ public class SepFactoryConfigBean {
     public DeclarativeNodeConiguration asDeclarativeNodeConiguration() throws ClassNotFoundException {
 
         // convert rootNodeMappings to classes
-        HashMap<Class, String> rootClasses = null;
+        HashMap<Class<?>, String> rootClasses = null;
         if (rootNodeMappings != null) {
             rootClasses = new HashMap();
             for (Map.Entry<String, String> entrySet : rootNodeMappings.entrySet()) {
@@ -96,7 +96,7 @@ public class SepFactoryConfigBean {
         }
 
         //convert factoryClassSet
-        HashSet<Class<? extends NodeFactory>> nodeFactoryClasses = null;
+        HashSet<Class<? extends NodeFactory<?>>> nodeFactoryClasses = null;
         if (factoryClassSet != null) {
             nodeFactoryClasses = new HashSet();
             for (String factoryClassName : factoryClassSet) {

@@ -17,18 +17,16 @@
  */
 package com.fluxtion.integrations.dispatch;
 
-import com.fluxtion.integration.eventflow.EventConsumer;
-import com.fluxtion.integration.eventflow.EventFlow;
+import com.fluxtion.integration.eventflow.*;
 import com.fluxtion.integration.eventflow.EventFlow.PipelineBuilder;
-import static com.fluxtion.integration.eventflow.EventFlow.flow;
-import com.fluxtion.integration.eventflow.EventSink;
-import com.fluxtion.integration.eventflow.EventSource;
-import com.fluxtion.integration.eventflow.PipelineFilter;
-import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
-import com.fluxtion.integration.eventflow.sources.DelimitedSource;
-import com.fluxtion.integration.eventflow.sources.ManualEventSource;
-import com.fluxtion.integration.eventflow.sources.TransformPullSource;
-import com.fluxtion.integration.eventflow.sources.TransformSource;
+import com.fluxtion.integration.eventflow.sources.*;
+import lombok.Data;
+import lombok.extern.log4j.Log4j2;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.jupiter.api.Test;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PipedReader;
@@ -37,16 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+
+import static com.fluxtion.integration.eventflow.EventFlow.flow;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.Assert;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.junit.Rule;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
 
 /**
  *

@@ -50,10 +50,10 @@ import org.xml.sax.helpers.AttributesImpl;
 public class JgraphGraphMLExporter<V, E> {
 
     //~ Instance fields --------------------------------------------------------
-    private VertexNameProvider<V> vertexIDProvider;
-    private VertexNameProvider<V> vertexLabelProvider;
-    private EdgeNameProvider<E> edgeIDProvider;
-    private EdgeNameProvider<E> edgeLabelProvider;
+    private final VertexNameProvider<V> vertexIDProvider;
+    private final VertexNameProvider<V> vertexLabelProvider;
+    private final EdgeNameProvider<E> edgeIDProvider;
+    private final EdgeNameProvider<E> edgeLabelProvider;
 
     //~ Constructors -----------------------------------------------------------
     /**
@@ -63,9 +63,9 @@ public class JgraphGraphMLExporter<V, E> {
      */
     public JgraphGraphMLExporter() {
         this(
-                new IntegerNameProvider<V>(),
+                new IntegerNameProvider<>(),
                 null,
-                new IntegerEdgeNameProvider<E>(),
+                new IntegerEdgeNameProvider<>(),
                 null);
     }
 

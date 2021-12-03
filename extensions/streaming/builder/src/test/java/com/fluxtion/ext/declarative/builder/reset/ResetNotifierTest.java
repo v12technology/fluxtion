@@ -20,22 +20,23 @@ package com.fluxtion.ext.declarative.builder.reset;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.ext.declarative.builder.stream.MapFunctions;
 import com.fluxtion.ext.declarative.builder.stream.StreamData;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
+import lombok.Value;
+import org.junit.Test;
+
 import static com.fluxtion.ext.streaming.builder.factory.DefaultNumberBuilder.defaultVal;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.factory.FilterBuilder.filter;
 import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.cumSum;
-import lombok.Value;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ResetNotifierTest extends StreamInprocessTest {
+public class ResetNotifierTest extends StreamInProcessTest {
     
     @Test
     //to be reinstated

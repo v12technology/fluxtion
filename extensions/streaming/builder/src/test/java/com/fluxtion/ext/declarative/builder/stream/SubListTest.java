@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SubListTest extends StreamInprocessTest{
+public class SubListTest extends StreamInProcessTest {
     
     @Test
     public void subTop(){

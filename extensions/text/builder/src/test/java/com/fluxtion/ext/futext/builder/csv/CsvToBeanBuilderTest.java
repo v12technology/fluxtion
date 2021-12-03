@@ -18,15 +18,17 @@ package com.fluxtion.ext.futext.builder.csv;
 
 import com.fluxtion.ext.text.api.util.CsvRecordStream;
 import com.fluxtion.ext.text.builder.csv.CsvToBeanBuilder;
-import static com.fluxtion.generator.compiler.DirOptions.TEST_DIR_OUTPUT;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
+
+import static com.fluxtion.generator.compiler.DirOptions.TEST_DIR_OUTPUT;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 /**
  *

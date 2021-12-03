@@ -102,8 +102,6 @@ public interface Auditor extends Lifecycle {
     default void tearDown() {
     }
 
-//    default void nodeInvoked(Object node, String nodeName, String methodName, Event typedEvent) {
-//    }
     /**
      * Callback method received by the auditor due to processing an event. This
      * method is invoked before the node in the execution path receives a
@@ -134,4 +132,13 @@ public interface Auditor extends Lifecycle {
     default boolean auditInvocations() {
         return false;
     }
+
+    /**
+     * An Auditor marked with this interface will have {@link #processingComplete()}
+     * called before the event nodes {@link com.fluxtion.api.annotations.AfterEvent}'s are processed
+     * <p>
+     * Normally the {@link #processingComplete()} will be called following all the nodes
+     * annotated with {@link com.fluxtion.api.annotations.AfterEvent} have been invoked.
+     */
+    interface FirstAfterEvent{}
 }

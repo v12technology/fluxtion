@@ -7,25 +7,32 @@ package com.fluxtion.generator.evenpublisher;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.event.Event;
-import com.fluxtion.api.event.EventPublsher;
+import com.fluxtion.api.event.EventPublisher;
 import com.fluxtion.api.event.RegisterEventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import java.util.concurrent.atomic.LongAdder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.LongAdder;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventPublisherTest extends BaseSepInprocessTest {
+public class EventPublisherTest extends MultipleSepTargetInProcessTest {
+
+    public EventPublisherTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
     public void testAudit() {
         sep((c) -> {
             GreaterThan gt_10 = c.addNode(new GreaterThan(10));
-            EventPublsher publisher = c.addPublicNode(new EventPublsher(), "publisher");
+            EventPublisher<GreaterThan> publisher = c.addPublicNode(new EventPublisher<>(), "publisher");
             publisher.addEventSource(gt_10);
             c.formatSource = true;
         });

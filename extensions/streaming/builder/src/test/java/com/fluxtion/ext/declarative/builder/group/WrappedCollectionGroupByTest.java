@@ -16,7 +16,7 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
@@ -34,7 +34,7 @@ import org.junit.Test;
  *
  * @author V12 Technology Ltd.
  */
-public class WrappedCollectionGroupByTest extends StreamInprocessTest{
+public class WrappedCollectionGroupByTest extends StreamInProcessTest {
 
     @Test
     public void resetGroup(){

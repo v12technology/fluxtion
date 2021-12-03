@@ -32,7 +32,6 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Applies a sliding window to a {@link WrappedCollection}
@@ -40,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author Greg Higgins greg.higgins@v12technology.com
  * @param <T>
  */
-@Slf4j
 public class SlidingCollectionAggregator<T extends WrappedCollection> {
 
     @SepNode
@@ -94,7 +92,7 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
         publish |= publishCount >= bucketCount;
         ArrayListWrappedCollection collection = publish ? targetCollection : primingCollection;
         if (publish & !primingCollection.isEmpty()) {
-            log.debug("switching to target collection");
+//            log.debug("switching to target collection");
             targetCollection.combine(primingCollection);
             collection = targetCollection;
             primingCollection.reset();
@@ -105,7 +103,7 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
             addedToCurrentWindow = true;
             logCollection("0 expired current window:", currentWindow);
         } else {
-            log.debug("expired: " + expiredBuckete);
+//            log.debug("expired: " + expiredBuckete);
             if (!addedToCurrentWindow) {
                 addedToCurrentWindow = false;
                 currentWindow.reset();
@@ -132,18 +130,18 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
         }
         logDeque();
         if (publish) {
-            log.debug("publishing");
+//            log.debug("publishing");
         }
         return publish;
     }
 
     public void logDeque(){
-        if (!log.isDebugEnabled()) {
-            return;
-        }
-        StringBuilder sb = new StringBuilder("deque:\n");
-        deque.forEach(c -> sb.append("\t").append(c.collection()).append("\n"));
-        log.debug(sb.toString());
+//        if (!log.isDebugEnabled()) {
+//            return;
+//        }
+//        StringBuilder sb = new StringBuilder("deque:\n");
+//        deque.forEach(c -> sb.append("\t").append(c.collection()).append("\n"));
+//        log.debug(sb.toString());
     }
 
     private void logCollection(String prefix, Stateful holder) {
@@ -151,15 +149,15 @@ public class SlidingCollectionAggregator<T extends WrappedCollection> {
     }
 
     private void logCollection(String prefix, Stateful holder, String suffix) {
-        if (!log.isDebugEnabled()) {
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
-        if (holder instanceof WrappedCollection) {
-            WrappedCollection collection = (WrappedCollection) holder;
-            sb.append(prefix).append(" ").append(collection.collection()).append((suffix == null ? "" : suffix));
-        }
-        log.debug(sb.toString());
+//        if (!log.isDebugEnabled()) {
+//            return;
+//        }
+//        StringBuilder sb = new StringBuilder();
+//        if (holder instanceof WrappedCollection) {
+//            WrappedCollection collection = (WrappedCollection) holder;
+//            sb.append(prefix).append(" ").append(collection.collection()).append((suffix == null ? "" : suffix));
+//        }
+//        log.debug(sb.toString());
     }
 
     public WrappedList<T> comparator(Comparator comparator) {

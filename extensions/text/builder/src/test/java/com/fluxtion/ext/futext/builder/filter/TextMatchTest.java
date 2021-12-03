@@ -59,7 +59,7 @@ public class TextMatchTest extends BaseSepTest {
 
         {
             addPublicNode(new TextMatchPrinter("ccypair=\"eurusd\""), MATCHER_VARIABLE_NAME);
-            Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
+            Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
             factoryList.add(AsciiMatchFilterFactory.class);
             declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
         }

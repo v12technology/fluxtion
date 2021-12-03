@@ -12,27 +12,27 @@
 package com.fluxtion.ext.declarative.builder.log;
 
 import com.fluxtion.ext.declarative.builder.helpers.DataEvent;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableIdFiltering;
-import static com.fluxtion.ext.streaming.api.log.LogControlEvent.enableLevelFiltering;
-import static com.fluxtion.ext.streaming.api.log.LogControlEvent.recordMsgBuilderId;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
+import com.fluxtion.junit.SystemOutResource;
+import org.junit.Rule;
+import org.junit.Test;
+
+import java.util.Collection;
+
+import static com.fluxtion.ext.streaming.api.log.LogControlEvent.*;
 import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.log.LogBuilder.log;
-import com.fluxtion.junit.SystemOutResource;
-import java.util.Collection;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.junit.Rule;
-import org.junit.Test;
 
 /**
  *
  * @author greg
  */
-public class ConsoleLogTest extends StreamInprocessTest {
+public class ConsoleLogTest extends StreamInProcessTest {
 
     @Rule
     public SystemOutResource sysOut = new SystemOutResource();

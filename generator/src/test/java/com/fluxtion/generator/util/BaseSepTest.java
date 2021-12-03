@@ -88,11 +88,9 @@ public class BaseSepTest {
         }
     }
 
-    public static DeclarativeNodeConiguration factorySet(Class<? extends NodeFactory>... classes) {
-        Set<Class<? extends NodeFactory>> factoryList = new HashSet<>();
-        factoryList.addAll(Arrays.asList(classes));
-        DeclarativeNodeConiguration declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
-        return declarativeConfig;
+    @SafeVarargs
+    public static DeclarativeNodeConiguration factorySet(Class<? extends NodeFactory<?>>... classes) {
+        return new DeclarativeNodeConiguration(null, new HashSet<>(Arrays.asList(classes)), null);
     }
 
     protected <T> T getField(String name) {

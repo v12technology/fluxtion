@@ -17,7 +17,7 @@
  */
 package com.fluxtion.ext.futext.builder.csv;
 
-import com.fluxtion.ext.futext.builder.util.TextInprocessTest;
+import com.fluxtion.ext.futext.builder.util.TextInProcessTest;
 import com.fluxtion.ext.text.api.annotation.CsvMarshaller;
 import com.fluxtion.ext.text.api.csv.RowProcessor;
 import static com.fluxtion.ext.text.builder.csv.CsvMarshallerBuilder.csvMarshaller;
@@ -32,7 +32,7 @@ import org.junit.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class SerialiseTest extends TextInprocessTest{
+public class SerialiseTest extends TextInProcessTest {
     
     
     @Test

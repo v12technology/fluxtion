@@ -43,8 +43,7 @@ public class TemplatingCompiler {
     
     public enum TemplateKeys{
         packageName,
-        className,
-        ;
+        className
     }
 
     public static <T> Class<T> generateAndCompile(T node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException, ClassNotFoundException {
@@ -53,8 +52,7 @@ public class TemplatingCompiler {
         File file = new File(generationConfig.getPackageDirectory(), className + ".java");
         CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
         String javaCode = GenerationContext.readText(file.getCanonicalPath());
-        Class newClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
-        return newClass;
+        return javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
     }
 
     public static String writeSourceFile(Object node, String templateFile, GenerationContext generationConfig, Context ctx) throws IOException, MethodInvocationException, ParseErrorException, ResourceNotFoundException {
@@ -81,17 +79,6 @@ public class TemplatingCompiler {
             template.merge(ctx, templateWriter);
             templateWriter.flush();
         }
-//        try {
-//            while (true) {
-//                if (outFile.exists() && outFile.length() > 1) {
-//                    break;
-//                } else {
-//                    Thread.sleep(1);
-//                }
-//            }
-//        } catch (InterruptedException ex) {
-//            LOG.info("interrupted while writing source file", ex);
-//        }
         return generatedClassName;
     }
 

@@ -17,21 +17,22 @@
  */
 package com.fluxtion.ext.declarative.builder.map;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
-import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
-import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.add;
-import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
-import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import lombok.Data;
+import org.junit.Test;
+
+import static com.fluxtion.ext.streaming.api.stream.Argument.arg;
+import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
+import static com.fluxtion.ext.streaming.builder.factory.MappingBuilder.map;
+import static com.fluxtion.ext.streaming.builder.factory.StreamFunctionsBuilder.add;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class MapTest extends StreamInprocessTest {
+public class MapTest extends StreamInProcessTest {
 
     @Test
     public void testNotify() {

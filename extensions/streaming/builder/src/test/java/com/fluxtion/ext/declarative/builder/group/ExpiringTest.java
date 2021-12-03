@@ -1,6 +1,6 @@
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.junit.Categories;
@@ -10,7 +10,7 @@ import org.junit.experimental.categories.Category;
 /**
  * @author gregp
  */
-public class ExpiringTest extends StreamInprocessTest {
+public class ExpiringTest extends StreamInProcessTest {
 
 //    @Override
 //    protected String testPackageID() {

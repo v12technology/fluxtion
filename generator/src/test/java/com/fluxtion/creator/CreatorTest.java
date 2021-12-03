@@ -25,6 +25,7 @@ import com.fluxtion.generator.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,27 +35,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class CreatorTest extends BaseSepTest {
 
-    /**
-     * Test of createModel method, of class Creator.
-     */
     @Test
-//    @Ignore
-    public void testCreateModel() throws Exception {
-        FunctionCfg mathCfg = new FunctionCfg("max", "src::intValue");
-        Node node = new Node("com.text.xx", "nodeId_1", true);
-        node.setConfigBean(mathCfg);
-        //
-        Yaml beanLoader = new Yaml();
-        String dump = beanLoader.dumpAsMap(node);
-        System.out.println("dump:\n" + dump);
-
-        Node loadedNode = beanLoader.loadAs(dump, Node.class);
-        mathCfg = loadedNode.getConfigBean();
-        System.out.println("config:" + mathCfg);
-    }
-
-    @Test
-//     @Ignore
     public void parserTest() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();
@@ -240,5 +221,4 @@ public class CreatorTest extends BaseSepTest {
         }
 
     }
-
 }

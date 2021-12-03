@@ -19,15 +19,17 @@ package com.fluxtion.integrations.dispatch;
 
 import com.fluxtion.integration.eventflow.sources.DelimitedPullSource;
 import com.fluxtion.integrations.dispatch.FileDispatchTest.DataEvent;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.util.concurrent.atomic.LongAdder;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.junit.jupiter.api.Test;
 
 /**
  *

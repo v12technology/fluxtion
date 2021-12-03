@@ -17,22 +17,26 @@
  */
 package com.fluxtion.generator.constructor;
 
+import com.fluxtion.api.annotations.ConstructorArg;
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInprocessTest;
-import lombok.AllArgsConstructor;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import com.fluxtion.api.annotations.ConstructorArg;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class ConstructorArgTest extends BaseSepInprocessTest{
-    
+public class ConstructorArgTest extends MultipleSepTargetInProcessTest {
+
+    public ConstructorArgTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
     @Test
     public void testArgs(){
     

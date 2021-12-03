@@ -1,11 +1,12 @@
 package com.fluxtion.ext.declarative.api.util;
 
 import com.fluxtion.ext.streaming.api.util.StringCache;
+import org.junit.Assert;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import org.junit.Assert;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * 

@@ -22,8 +22,9 @@ import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Map;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -43,12 +44,14 @@ public class AveragingNodeFactory implements NodeFactory<AveragingNode> {
     public static final String DATA_SOURCE_FIELD = NAME_SPACE + ".dataSourceField";
     public static final String WINDOW_SIZE = NAME_SPACE + ".windowSize";
     public static final String OUTPUT_AVERAGE = NAME_SPACE + ".average";
+    public static final String AVERAGING_NODE_NAME = "averagingNode";
 
     private final String TEMPLATE_JAVA = "nodegen/javaAveragingNodeTemplate.vsl";
     private GenerationContext generationConfig;
     private static int count;
 
     @Override
+//    @SneakyThrows
     public AveragingNode createNode(Map config, NodeRegistry registry) {
         try {
             //creates instance
@@ -72,10 +75,14 @@ public class AveragingNodeFactory implements NodeFactory<AveragingNode> {
             FileWriter templateWriter = new FileWriter(outFile);
             template.merge(ctx, templateWriter);
             templateWriter.flush();
-
+            StringWriter stringWriter = new StringWriter();
+            template.merge(ctx, stringWriter);
             generationConfig.getProxyClassMap().put(node, generatedClassName);
+            String fqn = outputPackage + "." + generatedClassName;
+            GenerationContext.SINGLETON.getJavaCompiler().loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, stringWriter.toString());
+            registry.registerNode(node, AVERAGING_NODE_NAME);
             return node;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("unable to create proxied class for AveragingNode", ex);
         }
     }

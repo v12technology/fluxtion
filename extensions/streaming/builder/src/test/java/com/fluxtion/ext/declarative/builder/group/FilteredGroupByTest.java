@@ -11,28 +11,30 @@
  */
 package com.fluxtion.ext.declarative.builder.group;
 
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
+import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
+import com.fluxtion.junit.Categories;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import java.util.HashMap;
+import java.util.Optional;
+
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.positive;
 import static com.fluxtion.ext.streaming.builder.factory.EventSelect.select;
 import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
-import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
-import com.fluxtion.junit.Categories;
-import java.util.HashMap;
-import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 /**
  *
  * @author Greg Higgins
  */
-public class FilteredGroupByTest extends StreamInprocessTest {
+public class FilteredGroupByTest extends StreamInProcessTest {
 
     @Test
     @Category(Categories.FilterTest.class)

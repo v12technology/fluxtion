@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventFlowTest extends TextInprocessTest {
+public class EventFlowTest extends TextInProcessTest {
 
     @Test
     public void simpleFlow() throws IOException {

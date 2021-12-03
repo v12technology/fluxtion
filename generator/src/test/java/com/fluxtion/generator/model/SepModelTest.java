@@ -19,51 +19,20 @@ package com.fluxtion.generator.model;
 
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
-import com.fluxtion.test.event.AnnotatedEventHandlerWithOverrideFilter;
-import com.fluxtion.test.event.AnnotatedHandlerNoFilter;
-import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
-import com.fluxtion.test.event.AnnotatedOnCompleteTestEventHandler;
-import com.fluxtion.test.event.AnnotatedTestEventHandler;
-import com.fluxtion.test.event.AnnotatedTestEventHandlerNoFilter;
-import com.fluxtion.test.event.AnnotatedTimeHandler;
-import com.fluxtion.test.event.AnnotatedTimeHandlerInverseFilter;
-import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
-import com.fluxtion.test.event.DirtyNotifierNode;
-import com.fluxtion.test.event.EventHandlerCb;
-import com.fluxtion.test.event.InitCB;
-import com.fluxtion.test.event.NodeWithParentList;
-import com.fluxtion.test.event.OnEventCompleteHandler;
-import com.fluxtion.test.event.ParentUpdateListener;
-import com.fluxtion.test.event.RootCB;
-import com.fluxtion.test.event.TestEvent;
-import com.fluxtion.test.event.TimeEvent;
-import com.fluxtion.test.event.TimeHandlerExtends;
-import com.fluxtion.test.event.TimeHandlerImpl;
-import com.fluxtion.test.event.TimerHandler2Removed;
+import com.fluxtion.test.event.*;
 import com.google.common.base.Predicates;
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import static org.reflections.ReflectionUtils.getAllMethods;
-import static org.reflections.ReflectionUtils.withModifier;
-import static org.reflections.ReflectionUtils.withName;
-import static org.reflections.ReflectionUtils.withParametersCount;
+import static org.junit.Assert.*;
+import static org.reflections.ReflectionUtils.*;
 
 /**
  *
@@ -89,7 +58,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         //sizes
@@ -136,14 +105,14 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
         srcModel.buildSourceModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(1, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TestEvent.class);
@@ -180,14 +149,14 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap);
         sep.generateMetaModel();
         SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
         srcModel.buildSourceModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(1, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TestEvent.class);
@@ -227,7 +196,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, i1, i2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         //
@@ -255,12 +224,12 @@ public class SepModelTest {
         i2.parents = new Object[]{testHandler2};
         root.parents = new Object[]{i1, i2};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(timeHandler1, testHandler2, i1, i2, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(timeHandler1, testHandler2, i1, i2, root);
         graph.generateDependencyTree();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> timeCbMap = dispatchMap.get(TimeEvent.class);
@@ -294,12 +263,12 @@ public class SepModelTest {
         i2.parents = new Object[]{filter_10_Handler, inverseHandler};
         root.parents = new Object[]{i1, i2};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(noFilterHandler, filter_10_Handler, i1, i2, root, inverseHandler);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(noFilterHandler, filter_10_Handler, i1, i2, root, inverseHandler);
         graph.generateDependencyTree();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> timeCbMap = dispatchMap.get(TimeEvent.class);
@@ -328,13 +297,13 @@ public class SepModelTest {
         unFilteredInter.parents = new Object[]{unFilteredTestHandler};
         root.parents = new Object[]{filteredInter, unFilteredInter};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(filteredTestHandler, unFilteredTestHandler, filteredInter, unFilteredInter, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(filteredTestHandler, unFilteredTestHandler, filteredInter, unFilteredInter, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(1, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> testCbMap = dispatchMap.get(TestEvent.class);
@@ -369,13 +338,13 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(1, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -398,13 +367,13 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(1, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -427,13 +396,13 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -468,13 +437,13 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();  
         
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());  
         
 
@@ -515,13 +484,13 @@ public class SepModelTest {
         RootCB root = new RootCB("root");
         root.parents = new Object[]{ thImpl};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();  
         
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -539,14 +508,14 @@ public class SepModelTest {
         complete1.parents = new Object[]{handler};
         root.parents = new Object[]{complete1};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(handler, root, complete1);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(handler, root, complete1);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
         //post dispatch map
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();
         Map<FilterDescription, List<CbMethodHandle>>  typedMap = postDispatchMap.get(TestEvent.class);
         assertEquals(1, typedMap.size());
         
@@ -575,13 +544,13 @@ public class SepModelTest {
         complete3.parents = new Object[]{noFilterEh};
         root.parents = new Object[]{complete1, complete2, complete3};
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, noFilterEh, root, complete1, complete2, complete3);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, noFilterEh, root, complete1, complete2, complete3);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -596,7 +565,7 @@ public class SepModelTest {
         assertThat(luu, containsInAnyOrder(thImpl, noFilterEh, root));
 
         //post dispatch map
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();
         typedMap = postDispatchMap.get(TimeEvent.class);
         assertEquals(4, typedMap.size());
 
@@ -629,13 +598,13 @@ public class SepModelTest {
         filterMap.put(thExt, 100);
         filterMap.put(thImpl, 200);
 
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(thExt, thImpl, root);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thExt, thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap, null);
         sep.generateMetaModel();
 
-        Map<Class, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
@@ -692,7 +661,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, pl_1, pl_2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         final Map<Object, List<CbMethodHandle>> listenerMethodMap = sep.getParentUpdateListenerMethodMap();
@@ -732,7 +701,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(root, e1, e2, e3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         final Map<Object, List<CbMethodHandle>> listenerMethodMap = sep.getParentUpdateListenerMethodMap();
@@ -765,7 +734,7 @@ public class SepModelTest {
 
         List<Object> nodeList = Arrays.asList(eRoot, e1, pl_1, dirty_2, e2, e3, i3);
         //generate model
-        TopologicallySortedDependecyGraph graph = new TopologicallySortedDependecyGraph(nodeList);
+        TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
         //

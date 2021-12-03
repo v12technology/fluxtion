@@ -25,7 +25,7 @@ import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.generator.model.Field;
 import com.fluxtion.generator.model.SimpleEventProcessorModel;
-import com.fluxtion.generator.model.TopologicallySortedDependecyGraph;
+import com.fluxtion.generator.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.generator.targets.JavaTestGeneratorHelper;
 import com.fluxtion.generator.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.test.nodes.Calculator;
@@ -45,17 +45,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import static org.junit.Assert.assertTrue;
+
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -66,20 +66,18 @@ public class SimpleDeclarativeTest {
     @Test
     @Ignore
     public void testSimpleBuild() throws Exception {
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
-
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
-
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
     }
 
     @Test
     public void testGeneration() throws Exception {
-        Set<Class<? extends NodeFactory>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
 //        rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
         rootNodeMappings.put(Calculator.class, "calculator");
         GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "SimpleCalculator", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
@@ -99,17 +97,17 @@ public class SimpleDeclarativeTest {
     @Test
     public void testFactoryOverride() throws Exception {
         //failing factory
-        Set<Class<? extends NodeFactory>> class2Factory = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = new HashSet<>();
         class2Factory.add(FailingWindowNodeFactory.class);
         //Overrides failing factory
         Set<NodeFactory<?>> factorySet = new HashSet<>();
         factorySet.add(new WindowNodeFactory());
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
 
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         assertEquals(1, instance.getInstanceMap().size());
@@ -120,16 +118,16 @@ public class SimpleDeclarativeTest {
     @Test
     public void testFactoryInstanceInjection() throws Exception {
         //failing factory
-        Set<Class<? extends NodeFactory>> class2Factory = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = new HashSet<>();
         //Overrides failing factory
         Set<NodeFactory<?>> factorySet = new HashSet<>();
         factorySet.add(new CalculatorRegisteringAccumulatorFactory());
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(Calculator.class, "calcInjecting");
 
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         assertEquals(2, instance.getInstanceMap().size());
@@ -142,21 +140,20 @@ public class SimpleDeclarativeTest {
     @Test
     public void testClassOverride() throws Exception {
         //failing factory
-        Set<Class<? extends NodeFactory>> class2Factory = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = new HashSet<>();
         class2Factory.add(FailingWindowNodeFactory.class);
         //Overrides failing factory
         Set<NodeFactory<?>> factorySet = new HashSet<>();
         factorySet.add(new WindowNodeFactory());
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
 
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
 
         Object x = instance.getSortedDependents().get(0);
-        Map classMap = new HashMap();
+        Map<Object, String> classMap = new HashMap<>();
         classMap.put(x, "MyMadeUpClass");
 
         SimpleEventProcessorModel model = new SimpleEventProcessorModel(instance, null, classMap);
@@ -169,18 +166,15 @@ public class SimpleDeclarativeTest {
     @Test(expected = Exception.class)
     public void testFactoryFailsOverride() throws Exception {
         //failing factory
-        Set<Class<? extends NodeFactory>> class2Factory = new HashSet<>();
+        Set<Class<? extends NodeFactory<?>>> class2Factory = new HashSet<>();
         class2Factory.add(FailingWindowNodeFactory.class);
         //Overrides failing factory
         Set<NodeFactory<?>> factorySet = new HashSet<>();
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
-
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
-
     }
 
     @Test
@@ -188,14 +182,14 @@ public class SimpleDeclarativeTest {
         //Build graph
         Set<NodeFactory<?>> factorySet = new HashSet<>();
         factorySet.add(new WindowNodeFactory());
-        Map<Class, String> rootNodeMappings = new HashMap<>();
+        Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, null, null, factorySet);
-        TopologicallySortedDependecyGraph instance = new TopologicallySortedDependecyGraph(config);
+        TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         //override the EindowNode class with DynamicallyGeneratedWindowNode
         Object x = instance.getSortedDependents().get(0);
-        Map classMap = new HashMap();
+        HashMap<Object, String> classMap = new HashMap<>();
 
         classMap.put(x, DynamicallyGeneratedWindowNode.class.getCanonicalName());
         //build model

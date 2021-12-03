@@ -17,6 +17,8 @@
 package com.fluxtion.builder.generation;
 
 import com.fluxtion.api.event.Event;
+import lombok.ToString;
+
 import java.util.Objects;
 
 /**
@@ -29,6 +31,7 @@ import java.util.Objects;
  *
  * @author Greg Higgins
  */
+@ToString
 public class FilterDescription {
 
     public static final FilterDescription NO_FILTER = new FilterDescription("NO_FILTER");
@@ -77,6 +80,21 @@ public class FilterDescription {
      * relevant rules.
      */
     public String variableName;
+
+    public static FilterDescription build(Object input){
+        FilterDescription result = DEFAULT_FILTER;
+        if(input instanceof Event){
+            Event event = (Event) input;
+            if(event.filterId() != Integer.MAX_VALUE){
+                result = new FilterDescription(event.getClass(), event.filterId());
+            }else if(event.filterString()!=null && !event.filterString().isEmpty()){
+                result = new FilterDescription(event.getClass(), event.filterString());
+            }else{
+                result = new FilterDescription(event.getClass());
+            }
+        }
+        return result;
+    }
 
     public FilterDescription(Class<? extends Event> eventClass) {
         this.value = 0;
@@ -170,9 +188,5 @@ public class FilterDescription {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "FilterDescription{" + "value=" + value + ", eventClass=" + eventClass + ", comment=" + comment + ", variableName=" + variableName + '}';
-    }
 
 }

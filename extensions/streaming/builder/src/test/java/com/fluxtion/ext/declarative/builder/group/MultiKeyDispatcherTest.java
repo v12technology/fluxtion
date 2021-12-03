@@ -19,24 +19,25 @@ package com.fluxtion.ext.declarative.builder.group;
 
 import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.api.lifecycle.Lifecycle;
-import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
-import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.group.GroupBy;
 import com.fluxtion.ext.streaming.api.group.MultiKeyDispatcher;
-import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
 import com.fluxtion.ext.streaming.builder.group.GroupByBuilder;
 import net.vidageek.mirror.dsl.Mirror;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+
+import static com.fluxtion.ext.declarative.builder.group.Deal.DEAL;
+import static com.fluxtion.ext.declarative.builder.group.TraderPosition.TRADER_POSITION;
+import static com.fluxtion.ext.streaming.builder.group.Group.groupBy;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class MultiKeyDispatcherTest extends StreamInprocessTest {
+public class MultiKeyDispatcherTest extends StreamInProcessTest {
 
     private Deal eu_dave;
     private Deal eu_gustav;

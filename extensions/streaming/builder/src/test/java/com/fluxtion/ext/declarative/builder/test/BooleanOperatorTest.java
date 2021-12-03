@@ -2,7 +2,7 @@ package com.fluxtion.ext.declarative.builder.test;
 
 import com.fluxtion.ext.declarative.builder.helpers.MyData;
 import com.fluxtion.ext.declarative.builder.helpers.TestResultListener;
-import com.fluxtion.ext.declarative.builder.stream.StreamInprocessTest;
+import com.fluxtion.ext.declarative.builder.stream.StreamInProcessTest;
 import com.fluxtion.ext.streaming.api.Test;
 import com.fluxtion.ext.streaming.api.Wrapper;
 import static com.fluxtion.ext.streaming.api.stream.NumericPredicates.gt;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gregp
  */
-public class BooleanOperatorTest extends StreamInprocessTest {
+public class BooleanOperatorTest extends StreamInProcessTest {
 
     @org.junit.Test
     public void testNot() throws Exception {
