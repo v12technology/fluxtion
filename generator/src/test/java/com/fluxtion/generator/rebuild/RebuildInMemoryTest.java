@@ -2,7 +2,6 @@ package com.fluxtion.generator.rebuild;
 
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.audit.EventLogControlEvent;
 import com.fluxtion.api.event.Signal;
 import com.fluxtion.generator.util.InMemoryOnlySepTest;
 import lombok.Data;
