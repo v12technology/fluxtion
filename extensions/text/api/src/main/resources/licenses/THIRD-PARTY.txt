@@ -1,9 +1,0 @@
-
-Lists of 7 third-party dependencies.
-     (Common Public License Version 1.0) System Rules (com.github.stefanbirkner:system-rules:1.16.0 - http://stefanbirkner.github.io/system-rules/)
-     (The Apache Software License, Version 2.0) Disruptor Framework (com.lmax:disruptor:3.4.2 - http://lmax-exchange.github.com/disruptor)
-     (The Apache Software License, Version 2.0) fastutil (it.unimi.dsi:fastutil:7.0.7 - http://fasutil.di.unimi.it/)
-     (Eclipse Public License - v 1.0) JUnit (junit:junit:4.13.1 - http://junit.org)
-     (New BSD License) Hamcrest All (org.hamcrest:hamcrest-all:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-all)
-     (New BSD License) Hamcrest Core (org.hamcrest:hamcrest-core:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-core)
-     (The MIT License) Project Lombok (org.projectlombok:lombok:1.18.12 - https://projectlombok.org)
