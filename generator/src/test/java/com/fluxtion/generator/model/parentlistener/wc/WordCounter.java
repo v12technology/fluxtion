@@ -66,17 +66,4 @@ public class WordCounter {
                 + "\nlineCount:" + lineCount;
     }
 
-    public static class Builder extends SEPConfig {
-
-        {
-            WordCounter root = addPublicNode(new WordCounter(), "result");
-            root.anyCharHandler = addNode(new CharHandler());
-            root.eolHandler = addNode(new CharHandler.EolCharEventHandler('\n'));
-            root.wordChardHandler = addNode(new CharHandler.UnMatchedCharEventHandler());
-            root.delimiterHandlers = new CharHandler.DelimiterCharEventHandler[]{
-                addNode(new CharHandler.DelimiterCharEventHandler(' ')),
-                addNode(new CharHandler.DelimiterCharEventHandler('\t'))};
-        }
-    }
-
 }

@@ -58,7 +58,7 @@ public class MultipleSepTargetInProcessTest {
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
     //parametrized test config
-    private final boolean compiledSep;
+    protected final boolean compiledSep;
     private InMemoryEventProcessor inMemorySep;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
 
@@ -97,6 +97,9 @@ public class MultipleSepTargetInProcessTest {
     protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
         try {
             if(!compiledSep){
+                GenerationContext.setupStaticContext(pckName(), sepClassName(),
+                        new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                        new File(OutputRegistry.RESOURCE_TEST_DIR));
                 SEPConfig cfg = new SEPConfig();
                 cfg.supportDirtyFiltering = true;
                 cfgBuilder.accept(cfg);

@@ -25,20 +25,6 @@ import org.junit.Test;
 public class GenWcTestIT {
 
     @Test
-    public void test_wc() throws Exception {
-        //System.out.println("test_wc");
-        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_wc);
-
-        String testString = "fred goes\nhome\today\n";
-        WordCounter result = (WordCounter) handler.getClass().getField("result").get(handler);
-        StringDriver.streamChars(testString, handler);
-        //System.out.println(result.toString());
-        assertEquals(20, result.charCount);
-        assertEquals(4, result.wordCount);
-        assertEquals(2, result.lineCount);
-    }
-
-    @Test
     public void test_wc_generic() throws Exception {
         //System.out.println("test_wc_generic");
         StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstance(test_wc_generic);
