@@ -18,57 +18,140 @@
  */
 package com.fluxtion.generator.targets;
 
+import com.fluxtion.api.StaticEventProcessor;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
-import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory;
-import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
+
+import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.nodes.KeyProcessorFactory;
 import com.fluxtion.test.nodes.KeyTracker;
 import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;
-import com.thoughtworks.qdox.model.JavaClass;
+
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.fluxtion.generator.targets.JavaGeneratorNames.test_injected_factory_variable_config;
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins
  */
-public class InjectedFactoryTest {
-    
-    @Test
-    public void test_injected_factory() throws Exception {
-        //System.out.println(test_injected_factory);
-        SEPConfig cfg = new SEPConfig();
-        cfg.generateDescription = false;
-        //add nodes
+public class InjectedFactoryTest extends BaseSepInProcessTest {
+
+    private static void buildFactory(SEPConfig cfg) {
         cfg.addPublicNode(new KeyTracker(), "keyTracker1");
-        //Factories
         Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
         cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
-        //generate
-        JavaClass generatedClass = JavaTestGeneratorHelper.generateClass(cfg, test_injected_factory);
-        assertEquals(3, generatedClass.getFields().length);
     }
-    
-    @Test
-    public void test_injected_factory_variable_config() throws Exception {
-        //System.out.println(test_injected_factory_variable_config);
-        SEPConfig cfg = new SEPConfig();
-        cfg.generateDescription = false;
-        //add nodes
+
+    private static void buildFactoryWithConfig(SEPConfig cfg) {
         cfg.addPublicNode(new KeyTrackerWithVariableConfig(), "keyTracker1");
         //Factories
         Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
-        cfg.maxFiltersInline = 10;
         cfg.declarativeConfig = new DeclarativeNodeConiguration(null, factoryList, null);
-        //generate
-        JavaClass generatedClass = JavaTestGeneratorHelper.generateClass(cfg, test_injected_factory_variable_config);
-        assertEquals(4, generatedClass.getFields().length);
     }
-    
+
+    @Test
+    public void test_injected_factory() throws Exception {
+        sep(InjectedFactoryTest::buildFactory);
+        KeyTracker tracker = getField("keyTracker1");
+        Assert.assertEquals('1', tracker.keyProcessor_1.myChar);
+        Assert.assertEquals(false, tracker.keyProcessor_1.notifyAccumulator);
+        Assert.assertEquals('a', tracker.keyProcessor_a.myChar);
+        Assert.assertEquals(false, tracker.keyProcessor_a.notifyAccumulator);
+    }
+
+    @Test
+    public void test_injected_factory_variable_config() throws Exception {
+        sep(InjectedFactoryTest::buildFactoryWithConfig);
+        KeyTrackerWithVariableConfig tracker = getField("keyTracker1");
+        Assert.assertEquals('1', tracker.keyProcessor_1.myChar);
+        Assert.assertEquals(false, tracker.keyProcessor_1.notifyAccumulator);
+        Assert.assertEquals('a', tracker.keyProcessor_a.myChar);
+        Assert.assertEquals(false, tracker.keyProcessor_a.notifyAccumulator);
+        Assert.assertEquals('x', tracker.keyProcessor_x.myChar);
+        Assert.assertEquals(false, tracker.keyProcessor_x.notifyAccumulator);
+    }
+
+    @Test
+    public void validateEventHandling() throws Exception{
+        sep(InjectedFactoryTest::buildFactory);
+        KeyTracker tracker = getField("keyTracker1");
+        CharEvent event_a = new CharEvent('a');
+        CharEvent event_1 = new CharEvent('1');
+        CharEvent event_x = new CharEvent('x');
+
+        onEvent(event_x);
+        assertEquals(false, tracker.onEvent);
+        assertEquals(false, tracker.key_1);
+        assertEquals(false, tracker.key_a);
+
+        onEvent(event_1);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(true, tracker.key_1);
+        assertEquals(false, tracker.key_a);
+
+        tracker.resetTestFlags();
+
+        onEvent(event_a);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(false, tracker.key_1);
+        assertEquals(true, tracker.key_a);
+
+        onEvent(event_1);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(true, tracker.key_1);
+        assertEquals(true, tracker.key_a);
+    }
+
+    @Test
+    public void validateEventHandlingOverride() throws Exception{
+        sep(InjectedFactoryTest::buildFactoryWithConfig);
+        KeyTrackerWithVariableConfig tracker = getField("keyTracker1");
+
+        CharEvent event_a = new CharEvent('a');
+        CharEvent event_1 = new CharEvent('1');
+        CharEvent event_x = new CharEvent('x');
+        CharEvent event_y = new CharEvent('y');
+
+        onEvent(event_y);
+        assertEquals(false, tracker.onEvent);
+        assertEquals(false, tracker.key_1);
+        assertEquals(false, tracker.key_a);
+        assertEquals(false, tracker.key_x);
+
+        onEvent(event_1);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(true, tracker.key_1);
+        assertEquals(false, tracker.key_a);
+        assertEquals(false, tracker.key_x);
+
+        tracker.resetTestFlags();
+
+        onEvent(event_a);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(false, tracker.key_1);
+        assertEquals(true, tracker.key_a);
+        assertEquals(false, tracker.key_x);
+
+        onEvent(event_1);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(true, tracker.key_1);
+        assertEquals(true, tracker.key_a);
+        assertEquals(false, tracker.key_x);
+
+        onEvent(event_x);
+        assertEquals(true, tracker.onEvent);
+        assertEquals(true, tracker.key_1);
+        assertEquals(true, tracker.key_a);
+        assertEquals(true, tracker.key_x);
+    }
 }

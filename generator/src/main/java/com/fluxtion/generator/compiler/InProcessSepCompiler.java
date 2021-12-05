@@ -113,11 +113,25 @@ public class InProcessSepCompiler {
      * @return
      */
     @SneakyThrows
-    public static InMemoryEventProcessor interpreted(Consumer<SEPConfig> cfgBuilder){
+    public static InMemoryEventProcessor interpreted(SerializableConsumer<SEPConfig> cfgBuilder){
         SEPConfig cfg = new SEPConfig();
         cfg.supportDirtyFiltering = true;
         cfgBuilder.accept(cfg);
         Generator generator = new Generator();
+        String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
+        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
+        InMemoryEventProcessor inMemorySep = generator.inMemoryProcessor(cfg);
+        return inMemorySep;
+    }
+
+    @SneakyThrows
+    public static InMemoryEventProcessor interpretedTest(SerializableConsumer<SEPConfig> cfgBuilder){
+        SEPConfig cfg = new SEPConfig();
+        cfg.supportDirtyFiltering = true;
+        cfgBuilder.accept(cfg);
+        Generator generator = new Generator();
+        String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
+        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_TESTGEN_DIR), new File(OutputRegistry.RESOURCE_TEST_DIR));
         InMemoryEventProcessor inMemorySep = generator.inMemoryProcessor(cfg);
         return inMemorySep;
     }

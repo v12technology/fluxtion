@@ -17,6 +17,7 @@
  */
 package com.fluxtion.generator.model;
 
+import com.fluxtion.api.Named;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class NamingStrategy implements NodeNameProducer {
             mappedName = namingStrategy.mappedNodeName(nodeToMap);
             if(mappedName!=null)
                 break;
+        }
+        if(mappedName==null && nodeToMap instanceof Named){
+            mappedName = ((Named)nodeToMap).getName();
         }
         if(mappedName==null){
             mappedName = nodeToMap.getClass().getSimpleName() + "_" + count++;

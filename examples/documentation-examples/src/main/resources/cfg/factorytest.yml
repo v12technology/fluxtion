@@ -1,5 +1,0 @@
-rootNodeMappings: 
-    com.fluxtion.example.core.building.factories.FactoryNode: factoryBuilt
-config:
-    limit: 2000
-    filter: myTestFilter
