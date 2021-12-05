@@ -6,31 +6,44 @@
 package com.fluxtion.generator.targets;
 
 import com.fluxtion.builder.node.SEPConfig;
-import com.fluxtion.generator.model.parentlistener.wc.WordCounter;
-import com.fluxtion.generator.model.parentlistener.wc.WordCounterGeneric;
-import com.fluxtion.generator.model.parentlistener.wc.WordCounterGenericArrays;
-import com.fluxtion.generator.model.parentlistener.wc.WordCounterInlineEventHandler;
+import com.fluxtion.generator.model.parentlistener.wc.*;
+
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_generic;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_generic_arrays;
 import static com.fluxtion.generator.targets.JavaGeneratorNames.test_wc_inline_event_handling;
+import static org.junit.Assert.assertEquals;
+
+import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 /**
  *
  * @author Greg Higgins
  */
-public class GenWcTest {
-
-    public GenWcTest() {
-    }
+public class GenWcTest extends BaseSepInProcessTest {
 
     @Test
     public void test_wc() throws Exception {
-        //System.out.println("test_wc");
-        SEPConfig cfg = new WordCounter.Builder();
-        cfg.generateDescription = false;
-        JavaTestGeneratorHelper.generateClass(cfg, test_wc);
+        sep(c ->{
+            WordCounter root = c.addPublicNode(new WordCounter(), "result");
+            root.anyCharHandler = (new CharHandler());
+            root.eolHandler = (new CharHandler.EolCharEventHandler('\n'));
+            root.wordChardHandler = (new CharHandler.UnMatchedCharEventHandler());
+            root.delimiterHandlers = new CharHandler.DelimiterCharEventHandler[]{
+                    (new CharHandler.DelimiterCharEventHandler(' ')),
+                    (new CharHandler.DelimiterCharEventHandler('\t'))};
+        });
+
+        String testString = "fred goes\nhome\today\n";
+        WordCounter result = getField("result");
+        StringDriver.streamChars(testString, sep);
+        //System.out.println(result.toString());
+        assertEquals(20, result.charCount);
+        assertEquals(4, result.wordCount);
+        assertEquals(2, result.lineCount);
+
     }
 
     @Test
