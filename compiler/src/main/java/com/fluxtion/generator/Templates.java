@@ -24,5 +24,4 @@ public class Templates {
 
     private static final String PACKAGE = "template/base";
     public static final String JAVA_TEMPLATE = PACKAGE + "/javaTemplate.vsl";
-    public static final String JAVA_TEST_DECORATOR_TEMPLATE = PACKAGE + "/javaTestDecoratorTemplate.vsl";
 }

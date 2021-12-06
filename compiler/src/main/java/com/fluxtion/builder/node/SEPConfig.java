@@ -178,10 +178,6 @@ public class SEPConfig {
      */
     public String templateFile;
 
-    /**
-     * the name of the template file to use as an input
-     */
-    public String testTemplateFile;
 
     /**
      * the nodes included in this graph

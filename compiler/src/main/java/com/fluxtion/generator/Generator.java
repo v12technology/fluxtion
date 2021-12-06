@@ -186,9 +186,6 @@ public class Generator {
         if (config.templateFile == null) {
             config.templateFile = JAVA_TEMPLATE;
         }
-        if (config.testTemplateFile == null) {
-            config.testTemplateFile = JAVA_TEST_DECORATOR_TEMPLATE;
-        }
 
         LOG.debug("templating output source - start");
         String templateFile = config.templateFile;
