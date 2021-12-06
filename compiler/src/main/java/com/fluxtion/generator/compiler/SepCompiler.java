@@ -17,36 +17,28 @@
  */
 package com.fluxtion.generator.compiler;
 
-//import ch.qos.logback.classic.LoggerContext;
-//import ch.qos.logback.core.util.StatusPrinter;
 import com.fluxtion.builder.generation.GenerationContext;
 import com.fluxtion.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.SEPConfig;
 import com.fluxtion.generator.Generator;
 import com.fluxtion.generator.graphbuilder.NodeFactoryLocator;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * An executable class that will parse a set of class files to produce a SEP
@@ -61,9 +53,6 @@ public class SepCompiler {
     private SEPConfig builderConfig;
 
     public static void main(String[] args) throws Exception {
-//        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-//        // print logback's internal status
-//        StatusPrinter.print(lc);
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         URL[] urls = ((URLClassLoader) cl).getURLs();
         LOG.debug("classpath");
@@ -121,7 +110,7 @@ public class SepCompiler {
                 compilerConfig.getClassName(),
                 new File(compilerConfig.getOutputDirectory()),
                 new File(compilerConfig.getResourcesOutputDirectory()),
-                compilerConfig.isGenerateDebugPrep() || compilerConfig.isGenerateDescription(),
+                compilerConfig.isGenerateDescription(),
                 buildDir,
                 true,
                 compilerConfig.getCachedCompiler());
@@ -139,12 +128,9 @@ public class SepCompiler {
             builderConfig = configOverride;
         }
         builderConfig.templateFile = compilerConfig.getTemplateSep();
-        builderConfig.debugTemplateFile = compilerConfig.getTemplateDebugSep();
         builderConfig.supportDirtyFiltering = compilerConfig.isSupportDirtyFiltering();
         //TODO add configuration back in when split png and debug generation
-        builderConfig.generateDebugPrep = compilerConfig.isGenerateDebugPrep();
         builderConfig.generateDescription = compilerConfig.isGenerateDescription();
-        builderConfig.generateTestDecorator = compilerConfig.isGenerateTestDecorator();
         builderConfig.assignPrivateMembers = compilerConfig.isAssignNonPublicMembers();
     }
 

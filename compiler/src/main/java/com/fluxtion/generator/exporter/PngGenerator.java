@@ -17,27 +17,27 @@
  */
 package com.fluxtion.generator.exporter;
 
-import com.fluxtion.generator.Main;
 import com.mxgraph.io.mxGraphMlCodec;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
-import java.awt.Color;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * Utility method for generating png representation of a graph from a graphml
@@ -112,9 +112,8 @@ public class PngGenerator {
             document = parser.parse(graphmlFile);
             Object parent = graph.getDefaultParent();
             mxGraphMlCodec.decode(document, graph);
-//            System.out.println("decoded graph:" + graph);
         } catch (SAXException | IOException | ParserConfigurationException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PngGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         //create graph and save to file
@@ -145,7 +144,7 @@ public class PngGenerator {
                 ImageIO.write(image, "PNG", pngFile);
                 LOG.debug( "png image generated:{}", pngFile.getCanonicalPath());
             } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PngGenerator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -171,13 +171,7 @@ public class Main {
         config.setClassLoader(loader);
         config.setClassName(val("oc", "SepProcessor"));
         config.setConfigClass(val("cc", config.getConfigClass()));
-//        config.setGenerateDebugPrep(bool("gd", config.isGenerateDebugPrep()));
-        //TODO separate sep diagram and debugger generation - by default always generate images
-//        config.setGenerateDebugPrep(true);
-        config.setGenerateDebugPrep(bool("gb", config.isGenerateDebugPrep()));
         config.setGenerateDescription(bool("gd", config.isGenerateDescription()));
-        //not configured
-        config.setGenerateTestDecorator(bool("gt", config.isGenerateTestDecorator()));
         config.setCompileSource(bool("bc", config.isCompileSource()));
         config.setFormatSource(bool("fs", config.isFormatSource()));
         config.setOutputDirectory(val("od", "output/source"));
@@ -185,7 +179,6 @@ public class Main {
         config.setResourcesOutputDirectory(val("or", "output/resources"));
         config.setRootFactoryClass(val("rf", null));
         config.setSupportDirtyFiltering(bool("df", config.isSupportDirtyFiltering()));
-        config.setTemplateDebugSep(val("dt", config.getTemplateDebugSep()));
         config.setTemplateSep(val("st", config.getTemplateSep()));
         config.setYamlFactoryConfig(val("yc", null));
         LOG.debug(config.toString());

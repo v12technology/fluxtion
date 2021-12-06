@@ -170,12 +170,6 @@ public class SepJavaSourceModelHugeFilter {
      * the dispatch method is not compiled 800% degradation, yes 8 times slower
      */
     private final ArrayList<InvokerFilterTarget> filteredInvokerList;
-    private final ArrayList<InvokerFilterTarget> filteredInvokerListDebug;
-
-    /**
-     * A string representing the delegated event handling methods
-     */
-    private String debugEventHandlers;
 
     /**
      * determines whether separate delegate eventHandling methods are generated.
@@ -183,19 +177,9 @@ public class SepJavaSourceModelHugeFilter {
     private final boolean isInlineEventHandling;
 
     /**
-     * String representation of event dispatch
-     */
-    private String debugEventDispatch;
-
-    /**
      * String representing event audit dispatch
      */
     private String eventAuditDispatch;
-    
-    /**
-     * String representation of template method for test event dispatch
-     */
-    private String testDispatch;
 
     /**
      * String representation of public nodes as a list.
@@ -233,7 +217,6 @@ public class SepJavaSourceModelHugeFilter {
     public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers, int maxFilterBranches) {
         this.model = model;
         this.eventHandlers = "";
-        this.debugEventHandlers = "";
         this.isInlineEventHandling = inlineEventHandling;
         this.assignPrivateMembers = assignPrivateMembers;
         this.maxFilterBranches = maxFilterBranches;
@@ -246,7 +229,6 @@ public class SepJavaSourceModelHugeFilter {
         nodeMemberAssignmentList = new ArrayList<>();
         publicNodeIdentifierList = new ArrayList<>();
         filteredInvokerList = new ArrayList<>();
-        filteredInvokerListDebug = new ArrayList<>();
         importList = new ArrayList<>();
     }
 
@@ -263,7 +245,6 @@ public class SepJavaSourceModelHugeFilter {
         buildMemberAssignments();
         buildNodeRegistrationListeners();
         buildEventDispatch();
-        buildTestDispatch();
 
         initialiseMethods = "";
         boolean firstLine = true;
@@ -304,7 +285,6 @@ public class SepJavaSourceModelHugeFilter {
         firstLine = true;
         for (String initialiseMethod : nodeMemberAssignmentList) {
             memberAssignments.append(firstLine ? "    " : "\n    ").append(initialiseMethod);
-//            nodeMemberAssignments += (firstLine ? "    " : "\n    ") + initialiseMethod;
             firstLine = false;
         }
         nodeMemberAssignments = memberAssignments.toString();
@@ -455,14 +435,12 @@ public class SepJavaSourceModelHugeFilter {
     }
 
     private void buildEventDispatch() {
-        generateClassBasedDispatcher(false);
-        generateClassBasedDispatcher(true);
+        generateClassBasedDispatcher();
         //eventHandlers += tmpEventHandlersAsMethods;
         //filter for debug and non-debug
         if (!isInlineEventHandling) {
             List<Class<?>> importClassList = new ArrayList<>();
             eventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerList, importClassList);
-            debugEventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerListDebug, importClassList);
             if(importClassList.size()>0){
                 //bit of a hack, need to remove
                 getClassName("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap");
@@ -482,9 +460,8 @@ public class SepJavaSourceModelHugeFilter {
      * on class type, casts to the correct object and then invokes specific
      * event handling for that type.
      *
-     * @param isDebug
      */
-    private void generateClassBasedDispatcher(boolean isDebug) {
+    private void generateClassBasedDispatcher() {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
         boolean idDispatch = false;
         boolean noIdDispatch = false;
@@ -501,12 +478,9 @@ public class SepJavaSourceModelHugeFilter {
             String className = getClassName(eventId.getCanonicalName());
             dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
             dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
-            if (isDebug) {
-                dispatchStringNoId += String.format("%16sdebugger.eventInvocation(event);%n", "");
-            }
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
-            dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, isDebug, eventId);
+            dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, eventId);
             dispatchStringNoId += String.format("%16sbreak;%n", "");
             dispatchStringNoId += String.format("%12s}%n", "");
             noIdDispatch = true;
@@ -517,11 +491,7 @@ public class SepJavaSourceModelHugeFilter {
         }
         //build a noIddispatchString - just copy method above and only
         //process <Event>.ID free events.
-        if (isDebug) {
-            debugEventDispatch = "//DEBUG\n" + dispatchStringNoId;
-        } else {
-            eventDispatch = dispatchStringNoId + "\n";
-        }
+        eventDispatch = dispatchStringNoId + "\n";
     }
 
     private static boolean hasIdField(Class e) {
@@ -539,7 +509,7 @@ public class SepJavaSourceModelHugeFilter {
 
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
-            boolean isDebug, boolean intFilter, boolean noFilter) {
+            boolean intFilter, boolean noFilter) {
         Set<FilterDescription> filterIdSet = cbMap.keySet();
         //generate all the booleans for each CbMethodHandle in the cbMap and store in a map
         //&& caseCount > maxCaseCount
@@ -639,10 +609,6 @@ public class SepJavaSourceModelHugeFilter {
                                 .append(");\n");
                     }
                     //assign return if appropriate
-                    if (isDebug) {
-                        //callTree += String.format("%24sdebugger.nodeInvocation(%s, \"%s\");%n", "", method.variableName, method.variableName);
-                        ct.append(s24).append("debugger.nodeInvocation(").append(method.variableName).append(", \"").append(method.variableName).append("\");\n");
-                    }
                     if (method.parameterClass == null) {
                         //callTree += String.format("%24s%s%s.%s();\n", "", dirtyAssignment, method.variableName, method.method.getName());
                         ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
@@ -724,10 +690,6 @@ public class SepJavaSourceModelHugeFilter {
                     }
 
                     //assign return if appropriate
-                    if (isDebug) {
-                        //callTree += String.format("%24sdebugger.nodeInvocation(%s, \"%s\");%n", "", method.variableName, method.variableName);
-                        ct.append(s24 + "debugger.nodeInvocation(").append(method.variableName).append(", \"").append(method.variableName).append("\");");
-                    }
                     if (method.parameterClass == null) {
                         //callTree += String.format("%24s%s%s.%s();\n", "", "", method.variableName, method.method.getName());
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
@@ -742,11 +704,8 @@ public class SepJavaSourceModelHugeFilter {
                     }
                 }
                 //INVOKETARGET
-//                invokerTarget.methodBody = //callTree;
                 invokerTarget.methodBody = ct.toString();
-                if (isDebug && caseCount > maxFilterBranches) {
-                    filteredInvokerListDebug.add(invokerTarget);
-                } else if (caseCount > maxFilterBranches) {
+                if (caseCount > maxFilterBranches) {
                     filteredInvokerList.add(invokerTarget);
                 }
 
@@ -762,12 +721,12 @@ public class SepJavaSourceModelHugeFilter {
 
     private String buildFilteredDispatch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
                                          Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent,
-                                         boolean isDebug, Class eventClass) {
+                                         Class eventClass) {
         String dispatchString = "";
         String eventHandlerString = "";
-        String intFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, isDebug, true, false);
-        String stringFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, isDebug, false, false);
-        String noFilterDispatch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, isDebug, false, true);
+        String intFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, true, false);
+        String stringFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, false, false);
+        String noFilterDispatch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, false, true);
         int caseCount = cbMap.size();
         if (!isInlineEventHandling && caseCount > maxFilterBranches) {
             //Handle with a dispatch map
@@ -848,28 +807,8 @@ public class SepJavaSourceModelHugeFilter {
                 dispatchString += noFilterDispatch;
             }
         }
-        if (isDebug) {
-            debugEventHandlers += eventHandlerString;
-        } else {
-            eventHandlers += eventHandlerString;
-        }
+        eventHandlers += eventHandlerString;
         return dispatchString;
-    }
-
-    private void buildTestDispatch() {
-        testDispatch = "";
-        testDispatch += "    public void testNode(AssertTestEvent assertTestEvent) {\n";
-        testDispatch += "        switch (assertTestEvent.nodeName) {\n";
-        for (Field field : model.getNodeFields()) {
-            if (field.publicAccess) {
-                testDispatch += String.format("%12scase (\"%s\"): {%n", "", field.name);
-                testDispatch += String.format("%16s%s node = sep.%s;%n", "", field.fqn, field.name);
-                testDispatch += String.format("%16sbreak;%n", "");
-                testDispatch += String.format("%12s}%n", "");
-            }
-        }
-        testDispatch += String.format("%8s}%n", "");
-        testDispatch += String.format("%4s}%n", "");
     }
 
     private void buildMemberAssignments() throws Exception {
@@ -1073,9 +1012,6 @@ public class SepJavaSourceModelHugeFilter {
         return publicNodeIdentifierList;
     }
 
-    public String getTestDispatch() {
-        return testDispatch;
-    }
 
     public String getNodeMemberAssignments() {
         return nodeMemberAssignments;
@@ -1123,14 +1059,6 @@ public class SepJavaSourceModelHugeFilter {
      */
     public String getEventHandlers() {
         return eventHandlers;
-    }
-
-    public String getDebugEventHandlers() {
-        return debugEventHandlers;
-    }
-
-    public String getDebugEventDispatch() {
-        return debugEventDispatch;
     }
 
     public String getNodeDeclarations() {
