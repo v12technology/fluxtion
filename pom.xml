@@ -25,9 +25,8 @@ along with this program.  If not, see
     
     <modules>
         <module>poms</module>
-        <module>api</module>
-        <module>builder</module>
-        <module>generator</module>
+        <module>runtime</module>
+        <module>compiler</module>
     </modules>
     
     <properties>
