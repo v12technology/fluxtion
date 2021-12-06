@@ -140,11 +140,6 @@ Copyright (C) 2018 V12 Technology Ltd.
             <artifactId>runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.fluxtion</groupId>-->
-<!--            <artifactId>fluxtion-builder</artifactId>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>  -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

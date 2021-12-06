@@ -308,15 +308,7 @@
     </dependencies> 
     
     <dependencyManagement>
-        <dependencies>  
-            <!--flxution compatible versions-->
-            <dependency>
-                <groupId>com.fluxtion</groupId>
-                <artifactId>fluxtion-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>  
+        <dependencies>
             <!--dependencies-->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -472,6 +464,16 @@
                 <artifactId>lombok</artifactId>
                 <version>1.18.20</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>it.unimi.dsi</groupId>
+                <artifactId>fastutil</artifactId>
+                <version>7.0.7</version>
+            </dependency>
+            <dependency>
+                <groupId>net.vidageek</groupId>
+                <artifactId>mirror</artifactId>
+                <version>1.6.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
