@@ -197,10 +197,16 @@ public class SepJavaSourceModelHugeFilter {
      * are any auditors registered for this SEP
      */
     private boolean auditingEvent;
+
     private boolean auditingInvocations;
+
     private String auditMethodString;
     
     private String additionalInterfaces;
+
+    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
+
+    private final HashMap<String, String> importMap = new HashMap<>();
 
     public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model) {
         this(model, false);
@@ -317,9 +323,6 @@ public class SepJavaSourceModelHugeFilter {
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
 
-    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
-    private final HashMap<String, String> importMap = new HashMap<>();
-
     private String getClassName(Class<?> clazzName) {
         return getClassName(clazzName.getCanonicalName());
     }
@@ -384,7 +387,6 @@ public class SepJavaSourceModelHugeFilter {
                             .append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
             }
-
             final String declaration = declarationBuilder.toString();
             nodeDeclarationList.add(declaration);
             nodeDecBuilder.append(firstLine ? "" : "\n").append(declaration);
@@ -392,14 +394,11 @@ public class SepJavaSourceModelHugeFilter {
             if (field.publicAccess) {
                 publicNodeIdentifierList.add(field.name);
             }
-
             fqnBuilder.delete(0, fqnBuilder.length());
             declarationBuilder.delete(0, declarationBuilder.length());
         }
-
         nodeDeclarations = nodeDecBuilder.toString();
         nodeDecBuilder.delete(0, nodeDecBuilder.length());
-
     }
 
     private void buildFilterConstantDeclarations() {
@@ -427,7 +426,6 @@ public class SepJavaSourceModelHugeFilter {
                 final String declaration = String.format("    "
                         + "public static final int %s = %d;",
                         variableName, value);
-//            nodeDeclarationList.add(declaration);
                 filterConstantDeclarations += (firstLine ? "" : "\n") + declaration;
                 firstLine = false;
             }
@@ -436,8 +434,6 @@ public class SepJavaSourceModelHugeFilter {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
-        //eventHandlers += tmpEventHandlersAsMethods;
-        //filter for debug and non-debug
         if (!isInlineEventHandling) {
             List<Class<?>> importClassList = new ArrayList<>();
             eventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerList, importClassList);
@@ -447,7 +443,6 @@ public class SepJavaSourceModelHugeFilter {
             }
             importClassList.stream().map(Class::getCanonicalName).forEach(this::getClassName);
         }
-        
         if(auditingEvent){
             eventHandlers += auditMethodString;
         }
@@ -463,8 +458,6 @@ public class SepJavaSourceModelHugeFilter {
      */
     private void generateClassBasedDispatcher() {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
-        boolean idDispatch = false;
-        boolean noIdDispatch = false;
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
@@ -483,7 +476,6 @@ public class SepJavaSourceModelHugeFilter {
             dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, eventId);
             dispatchStringNoId += String.format("%16sbreak;%n", "");
             dispatchStringNoId += String.format("%12s}%n", "");
-            noIdDispatch = true;
         }
         dispatchStringNoId += String.format("%8s}%n", "");
         if (isInlineEventHandling) {
@@ -511,9 +503,6 @@ public class SepJavaSourceModelHugeFilter {
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
             boolean intFilter, boolean noFilter) {
         Set<FilterDescription> filterIdSet = cbMap.keySet();
-        //generate all the booleans for each CbMethodHandle in the cbMap and store in a map
-        //&& caseCount > maxCaseCount
-        //TODO produce combined list of cbMap and cbMapPostEvent
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
         int caseCount = Math.max(cbMap.size(), cbMapPostEvent.size());
         clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
@@ -595,7 +584,6 @@ public class SepJavaSourceModelHugeFilter {
 //                            OR = " || ";
                             OR = " | ";
                         }
-                        //callTree += ") {\n";
                         ct.append(") {\n");
                     }
 
@@ -610,10 +598,8 @@ public class SepJavaSourceModelHugeFilter {
                     }
                     //assign return if appropriate
                     if (method.parameterClass == null) {
-                        //callTree += String.format("%24s%s%s.%s();\n", "", dirtyAssignment, method.variableName, method.method.getName());
                         ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        //callTree += String.format("%24s%s%s.%s(typedEvent);%n", "", dirtyAssignment, method.variableName, method.method.getName());
                         ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
@@ -672,34 +658,27 @@ public class SepJavaSourceModelHugeFilter {
                 }
                 cbList = cbList == null ? Collections.EMPTY_LIST : cbList;
                 for (CbMethodHandle method : cbList) {
-//METHOD BREAK UP HERE                    ct.append("//ct callback - unwind").append('\n');
                     //protect with guards
                     Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
-                        //callTree += String.format("%24sif(", "");
                         ct.append(s24 + "if(");
                         for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
-                            //callTree += OR + nodeGuardCondition.name;
                             ct.append(OR).append(nodeGuardCondition.name);
 //                            OR = " || ";
                             OR = " | ";
                         }
-                        //callTree += ") {\n";
                         ct.append(") {\n");
                     }
 
                     //assign return if appropriate
                     if (method.parameterClass == null) {
-                        //callTree += String.format("%24s%s%s.%s();\n", "", "", method.variableName, method.method.getName());
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        //callTree += String.format("%24s%s%s.%s(typedEvent);%n", "", "", method.variableName, method.method.getName());
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     //close guarded clause
                     if (nodeGuardConditions.size() > 0) {
-                        //callTree += String.format("%16s}\n", "");
                         ct.append(s16 + "}\n");
                     }
                 }
@@ -817,18 +796,12 @@ public class SepJavaSourceModelHugeFilter {
             nodeMemberAssignmentList.add("    final net.vidageek.mirror.dsl.Mirror assigner = new net.vidageek.mirror.dsl.Mirror();");
         }
         for (Field field : nodeFields) {
-//            boolean useRefelction = false;
             Object object = field.instance;
             String varName = field.name;
-            
             model.beanProperties(object).stream().forEach(s -> nodeMemberAssignmentList.add(varName + "." + s + ";"));
-            
-//            java.lang.reflect.Field[] fields = object.getClass().getDeclaredFields();
             java.lang.reflect.Field[] fields = object.getClass().getFields();
-            
             MirrorList<java.lang.reflect.Field> fields1 = new Mirror().on(object.getClass()).reflectAll().fields();
             fields = fields1.toArray(fields);
-
             for (java.lang.reflect.Field instanceField : fields) {
                 boolean useRefelction = false;
                 if ((instanceField.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
@@ -1012,7 +985,6 @@ public class SepJavaSourceModelHugeFilter {
         return publicNodeIdentifierList;
     }
 
-
     public String getNodeMemberAssignments() {
         return nodeMemberAssignments;
     }
@@ -1145,7 +1117,7 @@ public class SepJavaSourceModelHugeFilter {
             nodeMemberAssignmentList.add("initialiseAuditor(" + listenerField.name + ");");
             //add init
             //initialiseMethodList.add(String.format("%8s%s.init();", "", listenerName));
-            //add teardwon
+            //add tear down
             tearDownMethodList.add(0, String.format("%8s%s.tearDown();", "", listenerName));
             //add event complete
             eventEndMethodList.add(String.format("%8s%s.processingComplete();", "", listenerName));
