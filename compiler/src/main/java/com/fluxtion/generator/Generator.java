@@ -178,22 +178,17 @@ public class Generator {
     }
 
     private File templateJavaOutput() throws Exception {
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(simpleEventProcessorModel, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
-        srcModel.additonalInterfacesToImplement(config.interfacesToImplement());
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(
+                simpleEventProcessorModel,
+                config.inlineEventHandling,
+                config.assignPrivateMembers
+        );
+        srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();
         //set up defaults
         if (config.templateFile == null) {
             config.templateFile = JAVA_TEMPLATE;
-        }
-        if (config.debugTemplateFile == null) {
-            config.debugTemplateFile = JAVA_DEBUG_TEMPLATE;
-        }
-        if (config.testTemplateFile == null) {
-            config.testTemplateFile = JAVA_TEST_DECORATOR_TEMPLATE;
-        }
-        if (config.introspectorTemplateFile == null) {
-            config.introspectorTemplateFile = JAVA_INTROSPECTOR_TEMPLATE;
         }
 
         LOG.debug("templating output source - start");
@@ -225,49 +220,6 @@ public class Generator {
         template.merge(ctx, templateWriter);
         templateWriter.flush();
         LOG.debug("templating output source - finish");
-        //TODO separate sep diagram and debugger generation - by default always generate images
-        if (config.generateDebugPrep && false) {
-            //debug class
-            template = Velocity.getTemplate(config.debugTemplateFile);
-            ctx = new VelocityContext();
-            ctx.put("MODEL", srcModel);
-            ctx.put("MODEL_EXTENSION", config.templateContextExtension);
-
-            ctx.put("package", GenerationContext.SINGLETON.getPackageName());
-            ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
-            ctx.put("debugClassName", GenerationContext.SINGLETON.getSepClassName() + "Debug");
-            outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + "Debug.java");
-            templateWriter = new FileWriter(outFile);
-            template.merge(ctx, templateWriter);
-            templateWriter.flush();
-            //introspector
-            template = Velocity.getTemplate(config.introspectorTemplateFile);
-            ctx = new VelocityContext();
-            ctx.put("MODEL", srcModel);
-            ctx.put("MODEL_EXTENSION", config.templateContextExtension);
-            ctx.put("package", GenerationContext.SINGLETON.getPackageName());
-            ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
-            ctx.put("debugClassName", GenerationContext.SINGLETON.getSepClassName() + "Debug");
-            ctx.put("introspectorClassName", GenerationContext.SINGLETON.getSepClassName() + "Introspector");
-            outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + "Introspector.java");
-            templateWriter = new FileWriter(outFile);
-            template.merge(ctx, templateWriter);
-            templateWriter.flush();
-        }
-        if (config.generateTestDecorator) {
-            //test class
-            template = Velocity.getTemplate(config.testTemplateFile);
-            ctx = new VelocityContext();
-            ctx.put("MODEL", srcModel);
-            ctx.put("MODEL_EXTENSION", config.templateContextExtension);
-            ctx.put("package", GenerationContext.SINGLETON.getPackageName());
-            ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
-            ctx.put("decoratorClassName", GenerationContext.SINGLETON.getSepClassName() + "TestDecorator");
-            outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + "TestDecorator.java");
-            templateWriter = new FileWriter(outFile);
-            template.merge(ctx, templateWriter);
-            templateWriter.flush();
-        }
         //add some formatting
         templateWriter.close();
         return outFile;
@@ -280,7 +232,6 @@ public class Generator {
     }
 
     public static void formatSource(File outFile) {
-
         try {
             LOG.debug("Reading source:'{}'", outFile.getCanonicalPath());
             CharSource source = Files.asCharSource(outFile, Charset.defaultCharset());

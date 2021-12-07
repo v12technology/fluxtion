@@ -17,7 +17,6 @@
  */
 package com.fluxtion.generator.compiler;
 
-import static com.fluxtion.generator.Templates.JAVA_DEBUG_TEMPLATE;
 import static com.fluxtion.generator.Templates.JAVA_TEMPLATE;
 import net.openhft.compiler.CachedCompiler;
 
@@ -35,10 +34,7 @@ import net.openhft.compiler.CachedCompiler;
  * fluxtion.outputDirectory
  * fluxtion.resourcesOutputDirectory
  * fluxtion.templateSep
- * fluxtion.templateDebugSep
  * fluxtion.supportDirtyFiltering
- * fluxtion.generateDebugPrep
- * fluxtion.generateTestDecorator
  * fluxtion.assignNonPublicMembers
  * fluxtion.nodeNamingClass
  * fluxtion.filterNamingClass 
@@ -115,36 +111,19 @@ public class SepCompilerConfig {
      */
     private String templateSep;
     /**
-     * The velocity template file to use in the SEP debug generation process.
-     * Default value will be used if not supplied.
-     * 
-     * not.
-     */
-    private String templateDebugSep;
-    /**
      * Flag controlling generation of conditional branching in the generated SEP.
      * 
      * not required, default = true.
      */
     private boolean supportDirtyFiltering;
-    /**
-     * Flag controlling generation of debug resources.
-     * 
-     * not required, default = false.
-     */
-    private boolean generateDebugPrep;
+
     /**
      * Flag controlling generation of meta data description resources.
      * 
      * not required, default = true.
      */
     private boolean generateDescription;
-    /**
-     * Flag controlling generation of test helpers for the generated SEP.
-     * 
-     * not required, default = false.
-     */
-    private boolean generateTestDecorator;
+
     /**
      * Flag controlling use of non public fields in the generated SEP for setting
      * members. Not all platforms support "reflection" style mutators.
@@ -161,14 +140,11 @@ public class SepCompilerConfig {
     public SepCompilerConfig() {
         configClass = CONFIGCLASSDEFAULT;
         supportDirtyFiltering = true;
-        generateDebugPrep = false;
         generateDescription = true;
-        generateTestDecorator = false;
         assignNonPublicMembers = false;
         compileSource = true;
         formatSource = true;
-        templateSep = JAVA_TEMPLATE;//"javaTemplate.vsl";
-        templateDebugSep = JAVA_DEBUG_TEMPLATE;//"javaTemplateDebug.vsl";
+        templateSep = JAVA_TEMPLATE;
         classLoader = SepCompilerConfig.class.getClassLoader();
     }
     
@@ -184,10 +160,7 @@ public class SepCompilerConfig {
      * fluxtion.outputDirectory
      * fluxtion.resourcesOutputDirectory
      * fluxtion.templateSep
-     * fluxtion.templateDebugSep
      * fluxtion.supportDirtyFiltering
-     * fluxtion.generateDebugPrep
-     * fluxtion.generateTestDecorator
      * fluxtion.assignNonPublicMembers
      * </pre>
      *        
@@ -203,11 +176,8 @@ public class SepCompilerConfig {
         config.outputDirectory = System.getProperty("fluxtion.outputDirectory");
         config.resourcesOutputDirectory = System.getProperty("fluxtion.resourcesOutputDirectory");
         config.templateSep = System.getProperty("fluxtion.templateSep", config.templateSep);
-        config.templateDebugSep = System.getProperty("fluxtion.templateDebugSep", config.templateSep);
         config.supportDirtyFiltering = Boolean.valueOf(System.getProperty("fluxtion.supportDirtyFiltering", "true"));
-        config.generateDebugPrep = Boolean.getBoolean("fluxtion.generateDebugPrep");
         config.generateDescription = Boolean.getBoolean("fluxtion.generateDescription");
-        config.generateTestDecorator = Boolean.getBoolean("fluxtion.generateTestDecorator");
         config.assignNonPublicMembers = Boolean.getBoolean("fluxtion.assignNonPublicMembers");
         config.buildOutputdirectory = System.getProperty("fluxtion.build.outputdirectory", "");
         config.buildOutputdirectory = config.buildOutputdirectory.isEmpty()?null:config.buildOutputdirectory;
@@ -250,24 +220,12 @@ public class SepCompilerConfig {
         return templateSep;
     }
 
-    public String getTemplateDebugSep() {
-        return templateDebugSep;
-    }
-
     public boolean isSupportDirtyFiltering() {
         return supportDirtyFiltering;
     }
 
-    public boolean isGenerateDebugPrep() {
-        return generateDebugPrep;
-    }
-
     public boolean isGenerateDescription() {
         return generateDescription;
-    }
-
-    public boolean isGenerateTestDecorator() {
-        return generateTestDecorator;
     }
 
     public boolean isAssignNonPublicMembers() {
@@ -322,24 +280,12 @@ public class SepCompilerConfig {
         this.templateSep = templateSep;
     }
 
-    public void setTemplateDebugSep(String templateDebugSep) {
-        this.templateDebugSep = templateDebugSep;
-    }
-
     public void setSupportDirtyFiltering(boolean supportDirtyFiltering) {
         this.supportDirtyFiltering = supportDirtyFiltering;
     }
 
-    public void setGenerateDebugPrep(boolean generateDebugPrep) {
-        this.generateDebugPrep = generateDebugPrep;
-    }
-
     public void setGenerateDescription(boolean generateDescription) {
         this.generateDescription = generateDescription;
-    }
-
-    public void setGenerateTestDecorator(boolean generateTestDecorator) {
-        this.generateTestDecorator = generateTestDecorator;
     }
 
     public void setAssignNonPublicMembers(boolean assignNonPublicMembers) {
@@ -367,13 +313,10 @@ public class SepCompilerConfig {
                 + ", buildOutputdirectory=" + buildOutputdirectory
                 + ", compileSource=" + compileSource
                 + ", formatSource=" + formatSource
-                + ", templateSep=" + templateSep 
-                + ", templateDebugSep=" + templateDebugSep 
-                + ", supportDirtyFiltering=" + supportDirtyFiltering 
-                + ", generateDebugPrep=" + generateDebugPrep 
+                + ", templateSep=" + templateSep
+                + ", supportDirtyFiltering=" + supportDirtyFiltering
                 + ", generateDescription=" + generateDescription 
-                + ", generateTestDecorator=" + generateTestDecorator 
-                + ", assignNonPublicMembers=" + assignNonPublicMembers 
+                + ", assignNonPublicMembers=" + assignNonPublicMembers
                 + '}';
     }
 

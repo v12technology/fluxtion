@@ -22,6 +22,8 @@ import com.fluxtion.api.audit.EventLogManager;
 import com.fluxtion.api.time.Clock;
 import com.fluxtion.builder.generation.NodeNameProducer;
 import com.fluxtion.builder.time.ClockFactory;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +39,7 @@ import java.util.Set;
  *
  * @author Greg Higgins
  */
+@ToString
 public class SEPConfig {
 
     public SEPConfig() {
@@ -174,18 +177,7 @@ public class SEPConfig {
      * the name of the template file to use as an input
      */
     public String templateFile;
-    /**
-     * the name of the template file to use as an input
-     */
-    public String debugTemplateFile;
-    /**
-     * the name of the template file to use as an input
-     */
-    public String testTemplateFile;
-    /**
-     * the name of the template file to use as an input
-     */
-    public String introspectorTemplateFile;
+
 
     /**
      * the nodes included in this graph
@@ -227,21 +219,11 @@ public class SEPConfig {
     public boolean supportDirtyFiltering = false;
 
     /**
-     * generate a set of debugging classes that can be used with the SEP and
-     * debugging tool sets.
-     */
-    public boolean generateDebugPrep = false;
-
-    /**
      * Flag controlling generation of meta data description resources.
      *
      * not required, default = true.
      */
     public boolean generateDescription = true;
-    /**
-     * Generate a test decorator.
-     */
-    public boolean generateTestDecorator = false;
 
     /**
      * attempt to assign private member variables, some platforms will support
@@ -266,12 +248,6 @@ public class SEPConfig {
         this.generateLogging = generateLogging;
         System.setProperty("generateLogging", Boolean.toString(generateLogging));
     }
-    /**
-     * The maximum number of filter branches inside an event handler before an
-     * alternate map-dispatch strategy is employed.
-     *
-     */
-    public int maxFiltersInline = 7;
 
     /**
      * Map an original fully qualified class name into a new value. Can be
@@ -281,10 +257,4 @@ public class SEPConfig {
     public final Map<String, String> class2replace = new HashMap<>();
     
     private final Clock clock = ClockFactory.SINGLETON;
-
-    @Override
-    public String toString() {
-        return "SEPConfig{" + "templateFile=" + templateFile + ", debugTemplateFile=" + debugTemplateFile + ", testTemplateFile=" + testTemplateFile + ", introspectorTemplateFile=" + introspectorTemplateFile + ", nodeList=" + nodeList + ", publicNodes=" + publicNodes + ", auditorMap=" + auditorMap + ", declarativeConfig=" + declarativeConfig + ", filterMap=" + filterMap + ", templateContextExtension=" + templateContextExtension + ", inlineEventHandling=" + inlineEventHandling + ", supportDirtyFiltering=" + supportDirtyFiltering + ", generateDebugPrep=" + generateDebugPrep + ", generateDescription=" + generateDescription + ", generateTestDecorator=" + generateTestDecorator + ", assignPrivateMembers=" + assignPrivateMembers + ", formatSource=" + formatSource + ", maxFiltersInline=" + maxFiltersInline + ", class2replace=" + class2replace + '}';
-    }
-
 }

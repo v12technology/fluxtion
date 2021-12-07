@@ -36,92 +36,6 @@ public interface JavaGenHelper {
 
     StringBuilder builder = new StringBuilder(1 * 1000 * 1000);
 
-    static String generateMapDispatch(ArrayList<InvokerFilterTarget> filteredInvokerList, List<Class<?>> importClassList) {
-        builder.delete(0, builder.length());
-        if (filteredInvokerList == null || filteredInvokerList.isEmpty()) {
-            return "";
-        }
-        importClassList.add(FilteredHandlerInvoker.class);
-
-        builder.append("//int filter maps\n");
-        filteredInvokerList.stream().filter(i -> i.filterDescription.isIntFilter).map((invoker) -> invoker.intMapName)
-                .collect(Collectors.toSet()).forEach(
-                        (methodName) -> builder.append("\tprivate final Int2ObjectOpenHashMap<FilteredHandlerInvoker> ")
-                                .append(methodName).append(" = init").append(methodName).append("();\n\n")
-                );
-        builder.append("//String filter maps\n");
-        filteredInvokerList.stream().filter(i -> !i.filterDescription.isIntFilter).map((invoker) -> invoker.stringMapName)
-                .collect(Collectors.toSet()).forEach(
-                        (methodName) -> builder.append("\tprivate final HashMap<String, FilteredHandlerInvoker> ")
-                                .append(methodName).append(" = init").append(methodName).append("();\n\n")
-                );
-
-        HashSet<Class<? extends Event>> setIntClasses = new HashSet<>();
-        HashSet<Class<? extends Event>> setStrClasses = new HashSet<>();
-
-        for (InvokerFilterTarget invoker1 : filteredInvokerList) {
-            Class<? extends Event> e = invoker1.filterDescription.eventClass;
-            if (invoker1.filterDescription.isIntFilter && !setIntClasses.contains(e)) {
-                builder.append("\tprivate Int2ObjectOpenHashMap<FilteredHandlerInvoker> init" + invoker1.intMapName + "(){\n"
-                        + "\t\tInt2ObjectOpenHashMap<FilteredHandlerInvoker> dispatchMap = new Int2ObjectOpenHashMap<>();\n");
-
-                filteredInvokerList.stream().filter(i -> i.filterDescription.eventClass == e).filter(i -> i.filterDescription.isIntFilter).forEach(
-                        (invoker)
-                                -> builder.append("\t\tdispatchMap.put( " + invoker.filterDescription.value + ", new FilteredHandlerInvoker() {\n"
-                                + "\n"
-                                + "\t\t\t@Override\n"
-                                + "\t\t\tpublic void invoke(Object event) {\n"
-                                + "\t\t\t\t"
-                                + generateFilteredDispatchMethodName(invoker.filterDescription)
-                                + "( (" + invoker.filterDescription.eventClass.getCanonicalName() + ")event);\n"
-                                + "\t\t\t}\n"
-                                + "\t\t});"
-                                + "\t\t\n"));
-
-                builder.append("\t\treturn dispatchMap;\n"
-                        + "\t}\n\n");
-
-                setIntClasses.add(e);
-
-            }
-
-            if (!invoker1.filterDescription.isIntFilter && !setStrClasses.contains(e)) {
-                builder.append("\tprivate HashMap<String, FilteredHandlerInvoker> init" + invoker1.stringMapName + "(){\n"
-                        + "\t\tHashMap<String, FilteredHandlerInvoker> dispatchMap = new HashMap<>();\n");
-
-                filteredInvokerList.stream().filter(i -> i.filterDescription.eventClass == e).filter(i -> !i.filterDescription.isIntFilter).forEach(
-                        (invoker)
-                                -> builder.append("\t\tdispatchMap.put(\"" + invoker.filterDescription.stringValue + "\", new FilteredHandlerInvoker() {\n"
-                                + "\n"
-                                + "\t\t\t@Override\n"
-                                + "\t\t\tpublic void invoke(Object event) {\n"
-                                + "\t\t\t\t"
-                                + generateFilteredDispatchMethodName(invoker.filterDescription)
-                                + "( (" + invoker.filterDescription.eventClass.getCanonicalName() + ")event);\n"
-                                + "\t\t\t}\n"
-                                + "\t\t});"
-                                + "\t\t\n"));
-                builder.append("\t\treturn dispatchMap;\n"
-                        + "\t}\n\n");
-
-                setStrClasses.add(e);
-            }
-
-            if (setStrClasses.size() > 0) {
-                importClassList.add(HashMap.class);
-            }
-        }
-        //loop and generate the methods - check no name clashes on the method names
-        filteredInvokerList.forEach((invoker) ->
-                builder.append("\tprivate void ").append(invoker.methodName).append("(")
-                        .append(invoker.filterDescription.eventClass.getCanonicalName()).append(" typedEvent){\n")
-                        .append("\t\t//method body - invoke call tree\n").append("\t\t")
-                        .append(invoker.methodBody).append("\t}\n\n")
-        );
-        return builder.toString();
-    }
-
-
     static String generateFilteredDispatchMethodName(FilterDescription filter) {
         String filterName = filter.variableName;
         if (filterName == null) {
@@ -133,14 +47,6 @@ public interface JavaGenHelper {
             filterClass = filter.eventClass.getSimpleName();
         }
         return getIdentifier("handle_" + filterClass + "_" + filterName);
-    }
-
-    static String generateFilteredDispatchMap(Class<? extends Event> clazz, boolean isInt) {
-        FilterDescription filter = new FilterDescription(clazz, 0);
-        if (!isInt) {
-            filter = new FilterDescription(clazz, "");
-        }
-        return generateFilteredDispatchMap(filter);
     }
 
     static String generateFilteredDispatchMap(FilterDescription filter) {
