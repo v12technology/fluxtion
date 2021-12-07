@@ -17,14 +17,15 @@
  * limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion.core</groupId>
     <artifactId>root-parent-pom</artifactId>
     <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
-    
+
     <properties>
         <osgi.version>5.0.0</osgi.version>
         <felix.plugin.version>2.5.3</felix.plugin.version>
@@ -33,12 +34,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>   
-    
+    </properties>
+
     <description>Root build pom for use by non-pom projects</description>
-    
+
     <url>https://github.com/v12technology/fluxtion</url>
-    
+
     <licenses>
         <license>
             <distribution>repo</distribution>
@@ -46,7 +47,7 @@
             <url>http://www.mongodb.com/licensing/server-side-public-license</url>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <name>Greg Higgins</name>
@@ -54,20 +55,20 @@
             <organization>V12 Technology Limited</organization>
         </developer>
     </developers>
-    
+
     <scm>
         <connection>scm:git:https://github.com/v12technology/fluxtion.git</connection>
         <developerConnection>scm:git:https://github.com/v12technology/fluxtion.git</developerConnection>
         <url>https://github.com/v12technology/fluxtion</url>
     </scm>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
-    </distributionManagement> 
-    
+    </distributionManagement>
+
     <profiles>
         <profile>
             <id>release</id>
@@ -104,7 +105,7 @@
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
-                    </plugin> 
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -165,12 +166,12 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin> 
+                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -204,9 +205,9 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
-            </plugin> 
+            </plugin>
         </plugins>
-        
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -279,11 +280,11 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>  
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -305,8 +306,12 @@
             <groupId>io.github.hakky54</groupId>
             <artifactId>logcaptor</artifactId>
         </dependency>
-    </dependencies> 
-    
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+        </dependency>
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <!--dependencies-->
@@ -437,7 +442,7 @@
                 <groupId>org.jgrapht</groupId>
                 <artifactId>jgrapht-ext</artifactId>
                 <version>0.9.0</version>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>net.jodah</groupId>
                 <artifactId>typetools</artifactId>

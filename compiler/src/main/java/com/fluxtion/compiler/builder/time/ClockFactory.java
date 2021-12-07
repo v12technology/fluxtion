@@ -19,19 +19,21 @@ package com.fluxtion.compiler.builder.time;
 import com.fluxtion.runtim.time.Clock;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.google.auto.service.AutoService;
+
 import java.util.Map;
 
 /**
  *
  * @author V12 Technology Ltd.
  */
-//@AutoService(NodeFactory.class)
+@AutoService(NodeFactory.class)
 public class ClockFactory implements NodeFactory<Clock> {
 
     public static final Clock SINGLETON = new Clock();
 
     @Override
-    public Clock createNode(Map config, NodeRegistry registry) {
+    public Clock createNode(Map<?, ?> config, NodeRegistry registry) {
         registry.registerAuditor(SINGLETON, "clock");
         return SINGLETON;
     }
