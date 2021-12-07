@@ -17,10 +17,10 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.api.annotations.OnBatchPause;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.TearDown;
+import com.fluxtion.runtim.annotations.OnBatchEnd;
+import com.fluxtion.runtim.annotations.OnBatchPause;
+import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.TearDown;
 
 /**
  *

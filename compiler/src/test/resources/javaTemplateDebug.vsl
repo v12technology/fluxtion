@@ -19,10 +19,10 @@ package ${package};
 
 import java.util.HashMap;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.FilteredHandlerInvoker;
-import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtim.lifecycle.BatchHandler;
+import com.fluxtion.runtim.lifecycle.FilteredHandlerInvoker;
+import com.fluxtion.runtim.lifecycle.Lifecycle;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 #if(${MODEL.imports})
 ${MODEL.imports}

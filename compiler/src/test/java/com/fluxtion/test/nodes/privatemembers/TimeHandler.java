@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.nodes.privatemembers;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Initialise;
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.test.event.TimeEvent;
 
 /**

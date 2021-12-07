@@ -16,9 +16,8 @@
  */
 package com.fluxtion.test.enums;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
-import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 

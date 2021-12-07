@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.FilterType;
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.FilterType;
 
 /**
  *

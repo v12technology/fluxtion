@@ -17,9 +17,9 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnBatchEnd;
-import com.fluxtion.api.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.Initialise;
+import com.fluxtion.runtim.annotations.OnBatchEnd;
+import com.fluxtion.runtim.annotations.OnEvent;
 
 /**
  *
