@@ -6,7 +6,7 @@
 package com.fluxtion.generator.audit;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Inject;
+import com.fluxtion.builder.annotation.Inject;
 import com.fluxtion.api.audit.Auditor;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.builder.node.NodeFactory;

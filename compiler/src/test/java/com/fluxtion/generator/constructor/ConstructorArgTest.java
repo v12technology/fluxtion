@@ -17,7 +17,7 @@
  */
 package com.fluxtion.generator.constructor;
 
-import com.fluxtion.api.annotations.ConstructorArg;
+import com.fluxtion.builder.annotation.ConstructorArg;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Data;

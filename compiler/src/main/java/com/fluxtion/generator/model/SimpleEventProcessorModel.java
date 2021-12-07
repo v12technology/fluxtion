@@ -21,6 +21,7 @@ import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
+import com.fluxtion.builder.annotation.ConstructorArg;
 import com.fluxtion.builder.generation.FilterDescription;
 import com.fluxtion.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.generator.model.Field.MappedField;

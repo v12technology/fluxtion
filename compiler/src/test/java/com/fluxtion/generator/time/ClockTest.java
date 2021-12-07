@@ -18,7 +18,7 @@
 package com.fluxtion.generator.time;
 
 import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.Inject;
+import com.fluxtion.builder.annotation.Inject;
 import com.fluxtion.api.annotations.OnEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;

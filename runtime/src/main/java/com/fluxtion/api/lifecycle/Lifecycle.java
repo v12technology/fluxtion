@@ -23,7 +23,7 @@ package com.fluxtion.api.lifecycle;
  *
  * These notifications are generally used to intitialise and teardown a node in
  * the graph before any events have been received. The static event processor
- * gurantees:
+ * guarantees:
  * <ul>
  * <li>the init method will be called before any events are processed by the SEP
  * <li>the teardown method will be called after the sep is closed down

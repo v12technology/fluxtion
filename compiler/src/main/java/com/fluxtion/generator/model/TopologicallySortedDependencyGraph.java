@@ -19,11 +19,11 @@ package com.fluxtion.generator.model;
 
 import com.fluxtion.api.FilteredEventHandler;
 import com.fluxtion.api.annotations.AfterEvent;
-import com.fluxtion.api.annotations.Config;
-import com.fluxtion.api.annotations.ConfigVariable;
+import com.fluxtion.builder.annotation.Config;
+import com.fluxtion.builder.annotation.ConfigVariable;
 import com.fluxtion.api.annotations.EventHandler;
 import com.fluxtion.builder.annotation.ExcludeNode;
-import com.fluxtion.api.annotations.Inject;
+import com.fluxtion.builder.annotation.Inject;
 import com.fluxtion.api.annotations.NoEventReference;
 import com.fluxtion.api.annotations.OnBatchEnd;
 import com.fluxtion.api.annotations.OnBatchPause;

@@ -16,8 +16,8 @@
  */
 package com.fluxtion.builder.node;
 
-import com.fluxtion.api.annotations.Config;
-import com.fluxtion.api.annotations.Inject;
+import com.fluxtion.builder.annotation.Config;
+import com.fluxtion.builder.annotation.Inject;
 import com.fluxtion.builder.generation.GenerationContext;
 import java.util.Map;
 import java.util.ServiceLoader;

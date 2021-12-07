@@ -21,13 +21,15 @@ import com.fluxtion.api.annotations.*;
 import com.fluxtion.api.event.DefaultEvent;
 import com.fluxtion.api.event.Event;
 import com.fluxtion.api.time.Clock;
+import com.fluxtion.builder.annotation.Config;
+import com.fluxtion.builder.annotation.ConfigVariable;
+import com.fluxtion.builder.annotation.Inject;
 import com.fluxtion.builder.node.NodeFactory;
 import com.fluxtion.builder.node.NodeRegistry;
 import com.fluxtion.generator.util.MultipleSepTargetInProcessTest;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;

@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.annotations;
+package com.fluxtion.builder.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -23,27 +23,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a field as providing configuration for an injected instance. The
+ * variable value is read at construction time creating a key/value pair.
+ * Key/value pairs are added to a map which is supplied to a Nodefactory. A
+ * NodeFactory uses the configuration map to build an injected instance.
  *
- * A static String based key value pair configuration item. The key/value pair
- * is added to a map which is supplied to a Nodefactory. A NodeFactory uses the
- * configuration map to build an injected instance. 
- *
- * @see Inject
+ * @see  Inject
  *
  * @author Greg Higgins
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@Repeatable(value = ConfigList.class)
-public @interface Config {
+@Repeatable(ConfigVariableList.class)
+public @interface ConfigVariable {
 
     /**
-     * The configuration value.
+     * The field to read for a configuration value.
      *
-     * @return The configuration value
+     * @return The field to read
      */
-    String value();
+    String field() default "";
 
     /**
      * The key the value will be assigned to in the configuration map.
@@ -51,5 +51,4 @@ public @interface Config {
      * @return the configuration key
      */
     String key();
-
 }

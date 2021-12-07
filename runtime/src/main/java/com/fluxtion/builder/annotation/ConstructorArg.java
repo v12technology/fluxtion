@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.annotations;
+package com.fluxtion.builder.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,16 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A holder for an array of {@link ConfigVariable} variables. The collection of {@link Config}
- * items populates a map. The configuration map is used by a Nodefactory to build an 
- * injected instance.
- * 
- * @see ConfigVariable
- * @see Inject
+ * Marks a reference as an instance that will be used in the constructor. By default only final, non-static, non-public, non-transient
+ * members are used in the constructor.
+ * <p>
+ *
+ *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigVariableList {
-    ConfigVariable[] value(); 
+public @interface ConstructorArg {
+
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.api.annotations;
+package com.fluxtion.builder.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
