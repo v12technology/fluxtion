@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.FilteredEventHandler;
+import com.fluxtion.runtim.FilteredEventHandler;
 import java.io.Serializable;
 
 /**

@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtim.event.AbstractFilteredEventHandler;
 
 /**
  *

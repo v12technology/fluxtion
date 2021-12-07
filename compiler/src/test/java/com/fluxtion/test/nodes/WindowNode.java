@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.FilterId;
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.FilterId;
 import com.fluxtion.test.event.TimeEvent;
 
 /**

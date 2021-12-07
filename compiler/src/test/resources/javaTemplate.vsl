@@ -17,9 +17,9 @@
  */
 package ${package};
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.lifecycle.BatchHandler;
-import com.fluxtion.api.lifecycle.Lifecycle;
+import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtim.lifecycle.BatchHandler;
+import com.fluxtion.runtim.lifecycle.Lifecycle;
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end

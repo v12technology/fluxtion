@@ -17,11 +17,11 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.api.annotations.Config;
-import com.fluxtion.api.annotations.ConfigVariable;
-import com.fluxtion.api.annotations.Inject;
-import com.fluxtion.api.annotations.OnEvent;
-import com.fluxtion.api.annotations.OnParentUpdate;
+import com.fluxtion.runtim.annotations.builder.Config;
+import com.fluxtion.runtim.annotations.builder.ConfigVariable;
+import com.fluxtion.runtim.annotations.builder.Inject;
+import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.OnParentUpdate;
 
 /**
  *

@@ -16,10 +16,10 @@
  */
 package com.fluxtion.runtime.partition;
 
-import com.fluxtion.api.StaticEventProcessor;
-import com.fluxtion.api.event.DefaultEvent;
-import com.fluxtion.api.event.Event;
-import com.fluxtion.api.partition.Partitioner;
+import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtim.partition.Partitioner;
 import org.junit.Before;
 import org.junit.Test;
 

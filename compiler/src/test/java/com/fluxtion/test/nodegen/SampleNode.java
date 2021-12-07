@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.api.annotations.EventHandler;
-import com.fluxtion.api.annotations.FilterId;
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.FilterId;
 
 /**
  *

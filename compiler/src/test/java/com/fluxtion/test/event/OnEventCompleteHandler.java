@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.api.annotations.OnEventComplete;
+import com.fluxtion.runtim.annotations.OnEventComplete;
 
 /**
  *

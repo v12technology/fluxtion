@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.api.annotations.Initialise;
-import com.fluxtion.api.annotations.OnBatchEnd;
+import com.fluxtion.runtim.annotations.Initialise;
+import com.fluxtion.runtim.annotations.OnBatchEnd;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

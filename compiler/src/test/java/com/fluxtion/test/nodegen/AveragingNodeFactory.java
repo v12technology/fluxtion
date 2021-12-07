@@ -17,9 +17,9 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.builder.generation.GenerationContext;
-import com.fluxtion.builder.node.NodeFactory;
-import com.fluxtion.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.builder.node.NodeRegistry;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.StringWriter;

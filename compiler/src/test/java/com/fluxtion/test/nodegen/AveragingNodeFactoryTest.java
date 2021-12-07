@@ -17,9 +17,9 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.builder.node.DeclarativeNodeConiguration;
-import com.fluxtion.builder.node.NodeFactory;
-import com.fluxtion.generator.util.BaseSepInProcessTest;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.generation.util.BaseSepInProcessTest;
 import net.vidageek.mirror.dsl.Mirror;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
