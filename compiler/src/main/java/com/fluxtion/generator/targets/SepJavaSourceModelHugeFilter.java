@@ -47,11 +47,6 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 public class SepJavaSourceModelHugeFilter {
 
     /**
-     * max number of cases statements to generate before using a dispatch map.
-     */
-    private final int maxFilterBranches;
-
-    /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order, in a list.
      */
@@ -158,20 +153,6 @@ public class SepJavaSourceModelHugeFilter {
     private String eventHandlers;
 
     /**
-     * A list of invokers for a filtered call tree. This list is used to create
-     * a dispatch map the SEP will use to in place of switch dispatch.
-     *
-     * When switch cases in crease the performance degrades massively:
-     *
-     * 0-20 java switch optimised very fast. 20-n performance drops off by 30%
-     * when n is too large the the number of bytes in the dispatch method grows
-     * causing the vm to behave as follows: bytes > approx 325 bytes the
-     * dispatch method is not inlined 30% degradation bytes > approx 8k bytes
-     * the dispatch method is not compiled 800% degradation, yes 8 times slower
-     */
-    private final ArrayList<InvokerFilterTarget> filteredInvokerList;
-
-    /**
      * determines whether separate delegate eventHandling methods are generated.
      */
     private final boolean isInlineEventHandling;
@@ -216,16 +197,12 @@ public class SepJavaSourceModelHugeFilter {
         this(model, inlineEventHandling, false);
     }
 
-    public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers) {
-        this(model, inlineEventHandling, assignPrivateMembers, 5);
-    }
-    
-    public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers, int maxFilterBranches) {
+    public SepJavaSourceModelHugeFilter(
+            SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers) {
         this.model = model;
         this.eventHandlers = "";
         this.isInlineEventHandling = inlineEventHandling;
         this.assignPrivateMembers = assignPrivateMembers;
-        this.maxFilterBranches = maxFilterBranches;
         initialiseMethodList = new ArrayList<>();
         batchEndMethodList = new ArrayList<>();
         batchPauseMethodList = new ArrayList<>();
@@ -234,7 +211,6 @@ public class SepJavaSourceModelHugeFilter {
         nodeDeclarationList = new ArrayList<>();
         nodeMemberAssignmentList = new ArrayList<>();
         publicNodeIdentifierList = new ArrayList<>();
-        filteredInvokerList = new ArrayList<>();
         importList = new ArrayList<>();
     }
 
@@ -244,7 +220,7 @@ public class SepJavaSourceModelHugeFilter {
         buildMethodSource(model.getEventEndMethods(), eventEndMethodList);
         buildMethodSource(model.getBatchEndMethods(), batchEndMethodList);
         buildMethodSource(model.getTearDownMethods(), tearDownMethodList);
-        addDefacultImports();
+        addDefaultImports();
         buildNodeDeclarations();
         buildDirtyFlags();
         buildFilterConstantDeclarations();
@@ -434,15 +410,6 @@ public class SepJavaSourceModelHugeFilter {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
-        if (!isInlineEventHandling) {
-            List<Class<?>> importClassList = new ArrayList<>();
-            eventHandlers += JavaGenHelper.generateMapDispatch(filteredInvokerList, importClassList);
-            if(importClassList.size()>0){
-                //bit of a hack, need to remove
-                getClassName("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap");
-            }
-            importClassList.stream().map(Class::getCanonicalName).forEach(this::getClassName);
-        }
         if(auditingEvent){
             eventHandlers += auditMethodString;
         }
@@ -504,7 +471,6 @@ public class SepJavaSourceModelHugeFilter {
             boolean intFilter, boolean noFilter) {
         Set<FilterDescription> filterIdSet = cbMap.keySet();
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
-        int caseCount = Math.max(cbMap.size(), cbMapPostEvent.size());
         clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
             int ret = o1.value - o2.value;
             if (!o1.isIntFilter && !o2.isIntFilter) {
@@ -684,10 +650,6 @@ public class SepJavaSourceModelHugeFilter {
                 }
                 //INVOKETARGET
                 invokerTarget.methodBody = ct.toString();
-                if (caseCount > maxFilterBranches) {
-                    filteredInvokerList.add(invokerTarget);
-                }
-
                 if (!noFilter) {
                     ct.append(s24 + "afterEvent();\n");
                     ct.append(s24 + "return;\n");
@@ -706,44 +668,7 @@ public class SepJavaSourceModelHugeFilter {
         String intFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, true, false);
         String stringFilterSwitch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, false, false);
         String noFilterDispatch = buildFilteredSwitch(cbMap, cbMapPostEvent, eventClass, false, true);
-        int caseCount = cbMap.size();
-        if (!isInlineEventHandling && caseCount > maxFilterBranches) {
-            //Handle with a dispatch map
-            dispatchString += String.format("%16shandleEvent(typedEvent);%n", "");
-            eventHandlerString += String.format("%n%4spublic void handleEvent(%s typedEvent) {%n", "", getClassName(eventClass.getCanonicalName()));
-            eventHandlerString += eventAuditDispatch;
-            //intFiltered
-            String filterDec = "FilteredHandlerInvoker ";
-            if (intFilterSwitch != null) {
-                //INVOKER
-                String mapName = JavaGenHelper.generateFilteredDispatchMap(eventClass, true);
-                eventHandlerString += String.format("%8sFilteredHandlerInvoker invoker = %s.get(typedEvent.filterId());%n"
-                        + "        if(invoker!=null){%n"
-                        + "             invoker.invoke(typedEvent);%n"
-                        + "             afterEvent();%n"
-                        + "             return;%n"
-                        + "        }%n", "", mapName);
-                filterDec = "";
-            }
-            //String filtered
-            if (stringFilterSwitch != null) {
-                //INVOKER
-                String mapName = JavaGenHelper.generateFilteredDispatchMap(eventClass, false);
-                eventHandlerString += String.format("%8s%sinvoker = %s.get(typedEvent.filterString());%n"
-                        + "        if(invoker!=null){%n"
-                        + "             invoker.invoke(typedEvent);%n"
-                        + "             afterEvent();%n"
-                        + "             return;%n"
-                        + "        }%n", "", filterDec, mapName);
-            }
-            if (noFilterDispatch != null) {
-                eventHandlerString += "        //Default, no filter methods\n";
-                eventHandlerString += noFilterDispatch;
-            }
-            eventHandlerString += "        afterEvent();\n";
-            eventHandlerString += "    }\n\n";
-
-        } else if (!isInlineEventHandling) {
+        if (!isInlineEventHandling) {
             //Handle with case statements
             dispatchString += String.format("%16shandleEvent(typedEvent);%n", "");
             eventHandlerString += String.format("%n%4spublic void handleEvent(%s typedEvent) {%n", "", getClassName(eventClass.getCanonicalName()));
@@ -1141,11 +1066,11 @@ public class SepJavaSourceModelHugeFilter {
         auditMethodString += initialiseAuditor;
     }
 
-    private void addDefacultImports() {
+    private void addDefaultImports() {
         model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
     }
 
-    public void additonalInterfacesToImplement(Set<Class> interfacesToImplement) {
+    public void additionalInterfacesToImplement(Set<Class> interfacesToImplement) {
         if(!interfacesToImplement.isEmpty()){
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassName)

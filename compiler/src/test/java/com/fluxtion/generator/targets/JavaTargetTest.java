@@ -142,8 +142,6 @@ public class JavaTargetTest {
                 HandlerNoFilter_TraceEvent_InFilter_0 allEventHandler = addNode(new HandlerNoFilter_TraceEvent_InFilter_0("D0"));
                 //
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
-                //
-                maxFiltersInline = 10;
             }
         };
         cfg.generateDescription = false;
@@ -173,8 +171,6 @@ public class JavaTargetTest {
                 HandlerNoFilter_TraceEvent_InFilter_0 allEventHandler = addNode(new HandlerNoFilter_TraceEvent_InFilter_0("D0"));
                 //
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
-                //
-                maxFiltersInline = 10;
             }
         };
         cfg.generateDescription = false;
@@ -203,8 +199,6 @@ public class JavaTargetTest {
                 HandlerNoFilter_TraceEvent_InFilter_0 allEventHandler = addNode(new HandlerNoFilter_TraceEvent_InFilter_0("ANY-1"));
                 //
                 addPublicNode(new Node_TraceEventHolder_Aggregator("aggregator", node_1, def_2, allEventHandler), "aggregator");
-                //
-                maxFiltersInline = 10;
             }
         };
         cfg.generateDescription = false;
@@ -241,8 +235,6 @@ public class JavaTargetTest {
                 HandlerNoFilter_TraceEvent_InFilter_0 allEventHandler = addNode(new HandlerNoFilter_TraceEvent_InFilter_0("D0"));
                 //
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
-                //
-                maxFiltersInline = 12;
             }
         };
         cfg.generateDescription = false;

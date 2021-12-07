@@ -178,8 +178,12 @@ public class Generator {
     }
 
     private File templateJavaOutput() throws Exception {
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(simpleEventProcessorModel, config.inlineEventHandling, config.assignPrivateMembers, config.maxFiltersInline);
-        srcModel.additonalInterfacesToImplement(config.interfacesToImplement());
+        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(
+                simpleEventProcessorModel,
+                config.inlineEventHandling,
+                config.assignPrivateMembers
+        );
+        srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();
         //set up defaults

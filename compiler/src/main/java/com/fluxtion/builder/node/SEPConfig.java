@@ -248,12 +248,6 @@ public class SEPConfig {
         this.generateLogging = generateLogging;
         System.setProperty("generateLogging", Boolean.toString(generateLogging));
     }
-    /**
-     * The maximum number of filter branches inside an event handler before an
-     * alternate map-dispatch strategy is employed.
-     *
-     */
-    public int maxFiltersInline = 7;
 
     /**
      * Map an original fully qualified class name into a new value. Can be
