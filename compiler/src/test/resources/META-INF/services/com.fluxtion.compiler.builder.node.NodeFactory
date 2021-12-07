@@ -1,0 +1,4 @@
+com.fluxtion.compiler.generation.inject.InjectionTest$Char2IntFactory
+com.fluxtion.compiler.generation.inject.InjectionTest$CharHandlerFactory
+com.fluxtion.compiler.generation.audit.FactoryAuditorTest$MyNodeFactory
+

@@ -1,0 +1,61 @@
+package com.fluxtion.compiler.generation.parent;
+
+import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.OnParentUpdate;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import lombok.Data;
+import lombok.Value;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest {
+    public UnguardedParentListenerTest(boolean compiledSep) {
+        super(compiledSep);
+    }
+
+    @Test
+    public void testClassFilter() {
+        sep(cfg -> {
+            cfg.addPublicNode(new Counter(new FilterHandler("match me")), "counter");
+        });
+        onEvent("no match");
+        Counter counter = getField("counter");
+        assertThat(counter.getParentCount(), is(1));
+        assertThat(counter.getEventCount(), is(0));
+        onEvent("match me");
+        assertThat(counter.getParentCount(), is(2));
+        assertThat(counter.getEventCount(), is(1));
+    }
+
+    @Value
+    public static class FilterHandler {
+
+        String filter;
+
+        @EventHandler
+        public boolean checkString(String s) {
+            return filter.equalsIgnoreCase(s);
+        }
+    }
+
+    @Data
+    public static class Counter {
+
+        final FilterHandler parent;
+        int eventCount;
+        int parentCount;
+
+        @OnParentUpdate(guarded = false)
+        public void parentUpdated(FilterHandler marketHandler) {
+            parentCount++;
+        }
+
+        @OnEvent
+        public void onEvent() {
+            eventCount++;
+        }
+    }
+}

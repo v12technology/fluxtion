@@ -43,3 +43,5 @@
 /.idea/
 **/*.iml
 /examples/learning-streaming/src/main/resources/lambda.ser/
+/compiler/target/
+/runtime/target/
