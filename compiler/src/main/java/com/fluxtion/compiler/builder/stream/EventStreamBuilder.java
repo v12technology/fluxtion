@@ -40,10 +40,20 @@ public class EventStreamBuilder<T> {
     }
 
     public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
-        PushEventStream<T> pushStream = SepContext.service().add(new PushEventStream<>(eventStream));
-        pushStream.setEventStreamConsumer(pushFunction);
         SepContext.service().add(pushFunction.captured()[0]);
-        return new EventStreamBuilder<>(pushStream);
+        return new EventStreamBuilder<>(
+                SepContext.service().add(
+                        new PushEventStream<>(eventStream, pushFunction)
+                )
+        );
+    }
+
+    public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
+        return new EventStreamBuilder<>(
+                SepContext.service().add(
+                        new FilterEventStream<>(eventStream, filterFunction)
+                )
+        );
     }
 
     public EventStreamBuilder<T> updateTrigger(Object updateTrigger){
@@ -59,8 +69,6 @@ public class EventStreamBuilder<T> {
 
     /*
     TODO:
-    filter
-    push
     binaryMap
 
     resetTrigger
@@ -83,11 +91,8 @@ public class EventStreamBuilder<T> {
      updateTrigger
      peek
      get
+     push
+    filter
      */
-
-    public EventStreamBuilder<T> addToGraph(SEPConfig config) {
-        config.addNode(eventStream);
-        return this;
-    }
 
 }
