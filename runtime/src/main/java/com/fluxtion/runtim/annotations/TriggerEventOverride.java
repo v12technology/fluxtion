@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a member as overriding event trigger reference, all other nodes in this class will be treated as if they
- * were annotated with {@link NoEventReference} and removed the from the event notification triggers for this
+ * were annotated with {@link NoEventReference} and removed from the event notification triggers for this
  * instance.
  *
  * @author Greg Higgins

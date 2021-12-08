@@ -12,12 +12,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.PushReference;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
 import lombok.Data;
@@ -27,7 +29,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
@@ -57,9 +58,19 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         onEvent("hello");
         assertThat(transform.out, is("HELLO"));
     }
-    
+
+
     @Test
-    public void testNodeInstanceMethdRef(){
+    public void testInstanceMethodRefConsumer() {
+        sep((c) -> {
+            MyPush transform = c.addPublicNode(new MyPush(), "transform");
+            transform.setConsumer(c.addNode(new MyConsumer())::consumeMyPush);
+        });
+        onEvent("hello");
+    }
+
+    @Test
+    public void testNodeInstanceMethdRef() {
         sep((c) -> {
             Transform transform = c.addPublicNode(new Transform(), "transform");
             final InstanceFunction instanceFunction = c.addNode(new InstanceFunction());
@@ -84,9 +95,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testConstructor() {
         sep(c -> {
-            c.addNode(new FactoryGeneraor(MyTarget::new), "factory");
+            c.addNode(new FactoryGenerator(MyTarget::new), "factory");
         });
-        FactoryGeneraor transform = getField("factory");
+        FactoryGenerator transform = getField("factory");
         assertNull(transform.getInstance());
         onEvent("hello");
         assertNotNull(transform.getInstance());
@@ -128,12 +139,12 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static class FactoryGeneraor<R> {
+    public static class FactoryGenerator<R> {
 
         private final LambdaReflection.SerializableSupplier<R> factory;
         private R instance;
 
-        public FactoryGeneraor(LambdaReflection.SerializableSupplier<R> factory) {
+        public FactoryGenerator(LambdaReflection.SerializableSupplier<R> factory) {
             this.factory = factory;
         }
 
@@ -145,6 +156,25 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         public R getInstance() {
             return instance;
         }
+    }
+
+    @Data
+    public static class MyPush {
+        private LambdaReflection.SerializableConsumer<String> f;
+        private String out;
+        @PushReference
+        private transient Object pushRef;
+
+        public void setConsumer(LambdaReflection.SerializableConsumer<String> f){
+            pushRef = f.captured()[0];
+            this.f = f;
+        }
+
+        @EventHandler
+        public void handleString(String in) {
+            f.accept(in);
+        }
+
     }
 
     public static String myUpperCase(String in) {
@@ -161,13 +191,25 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     public static class InstanceFunction {
 
         private String prefix;
-        
+
         public String myUpperCase(String in) {
             return in.toUpperCase();
         }
-        
-        public String prefixString(String in){
+
+        public String prefixString(String in) {
             return prefix + in;
         }
+
+
+    }
+
+    public static class MyConsumer{
+        public void consumeMyPush(String in){
+
+        }
+
+        @OnEvent
+        public void onEven(){}
+
     }
 }

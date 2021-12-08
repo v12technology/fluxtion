@@ -17,12 +17,15 @@
 package com.fluxtion.runtim.event;
 
 import com.fluxtion.runtim.FilteredEventHandler;
+import com.fluxtion.runtim.stream.EventStream;
+import com.fluxtion.runtim.stream.TriggeredEventStream;
+
 import java.util.Objects;
 
 /**
  * {@inheritDoc} 
  */
-public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T> {
+public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T>, TriggeredEventStream<T> {
 
     private int filterId;
     private Class<T> eventClass;
@@ -85,5 +88,14 @@ public final class DefaultFilteredEventHandler<T> implements FilteredEventHandle
         }
         return true;
     }
-    
+
+    @Override
+    public T get() {
+        return event;
+    }
+
+    @Override
+    public void setUpdateTriggerOverride(Object updateTriggerOverride) {
+        //do nothing
+    }
 }
