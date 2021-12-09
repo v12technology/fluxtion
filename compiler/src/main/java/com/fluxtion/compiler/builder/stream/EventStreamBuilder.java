@@ -59,7 +59,7 @@ public class EventStreamBuilder<T> {
     resetTrigger
     publishTrigger
 
-    tests
+    all tests
 
     ??? maybe not - need to test - implement last
     primitive map
@@ -79,6 +79,7 @@ public class EventStreamBuilder<T> {
      push
      filter
      notify
+     tests
      */
 
 }
