@@ -17,15 +17,16 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.BatchHandler;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
+import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtim.audit.EventLogControlEvent;
+import com.fluxtion.runtim.lifecycle.BatchHandler;
+import com.fluxtion.runtim.lifecycle.Lifecycle;
 import net.vidageek.mirror.dsl.Mirror;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,8 +40,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import static com.fluxtion.runtim.time.ClockStrategy.registerClockEvent;
 import static com.fluxtion.compiler.generation.compiler.InProcessSepCompiler.sepTestInstance;
+import static com.fluxtion.runtim.time.ClockStrategy.registerClockEvent;
 
 /**
  * Test class utility for building a SEP in process
@@ -55,6 +56,7 @@ public class MultipleSepTargetInProcessTest {
     protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
+    private boolean addAuditor = false;
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
     //parametrized test config
@@ -76,6 +78,7 @@ public class MultipleSepTargetInProcessTest {
     @Before
     public void beforeTest() {
         fixedPkg = true;
+        addAuditor = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -95,6 +98,14 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
+        Consumer<SEPConfig> wrappedBuilder = cfgBuilder;
+        if(addAuditor){
+            wrappedBuilder = cfg ->{
+                cfgBuilder.accept(cfg);
+                cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+            };
+        }
+
         try {
             if(!compiledSep){
                 GenerationContext.setupStaticContext(pckName(), sepClassName(),
@@ -102,7 +113,7 @@ public class MultipleSepTargetInProcessTest {
                         new File(OutputRegistry.RESOURCE_TEST_DIR));
                 SEPConfig cfg = new SEPConfig();
                 cfg.supportDirtyFiltering = true;
-                cfgBuilder.accept(cfg);
+                wrappedBuilder.accept(cfg);
                 Generator generator = new Generator();
                 inMemorySep = generator.inMemoryProcessor(cfg);
                 inMemorySep.init();
@@ -111,9 +122,9 @@ public class MultipleSepTargetInProcessTest {
             }
             else {
                 if (reuseSep) {
-                    sep(cfgBuilder, fqn());
+                    sep(wrappedBuilder, fqn());
                 } else {
-                    sep = sepTestInstance(cfgBuilder, pckName(), sepClassName());
+                    sep = sepTestInstance(wrappedBuilder, pckName(), sepClassName());
                 }
             }
             return sep;
@@ -271,5 +282,9 @@ public class MultipleSepTargetInProcessTest {
             onEvent(registerClockEvent(time::longValue));
         }
         timeAdded = true;
+    }
+
+    public void addAuditor(){
+        addAuditor = true;
     }
 }

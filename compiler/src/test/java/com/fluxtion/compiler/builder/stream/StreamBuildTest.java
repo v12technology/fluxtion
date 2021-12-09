@@ -1,10 +1,14 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.OnEvent;
+import lombok.Data;
 import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventStreamBuilder.subscribe;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
@@ -13,46 +17,76 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void subscribeToStream() {
-        sep(c -> {
-            subscribe(String.class)
-                    .peek(Console::println)
-                    .map(StreamBuildTest::toCaps)
-                    .peek(Console::println)
-                    .map(StreamBuildTest::triggerString).updateTrigger(subscribe(Double.class))
-                    .peek(Console::println)
-                    .push(new StringReceiver()::newData)
-                    .filter(StreamBuildTest::isTestString)
-                    .push(new StringReceiver()::newData)
-            ;
-//            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
-        });
-        onEvent("hello world");
+    public void notifyTest() {
+        addAuditor();
+        sep(c -> subscribe(String.class)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("test");
-        onEvent((Double)12.3);
+        assertThat(1, is(notifyTarget.getOnEventCount()));
     }
 
-    public static String toCaps(String in) {
-        return in.toUpperCase();
+    @Test
+    public void pushTest(){
+        sep(c -> subscribe(Integer.class)
+                .push(new NotifyAndPushTarget()::setPushValue)
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getPushValue()));
+        onEvent((Integer)200);
+        assertThat(200, is(notifyTarget.getPushValue()));
     }
 
-    public static String triggerString(String in){
-        return "TRANSFORM:" + in;
+    @Test
+    public void mapTest(){
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::parseInt)
+                .push(new NotifyAndPushTarget()::setPushValue)
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getPushValue(), is(0));
+        onEvent("86");
+        assertThat(notifyTarget.getPushValue(), is(86));
     }
 
-    public static class StringReceiver{
+    @Test
+    public void filterTest(){
+        sep(c -> subscribe(String.class)
+                .filter(StreamBuildTest::isTrue)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("86");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("true");
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
 
-        public void newData(String data){
-            System.out.println("received:" + data);
-        }
+    @Data
+    public static class NotifyAndPushTarget implements Named {
+        private transient int onEventCount;
+        private transient int pushValue;
 
         @OnEvent
-        public void onEvent(){}
+        public void notified() {
+            onEventCount++;
+        }
 
+        @Override
+        public String getName() {
+            return "notifyTarget";
+        }
     }
 
-    public static boolean isTestString(String in){
-        return true;
+    public static boolean isTrue(String in) {
+        return Boolean.parseBoolean(in);
+    }
+
+    public static int parseInt(String in){
+        return Integer.parseInt(in);
     }
 
 }
