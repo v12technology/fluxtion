@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.builder.stream;
+package com.fluxtion.runtim.stream;
 
 public interface Console {
 

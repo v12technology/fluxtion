@@ -17,6 +17,7 @@
 package com.fluxtion.runtim.event;
 
 import com.fluxtion.runtim.FilteredEventHandler;
+import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.audit.EventLogNode;
 import com.fluxtion.runtim.stream.TriggeredEventStream;
 
@@ -25,22 +26,25 @@ import java.util.Objects;
 /**
  * {@inheritDoc}
  */
-public final class DefaultFilteredEventHandler<T> extends EventLogNode
-        implements FilteredEventHandler<T>, TriggeredEventStream<T> {
+public final class DefaultFilteredEventHandler<T>
+        extends EventLogNode
+        implements FilteredEventHandler<T>, TriggeredEventStream<T>, Named {
 
     private int filterId;
     private Class<T> eventClass;
     public T event;
+    private String name;
 
     public DefaultFilteredEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
         filterId = Event.NO_INT_FILTER;
+        name = "handler" + eventClass.getSimpleName();
     }
-
 
     public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
         this.filterId = filterId;
         this.eventClass = eventClass;
+        name = "handler" + eventClass.getSimpleName() + "_" + filterId;
     }
 
     public DefaultFilteredEventHandler() {
@@ -99,5 +103,10 @@ public final class DefaultFilteredEventHandler<T> extends EventLogNode
     @Override
     public void setUpdateTriggerOverride(Object updateTriggerOverride) {
         //do nothing
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

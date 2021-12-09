@@ -2,10 +2,12 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtim.Named;
+import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 import lombok.Data;
 import org.junit.Test;
 
+import static com.fluxtion.compiler.builder.stream.EventStreamBuilder.nodeAsEventStream;
 import static com.fluxtion.compiler.builder.stream.EventStreamBuilder.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,8 +19,17 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void wrapNodeAsStreamTest(){
+        sep(c -> nodeAsEventStream(new MyStringHandler())
+                .notify(new NotifyAndPushTarget()));
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
+        onEvent("test");
+        assertThat(1, is(notifyTarget.getOnEventCount()));
+    }
+
+    @Test
     public void notifyTest() {
-        addAuditor();
         sep(c -> subscribe(String.class)
                 .notify(new NotifyAndPushTarget())
         );
@@ -78,6 +89,16 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         @Override
         public String getName() {
             return "notifyTarget";
+        }
+    }
+
+    @Data
+    public static class MyStringHandler{
+        private String inputString;
+
+        @EventHandler
+        public void newString(String in){
+            inputString = in;
         }
     }
 
