@@ -1,14 +1,14 @@
 package com.fluxtion.runtim.stream;
 
 import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
 
-public class FilterEventStream<T> extends AbstractEventStream<T, T> {
+public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
-    final LambdaReflection.SerializableFunction<T, Boolean> filterFunction;
+    final SerializableFunction<T, Boolean> filterFunction;
     transient final String auditInfo;
 
-    public FilterEventStream(EventStream<T> inputEventStream, LambdaReflection.SerializableFunction<T, Boolean> filterFunction) {
+    public FilterEventStream(S inputEventStream, SerializableFunction<T, Boolean> filterFunction) {
         super(inputEventStream);
         this.filterFunction = filterFunction;
         auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();

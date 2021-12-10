@@ -25,9 +25,13 @@ import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtim.StaticEventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
+import com.fluxtion.runtim.audit.JULLogRecordListener;
 import com.fluxtion.runtim.lifecycle.BatchHandler;
 import com.fluxtion.runtim.lifecycle.Lifecycle;
+import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -79,6 +83,11 @@ public class MultipleSepTargetInProcessTest {
     public void beforeTest() {
         fixedPkg = true;
         addAuditor = false;
+    }
+
+    @After
+    public void afterTest(){
+        tearDown();
     }
 
     @SuppressWarnings("unchecked")
@@ -224,7 +233,7 @@ public class MultipleSepTargetInProcessTest {
         return sep;
     }
 
-    protected StaticEventProcessor teardDown() {
+    protected StaticEventProcessor tearDown() {
         if (sep instanceof Lifecycle) {
             ((Lifecycle) sep).tearDown();
         }
@@ -287,4 +296,13 @@ public class MultipleSepTargetInProcessTest {
     public void addAuditor(){
         addAuditor = true;
     }
+
+    @SneakyThrows
+    private void writeAuditToFile(String fileNamePrefix) {
+        fileNamePrefix = fileNamePrefix + (compiledSep?"-compiled.yaml":"-interpreted.yaml");
+        File file = new File("target\\generated-test-sources\\fluxtion-log\\" + fileNamePrefix);
+        FileUtils.forceMkdirParent(file);
+        onEvent( new EventLogControlEvent(new JULLogRecordListener(file)) );
+    }
+
 }
