@@ -8,8 +8,10 @@ import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventStreamBuilder.nodeAsEventStream;
-import static com.fluxtion.compiler.builder.stream.EventStreamBuilder.subscribe;
+import java.io.IOException;
+
+import static com.fluxtion.compiler.builder.stream.EventStreamSubscriber.nodeAsEventStream;
+import static com.fluxtion.compiler.builder.stream.EventStreamSubscriber.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -103,8 +105,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void mapTestWithFilterAndUpdateAndPublishTriggers(){
-        addAuditor();
+    public void mapTestWithFilterAndUpdateAndPublishTriggers() throws IOException {
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isNumber)
                 .map(StreamBuildTest::parseInt)

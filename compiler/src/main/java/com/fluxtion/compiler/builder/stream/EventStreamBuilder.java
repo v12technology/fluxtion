@@ -1,62 +1,49 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
-import com.fluxtion.runtim.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtim.stream.*;
 
-public class
-EventStreamBuilder<T> {
+public class EventStreamBuilder<T> {
 
-    private final TriggeredEventStream<T> eventStream;
+    final TriggeredEventStream<T> eventStream;
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
-    //INPUTS - START
-    static <T> EventStreamBuilder<T> subscribe(Class<T> classSubscription) {
-        return new EventStreamBuilder<>(new DefaultFilteredEventHandler<>(classSubscription));
-    }
-
-    static <T> EventStreamBuilder<T> nodeAsEventStream(T source){
-        return new EventStreamBuilder<>(new NodeEventStream<>(source));
-    }
-    //INPUTS - END
-
     //TRIGGERS - START
     public EventStreamBuilder<T> updateTrigger(Object updateTrigger){
-        eventStream.setUpdateTriggerNode(updateTrigger);
+        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
         return this;
     }
 
-    public EventStreamBuilder<T> updateTrigger(EventStreamBuilder<?> updateTrigger){
-        eventStream.setUpdateTriggerNode(updateTrigger.eventStream);
+    public EventStreamBuilder<T> publishTrigger(Object publishTrigger){
+        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
-    public EventStreamBuilder<T> publishTrigger(EventStreamBuilder<?> updateTrigger){
-        eventStream.setPublishTriggerNode(updateTrigger.eventStream);
+    public EventStreamBuilder<T> resetTrigger(Object resetTrigger){
+        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
     }
-
-    public EventStreamBuilder<T> resetTrigger(EventStreamBuilder<?> updateTrigger){
-        eventStream.setResetTriggerNode(updateTrigger.eventStream);
-        return this;
-    }
-    //TRIGGERS - END
 
     //PROCESSING - START
     public <R> EventStreamBuilder<R> map(LambdaReflection.SerializableFunction<T, R> mapFunction) {
         return new EventStreamBuilder<>( new MapEventStream<>(eventStream, mapFunction));
     }
 
+    public IntStreamBuilder<T, EventStream<T>> mapToInt(LambdaReflection.SerializableToIntFunction<T> mapFunction) {
+        return new IntStreamBuilder<>( new MapEventStream.MapRef2IntEventStream<>(eventStream, mapFunction));
+    }
+
     public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
         return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
     }
 
+    //OUTPUTS - START
     public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
         SepContext.service().add(pushFunction.captured()[0]);
         return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
@@ -66,13 +53,11 @@ EventStreamBuilder<T> {
         SepContext.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
     }
-    //PROCESSING - END
 
-    //OUTPUTS - START
     public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {
         return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
     }
-    //OUTPUTS - END
+
 
     /*
     TODO:

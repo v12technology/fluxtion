@@ -103,10 +103,16 @@ public interface LambdaReflection {
     interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableIntConsumer extends IntConsumer, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableBiConsumer<t, u> extends BiConsumer<t, u>, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableFunction<t, r> extends Function<t, r>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableIntFunction<r> extends IntFunction<r>, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableToIntFunction<t> extends ToIntFunction<t>, Serializable, MethodReferenceReflection {

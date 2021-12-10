@@ -3,12 +3,12 @@ package com.fluxtion.runtim.stream;
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
 
-public final class PeekEventStream<T> extends AbstractEventStream<T, T> {
+public final class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
     final SerializableConsumer<? super T> eventStreamConsumer;
     transient final String auditInfo;
 
-    public PeekEventStream(EventStream<T> inputEventStream, SerializableConsumer<? super T> eventStreamConsumer) {
+    public PeekEventStream(S inputEventStream, SerializableConsumer<? super T> eventStreamConsumer) {
         super(inputEventStream);
         this.eventStreamConsumer = eventStreamConsumer;
         auditInfo = eventStreamConsumer.method().getDeclaringClass().getSimpleName() + "->" + eventStreamConsumer.method().getName();

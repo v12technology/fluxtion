@@ -12,10 +12,10 @@ import lombok.Setter;
  * @param <T> Output type of stream
  */
 @Data
-public abstract class AbstractEventStream<R, T> extends EventLogNode
+public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extends EventLogNode
         implements TriggeredEventStream<T> {
 
-    private final EventStream<R> inputEventStream;
+    private final S inputEventStream;
     @Setter(AccessLevel.NONE)
     private transient boolean overrideUpdateTrigger;
     @Setter(AccessLevel.NONE)
@@ -27,7 +27,7 @@ public abstract class AbstractEventStream<R, T> extends EventLogNode
     private Object publishTriggerNode;
     private Object resetTriggerNode;
 
-    public AbstractEventStream(EventStream<R> inputEventStream) {
+    public AbstractEventStream(S inputEventStream) {
         this.inputEventStream = inputEventStream;
     }
 
