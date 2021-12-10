@@ -9,7 +9,7 @@ public class PushEventStream<T> extends AbstractEventStream<T, T> {
     @PushReference
     private transient Object target;
     private final SerializableConsumer<T> eventStreamConsumer;
-    private String auditInfo;
+    private final String auditInfo;
 
     public PushEventStream(EventStream<T> inputEventStream, SerializableConsumer<T> eventStreamConsumer) {
         super(inputEventStream);
@@ -19,9 +19,12 @@ public class PushEventStream<T> extends AbstractEventStream<T, T> {
     }
 
     @OnEvent
-    public void push(){
+    public boolean push(){
         auditLog.info("pushTarget", auditInfo);
-        eventStreamConsumer.accept(get());
+        if(executeUpdate()){
+            eventStreamConsumer.accept(get());
+        }
+        return fireEventUpdateNotification();
     }
 
     @Override

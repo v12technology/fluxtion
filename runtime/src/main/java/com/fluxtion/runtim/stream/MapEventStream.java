@@ -17,14 +17,40 @@ public class MapEventStream<R, T> extends AbstractEventStream<R, T> {//implement
     }
 
     @OnEvent
-    public void map(){
+    public boolean map(){
         auditLog.info("mapFunction", auditInfo);
-        result = mapFunction.apply(getInputEventStream().get());
+        if(executeUpdate()){
+            auditLog.info("invokeMapFunction", true);
+            mapOperation();
+        }else{
+            auditLog.info("invokeMapFunction", false);
+        }
+        return fireEventUpdateNotification();
     }
 
     @Override
     public T get() {
         return result;
     }
+
+    protected void mapOperation(){
+        result = mapFunction.apply(getInputEventStream().get());
+    }
+
+//    public static class MapReferenceEventStream<R, T> extends MapEventStream<R, T>{
+//
+//        final LambdaReflection.SerializableFunction<R, T> mapFunction;
+//
+//        public MapReferenceEventStream(EventStream<R> inputEventStream, LambdaReflection.SerializableFunction<R, T> mapFunction) {
+//            super(inputEventStream, mapFunction);
+//        }
+//    }
+//
+//    public static class MapInt2IntEventStream extends MapEventStream<Integer, Integer>{
+//
+//        public MapInt2IntEventStream(EventStream<Integer> inputEventStream, LambdaReflection.SerializableFunction<Integer, Integer> mapFunction) {
+//            super(inputEventStream, mapFunction);
+//        }
+//    }
 
 }

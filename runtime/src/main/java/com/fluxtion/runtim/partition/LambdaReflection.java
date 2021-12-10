@@ -21,13 +21,7 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
 import static java.util.Arrays.asList;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 /**
  *
@@ -116,6 +110,9 @@ public interface LambdaReflection {
     }
 
     interface SerializableToIntFunction<t> extends ToIntFunction<t>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableIntUnaryOperator extends IntUnaryOperator, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableToDoubleFunction<t> extends ToDoubleFunction<t>, Serializable, MethodReferenceReflection {

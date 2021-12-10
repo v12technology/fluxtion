@@ -101,7 +101,17 @@ public final class DefaultFilteredEventHandler<T>
     }
 
     @Override
-    public void setUpdateTriggerOverride(Object updateTriggerOverride) {
+    public void setUpdateTriggerNode(Object updateTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setPublishTriggerNode(Object publishTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setResetTriggerNode(Object resetTriggerNode) {
         //do nothing
     }
 

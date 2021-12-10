@@ -1,6 +1,5 @@
 package com.fluxtion.runtim.stream;
 
-import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.NoEventReference;
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.annotations.PushReference;
@@ -11,7 +10,7 @@ public class NotifyEventStream<T> extends AbstractEventStream<T, T> {
 
     @PushReference
     private final Object target;
-    private String auditInfo;
+    private final String auditInfo;
     private String instanceName;
     @Inject
     @NoEventReference
@@ -23,15 +22,15 @@ public class NotifyEventStream<T> extends AbstractEventStream<T, T> {
         auditInfo = target.getClass().getSimpleName() ;
     }
 
-    @Initialise
-    public void init(){
+    protected void initialise(){
        instanceName = nodeNameLookup.lookup(target);
     }
 
     @OnEvent
-    public void notifyChild(){
+    public boolean notifyChild(){
         auditLog.info("notifyClass", auditInfo);
         auditLog.info("notifyInstance", instanceName);
+        return fireEventUpdateNotification();
     }
 
     @Override

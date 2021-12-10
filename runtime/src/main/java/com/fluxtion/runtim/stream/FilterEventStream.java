@@ -16,8 +16,12 @@ public class FilterEventStream<T> extends AbstractEventStream<T, T> {
 
     @OnEvent
     public boolean filter(){
+        boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().get());
+        boolean fireNotification = filter & fireEventUpdateNotification();
         auditLog.info("filterFunction", auditInfo);
-        return filterFunction.apply(getInputEventStream().get());
+        auditLog.info("filterPass", filter);
+        auditLog.info("publishToChild", fireNotification);
+        return fireNotification;
     }
 
     @Override

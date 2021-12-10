@@ -6,11 +6,12 @@ import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtim.stream.*;
 
-public class EventStreamBuilder<T> {
+public class
+EventStreamBuilder<T> {
 
     private final TriggeredEventStream<T> eventStream;
 
-    private EventStreamBuilder(TriggeredEventStream<T> eventStream) {
+    EventStreamBuilder(TriggeredEventStream<T> eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
     }
@@ -27,12 +28,22 @@ public class EventStreamBuilder<T> {
 
     //TRIGGERS - START
     public EventStreamBuilder<T> updateTrigger(Object updateTrigger){
-        eventStream.setUpdateTriggerOverride(updateTrigger);
+        eventStream.setUpdateTriggerNode(updateTrigger);
         return this;
     }
 
     public EventStreamBuilder<T> updateTrigger(EventStreamBuilder<?> updateTrigger){
-        eventStream.setUpdateTriggerOverride(updateTrigger.eventStream);
+        eventStream.setUpdateTriggerNode(updateTrigger.eventStream);
+        return this;
+    }
+
+    public EventStreamBuilder<T> publishTrigger(EventStreamBuilder<?> updateTrigger){
+        eventStream.setPublishTriggerNode(updateTrigger.eventStream);
+        return this;
+    }
+
+    public EventStreamBuilder<T> resetTrigger(EventStreamBuilder<?> updateTrigger){
+        eventStream.setResetTriggerNode(updateTrigger.eventStream);
         return this;
     }
     //TRIGGERS - END
@@ -65,34 +76,34 @@ public class EventStreamBuilder<T> {
 
     /*
     TODO:
-    binaryMap
-
-    resetTrigger
-    publishTrigger
-
-    all tests
-
+    ================
+    log - helper function
     ??? maybe not - need to test - implement last
     primitive map
-    primitive get
     primitive tests
     ??? maybe not - need to test - implement last
 
     optional:
+    ================
+    audit - helper function
     merge/zip
     flatmap
+    binaryMap
+    tests
 
      DONE
-     =======
-     subscribe
-     wrapNode
-     updateTrigger
-     peek
-     get
-     push
-     filter
-     notify
-     tests
+    ================
+    subscribe
+    wrapNode
+    updateTrigger
+    peek
+    get
+    push
+    filter
+    notify
+    tests
+    resetTrigger
+    publishTrigger
      */
 
 }

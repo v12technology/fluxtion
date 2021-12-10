@@ -1,6 +1,5 @@
 package com.fluxtion.runtim.stream;
 
-import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.NoEventReference;
 import com.fluxtion.runtim.annotations.OnEvent;
@@ -12,7 +11,6 @@ public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventS
 
     private final T source;
     private String instanceName;
-    private String name;
     @Inject
     @NoEventReference
     public NodeNameLookup nodeNameLookup;
@@ -29,7 +27,6 @@ public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventS
     @Initialise
     public void init(){
         instanceName = nodeNameLookup.lookup(source);
-        name = "stream_" + instanceName;
     }
 
     @Override
@@ -38,7 +35,17 @@ public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventS
     }
 
     @Override
-    public void setUpdateTriggerOverride(Object updateTriggerOverride) {
+    public void setUpdateTriggerNode(Object updateTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setPublishTriggerNode(Object publishTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setResetTriggerNode(Object resetTriggerNode) {
         //do nothing
     }
 }
