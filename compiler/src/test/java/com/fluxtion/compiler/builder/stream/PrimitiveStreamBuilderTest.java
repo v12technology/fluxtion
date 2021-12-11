@@ -34,7 +34,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     public static int multiplyX10(int input){
-        System.out.println("result:" + input * 10);
+//        System.out.println("result:" + input * 10);
         return input * 10;
     }
 
