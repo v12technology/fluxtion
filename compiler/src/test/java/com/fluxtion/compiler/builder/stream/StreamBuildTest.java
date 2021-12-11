@@ -8,8 +8,6 @@ import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static com.fluxtion.compiler.builder.stream.EventFlow.streamFromNode;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
