@@ -5,32 +5,23 @@ import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableToIntFunction;
 
+import java.lang.reflect.Method;
+
 import static com.fluxtion.runtim.partition.LambdaReflection.SerializableIntUnaryOperator;
 
 /**
- *
- * @param <R> Incoming type
- * @param <T> Output type
+ * @param <T> Incoming type
+ * @param <R> Output type
  * @param <S> Previous EventStream type
  */
-public class MapEventStream<R, T, S extends EventStream<R>> extends AbstractEventStream<R, T, S> {
+public abstract class MapEventStream<T, R, S extends EventStream<T>> extends AbstractEventStream<T, R, S> {
 
-    private final LambdaReflection.SerializableFunction<R, T> mapFunction;
     protected transient String auditInfo;
+    protected transient R result;
 
-    private transient T result;
-
-    public MapEventStream(S inputEventStream, SerializableFunction<R, T> mapFunction) {
+    public MapEventStream(S inputEventStream, Method method) {
         super(inputEventStream);
-        this.mapFunction = mapFunction;
-        if(mapFunction!=null){
-            auditInfo = mapFunction.method().getDeclaringClass().getSimpleName() + "->" + mapFunction.method().getName();
-        }
-    }
-
-    public MapEventStream(S inputEventStream) {
-        super(inputEventStream);
-        mapFunction = null;
+            auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
     }
 
     @OnEvent
@@ -46,66 +37,51 @@ public class MapEventStream<R, T, S extends EventStream<R>> extends AbstractEven
     }
 
     @Override
-    public T get() {
+    public R get() {
         return result;
     }
 
-    protected void mapOperation() {
-        result = mapFunction.apply(getInputEventStream().get());
-    }
+    abstract protected void mapOperation();
 
-    public static class MapRef2IntEventStream <R, S extends EventStream<R>> extends MapEventStream<R, Integer, S> implements IntEventStream {
+    public static class MapRef2RefEventStream<T, R, S extends EventStream<T>> extends  MapEventStream<T, R, S> {
 
-        private transient int result;
-        private final LambdaReflection.SerializableToIntFunction<R> intUnaryOperator;
-
-        public MapRef2IntEventStream(S inputEventStream, SerializableToIntFunction<R> intUnaryOperator) {
-            super(inputEventStream);
-            this.intUnaryOperator = intUnaryOperator;
-            auditInfo = intUnaryOperator.method().getDeclaringClass().getSimpleName() + "->" + intUnaryOperator.method().getName();
+        private final LambdaReflection.SerializableFunction<T, R> mapFunction;
+        public MapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction) {
+            super(inputEventStream, mapFunction.method());
+            this.mapFunction = mapFunction;
         }
 
-        @Override
-        public Integer get() {
-            return getAsInt();
-        }
-
-        @Override
         protected void mapOperation() {
-            result = intUnaryOperator.applyAsInt( getInputEventStream().get());
+            result = mapFunction.apply(getInputEventStream().get());
         }
 
-        @Override
-        public int getAsInt() {
-            return result;
-        }
     }
 
-
-    public static class MapInt2IntEventStream extends MapEventStream<Integer, Integer, IntEventStream> implements IntEventStream {
-
-        private transient int result;
+    public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
         private final SerializableIntUnaryOperator intUnaryOperator;
 
-        public MapInt2IntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
-            super(inputEventStream);
+        public MapInt2ToIntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
             this.intUnaryOperator = intUnaryOperator;
-            auditInfo = intUnaryOperator.method().getDeclaringClass().getSimpleName() + "->" + intUnaryOperator.method().getName();
-        }
-
-        @Override
-        public Integer get() {
-            return getAsInt();
         }
 
         @Override
         protected void mapOperation() {
-            result = intUnaryOperator.applyAsInt( getInputEventStream().getAsInt());
+            result = intUnaryOperator.applyAsInt(getInputEventStream().getAsInt());
+        }
+    }
+
+    public static class MapRef2ToIntEventStream<R, S extends EventStream<R>> extends AbstractMapToIntEventStream<R, S> {
+        private final SerializableToIntFunction<R> intUnaryOperator;
+
+        public MapRef2ToIntEventStream(S inputEventStream, SerializableToIntFunction<R> intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
         }
 
         @Override
-        public int getAsInt() {
-            return result;
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsInt(getInputEventStream().get());
         }
     }
 

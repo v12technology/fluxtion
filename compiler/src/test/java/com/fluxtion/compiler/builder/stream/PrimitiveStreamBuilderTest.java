@@ -15,7 +15,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void notifyTest() {
-//        addAuditor();
+        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isNumber)
@@ -34,7 +34,6 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     public static int multiplyX10(int input){
-//        System.out.println("result:" + input * 10);
         return input * 10;
     }
 

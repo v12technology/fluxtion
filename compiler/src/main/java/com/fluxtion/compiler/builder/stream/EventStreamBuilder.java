@@ -32,11 +32,11 @@ public class EventStreamBuilder<T> {
 
     //PROCESSING - START
     public <R> EventStreamBuilder<R> map(LambdaReflection.SerializableFunction<T, R> mapFunction) {
-        return new EventStreamBuilder<>( new MapEventStream<>(eventStream, mapFunction));
+        return new EventStreamBuilder<>( new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
     }
 
     public IntStreamBuilder<T, EventStream<T>> mapToInt(LambdaReflection.SerializableToIntFunction<T> mapFunction) {
-        return new IntStreamBuilder<>( new MapEventStream.MapRef2IntEventStream<>(eventStream, mapFunction));
+        return new IntStreamBuilder<>( new MapEventStream.MapRef2ToIntEventStream<>(eventStream, mapFunction));
     }
 
     public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
