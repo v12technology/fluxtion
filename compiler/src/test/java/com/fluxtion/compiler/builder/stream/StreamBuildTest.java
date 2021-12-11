@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.fluxtion.compiler.builder.stream.EventStreamSubscriber.nodeAsEventStream;
-import static com.fluxtion.compiler.builder.stream.EventStreamSubscriber.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.streamFromNode;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -23,7 +23,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void wrapNodeAsStreamTest(){
-        sep(c -> nodeAsEventStream(new MyStringHandler())
+        sep(c -> streamFromNode(new MyStringHandler())
                 .notify(new NotifyAndPushTarget()));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
@@ -105,7 +105,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void mapTestWithFilterAndUpdateAndPublishTriggers() throws IOException {
+    public void mapTestWithFilterAndUpdateAndPublishTriggers() {
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isNumber)
                 .map(StreamBuildTest::parseInt)

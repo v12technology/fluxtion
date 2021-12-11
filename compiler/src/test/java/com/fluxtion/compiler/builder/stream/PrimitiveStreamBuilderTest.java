@@ -4,7 +4,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventStreamSubscriber.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
