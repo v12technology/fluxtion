@@ -19,15 +19,15 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     public NotifyEventStream(S inputEventStream, Object target) {
         super(inputEventStream);
         this.target = target;
-        auditInfo = target.getClass().getSimpleName() ;
+        auditInfo = target.getClass().getSimpleName();
     }
 
-    protected void initialise(){
-       instanceName = nodeNameLookup.lookup(target);
+    protected void initialise() {
+        instanceName = nodeNameLookup.lookup(target);
     }
 
     @OnEvent
-    public boolean notifyChild(){
+    public boolean notifyChild() {
         auditLog.info("notifyClass", auditInfo);
         auditLog.info("notifyInstance", instanceName);
         return fireEventUpdateNotification();
@@ -38,7 +38,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         return getInputEventStream().get();
     }
 
-    public static class IntNotifyEventStream extends NotifyEventStream<Integer, IntEventStream> implements  IntEventStream{
+    public static class IntNotifyEventStream extends NotifyEventStream<Integer, IntEventStream> implements IntEventStream {
 
         public IntNotifyEventStream(IntEventStream inputEventStream, Object target) {
             super(inputEventStream, target);
@@ -50,4 +50,27 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         }
     }
 
+    public static class DoubleNotifyEventStream extends NotifyEventStream<Double, DoubleEventStream> implements DoubleEventStream {
+
+        public DoubleNotifyEventStream(DoubleEventStream inputEventStream, Object target) {
+            super(inputEventStream, target);
+        }
+
+        @Override
+        public double getAsDouble() {
+            return getInputEventStream().getAsDouble();
+        }
+    }
+
+    public static class LongNotifyEventStream extends NotifyEventStream<Long, LongEventStream> implements LongEventStream {
+
+        public LongNotifyEventStream(LongEventStream inputEventStream, Object target) {
+            super(inputEventStream, target);
+        }
+
+        @Override
+        public long getAsLong() {
+            return getInputEventStream().getAsLong();
+        }
+    }
 }

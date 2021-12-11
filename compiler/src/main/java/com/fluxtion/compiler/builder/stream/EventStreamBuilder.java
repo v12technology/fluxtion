@@ -39,6 +39,14 @@ public class EventStreamBuilder<T> {
         return new IntStreamBuilder<>( new MapEventStream.MapRef2ToIntEventStream<>(eventStream, mapFunction));
     }
 
+    public DoubleStreamBuilder<T, EventStream<T>> mapToDouble(LambdaReflection.SerializableToDoubleFunction<T> mapFunction) {
+        return new DoubleStreamBuilder<>( new MapEventStream.MapRef2ToDoubleEventStream<>(eventStream, mapFunction));
+    }
+
+    public LongStreamBuilder<T, EventStream<T>> mapToLong(LambdaReflection.SerializableToLongFunction<T> mapFunction) {
+        return new LongStreamBuilder<>( new MapEventStream.MapRef2ToLongEventStream<>(eventStream, mapFunction));
+    }
+
     public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
         return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
     }

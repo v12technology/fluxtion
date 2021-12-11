@@ -43,24 +43,24 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void pushTest(){
         sep(c -> subscribe(Integer.class)
-                .push(new NotifyAndPushTarget()::setPushValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        assertThat(0, is(notifyTarget.getPushValue()));
+        assertThat(0, is(notifyTarget.getIntPushValue()));
         onEvent((Integer)200);
-        assertThat(200, is(notifyTarget.getPushValue()));
+        assertThat(200, is(notifyTarget.getIntPushValue()));
     }
 
     @Test
     public void mapTest(){
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::parseInt)
-                .push(new NotifyAndPushTarget()::setPushValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        assertThat(notifyTarget.getPushValue(), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
         onEvent("86");
-        assertThat(notifyTarget.getPushValue(), is(86));
+        assertThat(notifyTarget.getIntPushValue(), is(86));
     }
 
     @Test
@@ -83,22 +83,22 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .filter(NumberUtils::isNumber)
                 .map(StreamBuildTest::parseInt)
                 .map(new Adder()::add)
-                .push(new NotifyAndPushTarget()::setPushValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        assertThat(notifyTarget.getPushValue(), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(notifyTarget.getOnEventCount(), is(0));
 
         onEvent("86");
-        assertThat(notifyTarget.getPushValue(), is(86));
+        assertThat(notifyTarget.getIntPushValue(), is(86));
         assertThat(notifyTarget.getOnEventCount(), is(1));
 
         onEvent("ignore me");
-        assertThat(notifyTarget.getPushValue(), is(86));
+        assertThat(notifyTarget.getIntPushValue(), is(86));
         assertThat(notifyTarget.getOnEventCount(), is(1));
 
         onEvent("14");
-        assertThat(notifyTarget.getPushValue(), is(100));
+        assertThat(notifyTarget.getIntPushValue(), is(100));
         assertThat(notifyTarget.getOnEventCount(), is(2));
     }
 
@@ -110,41 +110,43 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .map(new Adder()::add)
                     .updateTrigger(subscribe(Double.class))
                     .publishTrigger(subscribe(Integer.class))
-                .push(new NotifyAndPushTarget()::setPushValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        assertThat(notifyTarget.getPushValue(), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(notifyTarget.getOnEventCount(), is(0));
 
         onEvent("10");
-        assertThat(notifyTarget.getPushValue(), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(notifyTarget.getOnEventCount(), is(0));
 
         onEvent("ignore me");
-        assertThat(notifyTarget.getPushValue(), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(notifyTarget.getOnEventCount(), is(0));
 
         onEvent("100");
         onEvent("1000");
         onEvent("10000");
         onEvent(1.01);
-        assertThat(notifyTarget.getPushValue(), is(10000));
+        assertThat(notifyTarget.getIntPushValue(), is(10000));
         assertThat(notifyTarget.getOnEventCount(), is(1));
 
         onEvent(1.01);
-        assertThat(notifyTarget.getPushValue(), is(20000));
+        assertThat(notifyTarget.getIntPushValue(), is(20000));
         assertThat(notifyTarget.getOnEventCount(), is(2));
 
         onEvent("343540");
         onEvent((Integer)1);
-        assertThat(notifyTarget.getPushValue(), is(20000));
+        assertThat(notifyTarget.getIntPushValue(), is(20000));
         assertThat(notifyTarget.getOnEventCount(), is(3));
     }
 
     @Data
     public static class NotifyAndPushTarget implements Named {
         private transient int onEventCount;
-        private transient int pushValue;
+        private transient int intPushValue;
+        private transient double doublePushValue;
+        private transient long longPushValue;
 
         @OnEvent
         public void notified() {
@@ -173,6 +175,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     public static int parseInt(String in){
         return Integer.parseInt(in);
+    }
+
+    public static double parseDouble(String in){
+        return Double.parseDouble(in);
+    }
+
+    public static long parseLong(String in){
+        return Long.parseLong(in);
     }
 
     @Data

@@ -106,6 +106,12 @@ public interface LambdaReflection {
     interface SerializableIntConsumer extends IntConsumer, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableDoubleConsumer extends DoubleConsumer, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongConsumer extends LongConsumer, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableBiConsumer<t, u> extends BiConsumer<t, u>, Serializable, MethodReferenceReflection {
     }
 
@@ -115,13 +121,28 @@ public interface LambdaReflection {
     interface SerializableIntFunction<r> extends IntFunction<r>, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableDoubleFunction<r> extends DoubleFunction<r>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongFunction<r> extends LongFunction<r>, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableToIntFunction<t> extends ToIntFunction<t>, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableIntUnaryOperator extends IntUnaryOperator, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableDoubleUnaryOperator extends DoubleUnaryOperator, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongUnaryOperator extends LongUnaryOperator, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableToDoubleFunction<t> extends ToDoubleFunction<t>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableToLongFunction<t> extends ToLongFunction<t>, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {

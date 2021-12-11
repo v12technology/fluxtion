@@ -33,7 +33,7 @@ public class IntStreamBuilder<I, S extends EventStream<I>> {
     }
 
     //PROCESSING - START
-    public IntStreamBuilder<Integer, IntEventStream> mapToInt(SerializableIntUnaryOperator int2IntFunction) {
+    public IntStreamBuilder<Integer, IntEventStream> map(SerializableIntUnaryOperator int2IntFunction) {
         return new IntStreamBuilder<>(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
     }
 
