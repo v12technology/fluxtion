@@ -1,8 +1,5 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtim.partition.LambdaReflection;
-import com.fluxtion.runtim.stream.helpers.DefaultValue;
-
 class StreamHelper {
     static Object getSource(Object input) {
         Object returnValue = input;
