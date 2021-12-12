@@ -12,7 +12,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
     transient final String auditInfo;
 
     public FilterEventStream(S inputEventStream, SerializableFunction<T, Boolean> filterFunction) {
-        super(inputEventStream);
+        super(inputEventStream, filterFunction);
         this.filterFunction = filterFunction;
         auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
     }
@@ -39,7 +39,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
         transient final String auditInfo;
 
         public IntFilterEventStream(IntEventStream inputEventStream, SerializableIntFunction<Boolean> filterFunction) {
-            super(inputEventStream);
+            super(inputEventStream, filterFunction);
             this.filterFunction = filterFunction;
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
@@ -72,7 +72,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
         transient final String auditInfo;
 
         public DoubleFilterEventStream(DoubleEventStream inputEventStream, SerializableDoubleFunction<Boolean> filterFunction) {
-            super(inputEventStream);
+            super(inputEventStream,filterFunction);
             this.filterFunction = filterFunction;
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
@@ -105,7 +105,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
         transient final String auditInfo;
 
         public LongFilterEventStream(LongEventStream inputEventStream, SerializableLongFunction<Boolean> filterFunction) {
-            super(inputEventStream);
+            super(inputEventStream, filterFunction);
             this.filterFunction = filterFunction;
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }

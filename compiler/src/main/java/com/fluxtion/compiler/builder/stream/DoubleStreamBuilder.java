@@ -4,6 +4,7 @@ import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.partition.LambdaReflection.*;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
 public class DoubleStreamBuilder<I, S extends EventStream<I>> {
 
@@ -32,6 +33,10 @@ public class DoubleStreamBuilder<I, S extends EventStream<I>> {
 
     public DoubleStreamBuilder<Double, DoubleEventStream> filter(SerializableDoubleFunction<Boolean> filterFunction){
         return new DoubleStreamBuilder<>( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
+    }
+
+    public DoubleStreamBuilder<Double, DoubleEventStream>defaultValue(double defaultValue){
+        return map(new DefaultValue.DefaultDouble(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START

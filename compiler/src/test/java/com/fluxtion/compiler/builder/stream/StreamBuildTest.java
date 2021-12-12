@@ -4,6 +4,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.event.Signal;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import static com.fluxtion.compiler.builder.stream.EventFlow.streamFromNode;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StreamBuildTest extends MultipleSepTargetInProcessTest {
@@ -20,7 +22,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void wrapNodeAsStreamTest(){
+    public void wrapNodeAsStreamTest() {
         sep(c -> streamFromNode(new MyStringHandler())
                 .notify(new NotifyAndPushTarget()));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -41,18 +43,18 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void pushTest(){
+    public void pushTest() {
         sep(c -> subscribe(Integer.class)
                 .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getIntPushValue()));
-        onEvent((Integer)200);
+        onEvent((Integer) 200);
         assertThat(200, is(notifyTarget.getIntPushValue()));
     }
 
     @Test
-    public void mapTest(){
+    public void mapTest() {
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::parseInt)
                 .push(new NotifyAndPushTarget()::setIntPushValue)
@@ -64,7 +66,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void filterTest(){
+    public void filterTest() {
         sep(c -> subscribe(String.class)
                 .filter(StreamBuildTest::isTrue)
                 .notify(new NotifyAndPushTarget())
@@ -78,7 +80,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void mapTestWithFilter(){
+    public void mapTestWithFilter() {
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isNumber)
                 .map(StreamBuildTest::parseInt)
@@ -103,8 +105,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void multipleNotifiers(){
-        sep(c ->{
+    public void multipleNotifiers() {
+        sep(c -> {
             subscribe(String.class).notify(new NotifyAndPushTarget());
             subscribe(Double.class).notify(new NotifyAndPushTarget("doubleNotifier"));
         });
@@ -129,8 +131,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .filter(NumberUtils::isNumber)
                 .map(StreamBuildTest::parseInt)
                 .map(new Adder()::add)
-                    .updateTrigger(subscribe(Double.class))
-                    .publishTrigger(subscribe(Integer.class))
+                .updateTrigger(subscribe(Double.class))
+                .publishTrigger(subscribe(Integer.class))
                 .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -157,17 +159,33 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getOnEventCount(), is(2));
 
         onEvent("343540");
-        onEvent((Integer)1);
+        onEvent((Integer) 1);
         assertThat(notifyTarget.getIntPushValue(), is(20000));
         assertThat(notifyTarget.getOnEventCount(), is(3));
     }
 
+    @Test
+    public void defaultValueTest() {
+        sep(c -> subscribe(String.class)
+                .defaultValue("not null")
+                .publishTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setStringPushValue)
+        );
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getStringPushValue(), nullValue());
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getStringPushValue(), is("not null"));
+    }
+
     @Data
     public static class NotifyAndPushTarget implements Named {
+        public static final String DEFAULT_NAME = "notifyTarget";
         private transient int onEventCount;
         private transient int intPushValue;
         private transient double doublePushValue;
         private transient long longPushValue;
+        private transient String stringPushValue;
         private final String name;
 
         public NotifyAndPushTarget(String name) {
@@ -175,7 +193,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         public NotifyAndPushTarget() {
-            this("notifyTarget");
+            this(DEFAULT_NAME);
         }
 
         @OnEvent
@@ -190,11 +208,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class MyStringHandler{
+    public static class MyStringHandler {
         private String inputString;
 
         @EventHandler
-        public void newString(String in){
+        public void newString(String in) {
             inputString = in;
         }
     }
@@ -203,23 +221,23 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return Boolean.parseBoolean(in);
     }
 
-    public static int parseInt(String in){
+    public static int parseInt(String in) {
         return Integer.parseInt(in);
     }
 
-    public static double parseDouble(String in){
+    public static double parseDouble(String in) {
         return Double.parseDouble(in);
     }
 
-    public static long parseLong(String in){
+    public static long parseLong(String in) {
         return Long.parseLong(in);
     }
 
     @Data
-    public static class Adder{
+    public static class Adder {
         int sum;
 
-        public int add(int value){
+        public int add(int value) {
             return sum += value;
         }
     }

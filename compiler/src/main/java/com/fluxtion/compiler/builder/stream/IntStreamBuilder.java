@@ -7,6 +7,7 @@ import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntUnaryOperator;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.IntEventStream;
+import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
 public class IntStreamBuilder<I, S extends EventStream<I>> {
 
@@ -35,6 +36,10 @@ public class IntStreamBuilder<I, S extends EventStream<I>> {
 
     public IntStreamBuilder<Integer, IntEventStream> filter( SerializableIntFunction<Boolean> filterFunction){
         return new IntStreamBuilder<>( new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
+    }
+
+    public IntStreamBuilder<Integer, IntEventStream> defaultValue( int defaultValue){
+        return map(new DefaultValue.DefaultInt(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START

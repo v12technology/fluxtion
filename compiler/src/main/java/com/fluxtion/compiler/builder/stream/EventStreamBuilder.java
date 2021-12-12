@@ -4,6 +4,7 @@ import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtim.stream.*;
+import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
 public class EventStreamBuilder<T> {
 
@@ -30,6 +31,14 @@ public class EventStreamBuilder<T> {
         return this;
     }
 
+    public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
+        return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
+    }
+
+    public EventStreamBuilder<T> defaultValue(T defaultValue){
+        return map(new DefaultValue<>(defaultValue)::getOrDefault);
+    }
+
     //PROCESSING - START
     public <R> EventStreamBuilder<R> map(LambdaReflection.SerializableFunction<T, R> mapFunction) {
         return new EventStreamBuilder<>( new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
@@ -45,10 +54,6 @@ public class EventStreamBuilder<T> {
 
     public LongStreamBuilder<T, EventStream<T>> mapToLong(LambdaReflection.SerializableToLongFunction<T> mapFunction) {
         return new LongStreamBuilder<>( new MapEventStream.MapRef2ToLongEventStream<>(eventStream, mapFunction));
-    }
-
-    public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
-        return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
     }
 
     //OUTPUTS - START
@@ -70,22 +75,20 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    log - helper function
-    ??? maybe not - need to test - implement last
-    primitive map
-    primitive tests
-    ??? maybe not - need to test - implement last
+    De-dupe filter
+    binaryMap
+
 
     optional:
     ================
+    log - helper function
     audit - helper function
     merge/zip
     flatmap
-    binaryMap
-    tests
 
      DONE
     ================
+    Default helper
     subscribe
     wrapNode
     updateTrigger
@@ -97,6 +100,8 @@ public class EventStreamBuilder<T> {
     tests
     resetTrigger
     publishTrigger
+    primitive map
+    primitive tests
      */
 
 }

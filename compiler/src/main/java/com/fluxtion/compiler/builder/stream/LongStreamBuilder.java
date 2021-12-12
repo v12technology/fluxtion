@@ -7,6 +7,7 @@ import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongUnaryOperator;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.LongEventStream;
+import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
 public class LongStreamBuilder<I, S extends EventStream<I>> {
 
@@ -35,6 +36,10 @@ public class LongStreamBuilder<I, S extends EventStream<I>> {
 
     public LongStreamBuilder<Long, LongEventStream> filter(SerializableLongFunction<Boolean> filterFunction){
         return new LongStreamBuilder<>( new FilterEventStream.LongFilterEventStream(eventStream, filterFunction));
+    }
+
+    public LongStreamBuilder<Long, LongEventStream> defaultValue(long defaultValue){
+        return map(new DefaultValue.DefaultLong(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START

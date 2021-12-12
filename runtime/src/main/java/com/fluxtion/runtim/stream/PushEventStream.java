@@ -19,7 +19,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
     private transient final String auditInfo;
 
     public PushEventStream(S inputEventStream, SerializableConsumer<T> eventStreamConsumer) {
-        super(inputEventStream);
+        super(inputEventStream, null);
         this.eventStreamConsumer = eventStreamConsumer;
         this.target = eventStreamConsumer.captured()[0];
         auditInfo = target.getClass().getSimpleName() + "->" + eventStreamConsumer.method().getName();
@@ -49,7 +49,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         private transient final String auditInfo;
 
         public IntPushEventStream(IntEventStream inputEventStream, SerializableIntConsumer intConsumer) {
-            super(inputEventStream);
+            super(inputEventStream, null);
             this.intConsumer = intConsumer;
             this.target = intConsumer.captured()[0];
             auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();
@@ -85,7 +85,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         private transient final String auditInfo;
 
         public DoublePushEventStream(DoubleEventStream inputEventStream, SerializableDoubleConsumer intConsumer) {
-            super(inputEventStream);
+            super(inputEventStream, null);
             this.intConsumer = intConsumer;
             this.target = intConsumer.captured()[0];
             auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();
@@ -121,7 +121,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         private transient final String auditInfo;
 
         public LongPushEventStream(LongEventStream inputEventStream, SerializableLongConsumer intConsumer) {
-            super(inputEventStream);
+            super(inputEventStream, null);
             this.intConsumer = intConsumer;
             this.target = intConsumer.captured()[0];
             auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();

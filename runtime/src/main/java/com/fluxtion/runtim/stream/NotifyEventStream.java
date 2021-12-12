@@ -21,7 +21,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     public NodeNameLookup nodeNameLookup;
 
     public NotifyEventStream(S inputEventStream, Object target) {
-        super(inputEventStream);
+        super(inputEventStream, null);
         this.target = target;
         auditInfo = target.getClass().getSimpleName();
     }

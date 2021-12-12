@@ -100,6 +100,15 @@ public interface LambdaReflection {
     interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableIntSupplier extends IntSupplier, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableDoubleSupplier extends DoubleSupplier, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongSupplier extends LongSupplier, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableConsumer<t> extends Consumer<t>, Serializable, MethodReferenceReflection {
     }
 

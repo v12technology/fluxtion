@@ -1,8 +1,10 @@
 package com.fluxtion.runtim.stream;
 
+import com.fluxtion.runtim.Anchor;
 import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.OnParentUpdate;
 import com.fluxtion.runtim.audit.EventLogNode;
+import com.fluxtion.runtim.partition.LambdaReflection;
 import lombok.ToString;
 
 /**
@@ -22,8 +24,11 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
     private Object publishTriggerNode;
     private Object resetTriggerNode;
 
-    public AbstractEventStream(S inputEventStream) {
+    public AbstractEventStream(S inputEventStream, LambdaReflection.MethodReferenceReflection methodReferenceReflection) {
         this.inputEventStream = inputEventStream;
+        if (methodReferenceReflection!=null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
+            Anchor.anchor(this, methodReferenceReflection.captured()[0]);
+        }
     }
 
     protected final boolean fireEventUpdateNotification() {

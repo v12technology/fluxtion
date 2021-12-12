@@ -298,7 +298,7 @@ public class MultipleSepTargetInProcessTest {
     }
 
     @SneakyThrows
-    private void writeAuditToFile(String fileNamePrefix) {
+    protected void auditToFile(String fileNamePrefix) {
         fileNamePrefix = fileNamePrefix + (compiledSep?"-compiled.yaml":"-interpreted.yaml");
         File file = new File("target\\generated-test-sources\\fluxtion-log\\" + fileNamePrefix);
         FileUtils.forceMkdirParent(file);

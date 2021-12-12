@@ -22,8 +22,9 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     protected transient String auditInfo;
     protected transient R result;
 
-    public MapEventStream(S inputEventStream, Method method) {
-        super(inputEventStream);
+    public MapEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
+        super(inputEventStream, methodReferenceReflection);
+        Method method = methodReferenceReflection.method();
         auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
     }
 
@@ -50,7 +51,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         private final LambdaReflection.SerializableFunction<T, R> mapFunction;
         public MapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction) {
-            super(inputEventStream, mapFunction.method());
+            super(inputEventStream, mapFunction);
             this.mapFunction = mapFunction;
         }
 
@@ -72,7 +73,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         protected transient int result;
 
-        public AbstractMapToIntEventStream(S inputEventStream, Method method) {
+        public AbstractMapToIntEventStream(S inputEventStream, MethodReferenceReflection method) {
             super(inputEventStream, method);
         }
 
@@ -93,7 +94,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableToIntFunction<R> intUnaryOperator;
 
         public MapRef2ToIntEventStream(S inputEventStream, SerializableToIntFunction<R> intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -109,7 +110,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableIntUnaryOperator intUnaryOperator;
 
         public MapInt2ToIntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -125,7 +126,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableDoubleToIntFunction intUnaryOperator;
 
         public MapDouble2ToIntEventStream(DoubleEventStream inputEventStream, SerializableDoubleToIntFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -141,7 +142,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableLongToIntFunction intUnaryOperator;
 
         public MapLong2ToIntEventStream(LongEventStream inputEventStream, SerializableLongToIntFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -166,7 +167,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         protected transient double result;
 
-        public AbstractMapToDoubleEventStream(S inputEventStream, Method method) {
+        public AbstractMapToDoubleEventStream(S inputEventStream, MethodReferenceReflection method) {
             super(inputEventStream, method);
         }
 
@@ -187,7 +188,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableToDoubleFunction<R> intUnaryOperator;
 
         public MapRef2ToDoubleEventStream(S inputEventStream, SerializableToDoubleFunction<R> intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -203,7 +204,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableDoubleUnaryOperator intUnaryOperator;
 
         public MapDouble2ToDoubleEventStream(DoubleEventStream inputEventStream, SerializableDoubleUnaryOperator intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -219,7 +220,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableIntToDoubleFunction intUnaryOperator;
 
         public MapInt2ToDoubleEventStream(IntEventStream inputEventStream, SerializableIntToDoubleFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -235,7 +236,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableLongToDoubleFunction intUnaryOperator;
 
         public MapLong2ToDoubleEventStream(LongEventStream inputEventStream, SerializableLongToDoubleFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -260,7 +261,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         protected transient long result;
 
-        public AbstractMapToLongEventStream(S inputEventStream, Method method) {
+        public AbstractMapToLongEventStream(S inputEventStream, MethodReferenceReflection method) {
             super(inputEventStream, method);
         }
 
@@ -280,7 +281,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final LambdaReflection.SerializableToLongFunction<R> intUnaryOperator;
 
         public MapRef2ToLongEventStream(S inputEventStream, LambdaReflection.SerializableToLongFunction<R> intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -296,7 +297,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableLongUnaryOperator intUnaryOperator;
 
         public MapLong2ToLongEventStream(LongEventStream inputEventStream, SerializableLongUnaryOperator intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -312,7 +313,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableIntToLongFunction intUnaryOperator;
 
         public MapInt2ToLongEventStream(IntEventStream inputEventStream, SerializableIntToLongFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 
@@ -328,7 +329,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private final SerializableDoubleToLongFunction intUnaryOperator;
 
         public MapDouble2ToLongEventStream(DoubleEventStream inputEventStream, SerializableDoubleToLongFunction intUnaryOperator) {
-            super(inputEventStream, intUnaryOperator.method());
+            super(inputEventStream, intUnaryOperator);
             this.intUnaryOperator = intUnaryOperator;
         }
 

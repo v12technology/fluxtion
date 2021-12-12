@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.event.Signal;
 import com.fluxtion.runtim.stream.EventStream;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
@@ -28,6 +29,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
                 .notify(notifyAndPushTarget)
                 .push(notifyAndPushTarget::setIntPushValue)
         );
+//        auditToFile("intTest");
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("sdsdsd 230");
@@ -79,7 +81,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testIntConversions() {
+    public void testMultipleIntConversions() {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
@@ -98,7 +100,6 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getDoublePushValue(), closeTo(2147483.648, 0.00001));
         assertThat(notifyTarget.getIntPushValue(), is(2147483));
     }
-
 
     @Test
     public void testDoubleConversions(){
@@ -120,14 +121,78 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         sep(c ->{
             StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
-            LongStreamBuilder<Long, EventStream<Long>> doubleStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
-            doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
-            doubleStreamBuilder.mapToDouble(PrimitiveStreamBuilderTest::castLongToDouble).push(pushTarget::setDoublePushValue);
+            LongStreamBuilder<Long, EventStream<Long>> longStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
+            longStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
+            longStreamBuilder.mapToDouble(PrimitiveStreamBuilderTest::castLongToDouble).push(pushTarget::setDoublePushValue);
         });
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent(234L);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getDoublePushValue(), closeTo(234.0, 0.0001));
+    }
+
+
+    @Test
+    public void defaultIntValueTest(){
+//        addAuditor();
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .defaultValue(100)
+                .publishTrigger(subscribe(Signal.class))
+                .push(new StreamBuildTest.NotifyAndPushTarget()::setIntPushValue)
+        );
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getIntPushValue(), is(100));
+
+        onEvent("2000");
+        assertThat(notifyTarget.getIntPushValue(), is(2_000));
+
+        onEvent("0");
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+    }
+
+    @Test
+    public void defaultDoubleValueTest(){
+//        addAuditor();
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .defaultValue(100)
+                .publishTrigger(subscribe(Signal.class))
+                .push(new StreamBuildTest.NotifyAndPushTarget()::setDoublePushValue)
+        );
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getDoublePushValue(), is(100.0));
+
+        onEvent("2000");
+        assertThat(notifyTarget.getDoublePushValue(), is(2_000.0));
+
+        onEvent("0");
+        assertThat(notifyTarget.getDoublePushValue(), is(0.0));
+    }
+
+    @Test
+    public void defaultLongValueTest(){
+//        addAuditor();
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .defaultValue(100)
+                .publishTrigger(subscribe(Signal.class))
+                .push(new StreamBuildTest.NotifyAndPushTarget()::setLongPushValue)
+        );
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getLongPushValue(), is(100L));
+
+        onEvent("2000");
+        assertThat(notifyTarget.getLongPushValue(), is(2_000L));
+
+        onEvent("0");
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
     }
 
     public static int multiplyDoubleBy100CastToInt(double input){

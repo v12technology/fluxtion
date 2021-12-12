@@ -554,6 +554,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         processed = true;
     }
 
+    @SuppressWarnings("unchecked")
     private void buildNonPushSortedHandlers(){
         DirectedGraph<Object, DefaultEdge>  cloneGraph = (DirectedGraph<Object, DefaultEdge>) graph.clone();
         pushEdges.stream()
@@ -571,7 +572,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //        for (Iterator topologicalIter = new TopologicalOrderIterator<>(graph);
              topologicalIter.hasNext();) {
             Object value = topologicalIter.next();
-            noPushTopologicalHandlers.add(value);
+            if(topologicalHandlers.contains(value)){
+                noPushTopologicalHandlers.add(value);
+            }
         }
 
         //if topologicalHandlers is missing nodes then add in a random order

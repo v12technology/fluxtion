@@ -9,7 +9,7 @@ public final class PeekEventStream<T, S extends EventStream<T>> extends Abstract
     transient final String auditInfo;
 
     public PeekEventStream(S inputEventStream, SerializableConsumer<? super T> eventStreamConsumer) {
-        super(inputEventStream);
+        super(inputEventStream, eventStreamConsumer);
         this.eventStreamConsumer = eventStreamConsumer;
         auditInfo = eventStreamConsumer.method().getDeclaringClass().getSimpleName()
                 + "->" + eventStreamConsumer.method().getName();
