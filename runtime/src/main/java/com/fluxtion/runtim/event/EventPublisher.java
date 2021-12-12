@@ -68,9 +68,6 @@ public class EventPublisher<T> {
         if (handlers == null) {
             handlers = new StaticEventProcessor[0];
         }
-//        if (nodeSource == null) {
-//            nodeSource = new Event[0];
-//        }
     }
 
     @Override

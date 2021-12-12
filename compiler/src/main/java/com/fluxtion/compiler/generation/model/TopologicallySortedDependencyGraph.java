@@ -18,25 +18,6 @@
 package com.fluxtion.compiler.generation.model;
 //      com.fluxtion.generation.model
 
-import com.fluxtion.runtim.FilteredEventHandler;
-import com.fluxtion.runtim.annotations.AfterEvent;
-import com.fluxtion.runtim.annotations.builder.Config;
-import com.fluxtion.runtim.annotations.builder.ConfigVariable;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.builder.ExcludeNode;
-import com.fluxtion.runtim.annotations.builder.Inject;
-import com.fluxtion.runtim.annotations.NoEventReference;
-import com.fluxtion.runtim.annotations.OnBatchEnd;
-import com.fluxtion.runtim.annotations.OnBatchPause;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnEventComplete;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.annotations.PushReference;
-import com.fluxtion.runtim.annotations.builder.SepNode;
-import com.fluxtion.runtim.annotations.TearDown;
-import com.fluxtion.runtim.annotations.TriggerEventOverride;
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.event.Event;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
@@ -45,31 +26,18 @@ import com.fluxtion.compiler.builder.node.NodeRegistry;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtim.FilteredEventHandler;
+import com.fluxtion.runtim.annotations.*;
+import com.fluxtion.runtim.annotations.builder.*;
+import com.fluxtion.runtim.audit.Auditor;
+import com.fluxtion.runtim.event.Event;
 import com.google.common.base.Predicates;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.googlecode.gentyref.GenericTypeReflector;
-import java.io.Writer;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import javax.xml.transform.TransformerConfigurationException;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.reflect.dsl.ReflectionHandler;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.IntegerEdgeNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
@@ -78,11 +46,19 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.reflections.ReflectionUtils;
-import static org.reflections.ReflectionUtils.getAllFields;
-import static org.reflections.ReflectionUtils.withAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.*;
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.reflections.ReflectionUtils.getAllFields;
+import static org.reflections.ReflectionUtils.withAnnotation;
 
 /**
  * Creates a sorted set of dependencies from a supplied set of instances.
@@ -100,7 +76,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final BiMap<Object, String> inst2NameTemp;
     private final SimpleDirectedGraph<Object, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final DirectedGraph<Object, DefaultEdge> eventGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
+    private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
+    private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
     private boolean processed = false;
     private final DeclarativeNodeConiguration declarativeNodeConiguration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
@@ -230,6 +208,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     public List<Object> getSortedDependents() throws Exception {
         generateDependencyTree();
         return Collections.unmodifiableList(topologicalHandlers);
+    }
+
+    public List<Object> getObjectSortedDependents() throws Exception {
+        generateDependencyTree();
+        return Collections.unmodifiableList(noPushTopologicalHandlers);
     }
 
     //TODO this should be a list that is sorted topologically and then
@@ -567,7 +550,41 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("SORTED LIST:" + topologicalHandlers);
         }
+        buildNonPushSortedHandlers();
         processed = true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void buildNonPushSortedHandlers(){
+        DirectedGraph<Object, DefaultEdge>  cloneGraph = (DirectedGraph<Object, DefaultEdge>) graph.clone();
+        pushEdges.stream()
+                .filter(Objects::nonNull)
+                .forEach((DefaultEdge edge) -> {
+                    Object edgeSource = graph.getEdgeSource(edge);
+                    Object edgeTarget = graph.getEdgeTarget(edge);
+                    cloneGraph.removeEdge(edgeSource, edgeTarget);
+                    cloneGraph.addEdge(edgeTarget, edgeSource);
+                });
+
+        //create a topological sortedset and put into list
+        PriorityQueue<Object> pq = new PriorityQueue<>(Math.max(1, inst2Name.size()), new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
+        for (Iterator<Object> topologicalIter = new TopologicalOrderIterator<>(cloneGraph, pq);
+            //        for (Iterator topologicalIter = new TopologicalOrderIterator<>(graph);
+             topologicalIter.hasNext();) {
+            Object value = topologicalIter.next();
+            if(topologicalHandlers.contains(value)){
+                noPushTopologicalHandlers.add(value);
+            }
+        }
+
+        //if topologicalHandlers is missing nodes then add in a random order
+        for (Map.Entry<Object, String> entry : inst2Name.entrySet()) {
+            Object node = entry.getKey();
+            if (!noPushTopologicalHandlers.contains(node)) {
+                noPushTopologicalHandlers.add(node);
+            }
+        }
+
     }
 
     private void addNodesFromContext() {
@@ -774,7 +791,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         graph.addVertex(parent);
 
                         if (pushCollection) {
-                            graph.addEdge(object, parent);
+                            pushEdges.add(graph.addEdge(object, parent));
                         } else {
                             graph.addEdge(parent, object);
                             walkDependencies(parent);
@@ -786,7 +803,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 graph.addVertex(refField);
 
                 if (field.getAnnotation(PushReference.class) != null) {
-                    graph.addEdge(object, refField);
+                    pushEdges.add(graph.addEdge(object, refField));
                 } else {
                     graph.addEdge(refField, object);
                     walkDependencies(refField);
