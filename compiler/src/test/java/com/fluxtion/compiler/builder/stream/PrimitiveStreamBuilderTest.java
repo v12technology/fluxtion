@@ -1,12 +1,14 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.stream.EventStream;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 
 public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public PrimitiveStreamBuilderTest(boolean compiledSep) {
@@ -14,7 +16,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void notifyTest() {
+    public void intTest() {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
@@ -35,7 +37,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void doubleTest(){
+    public void doubleTest() {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
@@ -56,7 +58,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void longTest(){
+    public void longTest() {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
@@ -76,8 +78,94 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getLongPushValue(), is(2300L));
     }
 
+    @Test
+    public void testIntConversions() {
+//        addAuditor();
+        StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
+        sep(c -> subscribe(String.class)
+                        .filter(NumberUtils::isNumber)
+                        .mapToInt(StreamBuildTest::parseInt)
+                        .mapToLong(PrimitiveStreamBuilderTest::addMaxInteger)
+                        .push(notifyAndPushTarget::setLongPushValue)
+                        .mapToDouble(PrimitiveStreamBuilderTest::divideLongBy1_000)
+                        .push(notifyAndPushTarget::setDoublePushValue)
+                        .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
+                        .push(notifyAndPushTarget::setIntPushValue)
+        );
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent("1");
+        assertThat(notifyTarget.getLongPushValue(), is(2147483648L));
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(2147483.648, 0.00001));
+        assertThat(notifyTarget.getIntPushValue(), is(2147483));
+    }
+
+
+    @Test
+    public void testDoubleConversions(){
+//        addAuditor();
+        sep(c ->{
+            StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
+            DoubleStreamBuilder<Double, EventStream<Double>> doubleStreamBuilder = subscribe(Double.class).mapToDouble(Double::doubleValue);
+            doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt).push(pushTarget::setIntPushValue);
+            doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
+        });
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent((Double)234.8);
+        assertThat(notifyTarget.getIntPushValue(), is(234));
+        assertThat(notifyTarget.getLongPushValue(), is(234L));
+    }
+
+    @Test
+    public void testLongConversions(){
+//        addAuditor();
+        sep(c ->{
+            StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
+            LongStreamBuilder<Long, EventStream<Long>> doubleStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
+            doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
+            doubleStreamBuilder.mapToDouble(PrimitiveStreamBuilderTest::castLongToDouble).push(pushTarget::setDoublePushValue);
+        });
+        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent(234L);
+        assertThat(notifyTarget.getIntPushValue(), is(234));
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(234.0, 0.0001));
+    }
+
+    public static int multiplyDoubleBy100CastToInt(double input){
+        return (int)(100 * input);
+    }
+
+    public static long addMaxInteger(int val) {
+        return Integer.MAX_VALUE + (long) val;
+    }
+
+    public static double divideLongBy1_000(long input){
+        return input/1000.0;
+    }
+
+    public static int castDoubleToInt(double input){
+        return (int) input;
+    }
+
+
+    public static long castDoubleToLong(double input){
+        return (long) input;
+    }
+
+    public static double castLongToDouble(long input){
+        return (double)input;
+    }
+
+    public static int castLongToInt(long input){
+        return (int)input;
+    }
+
+
     //INT functions
-    public static int multiplyX10(int input){
+    public static int multiplyX10(int input) {
+        return input * 10;
+    }
+
+    public static int multiplyX10(Integer input) {
         return input * 10;
     }
 
@@ -86,7 +174,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     //DOUBLE functions
-    public static double multiplyX10(double input){
+    public static double multiplyX10(double input) {
         return input * 10;
     }
 
@@ -94,8 +182,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         return i > 10;
     }
 
-    //DOUBLE functions
-    public static long multiplyX10(long input){
+    //LONG functions
+    public static long multiplyX10(long input) {
         return input * 10;
     }
 
@@ -104,7 +192,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     //NUMBER
-    public static boolean gt10_withRefType(Number number){
+    public static boolean gt10_withRefType(Number number) {
         return number.intValue() > 10;
     }
 

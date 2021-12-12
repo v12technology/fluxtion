@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
+import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntConsumer;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntUnaryOperator;
@@ -32,13 +33,21 @@ public class IntStreamBuilder<I, S extends EventStream<I>> {
         return this;
     }
 
+    public IntStreamBuilder<Integer, IntEventStream> filter( SerializableIntFunction<Boolean> filterFunction){
+        return new IntStreamBuilder<>( new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
+    }
+
     //PROCESSING - START
     public IntStreamBuilder<Integer, IntEventStream> map(SerializableIntUnaryOperator int2IntFunction) {
         return new IntStreamBuilder<>(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
     }
 
-    public IntStreamBuilder<Integer, IntEventStream> filter( SerializableIntFunction<Boolean> filterFunction){
-        return new IntStreamBuilder<>( new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
+    public DoubleStreamBuilder<Integer, IntEventStream> mapToDouble(LambdaReflection.SerializableIntToDoubleFunction int2IntFunction) {
+        return new DoubleStreamBuilder<>(new MapEventStream.MapInt2ToDoubleEventStream(eventStream, int2IntFunction));
+    }
+
+    public LongStreamBuilder<Integer, IntEventStream> mapToLong(LambdaReflection.SerializableIntToLongFunction int2IntFunction) {
+        return new LongStreamBuilder<>(new MapEventStream.MapInt2ToLongEventStream(eventStream, int2IntFunction));
     }
 
     //OUTPUTS - START

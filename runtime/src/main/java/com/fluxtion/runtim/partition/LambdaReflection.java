@@ -145,6 +145,24 @@ public interface LambdaReflection {
     interface SerializableToLongFunction<t> extends ToLongFunction<t>, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableDoubleToIntFunction extends DoubleToIntFunction, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongToIntFunction extends LongToIntFunction, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableIntToDoubleFunction extends IntToDoubleFunction, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableLongToDoubleFunction extends LongToDoubleFunction, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableIntToLongFunction extends IntToLongFunction, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableDoubleToLongFunction extends DoubleToLongFunction, Serializable, MethodReferenceReflection {
+    }
+
     interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {
     }
 

@@ -6,7 +6,11 @@ import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableDoubleConsumer;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntConsumer;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongConsumer;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
     @PushReference
@@ -35,7 +39,8 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         return getInputEventStream().get();
     }
 
-
+    @EqualsAndHashCode
+    @ToString
     public static class IntPushEventStream extends AbstractEventStream<Integer, Integer, IntEventStream> implements IntEventStream {
 
         @PushReference
@@ -70,6 +75,8 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class DoublePushEventStream extends AbstractEventStream<Double, Double, DoubleEventStream> implements DoubleEventStream {
 
         @PushReference
@@ -104,6 +111,8 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class LongPushEventStream extends AbstractEventStream<Long, Long, LongEventStream> implements LongEventStream {
 
         @PushReference

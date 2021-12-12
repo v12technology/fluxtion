@@ -5,13 +5,17 @@ import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.annotations.PushReference;
 import com.fluxtion.runtim.annotations.builder.Inject;
 import com.fluxtion.runtim.audit.NodeNameLookup;
+import lombok.ToString;
 
+import java.util.Objects;
+
+@ToString
 public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
     @PushReference
     private final Object target;
     private final transient String auditInfo;
-    private String instanceName;
+    private String instanceNameToNotify;
     @Inject
     @NoEventReference
     public NodeNameLookup nodeNameLookup;
@@ -23,13 +27,13 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     }
 
     protected void initialise() {
-        instanceName = nodeNameLookup.lookup(target);
+        instanceNameToNotify = nodeNameLookup.lookup(target);
     }
 
     @OnEvent
     public boolean notifyChild() {
         auditLog.info("notifyClass", auditInfo);
-        auditLog.info("notifyInstance", instanceName);
+        auditLog.info("notifyInstance", instanceNameToNotify);
         return fireEventUpdateNotification();
     }
 
@@ -38,6 +42,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         return getInputEventStream().get();
     }
 
+    @ToString
     public static class IntNotifyEventStream extends NotifyEventStream<Integer, IntEventStream> implements IntEventStream {
 
         public IntNotifyEventStream(IntEventStream inputEventStream, Object target) {
@@ -50,6 +55,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         }
     }
 
+    @ToString
     public static class DoubleNotifyEventStream extends NotifyEventStream<Double, DoubleEventStream> implements DoubleEventStream {
 
         public DoubleNotifyEventStream(DoubleEventStream inputEventStream, Object target) {
@@ -62,6 +68,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         }
     }
 
+    @ToString
     public static class LongNotifyEventStream extends NotifyEventStream<Long, LongEventStream> implements LongEventStream {
 
         public LongNotifyEventStream(LongEventStream inputEventStream, Object target) {
@@ -72,5 +79,18 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         public long getAsLong() {
             return getInputEventStream().getAsLong();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NotifyEventStream)) return false;
+        NotifyEventStream<?, ?> that = (NotifyEventStream<?, ?>) o;
+        return target.equals(that.target);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(target);
     }
 }

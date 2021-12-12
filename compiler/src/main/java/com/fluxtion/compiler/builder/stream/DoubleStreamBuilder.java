@@ -30,13 +30,21 @@ public class DoubleStreamBuilder<I, S extends EventStream<I>> {
         return this;
     }
 
+    public DoubleStreamBuilder<Double, DoubleEventStream> filter(SerializableDoubleFunction<Boolean> filterFunction){
+        return new DoubleStreamBuilder<>( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
+    }
+
     //PROCESSING - START
     public DoubleStreamBuilder<Double, DoubleEventStream> map(SerializableDoubleUnaryOperator int2IntFunction) {
         return new DoubleStreamBuilder<>(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
-    public DoubleStreamBuilder<Double, DoubleEventStream> filter(SerializableDoubleFunction<Boolean> filterFunction){
-        return new DoubleStreamBuilder<>( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
+    public IntStreamBuilder<Double, DoubleEventStream> mapToInt(SerializableDoubleToIntFunction int2IntFunction) {
+        return new IntStreamBuilder<>(new MapEventStream.MapDouble2ToIntEventStream(eventStream, int2IntFunction));
+    }
+
+    public LongStreamBuilder<Double, DoubleEventStream> mapToLong(SerializableDoubleToLongFunction int2IntFunction) {
+        return new LongStreamBuilder<>(new MapEventStream.MapDouble2ToLongEventStream(eventStream, int2IntFunction));
     }
 
     //OUTPUTS - START

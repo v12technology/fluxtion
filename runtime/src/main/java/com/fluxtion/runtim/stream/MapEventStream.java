@@ -3,6 +3,8 @@ package com.fluxtion.runtim.stream;
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.lang.reflect.Method;
 
@@ -22,7 +24,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     public MapEventStream(S inputEventStream, Method method) {
         super(inputEventStream);
-            auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
+        auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
     }
 
     @OnEvent
@@ -43,7 +45,6 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     }
 
     abstract protected void mapOperation();
-
 
     public static class MapRef2RefEventStream<T, R, S extends EventStream<T>> extends  MapEventStream<T, R, S> {
 
@@ -86,6 +87,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class MapRef2ToIntEventStream<R, S extends EventStream<R>> extends AbstractMapToIntEventStream<R, S> {
         private final SerializableToIntFunction<R> intUnaryOperator;
 
@@ -100,6 +103,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
         private final SerializableIntUnaryOperator intUnaryOperator;
 
@@ -113,6 +118,39 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             result = intUnaryOperator.applyAsInt(getInputEventStream().getAsInt());
         }
     }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class MapDouble2ToIntEventStream extends AbstractMapToIntEventStream<Double, DoubleEventStream> {
+        private final SerializableDoubleToIntFunction intUnaryOperator;
+
+        public MapDouble2ToIntEventStream(DoubleEventStream inputEventStream, SerializableDoubleToIntFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsInt(getInputEventStream().getAsDouble());
+        }
+    }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class MapLong2ToIntEventStream extends AbstractMapToIntEventStream<Long, LongEventStream> {
+        private final SerializableLongToIntFunction intUnaryOperator;
+
+        public MapLong2ToIntEventStream(LongEventStream inputEventStream, SerializableLongToIntFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsInt(getInputEventStream().getAsLong());
+        }
+    }
+
     //***************** INTEGER map producers END *****************//
 
 
@@ -143,6 +181,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class MapRef2ToDoubleEventStream<R, S extends EventStream<R>> extends AbstractMapToDoubleEventStream<R, S> {
         private final SerializableToDoubleFunction<R> intUnaryOperator;
 
@@ -157,6 +197,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class MapDouble2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Double, DoubleEventStream> {
         private final SerializableDoubleUnaryOperator intUnaryOperator;
 
@@ -170,7 +212,41 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             result = intUnaryOperator.applyAsDouble(getInputEventStream().getAsDouble());
         }
     }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class MapInt2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Integer, IntEventStream> {
+        private final SerializableIntToDoubleFunction intUnaryOperator;
+
+        public MapInt2ToDoubleEventStream(IntEventStream inputEventStream, SerializableIntToDoubleFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsDouble(getInputEventStream().getAsInt());
+        }
+    }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class MapLong2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Long, LongEventStream> {
+        private final SerializableLongToDoubleFunction intUnaryOperator;
+
+        public MapLong2ToDoubleEventStream(LongEventStream inputEventStream, SerializableLongToDoubleFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsDouble(getInputEventStream().getAsLong());
+        }
+    }
+
     //***************** DOUBLE map producers END *****************//
+
 
 
     //***************** LONG map producers START *****************//
@@ -198,8 +274,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             return result;
         }
     }
-
-
+    @EqualsAndHashCode
+    @ToString
     public static class MapRef2ToLongEventStream<R, S extends EventStream<R>> extends AbstractMapToLongEventStream<R, S> {
         private final LambdaReflection.SerializableToLongFunction<R> intUnaryOperator;
 
@@ -214,6 +290,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @EqualsAndHashCode
+    @ToString
     public static class MapLong2ToLongEventStream extends AbstractMapToLongEventStream<Long, LongEventStream> {
         private final SerializableLongUnaryOperator intUnaryOperator;
 
@@ -228,5 +306,36 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    //***************** DOUBLE map producers END *****************//
+    @EqualsAndHashCode
+    @ToString
+    public static class MapInt2ToLongEventStream extends AbstractMapToLongEventStream<Integer, IntEventStream> {
+        private final SerializableIntToLongFunction intUnaryOperator;
+
+        public MapInt2ToLongEventStream(IntEventStream inputEventStream, SerializableIntToLongFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsLong(getInputEventStream().getAsInt());
+        }
+    }
+
+    @EqualsAndHashCode
+    @ToString
+    public static class MapDouble2ToLongEventStream extends AbstractMapToLongEventStream<Double, DoubleEventStream> {
+        private final SerializableDoubleToLongFunction intUnaryOperator;
+
+        public MapDouble2ToLongEventStream(DoubleEventStream inputEventStream, SerializableDoubleToLongFunction intUnaryOperator) {
+            super(inputEventStream, intUnaryOperator.method());
+            this.intUnaryOperator = intUnaryOperator;
+        }
+
+        @Override
+        protected void mapOperation() {
+            result = intUnaryOperator.applyAsLong(getInputEventStream().getAsDouble());
+        }
+    }
+    //***************** LONG map producers END *****************//
 }
