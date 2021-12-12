@@ -151,7 +151,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
 
         @EventHandler
         public void charEvent(CharEvent event) {
-            log.info("char", event.getChar());
+            auditLog.info("char", event.getChar());
         }
 
     }
@@ -166,7 +166,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
 
         @OnEvent
         public void onEvent() {
-            log.info("child", true);
+            auditLog.info("child", true);
         }
     }
 

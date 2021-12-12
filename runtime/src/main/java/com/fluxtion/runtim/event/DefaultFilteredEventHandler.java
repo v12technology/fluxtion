@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,37 +11,45 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtim.event;
 
 import com.fluxtion.runtim.FilteredEventHandler;
+import com.fluxtion.runtim.Named;
+import com.fluxtion.runtim.audit.EventLogNode;
+import com.fluxtion.runtim.stream.TriggeredEventStream;
+
 import java.util.Objects;
 
 /**
- * {@inheritDoc} 
+ * {@inheritDoc}
  */
-public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T> {
+public final class DefaultFilteredEventHandler<T>
+        extends EventLogNode
+        implements FilteredEventHandler<T>, TriggeredEventStream<T>, Named {
 
     private int filterId;
     private Class<T> eventClass;
     public T event;
+    private String name;
 
     public DefaultFilteredEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
         filterId = Event.NO_INT_FILTER;
+        name = "handler" + eventClass.getSimpleName();
     }
-    
 
     public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
         this.filterId = filterId;
         this.eventClass = eventClass;
+        name = "handler" + eventClass.getSimpleName() + "_" + filterId;
     }
 
     public DefaultFilteredEventHandler() {
     }
-    
+
     @Override
     public int filterId() {
         return filterId;
@@ -49,6 +57,7 @@ public final class DefaultFilteredEventHandler<T> implements FilteredEventHandle
 
     @Override
     public void onEvent(T e) {
+        auditLog.info("inputEvent", e.getClass().getSimpleName());
         this.event = e;
     }
 
@@ -85,5 +94,29 @@ public final class DefaultFilteredEventHandler<T> implements FilteredEventHandle
         }
         return true;
     }
-    
+
+    @Override
+    public T get() {
+        return event;
+    }
+
+    @Override
+    public void setUpdateTriggerNode(Object updateTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setPublishTriggerNode(Object publishTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public void setResetTriggerNode(Object resetTriggerNode) {
+        //do nothing
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }

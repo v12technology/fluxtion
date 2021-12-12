@@ -39,9 +39,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testSubClassOnEvent() {
 
-        sep((c) -> {
-            c.addPublicNode(new SubclassHandler(new DefaultFilteredEventHandler<>(String.class)), "node");
-        });
+        sep((c) -> c.addPublicNode(new SubclassHandler(new DefaultFilteredEventHandler<>(String.class)), "node"));
         SubclassHandler node = getField("node");
         //init
         assertThat(node.eventCount, is(0));
@@ -71,7 +69,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         assertThat(node.batchPause, is(1));
         assertThat(node.tearDownCount, is(0));
         //teardown
-        teardDown();
+        tearDown();
         assertThat(node.eventCount, is(1));
         assertThat(node.initCount, is(1));
         assertThat(node.afterEvent, is(1));
@@ -83,9 +81,9 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
     public abstract static class ParentHandler {
 
         @SepNode
-        final DefaultFilteredEventHandler source;
+        final DefaultFilteredEventHandler<?> source;
 
-        public ParentHandler(DefaultFilteredEventHandler source) {
+        public ParentHandler(DefaultFilteredEventHandler<?> source) {
             this.source = source;
         }
 
@@ -120,7 +118,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         int initCount = 0;
         int tearDownCount = 0;
 
-        public SubclassHandler(DefaultFilteredEventHandler source) {
+        public SubclassHandler(DefaultFilteredEventHandler<?> source) {
             super(source);
         }
 
