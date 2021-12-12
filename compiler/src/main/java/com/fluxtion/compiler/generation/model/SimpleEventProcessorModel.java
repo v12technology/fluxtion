@@ -61,7 +61,7 @@ public class SimpleEventProcessorModel {
     private final Logger LOGGER = LoggerFactory.getLogger(SimpleEventProcessorModel.class);
 
     /**
-     * the nodes managed by this SEP in a alphabetically sorted list. There is
+     * the nodes managed by this SEP in an alphabetically sorted list. There is
      * only a single instance for a node within this list.
      */
     private List<Field> nodeFields;
@@ -248,7 +248,7 @@ public class SimpleEventProcessorModel {
     }
 
     private void generateDependentFields() throws Exception {
-        for (Object object : dependencyGraph.getSortedDependents()) {
+        for (Object object : dependencyGraph.getObjectSortedDependents()) {
             final String name = dependencyGraph.variableName(object);
             //TODO - map the class name to another class that will be provided later
             final String classNameOverride = nodeClassMap.get(object);

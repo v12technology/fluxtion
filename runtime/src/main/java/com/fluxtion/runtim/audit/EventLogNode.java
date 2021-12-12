@@ -24,11 +24,11 @@ package com.fluxtion.runtim.audit;
  */
 public class EventLogNode implements EventLogSource {
 
-    protected EventLogger log = NullEventLogger.INSTANCE;
+    protected EventLogger auditLog = NullEventLogger.INSTANCE;
 
     @Override
     public void setLogger(EventLogger log) {
-        this.log = log;
+        this.auditLog = log;
     }
 
 }
