@@ -1,6 +1,8 @@
 package com.fluxtion.runtim.stream.helpers;
 
-public class DefaultValue<T> {
+import com.fluxtion.runtim.stream.DefaultValueSupplier;
+
+public class DefaultValue<T> implements DefaultValueSupplier {
 
     private final T defaultValue;
 
@@ -12,7 +14,7 @@ public class DefaultValue<T> {
         return input == null ? defaultValue : input;
     }
 
-    public static class DefaultInt {
+    public static class DefaultInt implements DefaultValueSupplier{
         private final int defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 
@@ -29,7 +31,7 @@ public class DefaultValue<T> {
         }
     }
 
-    public static class DefaultDouble {
+    public static class DefaultDouble implements DefaultValueSupplier{
         private final double defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 
@@ -46,7 +48,7 @@ public class DefaultValue<T> {
         }
     }
 
-    public static class DefaultLong {
+    public static class DefaultLong implements DefaultValueSupplier{
         private final long defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 

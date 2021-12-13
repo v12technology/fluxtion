@@ -2,13 +2,12 @@ package com.fluxtion.runtim.stream;
 
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.partition.LambdaReflection;
-import com.fluxtion.runtim.partition.LambdaReflection.*;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.lang.reflect.Method;
 
-import static com.fluxtion.runtim.partition.LambdaReflection.SerializableIntUnaryOperator;
+import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
 /**
  * Base class for all mapping operations
@@ -41,15 +40,28 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     }
 
     @Override
+    protected void initialise() {
+        Method method = getStreamFunction().method();
+        if (DefaultValueSupplier.class.isAssignableFrom(method.getDeclaringClass())) {
+            mapOperation();
+        }
+    }
+
+
+    @Override
     public R get() {
         return result;
     }
 
     abstract protected void mapOperation();
 
-    public static class MapRef2RefEventStream<T, R, S extends EventStream<T>> extends  MapEventStream<T, R, S> {
 
-        private final LambdaReflection.SerializableFunction<T, R> mapFunction;
+    //***************** REFERENCE map producers START *****************//
+    @EqualsAndHashCode(callSuper = true)
+    public static class MapRef2RefEventStream<T, R, S extends EventStream<T>> extends MapEventStream<T, R, S> {
+
+        private final SerializableFunction<T, R> mapFunction;
+
         public MapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction) {
             super(inputEventStream, mapFunction);
             this.mapFunction = mapFunction;
@@ -61,15 +73,66 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     }
 
+    @EqualsAndHashCode(callSuper = true)
+    public static class MapInt2RefEventStream<R> extends MapEventStream<Integer, R, IntEventStream> {
+
+        private final SerializableIntFunction<R> mapFunction;
+
+        public MapInt2RefEventStream(IntEventStream inputEventStream, SerializableIntFunction<R> mapFunction) {
+            super(inputEventStream, mapFunction);
+            this.mapFunction = mapFunction;
+        }
+
+        protected void mapOperation() {
+            result = mapFunction.apply(getInputEventStream().getAsInt());
+        }
+
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    public static class MapDouble2RefEventStream<R> extends MapEventStream<Double, R, DoubleEventStream> {
+
+        private final SerializableDoubleFunction<R> mapFunction;
+
+        public MapDouble2RefEventStream(DoubleEventStream inputEventStream, SerializableDoubleFunction<R> mapFunction) {
+            super(inputEventStream, mapFunction);
+            this.mapFunction = mapFunction;
+        }
+
+        protected void mapOperation() {
+            result = mapFunction.apply(getInputEventStream().getAsDouble());
+        }
+
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    public static class MapLong2RefEventStream<R> extends MapEventStream<Long, R, LongEventStream> {
+
+        private final SerializableLongFunction<R> mapFunction;
+
+        public MapLong2RefEventStream(LongEventStream inputEventStream, SerializableLongFunction<R> mapFunction) {
+            super(inputEventStream, mapFunction);
+            this.mapFunction = mapFunction;
+        }
+
+        protected void mapOperation() {
+            result = mapFunction.apply(getInputEventStream().getAsLong());
+        }
+
+    }
+
+    //***************** REFERENCE map producers START *****************//
 
 
     //***************** INTEGER map producers START *****************//
+
     /**
      * Base class for mapping to an {@link com.fluxtion.runtim.stream.EventStream.IntEventStream}
+     *
      * @param <T> Input type
      * @param <S> {@link EventStream} input type
      */
-    abstract static class AbstractMapToIntEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Integer, S> implements IntEventStream{
+    abstract static class AbstractMapToIntEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Integer, S> implements IntEventStream {
 
         protected transient int result;
 
@@ -88,7 +151,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapRef2ToIntEventStream<R, S extends EventStream<R>> extends AbstractMapToIntEventStream<R, S> {
         private final SerializableToIntFunction<R> intUnaryOperator;
@@ -104,7 +167,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
         private final SerializableIntUnaryOperator intUnaryOperator;
@@ -120,7 +183,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapDouble2ToIntEventStream extends AbstractMapToIntEventStream<Double, DoubleEventStream> {
         private final SerializableDoubleToIntFunction intUnaryOperator;
@@ -136,7 +199,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapLong2ToIntEventStream extends AbstractMapToIntEventStream<Long, LongEventStream> {
         private final SerializableLongToIntFunction intUnaryOperator;
@@ -155,15 +218,15 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     //***************** INTEGER map producers END *****************//
 
 
-
     //***************** DOUBLE map producers START *****************//
 
     /**
      * Base class for mapping to an {@link com.fluxtion.runtim.stream.EventStream.DoubleEventStream}
+     *
      * @param <T> Input type
      * @param <S> {@link EventStream} input type
      */
-    abstract static class AbstractMapToDoubleEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Double, S> implements DoubleEventStream{
+    abstract static class AbstractMapToDoubleEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Double, S> implements DoubleEventStream {
 
         protected transient double result;
 
@@ -182,7 +245,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapRef2ToDoubleEventStream<R, S extends EventStream<R>> extends AbstractMapToDoubleEventStream<R, S> {
         private final SerializableToDoubleFunction<R> intUnaryOperator;
@@ -198,7 +261,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapDouble2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Double, DoubleEventStream> {
         private final SerializableDoubleUnaryOperator intUnaryOperator;
@@ -214,7 +277,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Integer, IntEventStream> {
         private final SerializableIntToDoubleFunction intUnaryOperator;
@@ -230,7 +293,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapLong2ToDoubleEventStream extends AbstractMapToDoubleEventStream<Long, LongEventStream> {
         private final SerializableLongToDoubleFunction intUnaryOperator;
@@ -249,15 +312,15 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     //***************** DOUBLE map producers END *****************//
 
 
-
     //***************** LONG map producers START *****************//
 
     /**
      * Base class for mapping to an {@link com.fluxtion.runtim.stream.EventStream.LongEventStream}
+     *
      * @param <T> Input type
      * @param <S> {@link EventStream} input type
      */
-    abstract static class AbstractMapToLongEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Long, S> implements LongEventStream{
+    abstract static class AbstractMapToLongEventStream<T, S extends EventStream<T>> extends MapEventStream<T, Long, S> implements LongEventStream {
 
         protected transient long result;
 
@@ -275,7 +338,8 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             return result;
         }
     }
-    @EqualsAndHashCode
+
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapRef2ToLongEventStream<R, S extends EventStream<R>> extends AbstractMapToLongEventStream<R, S> {
         private final LambdaReflection.SerializableToLongFunction<R> intUnaryOperator;
@@ -291,7 +355,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapLong2ToLongEventStream extends AbstractMapToLongEventStream<Long, LongEventStream> {
         private final SerializableLongUnaryOperator intUnaryOperator;
@@ -307,7 +371,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToLongEventStream extends AbstractMapToLongEventStream<Integer, IntEventStream> {
         private final SerializableIntToLongFunction intUnaryOperator;
@@ -323,7 +387,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapDouble2ToLongEventStream extends AbstractMapToLongEventStream<Double, DoubleEventStream> {
         private final SerializableDoubleToLongFunction intUnaryOperator;

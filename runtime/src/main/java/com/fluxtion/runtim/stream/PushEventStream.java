@@ -9,7 +9,7 @@ import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongConsumer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
 public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
@@ -21,8 +21,12 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
     public PushEventStream(S inputEventStream, SerializableConsumer<T> eventStreamConsumer) {
         super(inputEventStream, null);
         this.eventStreamConsumer = eventStreamConsumer;
-        this.target = eventStreamConsumer.captured()[0];
-        auditInfo = target.getClass().getSimpleName() + "->" + eventStreamConsumer.method().getName();
+        if(eventStreamConsumer.captured().length > 0) {
+            this.target = eventStreamConsumer.captured()[0];
+        }else{
+            this.target = null;
+        }
+        auditInfo = eventStreamConsumer.method().getDeclaringClass().getSimpleName() + "->" + eventStreamConsumer.method().getName();
     }
 
     @OnEvent
@@ -39,7 +43,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         return getInputEventStream().get();
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class IntPushEventStream extends AbstractEventStream<Integer, Integer, IntEventStream> implements IntEventStream {
 
@@ -51,8 +55,12 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         public IntPushEventStream(IntEventStream inputEventStream, SerializableIntConsumer intConsumer) {
             super(inputEventStream, null);
             this.intConsumer = intConsumer;
-            this.target = intConsumer.captured()[0];
-            auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();
+            if(intConsumer.captured().length > 0) {
+                this.target = intConsumer.captured()[0];
+            }else{
+                this.target = null;
+            }
+            auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
         @OnEvent
@@ -75,7 +83,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class DoublePushEventStream extends AbstractEventStream<Double, Double, DoubleEventStream> implements DoubleEventStream {
 
@@ -87,8 +95,12 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         public DoublePushEventStream(DoubleEventStream inputEventStream, SerializableDoubleConsumer intConsumer) {
             super(inputEventStream, null);
             this.intConsumer = intConsumer;
-            this.target = intConsumer.captured()[0];
-            auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();
+            if(intConsumer.captured().length > 0) {
+                this.target = intConsumer.captured()[0];
+            }else{
+                this.target = null;
+            }
+            auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
         @OnEvent
@@ -111,7 +123,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         }
     }
 
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class LongPushEventStream extends AbstractEventStream<Long, Long, LongEventStream> implements LongEventStream {
 
@@ -123,8 +135,12 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         public LongPushEventStream(LongEventStream inputEventStream, SerializableLongConsumer intConsumer) {
             super(inputEventStream, null);
             this.intConsumer = intConsumer;
-            this.target = intConsumer.captured()[0];
-            auditInfo = target.getClass().getSimpleName() + "->" + intConsumer.method().getName();
+            if(intConsumer.captured().length > 0) {
+                this.target = intConsumer.captured()[0];
+            }else{
+                this.target = null;
+            }
+            auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
         @OnEvent

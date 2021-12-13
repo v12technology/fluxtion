@@ -1,12 +1,15 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtim.stream.NodeEventStream;
 
 public interface EventFlow {
 
     static <T> EventStreamBuilder<T> subscribe(Class<T> classSubscription) {
-        return new EventStreamBuilder<>(new DefaultFilteredEventHandler<>(classSubscription));
+        return new EventStreamBuilder<>(
+                SepContext.service().addOrReuse(new DefaultFilteredEventHandler<>(classSubscription))
+        );
     }
 
     static <T> EventStreamBuilder<T> streamFromNode(T source){
