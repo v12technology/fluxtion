@@ -2,7 +2,9 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtim.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
@@ -31,7 +33,7 @@ public class EventStreamBuilder<T> {
         return this;
     }
 
-    public EventStreamBuilder<T> filter( LambdaReflection.SerializableFunction<T, Boolean> filterFunction){
+    public EventStreamBuilder<T> filter( SerializableFunction<T, Boolean> filterFunction){
         return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
     }
 
@@ -40,8 +42,15 @@ public class EventStreamBuilder<T> {
     }
 
     //PROCESSING - START
-    public <R> EventStreamBuilder<R> map(LambdaReflection.SerializableFunction<T, R> mapFunction) {
+    public <R> EventStreamBuilder<R> map(SerializableFunction<T, R> mapFunction) {
         return new EventStreamBuilder<>( new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
+    }
+
+    public <S, R> EventStreamBuilder<R> map(SerializableBiFunction<T, S, R> int2IntFunction, EventStreamBuilder<S> stream2Builder) {
+        return new EventStreamBuilder<>(
+                new BinaryMapEventStream.BinaryMapToRefEventStream<>(
+                        eventStream, stream2Builder.eventStream, int2IntFunction)
+        );
     }
 
     public IntStreamBuilder<T, EventStream<T>> mapToInt(LambdaReflection.SerializableToIntFunction<T> mapFunction) {
@@ -76,7 +85,6 @@ public class EventStreamBuilder<T> {
     TODO:
     ================
     De-dupe filter
-    binaryMap
 
 
     optional:
@@ -89,6 +97,7 @@ public class EventStreamBuilder<T> {
      DONE
     ================
     Default helper
+    binaryMap
     subscribe
     wrapNode
     updateTrigger

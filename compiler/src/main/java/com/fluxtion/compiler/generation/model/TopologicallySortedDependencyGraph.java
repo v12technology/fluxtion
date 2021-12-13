@@ -580,7 +580,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         //if topologicalHandlers is missing nodes then add in a random order
         for (Map.Entry<Object, String> entry : inst2Name.entrySet()) {
             Object node = entry.getKey();
-            if (!noPushTopologicalHandlers.contains(node)) {
+            if (!noPushTopologicalHandlers.contains(node) && topologicalHandlers.contains(node)) {
                 noPushTopologicalHandlers.add(node);
             }
         }
@@ -919,6 +919,16 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                 }
             });
+
+//            pushEdges.stream()
+//                    .filter(Objects::nonNull)
+//                    .forEach((DefaultEdge edge) -> {
+//                        Object edgeSource = graph.getEdgeSource(edge);
+//                        Object edgeTarget = graph.getEdgeTarget(edge);
+//                        exportGraph.removeEdge(edgeSource, edgeTarget);
+//                        exportGraph.addEdge(edgeTarget, edgeSource);
+//                    });
+
         }
         mlExporter.export(writer, exportGraph);//new EdgeReversedGraph(graph));
     }
