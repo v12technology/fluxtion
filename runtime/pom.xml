@@ -47,14 +47,7 @@ Copyright (C) 2018 V12 Technology Ltd.
             </plugin>
         </plugins>
     </build>
-    
-    <dependencies>
-        <dependency>
-            <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+
     <properties>
         <netbeans.hint.license>ssl1</netbeans.hint.license>
     </properties>
