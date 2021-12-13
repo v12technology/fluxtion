@@ -16,12 +16,15 @@
  */
 package com.fluxtion.runtim.partition;
 
+import lombok.SneakyThrows;
+
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import static java.util.Arrays.asList;
 import java.util.Objects;
 import java.util.function.*;
+
+import static java.util.Arrays.asList;
 
 /**
  *
@@ -82,7 +85,8 @@ public interface LambdaReflection {
         default boolean isDefaultConstructor(){
             return serialized().getImplMethodName().equalsIgnoreCase("<init>");
         }
-        
+
+        @SneakyThrows
         default Method method() {
             SerializedLambda lambda = serialized();
             Class<?> containingClass = getContainingClass();
@@ -173,6 +177,15 @@ public interface LambdaReflection {
     }
 
     interface SerializableBiFunction<f, t, r> extends BiFunction<f, t, r>, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableBiIntFunction extends IntBinaryOperator, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableBiDoubleFunction extends DoubleBinaryOperator, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableBiLongFunction extends LongBinaryOperator, Serializable, MethodReferenceReflection {
     }
 
     interface SerializableTriFunction<f, t, u, r> extends TriFunction<f, t, u, r>, Serializable, MethodReferenceReflection {

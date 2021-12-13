@@ -26,5 +26,4 @@ public final class PeekEventStream<T, S extends EventStream<T>> extends Abstract
         return getInputEventStream().get();
     }
 
-
 }

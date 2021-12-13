@@ -2,6 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtim.partition.LambdaReflection.SerializableBiLongFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongConsumer;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongUnaryOperator;
@@ -45,6 +46,17 @@ public class LongStreamBuilder<I, S extends EventStream<I>> {
     //PROCESSING - START
     public LongStreamBuilder<Long, LongEventStream> map(SerializableLongUnaryOperator int2IntFunction) {
         return new LongStreamBuilder<>(new MapEventStream.MapLong2ToLongEventStream(eventStream, int2IntFunction));
+    }
+
+    public LongStreamBuilder<Long, LongEventStream> map(SerializableBiLongFunction int2IntFunction, LongStreamBuilder<?, ?> stream2Builder) {
+        return new LongStreamBuilder<>(
+                new BinaryMapEventStream.BinaryMapToLongEventStream<>(
+                        eventStream, stream2Builder.eventStream, int2IntFunction)
+        );
+    }
+
+    public <R> EventStreamBuilder<R> mapToObj(LambdaReflection.SerializableLongFunction<R> int2IntFunction) {
+        return new EventStreamBuilder<>(new MapEventStream.MapLong2RefEventStream<>(eventStream, int2IntFunction));
     }
 
     public IntStreamBuilder<Long, LongEventStream> mapToInt(LambdaReflection.SerializableLongToIntFunction int2IntFunction) {

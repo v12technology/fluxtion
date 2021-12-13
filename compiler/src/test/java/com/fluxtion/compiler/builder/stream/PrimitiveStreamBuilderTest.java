@@ -1,9 +1,14 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.event.Signal;
 import com.fluxtion.runtim.stream.EventStream;
+import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
@@ -85,14 +90,14 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
-                        .filter(NumberUtils::isNumber)
-                        .mapToInt(StreamBuildTest::parseInt)
-                        .mapToLong(PrimitiveStreamBuilderTest::addMaxInteger)
-                        .push(notifyAndPushTarget::setLongPushValue)
-                        .mapToDouble(PrimitiveStreamBuilderTest::divideLongBy1_000)
-                        .push(notifyAndPushTarget::setDoublePushValue)
-                        .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
-                        .push(notifyAndPushTarget::setIntPushValue)
+                .filter(NumberUtils::isNumber)
+                .mapToInt(StreamBuildTest::parseInt)
+                .mapToLong(PrimitiveStreamBuilderTest::addMaxInteger)
+                .push(notifyAndPushTarget::setLongPushValue)
+                .mapToDouble(PrimitiveStreamBuilderTest::divideLongBy1_000)
+                .push(notifyAndPushTarget::setDoublePushValue)
+                .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
+                .push(notifyAndPushTarget::setIntPushValue)
         );
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent("1");
@@ -102,24 +107,24 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testDoubleConversions(){
+    public void testDoubleConversions() {
 //        addAuditor();
-        sep(c ->{
+        sep(c -> {
             StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
             DoubleStreamBuilder<Double, EventStream<Double>> doubleStreamBuilder = subscribe(Double.class).mapToDouble(Double::doubleValue);
             doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt).push(pushTarget::setIntPushValue);
             doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
         });
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        onEvent((Double)234.8);
+        onEvent((Double) 234.8);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getLongPushValue(), is(234L));
     }
 
     @Test
-    public void testLongConversions(){
+    public void testLongConversions() {
 //        addAuditor();
-        sep(c ->{
+        sep(c -> {
             StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
             LongStreamBuilder<Long, EventStream<Long>> longStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
             longStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
@@ -133,7 +138,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
 
     @Test
-    public void defaultIntValueTest(){
+    public void defaultIntValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
                 .mapToInt(StreamBuildTest::parseInt)
@@ -154,7 +159,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void defaultDoubleValueTest(){
+    public void defaultDoubleValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
@@ -175,7 +180,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void defaultLongValueTest(){
+    public void defaultLongValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
                 .mapToLong(StreamBuildTest::parseLong)
@@ -195,33 +200,67 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getLongPushValue(), is(0L));
     }
 
-    public static int multiplyDoubleBy100CastToInt(double input){
-        return (int)(100 * input);
+    @Test
+    public void mapPrimitiveToRef() {
+        sep(c -> {
+            ResultsHolder results = new ResultsHolder();
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .mapToObj(PrimitiveStreamBuilderTest::toMutableDouble)
+                    .push(results::setMutableDouble)
+            ;
+
+            subscribe(MutableInt.class)
+//                    .mapToInt(MutableInt::intValue)
+                    .mapToLong(MutableInt::longValue)
+                    .mapToObj(PrimitiveStreamBuilderTest::toMutableLong)
+                    .push(results::setMutableLong)
+            ;
+
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .map(PrimitiveStreamBuilderTest::multiplyX10)
+                    .mapToObj(PrimitiveStreamBuilderTest::toMutableInt)
+                    .push(results::setMutableInt)
+            ;
+
+        });
+
+        ResultsHolder results = getField(ResultsHolder.DEFAULT_NAME);
+        onEvent(new MutableInt(100));
+        assertThat(results.getMutableDouble(), is(new MutableDouble(100)));
+        assertThat(results.getMutableLong(), is(new MutableLong(100)));
+        assertThat(results.getMutableInt(), is(new MutableInt(1000)));
+
+    }
+
+    public static int multiplyDoubleBy100CastToInt(double input) {
+        return (int) (100 * input);
     }
 
     public static long addMaxInteger(int val) {
         return Integer.MAX_VALUE + (long) val;
     }
 
-    public static double divideLongBy1_000(long input){
-        return input/1000.0;
+    public static double divideLongBy1_000(long input) {
+        return input / 1000.0;
     }
 
-    public static int castDoubleToInt(double input){
+    public static int castDoubleToInt(double input) {
         return (int) input;
     }
 
 
-    public static long castDoubleToLong(double input){
+    public static long castDoubleToLong(double input) {
         return (long) input;
     }
 
-    public static double castLongToDouble(long input){
-        return (double)input;
+    public static double castLongToDouble(long input) {
+        return (double) input;
     }
 
-    public static int castLongToInt(long input){
-        return (int)input;
+    public static int castLongToInt(long input) {
+        return (int) input;
     }
 
 
@@ -259,6 +298,32 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     //NUMBER
     public static boolean gt10_withRefType(Number number) {
         return number.intValue() > 10;
+    }
+
+
+    public static MutableDouble toMutableDouble(int val){
+        return new MutableDouble(val);
+    }
+
+    public static MutableLong toMutableLong(long val){
+        return new MutableLong(val);
+    }
+
+    public static MutableInt toMutableInt(int val){
+        return new MutableInt(val);
+    }
+
+    @Data
+    public static class ResultsHolder implements Named {
+        public static final String DEFAULT_NAME = "resultsHolder_Mutables";
+        MutableInt mutableInt;
+        MutableDouble mutableDouble;
+        MutableLong mutableLong;
+
+        @Override
+        public String getName() {
+            return DEFAULT_NAME;
+        }
     }
 
 }

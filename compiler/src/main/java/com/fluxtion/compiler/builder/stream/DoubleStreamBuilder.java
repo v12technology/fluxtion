@@ -44,6 +44,17 @@ public class DoubleStreamBuilder<I, S extends EventStream<I>> {
         return new DoubleStreamBuilder<>(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
+    public DoubleStreamBuilder<Double, DoubleEventStream> map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder<?, ?> stream2Builder) {
+        return new DoubleStreamBuilder<>(
+                new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
+                        eventStream, stream2Builder.eventStream, int2IntFunction)
+        );
+    }
+
+    public <R> EventStreamBuilder<R> mapToObj(SerializableDoubleFunction<R> int2IntFunction) {
+        return new EventStreamBuilder<>(new MapEventStream.MapDouble2RefEventStream<>(eventStream, int2IntFunction));
+    }
+
     public IntStreamBuilder<Double, DoubleEventStream> mapToInt(SerializableDoubleToIntFunction int2IntFunction) {
         return new IntStreamBuilder<>(new MapEventStream.MapDouble2ToIntEventStream(eventStream, int2IntFunction));
     }
