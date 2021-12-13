@@ -20,15 +20,14 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testIntBinaryFunctionWith() {
-        sep(c -> {
-            subscribe(Data_1.class)
-                    .mapToInt(Data_1::getIntValue)
-                    .map(BinaryMapTest::add,
-                            subscribe(Data_2.class).mapToInt(Data_2::getIntValue)
-                    )
-                    .push( new NotifyAndPushTarget()::setIntPushValue);
-
-        });
+        sep(c ->
+                subscribe(Data_1.class)
+                        .mapToInt(Data_1::getIntValue)
+                        .map(BinaryMapTest::add,
+                                subscribe(Data_2.class).mapToInt(Data_2::getIntValue)
+                        )
+                        .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new Data_1(10));
         assertThat(target.getIntPushValue(), is(10));
@@ -40,16 +39,14 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testDoubleBinaryFunction() {
-        sep(c -> {
-            subscribe(MutableDouble.class)
-                    .mapToDouble(MutableDouble::doubleValue)
-                    .map(BinaryMapTest::multiply,
-                            subscribe(MutableInt.class).mapToDouble(MutableInt::doubleValue)
-                    )
-                    .push( new NotifyAndPushTarget()::setDoublePushValue)
-                    ;
-
-        });
+        sep(c ->
+                subscribe(MutableDouble.class)
+                        .mapToDouble(MutableDouble::doubleValue)
+                        .map(BinaryMapTest::multiply,
+                                subscribe(MutableInt.class).mapToDouble(MutableInt::doubleValue)
+                        )
+                        .push(new NotifyAndPushTarget()::setDoublePushValue)
+        );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new MutableDouble(10.1));
         assertThat(target.getDoublePushValue(), closeTo(0, 0.0001));
@@ -60,15 +57,14 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testLongBinaryFunction() {
-        sep(c -> {
-            subscribe(MutableLong.class)
-                    .mapToLong(MutableLong::longValue)
-                    .map(BinaryMapTest::addLong,
-                            subscribe(MutableInt.class).mapToLong(MutableInt::longValue)
-                    )
-                    .push( new NotifyAndPushTarget()::setLongPushValue);
-
-        });
+        sep(c ->
+                subscribe(MutableLong.class)
+                        .mapToLong(MutableLong::longValue)
+                        .map(BinaryMapTest::addLong,
+                                subscribe(MutableInt.class).mapToLong(MutableInt::longValue)
+                        )
+                        .push(new NotifyAndPushTarget()::setLongPushValue)
+        );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new MutableLong(1_000));
         assertThat(target.getLongPushValue(), is(1_000L));
@@ -78,15 +74,14 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testIntBinaryFunctionWithDefaultValue() {
-        sep(c -> {
-            subscribe(Data_1.class)
-                    .mapToInt(Data_1::getIntValue)
-                    .map(BinaryMapTest::add,
-                            subscribe(Data_2.class).mapToInt(Data_2::getIntValue).defaultValue(50)
-                    )
-                    .push( new NotifyAndPushTarget()::setIntPushValue);
-
-        });
+        sep(c ->
+                subscribe(Data_1.class)
+                        .mapToInt(Data_1::getIntValue)
+                        .map(BinaryMapTest::add,
+                                subscribe(Data_2.class).mapToInt(Data_2::getIntValue).defaultValue(50)
+                        )
+                        .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new Data_1(10));
         assertThat(target.getIntPushValue(), is(60));
@@ -110,11 +105,11 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         return arg1 + arg2;
     }
 
-    public static double multiply(double arg1, double arg2){
+    public static double multiply(double arg1, double arg2) {
         return arg1 * arg2;
     }
 
-    public static long addLong(long arg1, long arg2){
+    public static long addLong(long arg1, long arg2) {
         return arg1 + arg2;
     }
 
