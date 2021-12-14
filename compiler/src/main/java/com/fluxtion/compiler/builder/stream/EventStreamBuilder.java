@@ -86,7 +86,6 @@ public class EventStreamBuilder<T> {
 
     //META-DATA
     public EventStreamBuilder<T> id(String nodeId){
-//        SepContext.service().add(eventStream, nodeId +"EventStream");
         SepContext.service().add(eventStream, nodeId);
         return this;
     }
@@ -95,23 +94,23 @@ public class EventStreamBuilder<T> {
     TODO:
     ================
     stateful support for functions
-    log - helper function
-    audit - helper function
-    add standard predicates for primitives
-    add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
-    add peek functions to support log and audit helpers
     add peek to primitive streams
     More tests
 
     Done:
     ================
     Use transient reference in any stream that has an instance function reference. Remove anchor
+    add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
+    add standard predicates for primitives
     De-dupe filter
     mapOnNotify
     id for eventStream
 
     optional:
     ================
+    log - helper function
+    audit - helper function
+    add peek functions to support log and audit helpers
     merge/zip
     flatmap
      */

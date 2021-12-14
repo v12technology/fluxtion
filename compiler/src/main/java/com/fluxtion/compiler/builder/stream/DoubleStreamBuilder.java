@@ -84,8 +84,7 @@ public class DoubleStreamBuilder {
 
     //META-DATA
     public DoubleStreamBuilder id(String nodeId){
-        SepContext.service().add(eventStream, nodeId +"EventStream");
-        SepContext.service().add(eventStream.get(), nodeId);
+        SepContext.service().add(eventStream, nodeId);
         return this;
     }
 }
