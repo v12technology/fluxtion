@@ -9,7 +9,7 @@ import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.streamFromNode;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -23,7 +23,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void wrapNodeAsStreamTest() {
-        sep(c -> streamFromNode(new MyStringHandler())
+        sep(c -> subscribeToNode(new MyStringHandler())
                 .notify(new NotifyAndPushTarget()));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));

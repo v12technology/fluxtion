@@ -116,10 +116,10 @@ public class InProcessSepCompiler {
     public static InMemoryEventProcessor interpreted(SerializableConsumer<SEPConfig> cfgBuilder){
         SEPConfig cfg = new SEPConfig();
         cfg.supportDirtyFiltering = true;
-        cfgBuilder.accept(cfg);
-        Generator generator = new Generator();
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
         GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
+        cfgBuilder.accept(cfg);
+        Generator generator = new Generator();
         InMemoryEventProcessor inMemorySep = generator.inMemoryProcessor(cfg);
         return inMemorySep;
     }

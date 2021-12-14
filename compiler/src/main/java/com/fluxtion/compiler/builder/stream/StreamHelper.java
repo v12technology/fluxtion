@@ -6,8 +6,8 @@ class StreamHelper {
         if (input instanceof EventStreamBuilder<?>) {
             EventStreamBuilder<?> eventStreamBuilder = (EventStreamBuilder<?>) input;
             returnValue = eventStreamBuilder.eventStream;
-        } else if (input instanceof IntStreamBuilder<?, ?>) {
-            IntStreamBuilder<?, ?> eventStreamBuilder = (IntStreamBuilder<?, ?>) input;
+        } else if (input instanceof IntStreamBuilder) {
+            IntStreamBuilder eventStreamBuilder = (IntStreamBuilder) input;
             returnValue = eventStreamBuilder.eventStream;
         }
         return returnValue;

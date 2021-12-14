@@ -6,7 +6,7 @@ import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.DoubleEventStream;
 import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
-public class DoubleStreamBuilder<I, S extends EventStream<I>> {
+public class DoubleStreamBuilder {
 
     final DoubleEventStream eventStream;
 
@@ -16,61 +16,65 @@ public class DoubleStreamBuilder<I, S extends EventStream<I>> {
     }
 
     //TRIGGERS - START
-    public DoubleStreamBuilder<I, S> updateTrigger(Object updateTrigger){
+    public DoubleStreamBuilder updateTrigger(Object updateTrigger){
         eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder<I, S> publishTrigger(Object publishTrigger){
+    public DoubleStreamBuilder publishTrigger(Object publishTrigger){
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder<I, S> resetTrigger(Object resetTrigger){
+    public DoubleStreamBuilder resetTrigger(Object resetTrigger){
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder<Double, DoubleEventStream> filter(SerializableDoubleFunction<Boolean> filterFunction){
-        return new DoubleStreamBuilder<>( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
+    public DoubleStreamBuilder filter(SerializableDoubleFunction<Boolean> filterFunction){
+        return new DoubleStreamBuilder ( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
     }
 
-    public DoubleStreamBuilder<Double, DoubleEventStream>defaultValue(double defaultValue){
+    public DoubleStreamBuilder  defaultValue(double defaultValue){
         return map(new DefaultValue.DefaultDouble(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START
-    public DoubleStreamBuilder<Double, DoubleEventStream> map(SerializableDoubleUnaryOperator int2IntFunction) {
-        return new DoubleStreamBuilder<>(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
+    public DoubleStreamBuilder map(SerializableDoubleUnaryOperator int2IntFunction) {
+        return new DoubleStreamBuilder (new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
-    public DoubleStreamBuilder<Double, DoubleEventStream> map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder<?, ?> stream2Builder) {
-        return new DoubleStreamBuilder<>(
+    public DoubleStreamBuilder map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
+        return new DoubleStreamBuilder (
                 new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public EventStreamBuilder<Double> box(){
+        return mapToObj(StreamAccessories::boxDouble);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(SerializableDoubleFunction<R> int2IntFunction) {
         return new EventStreamBuilder<>(new MapEventStream.MapDouble2RefEventStream<>(eventStream, int2IntFunction));
     }
 
-    public IntStreamBuilder<Double, DoubleEventStream> mapToInt(SerializableDoubleToIntFunction int2IntFunction) {
-        return new IntStreamBuilder<>(new MapEventStream.MapDouble2ToIntEventStream(eventStream, int2IntFunction));
+    public IntStreamBuilder mapToInt(SerializableDoubleToIntFunction int2IntFunction) {
+        return new IntStreamBuilder(new MapEventStream.MapDouble2ToIntEventStream(eventStream, int2IntFunction));
     }
 
-    public LongStreamBuilder<Double, DoubleEventStream> mapToLong(SerializableDoubleToLongFunction int2IntFunction) {
-        return new LongStreamBuilder<>(new MapEventStream.MapDouble2ToLongEventStream(eventStream, int2IntFunction));
+    public LongStreamBuilder mapToLong(SerializableDoubleToLongFunction int2IntFunction) {
+        return new LongStreamBuilder(new MapEventStream.MapDouble2ToLongEventStream(eventStream, int2IntFunction));
     }
 
     //OUTPUTS - START
-    public DoubleStreamBuilder<Double, DoubleEventStream> notify(Object target) {
+    public DoubleStreamBuilder notify(Object target) {
         SepContext.service().add(target);
-        return new DoubleStreamBuilder<>(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
+        return new DoubleStreamBuilder (new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
-    public DoubleStreamBuilder<Double, DoubleEventStream> push(SerializableDoubleConsumer pushFunction) {
+    public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
         SepContext.service().add(pushFunction.captured()[0]);
-        return new DoubleStreamBuilder<>(new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
+        return new DoubleStreamBuilder (new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 }
