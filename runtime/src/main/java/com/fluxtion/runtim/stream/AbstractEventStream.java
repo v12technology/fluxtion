@@ -1,7 +1,9 @@
 package com.fluxtion.runtim.stream;
 
 import com.fluxtion.runtim.Anchor;
+import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.annotations.Initialise;
+import com.fluxtion.runtim.annotations.NoEventReference;
 import com.fluxtion.runtim.annotations.OnParentUpdate;
 import com.fluxtion.runtim.audit.EventLogNode;
 import com.fluxtion.runtim.partition.LambdaReflection;
@@ -21,6 +23,8 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
 
     private final S inputEventStream;
     private final transient MethodReferenceReflection streamFunction;
+    @NoEventReference
+    private final transient Object streamFunctionInstance;
     private transient boolean overrideUpdateTrigger;
     private transient boolean overrideTriggered;
     private transient boolean publishTriggered;
@@ -33,7 +37,9 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
-            Anchor.anchor(this, methodReferenceReflection.captured()[0]);
+            streamFunctionInstance = SepContext.service().addOrReuse(methodReferenceReflection.captured()[0]);
+        }else{
+            streamFunctionInstance = null;
         }
     }
 

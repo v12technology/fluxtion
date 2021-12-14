@@ -52,8 +52,12 @@ public class IntStreamBuilder {
         );
     }
 
+    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    }
+
     public EventStreamBuilder<Integer> box(){
-        return mapToObj(StreamAccessories::boxInt);
+        return mapToObj(Integer::valueOf);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(SerializableIntFunction<R> int2IntFunction) {
@@ -79,6 +83,13 @@ public class IntStreamBuilder {
             SepContext.service().add(pushFunction.captured()[0]);
         }
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
+    }
+
+    //META-DATA
+    public IntStreamBuilder id(String nodeId){
+//        SepContext.service().add(eventStream, nodeId +"EventStream");
+        SepContext.service().add(eventStream, nodeId);
+         return this;
     }
 
 //    public IntStreamBuilder<Integer, IntEventStream> peek(SerializableIntConsumer peekFunction) {

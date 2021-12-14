@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.targets;
 
+import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.StaticEventProcessor;
 import com.fluxtion.runtim.annotations.OnEventComplete;
 import com.fluxtion.runtim.audit.Auditor;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
-public class InMemoryEventProcessor implements StaticEventProcessor, Lifecycle, BatchHandler {
+public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, Lifecycle, BatchHandler {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
     private final BitSet dirtyBitset = new BitSet();

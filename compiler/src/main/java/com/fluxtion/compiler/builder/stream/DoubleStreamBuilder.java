@@ -51,8 +51,12 @@ public class DoubleStreamBuilder {
         );
     }
 
+    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    }
+
     public EventStreamBuilder<Double> box(){
-        return mapToObj(StreamAccessories::boxDouble);
+        return mapToObj(Double::valueOf);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(SerializableDoubleFunction<R> int2IntFunction) {
@@ -76,5 +80,12 @@ public class DoubleStreamBuilder {
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
         SepContext.service().add(pushFunction.captured()[0]);
         return new DoubleStreamBuilder (new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
+    }
+
+    //META-DATA
+    public DoubleStreamBuilder id(String nodeId){
+        SepContext.service().add(eventStream, nodeId +"EventStream");
+        SepContext.service().add(eventStream.get(), nodeId);
+        return this;
     }
 }

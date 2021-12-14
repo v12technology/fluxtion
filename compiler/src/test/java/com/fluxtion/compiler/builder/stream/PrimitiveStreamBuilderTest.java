@@ -3,7 +3,6 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.event.Signal;
-import com.fluxtion.runtim.stream.EventStream;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.mutable.MutableDouble;
