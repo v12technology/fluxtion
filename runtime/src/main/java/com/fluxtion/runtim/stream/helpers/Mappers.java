@@ -1,16 +1,16 @@
 package com.fluxtion.runtim.stream.helpers;
 
 import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableDoubleFunction;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableIntFunction;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableLongFunction;
 import lombok.ToString;
 import lombok.Value;
 
-import static com.fluxtion.runtim.partition.LambdaReflection.SerializableIntUnaryOperator;
+import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
 public interface Mappers {
+
+    SerializableDoubleUnaryOperator SUM_DOUBLE = new SumDouble()::add;
+    SerializableLongUnaryOperator SUM_LONG = new SumLong()::add;
+    SerializableIntUnaryOperator SUM_INT = new SumInt()::add;
 
     static Count count(){
         return new Count();
@@ -32,7 +32,6 @@ public interface Mappers {
         return new ConstantStringMapper(message)::toMessage;
     }
 
-    SerializableIntUnaryOperator SUM_INT = new Sum()::add;
 
     @Value
     class ConstantStringMapper{
@@ -55,10 +54,28 @@ public interface Mappers {
         }
     }
 
-   class Sum {
+    class SumInt {
         int sum;
 
         public int add(int add) {
+            sum += add;
+            return sum;
+        }
+    }
+
+    class SumDouble {
+        double sum;
+
+        public double add(double add) {
+            sum += add;
+            return sum;
+        }
+    }
+
+    class SumLong {
+        long sum;
+
+        public long add(long add) {
             sum += add;
             return sum;
         }

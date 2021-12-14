@@ -7,9 +7,7 @@ import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
 public interface Predicates {
 
-    SerializableIntUnaryOperator SUM_INT = new SumInt()::add;
-    SerializableDoubleUnaryOperator SUM_DOUBLE = new SumDouble()::add;
-    SerializableLongUnaryOperator SUM_LONG = new SumLong()::add;
+
 
     SerializableIntFunction<Boolean> HAS_CHANGED_INT = new HasChanged()::intChanged;
     SerializableDoubleFunction<Boolean> HAS_CHANGED_DOUBLE = new HasChanged()::doubleChanged;
@@ -32,32 +30,7 @@ public interface Predicates {
     }
 
 
-    class SumInt {
-        int sum;
 
-        public int add(int add) {
-            sum += add;
-            return sum;
-        }
-    }
-
-    class SumDouble {
-        double sum;
-
-        public double add(double add) {
-            sum += add;
-            return sum;
-        }
-    }
-
-    class SumLong {
-        long sum;
-
-        public long add(long add) {
-            sum += add;
-            return sum;
-        }
-    }
 
     class HasChanged {
         long longPrevious;
