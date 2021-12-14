@@ -12,7 +12,7 @@ public interface Mappers {
     SerializableLongUnaryOperator SUM_LONG = new SumLong()::add;
     SerializableIntUnaryOperator SUM_INT = new SumInt()::add;
 
-    static Count count(){
+    static Count newCount(){
         return new Count();
     }
 

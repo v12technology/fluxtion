@@ -21,8 +21,8 @@ public class PredicatesTest  extends MultipleSepTargetInProcessTest {
         sep(c ->{
             EventFlow.subscribe(Integer.class)
                     .mapToInt(Integer::intValue)
-                    .filter(Predicates.HAS_CHANGED_INT)
-                    .mapOnNotify(Mappers.count()).id("count")
+                    .filter(Predicates.HAS_CHANGED_INT_FILTER)
+                    .mapOnNotify(Mappers.newCount()).id("count")
                     .mapToInt(Mappers.Count::getCount)
             ;;
         });
@@ -44,8 +44,8 @@ public class PredicatesTest  extends MultipleSepTargetInProcessTest {
         sep(c ->{
             EventFlow.subscribe(Integer.class)
                     .mapToDouble(Integer::doubleValue)
-                    .filter(Predicates.HAS_CHANGED_DOUBLE)
-                    .mapOnNotify(Mappers.count()).id("count")
+                    .filter(Predicates.HAS_CHANGED_DOUBLE_FILTER)
+                    .mapOnNotify(Mappers.newCount()).id("count")
                     .mapToInt(Mappers.Count::getCount)
             ;
         });
@@ -67,8 +67,8 @@ public class PredicatesTest  extends MultipleSepTargetInProcessTest {
         sep(c ->{
             EventFlow.subscribe(Integer.class)
                     .mapToLong(Integer::longValue)
-                    .filter(Predicates.HAS_CHANGED_LONG)
-                    .mapOnNotify(Mappers.count()).id("count")
+                    .filter(Predicates.HAS_CHANGED_LONG_FILTER)
+                    .mapOnNotify(Mappers.newCount()).id("count")
                     .mapToInt(Mappers.Count::getCount)
             ;
         });
@@ -90,8 +90,8 @@ public class PredicatesTest  extends MultipleSepTargetInProcessTest {
         sep(c ->{
             EventFlow.subscribe(Integer.class)
                     .map(Objects::toString)
-                    .filter(Predicates.hasChanged())
-                    .mapOnNotify(Mappers.count()).id("count")
+                    .filter(Predicates.hasChangedFilter())
+                    .mapOnNotify(Mappers.newCount()).id("count")
                     .mapToInt(Mappers.Count::getCount)
             ;
         });

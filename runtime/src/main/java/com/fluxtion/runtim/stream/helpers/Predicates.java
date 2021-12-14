@@ -7,13 +7,11 @@ import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
 public interface Predicates {
 
+    SerializableIntFunction<Boolean> HAS_CHANGED_INT_FILTER = new HasChanged()::intChanged;
+    SerializableDoubleFunction<Boolean> HAS_CHANGED_DOUBLE_FILTER = new HasChanged()::doubleChanged;
+    SerializableLongFunction<Boolean> HAS_CHANGED_LONG_FILTER = new HasChanged()::longChanged;
 
-
-    SerializableIntFunction<Boolean> HAS_CHANGED_INT = new HasChanged()::intChanged;
-    SerializableDoubleFunction<Boolean> HAS_CHANGED_DOUBLE = new HasChanged()::doubleChanged;
-    SerializableLongFunction<Boolean> HAS_CHANGED_LONG = new HasChanged()::longChanged;
-
-    static <T> LambdaReflection.SerializableFunction<T, Boolean> hasChanged() {
+    static <T> LambdaReflection.SerializableFunction<T, Boolean> hasChangedFilter() {
         return new HasChanged()::objChanged;
     }
 
@@ -30,7 +28,17 @@ public interface Predicates {
     }
 
 
+    static SerializableIntFunction<Boolean> lt(int limit) {
+        return new LessThan(limit, Double.NaN)::check;
+    }
 
+    static SerializableLongFunction<Boolean> lt(long limit) {
+        return new LessThan(limit, Double.NaN)::check;
+    }
+
+    static SerializableDoubleFunction<Boolean> lt(double limit) {
+        return new LessThan(Long.MAX_VALUE, limit)::check;
+    }
 
     class HasChanged {
         long longPrevious;
@@ -80,6 +88,24 @@ public interface Predicates {
 
         public boolean check(long input) {
             return input > limit;
+        }
+    }
+
+    @Value
+    class LessThan {
+        long limit;
+        double doubleLimit;
+
+        public boolean check(int input) {
+            return input < limit;
+        }
+
+        public boolean check(double input) {
+            return input < doubleLimit;
+        }
+
+        public boolean check(long input) {
+            return input < limit;
         }
     }
 }
