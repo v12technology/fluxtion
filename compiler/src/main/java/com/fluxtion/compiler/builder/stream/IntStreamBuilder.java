@@ -7,7 +7,7 @@ import com.fluxtion.runtim.stream.helpers.DefaultValue;
 
 import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
-public class IntStreamBuilder<I, S extends EventStream<I>> {
+public class IntStreamBuilder {
 
     final IntEventStream eventStream;
 
@@ -17,64 +17,68 @@ public class IntStreamBuilder<I, S extends EventStream<I>> {
     }
 
     //TRIGGERS - START
-    public IntStreamBuilder<I, S> updateTrigger(Object updateTrigger) {
+    public IntStreamBuilder updateTrigger(Object updateTrigger) {
         eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
         return this;
     }
 
-    public IntStreamBuilder<I, S> publishTrigger(Object publishTrigger) {
+    public IntStreamBuilder publishTrigger(Object publishTrigger) {
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
-    public IntStreamBuilder<I, S> resetTrigger(Object resetTrigger) {
+    public IntStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
     }
 
-    public IntStreamBuilder<Integer, IntEventStream> filter(SerializableIntFunction<Boolean> filterFunction) {
-        return new IntStreamBuilder<>(new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
+    public IntStreamBuilder filter(SerializableIntFunction<Boolean> filterFunction) {
+        return new IntStreamBuilder(new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
     }
 
-    public IntStreamBuilder<Integer, IntEventStream> defaultValue(int defaultValue) {
+    public IntStreamBuilder defaultValue(int defaultValue) {
         return map(new DefaultValue.DefaultInt(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START
-    public IntStreamBuilder<Integer, IntEventStream> map(SerializableIntUnaryOperator int2IntFunction) {
-        return new IntStreamBuilder<>(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
+    public IntStreamBuilder map(SerializableIntUnaryOperator int2IntFunction) {
+        return new IntStreamBuilder(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
     }
 
-    public IntStreamBuilder<Integer, IntEventStream> map(SerializableBiIntFunction int2IntFunction, IntStreamBuilder<?, ?> stream2Builder) {
-        return new IntStreamBuilder<>(
+    public IntStreamBuilder map(SerializableBiIntFunction int2IntFunction, IntStreamBuilder stream2Builder) {
+        return new IntStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToIntEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public EventStreamBuilder<Integer> box(){
+        return mapToObj(StreamAccessories::boxInt);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(SerializableIntFunction<R> int2IntFunction) {
         return new EventStreamBuilder<>(new MapEventStream.MapInt2RefEventStream<>(eventStream, int2IntFunction));
     }
 
-    public DoubleStreamBuilder<Integer, IntEventStream> mapToDouble(SerializableIntToDoubleFunction int2IntFunction) {
-        return new DoubleStreamBuilder<>(new MapEventStream.MapInt2ToDoubleEventStream(eventStream, int2IntFunction));
+    public DoubleStreamBuilder mapToDouble(SerializableIntToDoubleFunction int2IntFunction) {
+        return new DoubleStreamBuilder(new MapEventStream.MapInt2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
-    public LongStreamBuilder<Integer, IntEventStream> mapToLong(SerializableIntToLongFunction int2IntFunction) {
-        return new LongStreamBuilder<>(new MapEventStream.MapInt2ToLongEventStream(eventStream, int2IntFunction));
+    public LongStreamBuilder mapToLong(SerializableIntToLongFunction int2IntFunction) {
+        return new LongStreamBuilder(new MapEventStream.MapInt2ToLongEventStream(eventStream, int2IntFunction));
     }
 
     //OUTPUTS - START
-    public IntStreamBuilder<Integer, IntEventStream> notify(Object target) {
+    public IntStreamBuilder notify(Object target) {
         SepContext.service().add(target);
-        return new IntStreamBuilder<>(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
+        return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
-    public IntStreamBuilder<Integer, IntEventStream> push(SerializableIntConsumer pushFunction) {
+    public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
         if (pushFunction.captured().length > 0) {
             SepContext.service().add(pushFunction.captured()[0]);
         }
-        return new IntStreamBuilder<>(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
+        return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
 
 //    public IntStreamBuilder<Integer, IntEventStream> peek(SerializableIntConsumer peekFunction) {
