@@ -111,7 +111,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         sep(c -> {
             StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
-            DoubleStreamBuilder<Double, EventStream<Double>> doubleStreamBuilder = subscribe(Double.class).mapToDouble(Double::doubleValue);
+            DoubleStreamBuilder doubleStreamBuilder = subscribe(Double.class).mapToDouble(Double::doubleValue);
             doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt).push(pushTarget::setIntPushValue);
             doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
         });
@@ -126,7 +126,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         sep(c -> {
             StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
-            LongStreamBuilder<Long, EventStream<Long>> longStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
+            LongStreamBuilder longStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
             longStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
             longStreamBuilder.mapToDouble(PrimitiveStreamBuilderTest::castLongToDouble).push(pushTarget::setDoublePushValue);
         });
@@ -234,6 +234,40 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
     }
 
+    @Test
+    public void boxPrimitiveTest(){
+//        addAuditor();
+        sep(c -> {
+            ResultsHolder results = new ResultsHolder();
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .box()
+                    .push(results::setBoxedInteger)
+            ;
+
+            subscribe(MutableDouble.class)
+                    .mapToDouble(MutableDouble::doubleValue)
+                    .box()
+                    .push(results::setBoxedDouble)
+            ;
+
+
+            subscribe(MutableLong.class)
+                    .mapToLong(MutableLong::longValue)
+                    .box()
+                    .push(results::setBoxedLong)
+            ;
+        });
+        ResultsHolder results = getField(ResultsHolder.DEFAULT_NAME);
+        onEvent(new MutableInt(100));
+        onEvent(new MutableDouble(100.5));
+        onEvent(new MutableLong(100));
+
+        assertThat(results.getBoxedInteger(), is((Integer)100));
+        assertThat(results.getBoxedDouble(), is((Double)100.5));
+        assertThat(results.getBoxedLong(), is((Long)100L));
+    }
+
     public static int multiplyDoubleBy100CastToInt(double input) {
         return (int) (100 * input);
     }
@@ -319,6 +353,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         MutableInt mutableInt;
         MutableDouble mutableDouble;
         MutableLong mutableLong;
+
+        Integer boxedInteger;
+        Double boxedDouble;
+        Long boxedLong;
 
         @Override
         public String getName() {
