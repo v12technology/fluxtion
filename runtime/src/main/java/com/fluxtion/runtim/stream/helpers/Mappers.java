@@ -1,6 +1,7 @@
 package com.fluxtion.runtim.stream.helpers;
 
 import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.stream.Stateful;
 import lombok.ToString;
 import lombok.Value;
 
@@ -131,37 +132,59 @@ public interface Mappers {
     }
     
     @ToString
-    class SumInt {
+    class SumInt implements Stateful<Integer> {
         int sum;
 
         public int add(int add) {
             sum += add;
             return sum;
         }
+
+        public int getSum() {
+            return sum;
+        }
+
+        @Override
+        public Integer reset() {
+            sum = 0;
+            return sum;
+        }
     }
 
     @ToString
-    class SumDouble {
+    class SumDouble implements Stateful<Double> {
         double sum;
 
         public double add(double add) {
             sum += add;
             return sum;
         }
+
+        @Override
+        public Double reset() {
+            sum = 0;
+            return sum;
+        }
     }
 
     @ToString
-    class SumLong {
+    class SumLong implements Stateful<Long>{
         long sum;
 
         public long add(long add) {
             sum += add;
             return sum;
         }
+
+        @Override
+        public Long reset() {
+            sum = 0;
+            return sum;
+        }
     }
 
     @ToString
-    class Count {
+    class Count implements Stateful<Integer>{
         int count;
 
         @OnEvent
@@ -173,9 +196,15 @@ public interface Mappers {
         public int getCount() {
             return count;
         }
+
+        @Override
+        public Integer reset() {
+            count = 0;
+            return count;
+        }
     }
 
-    class Max {
+    class Max implements Stateful<Number>{
         int maxInt;
         long maxLong;
         double maxDouble;
@@ -195,10 +224,18 @@ public interface Mappers {
             maxLong = Math.max(maxLong, input);
             return maxLong;
         }
+
+        @Override
+        public Integer reset() {
+            maxInt = 0;
+            maxLong = 0;
+            maxDouble = 0;
+            return maxInt;
+        }
     }
 
 
-    class Min {
+    class Min implements Stateful<Number>{
         int minInt;
         long minLong;
         double minDouble;
@@ -217,6 +254,15 @@ public interface Mappers {
             minLong = Math.min(minLong, input);
             return minLong;
         }
+
+        @Override
+        public Integer reset() {
+            minInt = 0;
+            minLong = 0;
+            minDouble = 0;
+            return minInt;
+        }
+
     }
 
 }

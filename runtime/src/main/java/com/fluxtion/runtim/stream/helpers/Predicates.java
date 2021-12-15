@@ -1,7 +1,13 @@
 package com.fluxtion.runtim.stream.helpers;
 
+import com.fluxtion.runtim.annotations.Initialise;
+import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtim.annotations.OnParentUpdate;
 import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtim.stream.Stateful;
 import lombok.Value;
+
+import java.util.*;
 
 import static com.fluxtion.runtim.partition.LambdaReflection.*;
 
@@ -106,6 +112,47 @@ public interface Predicates {
 
         public boolean check(long input) {
             return input < limit;
+        }
+    }
+
+    class AllUpdatedPredicate extends Stateful.StatefulWrapper  {
+
+        private final List<Object> monitored = new ArrayList<>();
+        private final transient Map<Object, Boolean> updateMap = new HashMap<>();
+        private boolean allUpdated;
+
+        public AllUpdatedPredicate(List<?> monitored, Object resetKey) {
+            super(resetKey);
+            this.monitored.addAll(monitored);
+        }
+
+        public AllUpdatedPredicate(List<?> monitored) {
+            this(monitored, null);
+        }
+
+        @OnParentUpdate("monitored")
+        public void parentUpdated(Object parent) {
+            if (!allUpdated) {
+                updateMap.put(parent, true);
+                allUpdated = updateMap.values().stream().allMatch(v -> v);
+            }
+        }
+
+        @OnEvent
+        public boolean propagateEvent() {
+            return allUpdated;
+        }
+
+        @Initialise
+        public void init() {
+            allUpdated = false;
+            updateMap.clear();
+            monitored.forEach(p -> updateMap.put(p, false));
+        }
+
+        @Override
+        public void reset() {
+            init();
         }
     }
 }

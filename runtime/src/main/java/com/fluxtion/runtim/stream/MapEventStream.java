@@ -1,5 +1,6 @@
 package com.fluxtion.runtim.stream;
 
+import com.fluxtion.runtim.annotations.NoEventReference;
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import lombok.EqualsAndHashCode;
@@ -20,11 +21,18 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     protected transient String auditInfo;
     protected transient R result;
+    @NoEventReference
+    protected transient Stateful<R> resetFunction;
 
+
+    @SuppressWarnings("unchecked")
     public MapEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
         super(inputEventStream, methodReferenceReflection);
         Method method = methodReferenceReflection.method();
         auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
+        if(isStatefulFunction()){
+            resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
+        }
     }
 
     @OnEvent
@@ -33,6 +41,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         if (executeUpdate()) {
             auditLog.info("invokeMapFunction", true);
             mapOperation();
+        } else if(reset()) {
+            auditLog.info("invokeMapFunction", false);
+            auditLog.info("reset", true);
+            resetOperation();
         } else {
             auditLog.info("invokeMapFunction", false);
         }
@@ -54,6 +66,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     }
 
     abstract protected void mapOperation();
+
+    protected void resetOperation(){
+        result = resetFunction.reset();
+    }
 
 
     //***************** REFERENCE map producers START *****************//
@@ -140,6 +156,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             super(inputEventStream, method);
         }
 
+        protected void resetOperation(){
+            result = resetFunction.reset();
+        }
+
         @Override
         public Integer get() {
             return getAsInt();
@@ -170,6 +190,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
+        @NoEventReference
         private final SerializableIntUnaryOperator intUnaryOperator;
 
         public MapInt2ToIntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
@@ -232,6 +253,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         public AbstractMapToDoubleEventStream(S inputEventStream, MethodReferenceReflection method) {
             super(inputEventStream, method);
+        }
+
+        protected void resetOperation(){
+            result = resetFunction.reset();
         }
 
         @Override
@@ -326,6 +351,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         public AbstractMapToLongEventStream(S inputEventStream, MethodReferenceReflection method) {
             super(inputEventStream, method);
+        }
+
+        protected void resetOperation(){
+            result = resetFunction.reset();
         }
 
         @Override

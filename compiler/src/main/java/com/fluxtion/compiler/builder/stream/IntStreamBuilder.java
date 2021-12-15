@@ -85,14 +85,14 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
 
+    public IntStreamBuilder peek(SerializableConsumer<Integer> peekFunction) {
+        return new IntStreamBuilder(new PeekEventStream.IntPeekEventStream(eventStream, peekFunction));
+    }
+
     //META-DATA
     public IntStreamBuilder id(String nodeId){
-//        SepContext.service().add(eventStream, nodeId +"EventStream");
         SepContext.service().add(eventStream, nodeId);
          return this;
     }
 
-//    public IntStreamBuilder<Integer, IntEventStream> peek(SerializableIntConsumer peekFunction) {
-//        return new IntStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
-//    }
 }

@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
+import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.*;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.DoubleEventStream;
@@ -82,9 +83,14 @@ public class DoubleStreamBuilder {
         return new DoubleStreamBuilder (new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 
+    public DoubleStreamBuilder peek(LambdaReflection.SerializableConsumer<Double> peekFunction) {
+        return new DoubleStreamBuilder(new PeekEventStream.DoublePeekEventStream(eventStream, peekFunction));
+    }
+
     //META-DATA
     public DoubleStreamBuilder id(String nodeId){
         SepContext.service().add(eventStream, nodeId);
         return this;
     }
+
 }

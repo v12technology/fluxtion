@@ -178,6 +178,28 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getStringPushValue(), is("not null"));
     }
 
+
+    @Test
+    public void defaultValueTestWithReset() {
+        sep(c -> subscribe(String.class)
+                .defaultValue("not null").resetTrigger(subscribe(Integer.class))
+                .publishTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setStringPushValue)
+        );
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getStringPushValue(), nullValue());
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getStringPushValue(), is("not null"));
+
+        onEvent("hello");
+        assertThat(notifyTarget.getStringPushValue(), is("hello"));
+
+        onEvent(Integer.valueOf(1));
+        assertThat(notifyTarget.getStringPushValue(), is("not null"));
+    }
+
+
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";

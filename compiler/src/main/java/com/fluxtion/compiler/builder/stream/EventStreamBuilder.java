@@ -93,12 +93,12 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    stateful support for functions
-    add peek to primitive streams
     More tests
 
     Done:
     ================
+    add peek to primitive streams
+    stateful support for functions
     Use transient reference in any stream that has an instance function reference. Remove anchor
     add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
     add standard predicates for primitives

@@ -23,8 +23,6 @@ public enum JavaGeneratorNames {
     trace_subclass_test1("Trace_subclass_test1"),
     trace_diamond_test1("Trace_diamond_test1"),
     trace_dirty_test1("Trace_dirty_test1"),
-//    trace_dirty_test2("Trace_dirty_test2"),
-    trace_dirty_test2("Trace_dirty_test2"),
     trace_eventlifecycle_test1("Trace_eventlifecycle_test1"),
     trace_mapdispatch_test1("Trace_mapdispatch_test1"),
     test_wc("Test_wc"),

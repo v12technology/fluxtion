@@ -86,6 +86,10 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new PushEventStream.LongPushEventStream(eventStream, pushFunction));
     }
 
+    public LongStreamBuilder peek(LambdaReflection.SerializableConsumer<Long> peekFunction) {
+        return new LongStreamBuilder(new PeekEventStream.LongPeekEventStream(eventStream, peekFunction));
+    }
+
     //META-DATA
     public LongStreamBuilder id(String nodeId){
         SepContext.service().add(eventStream, nodeId);
