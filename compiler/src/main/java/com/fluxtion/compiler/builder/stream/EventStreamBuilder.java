@@ -53,6 +53,10 @@ public class EventStreamBuilder<T> {
         );
     }
 
+    public <R> EventStreamBuilder<R> mapOnNotify(R target){
+        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    }
+
     public IntStreamBuilder mapToInt(LambdaReflection.SerializableToIntFunction<T> mapFunction) {
         return new IntStreamBuilder( new MapEventStream.MapRef2ToIntEventStream<>(eventStream, mapFunction));
     }
@@ -80,37 +84,35 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
     }
 
+    //META-DATA
+    public EventStreamBuilder<T> id(String nodeId){
+        SepContext.service().add(eventStream, nodeId);
+        return this;
+    }
 
     /*
     TODO:
     ================
-    De-dupe filter
+    More tests
 
+    Done:
+    ================
+    add peek to primitive streams
+    stateful support for functions
+    Use transient reference in any stream that has an instance function reference. Remove anchor
+    add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
+    add standard predicates for primitives
+    De-dupe filter
+    mapOnNotify
+    id for eventStream
 
     optional:
     ================
     log - helper function
     audit - helper function
+    add peek functions to support log and audit helpers
     merge/zip
     flatmap
-
-     DONE
-    ================
-    Default helper
-    binaryMap
-    subscribe
-    wrapNode
-    updateTrigger
-    peek
-    get
-    push
-    filter
-    notify
-    tests
-    resetTrigger
-    publishTrigger
-    primitive map
-    primitive tests
      */
 
 }

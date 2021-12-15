@@ -17,6 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
+import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.FilterId;
 
@@ -28,7 +29,7 @@ public interface TraceEventHolder {
 
     TraceEvent getTraceEvent();
 
-    class TraceEventHandler_generic  implements TraceEventHolder {
+    class TraceEventHandler_generic  implements TraceEventHolder, Named {
 
         @FilterId
         private int filter;
@@ -55,6 +56,10 @@ public interface TraceEventHolder {
             return event;
         }
 
+        @Override
+        public String getName() {
+            return traceId;
+        }
     }
     
     class TraceEventHandler_sub1 extends TraceEventHandler_generic{

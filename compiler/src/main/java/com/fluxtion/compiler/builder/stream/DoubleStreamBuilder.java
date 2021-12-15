@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtim.SepContext;
+import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.*;
 import com.fluxtion.runtim.stream.*;
 import com.fluxtion.runtim.stream.EventStream.DoubleEventStream;
@@ -51,8 +52,12 @@ public class DoubleStreamBuilder {
         );
     }
 
+    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    }
+
     public EventStreamBuilder<Double> box(){
-        return mapToObj(StreamAccessories::boxDouble);
+        return mapToObj(Double::valueOf);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(SerializableDoubleFunction<R> int2IntFunction) {
@@ -77,4 +82,15 @@ public class DoubleStreamBuilder {
         SepContext.service().add(pushFunction.captured()[0]);
         return new DoubleStreamBuilder (new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
+
+    public DoubleStreamBuilder peek(LambdaReflection.SerializableConsumer<Double> peekFunction) {
+        return new DoubleStreamBuilder(new PeekEventStream.DoublePeekEventStream(eventStream, peekFunction));
+    }
+
+    //META-DATA
+    public DoubleStreamBuilder id(String nodeId){
+        SepContext.service().add(eventStream, nodeId);
+        return this;
+    }
+
 }
