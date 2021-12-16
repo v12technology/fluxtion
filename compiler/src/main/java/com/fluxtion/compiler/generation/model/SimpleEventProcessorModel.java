@@ -406,13 +406,14 @@ public class SimpleEventProcessorModel {
     private void lifeCycleHandlers() throws Exception {
         Map<Object, String> inst2Name = dependencyGraph.getInstanceMap();
         List<Object> topologicalHandlers = dependencyGraph.getSortedDependents();
+        List<Object> objectTopologicalHandler = dependencyGraph.getObjectSortedDependents();
         Multimap<Object, CbMethodHandle> parentListenerMultiMap = HashMultimap.create();
         Multimap<Object, CbMethodHandle> parentListenerMultiMapUnmatched = HashMultimap.create();
 
         /*
           Add inexact match
          */
-        for (Object object : topologicalHandlers) {
+        for (Object object: objectTopologicalHandler){
             String name = inst2Name.get(object);
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
@@ -430,6 +431,28 @@ public class SimpleEventProcessorModel {
                         LOGGER.debug("tear down call back : " + validCb);
                     }
                 }
+            }
+        }
+
+
+        for (Object object : topologicalHandlers) {
+            String name = inst2Name.get(object);
+            Method[] methodList = object.getClass().getMethods();
+            for (Method method : methodList) {
+//                if (annotationInHierarchy(method, Initialise.class)) {
+//                    initialiseMethods.add(new CbMethodHandle(method, object, name));
+//                    if (LOGGER.isDebugEnabled()) {
+//                        final String validCb = name + "." + method.getName() + "()";
+//                        LOGGER.debug("initialise call back : " + validCb);
+//                    }
+//                }
+//                if (annotationInHierarchy(method, TearDown.class)) {
+//                    tearDownMethods.add(0, new CbMethodHandle(method, object, name));
+//                    if (LOGGER.isDebugEnabled()) {
+//                        final String validCb = name + "." + method.getName() + "()";
+//                        LOGGER.debug("tear down call back : " + validCb);
+//                    }
+//                }
                 if (annotationInHierarchy(method, OnBatchEnd.class)) {
                     //revered for the batch callbacks
                     batchEndMethods.add(0, new CbMethodHandle(method, object, name));
