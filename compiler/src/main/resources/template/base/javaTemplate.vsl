@@ -20,6 +20,7 @@ package ${package};
 import com.fluxtion.runtim.StaticEventProcessor;
 import com.fluxtion.runtim.lifecycle.BatchHandler;
 import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtim.EventProcessor;
 #importslf4j
 #if(${MODEL.imports})
 ${MODEL.imports}
@@ -34,7 +35,7 @@ ${MODEL.imports}
 * @author Greg Higgins 
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements StaticEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+public class ${className} implements EventProcessor, StaticEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
     #slf4j(${className})
 //Node declarations
