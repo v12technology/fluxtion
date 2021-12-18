@@ -55,8 +55,12 @@ public class LongStreamBuilder {
         );
     }
 
+    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    }
+
     public EventStreamBuilder<Long> box(){
-        return mapToObj(StreamAccessories::boxLong);
+        return mapToObj(Long::valueOf);
     }
 
     public <R> EventStreamBuilder<R> mapToObj(LambdaReflection.SerializableLongFunction<R> int2IntFunction) {
@@ -80,5 +84,15 @@ public class LongStreamBuilder {
     public LongStreamBuilder push(SerializableLongConsumer pushFunction) {
         SepContext.service().add(pushFunction.captured()[0]);
         return new LongStreamBuilder(new PushEventStream.LongPushEventStream(eventStream, pushFunction));
+    }
+
+    public LongStreamBuilder peek(LambdaReflection.SerializableConsumer<Long> peekFunction) {
+        return new LongStreamBuilder(new PeekEventStream.LongPeekEventStream(eventStream, peekFunction));
+    }
+
+    //META-DATA
+    public LongStreamBuilder id(String nodeId){
+        SepContext.service().add(eventStream, nodeId);
+        return this;
     }
 }

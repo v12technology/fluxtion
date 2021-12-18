@@ -17,6 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
+import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.annotations.OnEventComplete;
 import com.fluxtion.runtim.annotations.OnParentUpdate;
@@ -25,7 +26,7 @@ import com.fluxtion.runtim.annotations.OnParentUpdate;
  *
  * @author Greg Higgins
  */
-public class Node_DirtyFilter_TraceEvent implements TraceEventHolder {
+public class Node_DirtyFilter_TraceEvent implements TraceEventHolder, Named {
 
     public TraceEventHolder parentUpdated;
     public TraceEvent event;
@@ -69,4 +70,8 @@ public class Node_DirtyFilter_TraceEvent implements TraceEventHolder {
         return event;
     }
 
+    @Override
+    public String getName() {
+        return traceId;
+    }
 }

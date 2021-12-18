@@ -1,7 +1,9 @@
 package com.fluxtion.runtim.stream;
 
 import com.fluxtion.runtim.Anchor;
+import com.fluxtion.runtim.SepContext;
 import com.fluxtion.runtim.annotations.Initialise;
+import com.fluxtion.runtim.annotations.NoEventReference;
 import com.fluxtion.runtim.annotations.OnParentUpdate;
 import com.fluxtion.runtim.audit.EventLogNode;
 import com.fluxtion.runtim.partition.LambdaReflection;
@@ -21,9 +23,14 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
 
     private final S inputEventStream;
     private final transient MethodReferenceReflection streamFunction;
+    @NoEventReference
+    private final transient Object streamFunctionInstance;
+    private transient final boolean statefulFunction;
     private transient boolean overrideUpdateTrigger;
+    protected transient boolean inputStreamTriggered;
     private transient boolean overrideTriggered;
     private transient boolean publishTriggered;
+    private transient boolean resetTriggered;
 
     private Object updateTriggerNode;
     private Object publishTriggerNode;
@@ -33,7 +40,11 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
-            Anchor.anchor(this, methodReferenceReflection.captured()[0]);
+            streamFunctionInstance = SepContext.service().addOrReuse(methodReferenceReflection.captured()[0]);
+            statefulFunction = Stateful.class.isAssignableFrom(streamFunctionInstance.getClass());
+        }else{
+            streamFunctionInstance = null;
+            statefulFunction = false;
         }
     }
 
@@ -48,9 +59,11 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
      * @return flag indicating fire a notification to child nodes for any upstream change
      */
     protected final boolean fireEventUpdateNotification() {
-        boolean fireNotification = !overrideUpdateTrigger | overrideTriggered | publishTriggered;
+        boolean fireNotification = (!overrideUpdateTrigger && inputStreamTriggered) | overrideTriggered | publishTriggered | resetTriggered;
         overrideTriggered = false;
         publishTriggered = false;
+        resetTriggered = false;
+        inputStreamTriggered = false;
         auditLog.info("fireNotification", fireNotification);
         return fireNotification;
     }
@@ -67,7 +80,16 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
      *
      */
     protected final boolean executeUpdate() {
-        return !overrideUpdateTrigger | overrideTriggered;
+        return (!overrideUpdateTrigger && inputStreamTriggered) | overrideTriggered;
+    }
+
+    protected final boolean reset(){
+        return resetTriggered && statefulFunction;
+    }
+
+    @OnParentUpdate("inputEventStream")
+    public final void inputUpdated(Object inputEventStream){
+        inputStreamTriggered = true;
     }
 
     @OnParentUpdate("updateTriggerNode")
@@ -80,6 +102,12 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
         publishTriggered = true;
     }
 
+    @OnParentUpdate("resetTriggerNode")
+    public final void resetTriggerNodeUpdated(Object triggerNode) {
+        resetTriggered = true;
+        resetOperation();
+    }
+
     @Initialise
     public final void initialiseEventStream() {
         overrideUpdateTrigger = updateTriggerNode != null;
@@ -87,6 +115,10 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
     }
 
     protected void initialise() {
+        //NO-OP
+    }
+
+    protected void resetOperation(){
         //NO-OP
     }
 
@@ -118,10 +150,6 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
         return inputEventStream;
     }
 
-    public boolean isOverrideUpdateTrigger() {
-        return overrideUpdateTrigger;
-    }
-
     public boolean isOverrideTriggered() {
         return overrideTriggered;
     }
@@ -132,6 +160,10 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
 
     public MethodReferenceReflection getStreamFunction() {
         return streamFunction;
+    }
+
+    public boolean isStatefulFunction() {
+        return statefulFunction;
     }
 
     /**
@@ -157,6 +189,11 @@ public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extend
 
         public U getInputEventStream_2() {
             return inputEventStream_2;
+        }
+
+        @OnParentUpdate("inputEventStream_2")
+        public final void input2Updated(Object inputEventStream){
+            inputStreamTriggered = true;
         }
     }
 }

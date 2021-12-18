@@ -3,7 +3,7 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.event.Signal;
-import com.fluxtion.runtim.stream.EventStream;
+import com.fluxtion.runtim.stream.helpers.Mappers;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.mutable.MutableDouble;
@@ -266,6 +266,27 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(results.getBoxedInteger(), is((Integer)100));
         assertThat(results.getBoxedDouble(), is((Double)100.5));
         assertThat(results.getBoxedLong(), is((Long)100L));
+    }
+
+    @Test
+    public void testIntReset(){
+//        addAuditor();
+        sep(c ->{
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .map(Mappers.SUM_INT).id("sum")
+                    .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
+        });
+
+        onEvent(new MutableInt(10));
+        onEvent(new MutableInt(10));
+        onEvent(new MutableInt(10));
+        assertThat(getStreamed("sum"), is(30));
+
+        onEvent("NO reset");
+        assertThat(getStreamed("sum"), is(30));
+        onEvent("reset");
+        assertThat(getStreamed("sum"), is(0));
     }
 
     public static int multiplyDoubleBy100CastToInt(double input) {

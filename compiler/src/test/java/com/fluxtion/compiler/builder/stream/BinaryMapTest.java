@@ -2,6 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtim.stream.helpers.Mappers;
 import lombok.Value;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -89,6 +90,70 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         assertThat(target.getIntPushValue(), is(70));
         onEvent(new Data_2(80));
         assertThat(target.getIntPushValue(), is(100));
+    }
+
+    @Test
+    public void testInTAddStandardFunction(){
+        sep(c ->{
+            IntStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue);
+            IntStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue);
+
+            int1.map(Mappers.ADD_INTS, int2).id("add");
+            int1.map(Mappers.SUBTRACT_INTS, int2).id("subtract");
+            int1.map(Mappers.MULTIPLY_INTS, int2).id("multiply");
+        });
+
+        onEvent(new Data_1(10));
+        assertThat(getStreamed("add"), is(10));
+        assertThat(getStreamed("subtract"), is(10));
+        assertThat(getStreamed("multiply"), is(0));
+        onEvent(new Data_2(130));
+        assertThat(getStreamed("add"), is(140));
+        assertThat(getStreamed("subtract"), is(-120));
+        assertThat(getStreamed("multiply"), is(1300));
+    }
+
+    @Test
+    public void testDoubleAddStandardFunction(){
+        sep(c ->{
+            DoubleStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue).box().mapToDouble(Integer::doubleValue);
+            DoubleStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue).box().mapToDouble(Integer::doubleValue);
+
+            int1.map(Mappers.ADD_DOUBLES, int2).id("add");
+            int1.map(Mappers.SUBTRACT_DOUBLES, int2).id("subtract");
+            int1.map(Mappers.MULTIPLY_DOUBLES, int2).id("multiply");
+        });
+
+        onEvent(new Data_1(10));
+        assertThat(getStreamed("add"), is(10d));
+        assertThat(getStreamed("subtract"), is(10d));
+        assertThat(getStreamed("multiply"), is(0d));
+        onEvent(new Data_2(130));
+        assertThat(getStreamed("add"), is(140d));
+        assertThat(getStreamed("subtract"), is(-120d));
+        assertThat(getStreamed("multiply"), is(1300d));
+    }
+
+
+    @Test
+    public void testLongAddStandardFunction(){
+        sep(c ->{
+            LongStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue).box().mapToLong(Integer::longValue);
+            LongStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue).box().mapToLong(Integer::longValue);
+
+            int1.map(Mappers.ADD_LONGS, int2).id("add");
+            int1.map(Mappers.SUBTRACT_LONGS, int2).id("subtract");
+            int1.map(Mappers.MULTIPLY_LONGS, int2).id("multiply");
+        });
+
+        onEvent(new Data_1(10));
+        assertThat(getStreamed("add"), is(10L));
+        assertThat(getStreamed("subtract"), is(10L));
+        assertThat(getStreamed("multiply"), is(0L));
+        onEvent(new Data_2(130));
+        assertThat(getStreamed("add"), is(140L));
+        assertThat(getStreamed("subtract"), is(-120L));
+        assertThat(getStreamed("multiply"), is(1300L));
     }
 
     @Value

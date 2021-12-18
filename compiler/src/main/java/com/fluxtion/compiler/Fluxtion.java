@@ -2,6 +2,7 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
+import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.StaticEventProcessor;
 import com.fluxtion.runtim.lifecycle.Lifecycle;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
@@ -24,8 +25,8 @@ public interface Fluxtion {
      * @return An uninitialized instance of a {@link StaticEventProcessor}
      */
     @SneakyThrows
-    static StaticEventProcessor compile(SerializableConsumer<SEPConfig> sepConfig){
-       return InProcessSepCompiler.compile(sepConfig);
+    static EventProcessor compile(SerializableConsumer<SEPConfig> sepConfig){
+       return (EventProcessor) InProcessSepCompiler.compile(sepConfig);
     }
 
     /**
@@ -39,7 +40,7 @@ public interface Fluxtion {
      * @param sepConfig the configuration used to build this {@link StaticEventProcessor}
      * @return An uninitialized instance of a {@link StaticEventProcessor}
      */
-    static StaticEventProcessor interpret(SerializableConsumer<SEPConfig> sepConfig){
+    static EventProcessor interpret(SerializableConsumer<SEPConfig> sepConfig){
         return InProcessSepCompiler.interpreted(sepConfig);
     }
 }

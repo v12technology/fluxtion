@@ -13,7 +13,6 @@ import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.Test1N
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_0_test1;
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_diamond_test1;
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_dirty_test1;
-import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_dirty_test2;
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_eventlifecycle_test1;
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_int_0_test1;
 import static com.fluxtion.compiler.generation.targets.JavaGeneratorNames.trace_int_0_test2;
@@ -308,37 +307,6 @@ public class JavaTargetTestInlineIT {
                 "B0", "B1", "AB1", "AB3", "AB4", "AB5");
 
     }
-
-    @Test
-    public void trace_dirty_test3() throws Exception {
-        //System.out.println(trace_dirty_test2);
-        StaticEventProcessor handler = JavaTestGeneratorHelper.sepInstanceInline(trace_dirty_test2);
-        //
-        TraceEvent.TraceEvent_sub1 te = new TraceEvent.TraceEvent_sub1(1);
-        te.strValue = "no match";
-        handler.onEvent(te);
-        JavaTestGeneratorHelper.testTraceIdContains(te.getTraceIdList(), 
-                "handler_A0", "filter_A1", "node_2", "node_3", "node_4", "node_5", "node_6");
-        //
-        te.reset();
-        te.strValue = "filter_A1";
-        handler.onEvent(te);
-        JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceIdList(), "handler_A0", "filter_A1", "node_4");
-        //
-        TraceEvent.TraceEvent_sub2 te_2 = new TraceEvent.TraceEvent_sub2(2);
-        te_2.strValue = "no mathc";
-        handler.onEvent(te_2);
-        JavaTestGeneratorHelper.testTraceIdContains(te_2.getTraceIdList(),
-                "handler_B0", "filter_B1", "node_3", "node_1", "node_4", "node_6");
-        //
-        te_2.reset();
-        te_2.strValue = "filter_B1";
-        handler.onEvent(te_2);
-        JavaTestGeneratorHelper.testTraceIdContains(te_2.getTraceIdList(),
-                "handler_B0", "filter_B1", "node_1", "node_4");
-        
-    }    
-    
 
     @Test
     public void trace_eventlifecycle_test1() throws Exception {

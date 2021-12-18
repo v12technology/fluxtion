@@ -5,7 +5,8 @@ import com.fluxtion.runtim.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtim.stream.NodeEventStream;
 
 /**
- * Helper methods for subscribing and creating an {@link EventStreamBuilder}
+ * Helper methods for subscribing and creating an {@link EventStreamBuilder} from external events or internal nodes
+ * in the graph.
  */
 public interface EventFlow {
 

@@ -28,6 +28,7 @@ import com.fluxtion.runtim.audit.EventLogControlEvent;
 import com.fluxtion.runtim.audit.JULLogRecordListener;
 import com.fluxtion.runtim.lifecycle.BatchHandler;
 import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtim.stream.EventStream;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
@@ -207,6 +208,11 @@ public class MultipleSepTargetInProcessTest {
             return (T) new Mirror().on(sep).get().field(name);
         }
         return (T) inMemorySep.getFieldByName(name).instance;
+    }
+
+    protected <T> T getStreamed(String name){
+        EventStream<T> stream = getField(name);
+        return stream.get();
     }
 
     protected void onEvent(Object e) {

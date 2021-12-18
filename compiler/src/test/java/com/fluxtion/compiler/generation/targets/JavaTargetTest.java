@@ -295,37 +295,6 @@ public class JavaTargetTest {
 //        assertEquals(7, genClassInline.getFields().length);
     }
 
-    @Test
-    public void trace_dirty_test3() throws Exception {
-        //System.out.println(trace_dirty_test2);
-        SEPConfig cfg = new SEPConfig() {
-            {
-                //
-                TraceEventHolder handler_A = addNode(new TraceEventHolder.TraceEventHandler_sub1("handler_A0", 1));
-                TraceEventHolder handler_B = addNode(new TraceEventHolder.TraceEventHandler_sub2("handler_B0", 2));
-
-                TraceEventHolder filter_A1 = addNode(new Node_DirtyFilter_TraceEvent("filter_A1", handler_A));
-                TraceEventHolder filter_B1 = addNode(new Node_DirtyFilter_TraceEvent("filter_B1", handler_B));
-
-                TraceEventHolder node_1 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_1", handler_B));
-                TraceEventHolder node_2 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_2", filter_A1));
-                TraceEventHolder node_3 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_3", filter_A1, filter_B1));
-                TraceEventHolder node_4 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_4", node_1, node_3));
-                TraceEventHolder node_5 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_5", node_2));
-                TraceEventHolder node_6 = addNode(new Node_TraceEventHolder_Aggregator_NoFiltering("node_6", node_3));
-
-            }
-        };
-        cfg.generateDescription = false;
-        JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_dirty_test2, true);
-        JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_dirty_test2, true);
-
-        //a - filter match input string = "filter_A1"  "handler_A0", "filter_A1", "node_4"
-        //a - no filter match input string = !"filter_A1"  "handler_A0", "filter_A1", "node_2", "node_3", "node_4", "node_5", "node_6"
-        //
-        //b - filter match input string = "filter_B1"  "handler_B0", "filter_B1", "node_1", "node_4"
-        //b - no filter match input string = !"filter_B1"  "handler_B0", "filter_B1", "node_3", "node_1", "node_4", "node_6
-    }
 
     @Test
     public void testDirtyFilterOnEventHandler() throws Exception {
