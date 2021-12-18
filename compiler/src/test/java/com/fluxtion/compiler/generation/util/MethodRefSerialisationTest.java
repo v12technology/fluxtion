@@ -23,18 +23,33 @@ import com.fluxtion.runtim.annotations.PushReference;
 import com.fluxtion.runtim.partition.LambdaReflection;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
 import lombok.Data;
+import lombok.Value;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 
 /**
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
+    public static final String SUCCESS = "success";
+
     public MethodRefSerialisationTest(boolean compiledSep) {
         super(compiledSep);
+    }
+
+    private static String result;
+
+    @Test
+    public void testRunnableMethodRef(){
+        sep(c -> c.addNode(new RunnableExecutor(MethodRefSerialisationTest::failingTask)));
+        onEvent("fail please");
+        assertThat(result, is(SUCCESS));
     }
 
     @Test
@@ -70,7 +85,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testNodeInstanceMethdRef() {
+    public void testNodeInstanceMethodRef() {
         sep((c) -> {
             Transform transform = c.addPublicNode(new Transform(), "transform");
             final InstanceFunction instanceFunction = c.addNode(new InstanceFunction());
@@ -95,9 +110,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testConstructor() {
         sep(c -> {
-            c.addNode(new FactoryGenerator(MyTarget::new), "factory");
+            c.addNode(new FactoryGenerator<>(MyTarget::new), "factory");
         });
-        FactoryGenerator transform = getField("factory");
+        FactoryGenerator<Object> transform = getField("factory");
         assertNull(transform.getInstance());
         onEvent("hello");
         assertNotNull(transform.getInstance());
@@ -211,5 +226,20 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         @OnEvent
         public void onEven(){}
 
+    }
+
+    @Value
+    public static class RunnableExecutor{
+        LambdaReflection.SerializableRunnable runnable;
+
+        @EventHandler
+        public void executeTask(String in){
+            runnable.run();
+        }
+
+    }
+
+    public static void failingTask(){
+        result = SUCCESS;
     }
 }
