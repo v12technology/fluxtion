@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.*;
 
@@ -75,8 +76,7 @@ public interface LambdaReflection {
         default Method method(ClassLoader loader) {
             SerializedLambda lambda = serialized();
             Class<?> containingClass = getContainingClass(loader);
-            return asList(containingClass.getDeclaredMethods())
-                    .stream()
+            return Arrays.stream(containingClass.getDeclaredMethods())
                     .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
                     .findFirst()
                     .orElseThrow(UnableToGuessMethodException::new);
@@ -90,8 +90,7 @@ public interface LambdaReflection {
         default Method method() {
             SerializedLambda lambda = serialized();
             Class<?> containingClass = getContainingClass();
-            return asList(containingClass.getDeclaredMethods())
-                    .stream()
+            return Arrays.stream(containingClass.getDeclaredMethods())
                     .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
                     .findFirst()
                     .orElseThrow(UnableToGuessMethodException::new);
@@ -100,6 +99,8 @@ public interface LambdaReflection {
         class UnableToGuessMethodException extends RuntimeException {
         }
     }
+
+    interface SerializableRunnable extends Runnable,  Serializable, MethodReferenceReflection {}
 
     interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
