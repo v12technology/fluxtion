@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>3.1.4</version>
+    <version>3.1.5</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
 
@@ -405,6 +405,7 @@
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service</artifactId>
                 <version>1.0-rc4</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.googlejavaformat</groupId>
