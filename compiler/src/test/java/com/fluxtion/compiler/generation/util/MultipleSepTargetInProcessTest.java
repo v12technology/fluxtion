@@ -23,12 +23,12 @@ import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.audit.EventLogControlEvent;
-import com.fluxtion.runtim.audit.JULLogRecordListener;
-import com.fluxtion.runtim.lifecycle.BatchHandler;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import com.fluxtion.runtim.stream.EventStream;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.JULLogRecordListener;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.stream.EventStream;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
@@ -46,7 +46,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 import static com.fluxtion.compiler.generation.compiler.InProcessSepCompiler.sepTestInstance;
-import static com.fluxtion.runtim.time.ClockStrategy.registerClockEvent;
+import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 
 /**
  * Test class utility for building a SEP in process

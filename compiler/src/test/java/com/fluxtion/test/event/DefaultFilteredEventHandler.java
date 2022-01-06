@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtim.FilteredEventHandler;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.event.Event;
 
 /**
  *

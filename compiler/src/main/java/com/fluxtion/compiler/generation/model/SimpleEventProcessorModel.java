@@ -17,11 +17,11 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.FilteredEventHandler;
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.time.Clock;
-import com.fluxtion.runtim.annotations.builder.ConstructorArg;
+import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
@@ -1154,7 +1154,7 @@ public class SimpleEventProcessorModel {
             boolean tmpIsFiltered = true;
             boolean tmpIsInverseFiltered = false;
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), withAnnotation(FilterId.class));
-            com.fluxtion.runtim.annotations.EventHandler annotation = onEventMethod.getAnnotation(com.fluxtion.runtim.annotations.EventHandler.class);
+            com.fluxtion.runtime.annotations.EventHandler annotation = onEventMethod.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class);
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
             //String attribute filter on annoatation 

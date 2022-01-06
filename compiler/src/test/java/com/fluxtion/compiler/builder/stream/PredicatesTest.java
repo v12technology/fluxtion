@@ -1,9 +1,9 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.stream.helpers.Mappers;
-import com.fluxtion.runtim.stream.helpers.Predicates;
-import com.fluxtion.runtim.stream.helpers.Predicates.AllUpdatedPredicate;
+import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Predicates;
+import com.fluxtion.runtime.stream.helpers.Predicates.AllUpdatedPredicate;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

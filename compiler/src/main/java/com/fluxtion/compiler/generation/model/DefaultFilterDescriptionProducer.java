@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.compiler.builder.generation.GenerationContext;

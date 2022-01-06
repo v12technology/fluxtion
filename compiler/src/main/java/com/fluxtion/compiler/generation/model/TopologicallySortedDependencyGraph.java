@@ -26,11 +26,11 @@ import com.fluxtion.compiler.builder.node.NodeRegistry;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtim.FilteredEventHandler;
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.annotations.builder.*;
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.builder.*;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.event.Event;
 import com.google.common.base.Predicates;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -904,7 +904,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             graph.vertexSet().forEach((t) -> {
                 Method[] methodList = t.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(com.fluxtion.runtim.annotations.EventHandler.class) != null) {
+                    if (method.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class) != null) {
                         @SuppressWarnings("unchecked") Class<? extends Event> eventTypeClass = (Class<? extends Event>) method.getParameterTypes()[0];
                         exportGraph.addVertex(eventTypeClass);
                         exportGraph.addEdge(eventTypeClass, t);

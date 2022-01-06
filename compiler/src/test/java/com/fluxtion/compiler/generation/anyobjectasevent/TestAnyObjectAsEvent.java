@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
-import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 

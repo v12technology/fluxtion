@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;

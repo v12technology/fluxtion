@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Event;
 
 import java.util.Arrays;
 import java.util.List;

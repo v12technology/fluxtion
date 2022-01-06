@@ -2,10 +2,10 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
-import com.fluxtion.runtim.EventProcessor;
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import lombok.SneakyThrows;
 
 /**

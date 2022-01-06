@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEvent;
 
 /**
  * Prototype for generated derived average calculations.

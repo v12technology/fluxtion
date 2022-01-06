@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.function;
 
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.partition.LambdaReflection;
 
 public class UnaryFunction<T, R> {
 

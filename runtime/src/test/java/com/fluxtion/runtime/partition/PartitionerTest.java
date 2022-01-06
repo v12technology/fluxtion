@@ -16,10 +16,9 @@
  */
 package com.fluxtion.runtime.partition;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.event.DefaultEvent;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.partition.Partitioner;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
 import org.junit.Before;
 import org.junit.Test;
 

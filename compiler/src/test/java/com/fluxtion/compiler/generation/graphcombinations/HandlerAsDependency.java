@@ -16,8 +16,8 @@
  */
 package com.fluxtion.compiler.generation.graphcombinations;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
@@ -29,7 +29,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.fluxtion.runtim.partition.LambdaReflection.getMethod;
+import static com.fluxtion.runtime.partition.LambdaReflection.getMethod;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -125,7 +125,6 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
 
 
     @Test
-    @Ignore
     public void mappedAndUnMappedEventTypes() {
         sep((c) -> c.addNode(new StringHandler(), "strHandler"));
         StringHandler strHandler = getField("strHandler");

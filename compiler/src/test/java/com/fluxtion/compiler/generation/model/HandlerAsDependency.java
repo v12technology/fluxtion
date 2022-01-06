@@ -1,12 +1,12 @@
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.compiler.generation.util.BaseModelTest;
 import lombok.Data;
 import org.junit.Test;
 
-import static com.fluxtion.runtim.partition.LambdaReflection.getMethod;
+import static com.fluxtion.runtime.partition.LambdaReflection.getMethod;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 

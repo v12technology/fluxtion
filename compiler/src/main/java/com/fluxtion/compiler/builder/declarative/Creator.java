@@ -17,12 +17,12 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.annotations.TearDown;
-import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.squareup.javapoet.AnnotationSpec;

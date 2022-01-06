@@ -18,13 +18,13 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.annotations.NoEventReference;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.event.DefaultEvent;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.annotations.NoEventReference;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
@@ -144,7 +144,7 @@ public class NoPropagationTest {
 
     public static class TimeProcessor {
 
-        @com.fluxtion.runtim.annotations.EventHandler
+        @com.fluxtion.runtime.annotations.EventHandler
         public boolean handleTimeUpdate(TimeEvent event) {
             return true;
         }
@@ -152,7 +152,7 @@ public class NoPropagationTest {
 
     public static class LogNotifier {
 
-        @com.fluxtion.runtim.annotations.EventHandler
+        @com.fluxtion.runtime.annotations.EventHandler
         public void updateLog(LogToConsole notify) {
 //            return true;
         }
@@ -160,12 +160,12 @@ public class NoPropagationTest {
 
     public static class MsgBuilderBase {
 
-        @com.fluxtion.runtim.annotations.EventHandler(filterString = "level", propagate = false)
+        @com.fluxtion.runtime.annotations.EventHandler(filterString = "level", propagate = false)
         public boolean controlLevel(LogControlEvent lc) {
             return false;
         }
 
-        @com.fluxtion.runtim.annotations.EventHandler(filterString = "filter", propagate = false)
+        @com.fluxtion.runtime.annotations.EventHandler(filterString = "filter", propagate = false)
         public boolean controlFilter(LogControlEvent lc) {
             return false;
         }

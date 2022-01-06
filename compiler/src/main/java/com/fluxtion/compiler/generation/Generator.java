@@ -22,7 +22,7 @@ import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.compiler.generation.targets.SepJavaSourceModelHugeFilter;
-import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;

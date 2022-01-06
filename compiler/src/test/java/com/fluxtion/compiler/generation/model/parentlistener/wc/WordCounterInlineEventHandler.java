@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.FilterType;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.FilterType;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 
 /**

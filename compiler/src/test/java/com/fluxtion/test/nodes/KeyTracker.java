@@ -17,10 +17,10 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.runtim.annotations.builder.Config;
-import com.fluxtion.runtim.annotations.builder.Inject;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.builder.Config;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
  *

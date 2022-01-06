@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableConsumer;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import static com.fluxtion.compiler.builder.generation.GenerationContext.SINGLETON;
 import com.fluxtion.compiler.builder.node.SEPConfig;

@@ -18,10 +18,10 @@ package com.fluxtion.compiler.builder.node;
 
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 import com.fluxtion.compiler.builder.time.ClockFactory;
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.audit.EventLogControlEvent.LogLevel;
-import com.fluxtion.runtim.audit.EventLogManager;
-import com.fluxtion.runtim.time.Clock;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
 import java.util.ArrayList;

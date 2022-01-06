@@ -21,11 +21,11 @@ import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.event.Event;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -941,7 +941,7 @@ public class SepJavaSourceModelHugeFilter {
 
     /**
      * String representation of java code handling subclass of
-     * {@link com.fluxtion.runtim.event.Event Event}, with support for specific
+     * {@link com.fluxtion.runtime.event.Event Event}, with support for specific
      * dispatch based upon
      * {@linkplain  Event#filterId()}  filterID. If
      * inlining is false the following output will be produced:

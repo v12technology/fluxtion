@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.named;
 
-import com.fluxtion.runtim.Named;
+import com.fluxtion.runtime.Named;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;

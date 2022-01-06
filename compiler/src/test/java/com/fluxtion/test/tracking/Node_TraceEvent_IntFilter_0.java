@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEvent;
 
 /**
  *

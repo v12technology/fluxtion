@@ -5,10 +5,10 @@
  */
 package com.fluxtion.compiler.generation.evenpublisher;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.event.EventPublisher;
-import com.fluxtion.runtim.event.RegisterEventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.EventPublisher;
+import com.fluxtion.runtime.event.RegisterEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 

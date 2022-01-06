@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.runtim.annotations.builder.ClassProcessor;
-import com.fluxtion.runtim.annotations.builder.Disabled;
-import com.fluxtion.runtim.annotations.builder.SepInstance;
+import com.fluxtion.runtime.annotations.builder.ClassProcessor;
+import com.fluxtion.runtime.annotations.builder.Disabled;
+import com.fluxtion.runtime.annotations.builder.SepInstance;
 import com.google.auto.service.AutoService;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.AnnotationParameterValueList;
