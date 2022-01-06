@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * LogRecord is hydrated from a list of {@link EventLogSource}'s. An
  * EventLogManager configures and supplies a EventLogger instance for each
  * registered EventLogSource, via
- * {@link EventLogSource#setLogger(com.fluxtion.runtime.plugin.logging.EventLogger)}.
+ * {@link EventLogSource#setLogger(EventLogger)} com.fluxtion.runtime.plugin.logging.EventLogger)}.
  * The output from each EventLogSource is aggregated into the LogRecord and
  * published.
  * <br>
@@ -105,7 +105,7 @@ public class EventLogManager implements Auditor {
     @Override
     public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
         EventLogger logger = node2Logger.getOrDefault(nodeName, NullEventLogger.INSTANCE);
-        logger.logNodeInvoation(traceLevel);
+        logger.logNodeInvocation(traceLevel);
         logger.log("method", methodName, traceLevel);
     }
 

@@ -46,23 +46,23 @@ public class EventLogger {
     }
 
     public void error() {
-        logNodeInvoation(LogLevel.ERROR);
+        logNodeInvocation(LogLevel.ERROR);
     }
 
     public void warn() {
-        logNodeInvoation(LogLevel.WARN);
+        logNodeInvocation(LogLevel.WARN);
     }
 
     public void info() {
-        logNodeInvoation(LogLevel.INFO);
+        logNodeInvocation(LogLevel.INFO);
     }
 
     public void debug() {
-        logNodeInvoation(LogLevel.DEBUG);
+        logNodeInvocation(LogLevel.DEBUG);
     }
 
     public void trace() {
-        logNodeInvoation(LogLevel.TRACE);
+        logNodeInvocation(LogLevel.TRACE);
     }
 
     public void error(String key, String value) {
@@ -165,7 +165,7 @@ public class EventLogger {
         log(key, value, LogLevel.TRACE);
     }
 
-    public void logNodeInvoation(LogLevel logLevel) {
+    public void logNodeInvocation(LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addTrace(logSourceId);
         }

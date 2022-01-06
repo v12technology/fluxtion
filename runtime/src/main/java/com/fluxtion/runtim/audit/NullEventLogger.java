@@ -42,7 +42,7 @@ public final class NullEventLogger extends EventLogger {
     }
     
     @Override
-    public void logNodeInvoation(EventLogControlEvent.LogLevel logLevel) {
+    public void logNodeInvocation(EventLogControlEvent.LogLevel logLevel) {
     }
 
     @Override
