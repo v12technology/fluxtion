@@ -18,7 +18,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 
@@ -46,7 +46,7 @@ public class InjectedFactoryTest extends BaseSepInProcessTest {
         cfg.addPublicNode(new KeyTracker(), "keyTracker1");
         Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
-        cfg.setDeclarativeConfig(new DeclarativeNodeConiguration(null, factoryList, null));
+        cfg.setDeclarativeConfig(new DeclarativeNodeConfiguration(null, factoryList, null));
     }
 
     private static void buildFactoryWithConfig(SEPConfig cfg) {
@@ -54,7 +54,7 @@ public class InjectedFactoryTest extends BaseSepInProcessTest {
         //Factories
         Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
         factoryList.add(KeyProcessorFactory.class);
-        cfg.setDeclarativeConfig(new DeclarativeNodeConiguration(null, factoryList, null));
+        cfg.setDeclarativeConfig(new DeclarativeNodeConfiguration(null, factoryList, null));
     }
 
     @Test

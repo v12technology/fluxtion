@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.declarative;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
@@ -69,7 +69,7 @@ public class SimpleDeclarativeTest {
         Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(KeyProcessorHistogram.class, "histogram");
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, new HashMap<>());
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
     }
@@ -82,7 +82,7 @@ public class SimpleDeclarativeTest {
         rootNodeMappings.put(Calculator.class, "calculator");
         GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "SimpleCalculator", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, new HashMap<>());
         SEPConfig cfg = new SEPConfig();
         cfg.setTemplateFile("javaTemplate.vsl");
         cfg.setDeclarativeConfig(config);
@@ -105,7 +105,7 @@ public class SimpleDeclarativeTest {
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
@@ -125,7 +125,7 @@ public class SimpleDeclarativeTest {
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(Calculator.class, "calcInjecting");
 
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
@@ -147,7 +147,7 @@ public class SimpleDeclarativeTest {
         factorySet.add(new WindowNodeFactory());
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
 
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
@@ -172,7 +172,7 @@ public class SimpleDeclarativeTest {
         Set<NodeFactory<?>> factorySet = new HashSet<>();
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, class2Factory, null, factorySet);
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
     }
@@ -184,7 +184,7 @@ public class SimpleDeclarativeTest {
         factorySet.add(new WindowNodeFactory());
         Map<Class<?>, String> rootNodeMappings = new HashMap<>();
         rootNodeMappings.put(WindowNode.class, "windowNode");
-        DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, null, null, factorySet);
+        DeclarativeNodeConfiguration config = new DeclarativeNodeConfiguration(rootNodeMappings, null, null, factorySet);
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         //override the EindowNode class with DynamicallyGeneratedWindowNode

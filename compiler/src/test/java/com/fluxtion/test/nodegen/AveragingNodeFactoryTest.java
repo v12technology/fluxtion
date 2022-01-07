@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.generation.util.BaseSepInProcessTest;
 import net.vidageek.mirror.dsl.Mirror;
@@ -53,7 +53,7 @@ public class AveragingNodeFactoryTest extends BaseSepInProcessTest {
             //root nodes
             Map<Class<?>, String> rootNodeMappings = new HashMap<>();
             rootNodeMappings.put(AveragingNode.class, "averagingNode");
-            c.setDeclarativeConfig(new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config));
+            c.setDeclarativeConfig(new DeclarativeNodeConfiguration(rootNodeMappings, factoryList, config));
         });
         Object avgNode = getField(AVERAGING_NODE_NAME);
         int windowSize = (int)new Mirror().on(avgNode).get().field("windowSize");

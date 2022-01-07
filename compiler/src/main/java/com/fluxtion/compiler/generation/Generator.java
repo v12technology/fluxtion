@@ -24,7 +24,7 @@ import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.compiler.generation.targets.SepJavaSourceModelHugeFilter;
 import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
@@ -75,7 +75,7 @@ public class Generator {
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
         Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         loadedConfig.setConfig(new HashMap<>());
-        DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+        DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
         cfgActual.factoryClassSet.addAll(class2Factory);
         config.setDeclarativeConfig(cfgActual);
         config.getDeclarativeConfig().factoryClassSet.addAll(class2Factory);

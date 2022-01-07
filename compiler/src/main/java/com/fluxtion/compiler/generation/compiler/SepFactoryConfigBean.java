@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +75,7 @@ public class SepFactoryConfigBean {
         this.config = config;
     }
 
-    public DeclarativeNodeConiguration asDeclarativeNodeConiguration() throws ClassNotFoundException {
+    public DeclarativeNodeConfiguration asDeclarativeNodeConfiguration() throws ClassNotFoundException {
 
         // convert rootNodeMappings to classes
         HashMap<Class<?>, String> rootClasses = null;
@@ -110,8 +110,8 @@ public class SepFactoryConfigBean {
             }
         }
 
-        DeclarativeNodeConiguration declarativeCfg
-                = new DeclarativeNodeConiguration(rootClasses, nodeFactoryClasses, config);
+        DeclarativeNodeConfiguration declarativeCfg
+                = new DeclarativeNodeConfiguration(rootClasses, nodeFactoryClasses, config);
         return declarativeCfg;
     }
 

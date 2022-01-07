@@ -22,7 +22,7 @@ import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
@@ -89,8 +89,8 @@ public class BaseSepTest {
     }
 
     @SafeVarargs
-    public static DeclarativeNodeConiguration factorySet(Class<? extends NodeFactory<?>>... classes) {
-        return new DeclarativeNodeConiguration(null, new HashSet<>(Arrays.asList(classes)), null);
+    public static DeclarativeNodeConfiguration factorySet(Class<? extends NodeFactory<?>>... classes) {
+        return new DeclarativeNodeConfiguration(null, new HashSet<>(Arrays.asList(classes)), null);
     }
 
     protected <T> T getField(String name) {
