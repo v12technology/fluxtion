@@ -14,9 +14,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.node;
+package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -42,10 +43,21 @@ import java.util.Set;
 @ToString
 public class SEPConfig {
 
-    public SEPConfig() {
-        setGenerateLogging(false);
-    }
-
+    private final Set<Class> interfaces = new HashSet<>();
+    private final Clock clock = ClockFactory.SINGLETON;
+    private String templateFile;
+    private List nodeList;
+    private HashMap<Object, String> publicNodes;
+    private HashMap<String, Auditor> auditorMap;
+    private DeclarativeNodeConiguration declarativeConfig;
+    private Map<Object, Integer> filterMap;
+    private Object templateContextExtension;
+    private boolean inlineEventHandling = false;
+    private boolean supportDirtyFiltering = false;
+    private boolean generateDescription = true;
+    private boolean assignPrivateMembers;
+    private boolean formatSource = true;
+    private final Map<String, String> class2replace = new HashMap<>();
     /**
      * Add a node to the SEP. The node will have private final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -59,14 +71,14 @@ public class SEPConfig {
      */
     @SuppressWarnings("unchecked")
     public <T> T addNode(T node) {
-        if (nodeList == null) {
-            nodeList = new ArrayList();
+        if (getNodeList() == null) {
+            setNodeList(new ArrayList());
         }
-        if (!nodeList.contains(node)) {
-            nodeList.add(node);
+        if (!getNodeList().contains(node)) {
+            getNodeList().add(node);
             return node;
         }
-        return (T) nodeList.get(nodeList.indexOf(node));
+        return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
     /**
@@ -85,7 +97,7 @@ public class SEPConfig {
     public <T> T addNode(T node, String name) {
         addNode(node);
         addPublicNode(node, name);
-        return (T) nodeList.get(nodeList.indexOf(node));
+        return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
     /**
@@ -101,10 +113,10 @@ public class SEPConfig {
      * @return The de-duplicated added node
      */
     public <T> T addPublicNode(T node, String name) {
-        if (publicNodes == null) {
-            publicNodes = new HashMap<>();
+        if (getPublicNodes() == null) {
+            setPublicNodes(new HashMap<>());
         }
-        publicNodes.put(node, name);
+        getPublicNodes().put(node, name);
         return node;
     }
 
@@ -118,10 +130,10 @@ public class SEPConfig {
      * @return the added Auditor
      */
     public <T extends Auditor> T addAuditor(T listener, String name) {
-        if (auditorMap == null) {
-            auditorMap = new HashMap<>();
+        if (getAuditorMap() == null) {
+            setAuditorMap(new HashMap<>());
         }
-        auditorMap.put(name, listener);
+        getAuditorMap().put(name, listener);
         return listener;
     }
 
@@ -132,9 +144,9 @@ public class SEPConfig {
      * @param mappedFqn Class name replacement
      */
     public void mapClass(String originalFqn, String mappedFqn) {
-        class2replace.put(originalFqn, mappedFqn);
+        getClass2replace().put(originalFqn, mappedFqn);
     }
-    
+
     /**
      * adds a clock to the generated SEP.
      * @return the clock in generated SEP
@@ -144,18 +156,17 @@ public class SEPConfig {
         addAuditor(clock, "clock");
         return clock;
     }
-    
+
     /**
-     * Add an {@link EventLogManager} auditor to the generated SEP. Specify 
+     * Add an {@link EventLogManager} auditor to the generated SEP. Specify
      * the level at which method tracing will take place.
-     * @param tracingLogLevel 
+     * @param tracingLogLevel
      */
     public void addEventAudit(LogLevel tracingLogLevel){
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
-    private final Set<Class> interfaces = new HashSet<>();
-    
+
     public void addInterfaceImplementation(Class clazz){
         interfaces.add(clazz);
     }
@@ -169,84 +180,138 @@ public class SEPConfig {
      * buildConfig method will be called by the Fluxtion generator at build
      * time.
      */
-    public void buildConfig() {
+    public void buildConfig() {}
 
-    }
 
     /**
      * the name of the template file to use as an input
      */
-    public String templateFile;
+    public String getTemplateFile() {
+        return templateFile;
+    }
 
+    public void setTemplateFile(String templateFile) {
+        this.templateFile = templateFile;
+    }
 
     /**
      * the nodes included in this graph
      */
-    public List nodeList;
+    public List getNodeList() {
+        return nodeList;
+    }
+
+    public void setNodeList(List nodeList) {
+        this.nodeList = nodeList;
+    }
+
     /**
      * Variable names overrides for public nodes, these will be well known and
      * addressable from outside the SEP.
      */
-    public HashMap<Object, String> publicNodes;
+    public HashMap<Object, String> getPublicNodes() {
+        return publicNodes;
+    }
 
-    public HashMap<String, Auditor> auditorMap;
+    public void setPublicNodes(HashMap<Object, String> publicNodes) {
+        this.publicNodes = publicNodes;
+    }
+
+    public HashMap<String, Auditor> getAuditorMap() {
+        return auditorMap;
+    }
+
+    public void setAuditorMap(HashMap<String, Auditor> auditorMap) {
+        this.auditorMap = auditorMap;
+    }
 
     /**
      * Node Factory configuration
      */
-    public DeclarativeNodeConiguration declarativeConfig;
+    public DeclarativeNodeConiguration getDeclarativeConfig() {
+        return declarativeConfig;
+    }
 
-    //MAPPING
+    public void setDeclarativeConfig(DeclarativeNodeConiguration declarativeConfig) {
+        this.declarativeConfig = declarativeConfig;
+    }
+
     /**
      * overrides the filter integer id's for a set of instances
      */
-    public Map<Object, Integer> filterMap;
+    public Map<Object, Integer> getFilterMap() {
+        return filterMap;
+    }
+
+    public void setFilterMap(Map<Object, Integer> filterMap) {
+        this.filterMap = filterMap;
+    }
 
     /**
      * An extension point to the generator context. This instance will be
      * available in the templating context under the key MODEL_EXTENSION
      */
-    public Object templateContextExtension;
+    public Object getTemplateContextExtension() {
+        return templateContextExtension;
+    }
+
+    public void setTemplateContextExtension(Object templateContextExtension) {
+        this.templateContextExtension = templateContextExtension;
+    }
 
     /**
      * configures generated code to inline the event handling methods or not.
      */
-    public boolean inlineEventHandling = false;
+    public boolean isInlineEventHandling() {
+        return inlineEventHandling;
+    }
+
+    public void setInlineEventHandling(boolean inlineEventHandling) {
+        this.inlineEventHandling = inlineEventHandling;
+    }
 
     /**
      * configures generated code to support dirty filtering
      */
-    public boolean supportDirtyFiltering = false;
+    public boolean isSupportDirtyFiltering() {
+        return supportDirtyFiltering;
+    }
+
+    public void setSupportDirtyFiltering(boolean supportDirtyFiltering) {
+        this.supportDirtyFiltering = supportDirtyFiltering;
+    }
 
     /**
      * Flag controlling generation of meta data description resources.
      *
      * not required, default = true.
      */
-    public boolean generateDescription = true;
+    public boolean isGenerateDescription() {
+        return generateDescription;
+    }
+
+    public void setGenerateDescription(boolean generateDescription) {
+        this.generateDescription = generateDescription;
+    }
 
     /**
      * attempt to assign private member variables, some platforms will support
      * access to non-public scoped members. e.g. reflection utilities in Java.
      */
-    public boolean assignPrivateMembers;
-
-    public boolean formatSource = true;
-
-    private boolean generateLogging = false;
-
-    public boolean isGenerateLogging() {
-        return generateLogging;
+    public boolean isAssignPrivateMembers() {
+        return assignPrivateMembers;
     }
 
-    /**
-     * Sets a flag to add debug logging statements to generated artefacts. The generator may or may not ne implemented
-     * to change its output, there is no guarantee setting this flag will add debug logging.
-     * @param generateLogging 
-     */
-    public final void setGenerateLogging(boolean generateLogging) {
-        this.generateLogging = generateLogging;
-        System.setProperty("generateLogging", Boolean.toString(generateLogging));
+    public void setAssignPrivateMembers(boolean assignPrivateMembers) {
+        this.assignPrivateMembers = assignPrivateMembers;
+    }
+
+    public boolean isFormatSource() {
+        return formatSource;
+    }
+
+    public void setFormatSource(boolean formatSource) {
+        this.formatSource = formatSource;
     }
 
     /**
@@ -254,7 +319,7 @@ public class SEPConfig {
      * useful if generated code wants to remove all dependencies to Fluxtion
      * classes and replaced with user classes.
      */
-    public final Map<String, String> class2replace = new HashMap<>();
-    
-    private final Clock clock = ClockFactory.SINGLETON;
+    public Map<String, String> getClass2replace() {
+        return class2replace;
+    }
 }

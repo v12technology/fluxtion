@@ -83,7 +83,7 @@ public class AnnotatedClassCompiler implements ClassProcessor {
                             if (params.get("supportDirtyFiltering") != null) {
                                 supportDirtyFiltering = (Boolean) params.get("supportDirtyFiltering");
                             } 
-                            cfg.supportDirtyFiltering = supportDirtyFiltering;
+                            cfg.setSupportDirtyFiltering(supportDirtyFiltering);
                         }, dirNames.pkgName, params.get("name").toString(), dirNames.outDir, dirNames.resDir, init);
 
                     } else {

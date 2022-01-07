@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation;
 
 import com.fluxtion.runtime.StaticEventProcessor;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.test.event.TimeEvent;
 import org.junit.Test;
 

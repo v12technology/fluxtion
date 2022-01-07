@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
 import com.fluxtion.test.event.AnnotatedHandlerNoEventId;
@@ -81,12 +81,12 @@ public class JavaVeloctyTest {
         overrides.put(e1, "event_handler_1");
         
         GenerationContext.setupStaticContext("com.fluxtion.test.template.java", "TestJava", new File(JavaTestGeneratorHelper.TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
-        cfg.templateFile = "javaTemplate.vsl";
-        cfg.nodeList = nodeList;
-        cfg.publicNodes = overrides;
+        cfg.setTemplateFile("javaTemplate.vsl");
+        cfg.setNodeList(nodeList);
+        cfg.setPublicNodes(overrides);
 //        cfg.className = "TestJava";
-        cfg.supportDirtyFiltering = true;
-        cfg.generateDescription = false;
+        cfg.setSupportDirtyFiltering(true);
+        cfg.setGenerateDescription(false);
         
         Generator generator = new Generator();
 //        GeneratorHugeFilter generator = new GeneratorHugeFilter();

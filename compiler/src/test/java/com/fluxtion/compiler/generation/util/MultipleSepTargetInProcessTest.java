@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -122,7 +122,7 @@ public class MultipleSepTargetInProcessTest {
                         new File(OutputRegistry.JAVA_TESTGEN_DIR),
                         new File(OutputRegistry.RESOURCE_TEST_DIR));
                 SEPConfig cfg = new SEPConfig();
-                cfg.supportDirtyFiltering = true;
+                cfg.setSupportDirtyFiltering(true);
                 wrappedBuilder.accept(cfg);
                 Generator generator = new Generator();
                 inMemorySep = generator.inMemoryProcessor(cfg);

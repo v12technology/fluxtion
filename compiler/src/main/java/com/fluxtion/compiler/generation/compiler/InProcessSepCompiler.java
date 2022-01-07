@@ -22,7 +22,7 @@ import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import static com.fluxtion.compiler.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -115,7 +115,7 @@ public class InProcessSepCompiler {
     @SneakyThrows
     public static InMemoryEventProcessor interpreted(SerializableConsumer<SEPConfig> cfgBuilder){
         SEPConfig cfg = new SEPConfig();
-        cfg.supportDirtyFiltering = true;
+        cfg.setSupportDirtyFiltering(true);
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
         GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
         cfgBuilder.accept(cfg);
@@ -127,7 +127,7 @@ public class InProcessSepCompiler {
     @SneakyThrows
     public static InMemoryEventProcessor interpretedTest(SerializableConsumer<SEPConfig> cfgBuilder){
         SEPConfig cfg = new SEPConfig();
-        cfg.supportDirtyFiltering = true;
+        cfg.setSupportDirtyFiltering(true);
         cfgBuilder.accept(cfg);
         Generator generator = new Generator();
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();

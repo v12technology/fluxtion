@@ -33,7 +33,7 @@ public class EventPublisherTest extends MultipleSepTargetInProcessTest {
             GreaterThan gt_10 = c.addNode(new GreaterThan(10));
             EventPublisher<GreaterThan> publisher = c.addPublicNode(new EventPublisher<>(), "publisher");
             publisher.addEventSource(gt_10);
-            c.formatSource = true;
+            c.setFormatSource(true);
         });
 
         final LongAdder adder = new LongAdder();

@@ -24,7 +24,7 @@ import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
 import java.io.File;
 import java.io.IOException;

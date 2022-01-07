@@ -35,7 +35,7 @@ public class EnumTest extends MultipleSepTargetInProcessTest {
     public void testEnum() {
         sep((c) -> {
             c.addPublicNode(new DayProcessor(), "dayProcessor").firsDayOfWeek = DayOfWeek.MONDAY;
-            c.generateDescription = false;
+            c.setGenerateDescription(false);
         });
         DayProcessor dp = getField("dayProcessor");
         Assert.assertEquals(dp.firsDayOfWeek, DayOfWeek.MONDAY);

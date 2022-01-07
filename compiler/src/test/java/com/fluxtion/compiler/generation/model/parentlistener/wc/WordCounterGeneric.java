@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 
 /**
  * 

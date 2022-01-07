@@ -25,7 +25,7 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
 import com.fluxtion.test.event.RootCB;

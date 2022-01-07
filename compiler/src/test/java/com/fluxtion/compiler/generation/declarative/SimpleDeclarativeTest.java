@@ -20,7 +20,7 @@ package com.fluxtion.compiler.generation.declarative;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.Field;
@@ -84,10 +84,10 @@ public class SimpleDeclarativeTest {
 
         DeclarativeNodeConiguration config = new DeclarativeNodeConiguration(rootNodeMappings, class2Factory, new HashMap<>());
         SEPConfig cfg = new SEPConfig();
-        cfg.templateFile = "javaTemplate.vsl";
-        cfg.declarativeConfig = config;
-        cfg.inlineEventHandling = true;
-        cfg.generateDescription = false;
+        cfg.setTemplateFile("javaTemplate.vsl");
+        cfg.setDeclarativeConfig(config);
+        cfg.setInlineEventHandling(true);
+        cfg.setGenerateDescription(false);
 
         Generator generator = new Generator();
         generator.templateSep(cfg);

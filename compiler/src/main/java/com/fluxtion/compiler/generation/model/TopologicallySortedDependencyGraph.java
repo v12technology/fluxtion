@@ -23,7 +23,7 @@ import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -108,11 +108,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     public TopologicallySortedDependencyGraph(SEPConfig config) {
-        this(config.nodeList,
-                config.publicNodes,
-                config.declarativeConfig,
+        this(config.getNodeList(),
+                config.getPublicNodes(),
+                config.getDeclarativeConfig(),
                 GenerationContext.SINGLETON,
-                config.auditorMap,
+                config.getAuditorMap(),
                 config);
     }
 

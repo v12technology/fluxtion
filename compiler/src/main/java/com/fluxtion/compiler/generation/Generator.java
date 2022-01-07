@@ -26,7 +26,7 @@ import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import com.google.common.io.CharSink;
@@ -77,8 +77,8 @@ public class Generator {
         loadedConfig.setConfig(new HashMap<>());
         DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
         cfgActual.factoryClassSet.addAll(class2Factory);
-        config.declarativeConfig = cfgActual;
-        config.declarativeConfig.factoryClassSet.addAll(class2Factory);
+        config.setDeclarativeConfig(cfgActual);
+        config.getDeclarativeConfig().factoryClassSet.addAll(class2Factory);
         //Loading factories
 
         this.config = config;
@@ -86,16 +86,16 @@ public class Generator {
             GenerationContext.setupStaticContext("", "", null, null);
         }
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
-                config.nodeList,
-                config.publicNodes,
-                config.declarativeConfig,
+                config.getNodeList(),
+                config.getPublicNodes(),
+                config.getDeclarativeConfig(),
                 GenerationContext.SINGLETON,
-                config.auditorMap,
+                config.getAuditorMap(),
                 config
         );
-        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.filterMap, GenerationContext.SINGLETON.getProxyClassMap());
-        simpleEventProcessorModel.generateMetaModel(config.supportDirtyFiltering);
-        if(config.generateDescription || GenerationContext.SINGLETON.getPackageName().isEmpty()){
+        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), GenerationContext.SINGLETON.getProxyClassMap());
+        simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
+        if(config.isGenerateDescription() || GenerationContext.SINGLETON.getPackageName().isEmpty()){
             exportGraphMl(graph);
         }
         return new InMemoryEventProcessor(simpleEventProcessorModel);
@@ -112,17 +112,17 @@ public class Generator {
         GenerationContext context = GenerationContext.SINGLETON;
         //generate model
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
-                config.nodeList,
-                config.publicNodes,
-                config.declarativeConfig,
+                config.getNodeList(),
+                config.getPublicNodes(),
+                config.getDeclarativeConfig(),
                 context,
-                config.auditorMap,
+                config.getAuditorMap(),
                 config
         );
 //        graph.registrationListenerMap = config.auditorMap;
         LOG.debug("start model gen");
-        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.filterMap, context.getProxyClassMap());
-        simpleEventProcessorModel.generateMetaModel(config.supportDirtyFiltering);
+        simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), context.getProxyClassMap());
+        simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
         //TODO add conditionality for different target languages
         //buildJava output
         execSvc.submit(() -> {
@@ -180,19 +180,19 @@ public class Generator {
     private File templateJavaOutput() throws Exception {
         SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(
                 simpleEventProcessorModel,
-                config.inlineEventHandling,
-                config.assignPrivateMembers
+                config.isInlineEventHandling(),
+                config.isAssignPrivateMembers()
         );
         srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
         LOG.debug("building source model");
         srcModel.buildSourceModel();
         //set up defaults
-        if (config.templateFile == null) {
-            config.templateFile = JAVA_TEMPLATE;
+        if (config.getTemplateFile() == null) {
+            config.setTemplateFile(JAVA_TEMPLATE);
         }
 
         LOG.debug("templating output source - start");
-        String templateFile = config.templateFile;
+        String templateFile = config.getTemplateFile();
         Template template;//= Velocity.getTemplate(config.templateFile);
 
         try {
@@ -211,10 +211,9 @@ public class Generator {
         Context ctx = new VelocityContext();
         addVersionInformation(ctx);
         ctx.put("MODEL", srcModel);
-        ctx.put("MODEL_EXTENSION", config.templateContextExtension);
+        ctx.put("MODEL_EXTENSION", config.getTemplateContextExtension());
         ctx.put("package", GenerationContext.SINGLETON.getPackageName());
         ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
-        ctx.put("logenabled", config.isGenerateLogging());
         File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
         FileWriter templateWriter = new FileWriter(outFile);
         template.merge(ctx, templateWriter);
@@ -245,7 +244,7 @@ public class Generator {
     }
 
     private void exportGraphMl(TopologicallySortedDependencyGraph graph) {
-        if (config.generateDescription) {
+        if (config.isGenerateDescription()) {
             try {
                 LOG.debug("generating event images and graphml");
                 File graphMl = new File(GenerationContext.SINGLETON.getResourcesOutputDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".graphml");

@@ -19,7 +19,7 @@ package com.fluxtion.compiler.builder.declarative;
 
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.Map;

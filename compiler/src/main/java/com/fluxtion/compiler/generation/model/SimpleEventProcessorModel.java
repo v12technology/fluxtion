@@ -976,7 +976,7 @@ public class SimpleEventProcessorModel {
         if (dependencyGraph == null || dependencyGraph.getConfig() == null) {
             return className;
         }
-        return dependencyGraph.getConfig().class2replace.getOrDefault(className, className);
+        return dependencyGraph.getConfig().getClass2replace().getOrDefault(className, className);
     }
 
     private boolean supportDirtyFiltering() {

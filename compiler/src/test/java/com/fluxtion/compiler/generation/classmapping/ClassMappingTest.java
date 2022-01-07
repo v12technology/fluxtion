@@ -60,7 +60,7 @@ public class ClassMappingTest extends MultipleSepTargetInProcessTest {
                     new PricePublisher(new PriceFormer(cfgCache), new RulesProcessor(cfgCache)),
                     "pricePublisher"
             );
-            c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
+            c.getClass2replace().put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
         });
         //cannot work with InMemoryEventProcessor, replacement map is too late to process
         if(simpleEventProcessorModel!=null){

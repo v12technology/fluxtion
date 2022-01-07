@@ -53,7 +53,7 @@ public class AveragingNodeFactoryTest extends BaseSepInProcessTest {
             //root nodes
             Map<Class<?>, String> rootNodeMappings = new HashMap<>();
             rootNodeMappings.put(AveragingNode.class, "averagingNode");
-            c.declarativeConfig = new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config);
+            c.setDeclarativeConfig(new DeclarativeNodeConiguration(rootNodeMappings, factoryList, config));
         });
         Object avgNode = getField(AVERAGING_NODE_NAME);
         int windowSize = (int)new Mirror().on(avgNode).get().field("windowSize");

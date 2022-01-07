@@ -17,8 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
-import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.test.event.*;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;

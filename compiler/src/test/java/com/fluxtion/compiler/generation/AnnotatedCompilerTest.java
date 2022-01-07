@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.ClassProcessorDispatcher;
 import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
 import com.fluxtion.runtime.annotations.Initialise;

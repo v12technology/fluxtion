@@ -1,6 +1,5 @@
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
