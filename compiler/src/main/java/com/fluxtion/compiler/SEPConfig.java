@@ -43,21 +43,21 @@ import java.util.Set;
 @ToString
 public class SEPConfig {
 
-    private final Set<Class> interfaces = new HashSet<>();
+    private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;
     private String templateFile;
-    private List nodeList;
+    private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
     private DeclarativeNodeConiguration declarativeConfig;
     private Map<Object, Integer> filterMap;
-    private Object templateContextExtension;
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = false;
     private boolean generateDescription = true;
     private boolean assignPrivateMembers;
     private boolean formatSource = true;
     private final Map<String, String> class2replace = new HashMap<>();
+
     /**
      * Add a node to the SEP. The node will have private final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -72,7 +72,7 @@ public class SEPConfig {
     @SuppressWarnings("unchecked")
     public <T> T addNode(T node) {
         if (getNodeList() == null) {
-            setNodeList(new ArrayList());
+            setNodeList(new ArrayList<>());
         }
         if (!getNodeList().contains(node)) {
             getNodeList().add(node);
@@ -160,18 +160,17 @@ public class SEPConfig {
     /**
      * Add an {@link EventLogManager} auditor to the generated SEP. Specify
      * the level at which method tracing will take place.
-     * @param tracingLogLevel
      */
     public void addEventAudit(LogLevel tracingLogLevel){
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
 
-    public void addInterfaceImplementation(Class clazz){
+    public void addInterfaceImplementation(Class<?> clazz){
         interfaces.add(clazz);
     }
     
-    public Set<Class> interfacesToImplement(){
+    public Set<Class<?>> interfacesToImplement(){
         return interfaces;
     }
     
@@ -197,11 +196,11 @@ public class SEPConfig {
     /**
      * the nodes included in this graph
      */
-    public List getNodeList() {
+    public List<Object> getNodeList() {
         return nodeList;
     }
 
-    public void setNodeList(List nodeList) {
+    public void setNodeList(List<Object> nodeList) {
         this.nodeList = nodeList;
     }
 
@@ -245,18 +244,6 @@ public class SEPConfig {
 
     public void setFilterMap(Map<Object, Integer> filterMap) {
         this.filterMap = filterMap;
-    }
-
-    /**
-     * An extension point to the generator context. This instance will be
-     * available in the templating context under the key MODEL_EXTENSION
-     */
-    public Object getTemplateContextExtension() {
-        return templateContextExtension;
-    }
-
-    public void setTemplateContextExtension(Object templateContextExtension) {
-        this.templateContextExtension = templateContextExtension;
     }
 
     /**

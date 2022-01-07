@@ -1070,7 +1070,7 @@ public class SepJavaSourceModelHugeFilter {
         model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
     }
 
-    public void additionalInterfacesToImplement(Set<Class> interfacesToImplement) {
+    public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
         if(!interfacesToImplement.isEmpty()){
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassName)

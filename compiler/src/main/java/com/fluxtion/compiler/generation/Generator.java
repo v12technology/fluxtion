@@ -211,7 +211,6 @@ public class Generator {
         Context ctx = new VelocityContext();
         addVersionInformation(ctx);
         ctx.put("MODEL", srcModel);
-        ctx.put("MODEL_EXTENSION", config.getTemplateContextExtension());
         ctx.put("package", GenerationContext.SINGLETON.getPackageName());
         ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
         File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
