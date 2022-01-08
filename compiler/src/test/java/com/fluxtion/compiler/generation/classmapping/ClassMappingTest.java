@@ -17,10 +17,10 @@
  */
 package com.fluxtion.compiler.generation.classmapping;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.NoEventReference;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.NoEventReference;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class ClassMappingTest extends MultipleSepTargetInProcessTest {
                     new PricePublisher(new PriceFormer(cfgCache), new RulesProcessor(cfgCache)),
                     "pricePublisher"
             );
-            c.class2replace.put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
+            c.getClass2replace().put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
         });
         //cannot work with InMemoryEventProcessor, replacement map is too late to process
         if(simpleEventProcessorModel!=null){

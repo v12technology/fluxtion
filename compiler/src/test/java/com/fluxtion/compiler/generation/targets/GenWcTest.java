@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.model.parentlistener.wc.*;
 import com.fluxtion.compiler.generation.util.BaseSepInProcessTest;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class GenWcTest extends BaseSepInProcessTest {
     public void test_wc_generic() throws Exception {
         //System.out.println("test_wc_generic");
         SEPConfig cfg = new WordCounterGeneric.Builder();
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaTestGeneratorHelper.generateClass(cfg, test_wc_generic);
     }
 
@@ -53,7 +53,7 @@ public class GenWcTest extends BaseSepInProcessTest {
     public void test_wc_generic_arrays() throws Exception {
         //System.out.println("test_wc_generic_arrays");
         SEPConfig cfg = new WordCounterGenericArrays.Builder();
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaTestGeneratorHelper.generateClass(cfg, test_wc_generic_arrays);
     }
 
@@ -61,7 +61,7 @@ public class GenWcTest extends BaseSepInProcessTest {
     public void test_wc_inline_event_handling() throws Exception {
         //System.out.println("test_wc_inline_event_handling");
         SEPConfig cfg = new WordCounterInlineEventHandler.Builder();
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaTestGeneratorHelper.generateClass(cfg, test_wc_inline_event_handling);
     }
 

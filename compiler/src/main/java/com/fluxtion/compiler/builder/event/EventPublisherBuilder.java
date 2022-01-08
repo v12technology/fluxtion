@@ -16,8 +16,8 @@
  */
 package com.fluxtion.compiler.builder.event;
 
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.event.EventPublisher;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.EventPublisher;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 
 /**

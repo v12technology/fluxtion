@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.FilterType;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.FilterType;
 
 /**
  * Demonstrates use of the FilterType.unmatched value on the EventHandler.

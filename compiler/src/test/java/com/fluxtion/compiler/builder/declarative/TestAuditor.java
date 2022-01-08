@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.event.Event;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 

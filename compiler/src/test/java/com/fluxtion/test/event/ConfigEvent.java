@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.event.Event;
 
 /**
  *

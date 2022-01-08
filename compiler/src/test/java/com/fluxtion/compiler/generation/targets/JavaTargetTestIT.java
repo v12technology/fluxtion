@@ -5,9 +5,9 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.test.event.TestEventNoId;
 import com.fluxtion.test.event.TestEventNoIdHandler;
 import com.fluxtion.test.tracking.*;

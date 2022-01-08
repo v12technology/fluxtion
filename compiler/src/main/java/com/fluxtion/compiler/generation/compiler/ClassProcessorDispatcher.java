@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.runtim.annotations.builder.ClassProcessor;
+import com.fluxtion.runtime.annotations.builder.ClassProcessor;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import io.github.classgraph.AnnotationParameterValueList;
 import java.io.File;

@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.function;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

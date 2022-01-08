@@ -17,11 +17,10 @@
  */
 package ${package};
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.BatchHandler;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import com.fluxtion.runtim.EventProcessor;
-#importslf4j
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.EventProcessor;
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end
@@ -37,7 +36,6 @@ ${MODEL.imports}
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
 public class ${className} implements EventProcessor, StaticEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
-    #slf4j(${className})
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
@@ -47,44 +45,37 @@ ${MODEL.filterConstantDeclarations}
 
     public ${className} () {
 ${MODEL.nodeMemberAssignments}
-        #loginfo(  "'constructor class:${className}'" )
     }
 
     @Override
     public void onEvent(Object event) {
-        #logdebug(  "'onEvent:{}',event" )
 ${MODEL.eventDispatch}
     }
 
 ${MODEL.eventHandlers}
 
     private void afterEvent() {
-        #logdebug(  "'afterEvent'" )
 ${MODEL.eventEndMethods}
 ${MODEL.resetDirtyFlags}
     }
 
     @Override
     public void init() {
-        #loginfo(  "'init'" )
 ${MODEL.initialiseMethods}
     }
 
     @Override
     public void tearDown() {
-        #loginfo(  "'teardown'" )
 ${MODEL.tearDownMethods}
     }
 
     @Override
     public void batchPause() {
-        #logdebug(  "'batchPause'" )
 ${MODEL.batchPauseMethods}
     }
 
     @Override
     public void batchEnd() {
-        #logdebug(  "'batchEnd'" )
 ${MODEL.batchEndMethods}
     }
 

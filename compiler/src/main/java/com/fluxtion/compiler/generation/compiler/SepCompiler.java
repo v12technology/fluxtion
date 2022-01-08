@@ -18,9 +18,9 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import net.openhft.compiler.CachedCompiler;
@@ -34,8 +34,6 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -127,11 +125,11 @@ public class SepCompiler {
         } else {
             builderConfig = configOverride;
         }
-        builderConfig.templateFile = compilerConfig.getTemplateSep();
-        builderConfig.supportDirtyFiltering = compilerConfig.isSupportDirtyFiltering();
+        builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
+        builderConfig.setSupportDirtyFiltering(compilerConfig.isSupportDirtyFiltering());
         //TODO add configuration back in when split png and debug generation
-        builderConfig.generateDescription = compilerConfig.isGenerateDescription();
-        builderConfig.assignPrivateMembers = compilerConfig.isAssignNonPublicMembers();
+        builderConfig.setGenerateDescription(compilerConfig.isGenerateDescription());
+        builderConfig.setAssignPrivateMembers(compilerConfig.isAssignNonPublicMembers());
     }
 
     private void processYamlConfig() throws Exception {
@@ -144,11 +142,11 @@ public class SepCompiler {
             LOG.debug("loading SepFactoryConfigBean with beanLoader");
             SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
             LOG.debug("DeclarativeNodeConiguration load");
-            DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+            NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
             LOG.debug("searching for NodeFactory's");
             Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
-            builderConfig.declarativeConfig = cfgActual;
+            builderConfig.setDeclarativeConfig(cfgActual);
             LOG.debug("completed :: processYamlConfig ");
         } else {
             LOG.debug("no yaml factory config file specified");
@@ -158,18 +156,12 @@ public class SepCompiler {
     private void processRootFactoryConfig() throws Exception {
         LOG.debug("processRootFactoryConfig");
         if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
-            if (builderConfig.declarativeConfig == null) {
-                Map<String, String> rootNodeMappings = new HashMap<>();
-                rootNodeMappings.put(compilerConfig.getRootFactoryClass(), "root");
+            if (builderConfig.getDeclarativeConfig() == null) {
                 SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-                loadedConfig.setRootNodeMappings(rootNodeMappings);
-                loadedConfig.setConfig(new HashMap<>());
-                DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
+                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
                 Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
-                builderConfig.declarativeConfig = cfgActual;
-            } else {
-                builderConfig.declarativeConfig.rootNodeMappings.put(builderConfig.getClass(), "root");
+                builderConfig.setDeclarativeConfig(cfgActual);
             }
         }
     }
@@ -178,13 +170,12 @@ public class SepCompiler {
         LOG.debug("locateFactories");
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
         Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        loadedConfig.setConfig(new HashMap<>());
-        DeclarativeNodeConiguration cfgActual = loadedConfig.asDeclarativeNodeConiguration();
-        if (builderConfig == null || builderConfig.declarativeConfig==null) {
+        NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+        if (builderConfig == null || builderConfig.getDeclarativeConfig() ==null) {
             cfgActual.factoryClassSet.addAll(class2Factory);
-            builderConfig.declarativeConfig = cfgActual;
+            builderConfig.setDeclarativeConfig(cfgActual);
         } else {
-            builderConfig.declarativeConfig.factoryClassSet.addAll(class2Factory);
+            builderConfig.getDeclarativeConfig().factoryClassSet.addAll(class2Factory);
         }
     }
 
@@ -192,7 +183,7 @@ public class SepCompiler {
         LOG.debug("generateSep");
         Class<?> returnClass = null;
         Generator generator = new Generator();
-        builderConfig.formatSource = compilerConfig.isFormatSource();
+        builderConfig.setFormatSource(compilerConfig.isFormatSource());
         generator.templateSep(builderConfig);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();

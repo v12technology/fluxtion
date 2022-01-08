@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtime.event.DefaultEvent;
 
 /**
  * 

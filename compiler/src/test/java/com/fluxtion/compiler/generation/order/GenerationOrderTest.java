@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.order;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 
 import java.util.ArrayList;

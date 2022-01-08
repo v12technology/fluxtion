@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.builder.time;
 
-import com.fluxtion.runtim.time.Clock;
+import com.fluxtion.runtime.time.Clock;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
 import com.google.auto.service.AutoService;

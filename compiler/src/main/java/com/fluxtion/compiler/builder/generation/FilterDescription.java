@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.builder.generation;
 
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.event.Event;
 import lombok.ToString;
 
 import java.util.Objects;

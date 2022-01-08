@@ -17,14 +17,14 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.annotations.TearDown;
-import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -291,7 +291,6 @@ public class Creator {
         final TypeSpec.Builder nodeBuilder = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.FINAL, Modifier.PUBLIC)
                 .superclass(ClassName.get(SEPConfig.class));
-        final Method method = SEPConfig.class.getMethod("buildConfig");
 
         //override a method
         //init an teardown "buildConfig"

@@ -17,11 +17,11 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.PushReference;
-import com.fluxtion.runtim.partition.LambdaReflection;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import lombok.Data;
 import lombok.Value;
 import org.junit.Test;

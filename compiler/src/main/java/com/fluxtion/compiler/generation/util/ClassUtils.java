@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.runtim.partition.LambdaReflection.MethodReferenceReflection;
+import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;

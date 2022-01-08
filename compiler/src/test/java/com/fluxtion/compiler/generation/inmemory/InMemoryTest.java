@@ -1,10 +1,10 @@
 package com.fluxtion.compiler.generation.inmemory;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.TearDown;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;

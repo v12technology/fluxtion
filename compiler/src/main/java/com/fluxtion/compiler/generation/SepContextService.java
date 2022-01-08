@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.generation;
 
-import com.fluxtion.runtim.SepContext;
+import com.fluxtion.runtime.SepContext;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.google.auto.service.AutoService;
 import java.util.ArrayList;

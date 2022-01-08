@@ -18,8 +18,8 @@
 package com.fluxtion.compiler.generation.subclass;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.annotations.builder.SepNode;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
 import org.junit.Test;
 

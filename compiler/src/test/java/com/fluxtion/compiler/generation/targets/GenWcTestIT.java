@@ -9,7 +9,7 @@ import com.fluxtion.compiler.generation.model.parentlistener.wc.StringDriver;
 import com.fluxtion.compiler.generation.model.parentlistener.wc.WordCounterGeneric;
 import com.fluxtion.compiler.generation.model.parentlistener.wc.WordCounterGenericArrays;
 import com.fluxtion.compiler.generation.model.parentlistener.wc.WordCounterInlineEventHandler;
-import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

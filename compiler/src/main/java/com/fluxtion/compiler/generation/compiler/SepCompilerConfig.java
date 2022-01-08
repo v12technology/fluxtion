@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation.compiler;
 
 import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import net.openhft.compiler.CachedCompiler;
 
 /**

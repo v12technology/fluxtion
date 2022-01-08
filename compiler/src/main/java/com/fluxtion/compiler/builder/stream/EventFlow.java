@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtim.SepContext;
-import com.fluxtion.runtim.event.DefaultFilteredEventHandler;
-import com.fluxtion.runtim.stream.NodeEventStream;
+import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
+import com.fluxtion.runtime.stream.NodeEventStream;
 
 /**
  * Helper methods for subscribing and creating an {@link EventStreamBuilder} from external events or internal nodes
@@ -11,11 +11,11 @@ import com.fluxtion.runtim.stream.NodeEventStream;
 public interface EventFlow {
 
     /**
-     * Subscribes to events of type {@literal <T>}. Creates a handler method in the generated {@link com.fluxtion.runtim.StaticEventProcessor}
-     * so that if {@link com.fluxtion.runtim.StaticEventProcessor#onEvent(Object)} is called an invocation is routed
-     * to this {@link com.fluxtion.runtim.stream.EventStream}
+     * Subscribes to events of type {@literal <T>}. Creates a handler method in the generated {@link com.fluxtion.runtime.StaticEventProcessor}
+     * so that if {@link com.fluxtion.runtime.StaticEventProcessor#onEvent(Object)} is called an invocation is routed
+     * to this {@link com.fluxtion.runtime.stream.EventStream}
      * @param classSubscription A class literal describing the subscription
-     * @param <T> The actual type dispatched to this {@link com.fluxtion.runtim.stream.EventStream} by the generated {@link com.fluxtion.runtim.StaticEventProcessor}
+     * @param <T> The actual type dispatched to this {@link com.fluxtion.runtime.stream.EventStream} by the generated {@link com.fluxtion.runtime.StaticEventProcessor}
      * @return An {@link EventStreamBuilder} that can used to construct stream processing logic
      */
     static <T> EventStreamBuilder<T> subscribe(Class<T> classSubscription) {

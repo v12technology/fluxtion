@@ -5,10 +5,10 @@
  */
 package com.fluxtion.compiler.generation.evenpublisher;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.event.EventPublisher;
-import com.fluxtion.runtim.event.RegisterEventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.EventPublisher;
+import com.fluxtion.runtime.event.RegisterEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class EventPublisherTest extends MultipleSepTargetInProcessTest {
             GreaterThan gt_10 = c.addNode(new GreaterThan(10));
             EventPublisher<GreaterThan> publisher = c.addPublicNode(new EventPublisher<>(), "publisher");
             publisher.addEventSource(gt_10);
-            c.formatSource = true;
+            c.setFormatSource(true);
         });
 
         final LongAdder adder = new LongAdder();

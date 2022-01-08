@@ -86,7 +86,7 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
             root.intList.add(1);
             root.stringList.add("test val");
             root.stringList.add("another val");
-            c.assignPrivateMembers = true;
+            c.setAssignPrivateMembers(true);
         });
         NodeWithPrivateParentList root = getField("root");
         assertEquals(3, root.getParents().size());

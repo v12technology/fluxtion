@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.runtim.audit.LogRecord;
-import com.fluxtion.runtim.audit.LogRecordListener;
-import com.fluxtion.runtim.audit.StructuredLogRecord;
+import com.fluxtion.runtime.audit.LogRecord;
+import com.fluxtion.runtime.audit.LogRecordListener;
+import com.fluxtion.runtime.audit.StructuredLogRecord;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;

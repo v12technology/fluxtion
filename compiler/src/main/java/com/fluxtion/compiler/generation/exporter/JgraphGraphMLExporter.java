@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.exporter;
 
-import com.fluxtion.runtim.FilteredEventHandler;
+import com.fluxtion.runtime.FilteredEventHandler;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
@@ -182,7 +182,7 @@ public class JgraphGraphMLExporter<V, E> {
             if(!isHandler){
                 Method[] methodList = v.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(com.fluxtion.runtim.annotations.EventHandler.class) != null) {
+                    if (method.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class) != null) {
                         isHandler = true;
                         break;
                     }

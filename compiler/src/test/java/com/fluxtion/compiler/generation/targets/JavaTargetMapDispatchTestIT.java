@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.test.tracking.TraceEvent;
 import org.junit.Test;
 

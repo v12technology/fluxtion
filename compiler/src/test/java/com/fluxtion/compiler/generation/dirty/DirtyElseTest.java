@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

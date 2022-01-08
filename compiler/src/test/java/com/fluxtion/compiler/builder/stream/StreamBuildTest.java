@@ -1,10 +1,10 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.Named;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Signal;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Signal;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
