@@ -34,12 +34,10 @@ import java.util.List;
  */
 public class SepFactoryConfigBean {
 
-
     /**
      * Set representing the NodeFactory classes as a String in the SEP.
      */
     private List<String> factoryClassSet;
-
 
     public List<String> getFactoryClassSet() {
         return factoryClassSet;
@@ -49,23 +47,23 @@ public class SepFactoryConfigBean {
         this.factoryClassSet = factoryClassSet;
     }
 
+    @SuppressWarnings("unchecked")
     public NodeFactoryRegistration asDeclarativeNodeConfiguration() throws ClassNotFoundException {
         //convert factoryClassSet
         HashSet<Class<? extends NodeFactory<?>>> nodeFactoryClasses = null;
         if (factoryClassSet != null) {
-            nodeFactoryClasses = new HashSet();
+            nodeFactoryClasses = new HashSet<>();
             for (String factoryClassName : factoryClassSet) {
                 if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
-                    Class clazz = Class.forName(factoryClassName, true, GenerationContext.SINGLETON.getClassLoader());
+                    Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) Class.forName(factoryClassName, true, GenerationContext.SINGLETON.getClassLoader());
                     nodeFactoryClasses.add(clazz);
                 } else {
-                    Class clazz = Class.forName(factoryClassName);
+                    Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) Class.forName(factoryClassName);
                     nodeFactoryClasses.add(clazz);
                 }
             }
         }
-        NodeFactoryRegistration declarativeCfg = new NodeFactoryRegistration(nodeFactoryClasses);
-        return declarativeCfg;
+        return new NodeFactoryRegistration(nodeFactoryClasses);
     }
 
 }
