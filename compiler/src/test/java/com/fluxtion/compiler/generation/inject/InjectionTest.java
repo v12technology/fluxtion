@@ -17,13 +17,13 @@
  */
 package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.event.DefaultEvent;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.time.Clock;
-import com.fluxtion.runtim.annotations.builder.Config;
-import com.fluxtion.runtim.annotations.builder.ConfigVariable;
-import com.fluxtion.runtim.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.annotations.builder.Config;
+import com.fluxtion.runtime.annotations.builder.ConfigVariable;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
@@ -47,7 +47,6 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-//    @Ignore("Filtering not supported with inMemory processor")
     public void testInjectionTree() {
         sep(cfg -> cfg.addPublicNode(new WordProcessor(), "wordProcessor"));
         WordProcessor processor = getField("wordProcessor");

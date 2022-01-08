@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;

@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.test.event.AnnotatedEventHandlerDirtyNotifier;
 import com.fluxtion.test.event.DirtyNotifierNode;
 import com.fluxtion.test.event.TestEventNoIdFilteredHandler;
@@ -38,7 +38,7 @@ public class JavaTargetTest {
                 addNode(new TestEventNoIdHandler());
             }
         };
-                cfg.generateDescription = false;
+                cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.Test1NoFilter);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.Test1NoFilter);
         assertEquals(1, genClass.getFields().length);
@@ -55,7 +55,7 @@ public class JavaTargetTest {
                 addNode(new TestEventNoIdFilteredHandler(25));
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.Test1Filtered);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.Test1Filtered);
         assertEquals(1, genClass.getFields().length);
@@ -77,7 +77,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_int_0_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_int_0_test1);
         assertEquals(3, genClass.getFields().length);
@@ -104,7 +104,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_int_0_test2);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_int_0_test2);
         assertEquals(5, genClass.getFields().length);
@@ -133,7 +133,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_int_0_test3);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_int_0_test3);
         assertEquals(6, genClass.getFields().length);
@@ -162,7 +162,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_int_0_test4);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_int_0_test4);
         assertEquals(6, genClass.getFields().length);
@@ -190,7 +190,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEventHolder_Aggregator("aggregator", node_1, def_2, allEventHandler), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_int_0_test5);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_int_0_test5);
         assertEquals(6, genClass.getFields().length);
@@ -226,7 +226,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1, node_2), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_subclass_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_subclass_test1);
         assertEquals(10, genClass.getFields().length);
@@ -255,7 +255,7 @@ public class JavaTargetTest {
 
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_diamond_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_diamond_test1);
         assertEquals(6, genClass.getFields().length);
@@ -288,7 +288,7 @@ public class JavaTargetTest {
 
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_dirty_test1, true);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_dirty_test1, true);
 //        assertEquals(7, genClass.getFields().length);
@@ -302,7 +302,7 @@ public class JavaTargetTest {
             AnnotatedEventHandlerDirtyNotifier eh = addNode(new AnnotatedEventHandlerDirtyNotifier());
             DirtyNotifierNode dirty_1 = addNode(new DirtyNotifierNode("dirty_1", eh));
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.testDirtyFilterOnEventHandler, true);
     }
 
@@ -328,7 +328,7 @@ public class JavaTargetTest {
                 //
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_eventlifecycle_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_eventlifecycle_test1);
         assertEquals(8, genClass.getFields().length);
@@ -354,7 +354,7 @@ public class JavaTargetTest {
 
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_mapdispatch_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_mapdispatch_test1);
 
@@ -381,7 +381,7 @@ public class JavaTargetTest {
                 addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1), "aggregator");
             }
         };
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         JavaClass genClass = JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.trace_0_test1);
         JavaClass genClassInline = JavaTestGeneratorHelper.generateClassInline(cfg, JavaGeneratorNames.trace_0_test1);
         assertEquals(3, genClass.getFields().length);

@@ -16,8 +16,8 @@
  */
 package com.fluxtion.compiler.builder.node;
 
-import com.fluxtion.runtim.annotations.builder.Config;
-import com.fluxtion.runtim.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.builder.Config;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import java.util.Map;
 import java.util.ServiceLoader;

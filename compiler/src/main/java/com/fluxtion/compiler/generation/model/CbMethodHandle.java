@@ -17,10 +17,10 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnEventComplete;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public class CbMethodHandle {
     public final Class<?> parameterClass;
     
     /**
-     * indicates is an {@link com.fluxtion.runtim.annotations.EventHandler} method
+     * indicates is an {@link com.fluxtion.runtime.annotations.EventHandler} method
      */
     public final boolean isEventHandler;
     

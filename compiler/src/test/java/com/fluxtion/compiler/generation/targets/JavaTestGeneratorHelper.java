@@ -5,9 +5,9 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.runtim.StaticEventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.SepCompiler;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
@@ -67,7 +67,7 @@ public interface JavaTestGeneratorHelper {
     }
     
     static JavaClass generateClass(SEPConfig cfg, GenerationContext context) throws Exception {
-        cfg.templateFile = "javaTemplate.vsl";
+        cfg.setTemplateFile("javaTemplate.vsl");
         Generator generator = new Generator();
         generator.templateSep(cfg);
         JavaDocBuilder builder = new JavaDocBuilder();
@@ -79,7 +79,7 @@ public interface JavaTestGeneratorHelper {
     }
     
     static JavaClass generateClass(SEPConfig cfg, String packageName, String className) throws Exception {
-        cfg.templateFile = "javaTemplate.vsl";
+        cfg.setTemplateFile("javaTemplate.vsl");
         GenerationContext.setupStaticContext(packageName, className, new File(TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
         Generator generator = new Generator();
         generator.templateSep(cfg);
@@ -92,8 +92,8 @@ public interface JavaTestGeneratorHelper {
     }
 
     static JavaClass generateClass(SEPConfig cfg, String className, boolean inLine, boolean dirtySupport) throws Exception {
-        cfg.inlineEventHandling = inLine;
-        cfg.supportDirtyFiltering = dirtySupport;
+        cfg.setInlineEventHandling(inLine);
+        cfg.setSupportDirtyFiltering(dirtySupport);
         return generateClass(cfg, packageDefault.name, className);
     }
 

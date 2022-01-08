@@ -18,13 +18,13 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
 import java.io.File;
 import java.io.IOException;
@@ -89,8 +89,8 @@ public class BaseSepTest {
     }
 
     @SafeVarargs
-    public static DeclarativeNodeConiguration factorySet(Class<? extends NodeFactory<?>>... classes) {
-        return new DeclarativeNodeConiguration(null, new HashSet<>(Arrays.asList(classes)), null);
+    public static NodeFactoryRegistration factorySet(Class<? extends NodeFactory<?>>... classes) {
+        return new NodeFactoryRegistration(new HashSet<>(Arrays.asList(classes)), null);
     }
 
     protected <T> T getField(String name) {

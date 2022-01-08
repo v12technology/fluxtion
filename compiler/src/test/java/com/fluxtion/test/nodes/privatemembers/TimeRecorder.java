@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.nodes.privatemembers;
 
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEvent;
 
 /**
  * Class for testing private member assignment and event dispatch.

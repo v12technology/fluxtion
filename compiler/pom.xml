@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>3.1.5-SNAPSHOT</version>
+        <version>3.1.6-SNAPSHOT</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
@@ -148,7 +148,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
+            <artifactId>velocity-engine-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

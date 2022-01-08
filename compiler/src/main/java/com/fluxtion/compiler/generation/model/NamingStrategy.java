@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.Named;
+import com.fluxtion.runtime.Named;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 import java.util.ArrayList;

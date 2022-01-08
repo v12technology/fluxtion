@@ -17,12 +17,12 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.BatchHandler;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import static com.fluxtion.runtim.time.ClockStrategy.registerClockEvent;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import static com.fluxtion.compiler.generation.compiler.InProcessSepCompiler.sepTestInstance;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import java.io.File;

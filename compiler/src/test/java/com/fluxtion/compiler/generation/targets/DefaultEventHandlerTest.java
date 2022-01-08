@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.test.event.DefaultFilteredEventHandler;
 import com.fluxtion.test.event.TestEvent;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class DefaultEventHandlerTest {
     @Test
     public void testDefaultHandler() throws Exception {
         SEPConfig cfg = new SEPConfig();
-        cfg.generateDescription = false;
+        cfg.setGenerateDescription(false);
         DefaultFilteredEventHandler<TestEvent> testHandler2 = new DefaultFilteredEventHandler<>(10, TestEvent.class);
         cfg.addPublicNode(testHandler2, "testHandlerimpl");
         JavaTestGeneratorHelper.generateClass(cfg, JavaGeneratorNames.test_defaulthandler);

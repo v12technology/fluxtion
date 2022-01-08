@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtim.event.DefaultEvent;
+import com.fluxtion.runtime.event.DefaultEvent;
 import java.util.ArrayList;
 
 /**

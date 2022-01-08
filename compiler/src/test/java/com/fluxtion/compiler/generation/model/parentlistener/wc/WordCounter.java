@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtim.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
  *

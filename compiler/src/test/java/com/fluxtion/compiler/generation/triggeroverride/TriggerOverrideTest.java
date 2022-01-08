@@ -16,10 +16,10 @@
  */
 package com.fluxtion.compiler.generation.triggeroverride;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.builder.SepNode;
-import com.fluxtion.runtim.annotations.TriggerEventOverride;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.builder.SepNode;
+import com.fluxtion.runtime.annotations.TriggerEventOverride;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;

@@ -18,12 +18,11 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A javabean holding configuration properties that are passed into the SEP
@@ -36,28 +35,9 @@ import java.util.Map;
 public class SepFactoryConfigBean {
 
     /**
-     * Map representing the root class to name mapping in the SEP, the keys is
-     * the class name as a String.
-     */
-    private Map<String, String> rootNodeMappings;
-
-    /**
      * Set representing the NodeFactory classes as a String in the SEP.
      */
     private List<String> factoryClassSet;
-
-    /**
-     * Map passed to each root node, contains configuration data.
-     */
-    private Map config;
-
-    public Map<String, String> getRootNodeMappings() {
-        return rootNodeMappings;
-    }
-
-    public void setRootNodeMappings(Map<String, String> rootNodeMappings) {
-        this.rootNodeMappings = rootNodeMappings;
-    }
 
     public List<String> getFactoryClassSet() {
         return factoryClassSet;
@@ -67,52 +47,23 @@ public class SepFactoryConfigBean {
         this.factoryClassSet = factoryClassSet;
     }
 
-    public Map getConfig() {
-        return config;
-    }
-
-    public void setConfig(Map config) {
-        this.config = config;
-    }
-
-    public DeclarativeNodeConiguration asDeclarativeNodeConiguration() throws ClassNotFoundException {
-
-        // convert rootNodeMappings to classes
-        HashMap<Class<?>, String> rootClasses = null;
-        if (rootNodeMappings != null) {
-            rootClasses = new HashMap();
-            for (Map.Entry<String, String> entrySet : rootNodeMappings.entrySet()) {
-                String className = entrySet.getKey();
-                String nodeName = entrySet.getValue();
-                if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
-                    Class clazz = Class.forName(className, true, GenerationContext.SINGLETON.getClassLoader());
-                    rootClasses.put(clazz, nodeName);
-                } else {
-                    Class clazz = Class.forName(className);
-                    rootClasses.put(clazz, nodeName);
-                }
-
-            }
-        }
-
+    @SuppressWarnings("unchecked")
+    public NodeFactoryRegistration asDeclarativeNodeConfiguration() throws ClassNotFoundException {
         //convert factoryClassSet
         HashSet<Class<? extends NodeFactory<?>>> nodeFactoryClasses = null;
         if (factoryClassSet != null) {
-            nodeFactoryClasses = new HashSet();
+            nodeFactoryClasses = new HashSet<>();
             for (String factoryClassName : factoryClassSet) {
                 if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
-                    Class clazz = Class.forName(factoryClassName, true, GenerationContext.SINGLETON.getClassLoader());
+                    Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) Class.forName(factoryClassName, true, GenerationContext.SINGLETON.getClassLoader());
                     nodeFactoryClasses.add(clazz);
                 } else {
-                    Class clazz = Class.forName(factoryClassName);
+                    Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) Class.forName(factoryClassName);
                     nodeFactoryClasses.add(clazz);
                 }
             }
         }
-
-        DeclarativeNodeConiguration declarativeCfg
-                = new DeclarativeNodeConiguration(rootClasses, nodeFactoryClasses, config);
-        return declarativeCfg;
+        return new NodeFactoryRegistration(nodeFactoryClasses);
     }
 
 }

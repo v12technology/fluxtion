@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventComplete;
 import com.fluxtion.compiler.generation.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;

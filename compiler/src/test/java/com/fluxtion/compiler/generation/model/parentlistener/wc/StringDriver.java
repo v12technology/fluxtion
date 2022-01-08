@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 
 /**
  * 

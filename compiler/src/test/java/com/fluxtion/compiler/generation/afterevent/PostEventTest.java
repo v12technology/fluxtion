@@ -1,10 +1,10 @@
 package com.fluxtion.compiler.generation.afterevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.annotations.AfterEvent;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventComplete;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;

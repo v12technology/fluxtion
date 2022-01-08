@@ -17,7 +17,7 @@
 package com.fluxtion.compiler.builder.node;
 
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.runtim.audit.Auditor;
+import com.fluxtion.runtime.audit.Auditor;
 
 import java.util.Map;
 

@@ -17,10 +17,10 @@
  */
 package com.fluxtion.compiler.generation.parent;
 
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.event.DefaultEvent;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.annotations.builder.SepNode;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.ToString;
 import lombok.Value;

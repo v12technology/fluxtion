@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.util.BaseSepTest;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +85,6 @@ public class CreatorTest extends BaseSepTest {
     }
 
     @Test
-//    @Ignore
     public void predefinedEvent() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();
@@ -129,7 +128,6 @@ public class CreatorTest extends BaseSepTest {
     }
 
     @Test
-//    @Ignore
     public void factoryMethod() throws Exception {
         ConfigParser parser = new ConfigParser();
         String outPkg = GenerationContext.SINGLETON.getPackageName();

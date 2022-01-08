@@ -16,7 +16,7 @@
  */
 package com.fluxtion.test.enums;
 
-import com.fluxtion.runtim.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class EnumTest extends MultipleSepTargetInProcessTest {
     public void testEnum() {
         sep((c) -> {
             c.addPublicNode(new DayProcessor(), "dayProcessor").firsDayOfWeek = DayOfWeek.MONDAY;
-            c.generateDescription = false;
+            c.setGenerateDescription(false);
         });
         DayProcessor dp = getField("dayProcessor");
         Assert.assertEquals(dp.firsDayOfWeek, DayOfWeek.MONDAY);

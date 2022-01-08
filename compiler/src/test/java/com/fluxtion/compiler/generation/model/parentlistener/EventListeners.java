@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnParentUpdate;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.event.Event;
 
 /**
  *

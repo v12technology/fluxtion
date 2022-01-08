@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.test.nodes.privatemembers.TimeHandler;
 import com.fluxtion.test.nodes.privatemembers.TimeRecorder;
 import com.fluxtion.test.tracking.Handler_TraceEvent_PrivateMembers;
@@ -43,8 +43,8 @@ public class JavaReflectionAssignmentTest {
                         ), "testNode");
             }
         };
-        cfg.assignPrivateMembers = true;
-        cfg.generateDescription = false;
+        cfg.setAssignPrivateMembers(true);
+        cfg.setGenerateDescription(false);
         JavaClass genClass = generateClass(cfg, test_privateAssignment, true);
     }
 
@@ -56,8 +56,8 @@ public class JavaReflectionAssignmentTest {
                 addPublicNode(new TimeRecorder(timeHandler, 100), "timerecorder");
             }
         };
-        cfg.assignPrivateMembers = true;
-        cfg.generateDescription = false;
+        cfg.setAssignPrivateMembers(true);
+        cfg.setGenerateDescription(false);
         JavaClass genClass = generateClass(cfg, test_privateDispatch, true);
     }
 }

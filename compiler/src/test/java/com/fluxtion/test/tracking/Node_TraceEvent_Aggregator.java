@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtim.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
  *

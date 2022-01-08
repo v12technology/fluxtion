@@ -17,11 +17,11 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtim.FilteredEventHandler;
-import com.fluxtion.runtim.annotations.*;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.time.Clock;
-import com.fluxtion.runtim.annotations.builder.ConstructorArg;
+import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
@@ -976,7 +976,7 @@ public class SimpleEventProcessorModel {
         if (dependencyGraph == null || dependencyGraph.getConfig() == null) {
             return className;
         }
-        return dependencyGraph.getConfig().class2replace.getOrDefault(className, className);
+        return dependencyGraph.getConfig().getClass2replace().getOrDefault(className, className);
     }
 
     private boolean supportDirtyFiltering() {
@@ -1154,18 +1154,18 @@ public class SimpleEventProcessorModel {
             boolean tmpIsFiltered = true;
             boolean tmpIsInverseFiltered = false;
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), withAnnotation(FilterId.class));
-            com.fluxtion.runtim.annotations.EventHandler annotation = onEventMethod.getAnnotation(com.fluxtion.runtim.annotations.EventHandler.class);
+            com.fluxtion.runtime.annotations.EventHandler annotation = onEventMethod.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class);
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
             //String attribute filter on annoatation 
-            String genericFilter = "";
-            if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
-                final Type actualType = pt.getActualTypeArguments()[0];
-                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
-            }
+//            String genericFilter = "";
+//            if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
+//                ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
+//                final Type actualType = pt.getActualTypeArguments()[0];
+//                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
+//            }
             String filterStringOverride = annotation.filterStringFromClass() != void.class ? annotation.filterStringFromClass().getCanonicalName() : annotation.filterString();
-            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
+//            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
             Set<java.lang.reflect.Field> s = ReflectionUtils.getAllFields(instance.getClass(), withName(annotation.filterVariable()));
             if (annotation.filterVariable().length() > 0 && s.size() > 0) {
                 java.lang.reflect.Field f = s.iterator().next();

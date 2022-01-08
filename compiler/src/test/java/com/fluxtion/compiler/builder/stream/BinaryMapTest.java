@@ -2,7 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtim.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableInt;

@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.generation.rebuild;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Signal;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import lombok.Data;
 import org.junit.Test;

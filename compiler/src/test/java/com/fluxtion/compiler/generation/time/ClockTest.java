@@ -17,13 +17,13 @@
  */
 package com.fluxtion.compiler.generation.time;
 
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.builder.Inject;
-import com.fluxtion.runtim.annotations.OnEvent;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.time.Clock;
-import com.fluxtion.runtim.time.ClockStrategy.ClockStrategyEvent;
-import com.fluxtion.runtim.time.Tick;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
+import com.fluxtion.runtime.time.Tick;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;

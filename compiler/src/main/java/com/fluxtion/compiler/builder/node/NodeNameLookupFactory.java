@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.node;
 
-import com.fluxtion.runtim.audit.NodeNameLookup;
+import com.fluxtion.runtime.audit.NodeNameLookup;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;
