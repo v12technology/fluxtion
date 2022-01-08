@@ -1158,14 +1158,14 @@ public class SimpleEventProcessorModel {
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
             //String attribute filter on annoatation 
-            String genericFilter = "";
-            if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
-                final Type actualType = pt.getActualTypeArguments()[0];
-                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
-            }
+//            String genericFilter = "";
+//            if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
+//                ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
+//                final Type actualType = pt.getActualTypeArguments()[0];
+//                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
+//            }
             String filterStringOverride = annotation.filterStringFromClass() != void.class ? annotation.filterStringFromClass().getCanonicalName() : annotation.filterString();
-            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
+//            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
             Set<java.lang.reflect.Field> s = ReflectionUtils.getAllFields(instance.getClass(), withName(annotation.filterVariable()));
             if (annotation.filterVariable().length() > 0 && s.size() > 0) {
                 java.lang.reflect.Field f = s.iterator().next();

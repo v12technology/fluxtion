@@ -31,7 +31,7 @@ package com.fluxtion.runtime.event;
  * <pre>
  * <h2>Sending</h2>
  * StaticEventProcessor processor;<br>
- * processor.onEvent(new Signall{@literal <Queue<String>>}("someKey", new ConcurrentLinkedQueue<>(List.of("1","2","3","4", "5", "6"))));
+ * processor.onEvent(new Signal{@literal <Queue<String>>}("someKey", new ConcurrentLinkedQueue<>(List.of("1","2","3","4", "5", "6"))));
  * 
  * <h2>Receiving</h2>
  * {@literal @}EventHandler(filterString = "filterString")<br>
@@ -66,7 +66,7 @@ public class Signal<T> implements Event{
         this(filterString, null);
     }
     
-    public Signal(Enum enumFilter){
+    public Signal(Enum<?> enumFilter){
         this(enumFilter.name());
     }
 
