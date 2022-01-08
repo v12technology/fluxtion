@@ -17,7 +17,7 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -49,7 +49,7 @@ public class SEPConfig {
     private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
-    private DeclarativeNodeConfiguration declarativeConfig;
+    private NodeFactoryRegistration declarativeConfig;
     private Map<Object, Integer> filterMap;
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = false;
@@ -227,11 +227,11 @@ public class SEPConfig {
     /**
      * Node Factory configuration
      */
-    public DeclarativeNodeConfiguration getDeclarativeConfig() {
+    public NodeFactoryRegistration getDeclarativeConfig() {
         return declarativeConfig;
     }
 
-    public void setDeclarativeConfig(DeclarativeNodeConfiguration declarativeConfig) {
+    public void setDeclarativeConfig(NodeFactoryRegistration declarativeConfig) {
         this.declarativeConfig = declarativeConfig;
     }
 

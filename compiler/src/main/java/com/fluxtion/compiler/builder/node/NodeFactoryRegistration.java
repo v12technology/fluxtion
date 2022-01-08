@@ -16,25 +16,16 @@
  */
 package com.fluxtion.compiler.builder.node;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * Provides data driven SEP generation. 
- * 
- * <h2>Doc to be completed</h2>
- * @author Greg Higgins
+ * Registered {@link NodeFactory} available to support {@link com.fluxtion.runtime.annotations.builder.Inject}
+ * annotation
+ *
  */
-public final class DeclarativeNodeConfiguration {
-
-    /**
-     * The root nodes to create and the variable names they should be mapped to.
-     * 
-     */
-    public final Map<Class<?>, String> rootNodeMappings;
+public final class NodeFactoryRegistration {
 
     /**
      * The set of factory classes used for node creation, each factory must
@@ -51,38 +42,20 @@ public final class DeclarativeNodeConfiguration {
     public final Set<NodeFactory<?>> factorySet;
 
 
-    /**
-     * the configuration used to generate the nodes
-     */
-    public final Map config;
-
-    public DeclarativeNodeConfiguration(Map<Class<?>, String> rootNodeMappings, Set<Class<? extends NodeFactory<?>>> factoryList, Map config) {
-        this(rootNodeMappings, factoryList, config, null);
+    public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList) {
+        this(factoryList, null);
     }
 
-    /**
-     * 
-     * @param rootNodeMappings
-     * @param factoryList
-     * @param config
-     * @param factorySet 
-     */
-    @SuppressWarnings("unchecked")
-    public DeclarativeNodeConfiguration(Map<Class<?>, String> rootNodeMappings, Set<Class<? extends NodeFactory<?>>> factoryList, Map config, Set<NodeFactory<?>> factorySet) {
-        this.rootNodeMappings = rootNodeMappings == null ? Collections.EMPTY_MAP : rootNodeMappings;
+    public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList, Set<NodeFactory<?>> factorySet) {
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
-        this.config = config == null ? Collections.EMPTY_MAP : config;
-        //this.proxyClassMap = new HashMap<>();
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.rootNodeMappings);
         hash = 89 * hash + Objects.hashCode(this.factoryClassSet);
         hash = 89 * hash + Objects.hashCode(this.factorySet);
-        hash = 89 * hash + Objects.hashCode(this.config);
         return hash;
     }
 
@@ -94,21 +67,14 @@ public final class DeclarativeNodeConfiguration {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DeclarativeNodeConfiguration other = (DeclarativeNodeConfiguration) obj;
-        if (!Objects.equals(this.rootNodeMappings, other.rootNodeMappings)) {
-            return false;
-        }
+        final NodeFactoryRegistration other = (NodeFactoryRegistration) obj;
         if (!Objects.equals(this.factoryClassSet, other.factoryClassSet)) {
             return false;
         }
         if (!Objects.equals(this.factorySet, other.factorySet)) {
             return false;
         }
-        if (!Objects.equals(this.config, other.config)) {
-            return false;
-        }
         return true;
     }
-
     
 }

@@ -20,7 +20,7 @@ package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
 import com.fluxtion.compiler.SEPConfig;
@@ -80,7 +80,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
     private boolean processed = false;
-    private final DeclarativeNodeConfiguration declarativeNodeConfiguration;
+    private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final List<Object> publicNodeList;
     private final GenerationContext generationContext;
@@ -99,8 +99,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         this(null, publicNodes, null, null, null, null);
     }
 
-    public TopologicallySortedDependencyGraph(DeclarativeNodeConfiguration declarativeNodeConfiguration) {
-        this(null, null, declarativeNodeConfiguration, null, null, null);
+    public TopologicallySortedDependencyGraph(NodeFactoryRegistration nodeFactoryRegistration) {
+        this(null, null, nodeFactoryRegistration, null, null, null);
     }
 
     public TopologicallySortedDependencyGraph(List<?> nodes, Map<Object, String> publicNodes) {
@@ -123,14 +123,14 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
      * @param publicNodes Map of public available instances, the value is the
      * unique name of each instance. The names will override existing instances
      * in the nodes List or add the node to the set.
-     * @param declarativeNodeConfiguration factory description
+     * @param nodeFactoryRegistration factory description
      * @param context Generation context for this cycle
      * @param auditorMap Auditors to inject
      * @param config Config for this generation cycle
      *
      */
     public TopologicallySortedDependencyGraph(List<?> nodes, Map<Object, String> publicNodes,
-                                              DeclarativeNodeConfiguration declarativeNodeConfiguration,
+                                              NodeFactoryRegistration nodeFactoryRegistration,
                                               GenerationContext context, Map<String, Auditor> auditorMap, SEPConfig config) {
         this.config = config;
         this.nameStrategy = new NamingStrategy();
@@ -172,7 +172,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             publicNodeList.add(value);
         });
         //declarative nodes - add arguments to method and make defensive copy
-        this.declarativeNodeConfiguration = declarativeNodeConfiguration;
+        this.nodeFactoryRegistration = nodeFactoryRegistration;
         this.generationContext = context;
     }
 
@@ -487,21 +487,16 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             return;
         }
 
-        if (declarativeNodeConfiguration != null) {
+        if (nodeFactoryRegistration != null) {
 
             //store the factory callbacks
-            for (Class<? extends NodeFactory<?>> clazz : declarativeNodeConfiguration.factoryClassSet) {
+            for (Class<? extends NodeFactory<?>> clazz : nodeFactoryRegistration.factoryClassSet) {
                 NodeFactory<?> factory = clazz.getDeclaredConstructor().newInstance();
                 registerNodeFactory(factory);
             }
-            //override any any classes with pre-initialised NodeFactories
-            for (NodeFactory<?> factory : declarativeNodeConfiguration.factorySet) {
+            //override any classes with pre-initialised NodeFactories
+            for (NodeFactory<?> factory : nodeFactoryRegistration.factorySet) {
                 registerNodeFactory(factory);
-            }
-            //loop through root instance and
-            for (Map.Entry<Class<?>, String> rootNode : declarativeNodeConfiguration.rootNodeMappings.entrySet()) {
-                Object newNode = findOrCreateNode(rootNode.getKey(), declarativeNodeConfiguration.config, rootNode.getValue());
-                publicNodeList.add(newNode);
             }
         }
         //add injected instances created by factories

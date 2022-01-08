@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
@@ -34,8 +34,6 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -144,7 +142,7 @@ public class SepCompiler {
             LOG.debug("loading SepFactoryConfigBean with beanLoader");
             SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
             LOG.debug("DeclarativeNodeConiguration load");
-            DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+            NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
             LOG.debug("searching for NodeFactory's");
             Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
             cfgActual.factoryClassSet.addAll(class2Factory);
@@ -159,17 +157,11 @@ public class SepCompiler {
         LOG.debug("processRootFactoryConfig");
         if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
             if (builderConfig.getDeclarativeConfig() == null) {
-                Map<String, String> rootNodeMappings = new HashMap<>();
-                rootNodeMappings.put(compilerConfig.getRootFactoryClass(), "root");
                 SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-                loadedConfig.setRootNodeMappings(rootNodeMappings);
-                loadedConfig.setConfig(new HashMap<>());
-                DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
                 Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
                 cfgActual.factoryClassSet.addAll(class2Factory);
                 builderConfig.setDeclarativeConfig(cfgActual);
-            } else {
-                builderConfig.getDeclarativeConfig().rootNodeMappings.put(builderConfig.getClass(), "root");
             }
         }
     }
@@ -178,8 +170,7 @@ public class SepCompiler {
         LOG.debug("locateFactories");
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
         Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        loadedConfig.setConfig(new HashMap<>());
-        DeclarativeNodeConfiguration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+        NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
         if (builderConfig == null || builderConfig.getDeclarativeConfig() ==null) {
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.setDeclarativeConfig(cfgActual);

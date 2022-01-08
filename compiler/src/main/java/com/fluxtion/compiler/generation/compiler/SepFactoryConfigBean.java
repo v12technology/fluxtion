@@ -18,12 +18,11 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.DeclarativeNodeConfiguration;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
-import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A javabean holding configuration properties that are passed into the SEP
@@ -35,29 +34,12 @@ import java.util.Map;
  */
 public class SepFactoryConfigBean {
 
-    /**
-     * Map representing the root class to name mapping in the SEP, the keys is
-     * the class name as a String.
-     */
-    private Map<String, String> rootNodeMappings;
 
     /**
      * Set representing the NodeFactory classes as a String in the SEP.
      */
     private List<String> factoryClassSet;
 
-    /**
-     * Map passed to each root node, contains configuration data.
-     */
-    private Map config;
-
-    public Map<String, String> getRootNodeMappings() {
-        return rootNodeMappings;
-    }
-
-    public void setRootNodeMappings(Map<String, String> rootNodeMappings) {
-        this.rootNodeMappings = rootNodeMappings;
-    }
 
     public List<String> getFactoryClassSet() {
         return factoryClassSet;
@@ -67,34 +49,7 @@ public class SepFactoryConfigBean {
         this.factoryClassSet = factoryClassSet;
     }
 
-    public Map getConfig() {
-        return config;
-    }
-
-    public void setConfig(Map config) {
-        this.config = config;
-    }
-
-    public DeclarativeNodeConfiguration asDeclarativeNodeConfiguration() throws ClassNotFoundException {
-
-        // convert rootNodeMappings to classes
-        HashMap<Class<?>, String> rootClasses = null;
-        if (rootNodeMappings != null) {
-            rootClasses = new HashMap();
-            for (Map.Entry<String, String> entrySet : rootNodeMappings.entrySet()) {
-                String className = entrySet.getKey();
-                String nodeName = entrySet.getValue();
-                if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
-                    Class clazz = Class.forName(className, true, GenerationContext.SINGLETON.getClassLoader());
-                    rootClasses.put(clazz, nodeName);
-                } else {
-                    Class clazz = Class.forName(className);
-                    rootClasses.put(clazz, nodeName);
-                }
-
-            }
-        }
-
+    public NodeFactoryRegistration asDeclarativeNodeConfiguration() throws ClassNotFoundException {
         //convert factoryClassSet
         HashSet<Class<? extends NodeFactory<?>>> nodeFactoryClasses = null;
         if (factoryClassSet != null) {
@@ -109,9 +64,7 @@ public class SepFactoryConfigBean {
                 }
             }
         }
-
-        DeclarativeNodeConfiguration declarativeCfg
-                = new DeclarativeNodeConfiguration(rootClasses, nodeFactoryClasses, config);
+        NodeFactoryRegistration declarativeCfg = new NodeFactoryRegistration(nodeFactoryClasses);
         return declarativeCfg;
     }
 
