@@ -341,7 +341,9 @@ public class SimpleEventProcessorModel {
                     return false;
                 }
                 try {
-                    input.setAccessible(true);
+                    if(!TopologicallySortedDependencyGraph.trySetAccessible(input)){
+                        return false;
+                    }
                     final Object parent = input.get(field);
                     if (parent == null) {
                         return false;
@@ -373,7 +375,7 @@ public class SimpleEventProcessorModel {
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                } catch (IllegalArgumentException | IllegalAccessException | InaccessibleObjectException ex) {
                     java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return false;

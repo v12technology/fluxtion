@@ -1,9 +1,8 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
-import com.fluxtion.runtime.EventProcessor;
-
 import javax.tools.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 public class StringCompilation {
@@ -14,7 +13,7 @@ public class StringCompilation {
      * @throws Exception throws {@link RuntimeException} if fails to compile
      */
     @SuppressWarnings({"unchecked"})
-    public static<T>  Class<T> compile(String className, String source) throws Exception {
+    public static<T>  Class<T> compile(String className, String source) throws URISyntaxException, IOException, ClassNotFoundException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         final JavaByteObject byteObject = new JavaByteObject(className);
@@ -41,7 +40,7 @@ public class StringCompilation {
     }
 
     private static JavaFileManager createFileManager(StandardJavaFileManager fileManager, JavaByteObject byteObject) {
-        return new ForwardingJavaFileManager<>(fileManager) {
+        return new ForwardingJavaFileManager(fileManager) {
             @Override
             public JavaFileObject getJavaFileForOutput(Location location,
                                                        String className, JavaFileObject.Kind kind,

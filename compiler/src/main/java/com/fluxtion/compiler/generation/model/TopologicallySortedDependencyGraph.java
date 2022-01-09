@@ -402,7 +402,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 ReflectionHandler<T> reflect = new Mirror().on(clazz).reflect();
                 Set<? extends Map.Entry<String, ?>> entrySet = (Set<? extends Map.Entry<String, ?>>) (Object)config.entrySet();
                 //set all fields accessible
-                ReflectionUtils.getFields(clazz).forEach(f -> f.setAccessible(true));
+                ReflectionUtils.getFields(clazz).forEach(TopologicallySortedDependencyGraph::trySetAccessible);
                 //set none string properties
                 entrySet.stream()
                         .filter((Map.Entry<String, ?> map) -> {
@@ -611,7 +611,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 });
         fields = s.toArray(fields);
         for (Field field : fields) {
-            field.setAccessible(true);
+            if(!trySetAccessible(field)){
+                continue;
+            }
             Object refField = field.get(object);
             String refName = inst2Name.get(refField);
 
@@ -670,7 +672,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     @SuppressWarnings("unchecked")
     private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
-        field.setAccessible(true);
         Object refField = field.get(node);
         String refName = inst2Name.get(refField);
         boolean addNode = field.getAnnotation(SepNode.class) != null;
@@ -736,7 +737,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         Field[] fields = new Field[s.size()];
         fields = s.toArray(fields);
         for (Field field : fields) {
-            field.setAccessible(true);
+            if(!trySetAccessible(field)){
+                continue;
+            }
             Object refField = field.get(object);
             String refName = getInstanceName(field, object);
             if (field.getType().isArray()) {
@@ -923,6 +926,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private String nameNode(Object node) {
         return nameStrategy.mappedNodeName(node);
+    }
+
+    public static boolean trySetAccessible(Field field){
+        try {
+            field.setAccessible(true);
+            return true;
+        }catch (Throwable t){
+            return false;
+        }
     }
 
 }

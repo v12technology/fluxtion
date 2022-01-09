@@ -17,31 +17,12 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.TearDown;
-import com.fluxtion.runtime.event.DefaultEvent;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.SEPConfig;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import javax.lang.model.element.Modifier;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.squareup.javapoet.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.openhft.compiler.CachedCompiler;
@@ -50,6 +31,18 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.LoggerFactory;
+
+import javax.lang.model.element.Modifier;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * A Creator processes a meta-model to produce a code solution for the Fluxtion
@@ -277,8 +270,8 @@ public class Creator {
             File file = new File(GenerationContext.SINGLETON.getPackageDirectory(), ClassUtils.getShortClassName(fqn) + ".java");
             CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
             String javaCode = GenerationContext.readText(file.getCanonicalPath());
-            return javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, javaCode);
-        } catch (IOException | ClassNotFoundException ex) {
+            return StringCompilation.compile(fqn, javaCode);
+        } catch (IOException | ClassNotFoundException | URISyntaxException ex) {
             Logger.getLogger(Creator.class.getName()).log(Level.SEVERE, null, ex);
             throw new RuntimeException("cannot generate creator class", ex);
         }

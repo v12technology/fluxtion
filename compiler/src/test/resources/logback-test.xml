@@ -33,8 +33,8 @@ along with this program.  If not, see
 
   <!-- Strictly speaking, the level attribute is not necessary since -->
   <!-- the level of the root level is set to DEBUG by default.       -->
-  <!--<root level="DEBUG">-->          
-  <root level="OFF">
+<!--<root level="DEBUG">-->
+<root level="OFF">
     <appender-ref ref="STDOUT" />
   </root>  
   
