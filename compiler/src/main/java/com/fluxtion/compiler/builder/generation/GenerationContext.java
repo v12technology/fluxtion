@@ -16,26 +16,19 @@
  */
 package com.fluxtion.compiler.builder.generation;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import net.openhft.compiler.CachedCompiler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Context for the generated output of the SEP. Provides functions to control
@@ -79,14 +72,7 @@ public class GenerationContext {
     }
 
     public static void updateContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
-        CachedCompiler javaCompiler1 = null;
-        if (SINGLETON != null) {
-            javaCompiler1 = SINGLETON.getJavaCompiler();
-        }
         setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);
-        if (javaCompiler1 != null) {
-            SINGLETON.javaCompiler = javaCompiler1;
-        }
     }
 
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
@@ -105,25 +91,6 @@ public class GenerationContext {
         }
     }
 
-    public static void setupStaticContext(ClassLoader classLoader, String packageName, String className, File outputDirectory, File resourcesRootDirectory, boolean createResourceDirectory, File buildOutputDirectory, boolean createBuildOutputDirectory) {
-        SINGLETON = new GenerationContext(
-                classLoader,
-                packageName,
-                className,
-                outputDirectory,
-                resourcesRootDirectory,
-                buildOutputDirectory,
-                null
-        );
-        SINGLETON.createDirectories();
-        if (createResourceDirectory) {
-            SINGLETON.createResourceDirectory();
-        }
-        if (createBuildOutputDirectory && buildOutputDirectory != null) {
-            buildOutputDirectory.mkdirs();
-        }
-    }
-
     public static void setupStaticContext(ClassLoader classLoader,
             String packageName,
             String className,
@@ -131,17 +98,14 @@ public class GenerationContext {
             File resourcesRootDirectory,
             boolean createResourceDirectory,
             File buildOutputDirectory,
-            boolean createBuildOutputDirectory,
-            CachedCompiler cachedCompiler) {
+            boolean createBuildOutputDirectory) {
         SINGLETON = new GenerationContext(
                 classLoader,
                 packageName,
                 className,
                 outputDirectory,
                 resourcesRootDirectory,
-                buildOutputDirectory,
-                cachedCompiler
-        );
+                buildOutputDirectory);
         SINGLETON.createDirectories();
         if (createResourceDirectory) {
             SINGLETON.createResourceDirectory();
@@ -198,7 +162,6 @@ public class GenerationContext {
      */
     public File resourcesRootDirectory;
     public File resourcesOutputDirectory;
-    private CachedCompiler javaCompiler;
     
     public GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory) {
         this(packageName, sepClassName, outputDirectory, resourcesRootDirectory, null);
@@ -219,10 +182,9 @@ public class GenerationContext {
         log.info("classloader:{}", this.classLoader);
         log.debug("built GenerationContext: {}", toString());
         cacheMap = new HashMap<>();
-        javaCompiler = new CachedCompiler(null, buildOutputDirectory);
     }
 
-    private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory, CachedCompiler cachedCompiler) {
+    private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory) {
         this.packageName = packageName;
         this.sepClassName = sepClassName;
         this.sourceRootDirectory = outputDirectory;
@@ -230,11 +192,6 @@ public class GenerationContext {
         this.classLoader = classLoasder;
         cacheMap = new HashMap<>();
         log.debug("built GenerationContext: {}", toString());
-        if (cachedCompiler == null) {
-            javaCompiler = new CachedCompiler(null, buildOutputDirectory);
-        } else {
-            javaCompiler = cachedCompiler;
-        }
     }
 
     private void createDirectories() {
@@ -258,18 +215,6 @@ public class GenerationContext {
         }
         getNodeList().add(node);
         return node;
-    }
-
-    /**
-     * Performs a class.forName operation on the cached classes that have been
-     * compiled into this GenerationContext
-     *
-     * @param <T>
-     * @param name
-     * @return
-     */
-    public <T> Class<T> forName(String name) {
-        return javaCompiler.forName(name, classLoader);
     }
 
     /**

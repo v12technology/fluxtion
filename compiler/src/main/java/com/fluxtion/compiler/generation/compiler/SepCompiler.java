@@ -17,14 +17,13 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
-import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -111,18 +110,16 @@ public class SepCompiler {
                 new File(compilerConfig.getResourcesOutputDirectory()),
                 compilerConfig.isGenerateDescription(),
                 buildDir,
-                true,
-                compilerConfig.getCachedCompiler());
+                true);
         //compiler
         if (configOverride == null) {
             Class<?> rootClazz;
             try{
                 rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
+                builderConfig = (SEPConfig) rootClazz.getDeclaredConstructor().newInstance();
             }catch(Exception e){
                 LOG.info("loading class from cached compiler");
-                rootClazz = compilerConfig.getCachedCompiler().forName(compilerConfig.getConfigClass(), compilerConfig.getClassLoader());
             }
-            builderConfig = (SEPConfig) rootClazz.getDeclaredConstructor().newInstance();
         } else {
             builderConfig = configOverride;
         }
@@ -142,7 +139,7 @@ public class SepCompiler {
             Yaml beanLoader = new Yaml();
             LOG.debug("loading SepFactoryConfigBean with beanLoader");
             SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
-            LOG.debug("DeclarativeNodeConiguration load");
+            LOG.debug("DeclarativeNodeConfiguration load");
             NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
             LOG.debug("searching for NodeFactory's");
             Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
@@ -193,16 +190,11 @@ public class SepCompiler {
         if(compilerConfig.isFormatSource()){
             LOG.debug("start formatting source");
             Generator.formatSource(file);
-//            new Thread(() -> Generator.formatSource(file)).start();
             LOG.debug("completed formatting source");
         }
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-
             returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
-
-//            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
-//            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
             LOG.debug("completed compiling source");
         }
         return returnClass;

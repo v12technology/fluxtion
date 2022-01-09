@@ -25,7 +25,6 @@ import com.fluxtion.runtime.event.DefaultEvent;
 import com.squareup.javapoet.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.openhft.compiler.CachedCompiler;
 import org.apache.commons.lang3.ClassUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
@@ -268,7 +267,6 @@ public class Creator {
     private Class compile(String fqn) {
         try {
             File file = new File(GenerationContext.SINGLETON.getPackageDirectory(), ClassUtils.getShortClassName(fqn) + ".java");
-            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
             String javaCode = GenerationContext.readText(file.getCanonicalPath());
             return StringCompilation.compile(fqn, javaCode);
         } catch (IOException | ClassNotFoundException | URISyntaxException ex) {

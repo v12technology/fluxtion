@@ -77,7 +77,6 @@ public class BaseSepTest {
 
     protected StaticEventProcessor buildAndInitSep(Class<? extends SEPConfig> builderClass) {
         try {
-            compileCfg.setCachedCompiler(GenerationContext.SINGLETON.getJavaCompiler());
             compileCfg.setConfigClass(builderClass.getName());
             sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
             ((Lifecycle) sep).init();

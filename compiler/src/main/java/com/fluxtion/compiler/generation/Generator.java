@@ -17,24 +17,23 @@
  */
 package com.fluxtion.compiler.generation;
 
+import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.compiler.SepFactoryConfigBean;
+import com.fluxtion.compiler.generation.exporter.PngGenerator;
+import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.generation.exporter.PngGenerator;
-import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
-import net.openhft.compiler.CachedCompiler;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -55,7 +54,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.fluxtion.compiler.generation.Templates.*;
+import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
 /**
  * @author Greg Higgins
@@ -139,32 +138,6 @@ public class Generator {
         return simpleEventProcessorModel;
     }
 
-//    public static void warmupCompiler() {
-//        LOG.debug("running compiler warmup");
-//        try {
-//            CachedCompiler c = new CachedCompiler(null, null);
-//            c.loadFromJava("com.fluxtion.compiler.WarmupSample",
-//                    "package com.fluxtion.compiler;\n"
-//                            + "\n"
-//                            + "public class WarmupSample {\n"
-//                            + "\n"
-//                            + "    public String test;\n"
-//                            + "\n"
-//                            + "    public String getTest() {\n"
-//                            + "        return test;\n"
-//                            + "    }\n"
-//                            + "    \n"
-//                            + "}");
-//        } catch (Exception ex) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("problem running warmup compile", ex);
-//            } else {
-//                LOG.warn("problem running warmup compile");
-//            }
-//        } finally {
-//            LOG.debug("completed compiler warmup");
-//        }
-//    }
 
     private static void initVelocity() {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");

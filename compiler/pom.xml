@@ -56,9 +56,9 @@ Copyright (C) 2018 V12 Technology Ltd.
     <profiles>
         <profile>
             <id>jdk9</id>
-            <activation>
-                <jdk>[9,)</jdk>
-            </activation>
+<!--            <activation>-->
+<!--                <jdk>[9,)</jdk>-->
+<!--            </activation>-->
             <build>
                 <plugins>
                     <plugin>
