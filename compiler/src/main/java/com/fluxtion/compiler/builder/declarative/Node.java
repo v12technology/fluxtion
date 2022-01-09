@@ -64,7 +64,6 @@ public class Node extends TypeDefinition {
         try{
             forName = (Class<T>) Class.forName(getType());
        } catch(Exception e){
-          forName = GenerationContext.SINGLETON.forName(getType());
        }
        return forName;
     }

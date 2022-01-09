@@ -17,10 +17,9 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
-
 import com.fluxtion.compiler.SEPConfig;
-import net.openhft.compiler.CachedCompiler;
+
+import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
 /**
  * Configuration for the SEP compiler process. Initial calues can be read from 
@@ -135,9 +134,6 @@ public class SepCompilerConfig {
     private boolean assignNonPublicMembers;
 
     private ClassLoader classLoader;
-    
-    //re-usable compiler
-    private CachedCompiler cachedCompiler;
     
     public SepCompilerConfig() {
         configClass = CONFIGCLASSDEFAULT;
@@ -330,12 +326,4 @@ public class SepCompilerConfig {
         this.classLoader = classLoader;
     }
 
-    public CachedCompiler getCachedCompiler() {
-        return cachedCompiler;
-    }
-
-    public void setCachedCompiler(CachedCompiler cachedCompiler) {
-        this.cachedCompiler = cachedCompiler;
-    }
-    
 }

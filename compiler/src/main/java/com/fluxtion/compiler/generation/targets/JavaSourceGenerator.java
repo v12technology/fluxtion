@@ -44,7 +44,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
  *
  * @author Greg Higgins
  */
-public class SepJavaSourceModelHugeFilter {
+public class JavaSourceGenerator {
 
     /**
      * String representation of life-cycle callback methods for initialise,
@@ -189,15 +189,15 @@ public class SepJavaSourceModelHugeFilter {
 
     private final HashMap<String, String> importMap = new HashMap<>();
 
-    public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model) {
+    public JavaSourceGenerator(SimpleEventProcessorModel model) {
         this(model, false);
     }
 
-    public SepJavaSourceModelHugeFilter(SimpleEventProcessorModel model, boolean inlineEventHandling) {
+    public JavaSourceGenerator(SimpleEventProcessorModel model, boolean inlineEventHandling) {
         this(model, inlineEventHandling, false);
     }
 
-    public SepJavaSourceModelHugeFilter(
+    public JavaSourceGenerator(
             SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers) {
         this.model = model;
         this.eventHandlers = "";
