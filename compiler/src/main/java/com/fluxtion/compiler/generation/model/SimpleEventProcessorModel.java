@@ -341,7 +341,9 @@ public class SimpleEventProcessorModel {
                     return false;
                 }
                 try {
-                    input.setAccessible(true);
+                    if(!TopologicallySortedDependencyGraph.trySetAccessible(input)){
+                        return false;
+                    }
                     final Object parent = input.get(field);
                     if (parent == null) {
                         return false;

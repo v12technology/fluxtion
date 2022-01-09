@@ -17,12 +17,18 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
+import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.generation.Generator;
+import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import static com.fluxtion.compiler.builder.generation.GenerationContext.SINGLETON;
-import com.fluxtion.compiler.SEPConfig;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -34,13 +40,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.fluxtion.compiler.generation.Generator;
-import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import net.openhft.compiler.CompilerUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import static com.fluxtion.compiler.builder.generation.GenerationContext.SINGLETON;
 
 /**
  * Generates and compiles a SEP for use by a caller in the same process. The compilation is invoked programmatically
@@ -253,7 +253,6 @@ public class InProcessSepCompiler {
         log.debug("classpath");
         for (URL url : urls) {
             log.info(url.getFile());
-            CompilerUtils.addClassPath(url.getFile());
         }
         log.info("user classpath URL list:" + Arrays.toString(urls));
         return result;
@@ -340,7 +339,6 @@ public class InProcessSepCompiler {
         cfg.setResourcesOutputDirectory(SINGLETON.getResourcesRootDirectory().getCanonicalPath());
         cfg.setPackageName(packageName);
         cfg.setClassName(className);
-        cfg.setCachedCompiler(SINGLETON.getJavaCompiler());
         cfg.setConfigClass(InProcessSepConfig.class.getCanonicalName());
         return cfg;
     }

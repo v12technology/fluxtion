@@ -18,8 +18,7 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.generation.FilterDescription;
-import com.fluxtion.compiler.generation.model.*;
-import com.fluxtion.compiler.generation.targets.SepJavaSourceModelHugeFilter;
+import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.*;
 import com.google.common.base.Predicates;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
@@ -110,7 +109,7 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, true);
         srcModel.buildSourceModel();
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
@@ -154,7 +153,7 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap);
         sep.generateMetaModel();
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep, true);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, true);
         srcModel.buildSourceModel();
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
