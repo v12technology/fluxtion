@@ -375,7 +375,7 @@ public class SimpleEventProcessorModel {
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     }
-                } catch (IllegalArgumentException | IllegalAccessException | InaccessibleObjectException ex) {
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
                     java.util.logging.Logger.getLogger(SimpleEventProcessorModel.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return false;
