@@ -17,9 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
-import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
-import com.fluxtion.compiler.generation.targets.SepJavaSourceModelHugeFilter;
+import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
@@ -59,7 +57,7 @@ public class JavaSourceModelTest {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(sep);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep);
         srcModel.buildSourceModel();
 
     }

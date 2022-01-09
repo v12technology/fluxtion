@@ -21,7 +21,7 @@ import com.fluxtion.compiler.generation.compiler.SepFactoryConfigBean;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
-import com.fluxtion.compiler.generation.targets.SepJavaSourceModelHugeFilter;
+import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
@@ -101,7 +101,7 @@ public class Generator {
 
     public void templateSep(SEPConfig config) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
-        execSvc.submit(Generator::warmupCompiler);
+//        execSvc.submit(Generator::warmupCompiler);
         config.buildConfig();
         this.config = config;
         LOG.debug("init velocity");
@@ -139,32 +139,32 @@ public class Generator {
         return simpleEventProcessorModel;
     }
 
-    public static void warmupCompiler() {
-        LOG.debug("running compiler warmup");
-        try {
-            CachedCompiler c = new CachedCompiler(null, null);
-            c.loadFromJava("com.fluxtion.compiler.WarmupSample",
-                    "package com.fluxtion.compiler;\n"
-                            + "\n"
-                            + "public class WarmupSample {\n"
-                            + "\n"
-                            + "    public String test;\n"
-                            + "\n"
-                            + "    public String getTest() {\n"
-                            + "        return test;\n"
-                            + "    }\n"
-                            + "    \n"
-                            + "}");
-        } catch (Exception ex) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("problem running warmup compile", ex);
-            } else {
-                LOG.warn("problem running warmup compile");
-            }
-        } finally {
-            LOG.debug("completed compiler warmup");
-        }
-    }
+//    public static void warmupCompiler() {
+//        LOG.debug("running compiler warmup");
+//        try {
+//            CachedCompiler c = new CachedCompiler(null, null);
+//            c.loadFromJava("com.fluxtion.compiler.WarmupSample",
+//                    "package com.fluxtion.compiler;\n"
+//                            + "\n"
+//                            + "public class WarmupSample {\n"
+//                            + "\n"
+//                            + "    public String test;\n"
+//                            + "\n"
+//                            + "    public String getTest() {\n"
+//                            + "        return test;\n"
+//                            + "    }\n"
+//                            + "    \n"
+//                            + "}");
+//        } catch (Exception ex) {
+//            if (LOG.isDebugEnabled()) {
+//                LOG.debug("problem running warmup compile", ex);
+//            } else {
+//                LOG.warn("problem running warmup compile");
+//            }
+//        } finally {
+//            LOG.debug("completed compiler warmup");
+//        }
+//    }
 
     private static void initVelocity() {
         Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -176,7 +176,7 @@ public class Generator {
     }
 
     private File templateJavaOutput() throws Exception {
-        SepJavaSourceModelHugeFilter srcModel = new SepJavaSourceModelHugeFilter(
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(
                 simpleEventProcessorModel,
                 config.isInlineEventHandling(),
                 config.isAssignPrivateMembers()

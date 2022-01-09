@@ -22,6 +22,7 @@ import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
+import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import net.openhft.compiler.CachedCompiler;
 import org.jetbrains.annotations.NotNull;
@@ -197,15 +198,14 @@ public class SepCompiler {
         }
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
-            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
+
+            returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
+
+//            CachedCompiler javaCompiler = GenerationContext.SINGLETON.getJavaCompiler();
+//            returnClass = javaCompiler.loadFromJava(GenerationContext.SINGLETON.getClassLoader(), fqn, readText(file.getCanonicalPath()));
             LOG.debug("completed compiling source");
         }
         return returnClass;
-    }
-
-    public static Class<?> loadFromResource(@NotNull String className, @NotNull String resourceName) throws IOException, ClassNotFoundException {
-        return GenerationContext.SINGLETON.getJavaCompiler().loadFromJava(GenerationContext.SINGLETON.getClassLoader(), className, readText(resourceName));
     }
 
     private static String readText(@NotNull String resourceName) throws IOException {
