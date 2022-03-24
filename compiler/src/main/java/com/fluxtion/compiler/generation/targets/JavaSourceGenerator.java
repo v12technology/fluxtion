@@ -1067,7 +1067,11 @@ public class JavaSourceGenerator {
     }
 
     private void addDefaultImports() {
-        model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
+        model.getImportClasses().stream()
+                .map(Class::getCanonicalName)
+                .peek(Objects::toString)
+                .sorted()
+                .forEach(this::getClassName);
     }
 
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
