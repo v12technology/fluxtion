@@ -30,24 +30,44 @@ public final class DefaultFilteredEventHandler<T>
         extends EventLogNode
         implements FilteredEventHandler<T>, TriggeredEventStream<T>, Named {
 
-    private int filterId;
-    private Class<T> eventClass;
+    private final int filterId;
+    private final String filterString;
+    private final Class<T> eventClass;
+    private final transient String name;
     public T event;
-    private String name;
 
     public DefaultFilteredEventHandler(Class<T> eventClass) {
         this.eventClass = eventClass;
-        filterId = Event.NO_INT_FILTER;
+        this.filterId = Event.NO_INT_FILTER;
+        this.filterString = Event.NO_STRING_FILTER;
         name = "handler" + eventClass.getSimpleName();
     }
 
     public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
         this.filterId = filterId;
+        this.filterString = Event.NO_STRING_FILTER;
         this.eventClass = eventClass;
         name = "handler" + eventClass.getSimpleName() + "_" + filterId;
     }
 
-    public DefaultFilteredEventHandler() {
+    public DefaultFilteredEventHandler(String filterString, Class<T> eventClass) {
+        this.filterId = Event.NO_INT_FILTER;
+        this.filterString = filterString;
+        this.eventClass = eventClass;
+        name = "handler" + eventClass.getSimpleName() + "_" + filterString;
+    }
+
+    public DefaultFilteredEventHandler(int filterId, String filterString, Class<T> eventClass) {
+        this.filterId = filterId;
+        this.filterString = filterString;
+        this.eventClass = eventClass;
+        if (filterId != Event.NO_INT_FILTER) {
+            name = "handler" + eventClass.getSimpleName() + "_" + filterId;
+        } else if (!filterString.equals(Event.NO_STRING_FILTER)) {
+            name = "handler" + eventClass.getSimpleName() + "_" + filterString;
+        } else {
+            name = "handler" + eventClass.getSimpleName();
+        }
     }
 
     @Override
@@ -59,6 +79,11 @@ public final class DefaultFilteredEventHandler<T>
     public void onEvent(T e) {
         auditLog.info("inputEvent", e.getClass().getSimpleName());
         this.event = e;
+    }
+
+    @Override
+    public String filterString() {
+        return filterString;
     }
 
     @Override

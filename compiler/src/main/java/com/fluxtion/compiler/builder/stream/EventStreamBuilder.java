@@ -41,6 +41,12 @@ public class EventStreamBuilder<T> {
         return map(new DefaultValue<>(defaultValue)::getOrDefault);
     }
 
+    public <R, I, L> EventStreamBuilder<R> lookup(SerializableFunction<I, L> lookupFunction,
+                                                  SerializableFunction<T, I> lookupKeyFunction,
+                                                  SerializableBiFunction<T, L, R> enrichFunction){
+        return new EventStreamBuilder<>( new LookupEventStream<>(eventStream, lookupKeyFunction, lookupFunction, enrichFunction));
+    }
+
     //PROCESSING - START
     public <R> EventStreamBuilder<R> map(SerializableFunction<T, R> mapFunction) {
         return new EventStreamBuilder<>( new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));

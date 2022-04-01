@@ -306,7 +306,7 @@ public class MultipleSepTargetInProcessTest {
     @SneakyThrows
     protected void auditToFile(String fileNamePrefix) {
         fileNamePrefix = fileNamePrefix + (compiledSep?"-compiled.yaml":"-interpreted.yaml");
-        File file = new File("target\\generated-test-sources\\fluxtion-log\\" + fileNamePrefix);
+        File file = new File("target" + File.separator + "generated-test-sources" + File.separator + "fluxtion-log" + File.separator + fileNamePrefix);
         FileUtils.forceMkdirParent(file);
         onEvent( new EventLogControlEvent(new JULLogRecordListener(file)) );
     }

@@ -20,11 +20,15 @@ package com.fluxtion.compiler.generation.filter;
 import com.fluxtion.runtime.annotations.EventHandler;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
@@ -68,6 +72,28 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         assertThat(testHandler.wordBCount, is(2));
     }
 
+    @Test
+    public void defaultFilterHandlerTest(){
+
+        sep(cfg -> {
+            cfg.addPublicNode(new DefaultFilteredEventHandler<>(String.class), "handler");
+            cfg.addPublicNode(new DefaultFilteredEventHandler<>("filter", WordEvent.class), "handlerFiltered");
+        });
+        DefaultFilteredEventHandler<String> stringHandler = getField("handler");
+        DefaultFilteredEventHandler<WordEvent> filteredHandler = getField("handlerFiltered");
+        onEvent("test");
+        assertNull(filteredHandler.get());
+        assertThat(stringHandler.get(), is("test"));
+
+        onEvent(new WordEvent("ignore me"));
+        assertNull(filteredHandler.get());
+        assertThat(stringHandler.get(), is("test"));
+
+        onEvent(new WordEvent("filter"));
+        assertThat(stringHandler.get(), is("test"));
+        assertThat(filteredHandler.get(), is(new WordEvent("filter")));
+    }
+
     public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {
@@ -76,6 +102,8 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
     }
 
 
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
     public static class WordEvent extends DefaultEvent {
         public WordEvent(String word) {
             super();
