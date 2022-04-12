@@ -16,6 +16,9 @@
  */
 package com.fluxtion.runtime.event;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 /**
  * Default implementation of {@link Event} that can be extended to provide
  * meta-data to user events.
@@ -23,6 +26,8 @@ package com.fluxtion.runtime.event;
  * @author Greg Higgins
  *
  */
+@EqualsAndHashCode
+@ToString
 public abstract class DefaultEvent implements Event {
 
     public static final int NO_INT_FILTER = Integer.MAX_VALUE;
@@ -63,7 +68,7 @@ public abstract class DefaultEvent implements Event {
      */
     @Override
     public final String filterString() {
-        return filterString.toString();
+        return filterString;
     }
 
     public final CharSequence filterCharSequence() {

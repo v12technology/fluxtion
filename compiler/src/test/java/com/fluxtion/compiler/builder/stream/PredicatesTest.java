@@ -26,7 +26,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
                     .mapToInt(Integer::intValue)
                     .filter(Predicates.HAS_CHANGED_INT_FILTER)
                     .mapOnNotify(Mappers.newCount()).id("count")
-                    .mapToInt(Mappers.Count::getCount)
+//                    .mapToInt(Mappers.Count::getCount)
             ;
         });
         Mappers.Count count = getStreamed("count");
