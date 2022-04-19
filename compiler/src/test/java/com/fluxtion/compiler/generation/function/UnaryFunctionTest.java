@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.function;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ public class UnaryFunctionTest extends MultipleSepTargetInProcessTest {
 
     public static class StringHandler{
 
-        @EventHandler
+        @OnEventHandler
         public void onString(String in){
 
         }

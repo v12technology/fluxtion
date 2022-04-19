@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
@@ -131,7 +131,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
             this.f = f;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleString(String in) {
             out = (String) f.apply(in);
         }
@@ -147,7 +147,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
             this.f = f;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleString(String in) {
             out = (String) f.apply(in);
         }
@@ -163,7 +163,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
             this.factory = factory;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleString(String in) {
             instance = factory.get();
         }
@@ -185,7 +185,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
             this.f = f;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleString(String in) {
             f.accept(in);
         }
@@ -223,7 +223,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEven(){}
 
     }
@@ -232,7 +232,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     public static class RunnableExecutor{
         LambdaReflection.SerializableRunnable runnable;
 
-        @EventHandler
+        @OnEventHandler
         public void executeTask(String in){
             runnable.run();
         }

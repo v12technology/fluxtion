@@ -16,7 +16,7 @@
  */
 package com.fluxtion.test.enums;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class EnumTest extends MultipleSepTargetInProcessTest {
 
         public DayOfWeek firsDayOfWeek;
 
-        @EventHandler
+        @OnEventHandler
         public void endOfDay(EndOfDayEvent eod) {
         }
 

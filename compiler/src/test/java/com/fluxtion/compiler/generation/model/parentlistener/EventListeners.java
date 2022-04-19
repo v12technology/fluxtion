@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.event.Event;
 
@@ -29,28 +29,28 @@ public class EventListeners {
 
     public static class TestEventListener {
 
-        @EventHandler
+        @OnEventHandler
         public void onTestEvent(TestEvent event) {
         }
     }
 
     public static class ConfigEventListener {
 
-        @EventHandler
+        @OnEventHandler
         public void onConfigEvent(ConfigEvent event) {
         }
     }
 
     public static class ChildConfigEventListener extends ConfigEventListener{
 
-        @EventHandler
+        @OnEventHandler
         public void onChildConfigEvent(ChildConfigEvent event) {
         }
     }
 
     public static class UnknownTestEventListener {
 
-        @EventHandler
+        @OnEventHandler
         public void onTestEvent(TestEvent event) {
         }
     }

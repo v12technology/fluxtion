@@ -16,8 +16,8 @@
  */
 package com.fluxtion.compiler.generation.propagation;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
@@ -60,18 +60,18 @@ public class PropagationTest extends MultipleSepTargetInProcessTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newString(String s) {
             notified = true;
             return true;
         }
 
-        @EventHandler
+        @OnEventHandler
         public boolean handleInt(int input){
             return input > 0;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleDouble(double input){
 
         }
@@ -82,7 +82,7 @@ public class PropagationTest extends MultipleSepTargetInProcessTest {
         final MyHandler myHandler;
         boolean notified;
 
-        @OnEvent
+        @OnTrigger
         public void onEvent(){
             notified = true;
         }

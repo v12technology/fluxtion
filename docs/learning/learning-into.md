@@ -75,7 +75,7 @@ public static void main(String[] args) throws Exception {
         select(MyDataType.class)
             .log("received:");
     });
-    processor.onEvent(new MyDataType("hello", "world"));
+    processor.onTrigger(new MyDataType("hello", "world"));
 }
 ```
 
@@ -169,11 +169,11 @@ public void dynamicUserFiltering(){
             .filter(new FilterGT(10)::gt)
             .log("dynamic filter exceeded val:{}", Double::intValue);
     });
-    onEvent(20.0);
-    onEvent(50.0);
-    onEvent(new Signal("myConfigKey", 25));
-    onEvent(20.0);
-    onEvent(50.0);
+    onTrigger(20.0);
+    onTrigger(50.0);
+    onTrigger(new Signal("myConfigKey", 25));
+    onTrigger(20.0);
+    onTrigger(50.0);
 }
     
 @Data
@@ -261,11 +261,11 @@ public void filterEvent() {
         filterOnNotify(select(Double.class), filter("tick"::equalsIgnoreCase))
             .log("update:");
     });
-    onEvent(1.0);
-    onEvent(2.0);
-    onEvent(3.0);
-    onEvent("tick");
-    onEvent(4.0);
+    onTrigger(1.0);
+    onTrigger(2.0);
+    onTrigger(3.0);
+    onTrigger("tick");
+    onTrigger(4.0);
 }
 ```
 

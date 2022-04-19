@@ -16,7 +16,7 @@
  */
 package com.fluxtion.runtime.audit;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
@@ -109,7 +109,7 @@ public class EventLogManager implements Auditor {
         logger.log("method", methodName, traceLevel);
     }
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void calculationLogConfig(EventLogControlEvent newConfig) {
         if (newConfig.getLogRecordProcessor() != null) {
             this.sink = newConfig.getLogRecordProcessor();

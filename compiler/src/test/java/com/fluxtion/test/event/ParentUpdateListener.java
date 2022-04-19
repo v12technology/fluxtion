@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
@@ -37,7 +37,7 @@ public class ParentUpdateListener {
     public ParentUpdateListener() {
     }
     
-    @OnEvent
+    @OnTrigger
     public void onEvent() {
         parentUpdated = null;
     }

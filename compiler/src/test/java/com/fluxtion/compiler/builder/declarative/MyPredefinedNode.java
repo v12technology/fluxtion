@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.fluxtion.runtime.annotations.OnEvent;
 public class MyPredefinedNode {
     public Object parent;
     
-    @OnEvent
+    @OnTrigger
     public void process(){
     }
     

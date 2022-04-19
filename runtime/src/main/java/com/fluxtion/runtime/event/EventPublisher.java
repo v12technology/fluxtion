@@ -18,6 +18,7 @@ package com.fluxtion.runtime.event;
 
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class EventPublisher<T> {
         return this;
     }
 
-    @com.fluxtion.runtime.annotations.EventHandler
+    @OnEventHandler
     public void registerEventHandler(RegisterEventHandler registration) {
         ArrayList<StaticEventProcessor> nodes = new ArrayList<>(Arrays.asList(handlers));
         if (registration.isRegister()) {

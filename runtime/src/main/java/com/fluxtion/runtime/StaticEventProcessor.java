@@ -15,14 +15,14 @@
  */
 package com.fluxtion.runtime;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
- * and methods annotated with {@link EventHandler}. An subclass of a StaticEventProcessor is
+ * and methods annotated with {@link OnEventHandler}. An subclass of a StaticEventProcessor is
  * the product of running the event stream compiler on user input. On receipt of an event
  * the processor selects an execution path that comprises a set of application nodes that
- * have a reference to an incoming {@link EventHandler} for the specific event.
+ * have a reference to an incoming {@link OnEventHandler} for the specific event.
  * <p>
  * The StaticEventProcessor 
  * has the following functionality:
@@ -30,9 +30,9 @@ import com.fluxtion.runtime.annotations.EventHandler;
  * <ul>
  * <li>StaticEventProcessor process events of multiple type in a predictable order</li>
  * <li>Application classes are nodes managed by StaticEventProcessor and are notified in a predictable manner when an event is processed</li>
- * <li>An execution path is the set of connected nodes to a matching {@link EventHandler} for the incoming event</li>
+ * <li>An execution path is the set of connected nodes to a matching {@link OnEventHandler} for the incoming event</li>
  * <li>Nodes on the execution path are invoked in topological order, where object reference determine precedence</li>
- * <li>The root of the execution path is an {@link EventHandler}</li>
+ * <li>The root of the execution path is an {@link OnEventHandler}</li>
  * <li>Dispatches events based on type to the correct handler</li>
  * <li>Optional String or int filtering can be supplied to narrow the handler selection in conjunction with event type</li>
  * <li>An execution path that is unique for the Event and filter is invoked when an event is received.</li>

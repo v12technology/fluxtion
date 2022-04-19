@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
@@ -115,7 +115,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
     public static class SingleFilteredHandler {
         private int wordACount;
 
-        @EventHandler(filterString = "A")
+        @OnEventHandler(filterString = "A")
         public void processWordA(WordEvent wordA) {
             wordACount++;
         }
@@ -129,17 +129,17 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         public transient String filterA = "A";
         public transient String filterB = "B";
 
-        @EventHandler(filterStringFromClass = String.class)
+        @OnEventHandler(filterStringFromClass = String.class)
         public void handleEvent(ClassFilterEvent event) {
             count++;
         }
 
-        @EventHandler(filterVariable = "filterA")
+        @OnEventHandler(filterVariable = "filterA")
         public void processWordA(WordEvent wordA) {
             wordACount++;
         }
 
-        @EventHandler(filterVariable = "filterB")
+        @OnEventHandler(filterVariable = "filterB")
         public void processWordB(WordEvent wordB) {
             wordBCount++;
         }

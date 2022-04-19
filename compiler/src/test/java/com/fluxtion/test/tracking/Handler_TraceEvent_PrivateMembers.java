@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -57,7 +57,7 @@ public class Handler_TraceEvent_PrivateMembers {
         this.arrayRef = arrayRef;
     }
 
-    @EventHandler
+    @OnEventHandler
     public void handleEvent(TraceEvent_0 event){
     }
 

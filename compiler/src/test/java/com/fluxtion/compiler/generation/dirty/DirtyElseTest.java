@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +106,7 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
             this.barrier = barrier;
         }
 
-        @EventHandler
+        @OnEventHandler
         public boolean isGreaterThan(NumberEvent number) {
             return number.value > barrier;
         }
@@ -119,7 +119,7 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
             this.tracked = tracked;
         }
         
-        @OnEvent
+        @OnTrigger
         public boolean notifyChildren(){
             return true;
         }
@@ -134,7 +134,7 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
             this.greaterThan = greaterThan;
         }
 
-        @OnEvent
+        @OnTrigger
         public void publishPass() {
             count++;
         }
@@ -150,7 +150,7 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
             this.greaterThan = greaterThan;
         }
 
-        @OnEvent(dirty = false)
+        @OnTrigger(dirty = false)
         public void publishFail() {
             count++;
         }

@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface OnEvent {
+public @interface OnTrigger {
 
     /**
      * Controls the event calling strategy for this node. If conditional

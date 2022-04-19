@@ -18,7 +18,7 @@
 package com.fluxtion.test.nodes.privatemembers;
 
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  * Class for testing private member assignment and event dispatch.
@@ -41,7 +41,7 @@ public class TimeRecorder {
         recordedTime = 0;
     }
     
-    @OnEvent
+    @OnTrigger
     public void update(){
         recordedTime = tickNotifier.getTickTime();
     }

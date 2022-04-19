@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  *
@@ -41,7 +41,7 @@ public class DirtyNotifierNode {
     public DirtyNotifierNode() {
     }
     
-    @OnEvent
+    @OnTrigger
     public boolean onEvent() {
         return true;
     }

@@ -120,21 +120,21 @@ public class SimpleEventProcessorModel {
 
     /**
      * A topologically sorted list of all {@link CbMethodHandle} in this graph. These methods are
-     * annotated with {@link OnEvent} or {@link EventHandler}
+     * annotated with {@link OnTrigger} or {@link OnEventHandler}
      */
     private List<CbMethodHandle> allEventCallBacks;
 
     /**
      * The dispatch map for event handling, grouped by event filter id's. Class
      * is the class of the Event. Integer is the filter Id. These methods are
-     * annotated with {@link OnEvent} or {@link EventHandler}
+     * annotated with {@link OnTrigger} or {@link OnEventHandler}
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap;
 
     /**
      * The dispatch map for post event handling, grouped by event filter id's.
      * Class is the class of the Event. Integer is the filter Id. These methods
-     * are annotated with {@link OnEventComplete}
+     * are annotated with {@link AfterTrigger}
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
 
@@ -480,11 +480,11 @@ public class SimpleEventProcessorModel {
                     }
                 }
 
-                if (annotationInHierarchy(method, OnEvent.class)) {
+                if (annotationInHierarchy(method, OnTrigger.class)) {
                     node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                 }
 
-                if (method.getAnnotation(EventHandler.class) != null) {
+                if (method.getAnnotation(OnEventHandler.class) != null) {
                     node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                 }
 
@@ -503,7 +503,7 @@ public class SimpleEventProcessorModel {
                         java.lang.reflect.Field field;
                         field = ClassUtils.getReflectField(object.getClass(), val);
                         field.setAccessible(true);
-                        if (field.getAnnotation(NoEventReference.class) != null || field.getAnnotation(PushReference.class) != null) {
+                        if (field.getAnnotation(NoTriggerReference.class) != null || field.getAnnotation(PushReference.class) != null) {
                             LOGGER.debug("IGNORING NoEventReference for parentUpdate");
                             //continue;
                         }
@@ -591,7 +591,7 @@ public class SimpleEventProcessorModel {
             }
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
-                if (method.getAnnotation(EventHandler.class) != null) {
+                if (method.getAnnotation(OnEventHandler.class) != null) {
                     eventCbList.add(new EventCallList(object, method));
                 }
             }
@@ -810,7 +810,7 @@ public class SimpleEventProcessorModel {
                 && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
         Method[] methodList = node.instance.getClass().getDeclaredMethods();
         for (Method method : methodList) {
-            if (annotationInHierarchy(method, OnEventComplete.class)) {
+            if (annotationInHierarchy(method, AfterTrigger.class)) {
                 notRequired = false;
             }
         }
@@ -956,8 +956,8 @@ public class SimpleEventProcessorModel {
     }
 
     /**
-     * returns all the {@link OnEvent} {@link CbMethodHandle}'s that depend upon this node.
-     * @return dependents that will be notified with methods @{@link OnEvent}
+     * returns all the {@link OnTrigger} {@link CbMethodHandle}'s that depend upon this node.
+     * @return dependents that will be notified with methods @{@link OnTrigger}
      */
     public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
         if(callSource.isNoPropagateEventHandler()){
@@ -970,7 +970,7 @@ public class SimpleEventProcessorModel {
     public Set<Object> getOnEventDependenciesForNode(Object instance){
         return getDirectChildrenListeningForEvent(instance).stream()
                 .peek(o -> log.debug("checking for OnEvent instance:{}", o))
-                .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnEvent.class)).isEmpty())
+                .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnTrigger.class)).isEmpty())
                 .collect(Collectors.toSet());
     }
 
@@ -1099,7 +1099,7 @@ public class SimpleEventProcessorModel {
         private final List<CbMethodHandle> dispatchMethods;
         /**
          * the set of methods to be called on a unwind of an event annotated
-         * with {@link OnEventComplete}
+         * with {@link AfterTrigger}
          */
         private final List<CbMethodHandle> postDispatchMethods;
 
@@ -1133,10 +1133,10 @@ public class SimpleEventProcessorModel {
                 name = dependencyGraph.variableName(object);
                 Method[] methodList = object.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (annotationInHierarchy(method, OnEvent.class)) {
+                    if (annotationInHierarchy(method, OnTrigger.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
-                    if (annotationInHierarchy(method, OnEventComplete.class)) {
+                    if (annotationInHierarchy(method, AfterTrigger.class)) {
                         postDispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
                 }
@@ -1156,7 +1156,7 @@ public class SimpleEventProcessorModel {
             boolean tmpIsFiltered = true;
             boolean tmpIsInverseFiltered = false;
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), withAnnotation(FilterId.class));
-            com.fluxtion.runtime.annotations.EventHandler annotation = onEventMethod.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class);
+            OnEventHandler annotation = onEventMethod.getAnnotation(OnEventHandler.class);
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
             //String attribute filter on annoatation 
@@ -1239,7 +1239,7 @@ public class SimpleEventProcessorModel {
             //check for @OnEventComplete on the root of the event tree
             Method[] methodList = instance.getClass().getMethods();
             for (Method method : methodList) {
-                if (annotationInHierarchy(method, OnEventComplete.class)) {
+                if (annotationInHierarchy(method, AfterTrigger.class)) {
                     postDispatchMethods.add(new CbMethodHandle(method, instance, name));
                 }
             }
@@ -1249,10 +1249,10 @@ public class SimpleEventProcessorModel {
                 name = dependencyGraph.variableName(object);
                 methodList = object.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (annotationInHierarchy(method, OnEvent.class)) {
+                    if (annotationInHierarchy(method, OnTrigger.class)) {
                         dispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
-                    if (annotationInHierarchy(method, OnEventComplete.class) && i > 0) {
+                    if (annotationInHierarchy(method, AfterTrigger.class) && i > 0) {
                         postDispatchMethods.add(new CbMethodHandle(method, object, name));
                     }
                 }

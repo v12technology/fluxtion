@@ -19,8 +19,9 @@
 package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.runtime.StaticEventProcessor;
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Event;
@@ -144,7 +145,7 @@ public class NoPropagationTest {
 
     public static class TimeProcessor {
 
-        @com.fluxtion.runtime.annotations.EventHandler
+        @OnEventHandler
         public boolean handleTimeUpdate(TimeEvent event) {
             return true;
         }
@@ -152,7 +153,7 @@ public class NoPropagationTest {
 
     public static class LogNotifier {
 
-        @com.fluxtion.runtime.annotations.EventHandler
+        @OnEventHandler
         public void updateLog(LogToConsole notify) {
 //            return true;
         }
@@ -160,12 +161,12 @@ public class NoPropagationTest {
 
     public static class MsgBuilderBase {
 
-        @com.fluxtion.runtime.annotations.EventHandler(filterString = "level", propagate = false)
+        @OnEventHandler(filterString = "level", propagate = false)
         public boolean controlLevel(LogControlEvent lc) {
             return false;
         }
 
-        @com.fluxtion.runtime.annotations.EventHandler(filterString = "filter", propagate = false)
+        @OnEventHandler(filterString = "filter", propagate = false)
         public boolean controlFilter(LogControlEvent lc) {
             return false;
         }
@@ -184,7 +185,7 @@ public class NoPropagationTest {
         public MsgBuilder() {
         }
 
-        @NoEventReference
+        @NoTriggerReference
         public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
@@ -194,7 +195,7 @@ public class NoPropagationTest {
             this.timeprocessorUpdated = true;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean buildMessage() {
             return true;
         }
@@ -213,7 +214,7 @@ public class NoPropagationTest {
         public NoEventFilterMsg() {
         }
 
-        @NoEventReference
+        @NoTriggerReference
         public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
@@ -223,7 +224,7 @@ public class NoPropagationTest {
             this.timeProcessorUpdated = true;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean buildMessage() {
             return true;
         }
@@ -242,7 +243,7 @@ public class NoPropagationTest {
 //        
 //        @OnParentUpdate
 //        public void publishLog(MsgBuilder builder) {
-        @OnEvent
+        @OnTrigger
         public void publishLog() {
             invoked = true;
         }

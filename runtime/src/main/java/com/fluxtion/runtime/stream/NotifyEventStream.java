@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.NodeNameLookup;
@@ -17,7 +17,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     private final transient String auditInfo;
     private String instanceNameToNotify;
     @Inject
-    @NoEventReference
+    @NoTriggerReference
     public NodeNameLookup nodeNameLookup;
 
     public NotifyEventStream(S inputEventStream, Object target) {
@@ -30,7 +30,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
         instanceNameToNotify = nodeNameLookup.lookup(target);
     }
 
-    @OnEvent
+    @OnTrigger
     public boolean notifyChild() {
         auditLog.info("notifyClass", auditInfo);
         auditLog.info("notifyInstance", instanceNameToNotify);

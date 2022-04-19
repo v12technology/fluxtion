@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.name = name;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void configEvent(ConfigEvent configEvent) {
 
         }
@@ -128,7 +128,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.stringFinalProp = stringFinalProp;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void configEvent(ConfigEvent configEvent) {
 
         }
@@ -177,7 +177,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.id = id;
         }
 
-        @OnEvent
+        @OnTrigger
         public void processEvent() {
 
         }
@@ -219,7 +219,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.minRate = minRate;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void newOrderEvent(NewOrderEvent configEvent) {
 
         }
@@ -325,7 +325,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.name = name == null ? "no name" : name;
         }
 
-        @OnEvent
+        @OnTrigger
         public void publishConfig() {
         }
 
@@ -350,7 +350,7 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
             this.clazz = clazz;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void newOrderEvent(NewOrderEvent configEvent) {
 
         }

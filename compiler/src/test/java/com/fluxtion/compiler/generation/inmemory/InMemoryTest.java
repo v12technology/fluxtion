@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.generation.inmemory;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.Generator;
@@ -105,7 +105,7 @@ public class InMemoryTest {
             recorder.setParentTeardown(true);
         }
 
-        @EventHandler
+        @OnEventHandler
         public void inString(String in) {
             recorder.setParentUpdated(true);
         }
@@ -125,7 +125,7 @@ public class InMemoryTest {
             recorder.setChildTeardown(true);
         }
 
-        @OnEvent
+        @OnTrigger
         public void updated() {
             recorder.setChildUpdated(true);
         }

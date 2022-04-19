@@ -130,7 +130,7 @@ public class Creator {
                             .addModifiers(Modifier.PUBLIC)
                             .returns(boolean.class)
                             .addStatement("return true")
-                            .addAnnotation(AnnotationSpec.builder(OnEvent.class)
+                            .addAnnotation(AnnotationSpec.builder(OnTrigger.class)
                                     .build())
                             .build();
                     nodeBuilder.addMethod(handler);
@@ -139,7 +139,7 @@ public class Creator {
                 //event handlers
                 node.getEvents().stream().forEach((EventMethod e) -> {
                     EventDefinition t = id2EventMap.get(e.getEventId());
-                    AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(EventHandler.class)
+                    AnnotationSpec.Builder annoBuilder = AnnotationSpec.builder(OnEventHandler.class)
                             .addMember("propagate", e.isPropagate() + "");
                     if (e.getFilter() != null) {
                         annoBuilder.addMember("filterId", e.getFilter());

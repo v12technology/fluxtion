@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterType;
 
 /**
@@ -35,7 +35,7 @@ public class Handler_UnMatchedFilter_TraceEvent_InFilter_0 extends HandlerNoFilt
     }
 
     @Override
-    @EventHandler(FilterType.unmatched)
+    @OnEventHandler(FilterType.unmatched)
     public void handleEvent(TraceEvent_InFilter_0 event) {
         super.handleEvent(event); 
     }

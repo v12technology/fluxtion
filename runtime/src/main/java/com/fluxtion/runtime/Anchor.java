@@ -1,6 +1,6 @@
 package com.fluxtion.runtime;
 
-import com.fluxtion.runtime.annotations.NoEventReference;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.builder.ExcludeNode;
 import lombok.Value;
@@ -15,7 +15,7 @@ import lombok.Value;
 @ExcludeNode
 public class Anchor {
 
-    @NoEventReference
+    @NoTriggerReference
     Object anchor;
     @PushReference
     Object afterAnchor;

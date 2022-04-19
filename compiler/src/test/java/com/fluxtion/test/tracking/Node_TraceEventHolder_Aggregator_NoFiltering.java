@@ -18,7 +18,7 @@
 package com.fluxtion.test.tracking;
 
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
@@ -39,7 +39,7 @@ public class Node_TraceEventHolder_Aggregator_NoFiltering implements TraceEventH
     public Node_TraceEventHolder_Aggregator_NoFiltering() {
     }
 
-    @OnEvent
+    @OnTrigger
     public void onEvent() {
         //no-op - boolean return for dirty filtering test
         getTraceEvent().getTraceList().add(this);

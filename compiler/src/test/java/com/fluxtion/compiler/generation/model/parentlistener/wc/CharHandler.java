@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 import com.fluxtion.runtime.annotations.FilterType;
 
@@ -27,7 +27,7 @@ import com.fluxtion.runtime.annotations.FilterType;
  */
 public class CharHandler {
 
-	@EventHandler
+	@OnEventHandler
 	public void onCharEvent(CharEvent event) {
 	}
 
@@ -72,7 +72,7 @@ public class CharHandler {
 
 	public static class UnMatchedCharEventHandler {
 
-		@EventHandler(FilterType.unmatched)
+		@OnEventHandler(FilterType.unmatched)
 		public void onCharEvent(CharEvent event) {
 		}
 	}

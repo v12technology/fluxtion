@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream.helpers;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.stream.Stateful;
 import lombok.ToString;
 import lombok.Value;
@@ -187,7 +187,7 @@ public interface Mappers {
     class Count implements Stateful<Integer>{
         int count;
 
-        @OnEvent
+        @OnTrigger
         public boolean increment() {
             count++;
             return true;

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.runtime.time;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
@@ -57,7 +57,7 @@ public class Clock implements Auditor, Auditor.FirstAfterEvent {
     public void nodeRegistered(Object node, String nodeName) {/*NoOp*/
     }
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void setClockStrategy(ClockStrategyEvent event) {
         this.wallClock = event.getStrategy();
     }

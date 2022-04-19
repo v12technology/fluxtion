@@ -78,7 +78,7 @@ public class TradeMonitor {
 A complete unit test is shown below that validates the behaviour of the event processor. 
 The processor is constructed by supplying the builder method to the test super class with `sep(TradeMonitor::build)`
 
-Events are sent to the processor under test with the onEvent method e.g.`onEvent(new Trade("EURUSD", 5_000))`. 
+Events are sent to the processor under test with the onTrigger method e.g.`onTrigger(new Trade("EURUSD", 5_000))`. 
 A data driven clock can be adjusted in the test using the `tick("new time")` method to simulate the passing of time.
 
 A reference to the "top3" node is gained using the id set in the bulder method, with: `WrappedList<Tuple<String, Number>> top3 = getField("top3")`. 
@@ -105,14 +105,14 @@ public class TradeMonitorTest extends BaseSepInprocessTest {
     sep(TradeMonitor::build);
     sysOut.clear();
     tick(1);
-    onEvent(new Trade("EURUSD", 5_000));
+    onTrigger(new Trade("EURUSD", 5_000));
     tick(1200);
-    onEvent(new Trade("EURUSD", 150));
-    onEvent(new Trade("EURJPY", 100));
+    onTrigger(new Trade("EURUSD", 150));
+    onTrigger(new Trade("EURJPY", 100));
     tick(2100);
-    onEvent(new Trade("USDCHF", 500));
+    onTrigger(new Trade("USDCHF", 500));
     tick(4000);
-    onEvent(new Trade("GBPUSD", 25));
+    onTrigger(new Trade("GBPUSD", 25));
     WrappedList<Tuple<String, Number>> top3 = getField("top3");
     assertThat(top3.size(), is(0));
 

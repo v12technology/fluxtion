@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -25,11 +25,11 @@ import com.fluxtion.runtime.annotations.EventHandler;
  */
 public class AnnotatedHandlerNoFilter {
 
-    @EventHandler
+    @OnEventHandler
     public void onAllTimeEvents(TimeEvent e){
     }
     
-    @EventHandler
+    @OnEventHandler
     public void onAllTestEvents(TestEvent e){
     }
 }

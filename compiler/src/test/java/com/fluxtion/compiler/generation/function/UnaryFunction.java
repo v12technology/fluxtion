@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.function;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 
 public class UnaryFunction<T, R> {
@@ -26,7 +26,7 @@ public class UnaryFunction<T, R> {
         source = supplier.captured()[0];
     }
 
-    @OnEvent
+    @OnTrigger
     public void calculate(){
         T t = supplier.get();
         if(intFunction!=null){

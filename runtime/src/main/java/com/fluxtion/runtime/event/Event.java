@@ -17,6 +17,7 @@
 package com.fluxtion.runtime.event;
 
 import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  * <p>
@@ -46,7 +47,7 @@ import com.fluxtion.runtime.FilteredEventHandler;
  * valid match.
  *
  *
- * @see com.fluxtion.runtime.annotations.EventHandler
+ * @see OnEventHandler
  * @see FilteredEventHandler
  * @author V12 Technology Ltd.
  */

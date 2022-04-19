@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.ExcludeNode;
-import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
 
     public static class StringHandler {
     
-        @EventHandler
+        @OnEventHandler
         public void stringUpdate(String s){
         
         }
@@ -92,14 +92,14 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     
       public static class DoubleHandler{
     
-        @EventHandler
+        @OnEventHandler
         public void doubleUpdate(Double s) {
         }
     }
 
     public static class DateHandler{
 
-        @EventHandler
+        @OnEventHandler
         public void doubleUpdate(Date s){
 
         }
@@ -118,7 +118,7 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
             this.myHandler = myHandler;
         }
         
-        @OnEvent
+        @OnTrigger
         public void increment(){
             count++;
         }
@@ -129,7 +129,7 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
         List<Object> parents = new ArrayList<>();
         int counter;
 
-        @OnEvent
+        @OnTrigger
         public void onEvent(){
             counter++;
         }
@@ -139,7 +139,7 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     public static class IntermediateNode{
         Object parent;
         
-        @OnEvent
+        @OnTrigger
         public void onEvent(){
         }
     }

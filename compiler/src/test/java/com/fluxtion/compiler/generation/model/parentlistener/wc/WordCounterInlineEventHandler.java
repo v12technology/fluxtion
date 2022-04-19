@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model.parentlistener.wc;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterType;
 import com.fluxtion.compiler.SEPConfig;
 
@@ -32,28 +32,28 @@ public class WordCounterInlineEventHandler {
     public transient int lineCount;
     private int increment = 1;
 
-    @EventHandler
+    @OnEventHandler
     public void onAnyChar(CharEvent event) {
         charCount++;
     }
 
-    @EventHandler(filterId = '\t')
+    @OnEventHandler(filterId = '\t')
     public void onTabDelimiter(CharEvent event) {
         increment = 1;
     }
 
-    @EventHandler(filterId = ' ')
+    @OnEventHandler(filterId = ' ')
     public void onSpaceDelimiter(CharEvent event) {
         increment = 1;
     }
 
-    @EventHandler(filterId = '\n')
+    @OnEventHandler(filterId = '\n')
     public void onEol(CharEvent event) {
         lineCount++;
         increment = 1;
     }
 
-    @EventHandler(FilterType.unmatched)
+    @OnEventHandler(FilterType.unmatched)
     public void onUnmatchedChar(CharEvent event) {
         wordCount += increment;
         increment = 0;

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Assert;
@@ -56,7 +56,7 @@ public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
         }
         
     
-        @EventHandler
+        @OnEventHandler
         public void stringUpdate(String in){
         }
     }

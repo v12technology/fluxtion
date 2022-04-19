@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 
 /**
@@ -27,7 +27,7 @@ public class LookupEventStream <R, T, S extends EventStream<R>, I, L> extends Ab
         this.lookupFunction = lookupFunction;
     }
 
-    @OnEvent
+    @OnTrigger
     public boolean applyLookup() {
         R streamValue = getInputEventStream().get();
         I lookupKey = lookupKeyFunction.apply(streamValue);

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newString(String s) {
             notified = true;
             return true;
