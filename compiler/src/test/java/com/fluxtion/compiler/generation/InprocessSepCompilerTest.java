@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation;
 
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.test.event.TimeEvent;
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class InprocessSepCompilerTest {
 
         int count;
 
-        @com.fluxtion.runtime.annotations.EventHandler
+        @OnEventHandler
         public void onAllTimeEvents(TimeEvent e) {
             count++;
         }

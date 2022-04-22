@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
@@ -45,7 +45,7 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         @Inject
         public MyNode myNode;
 
-        @EventHandler
+        @OnEventHandler
         public void charEvent(CharEvent event) {
 
         }

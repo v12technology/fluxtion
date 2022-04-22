@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.compiler.generation.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
@@ -58,13 +58,13 @@ public class EventCompleteTest extends MultipleSepTargetInProcessTest {
             this.barrier = barrier;
         }
         
-        @EventHandler
+        @OnEventHandler
         public boolean numberEvent(NumberEvent event){
             eventCount++;
             return event.value > barrier;
         }
 
-        @OnEventComplete
+        @AfterTrigger
         public void eventComplete(){
             completeCount++;
         }

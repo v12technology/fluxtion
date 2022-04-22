@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
 
 /**
@@ -28,7 +28,7 @@ public class TestEventNoIdHandler {
     
     public int count = 10;
     
-    @EventHandler
+    @OnEventHandler
     public void handleEvent(TestEventNoId event){
         event.value = ++count;
     }

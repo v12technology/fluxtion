@@ -19,7 +19,7 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  *
@@ -32,7 +32,7 @@ public class Calculator {
     private int currentSum = 0;
     String operation = "+";
 
-    @OnEvent
+    @OnTrigger
     public void calcComplete() {
         //System.out.println("Calculation stack");
         for (String val : accumulator.getInputQueue()) {

@@ -17,8 +17,8 @@
 package com.fluxtion.compiler.generation.subclass;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 import org.junit.Test;
 
@@ -121,22 +121,22 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         int implEvent;
         int timeEvent;
 
-        @EventHandler
+        @OnEventHandler
         public void anyEvent(Event e) {
             anyEvent++;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void anyTimeEvent(TimeEvent e) {
             timeEvent++;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void baseEvent(BaseEvent e) {
             baseEvent++;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void implEvent(ImplEvent e) {
             implEvent++;
         }
@@ -147,7 +147,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
         int eventCount;
 
-        @EventHandler
+        @OnEventHandler
         public void anyTimeEvent(TimeEvent e) {
             eventCount++;
         }
@@ -157,7 +157,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
         int eventCount;
 
-        @EventHandler
+        @OnEventHandler
         public boolean anyEvent(Event e) {
             eventCount++;
             return false;
@@ -168,7 +168,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
         int eventCount;
 
-        @EventHandler
+        @OnEventHandler
         public void implEvent(ImplEvent e) {
             eventCount++;
         }
@@ -183,7 +183,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
             this.parent = parent;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean update() {
             eventCount++;
             return true;

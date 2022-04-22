@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodes.privatemembers;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.test.event.TimeEvent;
 
@@ -29,7 +29,7 @@ public class TimeHandler {
     
     private long tickTime;
     
-    @EventHandler
+    @OnEventHandler
     public void onTick(TimeEvent e){
         tickTime = e.time;
     }

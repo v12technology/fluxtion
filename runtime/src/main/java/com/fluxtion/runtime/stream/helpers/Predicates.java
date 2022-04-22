@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.Stateful;
@@ -138,7 +138,7 @@ public interface Predicates {
             }
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean propagateEvent() {
             return allUpdated;
         }

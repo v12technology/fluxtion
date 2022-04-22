@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.constructor;
 
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -64,7 +64,7 @@ public class ConstructorArgTest extends MultipleSepTargetInProcessTest {
             this.name = name;
         }
     
-        @EventHandler
+        @OnEventHandler
         public void stringUpdate(String in){
             this.in = in;
         }

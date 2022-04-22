@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -28,17 +28,17 @@ public class AnnotatedEventHandlerWithOverrideFilter {
     public static final int FILTER_ID_TIME = 100;
     public static final String FILTER_STRING_TEST = "testMatch";
         
-    @EventHandler(filterId = FILTER_ID_TIME)
+    @OnEventHandler(filterId = FILTER_ID_TIME)
     public void onFilteredTime(TimeEvent e){
         
     }
     
-    @EventHandler(filterString = FILTER_STRING_TEST)
+    @OnEventHandler(filterString = FILTER_STRING_TEST)
     public void onFilteredTest(TestEvent e){
         
     }
     
-    @EventHandler
+    @OnEventHandler
     public void onAllTImeEvents(TimeEvent e){
         
     }

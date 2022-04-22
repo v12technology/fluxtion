@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 import java.lang.reflect.Method;
@@ -50,7 +50,7 @@ public class CbMethodHandle {
     public final Class<?> parameterClass;
     
     /**
-     * indicates is an {@link com.fluxtion.runtime.annotations.EventHandler} method
+     * indicates is an {@link OnEventHandler} method
      */
     public final boolean isEventHandler;
     
@@ -72,10 +72,10 @@ public class CbMethodHandle {
         this.variableName = variableName;
         this.parameterClass = parameterClass;
         this.isEventHandler = isEventHandler;
-        this.isPostEventHandler = method.getAnnotation(OnEventComplete.class) != null; 
-        this.isInvertedDirtyHandler =  method.getAnnotation(OnEvent.class)!=null && !method.getAnnotation(OnEvent.class).dirty();
+        this.isPostEventHandler = method.getAnnotation(AfterTrigger.class) != null;
+        this.isInvertedDirtyHandler =  method.getAnnotation(OnTrigger.class)!=null && !method.getAnnotation(OnTrigger.class).dirty();
         this.isGuardedParent = method.getAnnotation(OnParentUpdate.class)!=null && method.getAnnotation(OnParentUpdate.class).guarded();
-        this.isNoPropagateEventHandler = method.getAnnotation(EventHandler.class)!=null && !method.getAnnotation(EventHandler.class).propagate();
+        this.isNoPropagateEventHandler = method.getAnnotation(OnEventHandler.class)!=null && !method.getAnnotation(OnEventHandler.class).propagate();
     }
 
     public Method getMethod() {

@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleConsumer;
@@ -29,7 +29,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         auditInfo = eventStreamConsumer.method().getDeclaringClass().getSimpleName() + "->" + eventStreamConsumer.method().getName();
     }
 
-    @OnEvent
+    @OnTrigger
     public boolean push(){
         auditLog.info("pushTarget", auditInfo);
         if(executeUpdate()){
@@ -63,7 +63,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
             auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean push(){
             auditLog.info("pushTarget", auditInfo);
             if(executeUpdate()){
@@ -103,7 +103,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
             auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean pushValue(){
             auditLog.info("pushTarget", auditInfo);
             if(executeUpdate()){
@@ -143,7 +143,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
             auditInfo = intConsumer.method().getDeclaringClass().getSimpleName() + "->" + intConsumer.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean push(){
             auditLog.info("pushTarget", auditInfo);
             if(executeUpdate()){

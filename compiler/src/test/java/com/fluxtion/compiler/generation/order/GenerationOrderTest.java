@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.order;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 
@@ -74,7 +74,7 @@ public class GenerationOrderTest extends MultipleSepTargetInProcessTest {
             this(null, name);
         }
 
-        @EventHandler
+        @OnEventHandler
         public void update(OrderEvent e) {
             e.list.add(name);
         }

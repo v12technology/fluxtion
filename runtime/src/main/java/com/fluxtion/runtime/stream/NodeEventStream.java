@@ -1,8 +1,8 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.NodeNameLookup;
@@ -12,14 +12,14 @@ public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventS
     private final T source;
     private String instanceName;
     @Inject
-    @NoEventReference
+    @NoTriggerReference
     public NodeNameLookup nodeNameLookup;
 
     public NodeEventStream(T source) {
         this.source = source;
     }
 
-    @OnEvent
+    @OnTrigger
     public void sourceUpdated(){
         auditLog.info("sourceInstance", instanceName);
     }

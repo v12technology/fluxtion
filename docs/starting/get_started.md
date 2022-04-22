@@ -104,7 +104,7 @@ An application feeds events into a Fluxtion generated complex event processor.
 All Fluxtion event processors implement the 
 [StaticEventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/api/src/main/java/com/fluxtion/api/StaticEventProcessor.java) interface. 
 
-To post an event the application invokes `processor.onEvent(event)` on the processor instance.
+To post an event the application invokes `processor.onTrigger(event)` on the processor instance.
 
 ```java
 public class TradeGenerator {
@@ -116,7 +116,7 @@ public class TradeGenerator {
     Random random = new Random();
     int numberPairs = ccyPairs.length;
     while (true) {
-      processor.onEvent(new Trade(ccyPairs[random.nextInt(numberPairs)], random.nextInt(100) + 10));
+      processor.onTrigger(new Trade(ccyPairs[random.nextInt(numberPairs)], random.nextInt(100) + 10));
       Thread.sleep(random.nextInt(10) + 10);
     }
   }

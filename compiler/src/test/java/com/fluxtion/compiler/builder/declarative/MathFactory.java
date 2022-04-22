@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.builder.declarative.MathFactory.FunctionCfg;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class MathFactory implements SepConfigGenerator<FunctionCfg> {
             this.node = node;
         }
         
-        @OnEvent
+        @OnTrigger
         public void evauateMax(){
             
         }

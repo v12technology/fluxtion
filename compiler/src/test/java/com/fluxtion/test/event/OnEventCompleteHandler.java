@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 
 /**
  *
@@ -27,7 +27,7 @@ public class OnEventCompleteHandler {
 
     public Object[] parents;
     
-    @OnEventComplete
+    @AfterTrigger
     public void onEventComplete() {
 
     }

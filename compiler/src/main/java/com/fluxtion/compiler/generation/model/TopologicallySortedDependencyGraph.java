@@ -617,7 +617,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             Object refField = field.get(object);
             String refName = inst2Name.get(refField);
 
-            if (field.getAnnotation(NoEventReference.class) != null) {
+            if (field.getAnnotation(NoTriggerReference.class) != null) {
                 continue;
             }
             if (overrideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
@@ -680,12 +680,12 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     refField.getClass(),
                     Predicates.or(
                             ReflectionUtils.withAnnotation(AfterEvent.class),
-                            ReflectionUtils.withAnnotation(EventHandler.class),
+                            ReflectionUtils.withAnnotation(OnEventHandler.class),
                             ReflectionUtils.withAnnotation(Inject.class),
                             ReflectionUtils.withAnnotation(OnBatchEnd.class),
                             ReflectionUtils.withAnnotation(OnBatchPause.class),
-                            ReflectionUtils.withAnnotation(OnEvent.class),
-                            ReflectionUtils.withAnnotation(OnEventComplete.class),
+                            ReflectionUtils.withAnnotation(OnTrigger.class),
+                            ReflectionUtils.withAnnotation(AfterTrigger.class),
                             ReflectionUtils.withAnnotation(OnParentUpdate.class),
                             ReflectionUtils.withAnnotation(TearDown.class),
                             ReflectionUtils.withAnnotation(TriggerEventOverride.class)
@@ -713,12 +713,12 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     refField.getClass(),
                     Predicates.or(
                             ReflectionUtils.withAnnotation(AfterEvent.class),
-                            ReflectionUtils.withAnnotation(EventHandler.class),
+                            ReflectionUtils.withAnnotation(OnEventHandler.class),
                             ReflectionUtils.withAnnotation(Inject.class),
                             ReflectionUtils.withAnnotation(OnBatchEnd.class),
                             ReflectionUtils.withAnnotation(OnBatchPause.class),
-                            ReflectionUtils.withAnnotation(OnEvent.class),
-                            ReflectionUtils.withAnnotation(OnEventComplete.class),
+                            ReflectionUtils.withAnnotation(OnTrigger.class),
+                            ReflectionUtils.withAnnotation(AfterTrigger.class),
                             ReflectionUtils.withAnnotation(OnParentUpdate.class),
                             ReflectionUtils.withAnnotation(TearDown.class),
                             ReflectionUtils.withAnnotation(TriggerEventOverride.class)
@@ -895,7 +895,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             graph.vertexSet().forEach((t) -> {
                 Method[] methodList = t.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class) != null) {
+                    if (method.getAnnotation(OnEventHandler.class) != null) {
                         @SuppressWarnings("unchecked") Class<? extends Event> eventTypeClass = (Class<? extends Event>) method.getParameterTypes()[0];
                         exportGraph.addVertex(eventTypeClass);
                         exportGraph.addEdge(eventTypeClass, t);

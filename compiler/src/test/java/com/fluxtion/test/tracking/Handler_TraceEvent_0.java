@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -35,7 +35,7 @@ public class Handler_TraceEvent_0 {
     public Handler_TraceEvent_0() {
     }
     
-    @EventHandler
+    @OnEventHandler
     public void handleEvent(TraceEvent_0 event){
         event.traceList.add(this);
         event.traceIdList.add(this.traceId);

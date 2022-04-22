@@ -5,7 +5,7 @@
  */
 package com.fluxtion.compiler.generation.evenpublisher;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.EventPublisher;
 import com.fluxtion.runtime.event.RegisterEventHandler;
@@ -65,7 +65,7 @@ public class EventPublisherTest extends MultipleSepTargetInProcessTest {
             this.barrier = barrier;
         }
 
-        @EventHandler
+        @OnEventHandler
         public boolean isGreaterThan(NumberEvent number) {
             //System.out.println("number:" + number.value);
             return number.value > barrier;

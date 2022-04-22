@@ -2,24 +2,24 @@ package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoEventReference;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import lombok.ToString;
 
 /**
- * @param <R> Type of input stream
- * @param <T> Output type of this stream
- * @param <S> The type of {@link EventStream} that wraps R
+ * @param <T> Type of input stream
+ * @param <R> Output type of this stream
+ * @param <S> The type of incoming {@link EventStream} that wraps
  */
 @ToString
-public abstract class AbstractEventStream<R, T, S extends EventStream<R>> extends EventLogNode
-        implements TriggeredEventStream<T> {
+public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extends EventLogNode
+        implements TriggeredEventStream<R> {
 
     private final S inputEventStream;
     private final transient MethodReferenceReflection streamFunction;
-    @NoEventReference
+    @NoTriggerReference
     private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
     private transient boolean overrideUpdateTrigger;

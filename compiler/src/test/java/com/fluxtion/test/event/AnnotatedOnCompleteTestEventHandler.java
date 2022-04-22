@@ -17,9 +17,9 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 
 /**
  *
@@ -33,12 +33,12 @@ public class AnnotatedOnCompleteTestEventHandler {
         this.stateId = id;
     }
     
-    @EventHandler
+    @OnEventHandler
     public void onTest(TestEvent e){
         
     }
     
-    @OnEventComplete
+    @AfterTrigger
     public void onCompleteEventProcessing(){
         
     }

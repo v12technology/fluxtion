@@ -87,7 +87,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
             this.source = source;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean onEvent() {
             return true;
         }

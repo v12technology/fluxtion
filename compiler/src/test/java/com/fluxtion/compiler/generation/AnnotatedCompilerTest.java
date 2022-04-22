@@ -21,6 +21,7 @@ import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.compiler.ClassProcessorDispatcher;
 import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.ClassProcessor;
 import com.fluxtion.runtime.annotations.builder.SepBuilder;
 import com.fluxtion.runtime.annotations.builder.SepInstance;
@@ -83,7 +84,7 @@ public class AnnotatedCompilerTest {
         int count;
         public static int initCount;
 
-        @com.fluxtion.runtime.annotations.EventHandler
+        @OnEventHandler
         public void onAllTimeEvents(TimeEvent e) {
             count++;
         }
@@ -105,7 +106,7 @@ public class AnnotatedCompilerTest {
         int count;
         public static int initCount;
 
-        @com.fluxtion.runtime.annotations.EventHandler
+        @OnEventHandler
         public void onAllTimeEvents(TimeEvent e) {
             count++;
         }

@@ -11,16 +11,15 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.triggeroverride;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.builder.SepNode;
-import com.fluxtion.runtime.annotations.TriggerEventOverride;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.TriggerEventOverride;
 import lombok.Data;
 import org.junit.Test;
 
@@ -28,7 +27,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
@@ -50,7 +48,7 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
         onEvent(1);
         assertThat(trigger.getCount(), is(1));
     }
-    
+
     @Test
     public void triggerNoOverride() {
         fixedPkg = true;
@@ -71,7 +69,7 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newString(String s) {
             notified = true;
             return true;
@@ -82,7 +80,7 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newInt(Integer s) {
             notified = true;
             return true;
@@ -92,31 +90,27 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class TriggerinOverride {
 
-        @SepNode
         private final StringHandler stringHandler;
-        @SepNode
         @TriggerEventOverride
         private final NumberHandler numberHandler;
         private int count;
 
-        @OnEvent
+        @OnTrigger
         public void update() {
             count++;
         }
 
     }
-    
+
     @Data
     public static class TriggerinNoOverride {
 
-        @SepNode
         private final StringHandler stringHandler;
-        @SepNode
         @TriggerEventOverride
         private NumberHandler numberHandler;
         private int count;
 
-        @OnEvent
+        @OnTrigger
         public void update() {
             count++;
         }

@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -25,12 +25,12 @@ import com.fluxtion.runtime.annotations.EventHandler;
  */
 public class AnnotatedHandlerNoPropogate {
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public boolean onAllTimeEvents(TimeEvent e) {
         return true;
     }
     
-    @EventHandler
+    @OnEventHandler
     public boolean onAllTestEvents(TestEvent e){
         return true;
     }

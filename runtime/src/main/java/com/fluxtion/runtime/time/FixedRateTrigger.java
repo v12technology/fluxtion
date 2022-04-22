@@ -1,19 +1,22 @@
 package com.fluxtion.runtime.time;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoEventReference;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import lombok.EqualsAndHashCode;
 
 //@EqualsAndHashCode
 public class FixedRateTrigger {
 
     @Inject
-    @NoEventReference
+    @NoTriggerReference
     private final Clock clock;
     private final int rate;
     private long previousTime;
+
+    public static FixedRateTrigger atMillis(int millis){
+        return new FixedRateTrigger(millis);
+    }
 
     public FixedRateTrigger(int rate){
         this(null, rate);
@@ -24,7 +27,7 @@ public class FixedRateTrigger {
         this.rate = rate;
     }
 
-    @EventHandler
+    @OnEventHandler
     public boolean hasExpired(Object input) {
         long newTime = clock.getWallClockTime();
         boolean expired = rate < (newTime - previousTime);
@@ -33,7 +36,7 @@ public class FixedRateTrigger {
         return expired;
     }
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public boolean setClockStrategy(ClockStrategy.ClockStrategyEvent event) {
         init();
         return false;

@@ -2,8 +2,8 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import lombok.AllArgsConstructor;
@@ -247,7 +247,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             this(DEFAULT_NAME);
         }
 
-        @OnEvent
+        @OnTrigger
         public void notified() {
             onEventCount++;
         }
@@ -283,7 +283,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public static class MyStringHandler {
         private String inputString;
 
-        @EventHandler
+        @OnEventHandler
         public void newString(String in) {
             inputString = in;
         }

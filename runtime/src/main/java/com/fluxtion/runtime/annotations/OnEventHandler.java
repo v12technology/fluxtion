@@ -80,7 +80,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface EventHandler {
+public @interface OnEventHandler {
 
     /**
      * The match strategy this event handler will employ when filtering incoming

@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.generation.util.BaseModelTest;
 import lombok.Data;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class HandlerAsDependency extends BaseModelTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean handleStringEvent(String s) {
             notified = true;
             return true;
@@ -66,13 +66,13 @@ public class HandlerAsDependency extends BaseModelTest {
         boolean notified = false;
         boolean parentUpdated = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean handleIntEvent(Integer s) {
             notified = true;
             return true;
         }
 
-        @OnEvent
+        @OnTrigger
         public void parentUpdated(){
             parentUpdated = true;
         }
@@ -84,7 +84,7 @@ public class HandlerAsDependency extends BaseModelTest {
         boolean notified = false;
         boolean parentUpdated = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean handleIntEvent(Integer s) {
             notified = true;
             return true;
@@ -97,7 +97,7 @@ public class HandlerAsDependency extends BaseModelTest {
         final StringHandler parent;
         boolean notified = false;
 
-        @OnEvent
+        @OnTrigger
         public boolean parentUpdated() {
             notified = true;
             return true;

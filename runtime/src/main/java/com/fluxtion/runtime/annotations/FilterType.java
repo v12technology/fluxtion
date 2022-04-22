@@ -17,7 +17,7 @@
 package com.fluxtion.runtime.annotations;
 
 /**
- * Filter match strategy for an {@link EventHandler}.
+ * Filter match strategy for an {@link OnEventHandler}.
  *
  * Available strategies are:
  * <ul>

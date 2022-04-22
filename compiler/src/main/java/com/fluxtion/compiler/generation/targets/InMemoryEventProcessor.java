@@ -2,7 +2,7 @@ package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
@@ -318,7 +318,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
             onEventCompleteMethod = ReflectionUtils.getAllMethods(
                     callbackHandle.getInstance().getClass(),
-                    ReflectionUtils.withAnnotation(OnEventComplete.class)
+                    ReflectionUtils.withAnnotation(AfterTrigger.class)
             ).stream().findFirst().orElse(null);
             if(onEventCompleteMethod!=null){
                 onEventCompleteMethod.setAccessible(true);

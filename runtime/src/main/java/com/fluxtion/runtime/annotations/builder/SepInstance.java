@@ -16,7 +16,7 @@
  */
 package com.fluxtion.runtime.annotations.builder;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
@@ -50,7 +50,7 @@ public @interface SepInstance {
     String packageName();
 
     /**
-     * The name of the generated {@link EventHandler}
+     * The name of the generated {@link OnEventHandler}
      *
      * @return event handler name
      */
