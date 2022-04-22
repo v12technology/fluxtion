@@ -1,6 +1,7 @@
-package com.fluxtion.compiler.generation.targets;
+package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.test.tracking.Node_DirtyFilter_TraceEvent;
 import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator_NoFiltering;
 import com.fluxtion.test.tracking.TraceEvent;
@@ -9,11 +10,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class JavaTargetTestMigration extends MultipleSepTargetInProcessTest {
+public class ComplexDirtyGraphTest extends CompiledAndInterpretedSepTest {
 
-
-    public JavaTargetTestMigration(boolean compiledSep) {
-        super(compiledSep);
+    public ComplexDirtyGraphTest(SepTestConfig sepTestConfig) {
+        super(sepTestConfig);
     }
 
     @Test

@@ -2,7 +2,6 @@ package com.fluxtion.compiler.generation.time;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
-import com.fluxtion.runtime.stream.helpers.Peekers;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Test;
@@ -24,7 +23,8 @@ public class RateTriggerTest extends MultipleSepTargetInProcessTest {
                     .map(Mappers.SUM_INT).id("sum")
                     .resetTrigger(new FixedRateTrigger(100))
                     .publishTrigger(new FixedRateTrigger(5))
-                    .peek(Peekers.console("sum:{}"));
+//                    .peek(Peekers.console("sum:{}"))
+            ;
         });
         setTime(0);
         onEvent(new MutableInt(100));

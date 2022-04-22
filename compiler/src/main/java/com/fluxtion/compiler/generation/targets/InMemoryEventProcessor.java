@@ -39,8 +39,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = event;
         log.debug("dirtyBitset, before:{}", dirtyBitset);
         auditNewEvent(event);
-        noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
         filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
+        if(dirtyBitset.isEmpty()){
+            noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
+        }
 
         //now actually dispatch
         log.debug("dirtyBitset, after:{}", dirtyBitset);
@@ -181,7 +183,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
                 filterDescriptionListMap.forEach((filterDescription, cbMethodHandles) -> {
                             if (!filterDescription.equals(FilterDescription.NO_FILTER)
-                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)) {
+                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)
+                                    && !filterDescription.equals(FilterDescription.INVERSE_FILTER)
+                            ) {
                                 filteredEventHandlerToBitsetMap.put(
                                         filterDescription,
                                         cbMethodHandles.stream()

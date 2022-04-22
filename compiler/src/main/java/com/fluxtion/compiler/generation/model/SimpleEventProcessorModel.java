@@ -26,7 +26,6 @@ import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.google.common.base.Predicates;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -1118,10 +1117,9 @@ public class SimpleEventProcessorModel {
                 eventTypeClass = eh.eventClass();
             }
             @SuppressWarnings("unchecked") Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
-                    Predicates.and(
-                            withModifier(Modifier.PUBLIC),
-                            withName("onEvent"),
-                            withParametersCount(1))
+                    withModifier(Modifier.PUBLIC)
+                            .and(withName("onEvent"))
+                            .and(withParametersCount(1))
             );
             Method onEventMethod = ehMethodList.iterator().next();
             String name = dependencyGraph.variableName(eh);
@@ -1207,7 +1205,7 @@ public class SimpleEventProcessorModel {
                 tmpIsFiltered = false;
                 tmpIsIntFilter = false;
                 //EventHandler annotation = onEventMethod.getAnnotation(EventHandler.class);
-                tmpIsInverseFiltered = annotation.value() == FilterType.unmatched;
+                tmpIsInverseFiltered = annotation.value() == FilterType.defaultCase;
             } else {
                 java.lang.reflect.Field field = fields.iterator().next();
                 field.setAccessible(true);

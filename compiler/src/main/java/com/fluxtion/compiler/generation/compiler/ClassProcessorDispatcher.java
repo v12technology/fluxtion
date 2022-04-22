@@ -84,15 +84,15 @@ public class ClassProcessorDispatcher implements BiConsumer<URL, File> {
             File rootDir, File generatedDir, File resourceDir) throws IOException {
         String outDir = generatedDir.getCanonicalPath();
         String resDir = resourceDir.getCanonicalPath();
-        String pkgName = params.get("packageName").toString();
+        String pkgName = params.get("packageName").getValue().toString();
         if (params.get("outputDir") != null) {
-            outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").toString());
+            outDir = rootDir.getCanonicalPath() + "/" + (params.get("outputDir").getValue().toString());
         }
         if (params.get("resourceDir") != null) {
-            resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").toString());
+            resDir = rootDir.getCanonicalPath() + "/" + (params.get("resourceDir").getValue().toString());
         }
         //default params do not work - delete if param is missing
-        if (params.get("cleanOutputDir") == null || (Boolean) params.get("cleanOutputDir")) {
+        if (params.get("cleanOutputDir") == null || (Boolean) params.get("cleanOutputDir").getValue()) {
             FileUtils.deleteDirectory(new File(outDir, pkgName.replace(".", "/")));
             FileUtils.deleteDirectory(new File(resDir, pkgName.replace(".", "/")));
         }

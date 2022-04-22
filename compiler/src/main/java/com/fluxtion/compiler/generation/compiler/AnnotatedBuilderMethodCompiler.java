@@ -88,8 +88,8 @@ public class AnnotatedBuilderMethodCompiler implements ClassProcessor {
                             };
                             AnnotationParameterValueList params = method.getAnnotationInfo(SepBuilder.class.getCanonicalName()).getParameterValues();
                             ClassProcessorDispatcher.DirectoryNames dirNames = ClassProcessorDispatcher.standardParamsHelper(params, rootDir, generatedDir, resourceDir);
-                            boolean init = (params.get("initialise") == null || (Boolean) params.get("initialise"));
-                            InProcessSepCompiler.sepInstance(consumer, dirNames.pkgName, params.get("name").toString(), dirNames.outDir, dirNames.resDir, init);
+                            boolean init = (params.get("initialise") == null || (Boolean) params.get("initialise").getValue());
+                            InProcessSepCompiler.sepInstance(consumer, dirNames.pkgName, params.get("name").getValue().toString(), dirNames.outDir, dirNames.resDir, init);
                         } catch (Exception ex) {
                             LOGGER.error("problem creating class containing SepConfig builder method, should have default constructor", ex);
                         }

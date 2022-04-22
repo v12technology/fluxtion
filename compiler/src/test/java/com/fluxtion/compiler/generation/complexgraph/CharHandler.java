@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener.wc;
+package com.fluxtion.compiler.generation.complexgraph;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
@@ -72,7 +72,7 @@ public class CharHandler {
 
 	public static class UnMatchedCharEventHandler {
 
-		@OnEventHandler(FilterType.unmatched)
+		@OnEventHandler(FilterType.defaultCase)
 		public void onCharEvent(CharEvent event) {
 		}
 	}

@@ -26,7 +26,7 @@ import com.fluxtion.runtime.annotations.FilterType;
  */
 public class AnnotatedTimeHandlerInverseFilter {
 
-    @OnEventHandler(FilterType.unmatched)
+    @OnEventHandler(FilterType.defaultCase)
     public void onNoMatchedTimeEvents(TimeEvent e){
         
     }

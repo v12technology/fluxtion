@@ -95,7 +95,7 @@ public @interface OnEventHandler {
      * <ul>
      * <li> {@link FilterType#matched} Only matching filters allow event
      * propagation
-     * <li> {@link FilterType#unmatched} Invoked when no filter match is found,
+     * <li> {@link FilterType#defaultCase} Invoked when no filter match is found,
      * acts as a default case.
      * </ul>
      *

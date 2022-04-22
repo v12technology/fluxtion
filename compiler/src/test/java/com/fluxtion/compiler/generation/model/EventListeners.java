@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener;
+package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -25,7 +25,7 @@ import com.fluxtion.runtime.event.Event;
  *
  * @author Greg Higgins
  */
-public class EventListeners {
+class EventListeners {
 
     public static class TestEventListener {
 
