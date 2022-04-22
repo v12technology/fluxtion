@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.SlidingWindowedValueStream;
@@ -24,7 +24,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     protected transient String auditInfo;
     protected transient R result;
-    @NoEventReference
+    @NoTriggerReference
     protected transient Stateful<R> resetFunction;
 
 
@@ -38,7 +38,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @OnEvent
+    @OnTrigger
     public final boolean map() {
         auditLog.info("mapFunction", auditInfo);
         if (executeUpdate()) {
@@ -223,7 +223,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
-        @NoEventReference
+        @NoTriggerReference
         private final SerializableIntUnaryOperator intUnaryOperator;
 
         public MapInt2ToIntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
