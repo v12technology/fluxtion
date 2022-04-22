@@ -4,7 +4,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
-import com.fluxtion.runtime.stream.aggregate.SlidingWindowedValueStream;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -105,11 +105,11 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         private final SerializableFunction<T, R> mapFunction;
         private Supplier<W> function;
-        private SlidingWindowedValueStream<T, R, W> windowValueStream;
+        private BucketedSlidingWindowedFunction<T, R, W> windowValueStream;
 
         public SlidingWindowMapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction, Supplier<W> windowFunctionSupplier) {
             super(inputEventStream, mapFunction);
-            windowValueStream = new SlidingWindowedValueStream<>(windowFunctionSupplier, 1);
+            windowValueStream = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, 1);
             this.mapFunction = mapFunction;
         }
 
