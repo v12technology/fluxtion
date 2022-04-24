@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
+ * In process compiling test
  *
  * @author V12 Technology Ltd.
  */
