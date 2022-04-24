@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.noeventref;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
@@ -61,7 +61,7 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
 
     public static class ConfigCache {
 
-        @EventHandler
+        @OnEventHandler
         public boolean configUpdate(Config cfg) {
             return true;
         }
@@ -77,13 +77,13 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
             this.configCache = configCache;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean onEvent() {
             invokeCount++;
             return true;
         }
 
-        @EventHandler
+        @OnEventHandler
         public boolean priceUpdate(Price cfg) {
             return true;
         }
@@ -99,7 +99,7 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
             this.configCache = configCache;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean onEvent() {
             invokeCount++;
             return false;
@@ -108,7 +108,7 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
 
     public static class PricePublisher {
 
-        @NoEventReference
+        @NoTriggerReference
         public final PriceFormer priceFormer;
 
         public final RulesProcessor rulesProcessor;
@@ -119,7 +119,7 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
             this.rulesProcessor = rulesProcessor;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             invokeCount++;
         }

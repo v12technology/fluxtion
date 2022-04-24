@@ -115,7 +115,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         @Inject(singleton = true, singletonName = "mySingleton")
         public MySingleton singleton;
 
-        @EventHandler
+        @OnEventHandler
         public void onChar(CharEvent charEvent) {
         }
     }
@@ -127,7 +127,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public String stringVal;
         public int intVal;
 
-        @EventHandler
+        @OnEventHandler
         public void onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
         }
@@ -143,7 +143,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         @ConfigVariable(key = "stringVal", field = "parentStringVal")
         public NoFactoryCharHandler handler;
 
-        @OnEvent
+        @OnTrigger
         public void update() {
 
         }
@@ -156,7 +156,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         @Config(key = "stringVal", value = "someName")
         public NoFactoryCharHandler handler;
 
-        @OnEvent
+        @OnTrigger
         public void update() {
 
         }
@@ -190,7 +190,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
             receivedChar = charHandler.receivedChar;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             //System.out.println("finished processing\n");
         }
@@ -211,7 +211,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
 
         public int asInt;
 
-        @OnEvent
+        @OnTrigger
         public boolean convert() {
 //            //System.out.println("digit converison for char:" + handler.receivedChar);
             if (Character.isDigit(handler.receivedChar)) {
@@ -246,7 +246,7 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public CharHandler() {
         }
 
-        @EventHandler
+        @OnEventHandler
         public void onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
 //            //System.out.println("received char:"+ charEvent.filterId());

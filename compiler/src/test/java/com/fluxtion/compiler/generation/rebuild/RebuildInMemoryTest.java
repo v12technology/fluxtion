@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.rebuild;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import lombok.Data;
@@ -89,7 +89,7 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         final String bookName;
         int sum;
 
-        @EventHandler(filterVariable = "bookName")
+        @OnEventHandler(filterVariable = "bookName")
         public void addPosition(Signal<Integer> delta) {
             sum += delta.getValue();
         }
@@ -101,7 +101,7 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         BookHandler dropCopyFeed;
         int reconcileDifference;
 
-        @OnEvent
+        @OnTrigger
         public void reconcile() {
             int live = liveHandler == null ? 0 : liveHandler.getSum();
             int dropCopy = dropCopyFeed == null ? 0 : dropCopyFeed.getSum();
@@ -114,7 +114,7 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         final List<BookHandler> monitoredBooks = new ArrayList<>();
         int bookSum;
 
-        @OnEvent
+        @OnTrigger
         public void reconcile() {
             bookSum = monitoredBooks.stream().mapToInt(BookHandler::getSum).sum();
         }
@@ -125,7 +125,7 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         final Reconciler reconciler;
         int maxDelta;
 
-        @OnEvent
+        @OnTrigger
         public void calcMaxDelta() {
             maxDelta = Math.max(maxDelta, reconciler.getReconcileDifference());
         }

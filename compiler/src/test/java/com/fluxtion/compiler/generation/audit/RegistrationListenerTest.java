@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.audit;
 
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
@@ -130,7 +130,7 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
 
     public static class SimpleNode {
 
-        @OnEvent
+        @OnTrigger
         public void event() {
 
         }

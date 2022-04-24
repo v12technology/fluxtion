@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodegen;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 
 /**
@@ -29,7 +29,7 @@ public class SampleNode {
     @FilterId
     public String filter = "SampleData1";
     
-    @EventHandler
+    @OnEventHandler
     public void handleDataEvent(DataEvent dataEvent){
         sampleValue = dataEvent.value;
     }

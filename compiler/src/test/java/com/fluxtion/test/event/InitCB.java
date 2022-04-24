@@ -19,8 +19,8 @@ package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 
 /**
@@ -51,12 +51,12 @@ public class InitCB {
     public InitCB() {
     }
     
-    @OnEvent
+    @OnTrigger
     public void onEvent() {
 
     }
 
-    @OnEventComplete
+    @AfterTrigger
     public void onEventComplete(){
         
     }

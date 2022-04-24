@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.nodes;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 import com.fluxtion.test.event.TimeEvent;
 
@@ -30,7 +30,7 @@ public class DynamicallyGeneratedWindowNode {
     @FilterId
     public int filter = 1;
     
-    @EventHandler
+    @OnEventHandler
     public void handleTimeTick(TimeEvent timeEvent){
         //NO-OP
     }

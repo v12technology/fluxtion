@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.push;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
@@ -105,7 +105,7 @@ public class PushTest extends MultipleSepTargetInProcessTest {
 
         public MarketHandler marketHandler;
 
-        @OnEvent
+        @OnTrigger
         public boolean pushData() {
             return marketHandler.ccyPair.equals("EURUSD");
         }
@@ -118,7 +118,7 @@ public class PushTest extends MultipleSepTargetInProcessTest {
 
         public MarketHandler marketHandler;
 
-        @OnEvent
+        @OnTrigger
         public boolean pushData() {
             return marketHandler.ccyPair.equals("EURUSD");
         }
@@ -129,7 +129,7 @@ public class PushTest extends MultipleSepTargetInProcessTest {
         int eventCount;
         String ccyPair;
 
-        @EventHandler
+        @OnEventHandler
         public void newTick(MarketTickEvent tick) {
             eventCount++;
             ccyPair = tick.ccyPair;
@@ -140,7 +140,7 @@ public class PushTest extends MultipleSepTargetInProcessTest {
 
         int eventCount;
 
-        @OnEvent
+        @OnTrigger
         public void formPrice() {
             eventCount++;
         }

@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>4.0.1</version>
+        <version>5.0.0</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
@@ -121,10 +121,12 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
+<!--            <version>1.5.1</version>-->
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-ext</artifactId>
+<!--            <version>1.5.1</version>-->
         </dependency>
         <dependency>
             <groupId>net.vidageek</groupId>
@@ -170,6 +172,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>com.google.googlejavaformat</groupId>
             <artifactId>google-java-format</artifactId>
+<!--            <version>1.15.0</version>-->
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -182,6 +185,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup</groupId>

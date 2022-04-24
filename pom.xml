@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
     
@@ -36,8 +36,8 @@ along with this program.  If not, see
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pushReleases>true</pushReleases>
-<!--        <next.release.version>4.0.0</next.release.version>-->
-<!--        <next.development.version>4.0.1</next.development.version>-->
+        <next.release.version>5.0.0</next.release.version>
+        <next.development.version>5.0.1</next.development.version>
     </properties>
     
     <licenses>
@@ -76,8 +76,8 @@ along with this program.  If not, see
                     <!--<useReleaseProfile>false</useReleaseProfile>-->
                     <!--<noTag>true</noTag>-->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-<!--                    <releaseVersion>${next.release.version}</releaseVersion>-->
-<!--                    <developmentVersion>${next.development.version}</developmentVersion>-->
+                    <releaseVersion>${next.release.version}</releaseVersion>
+                    <developmentVersion>${next.development.version}</developmentVersion>
                     <!--<allowSnapshots>true</allowSnapshots>-->
                     <!-- see goals wiki page for configuration options -->
                 </configuration>

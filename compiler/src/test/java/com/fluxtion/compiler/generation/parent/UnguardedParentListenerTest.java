@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.parent;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
@@ -35,7 +35,7 @@ public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest 
 
         String filter;
 
-        @EventHandler
+        @OnEventHandler
         public boolean checkString(String s) {
             return filter.equalsIgnoreCase(s);
         }
@@ -53,7 +53,7 @@ public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest 
             parentCount++;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             eventCount++;
         }

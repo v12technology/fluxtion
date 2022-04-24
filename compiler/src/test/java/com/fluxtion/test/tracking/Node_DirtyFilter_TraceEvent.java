@@ -18,8 +18,8 @@
 package com.fluxtion.test.tracking;
 
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
@@ -47,7 +47,7 @@ public class Node_DirtyFilter_TraceEvent implements TraceEventHolder, Named {
      *
      * @return
      */
-    @OnEvent
+    @OnTrigger
     public boolean onEvent() {
         parentUpdated.getTraceEvent().getTraceList().add(this);
         parentUpdated.getTraceEvent().getTraceIdList().add(traceId);
@@ -55,7 +55,7 @@ public class Node_DirtyFilter_TraceEvent implements TraceEventHolder, Named {
         return (!traceId.equalsIgnoreCase(event.getStrValue()));
     }
 
-    @OnEventComplete
+    @AfterTrigger
     public void OnEventComplete(){
         
     }

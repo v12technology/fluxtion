@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
@@ -149,7 +149,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         @Inject
         public MyNode myNode;
 
-        @EventHandler
+        @OnEventHandler
         public void charEvent(CharEvent event) {
             auditLog.info("char", event.getChar());
         }
@@ -164,7 +164,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
             this.parent = parent;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             auditLog.info("child", true);
         }
@@ -178,7 +178,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
             this.parent = parent;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
         }
     }
@@ -191,7 +191,7 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
             this.parent = parent;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
         }
     }

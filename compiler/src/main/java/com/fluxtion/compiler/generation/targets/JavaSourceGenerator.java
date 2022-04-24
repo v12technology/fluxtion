@@ -21,8 +21,8 @@ import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
@@ -538,9 +538,9 @@ public class JavaSourceGenerator {
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
                         //callTree += String.format("%24sif(", "");
-                        OnEvent onEvent = method.method.getAnnotation(OnEvent.class);
+                        OnTrigger onTrigger = method.method.getAnnotation(OnTrigger.class);
                         String invert = "";
-                        if(onEvent!=null && !onEvent.dirty()){
+                        if(onTrigger !=null && !onTrigger.dirty()){
                             invert = " not";
                         }
                         ct.append(s24).append("if(");
@@ -583,7 +583,7 @@ public class JavaSourceGenerator {
                     //we carry out filtering here so that no propagate annotations on parents
                     //do not generate the parent callback
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
-                    final EventHandler handlerAnnotation = method.method.getAnnotation(EventHandler.class);
+                    final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
                     if (handlerAnnotation != null && (!handlerAnnotation.propagate() )) {
                     } else {
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
@@ -1067,7 +1067,11 @@ public class JavaSourceGenerator {
     }
 
     private void addDefaultImports() {
-        model.getImportClasses().stream().map(Class::getCanonicalName).sorted().forEach(this::getClassName);
+        model.getImportClasses().stream()
+                .map(Class::getCanonicalName)
+                .peek(Objects::toString)
+                .sorted()
+                .forEach(this::getClassName);
     }
 
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {

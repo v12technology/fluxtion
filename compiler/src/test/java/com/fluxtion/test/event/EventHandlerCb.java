@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
 
@@ -47,7 +47,7 @@ public class EventHandlerCb extends AbstractFilteredEventHandler<TestEvent>{
         
     }
     
-    @OnEvent
+    @OnTrigger
     public void onParentChange(){
     }
 

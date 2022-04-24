@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.fluxtion.runtime.annotations.EventHandler;
 public class AnnotatedEventHandlerDirtyNotifier {
     
     
-    @EventHandler
+    @OnEventHandler
     public boolean handleTestEvent(TestEvent te){
         return true;
     }

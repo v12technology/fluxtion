@@ -1,12 +1,15 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
@@ -21,7 +24,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     protected transient String auditInfo;
     protected transient R result;
-    @NoEventReference
+    @NoTriggerReference
     protected transient Stateful<R> resetFunction;
 
 
@@ -35,7 +38,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
-    @OnEvent
+    @OnTrigger
     public final boolean map() {
         auditLog.info("mapFunction", auditInfo);
         if (executeUpdate()) {
@@ -84,6 +87,36 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
 
         protected void mapOperation() {
+            result = mapFunction.apply(getInputEventStream().get());
+        }
+
+    }
+
+    /**
+     *
+     * I, R, T extends BaseSlidingWindowFunction<I, R, T>
+     *
+     *
+     * @param <T> Incoming type
+     * @param <R> Outgoing type
+     * @param <S> Previous EventStream
+     */
+    public static class SlidingWindowMapRef2RefEventStream< T, R, S extends EventStream<T>, W extends BaseSlidingWindowFunction<T, R, W>> extends MapEventStream<T, R, S> {
+
+        private final SerializableFunction<T, R> mapFunction;
+        private Supplier<W> function;
+        private BucketedSlidingWindowedFunction<T, R, W> windowValueStream;
+
+        public SlidingWindowMapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction, Supplier<W> windowFunctionSupplier) {
+            super(inputEventStream, mapFunction);
+            windowValueStream = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, 1);
+            this.mapFunction = mapFunction;
+        }
+
+        protected void mapOperation() {
+
+            windowValueStream.aggregate(getInputEventStream().get());
+
             result = mapFunction.apply(getInputEventStream().get());
         }
 
@@ -190,7 +223,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     @EqualsAndHashCode(callSuper = true)
     @ToString
     public static class MapInt2ToIntEventStream extends AbstractMapToIntEventStream<Integer, IntEventStream> {
-        @NoEventReference
+        @NoTriggerReference
         private final SerializableIntUnaryOperator intUnaryOperator;
 
         public MapInt2ToIntEventStream(IntEventStream inputEventStream, SerializableIntUnaryOperator intUnaryOperator) {
