@@ -76,8 +76,8 @@ along with this program.  If not, see
                     <!--<useReleaseProfile>false</useReleaseProfile>-->
                     <!--<noTag>true</noTag>-->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <releaseVersion>${next.release.version}</releaseVersion>
-                    <developmentVersion>${next.development.version}</developmentVersion>
+<!--                    <releaseVersion>${next.release.version}</releaseVersion>-->
+<!--                    <developmentVersion>${next.development.version}</developmentVersion>-->
                     <!--<allowSnapshots>true</allowSnapshots>-->
                     <!-- see goals wiki page for configuration options -->
                 </configuration>
