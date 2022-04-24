@@ -112,19 +112,23 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>1.2.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
+<!--            <version>1.5.1</version>-->
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-ext</artifactId>
+<!--            <version>1.5.1</version>-->
         </dependency>
         <dependency>
             <groupId>net.vidageek</groupId>
@@ -133,15 +137,18 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
+            <version>8.5.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
+            <version>4.8.143</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -150,10 +157,12 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+            <version>1.30</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.qdox</groupId>
             <artifactId>qdox</artifactId>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.gentyref</groupId>
@@ -162,14 +171,17 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>typetools</artifactId>
+            <version>0.6.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.googlejavaformat</groupId>
             <artifactId>google-java-format</artifactId>
+<!--            <version>1.15.0</version>-->
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -178,10 +190,12 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+<!--            <version>23.0</version>-->
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup</groupId>

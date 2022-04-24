@@ -15,10 +15,9 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener.wc;
+package com.fluxtion.compiler.generation.complexgraph;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.compiler.SEPConfig;
 
 /**
  * 
@@ -71,18 +70,6 @@ public class WordCounterGeneric {
 	public String toString() {
 		return "wc\n" + "charCount:" + charCount + "\nwordCount:" + wordCount
 				+ "\nlineCount:" + lineCount;
-	}
-
-	public static class Builder extends SEPConfig {
-
-		{
-			WordCounterGeneric root = addPublicNode(new WordCounterGeneric(), "result");
-			root.anyCharHandler = addNode(new CharHandler());
-			root.eolHandler = addNode(new CharHandler.FilteredCharEventHandler('\n'));
-			root.wordChardHandler = addNode(new CharHandler.UnMatchedCharEventHandler());
-			root.spaceHandler = addNode(new CharHandler.FilteredCharEventHandler(' '));
-			root.tabHandler = addNode(new CharHandler.FilteredCharEventHandler('\t'));
-		}
 	}
 
 }

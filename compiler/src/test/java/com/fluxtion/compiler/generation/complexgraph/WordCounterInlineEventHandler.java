@@ -15,11 +15,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener.wc;
+package com.fluxtion.compiler.generation.complexgraph;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterType;
-import com.fluxtion.compiler.SEPConfig;
 
 /**
  *
@@ -53,7 +52,7 @@ public class WordCounterInlineEventHandler {
         increment = 1;
     }
 
-    @OnEventHandler(FilterType.unmatched)
+    @OnEventHandler(FilterType.defaultCase)
     public void onUnmatchedChar(CharEvent event) {
         wordCount += increment;
         increment = 0;
@@ -64,9 +63,5 @@ public class WordCounterInlineEventHandler {
         return "wc\n" + "charCount:" + charCount + "\nwordCount:" + wordCount
                 + "\nlineCount:" + lineCount;
     }
-
-    public static class Builder extends SEPConfig {{
-            addPublicNode(new WordCounterInlineEventHandler(), "result");
-    }}
 
 }

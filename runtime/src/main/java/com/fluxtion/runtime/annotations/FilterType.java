@@ -23,7 +23,7 @@ package com.fluxtion.runtime.annotations;
  * <ul>
  * <li> {@link FilterType#matched} Only matching filters allow event
  * propagation
- * <li> {@link FilterType#unmatched} Invoked when no filter match is found,
+ * <li> {@link FilterType#defaultCase} Invoked when no filter match is found,
  * acts like a default branch in a case statement.
  * </ul>
  *
@@ -31,5 +31,5 @@ package com.fluxtion.runtime.annotations;
  */
 public enum FilterType {
     matched,
-    unmatched,;
+    defaultCase,;
 }

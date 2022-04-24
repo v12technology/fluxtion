@@ -42,8 +42,8 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
                 Arrays.asList(
                         "Parent::newEvent",
                         "Child::onEvent",
-                        "Parent::eventComplete",
                         "Child::eventComplete",
+                        "Parent::eventComplete",
                         "Child::afterEvent",
                         "Parent::afterEvent"
                 )

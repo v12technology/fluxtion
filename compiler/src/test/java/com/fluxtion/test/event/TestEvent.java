@@ -25,7 +25,6 @@ import com.fluxtion.runtime.event.DefaultEvent;
  */
 public class TestEvent extends DefaultEvent{
 
-    
     public TestEvent() {
         super();
     }

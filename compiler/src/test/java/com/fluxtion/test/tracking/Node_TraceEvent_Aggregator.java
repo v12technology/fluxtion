@@ -39,8 +39,6 @@ public class Node_TraceEvent_Aggregator {
         this.node_0 = node_0;
     }
 
-    
-    
     public Node_TraceEvent_Aggregator() {
     }
 
