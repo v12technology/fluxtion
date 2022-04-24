@@ -17,7 +17,7 @@
  */
 package ${package};
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  * generated AveragingNode

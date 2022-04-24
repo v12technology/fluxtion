@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import lombok.ToString;
 
@@ -16,7 +16,7 @@ public class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventS
                 + "->" + eventStreamConsumer.method().getName();
     }
 
-    @OnEvent
+    @OnTrigger
     public void peek(){
         auditLog.info("peekConsumer", auditInfo);
         eventStreamConsumer.accept(get());

@@ -2,7 +2,7 @@ package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
@@ -39,8 +39,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = event;
         log.debug("dirtyBitset, before:{}", dirtyBitset);
         auditNewEvent(event);
-        noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
         filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
+        if(dirtyBitset.isEmpty()){
+            noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
+        }
 
         //now actually dispatch
         log.debug("dirtyBitset, after:{}", dirtyBitset);
@@ -55,12 +57,14 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             eventHandlers.get(i).onEvent(event);
         }
         log.debug("======== eventComplete ========");
-        for (int i = dirtyBitset.nextSetBit(0); i >= 0; i = dirtyBitset.nextSetBit(i + 1)) {
-            log.debug("event dispatch bitset id[{}] handler[{}::{}]",
-                    i,
-                    eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
-                    eventHandlers.get(i).callbackHandle.getMethod().getName()
-            );
+        for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i-1)) >= 0; ) {
+                if(eventHandlers.get(i).willInvokeEventComplet()){
+                log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+                        i,
+                        eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                        eventHandlers.get(i).onEventCompleteMethod.getName()
+                );
+            }
             eventHandlers.get(i).eventComplete();
         }
         log.debug("======== GRAPH CYCLE END   EVENT:[{}] ========", event);
@@ -181,7 +185,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
                 filterDescriptionListMap.forEach((filterDescription, cbMethodHandles) -> {
                             if (!filterDescription.equals(FilterDescription.NO_FILTER)
-                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)) {
+                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)
+                                    && !filterDescription.equals(FilterDescription.INVERSE_FILTER)
+                            ) {
                                 filteredEventHandlerToBitsetMap.put(
                                         filterDescription,
                                         cbMethodHandles.stream()
@@ -276,9 +282,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
         }
 
+        public boolean willInvokeEventComplet(){
+            return dirty && onEventCompleteMethod!=null;
+        }
         @SneakyThrows
         public void eventComplete(){
-            if(dirty && onEventCompleteMethod!=null){
+            if(willInvokeEventComplet()){
                 auditors.stream()
                         .filter(Auditor::auditInvocations)
                         .forEachOrdered(a -> a.nodeInvoked(
@@ -318,7 +327,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
             onEventCompleteMethod = ReflectionUtils.getAllMethods(
                     callbackHandle.getInstance().getClass(),
-                    ReflectionUtils.withAnnotation(OnEventComplete.class)
+                    ReflectionUtils.withAnnotation(AfterTrigger.class)
             ).stream().findFirst().orElse(null);
             if(onEventCompleteMethod!=null){
                 onEventCompleteMethod.setAccessible(true);

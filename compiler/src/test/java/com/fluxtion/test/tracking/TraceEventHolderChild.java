@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
  *
@@ -37,7 +37,7 @@ public class TraceEventHolderChild implements TraceEventHolder{
     public TraceEventHolderChild() {
     }
 
-    @OnEvent
+    @OnTrigger
     public void onEvent() {
         parentHandler.getTraceEvent().getTraceList().add(this);
         parentHandler.getTraceEvent().getTraceIdList().add(traceId);

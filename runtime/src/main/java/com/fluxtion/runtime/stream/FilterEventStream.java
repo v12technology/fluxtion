@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
@@ -17,7 +17,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
         auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
     }
 
-    @OnEvent
+    @OnTrigger
     public boolean filter() {
         boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().get());
         boolean fireNotification = filter & fireEventUpdateNotification();
@@ -44,7 +44,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean filter() {
             boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsInt());
             boolean fireNotification = filter & fireEventUpdateNotification();
@@ -77,7 +77,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean filter() {
             boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsDouble());
             boolean fireNotification = filter & fireEventUpdateNotification();
@@ -110,7 +110,7 @@ public class FilterEventStream<T, S extends EventStream<T>> extends AbstractEven
             auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean filter() {
             boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsLong());
             boolean fireNotification = filter & fireEventUpdateNotification();

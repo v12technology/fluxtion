@@ -173,7 +173,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
         String filter;
 
-        @EventHandler
+        @OnEventHandler
         public boolean checkString(String s) {
             return filter.equalsIgnoreCase(s);
         }
@@ -181,7 +181,8 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
     
     
     public static class NoEventHandler{
-        @NoEventReference @SepNode
+        @NoTriggerReference
+        @SepNode
         final FilterHandler handler;
         @SepNode
         final FilterHandler handler2;
@@ -209,7 +210,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             parent2Updated = true;
         }
         
-        @OnEvent
+        @OnTrigger
         public void onEvent(){
             onEvent = true;
         }
@@ -229,12 +230,12 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
         public int count = 0;
 
-        @EventHandler(filterStringFromClass = String.class)
+        @OnEventHandler(filterStringFromClass = String.class)
         public void handleEvent(ClassFilterEvent event) {
             count++;
         }
 
-        @EventHandler(propagate = false)
+        @OnEventHandler(propagate = false)
         public void noParentPropagation(NoUpdateEvent event) {
             count++;
         }
@@ -248,7 +249,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
         public TestHandler parent;
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             eventCount++;
         }
@@ -270,7 +271,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             this.parent = parent;
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             eventCount++;
         }
@@ -292,7 +293,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
     public static class OrderCache {
 
-        @EventHandler
+        @OnEventHandler
         public boolean onNewOrder(NewOrderEvent event) {
             return true;
         }
@@ -320,7 +321,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public Rule1() {
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean isOrderRejected() {
             return true;
         }
@@ -337,13 +338,13 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public Rule2() {
         }
 
-        @EventHandler(propagate = false)
+        @OnEventHandler(propagate = false)
         public boolean configUpdate(ConfigEvent event) {
             configCount++;
             return false;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean isOrderRejected() {
             return true;
         }
@@ -361,7 +362,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             ruleCount++;
         }
 
-        @OnEvent
+        @OnTrigger
         public void validationFailed() {
             validationFailedCount++;
         }
@@ -378,7 +379,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
         int eventCount;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newTick(MarketTickEvent tick) {
             eventCount++;
             return false;
@@ -396,7 +397,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             parentCount++;
         }
 
-        @OnEvent
+        @OnTrigger
         public void formPrice() {
             eventCount++;
         }
@@ -414,7 +415,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             parentCount++;
         }
 
-        @OnEvent
+        @OnTrigger
         public void formPrice() {
             eventCount++;
         }
@@ -422,12 +423,12 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
     public static class PositionCalculator {
 
-        @EventHandler
+        @OnEventHandler
         public boolean postionUpdate(PositionEvent orderEvent) {
             return true;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean recalcPosition() {
             return false;
         }
@@ -440,12 +441,12 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public PositionCalculator positionCalc;
         int eventCount;
 
-        @OnEvent
+        @OnTrigger
         public void publish() {
             eventCount++;
         }
 
-        @EventHandler
+        @OnEventHandler
         public void newOrder(NewOrderEvent orderEvent) {
 
         }

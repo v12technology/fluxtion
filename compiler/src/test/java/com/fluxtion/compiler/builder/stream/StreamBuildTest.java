@@ -2,9 +2,11 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
@@ -178,7 +180,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getStringPushValue(), is("not null"));
     }
 
-
     @Test
     public void defaultValueTestWithReset() {
         sep(c -> subscribe(String.class)
@@ -199,7 +200,35 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getStringPushValue(), is("not null"));
     }
 
+    @Test
+    public void filteredSubscriptionTest(){
+        sep(c -> subscribe(FilteredInteger.class, "valid")
+                .map(FilteredInteger::getValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
 
+        onEvent(new StreamBuildTest.FilteredInteger("ignored", 10));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+
+        onEvent(new StreamBuildTest.FilteredInteger("valid", 10));
+        assertThat(notifyTarget.getIntPushValue(), is(10));
+    }
+
+    @Test
+    public void lookupTest(){
+        sep(c ->{
+            subscribe(PreMap.class)
+                    .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
+                    .map(PostMap::getLastName)
+                    .push(new NotifyAndPushTarget()::setStringPushValue);
+        });
+
+        onEvent(new PreMap("test"));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getStringPushValue(), is("TEST"));
+
+    }
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";
@@ -218,7 +247,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             this(DEFAULT_NAME);
         }
 
-        @OnEvent
+        @OnTrigger
         public void notified() {
             onEventCount++;
         }
@@ -230,10 +259,31 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
+    @AllArgsConstructor
+    public static class PreMap{
+        String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class PostMap{
+        String name;
+        String lastName;
+    }
+
+    public static String lookupFunction(String in){
+        return in.toUpperCase();
+    }
+
+    public static PostMap mapToPostMap(PreMap preMap, String lookupValue){
+        return new PostMap(preMap.getName(), lookupValue);
+    }
+
+    @Data
     public static class MyStringHandler {
         private String inputString;
 
-        @EventHandler
+        @OnEventHandler
         public void newString(String in) {
             inputString = in;
         }
@@ -261,6 +311,16 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         public int add(int value) {
             return sum += value;
+        }
+    }
+
+    @Data
+    public static class FilteredInteger extends DefaultEvent{
+        private final int value;
+
+        public FilteredInteger(String filterId, int value) {
+            super(filterId);
+            this.value = value;
         }
     }
 

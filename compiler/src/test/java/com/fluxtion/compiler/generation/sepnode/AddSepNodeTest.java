@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.sepnode;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class AddSepNodeTest extends MultipleSepTargetInProcessTest {
     
     public static class Stringhandler{
     
-        @EventHandler
+        @OnEventHandler
         public void stringUpdate(String s){
         
         }
@@ -66,7 +66,7 @@ public class AddSepNodeTest extends MultipleSepTargetInProcessTest {
             this.myHandler = myHandler;
         }
         
-        @OnEvent
+        @OnTrigger
         public void increment(){
             count++;
         }

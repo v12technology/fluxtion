@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 
 import java.beans.PropertyDescriptor;
@@ -32,6 +33,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.MergeProperty;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.reflections.ReflectionUtils;
@@ -147,7 +151,7 @@ public interface ClassUtils {
             primitiveSuffix = "'";
             primitiveVal = StringEscapeUtils.escapeJava(primitiveVal.toString());
         }
-        if (clazz == String.class || clazz == String.class) {
+        if (clazz == String.class) {
             primitivePrefix = "\"";
             primitiveSuffix = "\"";
             primitiveVal = StringEscapeUtils.escapeJava(primitiveVal.toString());
@@ -157,6 +161,24 @@ public interface ClassUtils {
             primitiveVal = ((Class) primitiveVal).getSimpleName() + ".class";
         }
         boolean foundMatch = false;
+        if(MergeProperty.class.isAssignableFrom(clazz)){
+            importList.add(MergeProperty.class);
+            MergeProperty<?,?> mergeProperty = (MergeProperty<?, ?>) primitiveVal;
+            LambdaReflection.SerializableBiConsumer<?,?> setValue = mergeProperty.getSetValue();
+            String containingClass = setValue.getContainingClass().getSimpleName();
+            String methodName = setValue.method().getName();
+            String lambda = containingClass + "::" + methodName;
+            String triggerName = "null";
+            //
+            EventStream<?> trigger = mergeProperty.getTrigger();
+            for (Field nodeField : nodeFields) {
+                if (nodeField.instance == trigger) {
+                    triggerName = nodeField.name;
+                    break;
+                }
+            }
+            primitiveVal = "new MergeProperty<>(" + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
+        }
         if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
             MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
             importList.add(ref.getContainingClass());
@@ -188,7 +210,11 @@ public interface ClassUtils {
             }
         }
         
-        if(!foundMatch && original==primitiveVal && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(clazz)){
+        if(!foundMatch && original==primitiveVal
+                && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(clazz)
+                && !String.class.isAssignableFrom(clazz)
+                && clazz.getCanonicalName() != null
+        ){
             importList.add(clazz);
             primitiveVal = "new " + (clazz).getSimpleName() + "()";  
         }
@@ -258,12 +284,12 @@ public interface ClassUtils {
         return (T) new Mirror().on(instance).get().field(name);
     }
 
-    static java.lang.reflect.Field getReflectField(Class clazz, String fieldName)
+    static java.lang.reflect.Field getReflectField(Class<?> clazz, String fieldName)
             throws NoSuchFieldException {
         try {
             return clazz.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
-            Class superClass = clazz.getSuperclass();
+            Class<?> superClass = clazz.getSuperclass();
             if (superClass == null) {
                 throw e;
             } else {

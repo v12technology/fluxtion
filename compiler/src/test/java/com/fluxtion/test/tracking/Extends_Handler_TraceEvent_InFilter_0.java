@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  *
@@ -33,7 +33,7 @@ public class Extends_Handler_TraceEvent_InFilter_0 extends Handler_TraceEvent_In
     }
 
     @Override
-    @EventHandler
+    @OnEventHandler
     public void handleEvent(TraceEvent_InFilter_0 event) {
         super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
     }

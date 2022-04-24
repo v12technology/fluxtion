@@ -18,7 +18,7 @@
 package com.fluxtion.test.tracking;
 
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 
 /**
@@ -70,9 +70,8 @@ public interface TraceEventHolder {
 
         public TraceEventHandler_sub1() {
         }
-
         
-        @EventHandler
+        @OnEventHandler
         public void handleEvent(TraceEvent.TraceEvent_sub1 event) {
             super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
         }
@@ -88,7 +87,7 @@ public interface TraceEventHolder {
         public TraceEventHandler_sub2() {
         }
 
-        @EventHandler
+        @OnEventHandler
         public void handleEvent(TraceEvent.TraceEvent_sub2 event) {
             super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
         }

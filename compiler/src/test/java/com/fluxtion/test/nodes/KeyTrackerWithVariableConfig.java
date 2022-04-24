@@ -17,10 +17,10 @@
  */
 package com.fluxtion.test.nodes;
 
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.ConfigVariable;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
@@ -74,7 +74,7 @@ public class KeyTrackerWithVariableConfig {
         key_x = true;
     }
 
-    @OnEvent
+    @OnTrigger
     public void onEvent() {
         onEvent = true;
     }

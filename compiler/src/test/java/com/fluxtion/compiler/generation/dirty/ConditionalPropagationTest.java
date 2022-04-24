@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
         final String match;
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newString(String s) {
             notified = true;
             return s.equals(getMatch());
@@ -83,7 +83,7 @@ public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
         final int match;
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newInt(Integer s) {
             notified = true;
             return s==(getMatch());
@@ -96,7 +96,7 @@ public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
         final Object parent;
         int count;
         
-        @OnEvent
+        @OnTrigger
         public void onEvent(){
             count++;
         }

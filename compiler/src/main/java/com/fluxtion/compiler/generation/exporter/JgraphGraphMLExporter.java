@@ -27,6 +27,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
+
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.EdgeNameProvider;
@@ -182,7 +184,7 @@ public class JgraphGraphMLExporter<V, E> {
             if(!isHandler){
                 Method[] methodList = v.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class) != null) {
+                    if (method.getAnnotation(OnEventHandler.class) != null) {
                         isHandler = true;
                         break;
                     }

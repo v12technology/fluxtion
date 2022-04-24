@@ -19,7 +19,7 @@ package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.OnBatchEnd;
 import com.fluxtion.runtime.annotations.OnBatchPause;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 
 /**
@@ -49,7 +49,7 @@ public class RootCB {
         
     }
     
-    @OnEvent
+    @OnTrigger
     public void onEvent(){
         onEventCalled = true;
     }

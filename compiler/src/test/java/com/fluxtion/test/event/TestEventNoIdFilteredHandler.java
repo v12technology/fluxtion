@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 
 /**
@@ -37,7 +37,7 @@ public class TestEventNoIdFilteredHandler {
     }
     
     
-    @EventHandler
+    @OnEventHandler
     public void handleEvent(TestEventNoId event){
         
     }

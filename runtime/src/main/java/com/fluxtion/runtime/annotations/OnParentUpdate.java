@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * of the parent.<p>
  *
  * The marked method(s) will be invoked during the event in phase before any
- * {@link OnEvent} methods in this node are invoked.
+ * {@link OnTrigger} methods in this node are invoked.
  *
  * A SEP processes event handling methods in two phases:
  * <ul>

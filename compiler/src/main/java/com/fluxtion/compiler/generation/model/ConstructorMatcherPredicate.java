@@ -63,13 +63,13 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
             LOGGER.debug("already matched constructor, ignoring");
             return false;
         } else {
-            LOGGER.debug("unmatched constructor, reset construtorArgs");
+            LOGGER.debug("unmatched constructor, reset constructorArgs");
             Arrays.fill(cstrArgList, null);
         }
         Parameter[] parameters = input.getParameters();
         int parameterCount = parameters.length;
         if (parameterCount == 0 || parameterCount != privateFields.size()) {
-            LOGGER.debug("parameterCount:{} privateFieldsCoumt:{} mismatch reject consturtcor", parameterCount, privateFields.size());
+            LOGGER.debug("parameterCount:{} privateFieldsCount:{} mismatch reject constructor", parameterCount, privateFields.size());
         } else {
             //possible match
             int matchCount = 0;
@@ -79,7 +79,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                 LOGGER.debug("match field var:{}, type:{}", varName, parentClass);
                 //                            Class<?> parentClass = mappedInstance.collection?List.class:parentInstance.getClass();
                 boolean matchOnName = false;
-                LOGGER.debug("matching contructor by type and name");
+                LOGGER.debug("matching constructor by type and name");
                 //match array
                 for (int i = 0; i < parameters.length; i++) {
                     if (parameters[i] == null) {

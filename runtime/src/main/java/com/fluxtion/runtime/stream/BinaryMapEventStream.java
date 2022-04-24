@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
@@ -32,7 +32,7 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
     }
 
-    @OnEvent
+    @OnTrigger
     public final boolean map() {
         auditLog.info("mapFunction", auditInfo);
         if (executeUpdate()) {

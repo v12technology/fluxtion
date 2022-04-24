@@ -17,14 +17,21 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.compiler.generation.util.Slf4jAuditLogger;
+import com.fluxtion.runtime.annotations.FilterType;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
@@ -68,6 +75,48 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         assertThat(testHandler.wordBCount, is(2));
     }
 
+    @Test
+    public void testUnmatchedFilter() {
+        sep(cfg -> {
+            cfg.addPublicNode(new UnMatchedHandler(), "handler");
+            cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+        });
+        UnMatchedHandler testHandler = getField("handler");
+
+        onEvent(new EventLogControlEvent(new Slf4jAuditLogger()));
+        onEvent(new WordEvent("ignored"));
+        assertThat(testHandler.wordACount, is(0));
+        assertThat(testHandler.anyWord, is(1));
+        assertThat(testHandler.wordUnmatched, is(1));
+
+        onEvent(new WordEvent("A"));
+        assertThat(testHandler.wordACount, is(1));
+        assertThat(testHandler.anyWord, is(2));
+        assertThat(testHandler.wordUnmatched, is(1));
+    }
+
+    @Test
+    public void defaultFilterHandlerTest(){
+
+        sep(cfg -> {
+            cfg.addPublicNode(new DefaultFilteredEventHandler<>(String.class), "handler");
+            cfg.addPublicNode(new DefaultFilteredEventHandler<>("filter", WordEvent.class), "handlerFiltered");
+        });
+        DefaultFilteredEventHandler<String> stringHandler = getField("handler");
+        DefaultFilteredEventHandler<WordEvent> filteredHandler = getField("handlerFiltered");
+        onEvent("test");
+        assertNull(filteredHandler.get());
+        assertThat(stringHandler.get(), is("test"));
+
+        onEvent(new WordEvent("ignore me"));
+        assertNull(filteredHandler.get());
+        assertThat(stringHandler.get(), is("test"));
+
+        onEvent(new WordEvent("filter"));
+        assertThat(stringHandler.get(), is("test"));
+        assertThat(filteredHandler.get(), is(new WordEvent("filter")));
+    }
+
     public static class ClassFilterEvent extends DefaultEvent {
 
         public ClassFilterEvent(Class clazz) {
@@ -76,6 +125,8 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
     }
 
 
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
     public static class WordEvent extends DefaultEvent {
         public WordEvent(String word) {
             super();
@@ -87,7 +138,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
     public static class SingleFilteredHandler {
         private int wordACount;
 
-        @EventHandler(filterString = "A")
+        @OnEventHandler(filterString = "A")
         public void processWordA(WordEvent wordA) {
             wordACount++;
         }
@@ -101,19 +152,41 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         public transient String filterA = "A";
         public transient String filterB = "B";
 
-        @EventHandler(filterStringFromClass = String.class)
+        @OnEventHandler(filterStringFromClass = String.class)
         public void handleEvent(ClassFilterEvent event) {
             count++;
         }
 
-        @EventHandler(filterVariable = "filterA")
+        @OnEventHandler(filterVariable = "filterA")
         public void processWordA(WordEvent wordA) {
             wordACount++;
         }
 
-        @EventHandler(filterVariable = "filterB")
+        @OnEventHandler(filterVariable = "filterB")
         public void processWordB(WordEvent wordB) {
             wordBCount++;
+        }
+    }
+
+    public static class UnMatchedHandler{
+        public int wordACount = 0;
+        public int wordUnmatched = 0;
+        public int anyWord = 0;
+        public transient String filterA = "A";
+
+        @OnEventHandler(filterVariable = "filterA")
+        public void processWordA(WordEvent wordA) {
+            wordACount++;
+        }
+
+        @OnEventHandler
+        public void processAnyWord(WordEvent anyWordEvent){
+            anyWord++;
+        }
+
+        @OnEventHandler(FilterType.defaultCase)
+        public void processWordUnmatched(WordEvent wordB) {
+            wordUnmatched++;
         }
     }
 

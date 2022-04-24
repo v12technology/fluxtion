@@ -19,12 +19,15 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.google.auto.service.AutoService;
+
 import java.util.Map;
 
 /**
  *
  * @author Greg Higgins
  */
+@AutoService(NodeFactory.class)
 public class KeyProcessorFactory implements NodeFactory<KeyProcessor> {
 
 //    public static final String KEY_CHAR = KeyProcessorFactory.class.getName() + ".charKey";

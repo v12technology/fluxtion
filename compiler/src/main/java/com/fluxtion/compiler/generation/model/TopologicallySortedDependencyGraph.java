@@ -18,20 +18,33 @@
 package com.fluxtion.compiler.generation.model;
 //      com.fluxtion.generation.model
 
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
-import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
-import com.fluxtion.runtime.annotations.*;
-import com.fluxtion.runtime.annotations.builder.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.TriggerEventOverride;
+import com.fluxtion.runtime.annotations.builder.Config;
+import com.fluxtion.runtime.annotations.builder.ConfigVariable;
+import com.fluxtion.runtime.annotations.builder.ExcludeNode;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
-import com.google.common.base.Predicates;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.googlecode.gentyref.GenericTypeReflector;
@@ -52,9 +65,24 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.reflections.ReflectionUtils.getAllFields;
@@ -617,7 +645,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             Object refField = field.get(object);
             String refName = inst2Name.get(refField);
 
-            if (field.getAnnotation(NoEventReference.class) != null) {
+            if (field.getAnnotation(NoTriggerReference.class) != null) {
                 continue;
             }
             if (overrideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
@@ -678,18 +706,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         if (refField != null && field.getAnnotation(ExcludeNode.class)==null) {
             addNode |= !ReflectionUtils.getAllMethods(
                     refField.getClass(),
-                    Predicates.or(
-                            ReflectionUtils.withAnnotation(AfterEvent.class),
-                            ReflectionUtils.withAnnotation(EventHandler.class),
-                            ReflectionUtils.withAnnotation(Inject.class),
-                            ReflectionUtils.withAnnotation(OnBatchEnd.class),
-                            ReflectionUtils.withAnnotation(OnBatchPause.class),
-                            ReflectionUtils.withAnnotation(OnEvent.class),
-                            ReflectionUtils.withAnnotation(OnEventComplete.class),
-                            ReflectionUtils.withAnnotation(OnParentUpdate.class),
-                            ReflectionUtils.withAnnotation(TearDown.class),
-                            ReflectionUtils.withAnnotation(TriggerEventOverride.class)
-                    )
+                    annotationPredicate()
             ).isEmpty();
             addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
         }
@@ -711,24 +728,27 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         if (refField != null && !inst2Name.containsKey(refField) && !inst2NameTemp.containsKey(refField)) {
             addNode = !ReflectionUtils.getAllMethods(
                     refField.getClass(),
-                    Predicates.or(
-                            ReflectionUtils.withAnnotation(AfterEvent.class),
-                            ReflectionUtils.withAnnotation(EventHandler.class),
-                            ReflectionUtils.withAnnotation(Inject.class),
-                            ReflectionUtils.withAnnotation(OnBatchEnd.class),
-                            ReflectionUtils.withAnnotation(OnBatchPause.class),
-                            ReflectionUtils.withAnnotation(OnEvent.class),
-                            ReflectionUtils.withAnnotation(OnEventComplete.class),
-                            ReflectionUtils.withAnnotation(OnParentUpdate.class),
-                            ReflectionUtils.withAnnotation(TearDown.class),
-                            ReflectionUtils.withAnnotation(TriggerEventOverride.class)
-                    )
+                    annotationPredicate()
             ).isEmpty();
             addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
             if(addNode){
                 inst2NameTemp.put(refField, nameNode(refField));
             }
         }
+    }
+
+    private Predicate annotationPredicate(){
+        return ReflectionUtils.withAnnotation(AfterEvent.class)
+                .or(ReflectionUtils.withAnnotation(OnEventHandler.class))
+                .or(ReflectionUtils.withAnnotation(Inject.class))
+                .or(ReflectionUtils.withAnnotation(OnBatchEnd.class))
+                .or(ReflectionUtils.withAnnotation(OnBatchPause.class))
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(AfterTrigger.class))
+                .or(ReflectionUtils.withAnnotation(OnParentUpdate.class))
+                .or(ReflectionUtils.withAnnotation(TearDown.class))
+                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                ;
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -895,7 +915,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             graph.vertexSet().forEach((t) -> {
                 Method[] methodList = t.getClass().getMethods();
                 for (Method method : methodList) {
-                    if (method.getAnnotation(com.fluxtion.runtime.annotations.EventHandler.class) != null) {
+                    if (method.getAnnotation(OnEventHandler.class) != null) {
                         @SuppressWarnings("unchecked") Class<? extends Event> eventTypeClass = (Class<? extends Event>) method.getParameterTypes()[0];
                         exportGraph.addVertex(eventTypeClass);
                         exportGraph.addEdge(eventTypeClass, t);

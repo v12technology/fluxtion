@@ -16,14 +16,13 @@
  */
 package com.fluxtion.compiler.generation.graphcombinations;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -141,7 +140,7 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
 
         boolean notified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newString(String s) {
             notified = true;
             return true;
@@ -154,13 +153,13 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
         boolean notified = false;
         boolean intEventNotified = false;
 
-        @EventHandler
+        @OnEventHandler
         public boolean newInt(Integer s) {
             intEventNotified = true;
             return true;
         }
 
-        @OnEvent
+        @OnTrigger
         public boolean updated() {
             notified = true;
             return true;
@@ -173,7 +172,7 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
         final StringHandler parent;
         boolean notified = false;
 
-        @OnEvent
+        @OnTrigger
         public boolean updated() {
             notified = true;
             return true;

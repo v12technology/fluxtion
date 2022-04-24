@@ -2,9 +2,9 @@ package com.fluxtion.compiler.generation.afterevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
-import com.fluxtion.runtime.annotations.OnEventComplete;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +42,8 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
                 Arrays.asList(
                         "Parent::newEvent",
                         "Child::onEvent",
-                        "Parent::eventComplete",
                         "Child::eventComplete",
+                        "Parent::eventComplete",
                         "Child::afterEvent",
                         "Parent::afterEvent"
                 )
@@ -62,12 +62,12 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
 
     @Data
     public static class Parent {
-        @EventHandler
+        @OnEventHandler
         public void newEvent(String in) {
             postInvocationTrace.add("Parent::newEvent");
         }
 
-        @OnEventComplete
+        @AfterTrigger
         public void eventComplete() {
             postInvocationTrace.add("Parent::eventComplete");
         }
@@ -82,12 +82,12 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
    public static class Child {
         final Parent parent;
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             postInvocationTrace.add("Child::onEvent");
         }
 
-        @OnEventComplete
+        @AfterTrigger
         public void eventComplete() {
             postInvocationTrace.add("Child::eventComplete");
             counter.incrementAndGet();
@@ -103,16 +103,16 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     public static class ChildWithEventHandler {
         final Parent parent;
 
-        @EventHandler
+        @OnEventHandler
         public void newEvent(String in) {
         }
 
-        @OnEvent
+        @OnTrigger
         public void onEvent() {
             postInvocationTrace.add("Child::onEvent");
         }
 
-        @OnEventComplete
+        @AfterTrigger
         public void eventComplete() {
             postInvocationTrace.add("Child::eventComplete");
             counter.incrementAndGet();

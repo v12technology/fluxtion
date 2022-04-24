@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.nopropagate;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.NoEventReference;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
@@ -74,7 +74,7 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
         int eventCount;
         String ccyPair;
 
-        @EventHandler
+        @OnEventHandler
         public void newTick(MarketTickEvent tick) {
             eventCount++;
             ccyPair = tick.ccyPair;
@@ -84,7 +84,7 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
     public static class PricerFormer {
         int eventCount;
 
-        @NoEventReference
+        @NoTriggerReference
         public final MarketHandler marketHanlder;
 
         public PricerFormer(MarketHandler marketHanlder) {
@@ -106,7 +106,7 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
             this.former = former;
         }
         
-        @OnEvent
+        @OnTrigger
         public void formPrice() {
             eventCount++;
         }

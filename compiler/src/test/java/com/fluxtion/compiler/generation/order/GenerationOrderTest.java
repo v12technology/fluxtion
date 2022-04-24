@@ -17,17 +17,16 @@
  */
 package com.fluxtion.compiler.generation.order;
 
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.event.Event;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.event.Event;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Sort siblings alphabetically so generation order is deterministic.
@@ -74,14 +73,14 @@ public class GenerationOrderTest extends MultipleSepTargetInProcessTest {
             this(null, name);
         }
 
-        @EventHandler
+        @OnEventHandler
         public void update(OrderEvent e) {
             e.list.add(name);
         }
 
     }
 
-    public static class NodeNamer implements NodeNameProducer {
+    public static class NodeNamingStrategy implements NodeNameProducer {
 
         @Override
         public String mappedNodeName(Object nodeToMap) {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
@@ -66,12 +66,15 @@ public class MultipleSepTargetInProcessTest {
     protected boolean timeAdded = false;
     //parametrized test config
     protected final boolean compiledSep;
+
+    protected boolean inlineCompiled = false;
     private InMemoryEventProcessor inMemorySep;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
 
     public MultipleSepTargetInProcessTest(boolean compiledSep) {
         this.compiledSep = compiledSep;
     }
+
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
         return Arrays.asList(false, true);
@@ -87,15 +90,15 @@ public class MultipleSepTargetInProcessTest {
     }
 
     @After
-    public void afterTest(){
+    public void afterTest() {
         tearDown();
     }
 
     @SuppressWarnings("unchecked")
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
         GenerationContext.setupStaticContext(pckName(), sepClassName(),
-            new File(OutputRegistry.JAVA_TESTGEN_DIR),
-            new File(OutputRegistry.RESOURCE_TEST_DIR));
+                new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                new File(OutputRegistry.RESOURCE_TEST_DIR));
         try {
             sep = handlerClass.getDeclaredConstructor().newInstance();
             if (sep instanceof Lifecycle) {
@@ -109,15 +112,17 @@ public class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
         Consumer<SEPConfig> wrappedBuilder = cfgBuilder;
-        if(addAuditor){
-            wrappedBuilder = cfg ->{
+        if (addAuditor || inlineCompiled) {
+            wrappedBuilder = cfg -> {
                 cfgBuilder.accept(cfg);
-                cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+                if (addAuditor)
+                    cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+                cfg.setInlineEventHandling(inlineCompiled);
             };
         }
 
         try {
-            if(!compiledSep){
+            if (!compiledSep) {
                 GenerationContext.setupStaticContext(pckName(), sepClassName(),
                         new File(OutputRegistry.JAVA_TESTGEN_DIR),
                         new File(OutputRegistry.RESOURCE_TEST_DIR));
@@ -129,8 +134,7 @@ public class MultipleSepTargetInProcessTest {
                 inMemorySep.init();
                 sep = inMemorySep;
                 simpleEventProcessorModel = generator.getSimpleEventProcessorModel();
-            }
-            else {
+            } else {
                 if (reuseSep) {
                     sep(wrappedBuilder, fqn());
                 } else {
@@ -147,8 +151,8 @@ public class MultipleSepTargetInProcessTest {
      * Lazily generates a SEP using the supplied String as the generated fully qualified class name. If a SEP cannot be
      * loaded then a new SEP is generated and initialised, using the supplied builder.
      *
-     * @param <T> The subclass of the generated StaticEventProcessor
-     * @param cfgBuilder The user supplied builder that adds nodes to the generation context
+     * @param <T>          The subclass of the generated StaticEventProcessor
+     * @param cfgBuilder   The user supplied builder that adds nodes to the generation context
      * @param handlerClass The fqn of the SEP that will be generated if it cannot be loaded
      * @return The SEP that the user can interact with in the test
      */
@@ -157,8 +161,8 @@ public class MultipleSepTargetInProcessTest {
         try {
             try {
                 GenerationContext.setupStaticContext("", "",
-                    new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                    new File(OutputRegistry.RESOURCE_TEST_DIR));
+                        new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                        new File(OutputRegistry.RESOURCE_TEST_DIR));
                 sep = (StaticEventProcessor) Class.forName(handlerClass).getDeclaredConstructor().newInstance();
                 if (sep instanceof Lifecycle) {
                     ((Lifecycle) sep).init();
@@ -168,8 +172,8 @@ public class MultipleSepTargetInProcessTest {
                 String pckName = org.apache.commons.lang3.ClassUtils.getPackageName(handlerClass);
                 String className = org.apache.commons.lang3.ClassUtils.getShortCanonicalName(handlerClass);
                 GenerationContext.setupStaticContext(pckName, className,
-                    new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                    new File(OutputRegistry.RESOURCE_TEST_DIR));
+                        new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                        new File(OutputRegistry.RESOURCE_TEST_DIR));
                 sep = sepTestInstance(cfgBuilder, pckName, className);
                 return (T) sep;
             }
@@ -195,22 +199,22 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected String sepClassName() {
-        return "TestSep_" + testName.getMethodName().replaceAll("\\[([0-9]*?)]", "");
+        return "TestSep_" + testName.getMethodName().replaceAll("\\[([0-9]*?)]", "") + (inlineCompiled?"Inline":"");
     }
 
-    protected String fqn(){
-        return pckName() +"." + sepClassName();
+    protected String fqn() {
+        return pckName() + "." + sepClassName();
     }
 
     @SuppressWarnings("unchecked")
     protected <T> T getField(String name) {
-        if(compiledSep){
+        if (compiledSep) {
             return (T) new Mirror().on(sep).get().field(name);
         }
         return (T) inMemorySep.getFieldByName(name).instance;
     }
 
-    protected <T> T getStreamed(String name){
+    protected <T> T getStreamed(String name) {
         EventStream<T> stream = getField(name);
         return stream.get();
     }
@@ -245,9 +249,10 @@ public class MultipleSepTargetInProcessTest {
         }
         return sep;
     }
-    
+
     /**
      * Sets the time in the clock. Does not fire an event into the SEP under test
+     *
      * @param newTime time in UTC
      * @return current {@link StaticEventProcessor}
      */
@@ -259,6 +264,7 @@ public class MultipleSepTargetInProcessTest {
 
     /**
      * Advances the time in the clock by delta. Does not fire an event into the SEP under test
+     *
      * @param delta advance time by delta milliseconds
      * @return current {@link StaticEventProcessor}
      */
@@ -274,6 +280,7 @@ public class MultipleSepTargetInProcessTest {
 
     /**
      * Sets the time and pushes an event to the SEP to force any nodes that depend on time to be updated
+     *
      * @param newTime time in UTC
      */
     protected void tick(long newTime) {
@@ -283,6 +290,7 @@ public class MultipleSepTargetInProcessTest {
 
     /**
      * Advances the time by delta and pushes an event to the SEP to force any nodes that depend on time to update
+     *
      * @param deltaTime advance time by delta milliseconds
      */
     protected void tickDelta(long deltaTime) {
@@ -299,16 +307,16 @@ public class MultipleSepTargetInProcessTest {
         timeAdded = true;
     }
 
-    public void addAuditor(){
+    public void addAuditor() {
         addAuditor = true;
     }
 
     @SneakyThrows
     protected void auditToFile(String fileNamePrefix) {
-        fileNamePrefix = fileNamePrefix + (compiledSep?"-compiled.yaml":"-interpreted.yaml");
-        File file = new File("target\\generated-test-sources\\fluxtion-log\\" + fileNamePrefix);
+        fileNamePrefix = fileNamePrefix + (compiledSep ? "-compiled.yaml" : "-interpreted.yaml");
+        File file = new File("target" + File.separator + "generated-test-sources" + File.separator + "fluxtion-log" + File.separator + fileNamePrefix);
         FileUtils.forceMkdirParent(file);
-        onEvent( new EventLogControlEvent(new JULLogRecordListener(file)) );
+        onEvent(new EventLogControlEvent(new JULLogRecordListener(file)));
     }
 
 }

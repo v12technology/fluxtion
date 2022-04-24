@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
 
 /**
@@ -28,7 +28,7 @@ public class DefaultEventHandlerAnnotation<T extends Event>{
  
     public T event;
     
-    @EventHandler
+    @OnEventHandler
     public void onEvent(T event){
         
     }

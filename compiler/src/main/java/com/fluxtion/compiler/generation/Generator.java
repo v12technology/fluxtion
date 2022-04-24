@@ -28,7 +28,7 @@ import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
@@ -196,7 +196,7 @@ public class Generator {
 
     private void addVersionInformation(Context ctx) {
         ctx.put("generator_version_information", this.getClass().getPackage().getImplementationVersion());
-        ctx.put("api_version_information", EventHandler.class.getPackage().getImplementationVersion());
+        ctx.put("api_version_information", OnEventHandler.class.getPackage().getImplementationVersion());
         ctx.put("build_time", LocalDateTime.now());
     }
 

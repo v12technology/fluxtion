@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation.time;
 
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.annotations.OnEvent;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
 import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
@@ -95,21 +95,21 @@ public class ClockTest extends MultipleSepTargetInProcessTest {
         public Clock clock2;
         public int tickCount;
 
-        @OnEvent
+        @OnTrigger
         public void update() {
         }
         
-        @EventHandler
+        @OnEventHandler
         public void tickHandler(Tick e){
             tickCount++;
         }
         
-        @EventHandler
+        @OnEventHandler
         public void noTimeEvent(NoTimeEvent e){
             
         }
         
-        @EventHandler
+        @OnEventHandler
         public void testTimedEvent(TestTimeEvent e){
             
         }
