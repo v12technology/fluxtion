@@ -385,7 +385,7 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
         JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceIdList(), "A0", "A1", "A2", "A3");
         JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceAfterEventIdList(), "A2");
         //TODO add this test back in - fails for in memory interpreted dispatching
-//        JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceEventCompleteIdList(), "A3", "A1");
+        JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceEventCompleteIdList(), "A3", "A1");
         //
         TraceEvent.TraceEvent_sub1 te_2 = new TraceEvent.TraceEvent_sub1(2);
         onEvent(te_2);

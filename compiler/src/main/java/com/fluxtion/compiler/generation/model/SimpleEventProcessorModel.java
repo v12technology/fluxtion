@@ -17,15 +17,27 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.FilteredEventHandler;
-import com.fluxtion.runtime.annotations.*;
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.time.Clock;
-import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.runtime.annotations.FilterType;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.builder.ConstructorArg;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +49,20 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -664,6 +688,7 @@ public class SimpleEventProcessorModel {
             if (set.size() > 0) {
                 List<CbMethodHandle> callList = new ArrayList<>(set);
                 dependencyGraph.sortNodeList(callList);
+                Collections.reverse(callList);
                 handlerMap.put(FilterDescription.DEFAULT_FILTER, callList);
             }
         }

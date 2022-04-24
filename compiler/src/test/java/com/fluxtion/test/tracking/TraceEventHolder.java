@@ -70,7 +70,6 @@ public interface TraceEventHolder {
 
         public TraceEventHandler_sub1() {
         }
-
         
         @OnEventHandler
         public void handleEvent(TraceEvent.TraceEvent_sub1 event) {

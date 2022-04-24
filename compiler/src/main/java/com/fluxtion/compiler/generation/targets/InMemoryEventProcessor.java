@@ -57,12 +57,14 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             eventHandlers.get(i).onEvent(event);
         }
         log.debug("======== eventComplete ========");
-        for (int i = dirtyBitset.nextSetBit(0); i >= 0; i = dirtyBitset.nextSetBit(i + 1)) {
-            log.debug("event dispatch bitset id[{}] handler[{}::{}]",
-                    i,
-                    eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
-                    eventHandlers.get(i).callbackHandle.getMethod().getName()
-            );
+        for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i-1)) >= 0; ) {
+                if(eventHandlers.get(i).willInvokeEventComplet()){
+                log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+                        i,
+                        eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                        eventHandlers.get(i).onEventCompleteMethod.getName()
+                );
+            }
             eventHandlers.get(i).eventComplete();
         }
         log.debug("======== GRAPH CYCLE END   EVENT:[{}] ========", event);
@@ -280,9 +282,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
         }
 
+        public boolean willInvokeEventComplet(){
+            return dirty && onEventCompleteMethod!=null;
+        }
         @SneakyThrows
         public void eventComplete(){
-            if(dirty && onEventCompleteMethod!=null){
+            if(willInvokeEventComplet()){
                 auditors.stream()
                         .filter(Auditor::auditInvocations)
                         .forEachOrdered(a -> a.nodeInvoked(
