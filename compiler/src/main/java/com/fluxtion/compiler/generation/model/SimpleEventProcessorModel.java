@@ -294,10 +294,10 @@ public class SimpleEventProcessorModel {
             int idx1 = nodeFieldsSortedTopologically.indexOf(o1);
             int idx2 = nodeFieldsSortedTopologically.indexOf(o2);
             if (o1.instance instanceof Clock) {
-                idx1 = Integer.MAX_VALUE;
+                return -1;
             }
             if (o2.instance instanceof Clock) {
-                idx1 = Integer.MAX_VALUE;
+                return 1;
             }
             if (idx1 > -1 || idx2 > -1) {
                 return idx2 - idx1;
