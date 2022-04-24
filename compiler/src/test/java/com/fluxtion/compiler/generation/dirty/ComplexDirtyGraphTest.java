@@ -8,8 +8,6 @@ import com.fluxtion.test.tracking.TraceEvent;
 import com.fluxtion.test.tracking.TraceEventHolder;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 public class ComplexDirtyGraphTest extends CompiledAndInterpretedSepTest {
 
     public ComplexDirtyGraphTest(SepTestConfig sepTestConfig) {
@@ -48,8 +46,6 @@ public class ComplexDirtyGraphTest extends CompiledAndInterpretedSepTest {
         te.reset();
         te.strValue = "filter_A1";
         onEvent(te);
-        ArrayList<String> traceIdList = te.getTraceIdList();
-        System.out.println(traceIdList);
         JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceIdList(), "handler_A0", "filter_A1");
         //
         TraceEvent.TraceEvent_sub2 te_2 = new TraceEvent.TraceEvent_sub2(2);
