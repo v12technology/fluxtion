@@ -15,34 +15,37 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener.wc;
+package com.fluxtion.compiler.generation.complexgraph;
 
-import com.fluxtion.runtime.StaticEventProcessor;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.event.DefaultEvent;
 
 /**
  * 
  * @author Greg Higgins
  */
-public class StringDriver {
+public class CharEvent extends DefaultEvent {
 
-	public static void streamChars(String testString, StaticEventProcessor sep) {
-		// init
-		if (sep instanceof Lifecycle) {
-			((Lifecycle) sep).init();
-		}
-		// get bytes
-		char[] chars = testString.toCharArray();
-		CharEvent charEvent = new CharEvent(' ');
-		// sep.onEvent(charEvent);
-		// post char events
-		for (char aByte : chars) {
-			charEvent.setCharacter(aByte);
-			sep.onEvent(charEvent);
-		}
-		// teardown
-		if (sep instanceof Lifecycle) {
-			((Lifecycle) sep).tearDown();
-		}
+	/** mutable char easy to re-use memory for demo **/
+	private char character;
+
+	public CharEvent(char id) {
+		super(id);
+		this.character = id;
+		filterId = id;
 	}
+
+	public char getCharacter() {
+		return character;
+	}
+
+	/**
+	 * Setting the character will also make the filterId update as well
+	 * 
+	 * @param character
+	 */
+	public void setCharacter(char character) {
+		this.character = character;
+		filterId = character;
+	}
+
 }

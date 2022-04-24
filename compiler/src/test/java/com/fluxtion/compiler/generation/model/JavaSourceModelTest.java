@@ -21,9 +21,10 @@ import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
 
 /**
  *
@@ -31,13 +32,8 @@ import org.junit.Test;
  */
 public class JavaSourceModelTest {
 
-    public JavaSourceModelTest() {
-
-    }
-
     @Test
     public void sortCbHandlerTest() throws Exception {
-
         //set up modes
         EventHandlerCb e1 = new EventHandlerCb("e1", 1);
         EventHandlerCb e2 = new EventHandlerCb("e2", 2);

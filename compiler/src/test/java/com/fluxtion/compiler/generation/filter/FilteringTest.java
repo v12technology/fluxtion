@@ -17,7 +17,10 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
+import com.fluxtion.compiler.generation.util.Slf4jAuditLogger;
+import com.fluxtion.runtime.annotations.FilterType;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
@@ -70,6 +73,26 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         onEvent(new WordEvent("disregard"));
         assertThat(testHandler.wordACount, is(3));
         assertThat(testHandler.wordBCount, is(2));
+    }
+
+    @Test
+    public void testUnmatchedFilter() {
+        sep(cfg -> {
+            cfg.addPublicNode(new UnMatchedHandler(), "handler");
+            cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+        });
+        UnMatchedHandler testHandler = getField("handler");
+
+        onEvent(new EventLogControlEvent(new Slf4jAuditLogger()));
+        onEvent(new WordEvent("ignored"));
+        assertThat(testHandler.wordACount, is(0));
+        assertThat(testHandler.anyWord, is(1));
+        assertThat(testHandler.wordUnmatched, is(1));
+
+        onEvent(new WordEvent("A"));
+        assertThat(testHandler.wordACount, is(1));
+        assertThat(testHandler.anyWord, is(2));
+        assertThat(testHandler.wordUnmatched, is(1));
     }
 
     @Test
@@ -142,6 +165,28 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler(filterVariable = "filterB")
         public void processWordB(WordEvent wordB) {
             wordBCount++;
+        }
+    }
+
+    public static class UnMatchedHandler{
+        public int wordACount = 0;
+        public int wordUnmatched = 0;
+        public int anyWord = 0;
+        public transient String filterA = "A";
+
+        @OnEventHandler(filterVariable = "filterA")
+        public void processWordA(WordEvent wordA) {
+            wordACount++;
+        }
+
+        @OnEventHandler
+        public void processAnyWord(WordEvent anyWordEvent){
+            anyWord++;
+        }
+
+        @OnEventHandler(FilterType.defaultCase)
+        public void processWordUnmatched(WordEvent wordB) {
+            wordUnmatched++;
         }
     }
 

@@ -1,19 +1,17 @@
-package com.fluxtion.compiler.generation.targets;
+package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.test.tracking.Node_DirtyFilter_TraceEvent;
 import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator_NoFiltering;
 import com.fluxtion.test.tracking.TraceEvent;
 import com.fluxtion.test.tracking.TraceEventHolder;
 import org.junit.Test;
 
-import java.util.ArrayList;
+public class ComplexDirtyGraphTest extends CompiledAndInterpretedSepTest {
 
-public class JavaTargetTestMigration extends MultipleSepTargetInProcessTest {
-
-
-    public JavaTargetTestMigration(boolean compiledSep) {
-        super(compiledSep);
+    public ComplexDirtyGraphTest(SepTestConfig sepTestConfig) {
+        super(sepTestConfig);
     }
 
     @Test
@@ -48,8 +46,6 @@ public class JavaTargetTestMigration extends MultipleSepTargetInProcessTest {
         te.reset();
         te.strValue = "filter_A1";
         onEvent(te);
-        ArrayList<String> traceIdList = te.getTraceIdList();
-        System.out.println(traceIdList);
         JavaTestGeneratorHelper.testTraceIdOrder(te.getTraceIdList(), "handler_A0", "filter_A1");
         //
         TraceEvent.TraceEvent_sub2 te_2 = new TraceEvent.TraceEvent_sub2(2);

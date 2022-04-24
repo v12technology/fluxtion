@@ -16,45 +16,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.compiler.generation.targets;
+package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.SEPConfig;
-
-import com.fluxtion.compiler.generation.util.BaseSepInProcessTest;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.CharEvent;
-import com.fluxtion.test.nodes.KeyProcessorFactory;
 import com.fluxtion.test.nodes.KeyTracker;
 import com.fluxtion.test.nodes.KeyTrackerWithVariableConfig;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author Greg Higgins
  */
-public class InjectedFactoryTest extends BaseSepInProcessTest {
+public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
+
+    public InjectedFactoryTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     private static void buildFactory(SEPConfig cfg) {
         cfg.addPublicNode(new KeyTracker(), "keyTracker1");
-        Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
-        factoryList.add(KeyProcessorFactory.class);
-        cfg.setDeclarativeConfig(new NodeFactoryRegistration(factoryList, null));
     }
 
     private static void buildFactoryWithConfig(SEPConfig cfg) {
         cfg.addPublicNode(new KeyTrackerWithVariableConfig(), "keyTracker1");
-        //Factories
-        Set<Class<? extends NodeFactory<?>>> factoryList = new HashSet<>();
-        factoryList.add(KeyProcessorFactory.class);
-        cfg.setDeclarativeConfig(new NodeFactoryRegistration(factoryList, null));
     }
 
     @Test

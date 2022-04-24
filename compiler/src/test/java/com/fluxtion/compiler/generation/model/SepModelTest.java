@@ -20,13 +20,18 @@ package com.fluxtion.compiler.generation.model;
 import com.fluxtion.compiler.builder.generation.FilterDescription;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.*;
-import com.google.common.base.Predicates;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,10 +73,9 @@ public class SepModelTest {
         assertEquals(7, sep.getTearDownMethods().size());
         //expected callback
         Set<Method> initMethodSet = getAllMethods(InitCB.class,
-                Predicates.and(
-                        withModifier(Modifier.PUBLIC),
-                        withName("init"),
-                        withParametersCount(0)));
+                withModifier(Modifier.PUBLIC)
+                        .and(withName("init"))
+                        .and(withParametersCount(0)));
         assertEquals(initMethodSet.size(), 1);
         Method expectedCb = initMethodSet.iterator().next();
         //order

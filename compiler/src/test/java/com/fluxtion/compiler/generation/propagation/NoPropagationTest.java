@@ -16,18 +16,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.fluxtion.compiler.generation.targets;
+package com.fluxtion.compiler.generation.propagation;
 
-import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
 import com.fluxtion.test.event.AnnotatedHandlerNoPropogate;
 import com.fluxtion.test.event.RootCB;
 import com.fluxtion.test.event.TestEvent;
@@ -41,19 +39,28 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Greg Higgins
  */
-public class NoPropagationTest {
+public class NoPropagationTest extends MultipleSepTargetInProcessTest {
+
+    public NoPropagationTest(boolean compiledSep) {
+        super(compiledSep);
+    }
 
     @Test
-    public void testComplexNoPropogate() throws Exception {
-        //System.out.println("comple no propogation");
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.generator.test.generated.complexnopropogation", "NoPropogationComplexProcessor");
-        compileCfg.setConfigClass(EventFilteringLogBuilder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        ConsolePrinter root = (ConsolePrinter) sep.getClass().getField("root").get(sep);
-        MsgBuilder msgBuilder = (MsgBuilder) sep.getClass().getField("msgBuilder").get(sep);
-        ((Lifecycle) sep).init();
+    public void noPropagationTest(){
+        sep(c -> c.addPublicNode(new RootCB("root", new AnnotatedHandlerNoPropogate()), "root"));
+        RootCB root = getField("root");
+        assertFalse(root.onEventCalled);
+        sep.onEvent(new TimeEvent());
+        assertFalse(root.onEventCalled);
+        sep.onEvent(new TestEvent());
+        assertTrue(root.onEventCalled);
+    }
+
+    @Test
+    public void testComplexNoPropagate(){
+        sep(NoPropagationTest::buildFilteringLog);
+        ConsolePrinter root = getField("root");
+        MsgBuilder msgBuilder = getField("msgBuilder");
         assertFalse(root.invoked);
         assertFalse(msgBuilder.timeprocessorUpdated);
         sep.onEvent(new TimeEvent());
@@ -68,17 +75,11 @@ public class NoPropagationTest {
     }
 
     @Test
-    public void testComplexNoPropogateWIthParentUpdate() throws Exception {
-        //System.out.println("complex no propogation and parent update");
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.generator.test.generated.complexnopropogation2", "NoPropogationComplexProcessor");
-        compileCfg.setConfigClass(EventFilteringLogBuilder.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        ConsolePrinter root = (ConsolePrinter) sep.getClass().getField("root").get(sep);
-        MsgBuilder msgBuilder = (MsgBuilder) sep.getClass().getField("msgBuilder").get(sep);
-        NoEventFilterMsg msgBuilder2 = (NoEventFilterMsg) sep.getClass().getField("msgBuilder2").get(sep);
-        ((Lifecycle) sep).init();
+    public void testComplexNoPropagateWithParentUpdate(){
+        sep(NoPropagationTest::buildFilteringLog);
+        ConsolePrinter root = getField("root");
+        MsgBuilder msgBuilder = getField("msgBuilder");
+        NoEventFilterMsg msgBuilder2 = getField("msgBuilder2");
         assertFalse(root.invoked);
         assertFalse(msgBuilder.timeprocessorUpdated);
         assertFalse(msgBuilder2.timeProcessorUpdated);
@@ -92,32 +93,15 @@ public class NoPropagationTest {
         assertFalse(root.invoked);
         sep.onEvent(new LogToConsole());
         assertTrue(root.invoked);
+
     }
 
-    @Test
-    public void testNoPropogate() throws Exception {
-        //System.out.println("function");
-        SepCompilerConfig compileCfg = JavaTestGeneratorHelper.getTestSepCompileConfig(
-                "com.fluxtion.generator.test.generated.nopropogation", "NoPropogationProcessor");
-        compileCfg.setConfigClass(LogBuilder1.class.getName());
-        compileCfg.setSupportDirtyFiltering(true);
-        StaticEventProcessor sep = JavaTestGeneratorHelper.generateAndInstantiate(compileCfg);
-        RootCB root = (RootCB) sep.getClass().getField("root").get(sep);
-        ((Lifecycle) sep).init();
-        assertFalse(root.onEventCalled);
-        sep.onEvent(new TimeEvent());
-        assertFalse(root.onEventCalled);
-        sep.onEvent(new TestEvent());
-        assertTrue(root.onEventCalled);
-    }
-
-    public static class LogBuilder1 extends SEPConfig {
-
-        public LogBuilder1() {
-            AnnotatedHandlerNoPropogate noPropHandler = addNode(new AnnotatedHandlerNoPropogate());
-            addPublicNode(new RootCB("root", noPropHandler), "root");
-
-        }
+    public static void buildFilteringLog(SEPConfig cfg){
+        TimeProcessor timeNode = new TimeProcessor();
+        LogNotifier logNotifier = new LogNotifier();
+        MsgBuilder msgBuilder = cfg.addPublicNode(new MsgBuilder(timeNode, logNotifier), "msgBuilder");
+        NoEventFilterMsg msgBuilder2 = cfg.addPublicNode(new NoEventFilterMsg(timeNode, logNotifier), "msgBuilder2");
+        cfg.addPublicNode(new ConsolePrinter(msgBuilder), "root");
     }
 
     public static class EventFilteringLogBuilder extends SEPConfig {

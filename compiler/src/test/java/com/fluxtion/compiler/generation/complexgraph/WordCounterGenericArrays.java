@@ -15,12 +15,11 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model.parentlistener.wc;
+package com.fluxtion.compiler.generation.complexgraph;
 
+import com.fluxtion.compiler.generation.complexgraph.CharHandler.FilteredCharEventHandler;
+import com.fluxtion.compiler.generation.complexgraph.CharHandler.UnMatchedCharEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.generation.model.parentlistener.wc.CharHandler.FilteredCharEventHandler;
-import com.fluxtion.compiler.generation.model.parentlistener.wc.CharHandler.UnMatchedCharEventHandler;
 
 /**
  *
@@ -65,19 +64,4 @@ public class WordCounterGenericArrays {
         return "wc\n" + "charCount:" + charCount + "\nwordCount:" + wordCount
                 + "\nlineCount:" + lineCount;
     }
-
-    public static class Builder extends SEPConfig {
-
-        {
-            WordCounterGenericArrays root = addPublicNode(new WordCounterGenericArrays(), "result");
-            root.anyCharHandler = addNode(new CharHandler());
-            root.eolHandler = addNode(new FilteredCharEventHandler('\n'));
-            root.wordChardHandler = addNode(new UnMatchedCharEventHandler());
-            root.delimiterHandlers = new FilteredCharEventHandler[]{
-                addNode(new FilteredCharEventHandler(' ')),
-                addNode(new FilteredCharEventHandler('\t'))};
-
-        }
-    }
-
 }

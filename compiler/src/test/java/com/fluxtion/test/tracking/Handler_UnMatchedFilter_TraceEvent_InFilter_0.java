@@ -35,7 +35,7 @@ public class Handler_UnMatchedFilter_TraceEvent_InFilter_0 extends HandlerNoFilt
     }
 
     @Override
-    @OnEventHandler(FilterType.unmatched)
+    @OnEventHandler(FilterType.defaultCase)
     public void handleEvent(TraceEvent_InFilter_0 event) {
         super.handleEvent(event); 
     }

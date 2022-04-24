@@ -17,13 +17,13 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
-import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.test.event.AnnotatedEventHandlerDirtyNotifier;
 import com.fluxtion.test.event.DirtyNotifierNode;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,15 +31,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
 /**
  *
  * @author Greg Higgins
  */
-public class DirtyFilteringTest {
+public class DirtyFilteringModelTest {
 
-    public DirtyFilteringTest() {
+    public DirtyFilteringModelTest() {
     }
 
     @Test
