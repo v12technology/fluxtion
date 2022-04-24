@@ -17,78 +17,76 @@
  */
 package com.fluxtion.compiler.builder.declarative;
 
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.compiler.builder.declarative.MathFactory.FunctionCfg;
-import java.util.List;
-
 /**
  *
  * @author gregp
  */
-public class MathFactory implements SepConfigGenerator<FunctionCfg> {
+public class MathFactory{}
 
-    public static class Value{
-        private final MyPredefinedNode node;
-
-        public Value(MyPredefinedNode node) {
-            this.node = node;
-        }
-        
-        @OnTrigger
-        public void evauateMax(){
-            
-        }
-        
-    }
-    
-    
-    public static Value max(MyPredefinedNode node){
-        return new Value(node);
-    }
-    
-    
-    @Override
-    public String sepConfigStatement(FunctionCfg cfg, String node, List<String> imports) {
-        String code = node + " = com.fluxtion.creator.MathFactory.max(" 
-                + cfg.getMethodRef() + ");\n" ;
-        return code;
-    }
-    
-    
-    public static class FunctionCfg{
-        String functionName;
-        String methodRef;
-
-        public FunctionCfg() {
-        }
-
-        public FunctionCfg(String functionName, String methodRef) {
-            this.functionName = functionName;
-            this.methodRef = methodRef;
-        }
-        
-        public String getFunctionName() {
-            return functionName;
-        }
-
-        public void setFunctionName(String functionName) {
-            this.functionName = functionName;
-        }
-
-        public String getMethodRef() {
-            return methodRef;
-        }
-
-        public void setMethodRef(String methodRef) {
-            this.methodRef = methodRef;
-        }
-
-        @Override
-        public String toString() {
-            return "FunctionCfg{" + "functionName=" + functionName + ", methodRef=" + methodRef + '}';
-        }
-        
-    }
-    
-    
-}
+//implements SepConfigGenerator<FunctionCfg> {
+//
+//    public static class Value{
+//        private final MyPredefinedNode node;
+//
+//        public Value(MyPredefinedNode node) {
+//            this.node = node;
+//        }
+//
+//        @OnTrigger
+//        public void evauateMax(){
+//
+//        }
+//
+//    }
+//
+//
+//    public static Value max(MyPredefinedNode node){
+//        return new Value(node);
+//    }
+//
+//
+//    @Override
+//    public String sepConfigStatement(FunctionCfg cfg, String node, List<String> imports) {
+//        String code = node + " = com.fluxtion.creator.MathFactory.max("
+//                + cfg.getMethodRef() + ");\n" ;
+//        return code;
+//    }
+//
+//
+//    public static class FunctionCfg{
+//        String functionName;
+//        String methodRef;
+//
+//        public FunctionCfg() {
+//        }
+//
+//        public FunctionCfg(String functionName, String methodRef) {
+//            this.functionName = functionName;
+//            this.methodRef = methodRef;
+//        }
+//
+//        public String getFunctionName() {
+//            return functionName;
+//        }
+//
+//        public void setFunctionName(String functionName) {
+//            this.functionName = functionName;
+//        }
+//
+//        public String getMethodRef() {
+//            return methodRef;
+//        }
+//
+//        public void setMethodRef(String methodRef) {
+//            this.methodRef = methodRef;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "FunctionCfg{" + "functionName=" + functionName + ", methodRef=" + methodRef + '}';
+//        }
+//
+//    }
+//
+//
+//}
