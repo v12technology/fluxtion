@@ -9,18 +9,6 @@ import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Mappers {
 
-    SerializableIntUnaryOperator SUM_INT = new SumInt()::add;
-    SerializableDoubleUnaryOperator SUM_DOUBLE = new SumDouble()::add;
-    SerializableLongUnaryOperator SUM_LONG = new SumLong()::add;
-
-    SerializableIntUnaryOperator MIN_INT = new Min()::minInt;
-    SerializableDoubleUnaryOperator MIN_DOUBLE = new Min()::minDouble;
-    SerializableLongUnaryOperator MIN_LONG = new Min()::minLong;
-
-    SerializableIntUnaryOperator MAX_INT = new Max()::maxInt;
-    SerializableDoubleUnaryOperator MAX_DOUBLE = new Max()::maxDouble;
-    SerializableLongUnaryOperator MAX_LONG = new Max()::maxLong;
-
     SerializableBiIntFunction ADD_INTS = Mappers::addInts;
     SerializableBiDoubleFunction ADD_DOUBLES = Mappers::addDoubles;
     SerializableBiLongFunction ADD_LONGS = Mappers::addLongs;
@@ -36,6 +24,62 @@ public interface Mappers {
     SerializableBiIntFunction DIVIDE_INTS = Mappers::divideInts;
     SerializableBiLongFunction DIVIDE_LONGS = Mappers::divideLongs;
     SerializableBiDoubleFunction DIVIDE_DOUBLES = Mappers::divideDoubles;
+
+    static SerializableToIntFunction count(){
+        return new CountInt()::increment;
+    }
+
+    /**
+     * more efficient version of count if counting stream of ints
+     * @return
+     */
+    static SerializableIntUnaryOperator countInt(){
+        return new CountInt()::increment;
+    }
+
+    static SerializableLongUnaryOperator countLong(){
+        return new CountInt()::increment;
+    }
+
+    static SerializableDoubleUnaryOperator countDouble(){
+        return new CountInt()::increment;
+    }
+
+    static SerializableIntUnaryOperator cumSumInt(){
+        return new SumInt()::add;
+    }
+
+    static SerializableDoubleUnaryOperator cumSumDouble(){
+        return new SumDouble()::add;
+    }
+
+    static SerializableLongUnaryOperator cumSumLong(){
+        return new SumLong()::add;
+    }
+
+    static SerializableIntUnaryOperator minimumInt(){
+        return new Min()::minInt;
+    }
+
+    static SerializableDoubleUnaryOperator minimumDouble(){
+        return new Min()::minDouble;
+    }
+
+    static SerializableLongUnaryOperator minimumLong(){
+        return new Min()::minLong;
+    }
+
+    static SerializableIntUnaryOperator maximumInt(){
+        return new Max()::maxInt;
+    }
+
+    static SerializableDoubleUnaryOperator maximumDouble(){
+        return new Max()::maxDouble;
+    }
+
+    static SerializableLongUnaryOperator maximumLong(){
+        return new Max()::maxLong;
+    }
 
     static Count newCount() {
         return new Count();
@@ -181,6 +225,43 @@ public interface Mappers {
             sum = 0;
             return sum;
         }
+    }
+
+    class CountInt implements Stateful<Integer>{
+
+        int count;
+
+        public int increment(int i){
+            count++;
+            return count;
+        }
+
+        public int increment(long i){
+            count++;
+            return count;
+        }
+
+
+        public int increment(double i){
+            count++;
+            return count;
+        }
+
+        public <T> int increment(T add) {
+            count++;
+            return count;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        @Override
+        public Integer reset() {
+            count = 0;
+            return count;
+        }
+
     }
 
     @ToString
