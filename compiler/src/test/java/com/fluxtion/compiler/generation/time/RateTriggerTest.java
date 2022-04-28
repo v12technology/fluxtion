@@ -20,7 +20,7 @@ public class RateTriggerTest extends MultipleSepTargetInProcessTest {
 
             subscribe(MutableInt.class)
                     .mapToInt(MutableInt::intValue)
-                    .map(Mappers.SUM_INT).id("sum")
+                    .map(Mappers.cumSumInt()).id("sum")
                     .resetTrigger(new FixedRateTrigger(100))
                     .publishTrigger(new FixedRateTrigger(5))
 //                    .peek(Peekers.console("sum:{}"))
