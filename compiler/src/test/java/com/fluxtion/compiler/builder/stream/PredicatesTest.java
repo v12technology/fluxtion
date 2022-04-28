@@ -41,6 +41,33 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         assertThat(count.getCount(), CoreMatchers.is(2));
     }
 
+    @Test
+    public void hasChangedIntWithMapCount() {
+        sep(c -> {
+            EventFlow.subscribe(Integer.class)
+                    .mapToInt(Integer::intValue)
+                    .filter(Predicates.HAS_CHANGED_INT_FILTER)
+                    .map(Mappers.countInt()).id("count")
+            ;
+
+            EventFlow.subscribe(String.class)
+                    .mapToInt(Mappers.count()).id("count_strings");
+        });
+        onEvent((Integer) 20);
+        onEvent((Integer) 20);
+        onEvent((Integer) 20);
+        onEvent((Integer) 20);
+        assertThat(getStreamed("count"), CoreMatchers.is(1));
+
+        onEvent((Integer) 255);
+        assertThat(getStreamed("count"), CoreMatchers.is(2));
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(0));
+        onEvent("test");
+        onEvent("test");
+        onEvent("test");
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(3));
+    }
 
     @Test
     public void hasChangedDouble() {
