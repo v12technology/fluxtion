@@ -269,12 +269,42 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void multipleStatefulFunctionsOfSameTypeTest(){
+        sep(c ->{
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .map(Mappers.cumSumInt()).id("sum")
+                    .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
+
+            subscribe(MutableInt.class)
+                    .mapToInt(MutableInt::intValue)
+                    .map(Mappers.cumSumInt()).id("sum2");
+
+            subscribe(MutableDouble.class)
+                    .mapToInt(MutableDouble::intValue)
+                    .map(Mappers.cumSumInt()).id("sum3");
+        });
+        onEvent(new MutableInt(10));
+        onEvent(new MutableInt(10));
+        onEvent(new MutableInt(10));
+        onEvent(new MutableDouble(55.8));
+        assertThat(getStreamed("sum"), is(30));
+
+        onEvent("NO reset");
+        assertThat(getStreamed("sum"), is(30));
+        onEvent("reset");
+        assertThat(getStreamed("sum"), is(0));
+        assertThat(getStreamed("sum2"), is(30));
+        assertThat(getStreamed("sum3"), is(55));
+    }
+
+    @Test
     public void testIntReset(){
 //        addAuditor();
         sep(c ->{
             subscribe(MutableInt.class)
                     .mapToInt(MutableInt::intValue)
-                    .map(Mappers.SUM_INT).id("sum")
+                    .map(Mappers.cumSumInt()).id("sum")
                     .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
         });
 
