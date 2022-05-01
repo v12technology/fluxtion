@@ -24,9 +24,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(Data_1.class)
                         .mapToInt(Data_1::getIntValue)
-                        .map(BinaryMapTest::add,
-                                subscribe(Data_2.class).mapToInt(Data_2::getIntValue)
-                        )
+                        .map(BinaryMapTest::add,subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
                         .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
