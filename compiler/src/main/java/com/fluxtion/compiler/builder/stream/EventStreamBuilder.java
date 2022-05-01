@@ -5,7 +5,17 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
+import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.LookupEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 
 public class EventStreamBuilder<T> {
@@ -57,6 +67,14 @@ public class EventStreamBuilder<T> {
                 new BinaryMapEventStream.BinaryMapToRefEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public <S, R> EventStreamBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction){
+        return new EventStreamBuilder<>(new FlatMapEventStream<>(eventStream, iterableFunction));
+    }
+
+    public <S, R> EventStreamBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction){
+        return new EventStreamBuilder<>(new FlatMapArrayEventStream<>(eventStream, iterableFunction));
     }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target){
