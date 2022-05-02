@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 @ToString
 public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFilteredEventHandler<CallbackEvent>
-        implements TriggeredEventStream<R>, Named, Callback<R> {
+        implements TriggeredEventStream<R>, Named, Callback<R>, EventDispatcher {
     private final int callbackId;
     private CallbackDispatcher callBackDispatcher;
     private CallbackEvent<R> event;
@@ -71,5 +71,15 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     @Override
     public void fireCallback(Iterator<R> dataIterator) {
         callBackDispatcher.fireIteratorCallback(callbackId, dataIterator);
+    }
+
+    @Override
+    public void processEvent(Object event) {
+        callBackDispatcher.processEvent(event);
+    }
+
+    @Override
+    public void processEvents(Iterable<Object> iterator) {
+        callBackDispatcher.processEvents(iterator);
     }
 }
