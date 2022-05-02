@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 @ToString
 public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFilteredEventHandler<CallbackEvent>
-        implements TriggeredEventStream<R>, Named, Callback<R>, EventDispatcher {
+        implements TriggeredEventStream<R>, Named, Callback<R>, EventDispatcher, CallbackDispatcherListener {
     private final int callbackId;
     private CallbackDispatcher callBackDispatcher;
     private CallbackEvent<R> event;
@@ -41,20 +41,18 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
 
     @Override
     public void setUpdateTriggerNode(Object updateTriggerNode) {
-
     }
 
     @Override
     public void setPublishTriggerNode(Object publishTriggerNode) {
-
     }
 
     @Override
     public void setResetTriggerNode(Object resetTriggerNode) {
-
     }
 
-    public void registerCallbackDispatcher(CallbackDispatcher callBackDispatcher){
+    @Override
+    public void registerCallbackDispatcher(CallbackDispatcher callBackDispatcher) {
         this.callBackDispatcher = callBackDispatcher;
     }
 
@@ -64,7 +62,7 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     }
 
     @Override
-    public void fireCallback(R data){
+    public void fireCallback(R data) {
         callBackDispatcher.fireCallback(callbackId, data);
     }
 

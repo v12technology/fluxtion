@@ -14,7 +14,7 @@ public class CallbackNodeFactory implements NodeFactory<Callback> {
     private static final LongAdder idGenerator = new LongAdder();
 
     @Override
-    public Callback createNode(Map<?, ?> config, NodeRegistry registry) {
+    public Callback<?> createNode(Map<?, ?> config, NodeRegistry registry) {
         idGenerator.increment();
         return new CallbackImpl<>(idGenerator.intValue());
     }

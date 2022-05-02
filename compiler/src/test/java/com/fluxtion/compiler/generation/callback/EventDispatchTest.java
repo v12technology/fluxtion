@@ -2,6 +2,7 @@ package com.fluxtion.compiler.generation.callback;
 
 import com.fluxtion.compiler.builder.stream.EventFlow;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.EventDispatcher;
@@ -35,7 +36,7 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void redispatchMuluiipleEvent(){
+    public void redispatchMultipleEvent(){
         sep(c ->{
             c.addNode(new Redispatcher());
             EventFlow.subscribe(MyEvent.class)
@@ -53,6 +54,7 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
 
     public static class Redispatcher{
         @Inject
+        @NoTriggerReference
         public EventDispatcher eventDispatcher;
 
         @OnEventHandler

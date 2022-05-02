@@ -16,29 +16,26 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
     Deque<Supplier<Boolean>> myStack = new ArrayDeque<>();
 
     private boolean dispatching = false;
+
     @Override
     public void nodeRegistered(Object node, String nodeName) {
-        if(CallbackImpl.class.isAssignableFrom(node.getClass())){
-            CallbackImpl callbackReceiver = (CallbackImpl) node;
-            //System.out.println("registering callback:" + callbackReceiver);
+        if (CallbackDispatcherListener.class.isAssignableFrom(node.getClass())) {
+            CallbackDispatcherListener callbackReceiver = (CallbackDispatcherListener) node;
             callbackReceiver.registerCallbackDispatcher(this);
         }
     }
 
-    public void dispatchQueuedCallbacks(){
-        if(processor == null){
+    public void dispatchQueuedCallbacks() {
+        if (processor == null) {
             //System.out.println("no event processor registered cannot publish callback");
-        }else{
-            while(!myStack.isEmpty()){
+        } else {
+            while (!myStack.isEmpty()) {
                 dispatching = true;
-                //do not remove this is responsibility of the callback item*
                 Supplier<Boolean> callBackItem = myStack.peekFirst();
-                //System.out.println("dispatching callback id:" + callBackItem);
-                if(!callBackItem.get()){
+                if (!callBackItem.get()) {
                     myStack.remove(callBackItem);
                 }
             }
-            //System.out.println("no callbacks on stack");
         }
         dispatching = false;
     }
@@ -50,8 +47,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
 
     @Override
     public void fireCallback(int id) {
-        //System.out.println("adding to callback queue id:" + id);
-        SingleCallBackWrapper callBackWrapper = new SingleCallBackWrapper();
+        SingleCallBackWrapper<Object> callBackWrapper = new SingleCallBackWrapper<>();
         callBackWrapper.setFilterId(id);
         myStack.add(callBackWrapper::dispatch);
     }
@@ -70,10 +66,10 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
         IteratingCallbackWrapper<R> callBackWrapper = new IteratingCallbackWrapper<>();
         callBackWrapper.setFilterId(callbackId);
         callBackWrapper.dataIterator = dataIterator;
-        if(dispatching){
+        if (dispatching) {
             //System.out.println("DISPATCHING adding iterator to FRONT of callback queue id:" + callbackId);
             myStack.addFirst(callBackWrapper::dispatch);
-        }else{
+        } else {
             //System.out.println("adding iterator to BACK of callback queue id:" + callbackId);
             myStack.add(callBackWrapper::dispatch);
         }
@@ -81,22 +77,23 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
 
     @Override
     public void processEvent(Object event) {
-        SingleEventPublishWrapper callBackWrapper = new SingleEventPublishWrapper();
+        SingleEventPublishWrapper<Object> callBackWrapper = new SingleEventPublishWrapper<>();
         callBackWrapper.data = event;
         myStack.add(callBackWrapper::dispatch);
     }
 
-    public void processEvents(Iterable<Object> iterable){
+    public void processEvents(Iterable<Object> iterable) {
         IteratingEventPublishWrapper publishingWrapper = new IteratingEventPublishWrapper();
         publishingWrapper.dataIterator = iterable.iterator();
         myStack.add(publishingWrapper::dispatch);
     }
 
     @ToString(callSuper = true)
-    private class SingleCallBackWrapper<T> extends CallbackEvent<T>{
+    private class SingleCallBackWrapper<T> extends CallbackEvent<T> {
 
-        private CallbackEvent<T> callbackEvent = new CallbackEvent<>();
-        boolean dispatch(){
+        private final CallbackEvent<T> callbackEvent = new CallbackEvent<>();
+
+        boolean dispatch() {
             //System.out.println("dispatching this id:" + filterId);
             callbackEvent.setData(getData());
             callbackEvent.setFilterId(getFilterId());
@@ -111,19 +108,21 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
     private class SingleEventPublishWrapper<T> {
 
         T data;
-        boolean dispatch(){
+
+        boolean dispatch() {
             processor.accept(data);
             return false;
         }
     }
 
     @ToString(callSuper = true)
-    private class IteratingCallbackWrapper<T> extends CallbackEvent<T>{
+    private class IteratingCallbackWrapper<T> extends CallbackEvent<T> {
         Iterator<T> dataIterator;
-        private CallbackEvent<T> callbackEvent = new CallbackEvent<>();
-        boolean dispatch(){
+        private final CallbackEvent<T> callbackEvent = new CallbackEvent<>();
+
+        boolean dispatch() {
             //System.out.println("dispatching this id:" + filterId);
-            if(dataIterator.hasNext()){
+            if (dataIterator.hasNext()) {
                 callbackEvent.setData(dataIterator.next());
                 callbackEvent.setFilterId(getFilterId());
                 processor.accept(callbackEvent);
@@ -136,8 +135,8 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
     private class IteratingEventPublishWrapper {
         Iterator<Object> dataIterator;
 
-        boolean dispatch(){
-            if(dataIterator.hasNext()){
+        boolean dispatch() {
+            if (dataIterator.hasNext()) {
                 processor.accept(dataIterator.next());
                 return true;
             }

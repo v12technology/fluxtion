@@ -8,5 +8,6 @@ public interface Callback<R> {
     void fireCallback(R data);
 
     void fireCallback(Iterator<R> dataIterator);
+
     R get();
 }
