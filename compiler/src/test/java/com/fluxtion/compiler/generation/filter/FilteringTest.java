@@ -114,7 +114,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
 
         onEvent(new WordEvent("filter"));
         assertThat(stringHandler.get(), is("test"));
-        assertThat(filteredHandler.get(), is(new WordEvent("filter")));
+        assertThat(filteredHandler.get().filterString(), is(new WordEvent("filter").filterString()));
     }
 
     public static class ClassFilterEvent extends DefaultEvent {
