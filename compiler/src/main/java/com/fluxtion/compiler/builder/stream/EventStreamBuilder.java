@@ -6,6 +6,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
@@ -102,6 +103,10 @@ public class EventStreamBuilder<T> {
     public EventStreamBuilder<T> notify(Object target) {
         SepContext.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
+    }
+
+    public EventStreamBuilder<T> processAsNewGraphEvent() {
+        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, new InternalEventDispatcher()::dispatchToGraph));
     }
 
     public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {

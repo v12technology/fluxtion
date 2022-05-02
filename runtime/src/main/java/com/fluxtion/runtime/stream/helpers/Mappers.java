@@ -25,7 +25,7 @@ public interface Mappers {
     SerializableBiLongFunction DIVIDE_LONGS = Mappers::divideLongs;
     SerializableBiDoubleFunction DIVIDE_DOUBLES = Mappers::divideDoubles;
 
-    static SerializableToIntFunction count(){
+    static <T> SerializableToIntFunction<T> count(){
         return new CountInt()::increment;
     }
 

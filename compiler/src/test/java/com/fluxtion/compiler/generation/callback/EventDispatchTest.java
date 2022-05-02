@@ -21,8 +21,8 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void redispatchSingleEvent(){
-        sep(c ->{
+    public void redispatchSingleEventTest() {
+        sep(c -> {
             c.addNode(new Redispatcher());
             EventFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
@@ -36,8 +36,8 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void redispatchMultipleEvent(){
-        sep(c ->{
+    public void redispatchMultipleEventTest() {
+        sep(c -> {
             c.addNode(new Redispatcher());
             EventFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
@@ -50,21 +50,67 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("count"), is(4));
     }
 
-    public static class MyEvent{}
+    @Test
+    public void redispatchFromStreamTest() {
+        sep(c -> {
+            EventFlow.subscribe(String.class)
+                    .map(EventDispatchTest::toMyEvent)
+                    .processAsNewGraphEvent();
 
-    public static class Redispatcher{
+            EventFlow.subscribe(MyEvent.class)
+                    .mapToInt(Mappers.count())
+                    .id("count");
+        });
+        onEvent("test");
+        onEvent("test");
+        assertThat(getStreamed("count"), is(2));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(3));
+    }
+
+    @Test
+    public void redispatchMultipleEventFromStreamTest(){
+        sep(c -> {
+            EventFlow.subscribe(String.class)
+                    .flatMap(EventDispatchTest::csvToIterable)
+                    .map(EventDispatchTest::toMyEvent)
+                    .processAsNewGraphEvent();
+
+            EventFlow.subscribe(MyEvent.class)
+                    .mapToInt(Mappers.count())
+                    .id("count");
+        });
+        onEvent("1,2,3");
+        onEvent("4");
+        assertThat(getStreamed("count"), is(4));
+        onEvent("5,six,seven,8");
+        assertThat(getStreamed("count"), is(8));
+    }
+
+    public static class MyEvent {
+    }
+
+    public static class Redispatcher {
         @Inject
         @NoTriggerReference
         public EventDispatcher eventDispatcher;
 
         @OnEventHandler
-        public void handleString(String s){
-            if(s.startsWith("test")){
+        public void handleString(String s) {
+            if (s.startsWith("test")) {
                 eventDispatcher.processEvent(new MyEvent());
-            }else if(s.startsWith("repeat")){
+            } else if (s.startsWith("repeat")) {
                 eventDispatcher.processEvents(Arrays.asList(new MyEvent(), new MyEvent(), new MyEvent()));
             }
         }
+    }
+
+    public static MyEvent toMyEvent(String in) {
+        return new MyEvent();
+    }
+
+    public static Iterable<String> csvToIterable(String input){
+        return Arrays.asList(input.split(","));
     }
 
 }
