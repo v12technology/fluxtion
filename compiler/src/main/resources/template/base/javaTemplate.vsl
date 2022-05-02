@@ -45,11 +45,18 @@ ${MODEL.filterConstantDeclarations}
 
     public ${className} () {
 ${MODEL.nodeMemberAssignments}
+        //callback wiring
+        callbackDispatcher.processor = this::onEventInternal;
     }
 
     @Override
     public void onEvent(Object event) {
-${MODEL.eventDispatch}
+        onEventInternal(event);
+        callbackDispatcher.dispatchQueuedCallbacks();
+    }
+
+    private void onEventInternal(Object event) {
+    ${MODEL.eventDispatch}
     }
 
 ${MODEL.eventHandlers}

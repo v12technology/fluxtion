@@ -5,7 +5,18 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
+import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.LookupEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 
 public class EventStreamBuilder<T> {
@@ -59,6 +70,14 @@ public class EventStreamBuilder<T> {
         );
     }
 
+    public <S, R> EventStreamBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction){
+        return new EventStreamBuilder<>(new FlatMapEventStream<>(eventStream, iterableFunction));
+    }
+
+    public <S, R> EventStreamBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction){
+        return new EventStreamBuilder<>(new FlatMapArrayEventStream<>(eventStream, iterableFunction));
+    }
+
     public <R> EventStreamBuilder<R> mapOnNotify(R target){
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
@@ -84,6 +103,10 @@ public class EventStreamBuilder<T> {
     public EventStreamBuilder<T> notify(Object target) {
         SepContext.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
+    }
+
+    public EventStreamBuilder<T> processAsNewGraphEvent() {
+        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, new InternalEventDispatcher()::dispatchToGraph));
     }
 
     public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {

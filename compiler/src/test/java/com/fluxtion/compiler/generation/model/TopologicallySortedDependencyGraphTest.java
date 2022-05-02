@@ -217,8 +217,8 @@ public class TopologicallySortedDependencyGraphTest {
         //generate model
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
-        //
-        assertEquals(4, instance.getSortedDependents().size());
+        //includes a default callback instance
+        assertEquals(5, instance.getSortedDependents().size());
         
     }
 
