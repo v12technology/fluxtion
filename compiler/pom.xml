@@ -51,57 +51,27 @@ Copyright (C) 2018 V12 Technology Ltd.
                     </compilerArgs>
                 </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-surefire-plugin</artifactId>-->
+<!--                <version>2.22.2</version>-->
+<!--                <configuration>-->
+<!--                    <argLine>-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED-->
+<!--                    </argLine>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>jdk9</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.1</version>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>-parameters</arg>
-                            </compilerArgs>
-                            <!--<release>8</release>-->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>java9-compile</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>compile</goal>
-                                </goals>
-                                <configuration>
-                                    <compilerArgs>
-                                        <arg>-parameters</arg>
-                                    </compilerArgs>
-                                    <multiReleaseOutput>true</multiReleaseOutput>
-                                    <release>9</release>
-                                    <compileSourceRoots>
-                                        <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
-                                    </compileSourceRoots>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <Multi-Release>true</Multi-Release>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     
     <dependencies>
         <dependency>
@@ -172,7 +142,6 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>com.google.googlejavaformat</groupId>
             <artifactId>google-java-format</artifactId>
-<!--            <version>1.15.0</version>-->
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
