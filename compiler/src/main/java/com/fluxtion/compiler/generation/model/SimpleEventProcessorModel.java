@@ -36,6 +36,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
+import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
 import com.google.common.collect.HashMultimap;
@@ -1063,6 +1064,10 @@ public class SimpleEventProcessorModel {
 
     public List<FilterDescription> getFilterDescriptionList() {
         return Collections.unmodifiableList(filterDescriptionList);
+    }
+
+    public CallbackDispatcherImpl getCallbackDispatcher(){
+        return dependencyGraph.CALLBACK_DISPATCHER;
     }
 
     public Set<Class<?>> getImportClasses() {

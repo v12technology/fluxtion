@@ -6,13 +6,19 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,6 +71,40 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getIntPushValue(), is(0));
         onEvent("86");
         assertThat(notifyTarget.getIntPushValue(), is(86));
+    }
+
+    @Test
+    public void flatMapTest(){
+        sep(c -> subscribe(String.class)
+                .flatMap(StreamBuildTest::csvToIterable)
+                .push(new NotifyAndPushTarget()::addStringElement)
+        );
+        onEvent("one,2,THREE");
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(notifyTarget.getStrings(), CoreMatchers.hasItems("one", "2", "THREE"));
+    }
+
+    @Test
+    public void flatMapThenMapEachElementTest(){
+        sep(c -> subscribe(String.class)
+                .flatMap(StreamBuildTest::csvToIterable)
+                .mapToInt(StreamBuildTest::parseInt)
+                .map(Mappers.cumSumInt()).id("sum")
+        );
+        onEvent("15,33,55");
+        assertThat(getStreamed("sum"), is(103));
+    }
+
+    @Test
+    public void flatMapFromArrayThenMapEachElementTest(){
+        sep(c -> subscribe(String.class)
+                .flatMapFromArray(StreamBuildTest::csvToStringArray)
+                .mapToInt(StreamBuildTest::parseInt)
+                .map(Mappers.cumSumInt()).id("sum")
+        );
+        onEvent("15,33,55");
+        assertThat(getStreamed("sum"), is(103));
     }
 
     @Test
@@ -237,6 +277,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         private transient double doublePushValue;
         private transient long longPushValue;
         private transient String stringPushValue;
+        private transient List<String> strings = new ArrayList<>();
         private final String name;
 
         public NotifyAndPushTarget(String name) {
@@ -245,6 +286,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         public NotifyAndPushTarget() {
             this(DEFAULT_NAME);
+        }
+
+        public void addStringElement(String element){
+            strings.add(element);
         }
 
         @OnTrigger
@@ -303,6 +348,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     public static long parseLong(String in) {
         return Long.parseLong(in);
+    }
+
+    public static Iterable<String> csvToIterable(String input){
+        return Arrays.asList(input.split(","));
+    }
+
+    public static String[] csvToStringArray(String input){
+        return input.split(",");
     }
 
     @Data
