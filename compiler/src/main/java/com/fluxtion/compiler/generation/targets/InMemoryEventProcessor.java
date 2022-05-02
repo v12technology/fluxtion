@@ -36,6 +36,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @Override
     @SneakyThrows
     public void onEvent(Object event) {
+        onEventInternal(event);
+        simpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
+    }
+
+    public void onEventInternal(Object event) {
         currentEvent = event;
         log.debug("dirtyBitset, before:{}", dirtyBitset);
         auditNewEvent(event);
@@ -58,7 +63,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
         log.debug("======== eventComplete ========");
         for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i-1)) >= 0; ) {
-                if(eventHandlers.get(i).willInvokeEventComplet()){
+            if(eventHandlers.get(i).willInvokeEventComplet()){
                 log.debug("event dispatch bitset id[{}] handler[{}::{}]",
                         i,
                         eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
@@ -215,6 +220,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
+        simpleEventProcessorModel.getCallbackDispatcher().processor = this::onEventInternal;
     }
 
     private void registerAuditors(){

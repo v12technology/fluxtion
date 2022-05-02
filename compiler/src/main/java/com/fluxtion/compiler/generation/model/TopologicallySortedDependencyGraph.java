@@ -44,6 +44,7 @@ import com.fluxtion.runtime.annotations.builder.ExcludeNode;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -95,6 +96,7 @@ import static org.reflections.ReflectionUtils.withAnnotation;
  */
 public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
+    public static final CallbackDispatcherImpl CALLBACK_DISPATCHER = new CallbackDispatcherImpl();
     //TODO move this to constructor
     private Map<String, Auditor> registrationListenerMap;
 
@@ -194,6 +196,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         if (auditorMap == null) {
             auditorMap = new HashMap<>();
         }
+        auditorMap.put("callbackDispatcher", CALLBACK_DISPATCHER);
         this.registrationListenerMap = auditorMap;
         registrationListenerMap.forEach((key, value) -> {
             inst2Name.put(value, key);
