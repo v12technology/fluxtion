@@ -6,7 +6,9 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctiondIntSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -267,8 +269,25 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent(new PreMap("test"));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
         assertThat(notifyTarget.getStringPushValue(), is("TEST"));
-
     }
+
+    @Test
+    public void slidingWindow(){
+        sep(c ->{
+            subscribe(String.class)
+                    .peek(Peekers.console("-> {}"))
+                    .map(StreamBuildTest::valueOfInt)
+                    .slidingMap(SlidingWindowFunctiondIntSum::new, 100, 10)
+                    .peek(Peekers.console("sliding value:{}"));
+
+        });
+        for (int i = 0; i < 20; i++) {
+            onEvent("" + i);
+            onEvent("" + i);
+            tickDelta(100);
+        }
+    }
+
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";
@@ -340,6 +359,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     public static int parseInt(String in) {
         return Integer.parseInt(in);
+    }
+
+    public static Integer valueOfInt(String in){
+        return parseInt(in);
     }
 
     public static double parseDouble(String in) {

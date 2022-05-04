@@ -107,7 +107,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         private Supplier<W> function;
         private BucketedSlidingWindowedFunction<T, R, W> windowValueStream;
 
-        public SlidingWindowMapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction, Supplier<W> windowFunctionSupplier) {
+        public SlidingWindowMapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction, SerializableSupplier<W> windowFunctionSupplier) {
             super(inputEventStream, mapFunction);
             windowValueStream = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, 1);
             this.mapFunction = mapFunction;

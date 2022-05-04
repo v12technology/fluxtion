@@ -5,6 +5,7 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.FilterEventStream;
@@ -17,7 +18,11 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+
+import java.util.function.Supplier;
 
 public class EventStreamBuilder<T> {
 
@@ -76,6 +81,12 @@ public class EventStreamBuilder<T> {
 
     public <S, R> EventStreamBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction){
         return new EventStreamBuilder<>(new FlatMapArrayEventStream<>(eventStream, iterableFunction));
+    }
+
+    public <S, R, F extends BaseSlidingWindowFunction<T, R, F>> EventStreamBuilder<R> slidingMap(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow){
+        return new EventStreamBuilder<>(
+                new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
     }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target){

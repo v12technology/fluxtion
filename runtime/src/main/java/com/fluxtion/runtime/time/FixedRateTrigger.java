@@ -1,8 +1,8 @@
 package com.fluxtion.runtime.time;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 
 //@EqualsAndHashCode
@@ -13,12 +13,13 @@ public class FixedRateTrigger {
     private final Clock clock;
     private final int rate;
     private long previousTime;
+    private int triggerCount;
 
-    public static FixedRateTrigger atMillis(int millis){
+    public static FixedRateTrigger atMillis(int millis) {
         return new FixedRateTrigger(millis);
     }
 
-    public FixedRateTrigger(int rate){
+    public FixedRateTrigger(int rate) {
         this(null, rate);
     }
 
@@ -30,10 +31,21 @@ public class FixedRateTrigger {
     @OnEventHandler
     public boolean hasExpired(Object input) {
         long newTime = clock.getWallClockTime();
-        boolean expired = rate < (newTime - previousTime);
-        if (expired)
+        boolean expired = rate <= (newTime - previousTime);
+        if (expired) {
+            triggerCount = (int) ((newTime - previousTime) / rate);
             previousTime = newTime;
+        }
         return expired;
+    }
+
+    /**
+     * number of triggers that should have fired since the last time update to now
+     *
+     * @return number of triggers between previous time and now
+     */
+    public int getTriggerCount() {
+        return triggerCount;
     }
 
     @OnEventHandler(propagate = false)

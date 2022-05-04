@@ -18,9 +18,14 @@ package com.fluxtion.compiler.generation.constructor;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Data;
+import lombok.Value;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Date;
+import java.util.function.Supplier;
 
 /**
  *
@@ -43,6 +48,21 @@ public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
         
         Handler handler = getField("handler");
         Assert.assertNotNull(handler.getName());
+    }
+
+    @Test
+    public void constructorMethodRefTest(){
+        sep(c ->{
+            c.addNode(new ConstructorMethodRef(Date::new));
+        });
+    }
+
+    @Value
+    public static class ConstructorMethodRef{
+        LambdaReflection.SerializableSupplier<Date> dateSupplier;
+
+        @OnEventHandler
+        public void stringIn(String in){}
     }
     
     

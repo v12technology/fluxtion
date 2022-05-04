@@ -7,11 +7,13 @@ public class SlidingWindowFunctiondIntSum extends BaseSlidingWindowFunction<Inte
     @Override
     public void combine(SlidingWindowFunctiondIntSum combine) {
         sum += combine.sum;
+        System.out.println("after combine window sum:" + sum + " to combine:" + combine.sum);
     }
 
     @Override
     public void deduct(SlidingWindowFunctiondIntSum deduct) {
         sum -= deduct.sum;
+        System.out.println("after deduct window sum:" + sum + " to remove:" + deduct.sum);
     }
 
     @Override
@@ -23,6 +25,7 @@ public class SlidingWindowFunctiondIntSum extends BaseSlidingWindowFunction<Inte
     @Override
     public Integer aggregate(Integer input) {
         sum += input;
+        System.out.println("add:" + input + " this bucket sum:" + sum);
         return sum;
     }
 
