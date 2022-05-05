@@ -1,11 +1,9 @@
 package com.fluxtion.runtime.stream.aggregate;
 
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  *
@@ -31,6 +29,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     }
 
     public void aggregate(T input) {
+        System.out.println("writing to:" + writePointer);
         buckets.get(writePointer).aggregate(input);
     }
 
@@ -44,11 +43,13 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
             //add the current function to aggregate
             //get the next, deduct from aggregate, reset function and bump write pointer
             aggregatedFunction.combine(buckets.get(writePointer));
-            writePointer = ++writePointer % buckets.size();
-            allBucketsFilled = allBucketsFilled | writePointer == 0;
+            writePointer++;
+            allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
+            writePointer = writePointer % buckets.size();
             F currentFunction = buckets.get(writePointer);
             aggregatedFunction.deduct(currentFunction);
             currentFunction.reset();
+            System.out.println("new write pointer:"  + writePointer);
         }
     }
 

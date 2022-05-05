@@ -277,13 +277,13 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             subscribe(String.class)
                     .peek(Peekers.console("-> {}"))
                     .map(StreamBuildTest::valueOfInt)
-                    .slidingMap(SlidingWindowFunctiondIntSum::new, 100, 10)
+                    .slidingMap(SlidingWindowFunctiondIntSum::new, 100, 4)
                     .peek(Peekers.console("sliding value:{}"));
 
         });
         for (int i = 0; i < 20; i++) {
             onEvent("" + i);
-            onEvent("" + i);
+//            onEvent("" + i);
             tickDelta(100);
         }
     }
