@@ -15,6 +15,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final F aggregatedFunction;
+    private final F currentFunction;
     private final List<F> buckets;
     private int writePointer;
     private boolean allBucketsFilled = false;
@@ -22,6 +23,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     public BucketedSlidingWindowedFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
         this.windowFunctionSupplier = windowFunctionSupplier;
         aggregatedFunction = windowFunctionSupplier.get();
+        currentFunction = windowFunctionSupplier.get();
         buckets = new ArrayList<>(numberOfBuckets);
         for (int i = 0; i < numberOfBuckets; i++) {
             buckets.add(windowFunctionSupplier.get());
@@ -29,8 +31,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     }
 
     public void aggregate(T input) {
-        System.out.println("writing to:" + writePointer);
-        buckets.get(writePointer).aggregate(input);
+        currentFunction.aggregate(input);
     }
 
     public void roll(){
@@ -38,18 +39,21 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     }
 
     public void roll(int windowsToRoll) {
-        System.out.println("roll count:" + windowsToRoll);
+//        System.out.println("roll count:" + windowsToRoll);
         for (int i = 0; i < windowsToRoll; i++) {
             //add the current function to aggregate
             //get the next, deduct from aggregate, reset function and bump write pointer
-            aggregatedFunction.combine(buckets.get(writePointer));
+//            System.out.println("head of list pointer:" + writePointer);
+            F oldFunction = buckets.get(writePointer);
+            aggregatedFunction.combine(currentFunction);
+            aggregatedFunction.deduct(oldFunction);
+            oldFunction.reset();
+            oldFunction.combine(currentFunction);
+            currentFunction.reset();
             writePointer++;
             allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
             writePointer = writePointer % buckets.size();
-            F currentFunction = buckets.get(writePointer);
-            aggregatedFunction.deduct(currentFunction);
-            currentFunction.reset();
-            System.out.println("new write pointer:"  + writePointer);
+//            System.out.println("new head of list:" + writePointer);
         }
     }
 

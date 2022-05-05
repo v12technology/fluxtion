@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.partition;
 
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
-import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctiondIntSum;
+import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctionIntSum;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,7 +9,8 @@ public class AggregateTest {
 
     @Test
     public void windowValueTest(){
-        BucketedSlidingWindowedFunction<Integer, Integer, SlidingWindowFunctiondIntSum> windowSum = new BucketedSlidingWindowedFunction<>(SlidingWindowFunctiondIntSum::new, 4);
+        BucketedSlidingWindowedFunction<Integer, Integer, SlidingWindowFunctionIntSum> windowSum =
+                new BucketedSlidingWindowedFunction<>(SlidingWindowFunctionIntSum::new, 4);
 
         windowSum.aggregate(10);
         windowSum.aggregate(10);

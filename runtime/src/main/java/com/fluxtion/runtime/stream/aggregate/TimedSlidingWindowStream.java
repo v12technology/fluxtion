@@ -4,15 +4,12 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.audit.EventLogNode;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-import java.util.function.Supplier;
-
-public class TimedSlidingWindowStream <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>> extends EventLogNode
+public class TimedSlidingWindowStream<T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>> extends EventLogNode
         implements TriggeredEventStream<R> {
 
     @NoTriggerReference
@@ -21,13 +18,10 @@ public class TimedSlidingWindowStream <T, R, S extends EventStream<T>, F extends
     private final int buckets;
     private transient final BucketedSlidingWindowedFunction<T, R, F> windowFunction;
     public FixedRateTrigger rollTrigger;
+    private R value;
 
-    public TimedSlidingWindowStream(S inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int windowSizeMillis, int buckets){
+    public TimedSlidingWindowStream(S inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int windowSizeMillis, int buckets) {
         this(inputEventStream, windowFunctionSupplier, buckets);
-//        this.inputEventStream = inputEventStream;
-//        this.windowFunctionSupplier = windowFunctionSupplier;
-//        this.buckets = buckets;
-//        this.windowFunction = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, buckets);
         rollTrigger = FixedRateTrigger.atMillis(windowSizeMillis);
     }
 
@@ -39,23 +33,27 @@ public class TimedSlidingWindowStream <T, R, S extends EventStream<T>, F extends
     }
 
     @OnParentUpdate
-    public void timeTriggerFired(FixedRateTrigger rollTrigger){
+    public void timeTriggerFired(FixedRateTrigger rollTrigger) {
         windowFunction.roll(rollTrigger.getTriggerCount());
     }
-    
+
     @OnParentUpdate
-    public void updateData(S inputEventStream){
+    public void updateData(S inputEventStream) {
         windowFunction.aggregate(inputEventStream.get());
     }
 
     @OnTrigger
-    public boolean triggered(){
-        return windowFunction.isAllBucketsFilled();
+    public boolean triggered() {
+        boolean publish = windowFunction.isAllBucketsFilled();
+        if (publish)
+            value = windowFunction.get();
+        return publish;
     }
+
 
     @Override
     public R get() {
-        return windowFunction.get();
+        return value;//windowFunction.get();
     }
 
     @Override

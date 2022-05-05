@@ -6,7 +6,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
-import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctiondIntSum;
+import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctionIntSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 import lombok.AllArgsConstructor;
@@ -76,7 +76,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void flatMapTest(){
+    public void flatMapTest() {
         sep(c -> subscribe(String.class)
                 .flatMap(StreamBuildTest::csvToIterable)
                 .push(new NotifyAndPushTarget()::addStringElement)
@@ -88,7 +88,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void flatMapThenMapEachElementTest(){
+    public void flatMapThenMapEachElementTest() {
         sep(c -> subscribe(String.class)
                 .flatMap(StreamBuildTest::csvToIterable)
                 .mapToInt(StreamBuildTest::parseInt)
@@ -99,7 +99,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void flatMapFromArrayThenMapEachElementTest(){
+    public void flatMapFromArrayThenMapEachElementTest() {
         sep(c -> subscribe(String.class)
                 .flatMapFromArray(StreamBuildTest::csvToStringArray)
                 .mapToInt(StreamBuildTest::parseInt)
@@ -243,7 +243,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void filteredSubscriptionTest(){
+    public void filteredSubscriptionTest() {
         sep(c -> subscribe(FilteredInteger.class, "valid")
                 .map(FilteredInteger::getValue)
                 .push(new NotifyAndPushTarget()::setIntPushValue));
@@ -258,8 +258,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void lookupTest(){
-        sep(c ->{
+    public void lookupTest() {
+        sep(c -> {
             subscribe(PreMap.class)
                     .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
                     .map(PostMap::getLastName)
@@ -272,20 +272,38 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void slidingWindow(){
-        sep(c ->{
+    public void slidingWindow() {
+        sep(c -> {
             subscribe(String.class)
                     .peek(Peekers.console("-> {}"))
                     .map(StreamBuildTest::valueOfInt)
-                    .slidingMap(SlidingWindowFunctiondIntSum::new, 100, 4)
+                    .slidingMap(SlidingWindowFunctionIntSum::new, 100, 4).id("sum")
                     .peek(Peekers.console("sliding value:{}"));
 
         });
-        for (int i = 0; i < 20; i++) {
-            onEvent("" + i);
-//            onEvent("" + i);
-            tickDelta(100);
-        }
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(nullValue()));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(nullValue()));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(nullValue()));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(10));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+
     }
 
     @Data
@@ -307,7 +325,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             this(DEFAULT_NAME);
         }
 
-        public void addStringElement(String element){
+        public void addStringElement(String element) {
             strings.add(element);
         }
 
@@ -324,22 +342,22 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Data
     @AllArgsConstructor
-    public static class PreMap{
+    public static class PreMap {
         String name;
     }
 
     @Data
     @AllArgsConstructor
-    public static class PostMap{
+    public static class PostMap {
         String name;
         String lastName;
     }
 
-    public static String lookupFunction(String in){
+    public static String lookupFunction(String in) {
         return in.toUpperCase();
     }
 
-    public static PostMap mapToPostMap(PreMap preMap, String lookupValue){
+    public static PostMap mapToPostMap(PreMap preMap, String lookupValue) {
         return new PostMap(preMap.getName(), lookupValue);
     }
 
@@ -361,7 +379,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return Integer.parseInt(in);
     }
 
-    public static Integer valueOfInt(String in){
+    public static Integer valueOfInt(String in) {
         return parseInt(in);
     }
 
@@ -373,11 +391,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return Long.parseLong(in);
     }
 
-    public static Iterable<String> csvToIterable(String input){
+    public static Iterable<String> csvToIterable(String input) {
         return Arrays.asList(input.split(","));
     }
 
-    public static String[] csvToStringArray(String input){
+    public static String[] csvToStringArray(String input) {
         return input.split(",");
     }
 
@@ -391,7 +409,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class FilteredInteger extends DefaultEvent{
+    public static class FilteredInteger extends DefaultEvent {
         private final int value;
 
         public FilteredInteger(String filterId, int value) {
