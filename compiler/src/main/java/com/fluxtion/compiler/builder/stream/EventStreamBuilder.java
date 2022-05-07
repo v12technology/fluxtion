@@ -7,10 +7,10 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
@@ -23,8 +23,6 @@ import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 import com.fluxtion.runtime.time.FixedRateTrigger;
-
-import java.util.function.Supplier;
 
 public class EventStreamBuilder<T> {
 
@@ -153,7 +151,9 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    More tests
+    windowing sliding
+    windowing tumbling
+    groupby
 
     Done:
     ================
@@ -165,6 +165,8 @@ public class EventStreamBuilder<T> {
     De-dupe filter
     mapOnNotify
     id for eventStream
+    flatmap
+    More tests
 
     optional:
     ================
@@ -172,7 +174,6 @@ public class EventStreamBuilder<T> {
     audit - helper function
     add peek functions to support log and audit helpers
     merge/zip
-    flatmap
      */
 
 }

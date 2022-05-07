@@ -62,4 +62,8 @@ public class FlatMapArrayEventStream<T, R, S extends EventStream<T>> extends Eve
     public void setResetTriggerNode(Object resetTriggerNode) {
 
     }
+
+    @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
 }

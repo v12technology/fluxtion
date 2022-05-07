@@ -9,7 +9,9 @@ import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-public class TimedSlidingWindowStream<T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>> extends EventLogNode
+public class TimedSlidingWindowStream
+        <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
+        extends EventLogNode
         implements TriggeredEventStream<R> {
 
     @NoTriggerReference
@@ -45,8 +47,7 @@ public class TimedSlidingWindowStream<T, R, S extends EventStream<T>, F extends 
     @OnTrigger
     public boolean triggered() {
         boolean publish = windowFunction.isAllBucketsFilled();
-        if (publish)
-            value = windowFunction.get();
+        if (publish) value = windowFunction.get();
         return publish;
     }
 
@@ -58,16 +59,17 @@ public class TimedSlidingWindowStream<T, R, S extends EventStream<T>, F extends 
 
     @Override
     public void setUpdateTriggerNode(Object updateTriggerNode) {
-
     }
 
     @Override
     public void setPublishTriggerNode(Object publishTriggerNode) {
-
     }
 
     @Override
     public void setResetTriggerNode(Object resetTriggerNode) {
+    }
 
+    @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
     }
 }

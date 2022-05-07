@@ -60,4 +60,8 @@ public class FlatMapEventStream<T, R, S extends EventStream<T>> extends EventLog
     public void setResetTriggerNode(Object resetTriggerNode) {
 
     }
+
+    @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
 }

@@ -141,6 +141,10 @@ public final class DefaultFilteredEventHandler<T>
     }
 
     @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
+
+    @Override
     public String getName() {
         return name;
     }
