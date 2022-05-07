@@ -4,6 +4,7 @@ import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
@@ -87,6 +88,10 @@ public class IntStreamBuilder {
 
     public IntStreamBuilder peek(SerializableConsumer<Integer> peekFunction) {
         return new IntStreamBuilder(new PeekEventStream.IntPeekEventStream(eventStream, peekFunction));
+    }
+
+    public IntStreamBuilder console(String in){
+        return peek(Peekers.console(in));
     }
 
     //META-DATA

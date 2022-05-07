@@ -9,6 +9,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOper
 import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class LongStreamBuilder {
 
@@ -88,6 +89,10 @@ public class LongStreamBuilder {
 
     public LongStreamBuilder peek(LambdaReflection.SerializableConsumer<Long> peekFunction) {
         return new LongStreamBuilder(new PeekEventStream.LongPeekEventStream(eventStream, peekFunction));
+    }
+
+    public LongStreamBuilder console(String in){
+        return peek(Peekers.console(in));
     }
 
     //META-DATA

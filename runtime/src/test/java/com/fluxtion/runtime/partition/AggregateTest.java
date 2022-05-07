@@ -29,13 +29,13 @@ public class AggregateTest {
         Assert.assertEquals(230, windowSum.get().intValue());
 
         windowSum.roll();
+        Assert.assertEquals(230, windowSum.get().intValue());
+
+        windowSum.roll();
         Assert.assertEquals(210, windowSum.get().intValue());
 
         windowSum.roll();
         Assert.assertEquals(50, windowSum.get().intValue());
-
-        windowSum.roll();
-        Assert.assertEquals(0, windowSum.get().intValue());
 
         windowSum.roll();
         Assert.assertEquals(0, windowSum.get().intValue());

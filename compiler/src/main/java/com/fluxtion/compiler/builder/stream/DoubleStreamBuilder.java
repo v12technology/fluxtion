@@ -6,6 +6,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.*;
 import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class DoubleStreamBuilder {
 
@@ -85,6 +86,10 @@ public class DoubleStreamBuilder {
 
     public DoubleStreamBuilder peek(LambdaReflection.SerializableConsumer<Double> peekFunction) {
         return new DoubleStreamBuilder(new PeekEventStream.DoublePeekEventStream(eventStream, peekFunction));
+    }
+
+    public DoubleStreamBuilder console(String in){
+        return peek(Peekers.console(in));
     }
 
     //META-DATA
