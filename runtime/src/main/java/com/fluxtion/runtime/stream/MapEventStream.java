@@ -3,13 +3,10 @@ package com.fluxtion.runtime.stream;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.lang.reflect.Method;
-import java.util.function.Supplier;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
@@ -31,10 +28,12 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
     @SuppressWarnings("unchecked")
     public MapEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
         super(inputEventStream, methodReferenceReflection);
-        Method method = methodReferenceReflection.method();
-        auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
-        if(isStatefulFunction()){
-            resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
+        if(methodReferenceReflection!=null){
+            Method method = methodReferenceReflection.method();
+            auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
+            if(isStatefulFunction()){
+                resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
+            }
         }
     }
 
@@ -87,36 +86,6 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
 
         protected void mapOperation() {
-            result = mapFunction.apply(getInputEventStream().get());
-        }
-
-    }
-
-    /**
-     *
-     * I, R, T extends BaseSlidingWindowFunction<I, R, T>
-     *
-     *
-     * @param <T> Incoming type
-     * @param <R> Outgoing type
-     * @param <S> Previous EventStream
-     */
-    public static class SlidingWindowMapRef2RefEventStream< T, R, S extends EventStream<T>, W extends BaseSlidingWindowFunction<T, R, W>> extends MapEventStream<T, R, S> {
-
-        private final SerializableFunction<T, R> mapFunction;
-        private Supplier<W> function;
-        private BucketedSlidingWindowedFunction<T, R, W> windowValueStream;
-
-        public SlidingWindowMapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction, SerializableSupplier<W> windowFunctionSupplier) {
-            super(inputEventStream, mapFunction);
-            windowValueStream = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, 1);
-            this.mapFunction = mapFunction;
-        }
-
-        protected void mapOperation() {
-
-            windowValueStream.aggregate(getInputEventStream().get());
-
             result = mapFunction.apply(getInputEventStream().get());
         }
 

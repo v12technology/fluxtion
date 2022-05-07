@@ -28,9 +28,4 @@ public abstract class BaseSlidingWindowFunction<I, R, T extends BaseSlidingWindo
 
     public abstract R aggregate(I input);
 
-    @Override
-    public R reset() {
-        return null;
-    }
-
 }

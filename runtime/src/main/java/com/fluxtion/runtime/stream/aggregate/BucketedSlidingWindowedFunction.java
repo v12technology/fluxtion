@@ -39,11 +39,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     }
 
     public void roll(int windowsToRoll) {
-//        System.out.println("roll count:" + windowsToRoll);
         for (int i = 0; i < windowsToRoll; i++) {
-            //add the current function to aggregate
-            //get the next, deduct from aggregate, reset function and bump write pointer
-//            System.out.println("head of list pointer:" + writePointer);
             F oldFunction = buckets.get(writePointer);
             aggregatedFunction.combine(currentFunction);
             aggregatedFunction.deduct(oldFunction);
@@ -53,7 +49,6 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
             writePointer++;
             allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
             writePointer = writePointer % buckets.size();
-//            System.out.println("new head of list:" + writePointer);
         }
     }
 

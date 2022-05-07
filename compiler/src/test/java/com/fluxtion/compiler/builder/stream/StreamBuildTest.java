@@ -7,7 +7,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctionIntSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -309,7 +309,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             subscribe(String.class)
                     .map(StreamBuildTest::valueOfInt)
-                    .slidingMap(SlidingWindowFunctionIntSum::new, 100, 4).id("sum");
+                    .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum");
         });
         onEvent("10");
         onEvent("10");
@@ -350,12 +350,37 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void aggregateTest(){
+        sep(c ->{
+            subscribe(String.class)
+                    .map(StreamBuildTest::valueOfInt)
+                    .aggregate(AggregateIntSum::new).id("sum")
+                    .resetTrigger(subscribe(Signal.class))
+                    .push(new NotifyAndPushTarget()::setIntPushValue);;
+        });
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(nullValue()));
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        assertThat(notifyTarget.getIntPushValue(), is(30));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), is(30));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
     public void tumblingMap(){
         sep(c -> {
             subscribe(String.class)
                     .map(StreamBuildTest::valueOfInt)
-                    .tumblingMap(new Mappers.SumInt()::add, 300).id("sum")
-                    .console("sum:{}")
+                    .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
                     .push(new NotifyAndPushTarget()::setIntPushValue);;
         });
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -365,29 +390,28 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent("10");
         tickDelta(100);
         assertThat(notifyTarget.getIntPushValue(), is(0));
-
-//        assertThat(getStreamed("sum"), is(nullValue()));
+        assertThat(getStreamed("sum"), is(nullValue()));
 
         onEvent("10");
         tickDelta(100);
         assertThat(notifyTarget.getIntPushValue(), is(0));
-//        assertThat(getStreamed("sum"), is(nullValue()));
-
-        tickDelta(100);
-//        assertThat(getStreamed("sum"), is(nullValue()));
+        assertThat(getStreamed("sum"), is(nullValue()));
 
         tickDelta(100);
         assertThat(notifyTarget.getIntPushValue(), is(40));
-//        assertThat(getStreamed("sum"), is(40));
-
-        tickDelta(200);
-        assertThat(notifyTarget.getIntPushValue(), is(40));
-//        assertThat(getStreamed("sum"), is(10));
+        assertThat(getStreamed("sum"), is(40));
 
         tickDelta(100);
-        //FIXME should reset and value should be 0
-//        assertThat(notifyTarget.getIntPushValue(), is(0));
-//        assertThat(getStreamed("sum"), is(0));
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
     }
 
     @Data
