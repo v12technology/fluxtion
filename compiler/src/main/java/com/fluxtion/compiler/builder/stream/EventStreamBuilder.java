@@ -21,6 +21,8 @@ import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
+import com.fluxtion.runtime.time.FixedRateTrigger;
 
 import java.util.function.Supplier;
 
@@ -41,6 +43,11 @@ public class EventStreamBuilder<T> {
 
     public EventStreamBuilder<T> publishTrigger(Object publishTrigger){
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        return this;
+    }
+
+    public EventStreamBuilder<T> publishTriggerOverride(Object publishTrigger){
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
@@ -89,6 +96,15 @@ public class EventStreamBuilder<T> {
                 new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
     }
 
+    //todo change to use slidingMap with bucket of 1
+    public <R> EventStreamBuilder<R> tumblingMap(SerializableFunction<T, R> mapFunction, int bucketSizeMillis) {
+        EventStreamBuilder<R> stream = new EventStreamBuilder<>(
+                new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
+        FixedRateTrigger trigger = new FixedRateTrigger(bucketSizeMillis);
+        stream.publishTriggerOverride(trigger);
+        return stream;
+    }
+
     public <R> EventStreamBuilder<R> mapOnNotify(R target){
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
@@ -122,6 +138,10 @@ public class EventStreamBuilder<T> {
 
     public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {
         return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
+    }
+
+    public EventStreamBuilder<T> console(String in){
+        return peek(Peekers.console(in));
     }
 
     //META-DATA

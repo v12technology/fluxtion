@@ -6,11 +6,12 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.SlidingWindowFunctionIntSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
-import com.fluxtion.runtime.stream.helpers.Peekers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -209,6 +210,38 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void overridePublish(){
+        sep(c -> subscribe(String.class)
+                .filter(NumberUtils::isNumber)
+                .map(StreamBuildTest::parseInt)
+                .map(new Adder()::add)
+                .publishTriggerOverride(subscribe(Integer.class))
+//                .peek(Peekers.console("sum:{}"))
+                .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent("100");
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+//        System.out.println(notifyTarget);
+
+        onEvent("1000");
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+//        System.out.println(notifyTarget);
+
+        onEvent("10000");
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+//        System.out.println(notifyTarget);
+
+        onEvent((Integer)2);
+        assertThat(notifyTarget.getIntPushValue(), is(11100));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+//        System.out.println(notifyTarget);
+    }
+
+    @Test
     public void defaultValueTest() {
         sep(c -> subscribe(String.class)
                 .defaultValue("not null")
@@ -275,11 +308,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public void slidingWindow() {
         sep(c -> {
             subscribe(String.class)
-                    .peek(Peekers.console("-> {}"))
                     .map(StreamBuildTest::valueOfInt)
-                    .slidingMap(SlidingWindowFunctionIntSum::new, 100, 4).id("sum")
-                    .peek(Peekers.console("sliding value:{}"));
-
+                    .slidingMap(SlidingWindowFunctionIntSum::new, 100, 4).id("sum");
         });
         onEvent("10");
         onEvent("10");
@@ -303,7 +333,61 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tickDelta(100);
         assertThat(getStreamed("sum"), is(0));
+    }
 
+    @Value
+    public static class CastFunction<T>{
+
+        public static <S> LambdaReflection.SerializableFunction<?, S> cast(Class<S> in){
+            return new CastFunction<>(in)::castInstance;
+        }
+
+        Class<T> clazz;
+
+        public T castInstance(Object o){
+            return clazz.cast(o);
+        }
+    }
+
+    @Test
+    public void tumblingMap(){
+        sep(c -> {
+            subscribe(String.class)
+                    .map(StreamBuildTest::valueOfInt)
+                    .tumblingMap(new Mappers.SumInt()::add, 300).id("sum")
+                    .console("sum:{}")
+                    .push(new NotifyAndPushTarget()::setIntPushValue);;
+        });
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+
+//        assertThat(getStreamed("sum"), is(nullValue()));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+//        assertThat(getStreamed("sum"), is(nullValue()));
+
+        tickDelta(100);
+//        assertThat(getStreamed("sum"), is(nullValue()));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+//        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(200);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+//        assertThat(getStreamed("sum"), is(10));
+
+        tickDelta(100);
+        //FIXME should reset and value should be 0
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+//        assertThat(getStreamed("sum"), is(0));
     }
 
     @Data
