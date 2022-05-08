@@ -310,7 +310,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
             doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
         });
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        onEvent((Double) 234.8);
+        onEvent(234.8);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getLongPushValue(), is(234L));
     }
@@ -457,9 +457,9 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent(new MutableDouble(100.5));
         onEvent(new MutableLong(100));
 
-        assertThat(results.getBoxedInteger(), is((Integer)100));
-        assertThat(results.getBoxedDouble(), is((Double)100.5));
-        assertThat(results.getBoxedLong(), is((Long)100L));
+        assertThat(results.getBoxedInteger(), is(100));
+        assertThat(results.getBoxedDouble(), is(100.5));
+        assertThat(results.getBoxedLong(), is(100L));
     }
 
     @Test
