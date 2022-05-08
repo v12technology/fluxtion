@@ -10,6 +10,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -64,6 +65,12 @@ public class IntStreamBuilder {
     public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction){
         return new IntStreamBuilder( new AggregateIntStream<>(eventStream, aggregateFunction));
+    }
+
+    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder tumblingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+        return new IntStreamBuilder(
+                new TumblingIntWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

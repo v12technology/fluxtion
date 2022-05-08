@@ -16,6 +16,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -68,6 +69,12 @@ public class LongStreamBuilder {
     public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction){
         return new LongStreamBuilder( new AggregateLongStream<>(eventStream, aggregateFunction));
+    }
+
+    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder tumblingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+        return new LongStreamBuilder(
+                new TumblingLongWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

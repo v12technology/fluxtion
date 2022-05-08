@@ -18,6 +18,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseDoubleSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -70,6 +71,12 @@ public class DoubleStreamBuilder {
     public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction){
         return new DoubleStreamBuilder( new AggregateDoubleStream<>(eventStream, aggregateFunction));
+    }
+
+    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder tumblingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+        return new DoubleStreamBuilder(
+                new TumblingDoubleWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){
