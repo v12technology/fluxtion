@@ -18,7 +18,7 @@ public class TimedSlidingWindowStream
     private final S inputEventStream;
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final int buckets;
-    private transient final BucketedSlidingWindowedFunction<T, R, F> windowFunction;
+    protected transient final BucketedSlidingWindowedFunction<T, R, F> windowFunction;
     public FixedRateTrigger rollTrigger;
     private R value;
 
@@ -71,4 +71,35 @@ public class TimedSlidingWindowStream
     @Override
     public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
     }
+//TODO add a sliding window for primitives
+
+//    public static class TimedSlidingWindowIntStream<F extends BaseIntSlidingWindowFunction<F>> extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>{
+//
+//        private int value;
+//
+//        public TimedSlidingWindowIntStream(IntEventStream inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int windowSizeMillis, int buckets) {
+//            super(inputEventStream, windowFunctionSupplier, windowSizeMillis, buckets);
+//        }
+//
+//        public TimedSlidingWindowIntStream(IntEventStream inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int buckets) {
+//            super(inputEventStream, windowFunctionSupplier, buckets);
+//        }
+//
+//        @OnParentUpdate
+//        public void updateData(S inputEventStream) {
+//            windowFunction.aggregate(inputEventStream.get());
+//        }
+//
+//        @OnTrigger
+//        public boolean triggered() {
+//            boolean publish = windowFunction.isAllBucketsFilled();
+//            if (publish) value = windowFunction.get();
+//            return publish;
+//        }
+//
+//        @Override
+//        public R get() {
+//            return value;//windowFunction.get();
+//        }
+//    }
 }

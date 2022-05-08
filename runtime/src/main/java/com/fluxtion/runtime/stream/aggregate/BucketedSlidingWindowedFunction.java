@@ -15,7 +15,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final F aggregatedFunction;
-    private final F currentFunction;
+    protected final F currentFunction;
     private final List<F> buckets;
     private int writePointer;
     private boolean allBucketsFilled = false;
@@ -58,6 +58,21 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
 
     public R get() {
         return aggregatedFunction.get();
+    }
+
+    public static class BucketedSlidingWindowedIntFunction <F extends BaseIntSlidingWindowFunction<F>> extends BucketedSlidingWindowedFunction<Integer, Integer, F>{
+
+        public BucketedSlidingWindowedIntFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
+            super(windowFunctionSupplier, numberOfBuckets);
+        }
+
+        public void aggregateInt(int input){
+            currentFunction.aggregateInt(input);
+        }
+
+        public int getAsInt(){
+            return currentFunction.getAsInt();
+        }
     }
 
 }
