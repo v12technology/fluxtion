@@ -1,8 +1,16 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
+import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -51,6 +59,11 @@ public class IntStreamBuilder {
                 new BinaryMapEventStream.BinaryMapToIntEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder aggregate(
+            SerializableSupplier<F> aggregateFunction){
+        return new IntStreamBuilder( new AggregateIntStream<>(eventStream, aggregateFunction));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

@@ -6,8 +6,17 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunctio
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
+import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -54,6 +63,11 @@ public class LongStreamBuilder {
                 new BinaryMapEventStream.BinaryMapToLongEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder aggregate(
+            SerializableSupplier<F> aggregateFunction){
+        return new LongStreamBuilder( new AggregateLongStream<>(eventStream, aggregateFunction));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

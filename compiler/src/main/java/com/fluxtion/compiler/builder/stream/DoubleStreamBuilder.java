@@ -2,9 +2,23 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.*;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleConsumer;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToIntFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToLongFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
+import com.fluxtion.runtime.stream.aggregate.BaseDoubleSlidingWindowFunction;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -51,6 +65,11 @@ public class DoubleStreamBuilder {
                 new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder aggregate(
+            SerializableSupplier<F> aggregateFunction){
+        return new DoubleStreamBuilder( new AggregateDoubleStream<>(eventStream, aggregateFunction));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

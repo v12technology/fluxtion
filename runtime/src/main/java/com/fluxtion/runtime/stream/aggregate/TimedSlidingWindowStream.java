@@ -51,7 +51,6 @@ public class TimedSlidingWindowStream
         return publish;
     }
 
-
     @Override
     public R get() {
         return value;//windowFunction.get();

@@ -1,34 +1,29 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
 
-public class AggregateIntSum extends BaseSlidingWindowFunction<Integer, Integer, AggregateIntSum> {
+public class AggregateIntSum extends BaseIntSlidingWindowFunction<AggregateIntSum> {
 
-    private int sum;
+    @Override
+    public int resetInt() {
+        value = 0;
+        return getAsInt();
+    }
+
+    @Override
+    public int aggregateInt(int input) {
+        value += input;
+        return getAsInt();
+    }
 
     @Override
     public void combine(AggregateIntSum combine) {
-        sum += combine.sum;
+        value += combine.value;
     }
 
     @Override
     public void deduct(AggregateIntSum deduct) {
-        sum -= deduct.sum;
+        value -= deduct.value;
     }
 
-    @Override
-    public Integer reset() {
-        sum = 0;
-        return 0;
-    }
-
-    @Override
-    public Integer aggregate(Integer input) {
-        sum += input;
-        return sum;
-    }
-
-    public Integer get(){
-        return sum;
-    }
 }

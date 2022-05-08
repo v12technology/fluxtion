@@ -1,8 +1,12 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -83,6 +87,84 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("230");
         assertThat(notifyTarget.getOnEventCount(), is(1));
         assertThat(notifyTarget.getLongPushValue(), is(2300L));
+    }
+
+    @Test
+    public void aggregateIntTest(){
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .aggregate(AggregateIntSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        assertThat(notifyTarget.getIntPushValue(), is(30));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), is(30));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
+    public void aggregateDoubleTest(){
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .aggregate(AggregateDoubleSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setDoublePushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(getStreamed("sum"), is(0d));
+
+        onEvent("10.1");
+        onEvent("10.1");
+        onEvent("10.1");
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(30.3, 0.0001));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), closeTo(30.3, 0.0001));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0d));
+    }
+
+    @Test
+    public void aggregateLongTest(){
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .aggregate(AggregateLongSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setLongPushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(getStreamed("sum"), is(0L));
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        assertThat(notifyTarget.getLongPushValue(), is(30L));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), is(30L));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0L));
     }
 
     @Test

@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 public class AggregateStream <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
 extends MapEventStream<T, R, S> {
 
-    private transient final F mapFunction;
     private final Supplier<F> windowFunctionSupplier;
+    private transient final F mapFunction;
 
     public AggregateStream(S inputEventStream, SerializableSupplier<F> windowFunctionSupplier) {
         super(inputEventStream, null);
@@ -19,9 +19,7 @@ extends MapEventStream<T, R, S> {
         auditInfo = mapFunction.getClass().getSimpleName() + "->aggregate";
     }
 
-    protected void initialise() {
-
-    }
+    protected void initialise() {    }
 
     @Override
     public boolean isStatefulFunction() {
@@ -37,5 +35,6 @@ extends MapEventStream<T, R, S> {
     protected void mapOperation() {
         result = mapFunction.aggregate(getInputEventStream().get());
     }
+
 
 }
