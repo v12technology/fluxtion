@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 
@@ -91,7 +90,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void aggregateIntTest(){
+    public void aggregateIntTest() {
         sep(c -> subscribe(String.class)
                 .mapToInt(StreamBuildTest::parseInt)
                 .aggregate(AggregateIntSum::new).id("sum")
@@ -117,7 +116,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void aggregateDoubleTest(){
+    public void aggregateDoubleTest() {
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
                 .aggregate(AggregateDoubleSum::new).id("sum")
@@ -143,7 +142,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void aggregateLongTest(){
+    public void aggregateLongTest() {
         sep(c -> subscribe(String.class)
                 .mapToLong(StreamBuildTest::parseLong)
                 .aggregate(AggregateLongSum::new).id("sum")
@@ -170,7 +169,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
 
     @Test
-    public void tumblingIntMap(){
+    public void tumblingIntMap() {
         sep(c -> subscribe(String.class)
                 .mapToInt(StreamBuildTest::parseInt)
                 .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
@@ -207,7 +206,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void tumblingDoubleMap(){
+    public void tumblingDoubleMap() {
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
                 .tumblingAggregate(AggregateDoubleSum::new, 300).id("sum")
@@ -244,7 +243,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void tumblingLongMap(){
+    public void tumblingLongMap() {
         sep(c -> subscribe(String.class)
                 .mapToLong(StreamBuildTest::parseLong)
                 .tumblingAggregate(AggregateLongSum::new, 300).id("sum")
@@ -311,6 +310,67 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), is(0));
     }
 
+    @Test
+    public void slidingDoubleWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .slidingAggregate(AggregateDoubleSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setDoublePushValue));
+        setTime(0);
+        onEvent("10.5");
+        onEvent("10.5");
+        onEvent("10.3");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0d));
+
+        onEvent("10.2");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), closeTo(41.5, 0.0001));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), closeTo(10.2, 0.0001));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+    }
+
+    @Test
+    public void slidingLongWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .slidingAggregate(AggregateLongSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setLongPushValue));
+        setTime(0);
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0L));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(40L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(10L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+    }
 
     @Test
     public void testMultipleIntConversions() {
@@ -462,7 +522,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void boxPrimitiveTest(){
+    public void boxPrimitiveTest() {
 //        addAuditor();
         sep(c -> {
             ResultsHolder results = new ResultsHolder();
@@ -496,8 +556,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void multipleStatefulFunctionsOfSameTypeTest(){
-        sep(c ->{
+    public void multipleStatefulFunctionsOfSameTypeTest() {
+        sep(c -> {
             subscribe(MutableInt.class)
                     .mapToInt(MutableInt::intValue)
                     .map(Mappers.cumSumInt()).id("sum")
@@ -526,7 +586,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testIntReset(){
+    public void testIntReset() {
 //        addAuditor();
         sep(c -> subscribe(MutableInt.class)
                 .mapToInt(MutableInt::intValue)
@@ -611,15 +671,15 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
 
-    public static MutableDouble toMutableDouble(int val){
+    public static MutableDouble toMutableDouble(int val) {
         return new MutableDouble(val);
     }
 
-    public static MutableLong toMutableLong(long val){
+    public static MutableLong toMutableLong(long val) {
         return new MutableLong(val);
     }
 
-    public static MutableInt toMutableInt(int val){
+    public static MutableInt toMutableInt(int val) {
         return new MutableInt(val);
     }
 

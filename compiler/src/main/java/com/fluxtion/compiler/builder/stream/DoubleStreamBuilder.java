@@ -2,24 +2,13 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleConsumer;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToIntFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.partition.LambdaReflection.*;
+import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseDoubleSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -33,57 +22,68 @@ public class DoubleStreamBuilder {
     }
 
     //TRIGGERS - START
-    public DoubleStreamBuilder updateTrigger(Object updateTrigger){
+    public DoubleStreamBuilder updateTrigger(Object updateTrigger) {
         eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder publishTrigger(Object publishTrigger){
+    public DoubleStreamBuilder publishTrigger(Object publishTrigger) {
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder resetTrigger(Object resetTrigger){
+    public DoubleStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
     }
 
-    public DoubleStreamBuilder filter(SerializableDoubleFunction<Boolean> filterFunction){
-        return new DoubleStreamBuilder ( new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
+    public DoubleStreamBuilder filter(SerializableDoubleFunction<Boolean> filterFunction) {
+        return new DoubleStreamBuilder(new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
     }
 
-    public DoubleStreamBuilder  defaultValue(double defaultValue){
+    public DoubleStreamBuilder defaultValue(double defaultValue) {
         return map(new DefaultValue.DefaultDouble(defaultValue)::getOrDefault);
     }
 
     //PROCESSING - START
     public DoubleStreamBuilder map(SerializableDoubleUnaryOperator int2IntFunction) {
-        return new DoubleStreamBuilder (new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
+        return new DoubleStreamBuilder(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
     public DoubleStreamBuilder map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
-        return new DoubleStreamBuilder (
+        return new DoubleStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
     }
 
     public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder aggregate(
-            SerializableSupplier<F> aggregateFunction){
-        return new DoubleStreamBuilder( new AggregateDoubleStream<>(eventStream, aggregateFunction));
+            SerializableSupplier<F> aggregateFunction) {
+        return new DoubleStreamBuilder(new AggregateDoubleStream<>(eventStream, aggregateFunction));
     }
 
     public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder tumblingAggregate(
-            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new DoubleStreamBuilder(
                 new TumblingDoubleWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder slidingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
+        return new DoubleStreamBuilder(
+                new TimedSlidingWindowStream.TimedSlidingWindowDoubleStream<>(
+                        eventStream,
+                        aggregateFunction,
+                        bucketSizeMillis,
+                        numberOfBuckets));
+    }
+
+
+    public <T> EventStreamBuilder<T> mapOnNotify(T target) {
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
 
-    public EventStreamBuilder<Double> box(){
+    public EventStreamBuilder<Double> box() {
         return mapToObj(Double::valueOf);
     }
 
@@ -102,24 +102,24 @@ public class DoubleStreamBuilder {
     //OUTPUTS - START
     public DoubleStreamBuilder notify(Object target) {
         SepContext.service().add(target);
-        return new DoubleStreamBuilder (new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
+        return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
         SepContext.service().add(pushFunction.captured()[0]);
-        return new DoubleStreamBuilder (new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
+        return new DoubleStreamBuilder(new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 
     public DoubleStreamBuilder peek(LambdaReflection.SerializableConsumer<Double> peekFunction) {
         return new DoubleStreamBuilder(new PeekEventStream.DoublePeekEventStream(eventStream, peekFunction));
     }
 
-    public DoubleStreamBuilder console(String in){
+    public DoubleStreamBuilder console(String in) {
         return peek(Peekers.console(in));
     }
 
     //META-DATA
-    public DoubleStreamBuilder id(String nodeId){
+    public DoubleStreamBuilder id(String nodeId) {
         SepContext.service().add(eventStream, nodeId);
         return this;
     }

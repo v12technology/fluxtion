@@ -7,7 +7,9 @@ import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream
@@ -77,7 +79,7 @@ public class TimedSlidingWindowStream
     public static class TimedSlidingWindowIntStream
             <F extends BaseIntSlidingWindowFunction<F>>
             extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>
-    implements IntEventStream{
+            implements IntEventStream {
 
         private int value;
         private transient final BucketedSlidingWindowedIntFunction<F> intSlidingFunction;
@@ -127,6 +129,109 @@ public class TimedSlidingWindowStream
         }
     }
 
-    //TODO add Double using BucketedSlidingWindowedDoubleFunction
-    //TODO add Long using BucketedSlidingWindowedLongFunction
+    public static class TimedSlidingWindowDoubleStream
+            <F extends BaseDoubleSlidingWindowFunction<F>>
+            extends TimedSlidingWindowStream<Double, Double, DoubleEventStream, F>
+            implements DoubleEventStream {
+
+        private double value;
+        private transient final BucketedSlidingWindowedDoubleFunction<F> intSlidingFunction;
+
+        public TimedSlidingWindowDoubleStream(
+                DoubleEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int windowSizeMillis,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, windowSizeMillis, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedDoubleFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        public TimedSlidingWindowDoubleStream(
+                DoubleEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedDoubleFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        @OnParentUpdate
+        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+        }
+
+        @OnParentUpdate
+        public void updateData(DoubleEventStream inputEventStream) {
+            intSlidingFunction.aggregateDouble(inputEventStream.getAsDouble());
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            boolean publish = intSlidingFunction.isAllBucketsFilled();
+            if (publish) value = intSlidingFunction.getAsDouble();
+            return publish;
+        }
+
+        @Override
+        public Double get() {
+            return value;
+        }
+
+        @Override
+        public double getAsDouble() {
+            return value;
+        }
+    }
+
+    public static class TimedSlidingWindowLongStream
+            <F extends BaseLongSlidingWindowFunction<F>>
+            extends TimedSlidingWindowStream<Long, Long, LongEventStream, F>
+            implements LongEventStream {
+
+        private long value;
+        private transient final BucketedSlidingWindowedLongFunction<F> intSlidingFunction;
+
+        public TimedSlidingWindowLongStream(
+                LongEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int windowSizeMillis,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, windowSizeMillis, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedLongFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        public TimedSlidingWindowLongStream(
+                LongEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedLongFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        @OnParentUpdate
+        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+        }
+
+        @OnParentUpdate
+        public void updateData(LongEventStream inputEventStream) {
+            intSlidingFunction.aggregateLong(inputEventStream.getAsLong());
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            boolean publish = intSlidingFunction.isAllBucketsFilled();
+            if (publish) value = intSlidingFunction.getAsLong();
+            return publish;
+        }
+
+        @Override
+        public Long get() {
+            return value;
+        }
+
+        @Override
+        public long getAsLong() {
+            return value;
+        }
+    }
 }
