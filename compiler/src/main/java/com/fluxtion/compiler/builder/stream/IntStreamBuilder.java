@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
@@ -12,6 +13,8 @@ import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -71,6 +74,16 @@ public class IntStreamBuilder {
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
         return new IntStreamBuilder(
                 new TumblingIntWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
+    }
+
+    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder slidingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets){
+        return new IntStreamBuilder(
+                new TimedSlidingWindowStream.TimedSlidingWindowIntStream<>(
+                        eventStream,
+                        aggregateFunction,
+                        bucketSizeMillis,
+                        numberOfBuckets));
     }
 
     public <T> EventStreamBuilder<T> mapOnNotify(T target){

@@ -127,7 +127,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void mapTestWithFilter() {
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .map(StreamBuildTest::parseInt)
                 .map(new Adder()::add)
                 .push(new NotifyAndPushTarget()::setIntPushValue)
@@ -173,7 +173,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void mapTestWithFilterAndUpdateAndPublishTriggers() {
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .map(StreamBuildTest::parseInt)
                 .map(new Adder()::add)
                 .updateTrigger(subscribe(Double.class))
@@ -212,7 +212,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void overridePublish(){
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .map(StreamBuildTest::parseInt)
                 .map(new Adder()::add)
                 .publishTriggerOverride(subscribe(Integer.class))
@@ -292,12 +292,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void lookupTest() {
-        sep(c -> {
-            subscribe(PreMap.class)
-                    .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
-                    .map(PostMap::getLastName)
-                    .push(new NotifyAndPushTarget()::setStringPushValue);
-        });
+        sep(c -> subscribe(PreMap.class)
+                .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
+                .map(PostMap::getLastName)
+                .push(new NotifyAndPushTarget()::setStringPushValue));
 
         onEvent(new PreMap("test"));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -305,12 +303,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void slidingWindow() {
-        sep(c -> {
-            subscribe(String.class)
-                    .map(StreamBuildTest::valueOfInt)
-                    .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum");
-        });
+    public void slidingWindowTest() {
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::valueOfInt)
+                .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum"));
+        addClock();
         onEvent("10");
         onEvent("10");
         onEvent("10");
@@ -351,13 +348,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void aggregateTest(){
-        sep(c ->{
-            subscribe(String.class)
-                    .map(StreamBuildTest::valueOfInt)
-                    .aggregate(AggregateIntSum::new).id("sum")
-                    .resetTrigger(subscribe(Signal.class))
-                    .push(new NotifyAndPushTarget()::setIntPushValue);;
-        });
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::valueOfInt)
+                .aggregate(AggregateIntSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
         assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(getStreamed("sum"), is(nullValue()));
@@ -377,12 +372,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void tumblingMap(){
-        sep(c -> {
-            subscribe(String.class)
-                    .map(StreamBuildTest::valueOfInt)
-                    .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
-                    .push(new NotifyAndPushTarget()::setIntPushValue);;
-        });
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::valueOfInt)
+                .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
+                .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
 
         onEvent("10");

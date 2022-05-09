@@ -7,6 +7,7 @@ import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream
@@ -15,7 +16,7 @@ public class TimedSlidingWindowStream
         implements TriggeredEventStream<R> {
 
     @NoTriggerReference
-    private final S inputEventStream;
+    protected final S inputEventStream;
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final int buckets;
     protected transient final BucketedSlidingWindowedFunction<T, R, F> windowFunction;
@@ -71,35 +72,61 @@ public class TimedSlidingWindowStream
     @Override
     public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
     }
-//TODO add a sliding window for primitives
 
-//    public static class TimedSlidingWindowIntStream<F extends BaseIntSlidingWindowFunction<F>> extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>{
-//
-//        private int value;
-//
-//        public TimedSlidingWindowIntStream(IntEventStream inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int windowSizeMillis, int buckets) {
-//            super(inputEventStream, windowFunctionSupplier, windowSizeMillis, buckets);
-//        }
-//
-//        public TimedSlidingWindowIntStream(IntEventStream inputEventStream, SerializableSupplier<F> windowFunctionSupplier, int buckets) {
-//            super(inputEventStream, windowFunctionSupplier, buckets);
-//        }
-//
-//        @OnParentUpdate
-//        public void updateData(S inputEventStream) {
-//            windowFunction.aggregate(inputEventStream.get());
-//        }
-//
-//        @OnTrigger
-//        public boolean triggered() {
-//            boolean publish = windowFunction.isAllBucketsFilled();
-//            if (publish) value = windowFunction.get();
-//            return publish;
-//        }
-//
-//        @Override
-//        public R get() {
-//            return value;//windowFunction.get();
-//        }
-//    }
+
+    public static class TimedSlidingWindowIntStream
+            <F extends BaseIntSlidingWindowFunction<F>>
+            extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>
+    implements IntEventStream{
+
+        private int value;
+        private transient final BucketedSlidingWindowedIntFunction<F> intSlidingFunction;
+
+        public TimedSlidingWindowIntStream(
+                IntEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int windowSizeMillis,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, windowSizeMillis, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedIntFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        public TimedSlidingWindowIntStream(
+                IntEventStream inputEventStream,
+                SerializableSupplier<F> windowFunctionSupplier,
+                int buckets) {
+            super(inputEventStream, windowFunctionSupplier, buckets);
+            intSlidingFunction = new BucketedSlidingWindowedIntFunction<>(windowFunctionSupplier, buckets);
+        }
+
+        @OnParentUpdate
+        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+        }
+
+        @OnParentUpdate
+        public void updateData(IntEventStream inputEventStream) {
+            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            boolean publish = intSlidingFunction.isAllBucketsFilled();
+            if (publish) value = intSlidingFunction.getAsInt();
+            return publish;
+        }
+
+        @Override
+        public Integer get() {
+            return value;
+        }
+
+        @Override
+        public int getAsInt() {
+            return value;
+        }
+    }
+
+    //TODO add Double using BucketedSlidingWindowedDoubleFunction
+    //TODO add Long using BucketedSlidingWindowedLongFunction
 }

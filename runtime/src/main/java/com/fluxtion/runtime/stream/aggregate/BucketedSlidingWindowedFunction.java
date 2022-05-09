@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @param <T> Input type
  * @param <R> return type
  * @param <F> BaseSlidingWindowFunction
@@ -14,7 +13,7 @@ import java.util.List;
 public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFunction<T, R, F>> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
-    private final F aggregatedFunction;
+    protected final F aggregatedFunction;
     protected final F currentFunction;
     private final List<F> buckets;
     private int writePointer;
@@ -34,7 +33,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         currentFunction.aggregate(input);
     }
 
-    public void roll(){
+    public void roll() {
         roll(1);
     }
 
@@ -60,18 +59,51 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         return aggregatedFunction.get();
     }
 
-    public static class BucketedSlidingWindowedIntFunction <F extends BaseIntSlidingWindowFunction<F>> extends BucketedSlidingWindowedFunction<Integer, Integer, F>{
+    public static class BucketedSlidingWindowedIntFunction<F extends BaseIntSlidingWindowFunction<F>>
+            extends BucketedSlidingWindowedFunction<Integer, Integer, F> {
 
         public BucketedSlidingWindowedIntFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
             super(windowFunctionSupplier, numberOfBuckets);
         }
 
-        public void aggregateInt(int input){
+        public void aggregateInt(int input) {
             currentFunction.aggregateInt(input);
         }
 
-        public int getAsInt(){
-            return currentFunction.getAsInt();
+        public int getAsInt() {
+            return aggregatedFunction.getAsInt();
+        }
+    }
+
+    public static class BucketedSlidingWindowedDoubleFunction<F extends BaseDoubleSlidingWindowFunction<F>>
+            extends BucketedSlidingWindowedFunction<Double, Double, F> {
+
+        public BucketedSlidingWindowedDoubleFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
+            super(windowFunctionSupplier, numberOfBuckets);
+        }
+
+        public void aggregateDouble(double input) {
+            currentFunction.aggregateDouble(input);
+        }
+
+        public double getAsDouble() {
+            return aggregatedFunction.getAsDouble();
+        }
+    }
+
+    public static class BucketedSlidingWindowedLongFunction<F extends BaseLongSlidingWindowFunction<F>>
+            extends BucketedSlidingWindowedFunction<Long, Long, F> {
+
+        public BucketedSlidingWindowedLongFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
+            super(windowFunctionSupplier, numberOfBuckets);
+        }
+
+        public void aggregateLong(long input) {
+            currentFunction.aggregateLong(input);
+        }
+
+        public long getAsLong() {
+            return aggregatedFunction.getAsLong();
         }
     }
 

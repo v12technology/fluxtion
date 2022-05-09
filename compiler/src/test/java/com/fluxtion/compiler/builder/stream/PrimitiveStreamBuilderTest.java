@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 
@@ -278,6 +279,38 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getLongPushValue(), is(0L));
         assertThat(getStreamed("sum"), is(0L));
     }
+
+    @Test
+    public void slidingIntWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        setTime(0);
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(10));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+    }
+
 
     @Test
     public void testMultipleIntConversions() {
