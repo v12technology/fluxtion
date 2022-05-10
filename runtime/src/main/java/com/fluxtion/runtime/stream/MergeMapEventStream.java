@@ -104,4 +104,8 @@ public class MergeMapEventStream<T> implements TriggeredEventStream<T> {
     public void setResetTriggerNode(Object resetTriggerNode) {
         //do nothing
     }
+
+    @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
 }

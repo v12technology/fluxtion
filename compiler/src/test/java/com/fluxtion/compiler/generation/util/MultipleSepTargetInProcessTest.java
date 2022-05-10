@@ -223,6 +223,34 @@ public class MultipleSepTargetInProcessTest {
         sep.onEvent(e);
     }
 
+    protected void onEvent(byte value){
+        onEvent((Byte)value);
+    }
+
+    protected void onEvent(char value){
+        onEvent((Character)value);
+    }
+
+    protected void onEvent(short value){
+        onEvent((Short)value);
+    }
+
+    protected void onEvent(int value){
+        onEvent((Integer)value);
+    }
+
+    protected void onEvent(float value){
+        onEvent((Float)value);
+    }
+
+    protected void onEvent(double value){
+        onEvent((Double)value);
+    }
+
+    protected void onEvent(long value){
+        onEvent((Long)value);
+    }
+
     protected void onGenericEvent(Object e) {
         onEvent(e);
     }
