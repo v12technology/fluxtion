@@ -44,11 +44,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
  */
 public interface StaticEventProcessor {
 
-    StaticEventProcessor NULL_EVENTHANDLER = new StaticEventProcessor() {
-        @Override
-        public void onEvent(Object e) {
-        }
-
+    StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };
 
     /**
@@ -58,5 +54,31 @@ public interface StaticEventProcessor {
      */
     void onEvent(Object e);
 
+    default void onEvent(byte value){
+        onEvent((Byte)value);
+    }
 
+    default void onEvent(char value){
+        onEvent((Character)value);
+    }
+
+    default void onEvent(short value){
+        onEvent((Short)value);
+    }
+
+    default void onEvent(int value){
+        onEvent((Integer)value);
+    }
+
+    default void onEvent(float value){
+        onEvent((Float)value);
+    }
+
+    default void onEvent(double value){
+        onEvent((Double)value);
+    }
+
+    default void onEvent(long value){
+        onEvent((Long)value);
+    }
 }

@@ -23,13 +23,16 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
     private transient boolean overrideUpdateTrigger;
+    private transient boolean overridePublishTrigger;
     protected transient boolean inputStreamTriggered;
     private transient boolean overrideTriggered;
     private transient boolean publishTriggered;
+    private transient boolean publishOverrideTriggered;
     private transient boolean resetTriggered;
 
     private Object updateTriggerNode;
     private Object publishTriggerNode;
+    private Object publishTriggerOverrideNode;
     private Object resetTriggerNode;
 
     public AbstractEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
@@ -55,7 +58,11 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
      * @return flag indicating fire a notification to child nodes for any upstream change
      */
     protected final boolean fireEventUpdateNotification() {
-        boolean fireNotification = (!overrideUpdateTrigger && inputStreamTriggered) | overrideTriggered | publishTriggered | resetTriggered;
+        boolean fireNotification = (!overridePublishTrigger && !overrideUpdateTrigger && inputStreamTriggered)
+                | (!overridePublishTrigger && overrideTriggered)
+                | publishOverrideTriggered
+                | publishTriggered
+                | resetTriggered;
         overrideTriggered = false;
         publishTriggered = false;
         resetTriggered = false;
@@ -98,6 +105,11 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         publishTriggered = true;
     }
 
+    @OnParentUpdate("publishTriggerOverrideNode")
+    public final void publishTriggerOverrideNodeUpdated(Object triggerNode) {
+        publishOverrideTriggered = true;
+    }
+
     @OnParentUpdate("resetTriggerNode")
     public final void resetTriggerNodeUpdated(Object triggerNode) {
         resetTriggered = true;
@@ -107,6 +119,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     @Initialise
     public final void initialiseEventStream() {
         overrideUpdateTrigger = updateTriggerNode != null;
+        overridePublishTrigger = publishTriggerOverrideNode != null;
         initialise();
     }
 
@@ -132,6 +145,14 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
 
     public void setPublishTriggerNode(Object publishTriggerNode) {
         this.publishTriggerNode = publishTriggerNode;
+    }
+
+    public Object getPublishTriggerOverrideNode() {
+        return publishTriggerOverrideNode;
+    }
+
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+        this.publishTriggerOverrideNode = publishTriggerOverrideNode;
     }
 
     public Object getResetTriggerNode() {

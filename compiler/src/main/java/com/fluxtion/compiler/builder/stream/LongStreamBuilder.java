@@ -2,13 +2,15 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
+import com.fluxtion.runtime.partition.LambdaReflection.*;
 import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
+import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class LongStreamBuilder {
 
@@ -20,26 +22,26 @@ public class LongStreamBuilder {
     }
 
     //TRIGGERS - START
-    public LongStreamBuilder updateTrigger(Object updateTrigger){
+    public LongStreamBuilder updateTrigger(Object updateTrigger) {
         eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
         return this;
     }
 
-    public LongStreamBuilder publishTrigger(Object publishTrigger){
+    public LongStreamBuilder publishTrigger(Object publishTrigger) {
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
-    public LongStreamBuilder resetTrigger(Object resetTrigger){
+    public LongStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
     }
 
-    public LongStreamBuilder filter(SerializableLongFunction<Boolean> filterFunction){
-        return new LongStreamBuilder( new FilterEventStream.LongFilterEventStream(eventStream, filterFunction));
+    public LongStreamBuilder filter(SerializableLongFunction<Boolean> filterFunction) {
+        return new LongStreamBuilder(new FilterEventStream.LongFilterEventStream(eventStream, filterFunction));
     }
 
-    public LongStreamBuilder defaultValue(long defaultValue){
+    public LongStreamBuilder defaultValue(long defaultValue) {
         return map(new DefaultValue.DefaultLong(defaultValue)::getOrDefault);
     }
 
@@ -55,11 +57,32 @@ public class LongStreamBuilder {
         );
     }
 
-    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder aggregate(
+            SerializableSupplier<F> aggregateFunction) {
+        return new LongStreamBuilder(new AggregateLongStream<>(eventStream, aggregateFunction));
+    }
+
+    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder tumblingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
+        return new LongStreamBuilder(
+                new TumblingLongWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
+    }
+
+    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder slidingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
+        return new LongStreamBuilder(
+                new TimedSlidingWindowStream.TimedSlidingWindowLongStream<>(
+                        eventStream,
+                        aggregateFunction,
+                        bucketSizeMillis,
+                        numberOfBuckets));
+    }
+
+    public <T> EventStreamBuilder<T> mapOnNotify(T target) {
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
 
-    public EventStreamBuilder<Long> box(){
+    public EventStreamBuilder<Long> box() {
         return mapToObj(Long::valueOf);
     }
 
@@ -90,8 +113,12 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new PeekEventStream.LongPeekEventStream(eventStream, peekFunction));
     }
 
+    public LongStreamBuilder console(String in) {
+        return peek(Peekers.console(in));
+    }
+
     //META-DATA
-    public LongStreamBuilder id(String nodeId){
+    public LongStreamBuilder id(String nodeId) {
         SepContext.service().add(eventStream, nodeId);
         return this;
     }

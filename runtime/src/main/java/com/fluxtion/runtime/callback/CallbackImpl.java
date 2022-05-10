@@ -52,6 +52,10 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     }
 
     @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
+
+    @Override
     public void registerCallbackDispatcher(CallbackDispatcher callBackDispatcher) {
         this.callBackDispatcher = callBackDispatcher;
     }

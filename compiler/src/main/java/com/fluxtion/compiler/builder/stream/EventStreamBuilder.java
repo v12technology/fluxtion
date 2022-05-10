@@ -5,11 +5,12 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
@@ -17,7 +18,12 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.aggregate.AggregateStream;
+import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
+import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class EventStreamBuilder<T> {
 
@@ -36,6 +42,11 @@ public class EventStreamBuilder<T> {
 
     public EventStreamBuilder<T> publishTrigger(Object publishTrigger){
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        return this;
+    }
+
+    public EventStreamBuilder<T> publishTriggerOverride(Object publishTrigger){
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
         return this;
     }
 
@@ -78,6 +89,23 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new FlatMapArrayEventStream<>(eventStream, iterableFunction));
     }
 
+    public <S, R, F extends BaseSlidingWindowFunction<T, R, F>> EventStreamBuilder<R> aggregate(
+            SerializableSupplier<F> aggregateFunction){
+        return new EventStreamBuilder<>(new AggregateStream<>(eventStream, aggregateFunction));
+    }
+
+    public <S, R, F extends BaseSlidingWindowFunction<T, R, F>> EventStreamBuilder<R> tumblingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+        return new EventStreamBuilder<>(
+                new TumblingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
+    }
+
+    public <S, R, F extends BaseSlidingWindowFunction<T, R, F>> EventStreamBuilder<R> slidingAggregate(
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow){
+        return new EventStreamBuilder<>(
+                new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
+    }
+
     public <R> EventStreamBuilder<R> mapOnNotify(R target){
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
@@ -113,6 +141,10 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
     }
 
+    public EventStreamBuilder<T> console(String in){
+        return peek(Peekers.console(in));
+    }
+
     //META-DATA
     public EventStreamBuilder<T> id(String nodeId){
         SepContext.service().add(eventStream, nodeId);
@@ -122,7 +154,9 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    More tests
+    windowing sliding
+    windowing tumbling
+    groupby
 
     Done:
     ================
@@ -134,6 +168,8 @@ public class EventStreamBuilder<T> {
     De-dupe filter
     mapOnNotify
     id for eventStream
+    flatmap
+    More tests
 
     optional:
     ================
@@ -141,7 +177,6 @@ public class EventStreamBuilder<T> {
     audit - helper function
     add peek functions to support log and audit helpers
     merge/zip
-    flatmap
      */
 
 }

@@ -8,9 +8,21 @@ public interface EventStream <R> {
 
     R get();
 
-    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier{}
-    interface DoubleEventStream extends TriggeredEventStream<Double>, DoubleSupplier {}
-    interface LongEventStream extends TriggeredEventStream<Long>, LongSupplier {}
+    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier{
+        default Integer get(){
+            return getAsInt();
+        }
+    }
+    interface DoubleEventStream extends TriggeredEventStream<Double>, DoubleSupplier {
+        default Double get(){
+            return getAsDouble();
+        }
+    }
+    interface LongEventStream extends TriggeredEventStream<Long>, LongSupplier {
+        default Long get(){
+            return getAsLong();
+        }
+    }
 
 
 }

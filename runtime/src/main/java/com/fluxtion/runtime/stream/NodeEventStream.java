@@ -48,4 +48,8 @@ public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventS
     public void setResetTriggerNode(Object resetTriggerNode) {
         //do nothing
     }
+
+    @Override
+    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+    }
 }

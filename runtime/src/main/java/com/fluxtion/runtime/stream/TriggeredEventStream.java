@@ -6,4 +6,6 @@ public interface TriggeredEventStream<T> extends EventStream <T> {
     void setPublishTriggerNode(Object publishTriggerNode);
 
     void setResetTriggerNode(Object resetTriggerNode);
+
+    void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode);
 }

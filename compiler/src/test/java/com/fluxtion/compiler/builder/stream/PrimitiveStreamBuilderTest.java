@@ -1,8 +1,12 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -26,7 +30,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .mapToInt(StreamBuildTest::parseInt)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
@@ -48,7 +52,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .mapToDouble(StreamBuildTest::parseDouble)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
@@ -69,7 +73,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .mapToLong(StreamBuildTest::parseLong)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
@@ -86,11 +90,294 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void aggregateIntTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .aggregate(AggregateIntSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        assertThat(notifyTarget.getIntPushValue(), is(30));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), is(30));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
+    public void aggregateDoubleTest() {
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .aggregate(AggregateDoubleSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setDoublePushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(getStreamed("sum"), is(0d));
+
+        onEvent("10.1");
+        onEvent("10.1");
+        onEvent("10.1");
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(30.3, 0.0001));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), closeTo(30.3, 0.0001));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0d));
+    }
+
+    @Test
+    public void aggregateLongTest() {
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .aggregate(AggregateLongSum::new).id("sum")
+                .resetTrigger(subscribe(Signal.class))
+                .push(new NotifyAndPushTarget()::setLongPushValue)
+        );
+
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(getStreamed("sum"), is(0L));
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        assertThat(notifyTarget.getLongPushValue(), is(30L));
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(getStreamed("sum"), is(30L));
+
+        onEvent(new Signal<>());
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(notifyTarget.getOnEventCount(), is(4));
+        assertThat(getStreamed("sum"), is(0L));
+    }
+
+
+    @Test
+    public void tumblingIntMap() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(40));
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
+    public void tumblingDoubleMap() {
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .tumblingAggregate(AggregateDoubleSum::new, 300).id("sum")
+                .push(new NotifyAndPushTarget()::setDoublePushValue));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent("10.1");
+        onEvent("10.1");
+        onEvent("10.4");
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(getStreamed("sum"), is(0d));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(getStreamed("sum"), is(0d));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(40.6, 000.1));
+        assertThat(getStreamed("sum"), closeTo(40.6, 000.1));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(40.6, 000.1));
+        assertThat(getStreamed("sum"), closeTo(40.6, 000.1));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), closeTo(40.6, 000.1));
+        assertThat(getStreamed("sum"), closeTo(40.6, 000.1));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getDoublePushValue(), is(0d));
+        assertThat(getStreamed("sum"), is(0d));
+    }
+
+    @Test
+    public void tumblingLongMap() {
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .tumblingAggregate(AggregateLongSum::new, 300).id("sum")
+                .push(new NotifyAndPushTarget()::setLongPushValue));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(getStreamed("sum"), is(0L));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(getStreamed("sum"), is(0L));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(40L));
+        assertThat(getStreamed("sum"), is(40L));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(40L));
+        assertThat(getStreamed("sum"), is(40L));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(40L));
+        assertThat(getStreamed("sum"), is(40L));
+
+        tickDelta(100);
+        assertThat(notifyTarget.getLongPushValue(), is(0L));
+        assertThat(getStreamed("sum"), is(0L));
+    }
+
+    @Test
+    public void slidingIntWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        setTime(0);
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(40));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(10));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
+    public void slidingDoubleWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .slidingAggregate(AggregateDoubleSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setDoublePushValue));
+        setTime(0);
+        onEvent("10.5");
+        onEvent("10.5");
+        onEvent("10.3");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0d));
+
+        onEvent("10.2");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), closeTo(41.5, 0.0001));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), closeTo(10.2, 0.0001));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0d));
+    }
+
+    @Test
+    public void slidingLongWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .slidingAggregate(AggregateLongSum::new, 100, 4).id("sum")
+                .push(new NotifyAndPushTarget()::setLongPushValue));
+        setTime(0);
+        onEvent("10");
+        onEvent("10");
+        onEvent("10");
+        tickDelta(100);
+
+        assertThat(getStreamed("sum"), is(0L));
+
+        onEvent("10");
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(40L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(10L));
+
+        tickDelta(100);
+        assertThat(getStreamed("sum"), is(0L));
+    }
+
+    @Test
     public void testMultipleIntConversions() {
 //        addAuditor();
         StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isNumber)
+                .filter(NumberUtils::isCreatable)
                 .mapToInt(StreamBuildTest::parseInt)
                 .mapToLong(PrimitiveStreamBuilderTest::addMaxInteger)
                 .push(notifyAndPushTarget::setLongPushValue)
@@ -116,7 +403,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
             doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
         });
         StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
-        onEvent((Double) 234.8);
+        onEvent(234.8);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getLongPushValue(), is(234L));
     }
@@ -235,7 +522,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void boxPrimitiveTest(){
+    public void boxPrimitiveTest() {
 //        addAuditor();
         sep(c -> {
             ResultsHolder results = new ResultsHolder();
@@ -263,14 +550,14 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent(new MutableDouble(100.5));
         onEvent(new MutableLong(100));
 
-        assertThat(results.getBoxedInteger(), is((Integer)100));
-        assertThat(results.getBoxedDouble(), is((Double)100.5));
-        assertThat(results.getBoxedLong(), is((Long)100L));
+        assertThat(results.getBoxedInteger(), is(100));
+        assertThat(results.getBoxedDouble(), is(100.5));
+        assertThat(results.getBoxedLong(), is(100L));
     }
 
     @Test
-    public void multipleStatefulFunctionsOfSameTypeTest(){
-        sep(c ->{
+    public void multipleStatefulFunctionsOfSameTypeTest() {
+        sep(c -> {
             subscribe(MutableInt.class)
                     .mapToInt(MutableInt::intValue)
                     .map(Mappers.cumSumInt()).id("sum")
@@ -299,14 +586,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testIntReset(){
+    public void testIntReset() {
 //        addAuditor();
-        sep(c ->{
-            subscribe(MutableInt.class)
-                    .mapToInt(MutableInt::intValue)
-                    .map(Mappers.cumSumInt()).id("sum")
-                    .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
-        });
+        sep(c -> subscribe(MutableInt.class)
+                .mapToInt(MutableInt::intValue)
+                .map(Mappers.cumSumInt()).id("sum")
+                .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase)));
 
         onEvent(new MutableInt(10));
         onEvent(new MutableInt(10));
@@ -386,15 +671,15 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
 
-    public static MutableDouble toMutableDouble(int val){
+    public static MutableDouble toMutableDouble(int val) {
         return new MutableDouble(val);
     }
 
-    public static MutableLong toMutableLong(long val){
+    public static MutableLong toMutableLong(long val) {
         return new MutableLong(val);
     }
 
-    public static MutableInt toMutableInt(int val){
+    public static MutableInt toMutableInt(int val) {
         return new MutableInt(val);
     }
 
