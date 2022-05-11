@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
+import static com.fluxtion.compiler.builder.stream.EventFlow.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,6 +39,43 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("test");
         assertThat(1, is(notifyTarget.getOnEventCount()));
+    }
+
+    @Test
+    public void wrapNodeAndPushStreamPropertyStreamTest() {
+        sep(c -> subscribeToNodeProperty(MyStringHandler::getInputString)
+                .push(new NotifyAndPushTarget()::setStringPushValue));
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
+        onEvent("test");
+        assertThat(notifyTarget.getStringPushValue(), is("test"));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
+    public void nodePropertyStreamTest(){
+        sep(c ->{
+            MyStringHandler myStringHandler = new MyStringHandler();
+            NotifyAndPushTarget target = new NotifyAndPushTarget();
+
+            EventFlow
+                    .subscribeToNodeProperty(myStringHandler::getInputString)
+                    .push(target::setStringPushValue);
+            EventFlow.subscribeToNodeProperty(myStringHandler::getParsedNumber)
+                    .push(target::setIntPushValue);
+        });
+
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
+        onEvent("test");
+        assertThat(notifyTarget.getStringPushValue(), is("test"));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+
+        onEvent("42");
+        assertThat(notifyTarget.getStringPushValue(), is("42"));
+        assertThat(notifyTarget.getIntPushValue(), is(42));
+        assertThat(notifyTarget.getOnEventCount(), is(2));
     }
 
     @Test
@@ -210,14 +246,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void overridePublish(){
+    public void overridePublish() {
         sep(c -> subscribe(String.class)
-                .filter(NumberUtils::isCreatable)
-                .map(StreamBuildTest::parseInt)
-                .map(new Adder()::add)
-                .publishTriggerOverride(subscribe(Integer.class))
+                        .filter(NumberUtils::isCreatable)
+                        .map(StreamBuildTest::parseInt)
+                        .map(new Adder()::add)
+                        .publishTriggerOverride(subscribe(Integer.class))
 //                .peek(Peekers.console("sum:{}"))
-                .push(new NotifyAndPushTarget()::setIntPushValue)
+                        .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent("100");
@@ -235,7 +271,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getOnEventCount(), is(0));
 //        System.out.println(notifyTarget);
 
-        onEvent((Integer)2);
+        onEvent((Integer) 2);
         assertThat(notifyTarget.getIntPushValue(), is(11100));
         assertThat(notifyTarget.getOnEventCount(), is(1));
 //        System.out.println(notifyTarget);
@@ -333,21 +369,21 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Value
-    public static class CastFunction<T>{
+    public static class CastFunction<T> {
 
-        public static <S> LambdaReflection.SerializableFunction<?, S> cast(Class<S> in){
+        public static <S> LambdaReflection.SerializableFunction<?, S> cast(Class<S> in) {
             return new CastFunction<>(in)::castInstance;
         }
 
         Class<T> clazz;
 
-        public T castInstance(Object o){
+        public T castInstance(Object o) {
             return clazz.cast(o);
         }
     }
 
     @Test
-    public void aggregateTest(){
+    public void aggregateTest() {
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
                 .aggregate(AggregateIntSum::new).id("sum")
@@ -371,7 +407,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void tumblingMap(){
+    public void tumblingMap() {
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
                 .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
@@ -465,10 +501,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class MyStringHandler {
         private String inputString;
+        private int parsedNumber;
 
         @OnEventHandler
         public void newString(String in) {
             inputString = in;
+            if (NumberUtils.isCreatable(in)) {
+                parsedNumber = Integer.parseInt(in);
+            }
         }
     }
 

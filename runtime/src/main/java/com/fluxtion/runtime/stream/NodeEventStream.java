@@ -7,7 +7,7 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.NodeNameLookup;
 
-public class NodeEventStream<T> extends EventLogNode  implements TriggeredEventStream<T> {
+public class NodeEventStream<T> extends EventLogNode implements TriggeredEventStream<T> {
 
     private final T source;
     private String instanceName;

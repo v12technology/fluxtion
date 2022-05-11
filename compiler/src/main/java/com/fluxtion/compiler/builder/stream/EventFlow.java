@@ -1,12 +1,15 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.FilteredEventHandler;
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.MergeMapEventStream;
 import com.fluxtion.runtime.stream.NodeEventStream;
+import com.fluxtion.runtime.stream.NodePropertyStream;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Helper methods for subscribing and creating an {@link EventStreamBuilder} from external events or internal nodes
@@ -71,6 +74,28 @@ public interface EventFlow {
      */
     static <T> EventStreamBuilder<T> subscribeToNode(T source) {
         return new EventStreamBuilder<>(new NodeEventStream<>(source));
+    }
+
+    static <T, R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableFunction<T, R> sourceProperty) {
+        T source;
+        if(sourceProperty.captured().length == 0){
+            try {
+                source = (T) sourceProperty.getContainingClass().getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException("no default constructor found for class:"
+                        + sourceProperty.getContainingClass()
+                        + " either add default constructor or pass in a node instance");
+            }
+        }else{
+            source = (T) sourceProperty.captured()[0];
+        }
+        return subscribeToNode(source).map(sourceProperty);
+    }
+
+    static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier){
+        SepContext.service().addOrReuse(propertySupplier.captured()[0]);
+        return new EventStreamBuilder<>(new NodePropertyStream<>(propertySupplier));
     }
 
     /**
