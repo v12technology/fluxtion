@@ -256,6 +256,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void defaultPrimitiveWrapperValueTest() {
+        sep(c -> subscribe(Integer.class)
+            .defaultValue(1).id("defaultValue"));
+        Integer defaultValue = getStreamed("defaultValue");
+        assertThat(defaultValue, is(1));
+    }
+
+    @Test
     public void defaultValueTestWithReset() {
         sep(c -> subscribe(String.class)
                 .defaultValue("not null").resetTrigger(subscribe(Integer.class))
