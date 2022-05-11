@@ -17,12 +17,13 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.google.common.base.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -76,6 +77,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
             for (Field.MappedField mappedInstance : privateFields) {
                 String varName = mappedInstance.mappedName;
                 Class<?> parentClass = mappedInstance.parentClass();
+                Class<?> realClass = mappedInstance.realClass();
                 LOGGER.debug("match field var:{}, type:{}", varName, parentClass);
                 //                            Class<?> parentClass = mappedInstance.collection?List.class:parentInstance.getClass();
                 boolean matchOnName = false;
@@ -88,7 +90,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     String paramName = parameters[i].getName();
                     Class<?> parameterType = parameters[i].getType();
                     LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
-                    if (parameterType != null && parameterType.isAssignableFrom(parentClass) && paramName.equals(varName)) {
+                    if (parameterType != null && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass)) && paramName.equals(varName)) {
                         matchCount++;
                         parameters[i] = null;
                         cstrArgList[i] = mappedInstance;
@@ -106,7 +108,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                         Class<?> parameterType = parameters[i].getType();
                         String paramName = parameters[i].getName();
                         LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
-                        if (parameterType != null && parameterType.isAssignableFrom(parentClass)) {
+                        if (parameterType != null && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass))) {
                             matchCount++;
                             parameters[i] = null;
                             cstrArgList[i] = mappedInstance;

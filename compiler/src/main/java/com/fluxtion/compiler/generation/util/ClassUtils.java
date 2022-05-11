@@ -21,6 +21,13 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
+import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.MergeProperty;
+import net.vidageek.mirror.dsl.Mirror;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
@@ -33,14 +40,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.MergeProperty;
-import net.vidageek.mirror.dsl.Mirror;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
