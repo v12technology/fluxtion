@@ -6,18 +6,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
-import com.fluxtion.runtime.stream.FlatMapEventStream;
-import com.fluxtion.runtime.stream.InternalEventDispatcher;
-import com.fluxtion.runtime.stream.LookupEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
@@ -57,6 +46,23 @@ public class EventStreamBuilder<T> {
 
     public EventStreamBuilder<T> filter( SerializableFunction<T, Boolean> filterFunction){
         return new EventStreamBuilder<>( new FilterEventStream<>(eventStream, filterFunction));
+    }
+
+    public <S> EventStreamBuilder<T> filter(
+            SerializableBiFunction<T, S, Boolean> predicate,
+            EventStreamBuilder<S> secondArgument){
+        return new EventStreamBuilder<>(
+                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
+    }
+
+    public <S> EventStreamBuilder<T> filter(
+            SerializableBiFunction<T, S, Boolean> predicate,
+            EventStreamBuilder<S> secondArgument,
+            S defaultValue){
+        FilterDynamicEventStream<T, S, TriggeredEventStream<T>, TriggeredEventStream<S>> filter =
+                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate);
+        filter.setDefaultValue(defaultValue);
+        return new EventStreamBuilder<>(filter);
     }
 
     public EventStreamBuilder<T> defaultValue(T defaultValue){

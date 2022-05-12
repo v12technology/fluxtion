@@ -246,6 +246,48 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void dynamicFilterTest(){
+        sep(c ->{
+            subscribe(MyData.class)
+                    .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
+                    .map(MyData::getValue)
+                    .push(new NotifyAndPushTarget()::setIntPushValue);
+        });
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent(new FilterConfig(10));
+        onEvent(new MyData(5));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+
+        onEvent(new MyData(50));
+        assertThat(notifyTarget.getIntPushValue(), is(50));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
+    public void dynamicFilterWithDefaultValueTest(){
+        sep(c ->{
+            subscribe(MyData.class)
+                    .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class), new FilterConfig(4))
+                    .map(MyData::getValue)
+                    .push(new NotifyAndPushTarget()::setIntPushValue);
+        });
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent(new MyData(5));
+        assertThat(notifyTarget.getIntPushValue(), is(5));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+
+        onEvent(new FilterConfig(10));
+        onEvent(new MyData(5));
+        assertThat(notifyTarget.getIntPushValue(), is(5));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+
+        onEvent(new MyData(50));
+        assertThat(notifyTarget.getIntPushValue(), is(50));
+        assertThat(notifyTarget.getOnEventCount(), is(2));
+    }
+
+    @Test
     public void overridePublish() {
         sep(c -> subscribe(String.class)
                         .filter(NumberUtils::isCreatable)
@@ -565,6 +607,23 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             super(filterId);
             this.value = value;
         }
+    }
+
+    @Value
+    public static class FilterConfig{
+        int limit;
+    }
+
+    @Value
+    public static class MyData{
+        int value;
+    }
+
+    public static boolean myDataTooBig(MyData myData, FilterConfig config){
+        if(myData==null || config == null){
+            return false;
+        }
+        return myData.getValue() > config.getLimit();
     }
 
 }
