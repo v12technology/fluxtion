@@ -8,6 +8,10 @@ public interface EventStream <R> {
 
     R get();
 
+    default boolean hasDefaultValue(){
+        return false;
+    }
+
     interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier{
         default Integer get(){
             return getAsInt();

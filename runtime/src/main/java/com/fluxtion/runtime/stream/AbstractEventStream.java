@@ -223,14 +223,8 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
 
         @Override
         protected void initialise() {
-            //TODO add default value check here
-//            Method method = getStreamFunction().method();
-//            if (DefaultValueSupplier.class.isAssignableFrom(method.getDeclaringClass())) {
-//                mapOperation();
-//            }
-//
-//
-//            if(getInputEventStream().getClass().isAssignableFrom())
+            inputStreamTriggered_1 = getInputEventStream_1().hasDefaultValue();
+            inputStreamTriggered_2 = getInputEventStream_2().hasDefaultValue();
         }
     }
 }
