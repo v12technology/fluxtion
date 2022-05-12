@@ -3,6 +3,7 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.MergeMapEventStream;
@@ -62,6 +63,18 @@ public interface EventFlow {
         return new EventStreamBuilder<>(
                 SepContext.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
         );
+    }
+
+    static IntStreamBuilder subscribeToIntSignal(String filterId){
+        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
+    }
+
+    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId){
+        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
+    }
+
+    static LongStreamBuilder subscribeToLongSignal(String filterId){
+        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
     }
 
     /**

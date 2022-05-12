@@ -4,6 +4,8 @@ import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.SinkDeregister;
+import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
@@ -15,7 +17,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -45,6 +47,95 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("230");
         assertThat(notifyTarget.getOnEventCount(), is(1));
         assertThat(notifyTarget.getIntPushValue(), is(2300));
+    }
+
+    @Test
+    public void dynamicIntFilterTest() {
+        MutableInt target = new MutableInt();
+        sep(c -> {
+            subscribe(String.class)
+                    .mapToInt(StreamBuildTest::parseInt)
+                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToIntSignal("test"))
+                    .sink("sink")
+            ;
+        });
+
+        onEvent(SinkRegistration.intSink("sink", target::add));
+        assertThat(target.intValue(), is(0));
+        onEvent("12");
+        assertThat(target.intValue(), is(0));
+        onEvent(Signal.intSignal("test", 5));
+        assertThat(target.intValue(), is(0));
+        onEvent("12");
+        assertThat(target.intValue(), is(12));
+
+        onEvent(Signal.intSignal("test", 7));
+        assertThat(target.intValue(), is(12));
+
+        onEvent("8");
+        assertThat(target.intValue(), is(20));
+    }
+
+    @Test
+    public void dynamicDoubleFilterTest() {
+        MutableDouble target = new MutableDouble();
+        sep(c -> {
+            subscribe(String.class)
+                    .mapToDouble(StreamBuildTest::parseDouble)
+                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToDoubleSignal("test"))
+                    .sink("sink")
+            ;
+        });
+
+        onEvent(SinkRegistration.doubleSink("sink", target::add));
+        assertThat(target.doubleValue(), closeTo(0, 0.0001));
+        onEvent("12");
+        assertThat(target.doubleValue(),  closeTo(0, 0.0001));
+        onEvent(Signal.doubleSignal("test", 5));
+        assertThat(target.doubleValue(),  closeTo(0, 0.0001));
+        onEvent("12");
+        assertThat(target.doubleValue(),  closeTo(12, 0.0001));
+
+        onEvent(Signal.doubleSignal("test", 7));
+        assertThat(target.doubleValue(), closeTo(12, 0.0001));
+
+        onEvent("8.5");
+        assertThat(target.doubleValue(), closeTo(20.5, 0.0001));
+    }
+
+
+    @Test
+    public void dynamicLongFilterTest() {
+        MutableLong target = new MutableLong();
+        sep(c -> {
+            subscribe(String.class)
+                    .mapToLong(StreamBuildTest::parseLong)
+                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToLongSignal("test"))
+                    .sink("sink")
+            ;
+        });
+
+        onEvent(SinkRegistration.longSink("sink", target::add));
+        assertThat(target.longValue(), is(0l));
+        onEvent("12");
+        assertThat(target.longValue(), is(0l));
+        onEvent(Signal.longSignal("test", 5));
+        assertThat(target.longValue(), is(0l));
+        onEvent("12");
+        assertThat(target.longValue(), is(12l));
+
+        onEvent(Signal.longSignal("test", 7));
+        assertThat(target.longValue(), is(12l));
+
+        onEvent("8");
+        assertThat(target.longValue(), is(20l));
+    }
+    public static boolean gt(int inputVariable, int limitToCompare){
+        return inputVariable > limitToCompare;
+    }
+
+    public static boolean gt(double inputVariable, double limitToCompare){
+        return inputVariable > limitToCompare;
     }
 
     @Test
@@ -423,6 +514,35 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getDoublePushValue(), closeTo(234.0, 0.0001));
     }
 
+    @Test
+    public void testSink(){
+        MutableDouble d = new MutableDouble();
+        MutableInt i = new MutableInt();
+        MutableLong l = new MutableLong();
+
+        sep( c-> subscribe(String.class)
+                .mapToDouble(Double::parseDouble)
+                .sink("doubleSink")
+                .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
+                .sink("intSink")
+                .mapToLong(PrimitiveStreamBuilderTest::castIntToLong)
+                .sink("longSink"));
+        //register sinks
+        onEvent(SinkRegistration.doubleSink("doubleSink", d::add));
+        onEvent(SinkRegistration.intSink("intSink", i::add));
+        onEvent(SinkRegistration.longSink("longSink", l::add));
+        //test
+        onEvent("12.3");
+        assertThat(d.doubleValue(), closeTo(12.3, 0.0001));
+        assertThat(i.intValue(), is(12));
+        assertThat(l.longValue(), is(12L));
+        //de-register int
+        onEvent(SinkDeregister.sink("intSink"));
+        onEvent("58.4");
+        assertThat(d.doubleValue(), closeTo(70.7, 0.0001));
+        assertThat(i.intValue(), is(12));
+        assertThat(l.longValue(), is(70L));
+    }
 
     @Test
     public void defaultIntValueTest() {
@@ -631,6 +751,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
     public static int castLongToInt(long input) {
         return (int) input;
+    }
+
+    public static long castIntToLong(int input){
+        return input;
     }
 
 

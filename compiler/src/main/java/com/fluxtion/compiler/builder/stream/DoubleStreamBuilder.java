@@ -41,6 +41,13 @@ public class DoubleStreamBuilder {
         return new DoubleStreamBuilder(new FilterEventStream.DoubleFilterEventStream(eventStream, filterFunction));
     }
 
+    public <S> DoubleStreamBuilder filter(
+            SerializableBiDoublePredicate predicate,
+            DoubleStreamBuilder secondArgument){
+        return new DoubleStreamBuilder(
+                new FilterDynamicEventStream.DoubleFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
+    }
+
     public DoubleStreamBuilder defaultValue(double defaultValue) {
         return map(new DefaultValue.DefaultDouble(defaultValue)::getOrDefault);
     }
@@ -103,6 +110,10 @@ public class DoubleStreamBuilder {
     public DoubleStreamBuilder notify(Object target) {
         SepContext.service().add(target);
         return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
+    }
+
+    public DoubleStreamBuilder sink(String sinkId){
+        return push(new SinkPublisher<>(sinkId)::publishDouble);
     }
 
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {

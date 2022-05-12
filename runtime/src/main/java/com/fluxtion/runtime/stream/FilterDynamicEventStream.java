@@ -1,19 +1,21 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.builder.SepNode;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntPredicate;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
 import com.fluxtion.runtime.stream.AbstractEventStream.AbstractBinaryEventStream;
 
-public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends EventStream<A>> extends AbstractBinaryEventStream<T, A, T, S, B> {
+public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends EventStream<A>>
+        extends AbstractBinaryEventStream<T, A, T, S, B> {
 
     final SerializableBiFunction<T, A, Boolean> filterFunction;
     transient final String auditInfo;
 
-    @SepNode
-    private A defaultValue;
-
-    public FilterDynamicEventStream(S inputEventStream, B inputEventStream_2, SerializableBiFunction<T, A, Boolean> filterFunction) {
+    public FilterDynamicEventStream(S inputEventStream,
+                                    B inputEventStream_2,
+                                    SerializableBiFunction<T, A, Boolean> filterFunction) {
         super(inputEventStream, inputEventStream_2, filterFunction);
         this.filterFunction = filterFunction;
         auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
@@ -21,9 +23,10 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
 
     @OnTrigger
     public boolean filter() {
-        boolean filter = inputStreamTriggered
-                & (inputStreamTriggered_2 | defaultValue!=null)
+        boolean filter = inputStreamTriggered_1
+                & (inputStreamTriggered_2)
                 && (isPublishTriggered() || filterFunction.apply(getInputEventStream().get(), secondArgument()));
+        inputStreamTriggered_1 = false;
         boolean fireNotification = filter & fireEventUpdateNotification();
         auditLog.info("filterFunction", auditInfo);
         auditLog.info("filterPass", filter);
@@ -36,118 +39,127 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         return getInputEventStream().get();
     }
 
-    public A getDefaultValue() {
-        return defaultValue;
+    private A secondArgument() {
+        return getInputEventStream_2().get();
     }
 
-    public void setDefaultValue(A defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+    public static class IntFilterDynamicEventStream
+            extends AbstractBinaryEventStream<Integer, Integer, Integer, IntEventStream, IntEventStream>
+            implements IntEventStream {
 
-    private A secondArgument(){
-        if(inputStreamTriggered_2){
-            return getInputEventStream_2().get();
+        transient final String auditInfo;
+        private final SerializableBiIntPredicate filterFunction;
+
+        public IntFilterDynamicEventStream(IntEventStream inputEventStream,
+                                           IntEventStream inputEventStream_2,
+                                           SerializableBiIntPredicate filterFunction) {
+            super(inputEventStream, inputEventStream_2, filterFunction);
+            this.filterFunction = filterFunction;
+            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
         }
-        return defaultValue;
+
+        @OnTrigger
+        public boolean filter() {
+            boolean filter = inputStreamTriggered_1
+                    & (inputStreamTriggered_2)
+                    && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsInt(), getInputEventStream_2().getAsInt()));
+            inputStreamTriggered_1 = false;
+            boolean fireNotification = filter & fireEventUpdateNotification();
+            auditLog.info("filterFunction", auditInfo);
+            auditLog.info("filterPass", filter);
+            auditLog.info("publishToChild", fireNotification);
+            return fireNotification;
+        }
+
+        @Override
+        public Integer get() {
+            return getAsInt();
+        }
+
+        @Override
+        public int getAsInt() {
+            return getInputEventStream().getAsInt();
+        }
     }
 
 
-//    public static class IntFilterEventStream extends AbstractEventStream<Integer, Integer, IntEventStream> implements IntEventStream {
-//
-//        final SerializableIntFunction<Boolean> filterFunction;
-//        transient final String auditInfo;
-//
-//        public IntFilterEventStream(IntEventStream inputEventStream, SerializableIntFunction<Boolean> filterFunction) {
-//            super(inputEventStream, filterFunction);
-//            this.filterFunction = filterFunction;
-//            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
-//        }
-//
-//        @OnTrigger
-//        public boolean filter() {
-//            boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsInt());
-//            boolean fireNotification = filter & fireEventUpdateNotification();
-//            auditLog.info("filterFunction", auditInfo);
-//            auditLog.info("filterPass", filter);
-//            auditLog.info("publishToChild", fireNotification);
-//            return fireNotification;
-//        }
-//
-//        @Override
-//        public Integer get() {
-//            return getAsInt();
-//        }
-//
-//        @Override
-//        public int getAsInt() {
-//            return getInputEventStream().getAsInt();
-//        }
-//    }
-//
-//
-//    public static class DoubleFilterEventStream extends AbstractEventStream<Double, Double, DoubleEventStream> implements DoubleEventStream {
-//
-//        final SerializableDoubleFunction<Boolean> filterFunction;
-//        transient final String auditInfo;
-//
-//        public DoubleFilterEventStream(DoubleEventStream inputEventStream, SerializableDoubleFunction<Boolean> filterFunction) {
-//            super(inputEventStream,filterFunction);
-//            this.filterFunction = filterFunction;
-//            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
-//        }
-//
-//        @OnTrigger
-//        public boolean filter() {
-//            boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsDouble());
-//            boolean fireNotification = filter & fireEventUpdateNotification();
-//            auditLog.info("filterFunction", auditInfo);
-//            auditLog.info("filterPass", filter);
-//            auditLog.info("publishToChild", fireNotification);
-//            return fireNotification;
-//        }
-//
-//        @Override
-//        public Double get() {
-//            return getAsDouble();
-//        }
-//
-//        @Override
-//        public double getAsDouble() {
-//            return getInputEventStream().getAsDouble();
-//        }
-//    }
-//
-//
-//    public static class LongFilterEventStream extends AbstractEventStream<Long, Long, LongEventStream> implements LongEventStream {
-//
-//        final SerializableLongFunction<Boolean> filterFunction;
-//        transient final String auditInfo;
-//
-//        public LongFilterEventStream(LongEventStream inputEventStream, SerializableLongFunction<Boolean> filterFunction) {
-//            super(inputEventStream, filterFunction);
-//            this.filterFunction = filterFunction;
-//            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
-//        }
-//
-//        @OnTrigger
-//        public boolean filter() {
-//            boolean filter = isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsLong());
-//            boolean fireNotification = filter & fireEventUpdateNotification();
-//            auditLog.info("filterFunction", auditInfo);
-//            auditLog.info("filterPass", filter);
-//            auditLog.info("publishToChild", fireNotification);
-//            return fireNotification;
-//        }
-//
-//        @Override
-//        public Long get() {
-//            return getAsLong();
-//        }
-//
-//        @Override
-//        public long getAsLong() {
-//            return getInputEventStream().getAsLong();
-//        }
-//    }
+    public static class DoubleFilterDynamicEventStream
+            extends AbstractBinaryEventStream<Double, Double, Double, DoubleEventStream, DoubleEventStream>
+            implements DoubleEventStream {
+
+        transient final String auditInfo;
+        private final SerializableBiDoublePredicate filterFunction;
+
+        public DoubleFilterDynamicEventStream(DoubleEventStream inputEventStream,
+                                              DoubleEventStream inputEventStream_2,
+                                              SerializableBiDoublePredicate filterFunction) {
+            super(inputEventStream, inputEventStream_2, filterFunction);
+            this.filterFunction = filterFunction;
+            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
+        }
+
+        @OnTrigger
+        public boolean filter() {
+            boolean filter = inputStreamTriggered_1 & (inputStreamTriggered_2)
+                    && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsDouble(), getInputEventStream_2().getAsDouble()));
+            inputStreamTriggered_1 = false;
+            boolean fireNotification = filter & fireEventUpdateNotification();
+            auditLog.info("filterFunction", auditInfo);
+            auditLog.info("filterPass", filter);
+            auditLog.info("publishToChild", fireNotification);
+            return fireNotification;
+        }
+
+        @Override
+        public Double get() {
+            return getAsDouble();
+        }
+
+        @Override
+        public double getAsDouble() {
+            return getInputEventStream().getAsDouble();
+        }
+    }
+
+    public static class LongFilterDynamicEventStream
+            extends AbstractBinaryEventStream<Long, Long, Long, LongEventStream, LongEventStream>
+            implements LongEventStream {
+
+        transient final String auditInfo;
+        private final SerializableBiLongPredicate filterFunction;
+
+        public LongFilterDynamicEventStream(LongEventStream inputEventStream,
+                                            LongEventStream inputEventStream_2,
+                                            SerializableBiLongPredicate filterFunction) {
+            super(inputEventStream, inputEventStream_2, filterFunction);
+            this.filterFunction = filterFunction;
+            auditInfo = filterFunction.method().getDeclaringClass().getSimpleName() + "->" + filterFunction.method().getName();
+        }
+
+        @OnTrigger
+        public boolean filter() {
+            boolean filter = inputStreamTriggered_1
+                    & (inputStreamTriggered_2)
+                    && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsLong(), getInputEventStream_2().getAsLong()));
+            inputStreamTriggered_1 = false;
+            boolean fireNotification = filter & fireEventUpdateNotification();
+            auditLog.info("filterFunction", auditInfo);
+            auditLog.info("filterPass", filter);
+            auditLog.info("publishToChild", fireNotification);
+            return fireNotification;
+        }
+
+        @Override
+        public Long get() {
+            return getAsLong();
+        }
+
+        @Override
+        public long getAsLong() {
+            return getInputEventStream().getAsLong();
+        }
+    }
+
+
 
 }

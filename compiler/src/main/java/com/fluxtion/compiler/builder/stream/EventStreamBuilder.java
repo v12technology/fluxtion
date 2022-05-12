@@ -55,16 +55,6 @@ public class EventStreamBuilder<T> {
                 new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
     }
 
-    public <S> EventStreamBuilder<T> filter(
-            SerializableBiFunction<T, S, Boolean> predicate,
-            EventStreamBuilder<S> secondArgument,
-            S defaultValue){
-        FilterDynamicEventStream<T, S, TriggeredEventStream<T>, TriggeredEventStream<S>> filter =
-                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate);
-        filter.setDefaultValue(defaultValue);
-        return new EventStreamBuilder<>(filter);
-    }
-
     public EventStreamBuilder<T> defaultValue(T defaultValue){
         return map(new DefaultValue<>(defaultValue)::getOrDefault);
     }
@@ -134,6 +124,10 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
     }
 
+    public EventStreamBuilder<T> sink(String sinkId){
+        return push(new SinkPublisher<>(sinkId)::publish);
+    }
+
     public EventStreamBuilder<T> notify(Object target) {
         SepContext.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
@@ -160,8 +154,6 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    windowing sliding
-    windowing tumbling
     groupby
 
     Done:
@@ -171,6 +163,8 @@ public class EventStreamBuilder<T> {
     Use transient reference in any stream that has an instance function reference. Remove anchor
     add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
     add standard predicates for primitives
+    windowing sliding
+    windowing tumbling
     De-dupe filter
     mapOnNotify
     id for eventStream

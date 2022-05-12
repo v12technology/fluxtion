@@ -7,6 +7,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
@@ -110,6 +111,21 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getIntPushValue(), is(0));
         onEvent("86");
         assertThat(notifyTarget.getIntPushValue(), is(86));
+    }
+
+    @Test
+    public void sinkTest(){
+        List myList = new ArrayList();
+        sep(c -> subscribe(String.class)
+                .sink("mySink")
+        );
+
+        onEvent(SinkRegistration.sink("mySink", myList::add));
+        onEvent("aa");
+        onEvent("2222");
+        onEvent("three");
+
+        assertThat(myList, is(Arrays.asList("aa", "2222", "three")));
     }
 
     @Test
@@ -268,7 +284,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public void dynamicFilterWithDefaultValueTest(){
         sep(c ->{
             subscribe(MyData.class)
-                    .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class), new FilterConfig(4))
+                    .filter(StreamBuildTest::myDataTooBig,
+                            subscribe(FilterConfig.class).defaultValue(new FilterConfig(4)))
                     .map(MyData::getValue)
                     .push(new NotifyAndPushTarget()::setIntPushValue);
         });
@@ -335,10 +352,16 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void defaultPrimitiveWrapperValueTest() {
-        sep(c -> subscribe(Integer.class)
-            .defaultValue(1).id("defaultValue"));
-        Integer defaultValue = getStreamed("defaultValue");
-        assertThat(defaultValue, is(1));
+        sep(c -> {
+            c.addNode("test");
+            c.addNode(new Integer(23));
+//            subscribe(String.class);
+        });
+
+//        sep(c -> subscribe(Integer.class)
+//            .defaultValue(1).id("defaultValue"));
+//        Integer defaultValue = getStreamed("defaultValue");
+//        assertThat(defaultValue, is(1));
     }
 
     @Test

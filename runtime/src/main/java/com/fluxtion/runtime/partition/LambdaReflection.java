@@ -181,6 +181,16 @@ public interface LambdaReflection {
     interface SerializableBiIntFunction extends IntBinaryOperator, Serializable, MethodReferenceReflection {
     }
 
+    interface SerializableBiIntPredicate extends IntBinaryPredicate, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableBiDoublePredicate extends DoubleBinaryPredicate, Serializable, MethodReferenceReflection {
+    }
+
+    interface SerializableBiLongPredicate extends LongBinaryPredicate, Serializable, MethodReferenceReflection {
+    }
+
+
     interface SerializableBiDoubleFunction extends DoubleBinaryOperator, Serializable, MethodReferenceReflection {
     }
 
@@ -191,6 +201,21 @@ public interface LambdaReflection {
     }
 
     interface SerializableQuadFunction<f, t, u, v, r> extends QuadFunction<f, t, u, v, r>, Serializable, MethodReferenceReflection {
+    }
+
+    @FunctionalInterface
+    interface IntBinaryPredicate {
+        boolean apply(int argument1, int argument2);
+    }
+
+    @FunctionalInterface
+    interface DoubleBinaryPredicate {
+        boolean apply(double argument1, double argument2);
+    }
+
+    @FunctionalInterface
+    interface LongBinaryPredicate {
+        boolean apply(long argument1, long argument2);
     }
 
     @FunctionalInterface

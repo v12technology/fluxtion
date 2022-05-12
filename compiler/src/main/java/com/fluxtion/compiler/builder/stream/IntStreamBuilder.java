@@ -1,19 +1,19 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
+import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
 import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -47,6 +47,13 @@ public class IntStreamBuilder {
 
     public IntStreamBuilder filter(SerializableIntFunction<Boolean> filterFunction) {
         return new IntStreamBuilder(new FilterEventStream.IntFilterEventStream(eventStream, filterFunction));
+    }
+
+    public <S> IntStreamBuilder filter(
+            SerializableBiIntPredicate predicate,
+            IntStreamBuilder secondArgument){
+        return new IntStreamBuilder(
+                new FilterDynamicEventStream.IntFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
 
     public IntStreamBuilder defaultValue(int defaultValue) {
@@ -110,6 +117,10 @@ public class IntStreamBuilder {
     public IntStreamBuilder notify(Object target) {
         SepContext.service().add(target);
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
+    }
+
+    public IntStreamBuilder sink(String sinkId){
+        return push(new SinkPublisher<>(sinkId)::publishInt);
     }
 
     public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
