@@ -61,6 +61,10 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         }
     }
 
+    @Override
+    public boolean hasDefaultValue() {
+        return DefaultValueSupplier.class.isAssignableFrom(getStreamFunction().method().getDeclaringClass());
+    }
 
     @Override
     public R get() {

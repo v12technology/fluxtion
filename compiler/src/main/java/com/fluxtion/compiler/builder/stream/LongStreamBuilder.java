@@ -41,6 +41,13 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new FilterEventStream.LongFilterEventStream(eventStream, filterFunction));
     }
 
+    public <S> LongStreamBuilder filter(
+            SerializableBiLongPredicate predicate,
+            LongStreamBuilder secondArgument){
+        return new LongStreamBuilder(
+                new FilterDynamicEventStream.LongFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
+    }
+
     public LongStreamBuilder defaultValue(long defaultValue) {
         return map(new DefaultValue.DefaultLong(defaultValue)::getOrDefault);
     }
@@ -102,6 +109,10 @@ public class LongStreamBuilder {
     public LongStreamBuilder notify(Object target) {
         SepContext.service().add(target);
         return new LongStreamBuilder(new NotifyEventStream.LongNotifyEventStream(eventStream, target));
+    }
+
+    public LongStreamBuilder sink(String sinkId){
+        return push(new SinkPublisher<>(sinkId)::publishLong);
     }
 
     public LongStreamBuilder push(SerializableLongConsumer pushFunction) {

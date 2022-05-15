@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,14 @@
 package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.SinkDeregister;
+import com.fluxtion.runtime.stream.SinkRegistration;
+
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 /**
  * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
@@ -24,9 +32,9 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
  * the processor selects an execution path that comprises a set of application nodes that
  * have a reference to an incoming {@link OnEventHandler} for the specific event.
  * <p>
- * The StaticEventProcessor 
+ * The StaticEventProcessor
  * has the following functionality:
- * 
+ *
  * <ul>
  * <li>StaticEventProcessor process events of multiple type in a predictable order</li>
  * <li>Application classes are nodes managed by StaticEventProcessor and are notified in a predictable manner when an event is processed</li>
@@ -54,31 +62,67 @@ public interface StaticEventProcessor {
      */
     void onEvent(Object e);
 
-    default void onEvent(byte value){
-        onEvent((Byte)value);
+    default void onEvent(byte value) {
+        onEvent((Byte) value);
     }
 
-    default void onEvent(char value){
-        onEvent((Character)value);
+    default void onEvent(char value) {
+        onEvent((Character) value);
     }
 
-    default void onEvent(short value){
-        onEvent((Short)value);
+    default void onEvent(short value) {
+        onEvent((Short) value);
     }
 
-    default void onEvent(int value){
-        onEvent((Integer)value);
+    default void onEvent(int value) {
+        onEvent((Integer) value);
     }
 
-    default void onEvent(float value){
-        onEvent((Float)value);
+    default void onEvent(float value) {
+        onEvent((Float) value);
     }
 
-    default void onEvent(double value){
-        onEvent((Double)value);
+    default void onEvent(double value) {
+        onEvent((Double) value);
     }
 
-    default void onEvent(long value){
-        onEvent((Long)value);
+    default void onEvent(long value) {
+        onEvent((Long) value);
+    }
+
+    default <T> void addSink(String id, Consumer<T> sink) {
+        onEvent(SinkRegistration.sink(id, sink));
+    }
+
+    default void addSink(String id, IntConsumer sink) {
+        onEvent(SinkRegistration.intSink(id, sink));
+    }
+
+    default void addSink(String id, DoubleConsumer sink) {
+        onEvent(SinkRegistration.doubleSink(id, sink));
+    }
+
+    default void addSink(String id, LongConsumer sink) {
+        onEvent(SinkRegistration.longSink(id, sink));
+    }
+
+    default void removeSink(String id) {
+        onEvent(SinkDeregister.sink(id));
+    }
+
+    default <T> void publishSignal(String filter, T value) {
+        onEvent(new Signal<>(filter, value));
+    }
+
+    default void publishSignal(String filter, int value) {
+        onEvent(Signal.intSignal(filter, value));
+    }
+
+    default void publishSignal(String filter, double value) {
+        onEvent(Signal.doubleSignal(filter, value));
+    }
+
+    default void publishSignal(String filter, long value) {
+        onEvent(Signal.longSignal(filter, value));
     }
 }

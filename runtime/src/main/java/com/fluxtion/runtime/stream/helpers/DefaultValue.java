@@ -1,10 +1,12 @@
 package com.fluxtion.runtime.stream.helpers;
 
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.stream.DefaultValueSupplier;
 import com.fluxtion.runtime.stream.Stateful;
 
 public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
 
+    @SepNode
     private final T defaultValue;
 
     public DefaultValue(T defaultValue) {

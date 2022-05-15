@@ -61,7 +61,19 @@ public class Signal<T> implements Event{
 
     public Signal() {
     }
-    
+
+    public static Signal.IntSignal intSignal(String filter, int value){
+        return new IntSignal(filter, value);
+    }
+
+    public static Signal.DoubleSignal doubleSignal(String filter, double value){
+        return new DoubleSignal(filter, value);
+    }
+
+    public static Signal.LongSignal longSignal(String filter, long value){
+        return new LongSignal(filter, value);
+    }
+
     public Signal(String filterString) {
         this(filterString, null);
     }
@@ -78,7 +90,6 @@ public class Signal<T> implements Event{
     public T getValue() {
         return value;
     }
-
 
     public void setValue(T value) {
         this.value = value;
@@ -100,6 +111,46 @@ public class Signal<T> implements Event{
     @Override
     public String toString() {
         return "Signal: {" + "filterString: " + filterString + ", value: " + value + '}';
-    }  
+    }
+
+    public static class IntSignal extends DefaultEvent{
+        private final int value;
+
+        public IntSignal(String filterId, int value) {
+            super(filterId);
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+    }
+
+    public static class DoubleSignal extends DefaultEvent{
+        private final double value;
+
+        public DoubleSignal(String filterId, double intValue) {
+            super(filterId);
+            this.value = intValue;
+        }
+
+        public double getValue() {
+            return value;
+        }
+    }
+
+    public static class LongSignal extends DefaultEvent{
+        private final long value;
+
+        public LongSignal(String filterId, long intValue) {
+            super(filterId);
+            this.value = intValue;
+        }
+
+        public long getValue() {
+            return value;
+        }
+    }
     
 }

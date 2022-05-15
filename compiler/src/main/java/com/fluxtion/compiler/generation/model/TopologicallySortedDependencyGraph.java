@@ -647,6 +647,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             }
             Object refField = field.get(object);
             String refName = inst2Name.get(refField);
+            if(refField != null && refField.equals(object)){
+                //no self reference loops
+                break;
+            }
 
             if (field.getAnnotation(NoTriggerReference.class) != null) {
                 continue;
@@ -765,6 +769,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             }
             Object refField = field.get(object);
             String refName = getInstanceName(field, object);
+            if(refField != null && refField.equals(object)){
+                //no self reference loops
+                break;
+            }
             if (field.getType().isArray()) {
                 Object array = field.get(object);
                 if (array == null) {

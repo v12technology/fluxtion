@@ -2,6 +2,8 @@ package com.fluxtion.runtime.stream.aggregate;
 
 import com.fluxtion.runtime.stream.Stateful;
 
+import java.util.function.Supplier;
+
 /**
  * {@link java.util.function.Function}
  *
@@ -9,7 +11,8 @@ import com.fluxtion.runtime.stream.Stateful;
  * @param <R> Return type of the wrapped function
  * @param <T> The type of this BaseSlidingWindowFunction
  */
-public abstract class BaseSlidingWindowFunction<I, R, T extends BaseSlidingWindowFunction<I, R, T>> implements Stateful<R> {
+public abstract class BaseSlidingWindowFunction<I, R, T extends BaseSlidingWindowFunction<I, R, T>>
+        implements Stateful<R>, Supplier<R> {
 
     public void combine(T add) {
     }

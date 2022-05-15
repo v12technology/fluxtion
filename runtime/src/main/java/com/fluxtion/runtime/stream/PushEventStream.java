@@ -104,7 +104,7 @@ public class PushEventStream<T, S extends EventStream<T>> extends AbstractEventS
         }
 
         @OnTrigger
-        public boolean pushValue(){
+        public boolean push(){
             auditLog.info("pushTarget", auditInfo);
             if(executeUpdate()){
                 intConsumer.accept(getAsDouble());

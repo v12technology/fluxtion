@@ -26,4 +26,10 @@ public class AggregateIntSum extends BaseIntSlidingWindowFunction<AggregateIntSu
         value -= deduct.value;
     }
 
+    @Override
+    public String toString() {
+        return "AggregateIntSum{" +
+                "value=" + value +
+                '}';
+    }
 }

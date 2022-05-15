@@ -29,9 +29,9 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new Data_1(10));
-        assertThat(target.getIntPushValue(), is(10));
+        assertThat(target.getIntPushValue(), is(0));
         onEvent(new Data_1(20));
-        assertThat(target.getIntPushValue(), is(20));
+        assertThat(target.getIntPushValue(), is(0));
         onEvent(new Data_2(80));
         assertThat(target.getIntPushValue(), is(100));
     }
@@ -66,7 +66,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new MutableLong(1_000));
-        assertThat(target.getLongPushValue(), is(1_000L));
+        assertThat(target.getLongPushValue(), is(0L));
         onEvent(new MutableInt(20_000));
         assertThat(target.getLongPushValue(), is(21_000L));
     }
@@ -102,8 +102,8 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         });
 
         onEvent(new Data_1(10));
-        assertThat(getStreamed("add"), is(10));
-        assertThat(getStreamed("subtract"), is(10));
+        assertThat(getStreamed("add"), is(0));
+        assertThat(getStreamed("subtract"), is(0));
         assertThat(getStreamed("multiply"), is(0));
         onEvent(new Data_2(130));
         assertThat(getStreamed("add"), is(140));
@@ -123,8 +123,8 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         });
 
         onEvent(new Data_1(10));
-        assertThat(getStreamed("add"), is(10d));
-        assertThat(getStreamed("subtract"), is(10d));
+        assertThat(getStreamed("add"), is(0d));
+        assertThat(getStreamed("subtract"), is(0d));
         assertThat(getStreamed("multiply"), is(0d));
         onEvent(new Data_2(130));
         assertThat(getStreamed("add"), is(140d));
@@ -145,8 +145,8 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         });
 
         onEvent(new Data_1(10));
-        assertThat(getStreamed("add"), is(10L));
-        assertThat(getStreamed("subtract"), is(10L));
+        assertThat(getStreamed("add"), is(0L));
+        assertThat(getStreamed("subtract"), is(0L));
         assertThat(getStreamed("multiply"), is(0L));
         onEvent(new Data_2(130));
         assertThat(getStreamed("add"), is(140L));
