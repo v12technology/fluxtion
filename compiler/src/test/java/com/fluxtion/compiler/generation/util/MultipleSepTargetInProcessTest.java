@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -44,6 +44,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 import static com.fluxtion.compiler.generation.compiler.InProcessSepCompiler.sepTestInstance;
 import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
@@ -253,6 +256,42 @@ public class MultipleSepTargetInProcessTest {
 
     protected void onGenericEvent(Object e) {
         onEvent(e);
+    }
+
+    protected <T> void addSink(String id, Consumer<T> sink) {
+        sep.addSink(id, sink);
+    }
+
+    protected void addIntSink(String id, IntConsumer sink){
+        sep.addSink(id, sink);
+    }
+
+    protected void addDoubleSink(String id, DoubleConsumer sink) {
+        sep.addSink(id, sink);
+    }
+
+    protected void addLongSink(String id, LongConsumer sink) {
+        sep.addSink(id, sink);
+    }
+
+    protected void removeSink(String id) {
+        sep.removeSink(id);
+    }
+
+    protected <T> void publishSignal(String filter, T value) {
+        sep.publishSignal(filter, value);
+    }
+
+    protected void publishSignal(String filter, int value) {
+        sep.publishSignal(filter, value);
+    }
+
+    protected void publishSignal(String filter, double value) {
+        sep.publishSignal(filter, value);
+    }
+
+    protected void publishSignal(String filter, long value) {
+        sep.publishSignal(filter, value);
     }
 
     protected StaticEventProcessor batchPause() {

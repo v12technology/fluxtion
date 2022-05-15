@@ -176,7 +176,8 @@ public interface ClassUtils {
                     break;
                 }
             }
-            primitiveVal = "new MergeProperty<>(" + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
+            primitiveVal = "new MergeProperty<>("
+                    + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
         }
         if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
             MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
@@ -198,7 +199,16 @@ public interface ClassUtils {
                     primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
                 }
             }else{
-                primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
+                if(ref.getContainingClass().getTypeParameters().length > 0){
+                    String typeParam = "<Object";
+                    for (int i = 1; i < ref.getContainingClass().getTypeParameters().length; i++) {
+                        typeParam += ", Object";
+                    }
+                    typeParam += ">";
+                    primitiveVal = ref.getContainingClass().getSimpleName() + typeParam + "::" + ref.method().getName();
+                }else {
+                    primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
+                }
             }
         }
         for (Field nodeField : nodeFields) {

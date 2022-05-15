@@ -340,27 +340,43 @@ public class JavaSourceGenerator {
 
             fqnBuilder.append(getClassName(field.fqn));
             boolean syntheticConstructor = false;
+            Class<?> fieldClass = field.instance.getClass();
             try {
-                field.instance.getClass().getConstructor();
+                fieldClass.getConstructor();
             } catch (Exception e) {
                 syntheticConstructor = true;
             }
+            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name);
             if (assignPrivateMembers && syntheticConstructor) {
                 //new constructor.on(clazz).invoke().constructor().bypasser();
-                declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
+                declarationRoot
                         .append(" = constructor.on(").append(fqnBuilder).append(".class).invoke().constructor().bypasser();");
             } else {
                 List<Field.MappedField> constructorArgs = model.constructorArgs(field.instance);
-                if(String.class.isAssignableFrom(field.instance.getClass())){
-                    declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
+                if(String.class.isAssignableFrom(fieldClass)){
+                    declarationRoot
                             .append(" = ").append("\"")
                             .append(escapeJava((String) field.instance))
                             .append("\";");
-                }else{
+                }else if(Integer.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = ").append( field.instance).append(";");
+                }else if(Float.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = ").append( field.instance).append("f;");
+                }else if(Double.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = ").append( field.instance).append("d;");
+                }else if(Long.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = ").append( field.instance).append("L;");
+                }else if(Short.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = (short)").append( field.instance).append(";");
+                }else if(Byte.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = (byte)").append( field.instance).append(";");
+                }else if(Character.class.isAssignableFrom(fieldClass)){
+                    declarationRoot.append(" = '").append( field.instance).append("';");
+                }
+                else{
                     String generic = field.isGeneric()?"<>":"";
                     String args = constructorArgs.stream().map(Field.MappedField::value).collect(Collectors.joining(", "));
-                    declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name)
-                            .append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
+                    declarationRoot.append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
             }
             final String declaration = declarationBuilder.toString();
