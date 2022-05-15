@@ -4,7 +4,6 @@ import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
-import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
@@ -17,7 +16,10 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.*;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToDoubleSignal;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToIntSignal;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToLongSignal;
 import static com.fluxtion.runtime.stream.helpers.Aggregates.counting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,16 +60,19 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
                 .filter(PrimitiveStreamBuilderTest::gt, subscribeToIntSignal("test"))
                 .sink("sink"));
 
-        onEvent(SinkRegistration.intSink("sink", target::add));
+//        onEvent(SinkRegistration.intSink("sink", target::add));
+        addIntSink("sink", target::add);
         assertThat(target.intValue(), is(0));
         onEvent("12");
         assertThat(target.intValue(), is(0));
-        onEvent(Signal.intSignal("test", 5));
+//        onEvent(Signal.intSignal("test", 5));
+        publishSignal("test", 5);
         assertThat(target.intValue(), is(0));
         onEvent("12");
         assertThat(target.intValue(), is(12));
 
-        onEvent(Signal.intSignal("test", 7));
+//        onEvent(Signal.intSignal("test", 7));
+        publishSignal("test", 7);
         assertThat(target.intValue(), is(12));
 
         onEvent("8");
@@ -540,16 +545,20 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
                 .mapToLong(PrimitiveStreamBuilderTest::castIntToLong)
                 .sink("longSink"));
         //register sinks
-        onEvent(SinkRegistration.doubleSink("doubleSink", d::add));
-        onEvent(SinkRegistration.intSink("intSink", i::add));
-        onEvent(SinkRegistration.longSink("longSink", l::add));
+//        onEvent(SinkRegistration.doubleSink("doubleSink", d::add));
+        addDoubleSink("doubleSink", d::add);
+//        onEvent(SinkRegistration.intSink("intSink", i::add));
+        addIntSink("intSink", i::add);
+//        onEvent(SinkRegistration.longSink("longSink", l::add));
+        addLongSink("longSink", l::add);
         //test
         onEvent("12.3");
         assertThat(d.doubleValue(), closeTo(12.3, 0.0001));
         assertThat(i.intValue(), is(12));
         assertThat(l.longValue(), is(12L));
         //de-register int
-        onEvent(SinkDeregister.sink("intSink"));
+//        onEvent(SinkDeregister.sink("intSink"));
+        removeSink("intSink");
         onEvent("58.4");
         assertThat(d.doubleValue(), closeTo(70.7, 0.0001));
         assertThat(i.intValue(), is(12));

@@ -16,6 +16,14 @@
 package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.SinkDeregister;
+import com.fluxtion.runtime.stream.SinkRegistration;
+
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 /**
  * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
@@ -80,5 +88,41 @@ public interface StaticEventProcessor {
 
     default void onEvent(long value){
         onEvent((Long)value);
+    }
+
+    default <T> void addSink(String id, Consumer<T> sink){
+        onEvent(SinkRegistration.sink(id, sink));
+    }
+
+    default void addSink(String id, IntConsumer sink){
+        onEvent(SinkRegistration.intSink(id, sink));
+    }
+
+    default void addSink(String id, DoubleConsumer sink){
+        onEvent(SinkRegistration.doubleSink(id, sink));
+    }
+
+    default void addSink(String id, LongConsumer sink){
+        onEvent(SinkRegistration.longSink(id, sink));
+    }
+
+    default void removeSink(String id){
+        onEvent(SinkDeregister.sink(id));
+    }
+
+    default  <T>  void publishSignal(String filter, T value){
+        onEvent(new Signal<>(filter, value));
+    }
+
+    default void  publishSignal(String filter, int value){
+        onEvent(Signal.intSignal(filter, value));
+    }
+
+    default void  publishSignal(String filter, double value){
+        onEvent(Signal.doubleSignal(filter, value));
+    }
+
+    default void  publishSignal(String filter, long value){
+        onEvent(Signal.longSignal(filter, value));
     }
 }

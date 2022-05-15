@@ -7,7 +7,6 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.helpers.Mappers;
@@ -22,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.*;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNodeProperty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -121,7 +122,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .sink("mySink")
         );
 
-        onEvent(SinkRegistration.sink("mySink", myList::add));
+//        onEvent(SinkRegistration.sink("mySink", myList::add));
+        addSink("mySink", myList::add);
         onEvent("aa");
         onEvent("2222");
         onEvent("three");

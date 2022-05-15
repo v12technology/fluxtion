@@ -29,21 +29,22 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
             c.addNode(reconciler, "reconciler");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        onEvent(new Signal<Integer>(liveFeed, 100));
+        publishSignal(liveFeed, (Integer)100);
         assertThat(reconciler.getReconcileDifference(), is(100));
-        onEvent(new Signal<Integer>(dropCopyFeed, 100));
+        publishSignal(dropCopyFeed, (Integer)100);
         assertThat(reconciler.getReconcileDifference(), is(100));
         //add new reference, nothing should happen until a rebuild
         reconciler.dropCopyFeed = new BookHandler(dropCopyFeed);
-        onEvent(new Signal<>(dropCopyFeed, 100));
+        publishSignal(dropCopyFeed, (Integer)100);
         assertThat(reconciler.getReconcileDifference(), is(100));
         //rebuild
         sep(c -> {
             c.addNode(reconciler, "reconciler");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        onEvent(new Signal<Integer>(liveFeed, 100));
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
+        publishSignal(liveFeed, (Integer)100);
+        publishSignal(dropCopyFeed, (Integer)200);
+
         assertThat(reconciler.getReconcileDifference(), is(0));
 
         // now add a new root node
@@ -52,13 +53,14 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
             c.addNode(maxDelta, "maxDelta");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
-        onEvent(new Signal<Integer>(liveFeed, 100));
-        onEvent(new Signal<Integer>(liveFeed, 100));
-        onEvent(new Signal<Integer>(liveFeed, 100_000));
+        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(dropCopyFeed, (Integer)200);
+
+        publishSignal(liveFeed, (Integer)100);
+        publishSignal(liveFeed, (Integer)100);
+        publishSignal(liveFeed, (Integer)20100_0000);
     }
 
     @Test
@@ -70,9 +72,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         sep(c -> {
             c.addNode(bookSum);
         });
-        onEvent(new Signal<Integer>(dropCopyFeed, 200));
-        onEvent(new Signal<Integer>(liveFeed, 100));
-        onEvent(new Signal<Integer>(liveFeed, 100));
+        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(liveFeed, (Integer)100);
+        publishSignal(liveFeed, (Integer)100);
         //add a new source and rebuild
         bookSum.getMonitoredBooks().add(dropCopyHandler);
         sep(c -> {
