@@ -9,6 +9,7 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -115,7 +116,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void sinkTest(){
-        List myList = new ArrayList();
+        List<Object> myList = new ArrayList<>();
         sep(c -> subscribe(String.class)
                 .sink("mySink")
         );
@@ -263,12 +264,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dynamicFilterTest(){
-        sep(c ->{
-            subscribe(MyData.class)
-                    .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
-                    .map(MyData::getValue)
-                    .push(new NotifyAndPushTarget()::setIntPushValue);
-        });
+        sep(c -> subscribe(MyData.class)
+                .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
+                .map(MyData::getValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent(new FilterConfig(10));
         onEvent(new MyData(5));
@@ -282,13 +281,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dynamicFilterWithDefaultValueTest(){
-        sep(c ->{
-            subscribe(MyData.class)
-                    .filter(StreamBuildTest::myDataTooBig,
-                            subscribe(FilterConfig.class).defaultValue(new FilterConfig(4)))
-                    .map(MyData::getValue)
-                    .push(new NotifyAndPushTarget()::setIntPushValue);
-        });
+        sep(c -> subscribe(MyData.class)
+                .filter(StreamBuildTest::myDataTooBig,
+                        subscribe(FilterConfig.class).defaultValue(new FilterConfig(4)))
+                .map(MyData::getValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent(new MyData(5));
         assertThat(notifyTarget.getIntPushValue(), is(5));
@@ -509,6 +506,19 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(getStreamed("sum"), is(0));
     }
+    @Test
+    public void groupByTest(){
+        sep(c -> subscribe(KeyedData.class)
+                .groupBy(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new)
+                .map(GroupBy::keyValue)
+                .console("{}"));
+
+        onEvent(new KeyedData("A", 22));
+        onEvent(new KeyedData("B", 250));
+        onEvent(new KeyedData("B", 140));
+        onEvent(new KeyedData("A", 22));
+        onEvent(new KeyedData("A", 22));
+    }
 
     @Data
     public static class NotifyAndPushTarget implements Named {
@@ -634,6 +644,12 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Value
     public static class MyData{
         int value;
+    }
+
+    @Value
+    public static class KeyedData{
+        String id;
+        int amount;
     }
 
     public static boolean myDataTooBig(MyData myData, FilterConfig config){

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.*;
+import static com.fluxtion.runtime.stream.helpers.Aggregates.counting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -52,13 +53,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void dynamicIntFilterTest() {
         MutableInt target = new MutableInt();
-        sep(c -> {
-            subscribe(String.class)
-                    .mapToInt(StreamBuildTest::parseInt)
-                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToIntSignal("test"))
-                    .sink("sink")
-            ;
-        });
+        sep(c -> subscribe(String.class)
+                .mapToInt(StreamBuildTest::parseInt)
+                .filter(PrimitiveStreamBuilderTest::gt, subscribeToIntSignal("test"))
+                .sink("sink"));
 
         onEvent(SinkRegistration.intSink("sink", target::add));
         assertThat(target.intValue(), is(0));
@@ -79,13 +77,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void dynamicDoubleFilterTest() {
         MutableDouble target = new MutableDouble();
-        sep(c -> {
-            subscribe(String.class)
-                    .mapToDouble(StreamBuildTest::parseDouble)
-                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToDoubleSignal("test"))
-                    .sink("sink")
-            ;
-        });
+        sep(c -> subscribe(String.class)
+                .mapToDouble(StreamBuildTest::parseDouble)
+                .filter(PrimitiveStreamBuilderTest::gt, subscribeToDoubleSignal("test"))
+                .sink("sink"));
 
         onEvent(SinkRegistration.doubleSink("sink", target::add));
         assertThat(target.doubleValue(), closeTo(0, 0.0001));
@@ -107,28 +102,25 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void dynamicLongFilterTest() {
         MutableLong target = new MutableLong();
-        sep(c -> {
-            subscribe(String.class)
-                    .mapToLong(StreamBuildTest::parseLong)
-                    .filter(PrimitiveStreamBuilderTest::gt, subscribeToLongSignal("test"))
-                    .sink("sink")
-            ;
-        });
+        sep(c -> subscribe(String.class)
+                .mapToLong(StreamBuildTest::parseLong)
+                .filter(PrimitiveStreamBuilderTest::gt, subscribeToLongSignal("test"))
+                .sink("sink"));
 
         onEvent(SinkRegistration.longSink("sink", target::add));
-        assertThat(target.longValue(), is(0l));
+        assertThat(target.longValue(), is(0L));
         onEvent("12");
-        assertThat(target.longValue(), is(0l));
+        assertThat(target.longValue(), is(0L));
         onEvent(Signal.longSignal("test", 5));
-        assertThat(target.longValue(), is(0l));
+        assertThat(target.longValue(), is(0L));
         onEvent("12");
-        assertThat(target.longValue(), is(12l));
+        assertThat(target.longValue(), is(12L));
 
         onEvent(Signal.longSignal("test", 7));
-        assertThat(target.longValue(), is(12l));
+        assertThat(target.longValue(), is(12L));
 
         onEvent("8");
-        assertThat(target.longValue(), is(20l));
+        assertThat(target.longValue(), is(20L));
     }
     public static boolean gt(int inputVariable, int limitToCompare){
         return inputVariable > limitToCompare;
@@ -178,6 +170,26 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("230");
         assertThat(notifyTarget.getOnEventCount(), is(1));
         assertThat(notifyTarget.getLongPushValue(), is(2300L));
+    }
+
+    @Test
+    public void aggregateCountTest(){
+        sep(c -> subscribe(String.class)
+            .aggregate(counting())
+            .push(new NotifyAndPushTarget()::setIntPushValue));
+        NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+
+        onEvent("ttt");
+        assertThat(notifyTarget.getIntPushValue(), is(1));
+        onEvent("ttt");
+        onEvent(23);
+        assertThat(notifyTarget.getIntPushValue(), is(2));
+        onEvent(23);
+        onEvent("ttt");
+        onEvent(23);
+
+        assertThat(notifyTarget.getIntPushValue(), is(3));
     }
 
     @Test

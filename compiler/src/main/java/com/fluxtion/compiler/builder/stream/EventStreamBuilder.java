@@ -6,11 +6,26 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
+import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
+import com.fluxtion.runtime.stream.LookupEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByCollection;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -101,6 +116,21 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(
                 new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
     }
+
+    public <V, K, A, F extends BaseSlidingWindowFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    groupBy(SerializableFunction<T, K> keyFunction,
+            SerializableFunction<T, V> valueFunction,
+            SerializableSupplier<F> aggregateFunctionSupplier){
+        return map(new GroupByCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+    }
+
+//    public <V, K, A, F extends BaseSlidingWindowFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+//    groupByTumbling(SerializableFunction<T, K> keyFunction,
+//            SerializableFunction<T, V> valueFunction,
+//            SerializableSupplier<F> aggregateFunctionSupplier,
+//            int bucketSizeMillis){
+//        return map(new GroupByCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+//    }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target){
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
