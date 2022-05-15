@@ -3,13 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.fluxtion.compiler.generation.evenpublisher;
+package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.event.EventPublisher;
-import com.fluxtion.runtime.event.RegisterEventHandler;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.LongAdder;
@@ -21,26 +19,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-public class EventPublisherTest extends MultipleSepTargetInProcessTest {
+public class SinkTest extends MultipleSepTargetInProcessTest {
 
-    public EventPublisherTest(boolean compiledSep) {
+    public SinkTest(boolean compiledSep) {
         super(compiledSep);
     }
 
     @Test
-    public void testAudit() {
-        sep((c) -> {
-            GreaterThan gt_10 = c.addNode(new GreaterThan(10));
-            EventPublisher<GreaterThan> publisher = c.addPublicNode(new EventPublisher<>(), "publisher");
-            publisher.addEventSource(gt_10);
-            c.setFormatSource(true);
-        });
+    public void simpleSinkTest() {
+        sep((c) -> EventFlow.subscribeToNode(new GreaterThan(10)).sink("gt_10"));
 
         final LongAdder adder = new LongAdder();
-//        sep.onEvent(new RegisterEventHandler(System.out::println));
-        sep.onEvent(new RegisterEventHandler(e -> adder.increment()));
-        sep.onEvent(new NumberEvent(12));
-        sep.onEvent(new NumberEvent(3));
+        addSink("gt_10", i -> adder.increment());
+        onEvent(new NumberEvent(12));
+        onEvent(new NumberEvent(3));
         assertThat(adder.intValue(), is(1));
     }
 
@@ -57,6 +49,7 @@ public class EventPublisherTest extends MultipleSepTargetInProcessTest {
     public static class GreaterThan implements Event{
 
         public int barrier;
+        private int toCheck;
 
         public GreaterThan() {
         }
@@ -67,8 +60,12 @@ public class EventPublisherTest extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler
         public boolean isGreaterThan(NumberEvent number) {
-            //System.out.println("number:" + number.value);
-            return number.value > barrier;
+            toCheck = number.value;
+            return isBreached();
+        }
+
+        public boolean isBreached(){
+            return toCheck > barrier;
         }
 
         @Override
