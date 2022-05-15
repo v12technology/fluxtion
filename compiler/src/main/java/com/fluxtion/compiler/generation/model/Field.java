@@ -122,6 +122,16 @@ public class Field {
             }
         }
 
+        public Class<?> realClass(){
+            if (collection) {
+                return List.class;
+            } else if (primitive) {
+                return primitiveVal.getClass();
+            } else {
+                return instance.getClass();
+            }
+        }
+
         public String value() {
             return derivedVal;
         }

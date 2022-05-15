@@ -21,6 +21,13 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
+import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.MergeProperty;
+import net.vidageek.mirror.dsl.Mirror;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
@@ -33,14 +40,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.MergeProperty;
-import net.vidageek.mirror.dsl.Mirror;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -177,7 +176,8 @@ public interface ClassUtils {
                     break;
                 }
             }
-            primitiveVal = "new MergeProperty<>(" + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
+            primitiveVal = "new MergeProperty<>("
+                    + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
         }
         if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
             MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
@@ -199,7 +199,16 @@ public interface ClassUtils {
                     primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
                 }
             }else{
-                primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
+                if(ref.getContainingClass().getTypeParameters().length > 0){
+                    String typeParam = "<Object";
+                    for (int i = 1; i < ref.getContainingClass().getTypeParameters().length; i++) {
+                        typeParam += ", Object";
+                    }
+                    typeParam += ">";
+                    primitiveVal = ref.getContainingClass().getSimpleName() + typeParam + "::" + ref.method().getName();
+                }else {
+                    primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
+                }
             }
         }
         for (Field nodeField : nodeFields) {

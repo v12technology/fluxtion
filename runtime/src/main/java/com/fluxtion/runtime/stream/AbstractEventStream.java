@@ -22,10 +22,11 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     @NoTriggerReference
     private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
-    private transient boolean overrideUpdateTrigger;
+    protected transient boolean overrideUpdateTrigger;
     private transient boolean overridePublishTrigger;
     protected transient boolean inputStreamTriggered;
-    private transient boolean overrideTriggered;
+    protected transient boolean inputStreamTriggered_1;
+    protected transient boolean overrideTriggered;
     private transient boolean publishTriggered;
     private transient boolean publishOverrideTriggered;
     private transient boolean resetTriggered;
@@ -41,7 +42,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
             streamFunctionInstance = SepContext.service().addOrReuse(methodReferenceReflection.captured()[0]);
             statefulFunction = Stateful.class.isAssignableFrom(streamFunctionInstance.getClass());
-        }else{
+        } else {
             streamFunctionInstance = null;
             statefulFunction = false;
         }
@@ -55,6 +56,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
      *     <li>publish trigger firing</li>
      *     <li>update override firing</li>
      * </ul>
+     *
      * @return flag indicating fire a notification to child nodes for any upstream change
      */
     protected final boolean fireEventUpdateNotification() {
@@ -78,20 +80,20 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
      *     <li>update override firing</li>
      * </ul>
      * Requests from publish trigger are not included in this flag
+     *
      * @return flag indicating fire a notification to child nodes for an upstream update change, not publish trigger
-     *
-     *
      */
-    protected final boolean executeUpdate() {
+    protected boolean executeUpdate() {
         return (!overrideUpdateTrigger && inputStreamTriggered) | overrideTriggered;
     }
 
-    protected final boolean reset(){
+    protected final boolean reset() {
         return resetTriggered && statefulFunction;
     }
 
     @OnParentUpdate("inputEventStream")
-    public final void inputUpdated(Object inputEventStream){
+    public final void inputUpdated(Object inputEventStream) {
+        inputStreamTriggered_1 = true;
         inputStreamTriggered = true;
     }
 
@@ -127,7 +129,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         //NO-OP
     }
 
-    protected void resetOperation(){
+    protected void resetOperation() {
         //NO-OP
     }
 
@@ -191,13 +193,18 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
      * @param <U> The type of {@link EventStream} that wraps Q
      */
     public static abstract class AbstractBinaryEventStream<R, Q, T, S extends EventStream<R>, U extends EventStream<Q>>
-        extends AbstractEventStream<R, T, S>{
+            extends AbstractEventStream<R, T, S> {
 
         private final U inputEventStream_2;
+        protected boolean inputStreamTriggered_2;
 
-        public AbstractBinaryEventStream(S inputEventStream_1, U inputEventStream_2, MethodReferenceReflection methodReferenceReflection) {
-            super(inputEventStream_1, methodReferenceReflection);
+        public AbstractBinaryEventStream(S inputEventStream, U inputEventStream_2, MethodReferenceReflection methodReferenceReflection) {
+            super(inputEventStream, methodReferenceReflection);
             this.inputEventStream_2 = inputEventStream_2;
+        }
+
+        protected boolean executeUpdate() {
+            return (!overrideUpdateTrigger && inputStreamTriggered && inputStreamTriggered_2) | overrideTriggered;
         }
 
         public S getInputEventStream_1() {
@@ -209,8 +216,15 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         }
 
         @OnParentUpdate("inputEventStream_2")
-        public final void input2Updated(Object inputEventStream){
+        public final void input2Updated(Object inputEventStream) {
+            inputStreamTriggered_2 = true;
             inputStreamTriggered = true;
+        }
+
+        @Override
+        protected void initialise() {
+            inputStreamTriggered_1 = getInputEventStream_1().hasDefaultValue();
+            inputStreamTriggered_2 = getInputEventStream_2().hasDefaultValue();
         }
     }
 }

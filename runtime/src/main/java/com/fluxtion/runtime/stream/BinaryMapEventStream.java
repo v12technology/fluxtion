@@ -24,10 +24,10 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
     protected transient T result;
 
     public BinaryMapEventStream(
-            S inputEventStream_1,
+            S inputEventStream,
             U inputEventStream_2,
             MethodReferenceReflection methodReferenceReflection) {
-        super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
+        super(inputEventStream, inputEventStream_2, methodReferenceReflection);
         Method method = methodReferenceReflection.method();
         auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
     }
@@ -62,7 +62,7 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
     public static class BinaryMapToRefEventStream<R, Q, T, S extends EventStream<R>, U extends EventStream<Q>>
             extends BinaryMapEventStream<R, Q, T, S, U> {
 
-        private SerializableBiFunction<R, Q, T> mapFunction;
+        private final SerializableBiFunction<R, Q, T> mapFunction;
 
         public BinaryMapToRefEventStream(S inputEventStream_1, U inputEventStream_2, SerializableBiFunction<R, Q, T> methodReferenceReflection) {
             super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
