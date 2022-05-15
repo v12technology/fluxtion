@@ -199,7 +199,7 @@ public interface ClassUtils {
                     primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
                 }
             }else{
-                if(ref.getContainingClass().getTypeParameters().length == 2){
+                if(ref.getContainingClass().getTypeParameters().length > 0){
                     String typeParam = "<Object";
                     for (int i = 1; i < ref.getContainingClass().getTypeParameters().length; i++) {
                         typeParam += ", Object";

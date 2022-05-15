@@ -65,6 +65,10 @@ public interface EventFlow {
         );
     }
 
+    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType){
+        return (EventStreamBuilder<T>) subscribe(Signal.class, filterId).map(Signal::getValue);
+    }
+
     static IntStreamBuilder subscribeToIntSignal(String filterId){
         return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
     }

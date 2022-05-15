@@ -19,11 +19,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNodeProperty;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToSignal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -129,6 +131,19 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent("three");
 
         assertThat(myList, is(Arrays.asList("aa", "2222", "three")));
+    }
+
+    @Test
+    public void signalTest(){
+        List<String> myList = new ArrayList<>();
+        sep(c -> {
+            subscribeToSignal("myfilter", String.class).sink("strings");
+        });
+        addSink("strings", (String s) -> myList.add(s));
+        publishSignal("myfilter", "aa");
+        publishSignal("xx", "BBB");
+
+        assertThat(myList, is(Collections.singletonList("aa")));
     }
 
     @Test
