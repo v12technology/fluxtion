@@ -7,7 +7,7 @@ import lombok.Value;
 public class GroupByCollectionTest extends TestCase {
 
     public void testMap() {
-        GroupByCollection<Data, Integer, String, Integer, AggregateIntSum> groupCount =
+        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> groupCount =
                 new GroupByCollection<>(Data::getKey, Data::getIntValue, AggregateIntSum::new);
 
 
@@ -19,7 +19,7 @@ public class GroupByCollectionTest extends TestCase {
         groupCount.aggregate(new Data("B", 565));
         groupCount.aggregate(new Data("A", 250));
 
-        System.out.println(groupCount.map());
+        //System.out.println(groupCount.map());
     }
 
     @Value

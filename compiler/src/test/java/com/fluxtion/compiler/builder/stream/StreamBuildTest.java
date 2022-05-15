@@ -9,6 +9,8 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
+import com.fluxtion.runtime.stream.groupby.GroupByBatched;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +22,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
@@ -136,9 +140,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void signalTest(){
         List<String> myList = new ArrayList<>();
-        sep(c -> {
-            subscribeToSignal("myfilter", String.class).sink("strings");
-        });
+        sep(c -> subscribeToSignal("myfilter", String.class).sink("strings"));
         addSink("strings", (String s) -> myList.add(s));
         publishSignal("myfilter", "aa");
         publishSignal("xx", "BBB");
@@ -525,16 +527,107 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
     @Test
     public void groupByTest(){
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
         sep(c -> subscribe(KeyedData.class)
                 .groupBy(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new)
                 .map(GroupBy::keyValue)
-                .console("{}"));
+                .sink("keyValue"));
+
+        addSink("keyValue", (KeyValue<String, Integer> kv) -> {
+            results.clear();
+            expected.clear();
+            results.put(kv.getKey(), kv.getValue());
+        });
+        onEvent(new KeyedData("A", 22));
+        expected.put("A", 22);
+        assertThat(results, is(expected));
+
+        onEvent(new KeyedData("B", 250));
+        expected.put("B", 250);
+        assertThat(results, is(expected));
+
+        onEvent(new KeyedData("B", 140));
+        expected.put("B", 390);
+        assertThat(results, is(expected));
 
         onEvent(new KeyedData("A", 22));
-        onEvent(new KeyedData("B", 250));
-        onEvent(new KeyedData("B", 140));
+        expected.put("A", 44);
+        assertThat(results, is(expected));
+
         onEvent(new KeyedData("A", 22));
-        onEvent(new KeyedData("A", 22));
+        expected.put("A", 66);
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void groupByTumblingTest(){
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
+                .map(GroupByBatched::map)
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) ->{
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 40));
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(25);//100
+        expected.put("A", 160);
+        expected.put("B", 200);
+        assertThat(results, is(expected));
+
+        onEvent(new KeyedData("B", 400));
+        onEvent(new KeyedData("C", 30));
+
+        tickDelta(25);
+        onEvent(new KeyedData("B", 400));
+        onEvent(new KeyedData("C", 30));
+
+        tickDelta(25);
+        onEvent(new KeyedData("C", 30));
+
+        tickDelta(25);
+        onEvent(new KeyedData("C", 30));
+
+        tickDelta(25);//100
+        expected.put("B", 800);
+        expected.put("C", 120);
+        assertThat(results, is(expected));
+
+        onEvent(new KeyedData("C", 80));
+
+        tickDelta(25);
+        onEvent(new KeyedData("C", 80));
+
+        tickDelta(50);
+        onEvent(new KeyedData("C", 80));
+
+        tickDelta(25);//100
+        expected.put("C", 240);
+        assertThat(results, is(expected));
+
+        tickDelta(200);
+        assertThat(results, is(expected));
     }
 
     @Data
