@@ -32,12 +32,19 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
     private final List<Auditor> auditors = new ArrayList<>();
     private Object currentEvent;
+    private boolean processing = false;
 
     @Override
     @SneakyThrows
     public void onEvent(Object event) {
-        onEventInternal(event);
-        simpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
+        if (processing) {
+            simpleEventProcessorModel.getCallbackDispatcher().processEvent(event);
+        } else {
+            processing = true;
+            onEventInternal(event);
+            simpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
+            processing = false;
+        }
     }
 
     public void onEventInternal(Object event) {
@@ -352,6 +359,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         @Override
         public void tearDown() {
             dirtyBitset.clear(position);
+            processing = false;
         }
 
         boolean sameCallback(CbMethodHandle other) {
