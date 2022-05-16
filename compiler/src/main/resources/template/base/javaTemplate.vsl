@@ -39,6 +39,7 @@ public class ${className} implements EventProcessor, StaticEventProcessor, Batch
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
+    private boolean processing = false;
 ${MODEL.dirtyFlagDeclarations}
 //Filter constants
 ${MODEL.filterConstantDeclarations}
@@ -51,8 +52,14 @@ ${MODEL.nodeMemberAssignments}
 
     @Override
     public void onEvent(Object event) {
-        onEventInternal(event);
-        callbackDispatcher.dispatchQueuedCallbacks();
+        if(processing){
+            callbackDispatcher.processEvent(event);
+        }else{
+            processing = true;
+            onEventInternal(event);
+            callbackDispatcher.dispatchQueuedCallbacks();
+            processing = false;
+        }
     }
 
     private void onEventInternal(Object event) {
