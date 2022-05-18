@@ -8,6 +8,7 @@ import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * @param <T> Input type
@@ -16,13 +17,16 @@ import java.util.Map;
  * @param <A> output type of aggregate calculation
  * @param <F> The aggregate function converts a V into an A
  */
-public class GroupByCollection<T, K, V, A, F extends BaseSlidingWindowFunction<V, A, F>> implements GroupBy<K, A>, Stateful<A> {
+public class GroupByCollection<T, K, V, A, F extends BaseSlidingWindowFunction<V, A, F>>
+        extends BaseSlidingWindowFunction<T, GroupBy<K, A>, GroupByCollection<T, K, V, A, F >>
+        implements GroupBy<K, A>, Stateful<GroupBy<K, A>> {
 
     private final SerializableFunction<T, K> keyFunction;
     private final SerializableFunction<T, V> valueFunction;
     private final SerializableSupplier<F> aggregateFunctionSupplier;
-    private transient final Map<K, F> map;
+    private transient final Map<K, F> mapOfFunctions;
     private transient final Map<K, A> mapOfValues;
+    private transient final Map<K, LongAdder> keyCount;
     private F latestAggregateValue;
     private KeyValue<K, A> keyValue;
 
@@ -32,17 +36,57 @@ public class GroupByCollection<T, K, V, A, F extends BaseSlidingWindowFunction<V
         this.keyFunction = keyFunction;
         this.valueFunction = valueFunction;
         this.aggregateFunctionSupplier = aggregateFunctionSupplier;
-        this.map = new HashMap<>();
-        mapOfValues = new HashMap<>();
+        this.mapOfFunctions = new HashMap<>();
+        this.mapOfValues = new HashMap<>();
+        this.keyCount = new HashMap<>();
+    }
+
+    @Override
+    public GroupBy<K, A> get() {
+        return this;
+    }
+
+    @Override
+    public void combine(GroupByCollection<T, K, V, A, F> add) {
+        super.combine(add);
+        //merge each if existing
+        add.mapOfFunctions.forEach((k, f) ->{
+            F targetFunction = mapOfFunctions.computeIfAbsent(k, key -> aggregateFunctionSupplier.get());
+            keyCount.computeIfAbsent(k, key -> new LongAdder()).increment();
+            targetFunction.combine(f);
+            mapOfValues.put(k, targetFunction.get());
+        });
+    }
+
+    @Override
+    public void deduct(GroupByCollection<T, K, V, A, F> add) {
+        super.deduct(add);
+        //ignore if
+        add.mapOfFunctions.forEach((k, f) ->{
+            LongAdder currentCount = keyCount.computeIfAbsent(k, key -> new LongAdder());
+            currentCount.decrement();
+            if(currentCount.intValue() < 1){
+                currentCount.reset();
+                //remove completely
+                mapOfFunctions.remove(k);
+                mapOfValues.remove(k);
+            }else{
+                //perform deduct
+                F targetFunction = mapOfFunctions.get(k);
+                targetFunction.deduct(f);
+                mapOfValues.put(k, targetFunction.get());
+            }
+        });
     }
 
     public GroupBy<K, A> aggregate(T input) {
         K key = keyFunction.apply(input);
         V value = valueFunction.apply(input);
-        F currentFunction = map.get(key);
+        F currentFunction = mapOfFunctions.get(key);
         if (currentFunction == null) {
             currentFunction = aggregateFunctionSupplier.get();
-            map.put(key, currentFunction);
+            mapOfFunctions.put(key, currentFunction);
+            keyCount.computeIfAbsent(key, k -> new LongAdder()).increment();
         }
         currentFunction.aggregate(value);
         latestAggregateValue = currentFunction;
@@ -72,9 +116,9 @@ public class GroupByCollection<T, K, V, A, F extends BaseSlidingWindowFunction<V
     }
 
     @Override
-    public A reset() {
-        map.clear();
+    public GroupBy<K, A> reset() {
+        mapOfFunctions.clear();
         mapOfValues.clear();
-        return null;
+        return this;
     }
 }

@@ -630,6 +630,50 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(results, is(expected));
     }
 
+    @Test
+    public void groupBySlidingTest(){
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .console("in -> {}")
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .map(GroupByBatched::map)
+                .console("received: {}")
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) ->{
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tickDelta(100);
+        onEvent(new KeyedData("A", 40));
+
+        tickDelta(50, 4);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(100, 3);
+        onEvent(new KeyedData("C", 40));
+
+        tickDelta(10, 150);
+        onEvent(new KeyedData("C", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(50, 2);
+        onEvent(new KeyedData("C", 40));
+
+        tickDelta(350);
+        onEvent(new KeyedData("D", 100));
+
+        tickDelta(10, 120);
+
+    }
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";

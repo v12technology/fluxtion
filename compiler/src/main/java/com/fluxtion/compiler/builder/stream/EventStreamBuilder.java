@@ -24,10 +24,7 @@ import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupByBatched;
-import com.fluxtion.runtime.stream.groupby.GroupByCollection;
-import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
+import com.fluxtion.runtime.stream.groupby.*;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -138,6 +135,22 @@ public class EventStreamBuilder<T> {
                 keyFunction,
                 valueFunction,
                 bucketSizeMillis
+        ));
+    }
+
+    public <V, K, A, F extends BaseSlidingWindowFunction<V, A, F>> EventStreamBuilder<GroupByBatched<K, A>>
+    groupBySliding(SerializableFunction<T, K> keyFunction,
+                    SerializableFunction<T, V> valueFunction,
+                    SerializableSupplier<F> aggregateFunctionSupplier,
+                    int bucketSizeMillis,
+                    int numberOfBuckets) {
+        return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
+                eventStream,
+                aggregateFunctionSupplier,
+                keyFunction,
+                valueFunction,
+                bucketSizeMillis,
+                numberOfBuckets
         ));
     }
 
