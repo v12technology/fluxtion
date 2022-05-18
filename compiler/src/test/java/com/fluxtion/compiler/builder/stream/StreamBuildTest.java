@@ -639,7 +639,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .console("in -> {}")
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .map(GroupByBatched::map)
-                .console("received: {}")
+                .console("window contents: {}")
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) ->{

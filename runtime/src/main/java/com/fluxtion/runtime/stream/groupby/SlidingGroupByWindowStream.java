@@ -3,7 +3,6 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -16,7 +15,6 @@ import com.fluxtion.runtime.time.FixedRateTrigger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 
 /**
@@ -33,14 +31,14 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
 
     @NoTriggerReference
     private final S inputEventStream;
-
-    @SepNode
-    @NoTriggerReference
-    public SerializableSupplier<GroupByCollection<T, K, V, R, F>> groupBySupplier;
-
+    private final SerializableSupplier<F> windowFunctionSupplier;
+    private final SerializableFunction<T, K> keyFunction;
+    private final SerializableFunction<T, V> valueFunction;
+    private final int bucketSizeMillis;
+    private final int bucketCount;
     public FixedRateTrigger rollTrigger;
-    private transient BucketedSlidingWindowedFunction<T, GroupBy<K, R>, GroupByCollection<T, K, V, R, F>> slidingCalculator;
-
+    private final transient SerializableSupplier<GroupByCollection<T, K, V, R, F>> groupBySupplier;
+    private final transient BucketedSlidingWindowedFunction<T, GroupBy<K, R>, GroupByCollection<T, K, V, R, F>> slidingCalculator;
     private transient final Map<K, R> mapOfValues = new HashMap<>();
     private transient final MyGroupByBatched results = new MyGroupByBatched();
 
@@ -51,15 +49,17 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
             SerializableFunction<T, V> valueFunction,
             int bucketSizeMillis,
             int bucketCount) {
-        this(inputEventStream);
+        this.inputEventStream = inputEventStream;
+        this.windowFunctionSupplier = windowFunctionSupplier;
+        this.keyFunction = keyFunction;
+        this.valueFunction = valueFunction;
+        this.bucketSizeMillis = bucketSizeMillis;
+        this.bucketCount = bucketCount;
         rollTrigger = FixedRateTrigger.atMillis(bucketSizeMillis);
         groupBySupplier = () -> new GroupByCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
         slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
     }
 
-    public SlidingGroupByWindowStream(S inputEventStream) {
-        this.inputEventStream = inputEventStream;
-    }
 
     @Override
     public GroupByBatched<K, R> get() {
