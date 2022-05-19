@@ -7,10 +7,11 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByBatched;
+import com.fluxtion.runtime.stream.groupby.GroupByBatched.KeyValue;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -632,14 +633,15 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void groupBySlidingTest(){
+//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 
         sep(c -> subscribe(KeyedData.class)
-                .console("in -> {}")
+                .console("\t\tIN eventTime:%t -> {}")
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .map(GroupByBatched::map)
-                .console("window contents: {}")
+                .console("OUT eventTime:%t {} ")
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) ->{
@@ -673,6 +675,52 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tickDelta(10, 120);
 
+    }
+
+    @Test
+    public void flatMapFollowedByGroupByTest(){
+        sep(c -> subscribe(Trade.class)
+                .flatMap(Trade::tradeLegs)
+                .groupBy(AssetAmountTraded::getId, AssetAmountTraded::getAmount, AggregateDoubleSum::new).resetTrigger(
+                        subscribe(String.class).filter("reset"::equalsIgnoreCase))
+                .map(GroupByBatched::map).updateTrigger(
+                        subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                .console("positionMap:{}"));
+
+        onEvent(Trade.bought("EUR", 200, "GBP", 170));
+        onEvent(Trade.sold("EUR", 140, "USD", 120));
+        onEvent(Trade.bought("GBP", 350, "USD", 420));
+        onEvent("publish");
+        onEvent("reset");
+        onEvent("publish");
+
+        onEvent(Trade.sold("EUR", 50, "HUF", 400.5));
+        onEvent(Trade.bought("EUR", 50, "CHF", 47.2));
+        onEvent(Trade.sold("GBP", 160, "USD", 200));
+        onEvent(Trade.bought("GBP", 160, "JPy", 2000000));
+        onEvent("publish");
+    }
+
+    @Value
+    public static class AssetAmountTraded {
+        String id;
+        double amount;
+    }
+    @Value
+    public static class Trade{
+        public static Trade bought(String dealtId, double dealtAmount, String contraId, double contraAmount){
+            return new Trade(new AssetAmountTraded(dealtId, dealtAmount), new AssetAmountTraded(contraId, -1.0 * contraAmount));
+        }
+
+        public static Trade sold(String dealtId, double dealtAmount, String contraId, double contraAmount){
+            return new Trade(new AssetAmountTraded(dealtId, -1.0 * dealtAmount), new AssetAmountTraded(contraId, contraAmount));
+        }
+        AssetAmountTraded dealt;
+        AssetAmountTraded contra;
+
+        public List<AssetAmountTraded> tradeLegs(){
+            return Arrays.asList(dealt, contra);
+        }
     }
     @Data
     public static class NotifyAndPushTarget implements Named {
