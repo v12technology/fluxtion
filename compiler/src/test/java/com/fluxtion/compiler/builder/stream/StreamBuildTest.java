@@ -9,9 +9,10 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupByBatched;
-import com.fluxtion.runtime.stream.groupby.GroupByBatched.KeyValue;
+import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
+import com.fluxtion.runtime.stream.helpers.Collectors;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
@@ -532,7 +534,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         Map<String, Integer> expected = new HashMap<>();
         sep(c -> subscribe(KeyedData.class)
                 .groupBy(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new)
-                .map(GroupBy::keyValue)
+                .map(GroupByStreamed::keyValue)
                 .sink("keyValue"));
 
         addSink("keyValue", (KeyValue<String, Integer> kv) -> {
@@ -569,7 +571,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
-                .map(GroupByBatched::map)
+                .map(GroupBy::map)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) ->{
@@ -640,7 +642,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .console("\t\tIN eventTime:%t -> {}")
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
-                .map(GroupByBatched::map)
+                .map(GroupBy::map)
                 .console("OUT eventTime:%t {} ")
                 .sink("map"));
 
@@ -677,15 +679,41 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     }
 
+    public static KeyValue<String, Double> markToMarket(KeyValue<String, Double> assetPosition, Map<String, Double> assetPriceMap){
+        if(assetPosition == null || assetPriceMap == null){
+            return  null;
+        }
+        Double price = assetPriceMap.getOrDefault(assetPosition.getKey(), Double.NaN);
+        return new KeyValue<>(assetPosition.getKey(), price * assetPosition.getValue());
+    }
+
     @Test
     public void flatMapFollowedByGroupByTest(){
-        sep(c -> subscribe(Trade.class)
-                .flatMap(Trade::tradeLegs)
-                .groupBy(AssetAmountTraded::getId, AssetAmountTraded::getAmount, AggregateDoubleSum::new).resetTrigger(
-                        subscribe(String.class).filter("reset"::equalsIgnoreCase))
-                .map(GroupByBatched::map).updateTrigger(
-                        subscribe(String.class).filter("publish"::equalsIgnoreCase))
-                .console("positionMap:{}"));
+        sep(c -> {
+            EventStreamBuilder<GroupByStreamed<String, Double>> assetPosition = subscribe(Trade.class)
+                    .flatMap(Trade::tradeLegs)
+                    .groupBy(AssetAmountTraded::getId, AssetAmountTraded::getAmount, AggregateDoubleSum::new)
+                    .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
+
+            EventStreamBuilder<GroupByStreamed<String, Double>> assetPriceMap = subscribe(AssetPrice.class)
+                    .groupBy(AssetPrice::getId, AssetPrice::getPrice, AggregateDoubleSum::new);
+
+            assetPosition.map(GroupByStreamed::keyValue)
+                    .console("calculate MtM for:{}")
+                    .map(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map))
+                    .filter(Objects::nonNull)
+                    .map(Collectors.toGroupBy())
+                    .map(GroupBy::map)
+                    .console("MarkToMarket Map:{}");
+
+
+            //logging
+            EventStreamBuilder<Map<String, Double>> positionMap = assetPosition
+                    .map(GroupBy::map)
+                    .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                    .console("positionMap:{}");
+            assetPriceMap.map(GroupByStreamed::keyValue).console("{}");
+        });
 
         onEvent(Trade.bought("EUR", 200, "GBP", 170));
         onEvent(Trade.sold("EUR", 140, "USD", 120));
@@ -699,6 +727,17 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent(Trade.sold("GBP", 160, "USD", 200));
         onEvent(Trade.bought("GBP", 160, "JPy", 2000000));
         onEvent("publish");
+
+        onEvent(new AssetPrice("EUR", 1.02));
+        onEvent(new AssetPrice("GBP", 1.23));
+
+        onEvent(Trade.bought("EUR", 200, "GBP", 170));
+    }
+
+    @Value
+    public static class AssetPrice{
+        String id;
+        double price;
     }
 
     @Value

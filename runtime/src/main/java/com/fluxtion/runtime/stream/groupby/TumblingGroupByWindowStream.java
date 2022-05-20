@@ -27,17 +27,17 @@ import java.util.Map;
  */
 public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<V, R, F>>
         extends EventLogNode
-        implements TriggeredEventStream<GroupByBatched<K, R>> {
+        implements TriggeredEventStream<GroupBy<K, R>> {
 
     @NoTriggerReference
     private final S inputEventStream;
     @SepNode
     @NoTriggerReference
-    public GroupByCollection<T, K, V, R, F> groupByCollection;
+    public GroupByWindowedCollection<T, K, V, R, F> groupByWindowedCollection;
     public FixedRateTrigger rollTrigger;
 
     private transient final Map<K, R> mapOfValues = new HashMap<>();
-    private transient final MyGroupByBatched results = new MyGroupByBatched();
+    private transient final MyGroupBy results = new MyGroupBy();
 
     public TumblingGroupByWindowStream(
             S inputEventStream,
@@ -46,7 +46,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
             SerializableFunction<T, V> valueFunction,
             int windowSizeMillis) {
         this(inputEventStream);
-        this.groupByCollection = new GroupByCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
+        this.groupByWindowedCollection = new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
         rollTrigger = FixedRateTrigger.atMillis(windowSizeMillis);
     }
 
@@ -55,20 +55,20 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
     }
 
     @Override
-    public GroupByBatched<K, R> get() {
+    public GroupBy<K, R> get() {
         return results;
     }
 
     @OnParentUpdate
     public void timeTriggerFired(FixedRateTrigger rollTrigger) {
         mapOfValues.clear();
-        mapOfValues.putAll(groupByCollection.map());
-        groupByCollection.reset();
+        mapOfValues.putAll(groupByWindowedCollection.map());
+        groupByWindowedCollection.reset();
     }
 
     @OnParentUpdate
     public void updateData(S inputEventStream) {
-        groupByCollection.aggregate(inputEventStream.get());
+        groupByWindowedCollection.aggregate(inputEventStream.get());
     }
 
     @OnTrigger
@@ -96,7 +96,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
 
     }
 
-    private class MyGroupByBatched implements GroupByBatched<K, R>{
+    private class MyGroupBy implements GroupBy<K, R> {
 
         @Override
         public Map<K, R> map() {

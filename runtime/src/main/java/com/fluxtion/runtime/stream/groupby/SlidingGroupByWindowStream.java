@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<V, R, F>>
         extends EventLogNode
-        implements TriggeredEventStream<GroupByBatched<K, R>> {
+        implements TriggeredEventStream<GroupBy<K, R>> {
 
     @NoTriggerReference
     private final S inputEventStream;
@@ -37,10 +37,10 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     private final int bucketSizeMillis;
     private final int bucketCount;
     public FixedRateTrigger rollTrigger;
-    private final transient SerializableSupplier<GroupByCollection<T, K, V, R, F>> groupBySupplier;
-    private final transient BucketedSlidingWindowedFunction<T, GroupBy<K, R>, GroupByCollection<T, K, V, R, F>> slidingCalculator;
+    private final transient SerializableSupplier<GroupByWindowedCollection<T, K, V, R, F>> groupBySupplier;
+    private final transient BucketedSlidingWindowedFunction<T, GroupByStreamed<K, R>, GroupByWindowedCollection<T, K, V, R, F>> slidingCalculator;
     private transient final Map<K, R> mapOfValues = new HashMap<>();
-    private transient final MyGroupByBatched results = new MyGroupByBatched();
+    private transient final MyGroupBy results = new MyGroupBy();
 
     public SlidingGroupByWindowStream(
             S inputEventStream,
@@ -56,13 +56,13 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         this.bucketSizeMillis = bucketSizeMillis;
         this.bucketCount = bucketCount;
         rollTrigger = FixedRateTrigger.atMillis(bucketSizeMillis);
-        groupBySupplier = () -> new GroupByCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
+        groupBySupplier = () -> new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
         slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
     }
 
 
     @Override
-    public GroupByBatched<K, R> get() {
+    public GroupBy<K, R> get() {
         return results;
     }
 
@@ -80,7 +80,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     public boolean triggered() {
         boolean publish = slidingCalculator.isAllBucketsFilled();
         if (publish) {
-            GroupBy<K, R> value = slidingCalculator.get();
+            GroupByStreamed<K, R> value = slidingCalculator.get();
             mapOfValues.clear();
             mapOfValues.putAll(value.map());
         }
@@ -108,7 +108,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
 
     }
 
-    private class MyGroupByBatched implements GroupByBatched<K, R>{
+    private class MyGroupBy implements GroupBy<K, R> {
 
         @Override
         public Map<K, R> map() {

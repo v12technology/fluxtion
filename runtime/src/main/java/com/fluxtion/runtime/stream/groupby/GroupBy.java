@@ -1,9 +1,19 @@
 package com.fluxtion.runtime.stream.groupby;
 
-public interface GroupBy<K, V> extends GroupByBatched<K, V> {
-    V value();
+import lombok.Value;
 
-    KeyValue<K, V> keyValue();
+import java.util.Collection;
+import java.util.Map;
 
+public interface GroupBy<K, V>  {
 
+    Map<K, V> map();
+
+    Collection<V> values();
+
+    @Value
+    class KeyValue<K, V>{
+        K key;
+        V value;
+    }
 }

@@ -1,7 +1,6 @@
 package com.fluxtion.runtime.stream.groupby;
 
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
-import junit.framework.TestCase;
 import lombok.Value;
 import org.junit.Test;
 
@@ -13,14 +12,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class GroupByCollectionTest {
+public class GroupByWindowedCollectionTest {
 
-    Supplier<GroupByCollection<Data, String, Integer, Integer, AggregateIntSum>> supplier =
-            () -> new GroupByCollection<>(Data::getKey, Data::getIntValue, AggregateIntSum::new);
+    Supplier<GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum>> supplier =
+            () -> new GroupByWindowedCollection<>(Data::getKey, Data::getIntValue, AggregateIntSum::new);
 
     @Test
     public void testMap() {
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> groupCount = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> groupCount = supplier.get();
 
         groupCount.aggregate(new Data("A", 25));
         groupCount.aggregate(new Data("A", 65));
@@ -37,9 +36,9 @@ public class GroupByCollectionTest {
 
     @Test
     public void testCombine() {
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group2 = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group3 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group2 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group3 = supplier.get();
 
         group2.aggregate(new Data("A", 30));
 
@@ -57,8 +56,8 @@ public class GroupByCollectionTest {
 
     @Test
     public void testDeduct(){
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
 
         group1.aggregate(new Data("A", 30));
 
@@ -79,10 +78,10 @@ public class GroupByCollectionTest {
 
     @Test
     public void combineAndDeductTest(){
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group2 = supplier.get();
-        GroupByCollection<Data, String, Integer, Integer, AggregateIntSum> group3 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group2 = supplier.get();
+        GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group3 = supplier.get();
 
         group1.aggregate(new Data("A", 30));
         group1.aggregate(new Data("A", 30));
