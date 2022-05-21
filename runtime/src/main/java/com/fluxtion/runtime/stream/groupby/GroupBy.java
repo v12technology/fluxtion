@@ -15,5 +15,16 @@ public interface GroupBy<K, V>  {
     class KeyValue<K, V>{
         K key;
         V value;
+        public Double getValueAsDouble(){
+            return (Double) value;
+        }
+
+        public Long getValueAsLong(){
+            return (Long) value;
+        }
+
+        public Integer getValueAsInt(){
+            return (Integer) value;
+        }
     }
 }

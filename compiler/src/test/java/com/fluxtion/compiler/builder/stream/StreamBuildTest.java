@@ -8,11 +8,11 @@ import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleValue;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.helpers.Collectors;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,11 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.LongAdder;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNodeProperty;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToSignal;
+import static com.fluxtion.compiler.builder.stream.EventFlow.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -425,6 +423,20 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void mergeTest(){
+        LongAdder adder = new LongAdder();
+        sep(c ->{
+            subscribe(Long.class)
+                    .merge(subscribe(String.class).map(StreamBuildTest::parseLong))
+                    .sink("integers");
+        });
+        addSink("integers", adder::add);
+        onEvent(200L);
+        onEvent("300");
+        assertThat(adder.intValue(), is(500));
+    }
+
+    @Test
     public void slidingWindowTest() {
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
@@ -689,51 +701,99 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void flatMapFollowedByGroupByTest(){
+//        addAuditor();
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, Double>> assetPosition = subscribe(Trade.class)
                     .flatMap(Trade::tradeLegs)
                     .groupBy(AssetAmountTraded::getId, AssetAmountTraded::getAmount, AggregateDoubleSum::new)
                     .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
 
-            EventStreamBuilder<GroupByStreamed<String, Double>> assetPriceMap = subscribe(AssetPrice.class)
+            EventStreamBuilder<GroupByStreamed<String, Double>> assetPriceMap = subscribe(PairPrice.class)
+                    .flatMap(new ConvertToBasePrice("USD")::toCrossRate)
                     .groupBy(AssetPrice::getId, AssetPrice::getPrice, AggregateDoubleSum::new);
 
-            assetPosition.map(GroupByStreamed::keyValue)
-                    .console("calculate MtM for:{}")
-                    .map(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map))
-                    .filter(Objects::nonNull)
-                    .map(Collectors.toGroupBy())
-                    .map(GroupBy::map)
-                    .console("MarkToMarket Map:{}");
+            EventStreamBuilder<KeyValue<String, Double>> posDrivenMtmStream = assetPosition.map(GroupByStreamed::keyValue)
+                    .map(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map));
 
+            EventStreamBuilder<KeyValue<String, Double>> priceDrivenMtMStream = assetPriceMap.map(GroupByStreamed::keyValue)
+                    .map(StreamBuildTest::markToMarket, assetPosition.map(GroupBy::map)).updateTrigger(assetPriceMap);
 
-            //logging
-            EventStreamBuilder<Map<String, Double>> positionMap = assetPosition
+            //Mark to market
+            posDrivenMtmStream.merge(priceDrivenMtMStream)
+                    .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, AggregateDoubleValue::new)
                     .map(GroupBy::map)
+                    .defaultValue(HashMap::new)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                    .console("MtM:{}");
+
+            //Positions
+            assetPosition.map(GroupBy::map).id("mtmNode")
+                    .defaultValue(HashMap::new)
+                    .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                    .filter(Objects::nonNull)
                     .console("positionMap:{}");
-            assetPriceMap.map(GroupByStreamed::keyValue).console("{}");
         });
 
-        onEvent(Trade.bought("EUR", 200, "GBP", 170));
-        onEvent(Trade.sold("EUR", 140, "USD", 120));
-        onEvent(Trade.bought("GBP", 350, "USD", 420));
-        onEvent("publish");
-        onEvent("reset");
-        onEvent("publish");
 
-        onEvent(Trade.sold("EUR", 50, "HUF", 400.5));
-        onEvent(Trade.bought("EUR", 50, "CHF", 47.2));
-        onEvent(Trade.sold("GBP", 160, "USD", 200));
-        onEvent(Trade.bought("GBP", 160, "JPy", 2000000));
+        onEvent(new PairPrice("EURUSD", 1.5));
+        onEvent(new PairPrice("GBPUSD", 2.0));
         onEvent("publish");
-
-        onEvent(new AssetPrice("EUR", 1.02));
-        onEvent(new AssetPrice("GBP", 1.23));
+        System.out.println("");
 
         onEvent(Trade.bought("EUR", 200, "GBP", 170));
+        onEvent("publish");
+        System.out.println("");
+
+        onEvent(new PairPrice("GBPUSD", 3.0));
+        onEvent("publish");
+        System.out.println("");
+
+        onEvent(Trade.sold("EUR", 10, "CHF", 15));
+        onEvent("publish");
+        System.out.println("");
+
+        onEvent(Trade.sold("EUR", 500, "USD", 650));
+        onEvent("publish");
+        System.out.println("");
+
+        onEvent(new PairPrice("USDCHF", 0.5));
+        onEvent("publish");
     }
 
+
+    public static class ConvertToBasePrice{
+        private final String baseCurrency;
+        private transient boolean hasPublished = false;
+
+        public ConvertToBasePrice(){
+            this("USD");
+        }
+
+        public ConvertToBasePrice(String baseCurrency) {
+            this.baseCurrency = baseCurrency;
+        }
+
+        public List<AssetPrice> toCrossRate(PairPrice pairPrice){
+            List<AssetPrice> list = new ArrayList<>();
+            if(!hasPublished){
+                list.add(new AssetPrice(baseCurrency, 1.0));
+            }
+            if(pairPrice.id.startsWith(baseCurrency)){
+                list.add(new AssetPrice(pairPrice.id.substring(3), 1.0/pairPrice.price));
+            }else if(pairPrice.id.contains(baseCurrency)){
+                list.add(new AssetPrice(pairPrice.id.substring(0,3), pairPrice.price));
+            }
+            hasPublished = true;
+            return list;
+        }
+    }
+
+    @Value
+    public static class PairPrice{
+        String id;
+        double price;
+
+    }
     @Value
     public static class AssetPrice{
         String id;

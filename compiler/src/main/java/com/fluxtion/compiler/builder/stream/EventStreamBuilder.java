@@ -15,6 +15,7 @@ import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.MergeEventStream;
 import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
@@ -24,8 +25,13 @@ import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.*;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
+import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
+import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
+import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class EventStreamBuilder<T> {
@@ -73,6 +79,10 @@ public class EventStreamBuilder<T> {
         return map(new DefaultValue<>(defaultValue)::getOrDefault);
     }
 
+    public EventStreamBuilder<T> defaultValue(SerializableSupplier<T> defaultValue) {
+        return map(new DefaultValueFromSupplier<>(defaultValue)::getOrDefault);
+    }
+
     public <R, I, L> EventStreamBuilder<R> lookup(SerializableFunction<I, L> lookupFunction,
                                                   SerializableFunction<T, I> lookupKeyFunction,
                                                   SerializableBiFunction<T, L, R> enrichFunction) {
@@ -90,6 +100,10 @@ public class EventStreamBuilder<T> {
                 new BinaryMapEventStream.BinaryMapToRefEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public EventStreamBuilder<T> merge(EventStreamBuilder<? extends T> streamToMerge){
+        return new EventStreamBuilder<>(new MergeEventStream<>(eventStream, streamToMerge.eventStream));
     }
 
     public <S, R> EventStreamBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction) {
