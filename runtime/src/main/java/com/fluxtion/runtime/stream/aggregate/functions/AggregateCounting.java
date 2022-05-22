@@ -27,6 +27,19 @@ public class AggregateCounting<T> extends BaseSlidingWindowFunction<T, Integer, 
         return ++count;
     }
 
+    public int increment(int input){
+        count++;
+        return getAsInt();
+    }
+
+    public int increment(double input){
+        return increment(1);
+    }
+
+    public int increment(long input){
+        return increment(1);
+    }
+
     @Override
     public void setUpdateTriggerNode(Object updateTriggerNode) {
 

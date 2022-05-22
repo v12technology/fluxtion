@@ -8,11 +8,11 @@ import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
-import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleValue;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +31,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.*;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNodeProperty;
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToSignal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -426,11 +429,9 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void mergeTest(){
         LongAdder adder = new LongAdder();
-        sep(c ->{
-            subscribe(Long.class)
-                    .merge(subscribe(String.class).map(StreamBuildTest::parseLong))
-                    .sink("integers");
-        });
+        sep(c -> subscribe(Long.class)
+                .merge(subscribe(String.class).map(StreamBuildTest::parseLong))
+                .sink("integers"));
         addSink("integers", adder::add);
         onEvent(200L);
         onEvent("300");
@@ -721,7 +722,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
             //Mark to market
             posDrivenMtmStream.merge(priceDrivenMtMStream)
-                    .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, AggregateDoubleValue::new)
+                    .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, Aggregates.doubleIdentity())
                     .map(GroupBy::map)
                     .defaultValue(HashMap::new)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
@@ -739,23 +740,23 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent(new PairPrice("EURUSD", 1.5));
         onEvent(new PairPrice("GBPUSD", 2.0));
         onEvent("publish");
-        System.out.println("");
+        System.out.println();
 
         onEvent(Trade.bought("EUR", 200, "GBP", 170));
         onEvent("publish");
-        System.out.println("");
+        System.out.println();
 
         onEvent(new PairPrice("GBPUSD", 3.0));
         onEvent("publish");
-        System.out.println("");
+        System.out.println();
 
         onEvent(Trade.sold("EUR", 10, "CHF", 15));
         onEvent("publish");
-        System.out.println("");
+        System.out.println();
 
         onEvent(Trade.sold("EUR", 500, "USD", 650));
         onEvent("publish");
-        System.out.println("");
+        System.out.println();
 
         onEvent(new PairPrice("USDCHF", 0.5));
         onEvent("publish");
