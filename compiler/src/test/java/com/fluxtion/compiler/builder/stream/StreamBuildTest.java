@@ -16,6 +16,7 @@ import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.CoreMatchers;
@@ -727,7 +728,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                     .console("MtM:{}");
 
             //Positions
-            assetPosition.map(GroupBy::map).id("mtmNode")
+            assetPosition.map(GroupBy::map)
                     .defaultValue(HashMap::new)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
                     .filter(Objects::nonNull)
@@ -760,7 +761,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent("publish");
     }
 
-
+    @EqualsAndHashCode
     public static class ConvertToBasePrice{
         private final String baseCurrency;
         private transient boolean hasPublished = false;
