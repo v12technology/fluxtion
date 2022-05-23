@@ -34,7 +34,7 @@ public class FixedRateTrigger {
         boolean expired = rate <= (newTime - previousTime);
         if (expired) {
             triggerCount = (int) ((newTime - previousTime) / rate);
-            previousTime = newTime;
+            previousTime += (long) triggerCount * rate;
         }
         return expired;
     }

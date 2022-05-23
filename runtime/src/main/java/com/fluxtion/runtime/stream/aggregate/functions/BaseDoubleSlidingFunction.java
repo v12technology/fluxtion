@@ -1,14 +1,18 @@
-package com.fluxtion.runtime.stream.aggregate;
+package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 
-public abstract class BaseDoubleSlidingWindowFunction<T extends BaseDoubleSlidingWindowFunction<T>>
-        extends BaseSlidingWindowFunction<Double, Double, T> implements DoubleEventStream {
+public abstract class BaseDoubleSlidingFunction<T extends BaseDoubleSlidingFunction<T>>
+        implements DoubleEventStream, DoubleAggregateFunction<T> {
 
     protected double value;
-    public abstract double resetDouble();
 
-    public abstract double aggregateDouble(double input);
+    @Override
+    public double resetDouble() {
+        value = 0;
+        return getAsDouble();
+    }
 
     @Override
     public Double reset() {

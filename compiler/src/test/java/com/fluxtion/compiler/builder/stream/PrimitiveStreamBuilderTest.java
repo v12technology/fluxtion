@@ -8,6 +8,7 @@ import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
+import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Data;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -201,7 +202,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void aggregateIntTest() {
         sep(c -> subscribe(String.class)
                 .mapToInt(StreamBuildTest::parseInt)
-                .aggregate(AggregateIntSum::new).id("sum")
+                .aggregate(Aggregates.intSum()).id("sum")
                 .resetTrigger(subscribe(Signal.class))
                 .push(new NotifyAndPushTarget()::setIntPushValue)
         );
@@ -227,7 +228,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void aggregateDoubleTest() {
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
-                .aggregate(AggregateDoubleSum::new).id("sum")
+//                .aggregate(AggregateDoubleSum::new).id("sum")
+                .aggregate(Aggregates.doubleSum()).id("sum")
                 .resetTrigger(subscribe(Signal.class))
                 .push(new NotifyAndPushTarget()::setDoublePushValue)
         );
@@ -253,7 +255,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void aggregateLongTest() {
         sep(c -> subscribe(String.class)
                 .mapToLong(StreamBuildTest::parseLong)
-                .aggregate(AggregateLongSum::new).id("sum")
+                .aggregate(Aggregates.longSum()).id("sum")
                 .resetTrigger(subscribe(Signal.class))
                 .push(new NotifyAndPushTarget()::setLongPushValue)
         );

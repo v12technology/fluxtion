@@ -9,7 +9,7 @@ import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-public class AggregateIntStream<F extends BaseIntSlidingWindowFunction<F>>
+public class AggregateIntStream<F extends IntAggregateFunction<F>>
         extends MapEventStream<Integer, Integer, IntEventStream>
         implements IntEventStream {
     private final SerializableSupplier<F> windowFunctionSupplier;
@@ -52,7 +52,7 @@ public class AggregateIntStream<F extends BaseIntSlidingWindowFunction<F>>
         return getAsInt();
     }
 
-    public static class TumblingIntWindowStream <F extends BaseIntSlidingWindowFunction<F>>
+    public static class TumblingIntWindowStream <F extends IntAggregateFunction<F>>
             extends EventLogNode
             implements IntEventStream {
 

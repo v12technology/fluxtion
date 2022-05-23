@@ -7,13 +7,17 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.groupby.GroupByBatched;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.CoreMatchers;
@@ -25,6 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.LongAdder;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
@@ -197,6 +203,20 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void filterByPropertyTest(){
+        sep(c -> subscribe(String.class)
+                .filterByProperty(String::length, StreamBuildTest::gt5)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("short");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("loooong");
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
     public void mapTestWithFilter() {
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
@@ -285,6 +305,23 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public void dynamicFilterTest(){
         sep(c -> subscribe(MyData.class)
                 .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
+                .map(MyData::getValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent(new FilterConfig(10));
+        onEvent(new MyData(5));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+
+        onEvent(new MyData(50));
+        assertThat(notifyTarget.getIntPushValue(), is(50));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
+    public void dynamicFilterByPropertyTest(){
+        sep(c -> subscribe(MyData.class)
+                .filterByProperty(StreamBuildTest::myDataIntTooBig, MyData::getValue, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
                 .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -412,13 +449,25 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void lookupTest() {
         sep(c -> subscribe(PreMap.class)
-                .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
+                .lookup(PreMap::getName, StreamBuildTest::lookupFunction, StreamBuildTest::mapToPostMap)
                 .map(PostMap::getLastName)
                 .push(new NotifyAndPushTarget()::setStringPushValue));
 
         onEvent(new PreMap("test"));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
         assertThat(notifyTarget.getStringPushValue(), is("TEST"));
+    }
+
+    @Test
+    public void mergeTest(){
+        LongAdder adder = new LongAdder();
+        sep(c -> subscribe(Long.class)
+                .merge(subscribe(String.class).map(StreamBuildTest::parseLong))
+                .sink("integers"));
+        addSink("integers", adder::add);
+        onEvent(200L);
+        onEvent("300");
+        assertThat(adder.intValue(), is(500));
     }
 
     @Test
@@ -449,6 +498,41 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tickDelta(100);
         assertThat(getStreamed("sum"), is(0));
+    }
+
+
+    @Test
+    public void slidingWindowNonDecuctTest() {
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::valueOfInt)
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max"));
+        addClock();
+        onEvent("70");
+        onEvent("50");
+        onEvent("100");
+        tickDelta(100);
+
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        onEvent("90");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        onEvent("30");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(100));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(90));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(30));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
     }
 
     @Value
@@ -531,7 +615,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         Map<String, Integer> expected = new HashMap<>();
         sep(c -> subscribe(KeyedData.class)
                 .groupBy(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new)
-                .map(GroupBy::keyValue)
+                .map(GroupByStreamed::keyValue)
                 .sink("keyValue"));
 
         addSink("keyValue", (KeyValue<String, Integer> kv) -> {
@@ -568,7 +652,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
-                .map(GroupByBatched::map)
+                .map(GroupBy::map)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) ->{
@@ -630,6 +714,218 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(results, is(expected));
     }
 
+    @Test
+    public void groupBySlidingTest(){
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+//                .console("\t\tIN eventTime:%t -> {}")
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .map(GroupBy::map)
+//                .console("OUT eventTime:%t {} ")
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) ->{
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tick(100);
+        onEvent(new KeyedData("A", 40));
+
+        tick(300);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tick(900);
+        onEvent(new KeyedData("C", 40));
+
+        tick(1000);
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tick(1230);
+        expected.put("A", 40);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tick(1290);
+        assertThat(results, is(expected));
+
+        tick(1300);
+        expected.put("A", 40);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tickDelta(10, 9);
+        assertThat(results, is(expected));
+
+        tick(1500);
+        expected.put("C", 40);
+
+        tick(1500);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+
+        tick(1600);
+        onEvent(new KeyedData("B", 100));
+        onEvent(new KeyedData("C", 40));
+
+        tick(1700);
+        expected.put("B", 100);
+        expected.put("C", 80);
+        assertThat(results, is(expected));
+
+        tick(2555);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tick(2705);
+        assertThat(results, is(expected));
+    }
+
+    public static KeyValue<String, Double> markToMarket(KeyValue<String, Double> assetPosition, Map<String, Double> assetPriceMap){
+        if(assetPosition == null || assetPriceMap == null){
+            return  null;
+        }
+        Double price = assetPriceMap.getOrDefault(assetPosition.getKey(), Double.NaN);
+        return new KeyValue<>(assetPosition.getKey(), price * assetPosition.getValue());
+    }
+
+//    @Test
+    public void flatMapFollowedByGroupByTest(){
+//        addAuditor();
+        sep(c -> {
+            EventStreamBuilder<GroupByStreamed<String, Double>> assetPosition = subscribe(Trade.class)
+                    .flatMap(Trade::tradeLegs)
+                    .groupBy(AssetAmountTraded::getId, AssetAmountTraded::getAmount, AggregateDoubleSum::new)
+                    .resetTrigger(subscribe(String.class).filter("reset"::equalsIgnoreCase));
+
+            EventStreamBuilder<GroupByStreamed<String, Double>> assetPriceMap = subscribe(PairPrice.class)
+                    .flatMap(new ConvertToBasePrice("USD")::toCrossRate)
+                    .groupBy(AssetPrice::getId, AssetPrice::getPrice, AggregateDoubleSum::new);
+
+            EventStreamBuilder<KeyValue<String, Double>> posDrivenMtmStream = assetPosition.map(GroupByStreamed::keyValue)
+                    .map(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map));
+
+            EventStreamBuilder<KeyValue<String, Double>> priceDrivenMtMStream = assetPriceMap.map(GroupByStreamed::keyValue)
+                    .map(StreamBuildTest::markToMarket, assetPosition.map(GroupBy::map)).updateTrigger(assetPriceMap);
+
+            //Mark to market
+            posDrivenMtmStream.merge(priceDrivenMtMStream)
+                    .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, Aggregates.doubleIdentity())
+                    .map(GroupBy::map)
+                    .defaultValue(Collections::emptyMap)
+                    .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                    .console("MtM:{}");
+
+            //Positions
+            assetPosition.map(GroupBy::map)
+                    .defaultValue(Collections::emptyMap)
+                    .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
+                    .filter(Objects::nonNull)
+                    .console("positionMap:{}");
+        });
+
+
+        onEvent(new PairPrice("EURUSD", 1.5));
+        onEvent(new PairPrice("GBPUSD", 2.0));
+        onEvent("publish");
+        System.out.println();
+
+        onEvent(Trade.bought("EUR", 200, "GBP", 170));
+        onEvent("publish");
+        System.out.println();
+
+        onEvent(new PairPrice("GBPUSD", 3.0));
+        onEvent("publish");
+        System.out.println();
+
+        onEvent(Trade.sold("EUR", 10, "CHF", 15));
+        onEvent("publish");
+        System.out.println();
+
+        onEvent(Trade.sold("EUR", 500, "USD", 650));
+        onEvent("publish");
+        System.out.println();
+
+        onEvent(new PairPrice("USDCHF", 0.5));
+        onEvent("publish");
+    }
+
+    @EqualsAndHashCode
+    public static class ConvertToBasePrice{
+        private final String baseCurrency;
+        private transient boolean hasPublished = false;
+
+        public ConvertToBasePrice(){
+            this("USD");
+        }
+
+        public ConvertToBasePrice(String baseCurrency) {
+            this.baseCurrency = baseCurrency;
+        }
+
+        public List<AssetPrice> toCrossRate(PairPrice pairPrice){
+            List<AssetPrice> list = new ArrayList<>();
+            if(!hasPublished){
+                list.add(new AssetPrice(baseCurrency, 1.0));
+            }
+            if(pairPrice.id.startsWith(baseCurrency)){
+                list.add(new AssetPrice(pairPrice.id.substring(3), 1.0/pairPrice.price));
+            }else if(pairPrice.id.contains(baseCurrency)){
+                list.add(new AssetPrice(pairPrice.id.substring(0,3), pairPrice.price));
+            }
+            hasPublished = true;
+            return list;
+        }
+    }
+
+    @Value
+    public static class PairPrice{
+        String id;
+        double price;
+
+    }
+    @Value
+    public static class AssetPrice{
+        String id;
+        double price;
+    }
+
+    @Value
+    public static class AssetAmountTraded {
+        String id;
+        double amount;
+    }
+    @Value
+    public static class Trade{
+        public static Trade bought(String dealtId, double dealtAmount, String contraId, double contraAmount){
+            return new Trade(new AssetAmountTraded(dealtId, dealtAmount), new AssetAmountTraded(contraId, -1.0 * contraAmount));
+        }
+
+        public static Trade sold(String dealtId, double dealtAmount, String contraId, double contraAmount){
+            return new Trade(new AssetAmountTraded(dealtId, -1.0 * dealtAmount), new AssetAmountTraded(contraId, contraAmount));
+        }
+        AssetAmountTraded dealt;
+        AssetAmountTraded contra;
+
+        public List<AssetAmountTraded> tradeLegs(){
+            return Arrays.asList(dealt, contra);
+        }
+    }
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";
@@ -703,6 +999,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return Boolean.parseBoolean(in);
     }
 
+    public static boolean gt5(int val){
+        return val > 5;
+    }
+
     public static int parseInt(String in) {
         return Integer.parseInt(in);
     }
@@ -767,6 +1067,13 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             return false;
         }
         return myData.getValue() > config.getLimit();
+    }
+
+    public static boolean myDataIntTooBig(int myData, FilterConfig config){
+        if(config == null){
+            return false;
+        }
+        return myData > config.getLimit();
     }
 
 }

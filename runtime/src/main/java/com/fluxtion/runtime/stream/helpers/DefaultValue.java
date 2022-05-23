@@ -1,9 +1,12 @@
 package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.annotations.builder.SepNode;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.DefaultValueSupplier;
 import com.fluxtion.runtime.stream.Stateful;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
 
     @SepNode
@@ -22,7 +25,28 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
         return defaultValue;
     }
 
-    public static class DefaultInt implements DefaultValueSupplier, Stateful<Integer>{
+    public static class DefaultValueFromSupplier<T> implements DefaultValueSupplier, Stateful<T> {
+
+        private final SerializableSupplier<T> defaultSupplier;
+        //    @SepNode
+        private transient final T defaultValue;
+
+        public DefaultValueFromSupplier(SerializableSupplier<T> defaultSupplier) {
+            this.defaultSupplier = defaultSupplier;
+            this.defaultValue = defaultSupplier.get();
+        }
+
+        public T getOrDefault(T input) {
+            return input == null ? defaultValue : input;
+        }
+
+        @Override
+        public T reset() {
+            return defaultValue;
+        }
+    }
+
+    public static class DefaultInt implements DefaultValueSupplier, Stateful<Integer> {
         private final int defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 
@@ -32,7 +56,7 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
 
         public int getOrDefault(int input) {
             inputUpdatedAtLeastOnce |= input != 0;
-            if(inputUpdatedAtLeastOnce) {
+            if (inputUpdatedAtLeastOnce) {
                 return input;
             }
             return defaultValue;
@@ -45,7 +69,7 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
         }
     }
 
-    public static class DefaultDouble implements DefaultValueSupplier, Stateful<Double>{
+    public static class DefaultDouble implements DefaultValueSupplier, Stateful<Double> {
         private final double defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 
@@ -55,7 +79,7 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
 
         public double getOrDefault(double input) {
             inputUpdatedAtLeastOnce |= input != 0;
-            if(inputUpdatedAtLeastOnce) {
+            if (inputUpdatedAtLeastOnce) {
                 return input;
             }
             return defaultValue;
@@ -68,7 +92,7 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
         }
     }
 
-    public static class DefaultLong implements DefaultValueSupplier, Stateful<Long>{
+    public static class DefaultLong implements DefaultValueSupplier, Stateful<Long> {
         private final long defaultValue;
         private boolean inputUpdatedAtLeastOnce;
 
@@ -78,7 +102,7 @@ public class DefaultValue<T> implements DefaultValueSupplier, Stateful<T> {
 
         public long getOrDefault(long input) {
             inputUpdatedAtLeastOnce |= input != 0;
-            if(inputUpdatedAtLeastOnce) {
+            if (inputUpdatedAtLeastOnce) {
                 return input;
             }
             return defaultValue;

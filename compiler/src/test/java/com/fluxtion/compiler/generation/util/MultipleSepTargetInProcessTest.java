@@ -365,6 +365,11 @@ public class MultipleSepTargetInProcessTest {
         tick();
     }
 
+    protected void tickDelta(long deltaTime, int repeats) {
+        for (int i = 0; i < repeats; i++) {
+            tickDelta(deltaTime);
+        }
+    }
     public void addClock() {
         if (!timeAdded) {
             time = new TestMutableNumber();

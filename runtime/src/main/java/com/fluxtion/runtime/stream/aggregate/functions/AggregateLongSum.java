@@ -1,14 +1,6 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
-
-public class AggregateLongSum extends BaseLongSlidingWindowFunction<AggregateLongSum> {
-
-    @Override
-    public long resetLong() {
-        value = 0;
-        return getAsLong();
-    }
+public class AggregateLongSum extends BaseLongSlidingFunction<AggregateLongSum> {
 
     @Override
     public long aggregateLong(long input) {

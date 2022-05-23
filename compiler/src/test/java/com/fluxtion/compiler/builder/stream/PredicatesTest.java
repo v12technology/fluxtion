@@ -2,6 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Mappers.CountNode;
 import com.fluxtion.runtime.stream.helpers.Predicates;
 import com.fluxtion.runtime.stream.helpers.Predicates.AllUpdatedPredicate;
 import org.hamcrest.CoreMatchers;
@@ -25,20 +26,20 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             EventFlow.subscribe(Integer.class)
                     .mapToInt(Integer::intValue)
                     .filter(Predicates.HAS_CHANGED_INT_FILTER)
-                    .mapOnNotify(Mappers.newCount()).id("count")
+                    .mapOnNotify(Mappers.newCountNode()).id("count")
 //                    .mapToInt(Mappers.Count::getCount)
             ;
         });
-        Mappers.Count count = getStreamed("count");
+        CountNode countNode = getStreamed("count");
 
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
-        assertThat(count.getCount(), CoreMatchers.is(1));
+        assertThat(countNode.getCount(), CoreMatchers.is(1));
 
         onEvent((Integer) 255);
-        assertThat(count.getCount(), CoreMatchers.is(2));
+        assertThat(countNode.getCount(), CoreMatchers.is(2));
     }
 
     @Test
@@ -75,20 +76,20 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             EventFlow.subscribe(Integer.class)
                     .mapToDouble(Integer::doubleValue)
                     .filter(Predicates.HAS_CHANGED_DOUBLE_FILTER)
-                    .mapOnNotify(Mappers.newCount()).id("count")
-                    .mapToInt(Mappers.Count::getCount)
+                    .mapOnNotify(Mappers.newCountNode()).id("count")
+                    .mapToInt(CountNode::getCount)
             ;
         });
-        Mappers.Count count = getStreamed("count");
+        CountNode countNode = getStreamed("count");
 
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
-        assertThat(count.getCount(), CoreMatchers.is(1));
+        assertThat(countNode.getCount(), CoreMatchers.is(1));
 
         onEvent((Integer) 255);
-        assertThat(count.getCount(), CoreMatchers.is(2));
+        assertThat(countNode.getCount(), CoreMatchers.is(2));
     }
 
 
@@ -98,20 +99,20 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             EventFlow.subscribe(Integer.class)
                     .mapToLong(Integer::longValue)
                     .filter(Predicates.HAS_CHANGED_LONG_FILTER)
-                    .mapOnNotify(Mappers.newCount()).id("count")
-                    .mapToInt(Mappers.Count::getCount)
+                    .mapOnNotify(Mappers.newCountNode()).id("count")
+                    .mapToInt(CountNode::getCount)
             ;
         });
-        Mappers.Count count = getStreamed("count");
+        CountNode countNode = getStreamed("count");
 
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
-        assertThat(count.getCount(), CoreMatchers.is(1));
+        assertThat(countNode.getCount(), CoreMatchers.is(1));
 
         onEvent((Integer) 255);
-        assertThat(count.getCount(), CoreMatchers.is(2));
+        assertThat(countNode.getCount(), CoreMatchers.is(2));
     }
 
 
@@ -121,20 +122,20 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             EventFlow.subscribe(Integer.class)
                     .map(Objects::toString)
                     .filter(Predicates.hasChangedFilter())
-                    .mapOnNotify(Mappers.newCount()).id("count")
-                    .mapToInt(Mappers.Count::getCount)
+                    .mapOnNotify(Mappers.newCountNode()).id("count")
+                    .mapToInt(CountNode::getCount)
             ;
         });
-        Mappers.Count count = getStreamed("count");
+        CountNode countNode = getStreamed("count");
 
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
-        assertThat(count.getCount(), CoreMatchers.is(1));
+        assertThat(countNode.getCount(), CoreMatchers.is(1));
 
         onEvent((Integer) 255);
-        assertThat(count.getCount(), CoreMatchers.is(2));
+        assertThat(countNode.getCount(), CoreMatchers.is(2));
     }
 
     @Test
