@@ -721,10 +721,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         Map<String, Integer> expected = new HashMap<>();
 
         sep(c -> subscribe(KeyedData.class)
-                .console("\t\tIN eventTime:%t -> {}")
+//                .console("\t\tIN eventTime:%t -> {}")
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .map(GroupBy::map)
-                .console("OUT eventTime:%t {} ")
+//                .console("OUT eventTime:%t {} ")
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) ->{
@@ -736,28 +736,64 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         setTime(0);
         onEvent(new KeyedData("A", 4000));
 
-        tickDelta(100);
+        tick(100);
         onEvent(new KeyedData("A", 40));
 
-        tickDelta(50, 4);
+        tick(300);
         onEvent(new KeyedData("A", 40));
         onEvent(new KeyedData("B", 100));
 
-        tickDelta(100, 3);
+        tick(900);
         onEvent(new KeyedData("C", 40));
 
-        tickDelta(10, 150);
-        onEvent(new KeyedData("C", 40));
+        tick(1000);
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tick(1230);
+        expected.put("A", 40);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tick(1290);
+        assertThat(results, is(expected));
+
+        tick(1300);
+        expected.put("A", 40);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+        tickDelta(10, 9);
+        assertThat(results, is(expected));
+
+        tick(1500);
+        expected.put("C", 40);
+
+        tick(1500);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
+
+
+        tick(1600);
         onEvent(new KeyedData("B", 100));
-
-        tickDelta(50, 2);
         onEvent(new KeyedData("C", 40));
 
-        tickDelta(350);
-        onEvent(new KeyedData("D", 100));
+        tick(1700);
+        expected.put("B", 100);
+        expected.put("C", 80);
+        assertThat(results, is(expected));
 
-        tickDelta(10, 120);
+        tick(2555);
+        expected.put("B", 100);
+        expected.put("C", 40);
+        assertThat(results, is(expected));
 
+        tick(2705);
+        assertThat(results, is(expected));
     }
 
     public static KeyValue<String, Double> markToMarket(KeyValue<String, Double> assetPosition, Map<String, Double> assetPriceMap){
@@ -768,7 +804,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return new KeyValue<>(assetPosition.getKey(), price * assetPosition.getValue());
     }
 
-    @Test
+//    @Test
     public void flatMapFollowedByGroupByTest(){
 //        addAuditor();
         sep(c -> {
