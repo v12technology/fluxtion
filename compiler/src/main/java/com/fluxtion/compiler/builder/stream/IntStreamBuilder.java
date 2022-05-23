@@ -13,12 +13,20 @@ import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
-import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.*;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntPredicate;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntConsumer;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntToDoubleFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntToLongFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntUnaryOperator;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 public class IntStreamBuilder {
 
@@ -72,18 +80,18 @@ public class IntStreamBuilder {
         );
     }
 
-    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder aggregate(
+    public <F extends IntAggregateFunction<F>> IntStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction){
         return new IntStreamBuilder( new AggregateIntStream<>(eventStream, aggregateFunction));
     }
 
-    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder tumblingAggregate(
+    public <F extends IntAggregateFunction<F>> IntStreamBuilder tumblingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
         return new IntStreamBuilder(
                 new TumblingIntWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <F extends BaseIntSlidingWindowFunction<F>> IntStreamBuilder slidingAggregate(
+    public <F extends IntAggregateFunction<F>> IntStreamBuilder slidingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets){
         return new IntStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowIntStream<>(

@@ -7,13 +7,14 @@ import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
+import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
+import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
+import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream
-        <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
+        <T, R, S extends EventStream<T>, F extends AggregateWindowFunction<T, R, F>>
         extends EventLogNode
         implements TriggeredEventStream<R> {
 
@@ -77,7 +78,7 @@ public class TimedSlidingWindowStream
 
 
     public static class TimedSlidingWindowIntStream
-            <F extends BaseIntSlidingWindowFunction<F>>
+            <F extends IntAggregateFunction<F>>
             extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>
             implements IntEventStream {
 
@@ -130,7 +131,7 @@ public class TimedSlidingWindowStream
     }
 
     public static class TimedSlidingWindowDoubleStream
-            <F extends BaseDoubleSlidingWindowFunction<F>>
+            <F extends DoubleAggregateWindowFunction<F>>
             extends TimedSlidingWindowStream<Double, Double, DoubleEventStream, F>
             implements DoubleEventStream {
 
@@ -183,7 +184,7 @@ public class TimedSlidingWindowStream
     }
 
     public static class TimedSlidingWindowLongStream
-            <F extends BaseLongSlidingWindowFunction<F>>
+            <F extends LongAggregateFunction<F>>
             extends TimedSlidingWindowStream<Long, Long, LongEventStream, F>
             implements LongEventStream {
 

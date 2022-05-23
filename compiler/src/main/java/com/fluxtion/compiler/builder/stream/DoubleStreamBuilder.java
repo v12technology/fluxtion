@@ -2,12 +2,27 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.*;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleConsumer;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToIntFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToLongFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtime.stream.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
-import com.fluxtion.runtime.stream.aggregate.BaseDoubleSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.DoubleAggregateWindowFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -64,18 +79,18 @@ public class DoubleStreamBuilder {
         );
     }
 
-    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder aggregate(
+    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction) {
         return new DoubleStreamBuilder(new AggregateDoubleStream<>(eventStream, aggregateFunction));
     }
 
-    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder tumblingAggregate(
+    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder tumblingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new DoubleStreamBuilder(
                 new TumblingDoubleWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <F extends BaseDoubleSlidingWindowFunction<F>> DoubleStreamBuilder slidingAggregate(
+    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder slidingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
         return new DoubleStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowDoubleStream<>(

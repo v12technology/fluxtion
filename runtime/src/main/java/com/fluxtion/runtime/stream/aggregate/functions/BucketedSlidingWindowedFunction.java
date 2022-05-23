@@ -1,6 +1,10 @@
-package com.fluxtion.runtime.stream.aggregate;
+package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.DoubleAggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
+import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +14,7 @@ import java.util.List;
  * @param <R> return type
  * @param <F> BaseSlidingWindowFunction
  */
-public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFunction<T, R, F>> {
+public class BucketedSlidingWindowedFunction<T, R, F extends AggregateWindowFunction<T, R, F>> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     protected final F aggregatedFunction;
@@ -59,7 +63,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         return aggregatedFunction.get();
     }
 
-    public static class BucketedSlidingWindowedIntFunction<F extends BaseIntSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedIntFunction<F extends IntAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Integer, Integer, F> {
 
         public BucketedSlidingWindowedIntFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
@@ -75,7 +79,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         }
     }
 
-    public static class BucketedSlidingWindowedDoubleFunction<F extends BaseDoubleSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedDoubleFunction<F extends DoubleAggregateWindowFunction<F>>
             extends BucketedSlidingWindowedFunction<Double, Double, F> {
 
         public BucketedSlidingWindowedDoubleFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
@@ -91,7 +95,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         }
     }
 
-    public static class BucketedSlidingWindowedLongFunction<F extends BaseLongSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedLongFunction<F extends LongAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Long, Long, F> {
 
         public BucketedSlidingWindowedLongFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {

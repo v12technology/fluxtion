@@ -9,7 +9,7 @@ import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-public class TumblingWindowStream<T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
+public class TumblingWindowStream<T, R, S extends EventStream<T>, F extends AggregateWindowFunction<T, R, F>>
         extends EventLogNode
         implements TriggeredEventStream<R> {
 

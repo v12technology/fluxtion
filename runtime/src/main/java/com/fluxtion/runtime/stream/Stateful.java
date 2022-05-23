@@ -9,7 +9,6 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 public interface Stateful<T> {
     T reset();
 
-
     abstract class StatefulWrapper {
 
         private final Object resetTrigger;

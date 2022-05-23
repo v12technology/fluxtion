@@ -8,8 +8,8 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
-import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Map;
  * @param <S> {@link EventStream} input type
  * @param <F>
  */
-public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<V, R, F>>
+public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends AggregateWindowFunction<V, R, F>>
         extends EventLogNode
         implements TriggeredEventStream<GroupBy<K, R>> {
 

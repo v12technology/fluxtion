@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.Stateful;
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.LongAdder;
  * @param <A> output type of aggregate calculation
  * @param <F> The aggregate function converts a V into an A
  */
-public class GroupByWindowedCollection<T, K, V, A, F extends BaseSlidingWindowFunction<V, A, F>>
-        extends BaseSlidingWindowFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F >>
-        implements GroupByStreamed<K, A>, Stateful<GroupByStreamed<K, A>> {
+public class GroupByWindowedCollection<T, K, V, A, F extends AggregateWindowFunction<V, A, F>>
+        implements AggregateWindowFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F >>,
+         GroupByStreamed<K, A>, Stateful<GroupByStreamed<K, A>> {
 
     private final SerializableFunction<T, K> keyFunction;
     private final SerializableFunction<T, V> valueFunction;
@@ -48,7 +48,6 @@ public class GroupByWindowedCollection<T, K, V, A, F extends BaseSlidingWindowFu
 
     @Override
     public void combine(GroupByWindowedCollection<T, K, V, A, F> add) {
-        super.combine(add);
         //merge each if existing
         add.mapOfFunctions.forEach((k, f) ->{
             F targetFunction = mapOfFunctions.computeIfAbsent(k, key -> aggregateFunctionSupplier.get());
@@ -60,7 +59,6 @@ public class GroupByWindowedCollection<T, K, V, A, F extends BaseSlidingWindowFu
 
     @Override
     public void deduct(GroupByWindowedCollection<T, K, V, A, F> add) {
-        super.deduct(add);
         //ignore if
         add.mapOfFunctions.forEach((k, f) ->{
             LongAdder currentCount = keyCount.computeIfAbsent(k, key -> new LongAdder());

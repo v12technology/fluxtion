@@ -1,8 +1,8 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
 
-public class AggregateIdentity<T> extends BaseSlidingWindowFunction<T, T, AggregateIdentity<T>> {
+public class AggregateIdentity<T> implements AggregateWindowFunction<T, T, AggregateIdentity<T>> {
     T value;
     @Override
     public T reset() {

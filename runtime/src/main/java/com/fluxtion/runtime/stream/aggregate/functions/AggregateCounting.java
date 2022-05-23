@@ -1,9 +1,9 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
 
-public class AggregateCounting<T> extends BaseSlidingWindowFunction<T, Integer, AggregateCounting<T>> implements IntEventStream {
+public class AggregateCounting<T> implements AggregateWindowFunction<T, Integer, AggregateCounting<T>>,  IntEventStream {
     private int count;
 
     @Override

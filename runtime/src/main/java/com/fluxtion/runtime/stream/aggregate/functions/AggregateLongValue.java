@@ -1,7 +1,5 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
-
 public class AggregateLongValue extends BaseLongSlidingWindowFunction<AggregateLongValue> {
 
     @Override

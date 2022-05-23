@@ -1,15 +1,12 @@
-package com.fluxtion.runtime.stream.aggregate;
+package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
+import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 
 public abstract class BaseLongSlidingWindowFunction<T extends BaseLongSlidingWindowFunction<T>>
-        extends BaseSlidingWindowFunction<Long, Long, T> implements LongEventStream {
+        implements LongEventStream, LongAggregateFunction<T> {
 
     protected long value;
-
-    public abstract long resetLong();
-
-    public abstract long aggregateLong(long input);
 
     @Override
     public Long reset() {

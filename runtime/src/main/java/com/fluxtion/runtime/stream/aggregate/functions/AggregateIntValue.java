@@ -1,7 +1,5 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
-
 public class AggregateIntValue extends BaseIntSlidingWindowFunction<AggregateIntValue> {
 
     @Override

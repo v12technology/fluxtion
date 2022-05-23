@@ -6,7 +6,7 @@ import com.fluxtion.runtime.stream.MapEventStream;
 
 import java.util.function.Supplier;
 
-public class AggregateStream <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
+public class AggregateStream <T, R, S extends EventStream<T>, F extends AggregateWindowFunction<T, R, F>>
 extends MapEventStream<T, R, S> {
 
     private final Supplier<F> windowFunctionSupplier;
