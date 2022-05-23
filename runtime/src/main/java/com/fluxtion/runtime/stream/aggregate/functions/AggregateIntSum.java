@@ -1,8 +1,6 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseIntSlidingWindowFunction;
-
-public class AggregateIntSum extends BaseIntSlidingWindowFunction<AggregateIntSum> {
+public class AggregateIntSum extends BaseIntSlidingFunction<AggregateIntSum> {
 
     @Override
     public int resetInt() {

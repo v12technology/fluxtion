@@ -31,15 +31,15 @@ public class LookupEventStream <R, T, S extends EventStream<R>, I, L> extends Ab
     public boolean applyLookup() {
         R streamValue = getInputEventStream().get();
         I lookupKey = lookupKeyFunction.apply(streamValue);
+        if(lookupKey !=null){
+            L lookupValue = lookupFunction.apply(lookupKey);
+            streamOutputValue = mapFunction.apply(streamValue, lookupValue);
+        }
         boolean filter = isPublishTriggered() || lookupKey !=null;
         boolean fireNotification = filter & fireEventUpdateNotification();
 //        auditLog.info("filterFunction", auditInfo);
         auditLog.info("foundLookupValue", filter);
         auditLog.info("publishToChild", fireNotification);
-        if(lookupKey !=null){
-            L lookupValue = lookupFunction.apply(lookupKey);
-            streamOutputValue = mapFunction.apply(streamValue, lookupValue);
-        }
         return fireNotification;
     }
 

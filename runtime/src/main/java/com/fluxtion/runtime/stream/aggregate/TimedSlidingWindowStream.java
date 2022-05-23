@@ -13,7 +13,7 @@ import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.Buc
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream
-        <T, R, S extends EventStream<T>, F extends BaseSlidingWindowFunction<T, R, F>>
+        <T, R, S extends EventStream<T>, F extends AggregateFunction<T, R, F>>
         extends EventLogNode
         implements TriggeredEventStream<R> {
 
@@ -77,7 +77,7 @@ public class TimedSlidingWindowStream
 
 
     public static class TimedSlidingWindowIntStream
-            <F extends BaseIntSlidingWindowFunction<F>>
+            <F extends IntAggregateFunction<F>>
             extends TimedSlidingWindowStream<Integer, Integer, IntEventStream, F>
             implements IntEventStream {
 
@@ -130,7 +130,7 @@ public class TimedSlidingWindowStream
     }
 
     public static class TimedSlidingWindowDoubleStream
-            <F extends BaseDoubleSlidingWindowFunction<F>>
+            <F extends DoubleAggregateFunction<F>>
             extends TimedSlidingWindowStream<Double, Double, DoubleEventStream, F>
             implements DoubleEventStream {
 
@@ -183,7 +183,7 @@ public class TimedSlidingWindowStream
     }
 
     public static class TimedSlidingWindowLongStream
-            <F extends BaseLongSlidingWindowFunction<F>>
+            <F extends LongAggregateFunction<F>>
             extends TimedSlidingWindowStream<Long, Long, LongEventStream, F>
             implements LongEventStream {
 
