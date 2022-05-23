@@ -9,6 +9,12 @@ public abstract class BaseDoubleSlidingFunction<T extends BaseDoubleSlidingFunct
     protected double value;
 
     @Override
+    public double resetDouble() {
+        value = 0;
+        return getAsDouble();
+    }
+
+    @Override
     public Double reset() {
         return resetDouble();
     }

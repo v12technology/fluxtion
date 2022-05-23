@@ -3,12 +3,6 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 public class AggregateDoubleValue extends BaseDoubleSlidingFunction<AggregateDoubleValue> {
 
     @Override
-    public double resetDouble() {
-        value = 0;
-        return getAsDouble();
-    }
-
-    @Override
     public double aggregateDouble(double input) {
         value = input;
         return getAsDouble();
@@ -20,8 +14,8 @@ public class AggregateDoubleValue extends BaseDoubleSlidingFunction<AggregateDou
     }
 
     @Override
-    public void deduct(AggregateDoubleValue deduct) {
-//        value -= deduct.value;
+    public boolean deductSupported(){
+        return false;
     }
 
 }

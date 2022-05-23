@@ -7,10 +7,9 @@ import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction;
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream

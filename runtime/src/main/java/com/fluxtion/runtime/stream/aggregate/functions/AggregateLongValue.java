@@ -3,12 +3,6 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 public class AggregateLongValue extends BaseLongSlidingFunction<AggregateLongValue> {
 
     @Override
-    public long resetLong() {
-        value = 0;
-        return getAsLong();
-    }
-
-    @Override
     public long aggregateLong(long input) {
         value = input;
         return getAsLong();
@@ -20,8 +14,8 @@ public class AggregateLongValue extends BaseLongSlidingFunction<AggregateLongVal
     }
 
     @Override
-    public void deduct(AggregateLongValue deduct) {
-//        value -= deduct.value;
+    public boolean deductSupported(){
+        return false;
     }
 
 }

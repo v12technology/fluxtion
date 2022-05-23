@@ -8,6 +8,7 @@ import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
@@ -468,6 +469,41 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), is(0));
     }
 
+
+    @Test
+    public void slidingWindowNonDecuctTest() {
+        sep(c -> subscribe(String.class)
+                .map(StreamBuildTest::valueOfInt)
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max"));
+        addClock();
+        onEvent("70");
+        onEvent("50");
+        onEvent("100");
+        tickDelta(100);
+
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        onEvent("90");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        onEvent("30");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(nullValue()));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(100));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(90));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(30));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+    }
+
     @Value
     public static class CastFunction<T> {
 
@@ -724,13 +760,13 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             posDrivenMtmStream.merge(priceDrivenMtMStream)
                     .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, Aggregates.doubleIdentity())
                     .map(GroupBy::map)
-                    .defaultValue(HashMap::new)
+                    .defaultValue(Collections::emptyMap)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
                     .console("MtM:{}");
 
             //Positions
             assetPosition.map(GroupBy::map)
-                    .defaultValue(HashMap::new)
+                    .defaultValue(Collections::emptyMap)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
                     .filter(Objects::nonNull)
                     .console("positionMap:{}");

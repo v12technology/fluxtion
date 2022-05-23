@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.partition;
 
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import org.junit.Assert;
 import org.junit.Test;

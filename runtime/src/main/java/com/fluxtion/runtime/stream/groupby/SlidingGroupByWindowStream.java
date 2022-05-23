@@ -9,7 +9,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
-import com.fluxtion.runtime.stream.aggregate.functions.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 import java.util.Collection;

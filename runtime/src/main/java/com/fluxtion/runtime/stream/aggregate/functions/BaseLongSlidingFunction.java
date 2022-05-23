@@ -9,6 +9,13 @@ public abstract class BaseLongSlidingFunction<T extends BaseLongSlidingFunction<
     protected long value;
 
     @Override
+    public long resetLong() {
+        value = 0;
+        return getAsLong();
+    }
+
+
+    @Override
     public Long reset() {
         return resetLong();
     }

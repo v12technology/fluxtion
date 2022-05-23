@@ -3,12 +3,6 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 public class AggregateLongSum extends BaseLongSlidingFunction<AggregateLongSum> {
 
     @Override
-    public long resetLong() {
-        value = 0;
-        return getAsLong();
-    }
-
-    @Override
     public long aggregateLong(long input) {
         value += input;
         return getAsLong();

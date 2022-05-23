@@ -59,27 +59,27 @@ public interface Mappers {
     }
 
     static SerializableIntUnaryOperator minimumInt() {
-        return new Min()::minInt;
+        return Aggregates.intMin().get()::aggregateInt;
     }
 
     static SerializableDoubleUnaryOperator minimumDouble() {
-        return new Min()::minDouble;
+        return Aggregates.doubleMin().get()::aggregateDouble;
     }
 
     static SerializableLongUnaryOperator minimumLong() {
-        return new Min()::minLong;
+        return Aggregates.longMin().get()::aggregateLong;
     }
 
     static SerializableIntUnaryOperator maximumInt() {
-        return new Max()::maxInt;
+        return Aggregates.intMax().get()::aggregateInt;
     }
 
     static SerializableDoubleUnaryOperator maximumDouble() {
-        return new Max()::maxDouble;
+        return Aggregates.doubleMax().get()::aggregateDouble;
     }
 
     static SerializableLongUnaryOperator maximumLong() {
-        return new Max()::maxLong;
+        return Aggregates.longMax().get()::aggregateLong;
     }
 
     static CountNode newCountNode() {
@@ -157,67 +157,6 @@ public interface Mappers {
 
     static long divideLongs(long a, long b) {
         return a / b;
-    }
-
-    class Max implements Stateful<Number> {
-        int maxInt;
-        long maxLong;
-        double maxDouble;
-
-        public int maxInt(int input) {
-            maxInt = Math.max(maxInt, input);
-            return maxInt;
-        }
-
-
-        public double maxDouble(double input) {
-            maxDouble = Math.max(maxDouble, input);
-            return maxDouble;
-        }
-
-        public long maxLong(long input) {
-            maxLong = Math.max(maxLong, input);
-            return maxLong;
-        }
-
-        @Override
-        public Integer reset() {
-            maxInt = 0;
-            maxLong = 0;
-            maxDouble = 0;
-            return maxInt;
-        }
-    }
-
-
-    class Min implements Stateful<Number> {
-        int minInt;
-        long minLong;
-        double minDouble;
-
-        public int minInt(int input) {
-            minInt = Math.min(minInt, input);
-            return minInt;
-        }
-
-        public double minDouble(double input) {
-            minDouble = Math.min(minDouble, input);
-            return minDouble;
-        }
-
-        public long minLong(long input) {
-            minLong = Math.min(minLong, input);
-            return minLong;
-        }
-
-        @Override
-        public Integer reset() {
-            minInt = 0;
-            minLong = 0;
-            minDouble = 0;
-            return minInt;
-        }
-
     }
 
 }

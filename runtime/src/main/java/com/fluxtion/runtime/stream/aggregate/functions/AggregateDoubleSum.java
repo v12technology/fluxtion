@@ -3,12 +3,6 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 public class AggregateDoubleSum extends BaseDoubleSlidingFunction<AggregateDoubleSum> {
 
     @Override
-    public double resetDouble() {
-        value = 0;
-        return getAsDouble();
-    }
-
-    @Override
     public double aggregateDouble(double input) {
         value += input;
         return getAsDouble();

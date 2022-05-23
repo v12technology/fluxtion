@@ -14,6 +14,12 @@ public abstract class BaseIntSlidingFunction<T extends BaseIntSlidingFunction<T>
     }
 
     @Override
+    public int resetInt() {
+        value = 0;
+        return getAsInt();
+    }
+
+    @Override
     public Integer aggregate(Integer input) {
         return aggregateInt(input);
     }

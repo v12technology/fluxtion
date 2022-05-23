@@ -22,6 +22,10 @@ public interface AggregateFunction<I, R, T extends AggregateFunction<I, R, T>>
         throw new RuntimeException("Sliding not supported implement deduct for " + this.getClass().getName());
     }
 
+    default boolean deductSupported(){
+        return true;
+    }
+
     R get();
 
     R aggregate(I input);
