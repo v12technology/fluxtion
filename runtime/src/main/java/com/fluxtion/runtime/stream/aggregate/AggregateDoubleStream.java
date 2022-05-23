@@ -9,7 +9,7 @@ import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-public class AggregateDoubleStream<F extends DoubleAggregateWindowFunction<F>>
+public class AggregateDoubleStream<F extends DoubleAggregateFunction<F>>
         extends MapEventStream<Double, Double, DoubleEventStream> implements DoubleEventStream {
     private final SerializableSupplier<F> windowFunctionSupplier;
     private transient final F mapFunction;
@@ -51,7 +51,7 @@ public class AggregateDoubleStream<F extends DoubleAggregateWindowFunction<F>>
         return getAsDouble();
     }
 
-    public static class TumblingDoubleWindowStream<F extends DoubleAggregateWindowFunction<F>>
+    public static class TumblingDoubleWindowStream<F extends DoubleAggregateFunction<F>>
             extends EventLogNode
             implements DoubleEventStream {
 

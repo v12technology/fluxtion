@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.Stateful;
-import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @param <A> output type of aggregate calculation
  * @param <F> The aggregate function converts a V into an A
  */
-public class GroupByWindowedCollection<T, K, V, A, F extends AggregateWindowFunction<V, A, F>>
-        implements AggregateWindowFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F >>,
+public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V, A, F>>
+        implements AggregateFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F >>,
          GroupByStreamed<K, A>, Stateful<GroupByStreamed<K, A>> {
 
     private final SerializableFunction<T, K> keyFunction;

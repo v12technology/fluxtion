@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 
-public abstract class BaseLongSlidingWindowFunction<T extends BaseLongSlidingWindowFunction<T>>
+public abstract class BaseLongSlidingFunction<T extends BaseLongSlidingFunction<T>>
         implements LongEventStream, LongAggregateFunction<T> {
 
     protected long value;

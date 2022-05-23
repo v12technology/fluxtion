@@ -22,7 +22,7 @@ import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
-import com.fluxtion.runtime.stream.aggregate.DoubleAggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -79,18 +79,18 @@ public class DoubleStreamBuilder {
         );
     }
 
-    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder aggregate(
+    public <F extends DoubleAggregateFunction<F>> DoubleStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction) {
         return new DoubleStreamBuilder(new AggregateDoubleStream<>(eventStream, aggregateFunction));
     }
 
-    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder tumblingAggregate(
+    public <F extends DoubleAggregateFunction<F>> DoubleStreamBuilder tumblingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new DoubleStreamBuilder(
                 new TumblingDoubleWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <F extends DoubleAggregateWindowFunction<F>> DoubleStreamBuilder slidingAggregate(
+    public <F extends DoubleAggregateFunction<F>> DoubleStreamBuilder slidingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
         return new DoubleStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowDoubleStream<>(

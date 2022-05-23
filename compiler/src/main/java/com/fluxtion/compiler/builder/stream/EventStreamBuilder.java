@@ -22,7 +22,7 @@ import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
@@ -114,31 +114,31 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new FlatMapArrayEventStream<>(eventStream, iterableFunction));
     }
 
-    public <S, R, F extends AggregateWindowFunction<T, R, F>> EventStreamBuilder<R>
+    public <S, R, F extends AggregateFunction<T, R, F>> EventStreamBuilder<R>
     aggregate(SerializableSupplier<F> aggregateFunction) {
         return new EventStreamBuilder<>(new AggregateStream<>(eventStream, aggregateFunction));
     }
 
-    public <S, R, F extends AggregateWindowFunction<T, R, F>> EventStreamBuilder<R>
+    public <S, R, F extends AggregateFunction<T, R, F>> EventStreamBuilder<R>
     tumblingAggregate(SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new EventStreamBuilder<>(
                 new TumblingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <S, R, F extends AggregateWindowFunction<T, R, F>> EventStreamBuilder<R>
+    public <S, R, F extends AggregateFunction<T, R, F>> EventStreamBuilder<R>
     slidingAggregate(SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow) {
         return new EventStreamBuilder<>(
                 new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
     }
 
-    public <V, K, A, F extends AggregateWindowFunction<V, A, F>> EventStreamBuilder<GroupByStreamed<K, A>>
+    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupByStreamed<K, A>>
     groupBy(SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction,
             SerializableSupplier<F> aggregateFunctionSupplier) {
         return map(new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
     }
 
-    public <V, K, A, F extends AggregateWindowFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
     groupByTumbling(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
                     SerializableSupplier<F> aggregateFunctionSupplier,
@@ -152,7 +152,7 @@ public class EventStreamBuilder<T> {
         ));
     }
 
-    public <V, K, A, F extends AggregateWindowFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
     groupBySliding(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
                     SerializableSupplier<F> aggregateFunctionSupplier,

@@ -1,8 +1,8 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.aggregate.AggregateWindowFunction;
-import com.fluxtion.runtime.stream.aggregate.DoubleAggregateWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * @param <R> return type
  * @param <F> BaseSlidingWindowFunction
  */
-public class BucketedSlidingWindowedFunction<T, R, F extends AggregateWindowFunction<T, R, F>> {
+public class BucketedSlidingWindowedFunction<T, R, F extends AggregateFunction<T, R, F>> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     protected final F aggregatedFunction;
@@ -79,7 +79,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends AggregateWindowFunc
         }
     }
 
-    public static class BucketedSlidingWindowedDoubleFunction<F extends DoubleAggregateWindowFunction<F>>
+    public static class BucketedSlidingWindowedDoubleFunction<F extends DoubleAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Double, Double, F> {
 
         public BucketedSlidingWindowedDoubleFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {

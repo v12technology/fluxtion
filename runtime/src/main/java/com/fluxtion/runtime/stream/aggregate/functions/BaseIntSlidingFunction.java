@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
 
-public abstract class BaseIntSlidingWindowFunction<T extends BaseIntSlidingWindowFunction<T>>
+public abstract class BaseIntSlidingFunction<T extends BaseIntSlidingFunction<T>>
         implements IntEventStream, IntAggregateFunction<T> {
 
     protected int value;
