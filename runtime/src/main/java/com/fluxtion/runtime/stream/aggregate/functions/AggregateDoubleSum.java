@@ -1,14 +1,6 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.BaseDoubleSlidingWindowFunction;
-
-public class AggregateDoubleSum extends BaseDoubleSlidingWindowFunction<AggregateDoubleSum> {
-
-    @Override
-    public double resetDouble() {
-        value = 0;
-        return getAsDouble();
-    }
+public class AggregateDoubleSum extends BaseDoubleSlidingFunction<AggregateDoubleSum> {
 
     @Override
     public double aggregateDouble(double input) {

@@ -70,7 +70,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         resetTriggered = false;
         inputStreamTriggered = false;
         auditLog.info("fireNotification", fireNotification);
-        return fireNotification;
+        return fireNotification && get()!=null;
     }
 
     /**

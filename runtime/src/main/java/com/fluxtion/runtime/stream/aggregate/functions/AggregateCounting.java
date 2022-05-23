@@ -1,9 +1,9 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.aggregate.BaseSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
-public class AggregateCounting<T> extends BaseSlidingWindowFunction<T, Integer, AggregateCounting<T>> implements IntEventStream {
+public class AggregateCounting<T> implements AggregateFunction<T, Integer, AggregateCounting<T>>,  IntEventStream {
     private int count;
 
     @Override
@@ -25,6 +25,19 @@ public class AggregateCounting<T> extends BaseSlidingWindowFunction<T, Integer, 
     @Override
     public Integer aggregate(T input) {
         return ++count;
+    }
+
+    public int increment(int input){
+        count++;
+        return getAsInt();
+    }
+
+    public int increment(double input){
+        return increment(1);
+    }
+
+    public int increment(long input){
+        return increment(1);
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.fluxtion.runtime.stream.EventStream.LongEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
-public class AggregateLongStream<F extends BaseLongSlidingWindowFunction<F>>
+public class AggregateLongStream<F extends LongAggregateFunction<F>>
         extends MapEventStream<Long, Long, LongEventStream> implements LongEventStream {
     private final SerializableSupplier<F> windowFunctionSupplier;
     private transient final F mapFunction;
@@ -51,7 +51,7 @@ public class AggregateLongStream<F extends BaseLongSlidingWindowFunction<F>>
         return getAsLong();
     }
 
-    public static class TumblingLongWindowStream<F extends BaseLongSlidingWindowFunction<F>>
+    public static class TumblingLongWindowStream<F extends LongAggregateFunction<F>>
             extends EventLogNode
             implements LongEventStream {
 

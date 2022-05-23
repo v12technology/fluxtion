@@ -2,12 +2,25 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.*;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
+import com.fluxtion.runtime.stream.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
-import com.fluxtion.runtime.stream.aggregate.BaseLongSlidingWindowFunction;
+import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -64,18 +77,18 @@ public class LongStreamBuilder {
         );
     }
 
-    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder aggregate(
+    public <F extends LongAggregateFunction<F>> LongStreamBuilder aggregate(
             SerializableSupplier<F> aggregateFunction) {
         return new LongStreamBuilder(new AggregateLongStream<>(eventStream, aggregateFunction));
     }
 
-    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder tumblingAggregate(
+    public <F extends LongAggregateFunction<F>> LongStreamBuilder tumblingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new LongStreamBuilder(
                 new TumblingLongWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <F extends BaseLongSlidingWindowFunction<F>> LongStreamBuilder slidingAggregate(
+    public <F extends LongAggregateFunction<F>> LongStreamBuilder slidingAggregate(
             SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
         return new LongStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowLongStream<>(
@@ -126,6 +139,10 @@ public class LongStreamBuilder {
 
     public LongStreamBuilder console(String in) {
         return peek(Peekers.console(in));
+    }
+
+    public LongStreamBuilder console() {
+        return console("{}");
     }
 
     //META-DATA

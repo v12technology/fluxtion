@@ -10,7 +10,7 @@ import java.util.List;
  * @param <R> return type
  * @param <F> BaseSlidingWindowFunction
  */
-public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFunction<T, R, F>> {
+public class BucketedSlidingWindowedFunction<T, R, F extends AggregateFunction<T, R, F>> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     protected final F aggregatedFunction;
@@ -18,11 +18,13 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     private final List<F> buckets;
     private int writePointer;
     private boolean allBucketsFilled = false;
+    private final boolean deductSupported;
 
     public BucketedSlidingWindowedFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
         this.windowFunctionSupplier = windowFunctionSupplier;
         aggregatedFunction = windowFunctionSupplier.get();
         currentFunction = windowFunctionSupplier.get();
+        deductSupported = currentFunction.deductSupported();
         buckets = new ArrayList<>(numberOfBuckets);
         for (int i = 0; i < numberOfBuckets; i++) {
             buckets.add(windowFunctionSupplier.get());
@@ -38,16 +40,33 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
     }
 
     public void roll(int windowsToRoll) {
-        for (int i = 0; i < windowsToRoll; i++) {
-            F oldFunction = buckets.get(writePointer);
-            aggregatedFunction.combine(currentFunction);
-            aggregatedFunction.deduct(oldFunction);
-            oldFunction.reset();
-            oldFunction.combine(currentFunction);
-            currentFunction.reset();
-            writePointer++;
-            allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
-            writePointer = writePointer % buckets.size();
+        if (deductSupported) {
+            for (int i = 0; i < windowsToRoll; i++) {
+                F oldFunction = buckets.get(writePointer);
+                aggregatedFunction.combine(currentFunction);
+                aggregatedFunction.deduct(oldFunction);
+                oldFunction.reset();
+                oldFunction.combine(currentFunction);
+                currentFunction.reset();
+                writePointer++;
+                allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
+                writePointer = writePointer % buckets.size();
+            }
+        }else{
+            aggregatedFunction.reset();
+            //clear and then combine
+            for (int i = 0; i < windowsToRoll; i++) {
+                F oldFunction = buckets.get(writePointer);
+                oldFunction.reset();
+                oldFunction.combine(currentFunction);
+                currentFunction.reset();
+                writePointer++;
+                allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
+                writePointer = writePointer % buckets.size();
+            }
+            for (int i = 0; i < buckets.size(); i++) {
+                aggregatedFunction.combine(buckets.get(i));
+            }
         }
     }
 
@@ -59,7 +78,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         return aggregatedFunction.get();
     }
 
-    public static class BucketedSlidingWindowedIntFunction<F extends BaseIntSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedIntFunction<F extends IntAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Integer, Integer, F> {
 
         public BucketedSlidingWindowedIntFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
@@ -75,7 +94,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         }
     }
 
-    public static class BucketedSlidingWindowedDoubleFunction<F extends BaseDoubleSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedDoubleFunction<F extends DoubleAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Double, Double, F> {
 
         public BucketedSlidingWindowedDoubleFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
@@ -91,7 +110,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends BaseSlidingWindowFu
         }
     }
 
-    public static class BucketedSlidingWindowedLongFunction<F extends BaseLongSlidingWindowFunction<F>>
+    public static class BucketedSlidingWindowedLongFunction<F extends LongAggregateFunction<F>>
             extends BucketedSlidingWindowedFunction<Long, Long, F> {
 
         public BucketedSlidingWindowedLongFunction(SerializableSupplier<F> windowFunctionSupplier, int numberOfBuckets) {
