@@ -141,6 +141,10 @@ public class LongStreamBuilder {
         return peek(Peekers.console(in));
     }
 
+    public LongStreamBuilder console() {
+        return console("{}");
+    }
+
     //META-DATA
     public LongStreamBuilder id(String nodeId) {
         SepContext.service().add(eventStream, nodeId);

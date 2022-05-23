@@ -225,6 +225,10 @@ public class EventStreamBuilder<T> {
         return peek(Peekers.console(in));
     }
 
+    public EventStreamBuilder<T> console() {
+        return console("{}");
+    }
+
     //META-DATA
     public EventStreamBuilder<T> id(String nodeId) {
         SepContext.service().add(eventStream, nodeId);

@@ -143,6 +143,10 @@ public class DoubleStreamBuilder {
         return peek(Peekers.console(in));
     }
 
+    public DoubleStreamBuilder console() {
+        return console("{}");
+    }
+
     //META-DATA
     public DoubleStreamBuilder id(String nodeId) {
         SepContext.service().add(eventStream, nodeId);

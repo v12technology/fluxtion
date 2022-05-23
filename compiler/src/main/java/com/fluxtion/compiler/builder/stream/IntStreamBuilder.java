@@ -146,6 +146,10 @@ public class IntStreamBuilder {
         return peek(Peekers.console(in));
     }
 
+    public IntStreamBuilder console() {
+        return console("{}");
+    }
+
     //META-DATA
     public IntStreamBuilder id(String nodeId){
         SepContext.service().add(eventStream, nodeId);
