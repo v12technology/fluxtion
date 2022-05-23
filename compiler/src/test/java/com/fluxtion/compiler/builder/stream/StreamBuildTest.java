@@ -203,6 +203,20 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void filterByPropertyTest(){
+        sep(c -> subscribe(String.class)
+                .filterByProperty(String::length, StreamBuildTest::gt5)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("short");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("loooong");
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
     public void mapTestWithFilter() {
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
@@ -291,6 +305,23 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public void dynamicFilterTest(){
         sep(c -> subscribe(MyData.class)
                 .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
+                .map(MyData::getValue)
+                .push(new NotifyAndPushTarget()::setIntPushValue));
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        onEvent(new FilterConfig(10));
+        onEvent(new MyData(5));
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+
+        onEvent(new MyData(50));
+        assertThat(notifyTarget.getIntPushValue(), is(50));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
+    public void dynamicFilterByPropertyTest(){
+        sep(c -> subscribe(MyData.class)
+                .filterByProperty(StreamBuildTest::myDataIntTooBig, MyData::getValue, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
                 .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -418,7 +449,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void lookupTest() {
         sep(c -> subscribe(PreMap.class)
-                .lookup(StreamBuildTest::lookupFunction, PreMap::getName, StreamBuildTest::mapToPostMap)
+                .lookup(PreMap::getName, StreamBuildTest::lookupFunction, StreamBuildTest::mapToPostMap)
                 .map(PostMap::getLastName)
                 .push(new NotifyAndPushTarget()::setStringPushValue));
 
@@ -932,6 +963,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return Boolean.parseBoolean(in);
     }
 
+    public static boolean gt5(int val){
+        return val > 5;
+    }
+
     public static int parseInt(String in) {
         return Integer.parseInt(in);
     }
@@ -996,6 +1031,13 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             return false;
         }
         return myData.getValue() > config.getLimit();
+    }
+
+    public static boolean myDataIntTooBig(int myData, FilterConfig config){
+        if(config == null){
+            return false;
+        }
+        return myData > config.getLimit();
     }
 
 }

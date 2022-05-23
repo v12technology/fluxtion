@@ -7,6 +7,8 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
@@ -21,8 +23,8 @@ import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
@@ -68,11 +70,23 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new FilterEventStream<>(eventStream, filterFunction));
     }
 
+    public <P> EventStreamBuilder<T> filterByProperty(SerializableFunction<T, P> accessor, SerializableFunction<P, Boolean> filterFunction) {
+        return new EventStreamBuilder<>(new FilterByPropertyEventStream<>(eventStream, accessor, filterFunction));
+    }
+
     public <S> EventStreamBuilder<T> filter(
             SerializableBiFunction<T, S, Boolean> predicate,
             EventStreamBuilder<S> secondArgument) {
         return new EventStreamBuilder<>(
                 new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
+    }
+
+    public <P, S> EventStreamBuilder<T> filterByProperty(
+            SerializableBiFunction<P, S, Boolean> predicate,
+            SerializableFunction<T, P> accessor,
+            EventStreamBuilder<S> secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
     }
 
     public EventStreamBuilder<T> defaultValue(T defaultValue) {
@@ -83,8 +97,8 @@ public class EventStreamBuilder<T> {
         return map(new DefaultValueFromSupplier<>(defaultValue)::getOrDefault);
     }
 
-    public <R, I, L> EventStreamBuilder<R> lookup(SerializableFunction<I, L> lookupFunction,
-                                                  SerializableFunction<T, I> lookupKeyFunction,
+    public <R, I, L> EventStreamBuilder<R> lookup(SerializableFunction<T, I> lookupKeyFunction,
+                                                  SerializableFunction<I, L> lookupFunction,
                                                   SerializableBiFunction<T, L, R> enrichFunction) {
         return new EventStreamBuilder<>(new LookupEventStream<>(eventStream, lookupKeyFunction, lookupFunction, enrichFunction));
     }

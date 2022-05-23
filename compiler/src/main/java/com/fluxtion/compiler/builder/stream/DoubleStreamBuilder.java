@@ -100,7 +100,6 @@ public class DoubleStreamBuilder {
                         numberOfBuckets));
     }
 
-
     public <T> EventStreamBuilder<T> mapOnNotify(T target) {
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
