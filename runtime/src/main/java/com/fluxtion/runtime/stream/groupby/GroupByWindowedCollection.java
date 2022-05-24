@@ -117,6 +117,7 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     public GroupByStreamed<K, A> reset() {
         mapOfFunctions.clear();
         mapOfValues.clear();
+        keyValue = null;
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.stream;
 
+import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -21,6 +22,8 @@ public class FlatMapArrayEventStream<T, R, S extends EventStream<T>> extends Eve
 
     @NoTriggerReference
     private final S inputEventStream;
+    @NoTriggerReference
+    private final transient Object streamFunctionInstance;
     private final SerializableFunction<T, R[]> iterableFunction;
     private transient R value;
     @Inject
@@ -29,6 +32,11 @@ public class FlatMapArrayEventStream<T, R, S extends EventStream<T>> extends Eve
     public FlatMapArrayEventStream(S inputEventStream, SerializableFunction<T, R[]> iterableFunction) {
         this.inputEventStream = inputEventStream;
         this.iterableFunction = iterableFunction;
+        if (iterableFunction.captured().length > 0){
+            streamFunctionInstance = SepContext.service().addOrReuse(iterableFunction.captured()[0]);
+        }else{
+            streamFunctionInstance = null;
+        }
     }
 
     @OnParentUpdate("inputEventStream")

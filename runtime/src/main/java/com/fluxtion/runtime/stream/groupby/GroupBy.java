@@ -11,6 +11,10 @@ public interface GroupBy<K, V>  {
 
     Collection<V> values();
 
+    static <K,V> KeyValue<K, V> emptyKey(){
+        return new KeyValue<>(null, null);
+    }
+
     @Value
     class KeyValue<K, V>{
         K key;

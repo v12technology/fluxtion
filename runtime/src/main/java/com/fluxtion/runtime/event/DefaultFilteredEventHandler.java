@@ -114,6 +114,9 @@ public final class DefaultFilteredEventHandler<T>
         if (this.filterId != other.filterId) {
             return false;
         }
+        if (this.filterString != other.filterString) {
+            return false;
+        }
         if (!Objects.equals(this.eventClass, other.eventClass)) {
             return false;
         }
