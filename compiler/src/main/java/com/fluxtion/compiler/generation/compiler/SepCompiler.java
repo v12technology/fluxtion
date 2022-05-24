@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.compiler;
@@ -30,10 +30,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -64,14 +71,14 @@ public class SepCompiler {
     /**
      * Compile method initialising SepCompilerConfig from system properties, see
      *
-     * @see SepCompilerConfig#initFromSystemProperties() System properties
-     * mapping.
      * @throws ClassNotFoundException exception during compile
      * @throws InstantiationException exception during compile
      * @throws IllegalAccessException exception during compile
-     * @throws Exception exception during compile
+     * @throws Exception              exception during compile
+     * @see SepCompilerConfig#initFromSystemProperties() System properties
+     * mapping.
      */
-    public Class<?> compile() throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class<?> compile() throws Exception {
         return compile(SepCompilerConfig.initFromSystemProperties());
     }
 
@@ -82,9 +89,9 @@ public class SepCompiler {
      * @throws ClassNotFoundException exception during compile
      * @throws InstantiationException exception during compile
      * @throws IllegalAccessException exception during compile
-     * @throws Exception exception during compile
+     * @throws Exception              exception during compile
      */
-    public Class<?> compile(SepCompilerConfig compilerConfig) throws ClassNotFoundException, InstantiationException, IllegalAccessException, Exception {
+    public Class<?> compile(SepCompilerConfig compilerConfig) throws Exception {
         return compile(compilerConfig, null);
     }
 
@@ -100,7 +107,7 @@ public class SepCompiler {
         return returnClass;
     }
 
-    private void initialiseGenerator(SEPConfig configOverride) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private void initialiseGenerator(SEPConfig configOverride) {
         LOG.debug("initialiseGenerator");
         LOG.debug(compilerConfig.toString());
         File buildDir = compilerConfig.getBuildOutputdirectory() == null ? null : new File(compilerConfig.getBuildOutputdirectory());
@@ -114,10 +121,10 @@ public class SepCompiler {
         //compiler
         if (configOverride == null) {
             Class<?> rootClazz;
-            try{
+            try {
                 rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
                 builderConfig = (SEPConfig) rootClazz.getDeclaredConstructor().newInstance();
-            }catch(Exception e){
+            } catch (Exception e) {
                 LOG.info("loading class from cached compiler");
             }
         } else {
@@ -135,17 +142,18 @@ public class SepCompiler {
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
             File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
             LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());
-            InputStream input = new FileInputStream(yamlFactoryConfig);
-            Yaml beanLoader = new Yaml();
-            LOG.debug("loading SepFactoryConfigBean with beanLoader");
-            SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
-            LOG.debug("DeclarativeNodeConfiguration load");
-            NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-            LOG.debug("searching for NodeFactory's");
-            Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-            cfgActual.factoryClassSet.addAll(class2Factory);
-            builderConfig.setDeclarativeConfig(cfgActual);
-            LOG.debug("completed :: processYamlConfig ");
+            try (InputStream input = Files.newInputStream(yamlFactoryConfig.toPath())) {
+                Yaml beanLoader = new Yaml();
+                LOG.debug("loading SepFactoryConfigBean with beanLoader");
+                SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
+                LOG.debug("DeclarativeNodeConfiguration load");
+                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+                LOG.debug("searching for NodeFactory's");
+                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+                cfgActual.factoryClassSet.addAll(class2Factory);
+                builderConfig.setDeclarativeConfig(cfgActual);
+                LOG.debug("completed :: processYamlConfig ");
+            }
         } else {
             LOG.debug("no yaml factory config file specified");
         }
@@ -169,7 +177,7 @@ public class SepCompiler {
         SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
         Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
         NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-        if (builderConfig == null || builderConfig.getDeclarativeConfig() ==null) {
+        if (builderConfig.getDeclarativeConfig() == null) {
             cfgActual.factoryClassSet.addAll(class2Factory);
             builderConfig.setDeclarativeConfig(cfgActual);
         } else {
@@ -187,7 +195,7 @@ public class SepCompiler {
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         LOG.info("generated sep: " + file.getCanonicalPath());
-        if(compilerConfig.isFormatSource()){
+        if (compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");
             Generator.formatSource(file);
             LOG.debug("completed formatting source");
@@ -227,7 +235,7 @@ public class SepCompiler {
         }
     }
 
-    private static InputStream getInputStream(@NotNull String filename) throws FileNotFoundException {
+    private static InputStream getInputStream(@NotNull String filename) throws IOException {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         InputStream is = contextClassLoader.getResourceAsStream(filename);
         if (is != null) {
@@ -237,7 +245,7 @@ public class SepCompiler {
         if (is2 != null) {
             return is2;
         }
-        return new FileInputStream(filename);
+        return Files.newInputStream(Paths.get(filename));
     }
 
 }

@@ -278,6 +278,10 @@ public class MultipleSepTargetInProcessTest {
         sep.removeSink(id);
     }
 
+    protected <T> void publishSignal(String filter) {
+        sep.publishSignal(filter);
+    }
+
     protected <T> void publishSignal(String filter, T value) {
         sep.publishSignal(filter, value);
     }
