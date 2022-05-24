@@ -238,10 +238,12 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    groupBy - sliding window
+    join
+    co-group joining multiple aggregates into a single row/object
 
     Done:
     ================
+    groupBy - sliding window
     add peek to primitive streams
     stateful support for functions
     Use transient reference in any stream that has an instance function reference. Remove anchor
@@ -256,13 +258,12 @@ public class EventStreamBuilder<T> {
     groupBy
     groupBy - tumbling window
     More tests
+    merge
 
     optional:
     ================
-    log - helper function
-    audit - helper function
     add peek functions to support log and audit helpers
-    merge/zip
+    zip - really just a stateful function
      */
 
 }
