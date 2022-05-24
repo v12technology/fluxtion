@@ -3,6 +3,7 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,8 +23,26 @@ public class SignalTest extends MultipleSepTargetInProcessTest {
 
         ConfigReceiver cfg = getField("cfg");
         assertThat(cfg.stringValue, is("hello world"));
-        assertThat(cfg.integerValue, is( (Integer)(35)));
+        assertThat(cfg.integerValue, is( 35));
         assertThat(cfg.intValue, is(12));
+    }
+
+    @Test
+    public void multipleSignalSubscriptionsTest(){
+        sep(c->{
+            EventFlow.subscribeToSignal("A").mapToInt(Mappers.count()).id("A_count");
+            EventFlow.subscribeToSignal("B").mapToInt(Mappers.count()).id("B_count");
+        });
+        publishSignal("A");
+        publishSignal("B");
+        publishSignal("A");
+        publishSignal("B");
+        publishSignal("VDFFF");
+        publishSignal("A");
+        publishSignal("A");
+
+        assertThat(getStreamed("A_count"), is(4));
+        assertThat(getStreamed("B_count"), is(2));
     }
 
     public static class ConfigReceiver{

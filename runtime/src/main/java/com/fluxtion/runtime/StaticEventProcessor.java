@@ -110,6 +110,10 @@ public interface StaticEventProcessor {
         onEvent(SinkDeregister.sink(id));
     }
 
+    default void publishSignal(String filter) {
+        publishSignal(filter, new Object());
+    }
+
     default <T> void publishSignal(String filter, T value) {
         onEvent(new Signal<>(filter, value));
     }

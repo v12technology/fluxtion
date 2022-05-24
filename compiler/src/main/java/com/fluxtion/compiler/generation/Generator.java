@@ -79,8 +79,11 @@ public class Generator {
         //Loading factories
 
         this.config = config;
-        if( GenerationContext.SINGLETON==null){
+        if (GenerationContext.SINGLETON == null) {
             GenerationContext.setupStaticContext("", "", null, null);
+        }
+        if (GenerationContext.SINGLETON == null) {
+            throw new RuntimeException("could not initialise Generations.SINGLETON context");
         }
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
                 config.getNodeList(),
@@ -92,7 +95,7 @@ public class Generator {
         );
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), GenerationContext.SINGLETON.getProxyClassMap());
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
-        if(config.isGenerateDescription() || GenerationContext.SINGLETON.getPackageName().isEmpty()){
+        if (config.isGenerateDescription() || GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
         return new InMemoryEventProcessor(simpleEventProcessorModel);
@@ -222,8 +225,9 @@ public class Generator {
                 if (graphMl.getParentFile() != null) {
                     graphMl.getParentFile().mkdirs();
                 }
-                FileWriter graphMlWriter = new FileWriter(graphMl);
-                graph.exportAsGraphMl(graphMlWriter, true);
+                try (FileWriter graphMlWriter = new FileWriter(graphMl)) {
+                    graph.exportAsGraphMl(graphMlWriter, true);
+                }
                 PngGenerator.generatePNG(graphMl, pngFile);
             } catch (IOException | TransformerConfigurationException | SAXException iOException) {
                 LOG.error("error writing png and graphml:", iOException);
