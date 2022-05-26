@@ -32,6 +32,7 @@ import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
 import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
 import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
+import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Peekers;
@@ -152,6 +153,12 @@ public class EventStreamBuilder<T> {
         return map(new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
     }
 
+    public <V, K> EventStreamBuilder<GroupByStreamed<K, V>>
+    groupBy(SerializableFunction<T, K> keyFunction,
+            SerializableFunction<T, V> valueFunction) {
+        return groupBy(keyFunction, valueFunction, Aggregates.identity());
+    }
+
     public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
     groupByTumbling(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
@@ -164,6 +171,13 @@ public class EventStreamBuilder<T> {
                 valueFunction,
                 bucketSizeMillis
         ));
+    }
+
+    public <V, K> EventStreamBuilder<GroupBy<K, V>>
+    groupByTumbling(SerializableFunction<T, K> keyFunction,
+                    SerializableFunction<T, V> valueFunction,
+                    int bucketSizeMillis) {
+        return groupByTumbling(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis);
     }
 
     public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
@@ -180,6 +194,14 @@ public class EventStreamBuilder<T> {
                 bucketSizeMillis,
                 numberOfBuckets
         ));
+    }
+
+    public <V, K> EventStreamBuilder<GroupBy<K, V>>
+    groupBySliding(SerializableFunction<T, K> keyFunction,
+                   SerializableFunction<T, V> valueFunction,
+                   int bucketSizeMillis,
+                   int numberOfBuckets) {
+        return groupBySliding(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis, numberOfBuckets);
     }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target) {

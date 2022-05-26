@@ -1,24 +1,42 @@
 package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.Stateful;
 import lombok.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.*;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
 
 public interface Predicates {
 
-    SerializableIntFunction<Boolean> HAS_CHANGED_INT_FILTER = new HasChanged()::intChanged;
-    SerializableDoubleFunction<Boolean> HAS_CHANGED_DOUBLE_FILTER = new HasChanged()::doubleChanged;
-    SerializableLongFunction<Boolean> HAS_CHANGED_LONG_FILTER = new HasChanged()::longChanged;
-
     static <T> LambdaReflection.SerializableFunction<T, Boolean> hasChangedFilter() {
         return new HasChanged()::objChanged;
+    }
+
+    static <K, V> SerializableFunction<Map<K, V>, Boolean> hasMapChanged() {
+        return new MapHasChanged()::checkMapChanged;
+    }
+
+    static SerializableIntFunction<Boolean> hasIntChanged() {
+        return new HasChanged()::intChanged;
+    }
+
+    static SerializableDoubleFunction<Boolean> hasDoubleChanged() {
+        return new HasChanged()::doubleChanged;
+    }
+
+    static SerializableLongFunction<Boolean> hasLongChanged() {
+        return new HasChanged()::longChanged;
     }
 
     static SerializableIntFunction<Boolean> gt(int limit) {
@@ -66,6 +84,9 @@ public interface Predicates {
 
 
         public boolean doubleChanged(double newValue) {
+            if(Double.isNaN(newValue) && Double.isNaN(doublePrevious)){
+                return false;
+            }
             boolean changed = newValue != doublePrevious;
             doublePrevious = newValue;
             return changed;
@@ -76,7 +97,17 @@ public interface Predicates {
             previousObject = newValue;
             return changed;
         }
+    }
 
+    class MapHasChanged {
+        private final Map<Object, Object> oldMap = new HashMap<>();
+
+        public <K, V> Boolean checkMapChanged(Map<K, V> map) {
+            boolean changed = !map.equals(oldMap);
+            oldMap.clear();
+            oldMap.putAll(map);
+            return changed;
+        }
     }
 
     @Value
@@ -115,7 +146,7 @@ public interface Predicates {
         }
     }
 
-    class AllUpdatedPredicate extends Stateful.StatefulWrapper  {
+    class AllUpdatedPredicate extends Stateful.StatefulWrapper {
 
         private final List<Object> monitored = new ArrayList<>();
         private final transient Map<Object, Boolean> updateMap = new HashMap<>();

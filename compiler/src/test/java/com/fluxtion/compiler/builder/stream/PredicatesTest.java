@@ -25,7 +25,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Integer.class)
                     .mapToInt(Integer::intValue)
-                    .filter(Predicates.HAS_CHANGED_INT_FILTER)
+                    .filter(Predicates.hasIntChanged())
                     .mapOnNotify(Mappers.newCountNode()).id("count")
 //                    .mapToInt(Mappers.Count::getCount)
             ;
@@ -47,7 +47,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Integer.class)
                     .mapToInt(Integer::intValue)
-                    .filter(Predicates.HAS_CHANGED_INT_FILTER)
+                    .filter(Predicates.hasIntChanged())
                     .map(Mappers.countInt()).id("count")
             ;
 
@@ -75,7 +75,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Integer.class)
                     .mapToDouble(Integer::doubleValue)
-                    .filter(Predicates.HAS_CHANGED_DOUBLE_FILTER)
+                    .filter(Predicates.hasDoubleChanged())
                     .mapOnNotify(Mappers.newCountNode()).id("count")
                     .mapToInt(CountNode::getCount)
             ;
@@ -98,7 +98,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Integer.class)
                     .mapToLong(Integer::longValue)
-                    .filter(Predicates.HAS_CHANGED_LONG_FILTER)
+                    .filter(Predicates.hasLongChanged())
                     .mapOnNotify(Mappers.newCountNode()).id("count")
                     .mapToInt(CountNode::getCount)
             ;
