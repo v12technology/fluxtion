@@ -111,8 +111,16 @@ public class HelloWorld {
 }
 ```
 
-See the [generated code and images](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated)
-from the ahead of time compiler.
+Execution output from
+```text
+rcvd -> Data1[value=20.5]
+rcvd -> Data2[value=63.0]
+rcvd -> Data1[value=56.8]
+OUT: sum 119.8 > 100
+
+Process finished with exit code 0
+```
+
 
 ## Highlights
 ### Ahead of time compiler
