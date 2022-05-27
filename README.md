@@ -5,9 +5,9 @@
 </p>
 
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/fluxtion-api)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
 
-### [Official documentation](https://v12technology.github.io/fluxtion/)
+
 # Lightweight event stream processor
  - Pure java in memory complex event processing 
  - Ultra fast [sub-microsecond response times](http://fluxtion.com/solutions/high-performance-flight-analysis/)
@@ -69,23 +69,45 @@ describe data processing logic. The strong typing makes the logic easier to read
 
 ### Code sample
 ```java
-public static void buildSensorProcessor(SEPConfig cfg) {
-    //merge csv marshller and SensorReading instance events
-    Wrapper<SensorReading> sensorData = merge(select(SensorReading.class),
-            csvMarshaller(SensorReading.class).build()).console(" -> \t");
-    //group by sensor and calculate max, average
-    GroupBy<SensorReadingDerived> sensors = groupBy(sensorData, SensorReading::getSensorName, 
-             SensorReadingDerived.class)
-            .init(SensorReading::getSensorName, SensorReadingDerived::setSensorName)
-            .max(SensorReading::getValue, SensorReadingDerived::setMax)
-            .avg(SensorReading::getValue, SensorReadingDerived::setAverage)
-            .build();
-    //tumble window (count=3), warning if avg > 60 && max > 90 in the window for a sensor
-    tumble(sensors, 3).console("readings in window : ", GroupBy::collection)
-            .map(SensorMonitor::warningSensors, GroupBy::collection)
-            .filter(c -> c.size() > 0)
-            .console("**** WARNING **** sensors to investigate:")
-            .push(new TempertureController()::investigateSensors);
+/**
+ * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100
+ * <ul>
+ *     <li>Subscribe to two event streams, Data1 and Data1</li>
+ *     <li>Map the double values of each stream using getter</li>
+ *     <li>Apply a stateless binary function {@link Double#sum(double, double)}</li>
+ *     <li>Apply a filter that logs to console when the sum > 100</li>
+ * </ul>
+ */
+public class HelloWorld {
+    public static void main(String[] args) {
+        //builds the EventProcessor
+        EventProcessor eventProcessor = Fluxtion.interpret(cfg -> {
+            var data1Stream = subscribe(Data1.class)
+                    .console("rcvd -> {}")
+                    .mapToDouble(Data1::value);
+
+            subscribe(Data2.class)
+                    .console("rcvd -> {}")
+                    .mapToDouble(Data2::value)
+                    .map(Double::sum, data1Stream)
+                    .filter(d -> d > 100)
+                    .console("OUT: sum {} > 100");
+        });
+        //init and send events
+        eventProcessor.init();
+        //no output < 100
+        eventProcessor.onEvent(new Data1(20.5));
+        //no output < 100
+        eventProcessor.onEvent(new Data2(63));
+        //output > 100 - log to console
+        eventProcessor.onEvent(new Data1(56.8));
+    }
+
+    public record Data1(double value) {
+    }
+
+    public record Data2(double value) {
+    }
 }
 ```
  
@@ -117,9 +139,6 @@ own advantages. The following descriptions are supported:
  - Data driven
  - Dependency injection based
 
-## Documentation
-Check out [documentation](https://v12technology.github.io/fluxtion/) that is still evolving :)
-This is undergoing active development so please check regularly.
 ## Contributing
 We welcome contributions to the project. Detailed information on our ways of working will 
 be written in time. In brief our goals are:
