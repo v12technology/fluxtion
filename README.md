@@ -111,7 +111,7 @@ public class HelloWorld {
 }
 ```
 
-Execution output from
+### Execution output
 ```text
 rcvd -> Data1[value=20.5]
 rcvd -> Data2[value=63.0]
