@@ -64,8 +64,8 @@ you want to concentrate on writing the logic.
 ## Example
 We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master).
 
-The sample below demonstrates the fluent functional api Fluxtion provides to
-describe data processing logic. The strong typing makes the logic easier to read, maintain and refactor.
+The sample below demonstrates the fluent functional api Fluxtion provides to describe data processing logic. The api
+should be familiar to anyone who has coded with java 8 streams.
 
 ### Code sample
 ```java
