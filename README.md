@@ -5,7 +5,7 @@
 </p>
 
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
 
 
 # Lightweight event stream processor
