@@ -5,7 +5,7 @@
 </p>
 
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
 
 
 # Lightweight event stream processor
@@ -64,8 +64,8 @@ you want to concentrate on writing the logic.
 ## Example
 We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master).
 
-The sample below demonstrates the fluent functional api Fluxtion provides to
-describe data processing logic. The strong typing makes the logic easier to read, maintain and refactor.
+The sample below demonstrates the fluent functional api Fluxtion provides to describe data processing logic. The api
+should be familiar to anyone who has coded with java 8 streams.
 
 ### Code sample
 ```java
@@ -111,8 +111,16 @@ public class HelloWorld {
 }
 ```
 
-See the [generated code and images](https://github.com/v12technology/fluxtion-quickstart/tree/master/src/main/resources/com/fluxtion/quickstart/roomsensor/generated)
-from the ahead of time compiler.
+### Execution output
+```text
+rcvd -> Data1[value=20.5]
+rcvd -> Data2[value=63.0]
+rcvd -> Data1[value=56.8]
+OUT: sum 119.8 > 100
+
+Process finished with exit code 0
+```
+
 
 ## Highlights
 ### Ahead of time compiler
