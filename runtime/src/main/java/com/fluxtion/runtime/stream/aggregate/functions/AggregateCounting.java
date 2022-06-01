@@ -32,6 +32,16 @@ public class AggregateCounting<T> implements AggregateFunction<T, Integer, Aggre
         return getAsInt();
     }
 
+    @Override
+    public void combine(AggregateCounting<T> add) {
+        count += add.count;
+    }
+
+    @Override
+    public void deduct(AggregateCounting<T> add) {
+        count -= add.count;
+    }
+
     public int increment(double input){
         return increment(1);
     }

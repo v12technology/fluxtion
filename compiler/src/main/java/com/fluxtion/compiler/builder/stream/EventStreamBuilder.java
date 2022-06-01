@@ -35,6 +35,7 @@ import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
 public class EventStreamBuilder<T> {
@@ -202,6 +203,21 @@ public class EventStreamBuilder<T> {
                    int bucketSizeMillis,
                    int numberOfBuckets) {
         return groupBySliding(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis, numberOfBuckets);
+    }
+
+    public <K, A, F extends AggregateFunction<T, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    groupBySliding(SerializableFunction<T, K> keyFunction,
+                   SerializableSupplier<F> aggregateFunctionSupplier,
+                   int bucketSizeMillis,
+                   int numberOfBuckets) {
+        return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
+                eventStream,
+                aggregateFunctionSupplier,
+                keyFunction,
+                Mappers::valueIdentity,
+                bucketSizeMillis,
+                numberOfBuckets
+        ));
     }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target) {

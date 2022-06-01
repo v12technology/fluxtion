@@ -30,6 +30,10 @@ public interface Mappers {
     SerializableBiLongFunction DIVIDE_LONGS = Mappers::divideLongs;
     SerializableBiDoubleFunction DIVIDE_DOUBLES = Mappers::divideDoubles;
 
+    static<T> T valueIdentity(T in){
+        return in;
+    }
+
     static <T> SerializableToIntFunction<T> count() {
         return Aggregates.counting().get()::aggregate;
     }

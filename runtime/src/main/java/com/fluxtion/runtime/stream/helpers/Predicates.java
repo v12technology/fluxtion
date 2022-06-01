@@ -5,6 +5,8 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.Stateful;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.predicate.TopNPredicate;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -12,12 +14,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Predicates {
+
+    static <K, V extends Comparable<V>> SerializableFunction<GroupBy<K, V>, List<Map.Entry<K, V>>> topN(int count) {
+        return new TopNPredicate(count)::filter;
+    }
+
+    static <K, V, T extends Comparable<T>> SerializableFunction<GroupBy<K, V>, List<Map.Entry<K, V>>> topN(
+            int count, SerializableFunction<V, T> propertyAccesor) {
+        TopNPredicate topNPredicate = new TopNPredicate(count);
+        topNPredicate.comparing = propertyAccesor;
+        return topNPredicate::filter;
+    }
 
     static <T> LambdaReflection.SerializableFunction<T, Boolean> hasChangedFilter() {
         return new HasChanged()::objChanged;
