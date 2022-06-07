@@ -12,3 +12,5 @@ published: true
 3. **Generate stream processor**
 4. **Describe processing logic**
 5. **Testing**
+6. **Monitoring/audit**
+7. **Examples**

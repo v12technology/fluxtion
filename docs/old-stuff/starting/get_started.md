@@ -2,7 +2,7 @@
 title: First Fluxtion application
 has_children: true
 nav_order: 12
-published: true
+published: false
 ---
 # First Fluxtion application
 This example processes a stream of trade events calculating statistics in a 5 second sliding window. 
