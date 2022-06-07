@@ -644,6 +644,33 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(results, is(expected));
     }
 
+
+    @Value
+    public static class Person{
+        String name;
+        String country;
+        String gender;
+    }
+
+    //TBD fix nested keys
+//    @Test
+    public void nestedGroupBy(){
+        sep(c ->{
+            EventStreamBuilder<Map<String, GroupByStreamed<String, Person>>> filtered = subscribe(Person.class)
+                    .console("->{}")
+                    .groupBy(Person::getCountry, Mappers::valueIdentity)
+                    .console("country key:{}")
+                    .groupBy(stream -> stream.value().getGender(), Mappers::valueIdentity)
+                    .map(GroupBy::map)
+                    .console();
+        });
+
+        onEvent(new Person("greg", "UK", "male"));
+        onEvent(new Person("josie", "UK", "female"));
+        onEvent(new Person("Freddie", "UK", "male"));
+        onEvent(new Person("Soren", "DK", "male"));
+    }
+
     @Test
     public void groupByTumblingTest(){
 //        addAuditor();

@@ -95,7 +95,6 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->{
             IntStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue);
             IntStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue);
-
             int1.map(Mappers.ADD_INTS, int2).id("add");
             int1.map(Mappers.SUBTRACT_INTS, int2).id("subtract");
             int1.map(Mappers.MULTIPLY_INTS, int2).id("multiply");

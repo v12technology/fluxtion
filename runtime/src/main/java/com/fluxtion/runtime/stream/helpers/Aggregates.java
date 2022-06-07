@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.stream.helpers;
 
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateCounting;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleMax;
@@ -15,6 +16,11 @@ import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongValue;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.TopNByValue;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 public class Aggregates {
 
@@ -76,4 +82,14 @@ public class Aggregates {
         return AggregateDoubleMin::new;
     }
 
+    public static <K, V extends Comparable<V>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(int count) {
+        return new TopNByValue(count)::filter;
+    }
+
+    public static <K, V, T extends Comparable<T>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(
+            int count, SerializableFunction<V, T> propertyAccesor) {
+        TopNByValue topNByValue = new TopNByValue(count);
+        topNByValue.comparing = propertyAccesor;
+        return topNByValue::filter;
+    }
 }

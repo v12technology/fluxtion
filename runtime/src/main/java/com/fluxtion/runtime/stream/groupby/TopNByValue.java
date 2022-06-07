@@ -1,7 +1,6 @@
-package com.fluxtion.runtime.stream.predicate;
+package com.fluxtion.runtime.stream.groupby;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,31 +9,29 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class TopNPredicate {
+public class TopNByValue {
     private final int count;
     public SerializableFunction comparing;
 
-    public TopNPredicate(int count) {
+    public TopNByValue(int count) {
         this.count = count;
     }
 
     //required for serialised version
-    public  <K, V> List<Entry<K, V>> filter(Object obj) {
+    public <K, V> List<Entry<K, V>> filter(Object obj) {
         return filter((GroupBy) obj);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <K, V> List<Map.Entry<K, V>> filter(GroupBy groupBy) {
         return (List<Entry<K, V>>) new ArrayList<>(groupBy.map().entrySet()).stream()
-                .sorted(new Comparator<Entry>() {
-                    @Override
-                    public int compare(Entry c1, Entry c2) {
-                        if(comparing!=null){
-                            return ((Comparable)comparing.apply(c2.getValue())).compareTo(
-                                    comparing.apply(c1.getValue())
-                            );
-                        }
-                        return ((Comparable)c2.getValue()).compareTo(c1.getValue());
+                .sorted((Comparator<Entry>) (c1, c2) -> {
+                    if (comparing != null) {
+                        return ((Comparable) comparing.apply(c2.getValue())).compareTo(
+                                comparing.apply(c1.getValue())
+                        );
                     }
+                    return ((Comparable) c2.getValue()).compareTo(c1.getValue());
                 })
                 .limit(count)
                 .collect(Collectors.toList());
