@@ -77,10 +77,23 @@ intValue:10
 An application can remove sink using the call ```EventProcessor#removeSink```
 
 ### Lifecycle - init
-```EventProcessor#init```
-Calls init on any node in the graph that has registered for an init callback. The init calls are in topological order.
+```EventProcessor#init``` Calls init on any node in the graph that has registered for an init callback. The init calls 
+are invoked in topological order.
 
 ### Lifecycle - teardown
-```EventProcessor#tearDown```
-Calls tearDown on any node in the graph that has registered for an tearDown callback. The tearDown calls are in 
-reverse topological order.
+```EventProcessor#tearDown``` Calls tearDown on any node in the graph that has registered for an tearDown callback. 
+The tearDown calls are invoked reverse topological order.
+
+### Attaching a user node to lifecycle callback
+User nodes that are added to the processing graph can attach to the lifecycle callbacks
+
+```java
+public static class MyNode{
+    @Initialise
+    public void myInitMethod(){}
+    
+    @TearDown
+    public void myTearDownMethod(){}
+    
+}
+```

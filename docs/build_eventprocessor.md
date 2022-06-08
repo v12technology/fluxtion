@@ -28,5 +28,7 @@ EventProcessor eventProcessor = Fluxtion.interpret(cfg -> EventFlow.subscribe(St
 ```
 
 ## Meta-data
-While generating the EventProcessor a set of meta-data documents are generated in the resources directory of the project
-using the fully qualified name of the buulde
+While generating the EventProcessor meta-data documents are generated in the src/resources directory of the project
+using the fully qualified name of the builder class/builder method:
+- A png file showing the processing graph
+- A graphml document describing the processing graph structure
