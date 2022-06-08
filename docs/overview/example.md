@@ -13,6 +13,8 @@ The sum is the addition of the value member variable from each event stream.
 
 ### Processing graph
 
+Graphical representation of the processing graph that Fluxtion will generate.
+
 ![](../images/helloworld_eventstream.png)
 
 ## Maven pom file
@@ -46,6 +48,15 @@ The sum is the addition of the value member variable from each event stream.
 ```
 
 ## Java code
+
+All the elements are joined together using a fluent style api that streaming implements.
+
+The example creates an EventProcessor using the streaming api. A subscription is made to
+each class of event and the double value from each new event is extracted as a map operation.
+Console operations are applied to introspect the state of the stream. Eventually the double value are supplied as
+arguments to the binary function Double::sum. A filter checks the value is > 100 before pushing the sum value to 
+next operation in the chain.
+
 
 ```java
 import com.fluxtion.compiler.Fluxtion;
@@ -101,6 +112,7 @@ public class HelloWorld {
 - **line 31-37** Posts a stream of events to the EventProcessor instance
 
 ## Example execution output
+
 ```text
 rcvd -> Data1[value=20.5]
 rcvd -> Data2[value=63.0]
