@@ -11,6 +11,9 @@ published: true
 Simple Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the value member variable from each event stream.
 
+### Processing graph
+
+![](../images/helloworld_eventstream.png)
 
 ## Maven pom file
 
@@ -94,8 +97,8 @@ public class HelloWorld {
 
 - **line 19-28** User code describing the processing graph
 - **line 18** Supplies the graph description to Fluxtion to generate an EventProcessor
-- **line 312** Inits the generated EventProcessor
-- **line 16-22** Posts a stream of events to the EventProcessor instance
+- **line 30** Inits the generated EventProcessor
+- **line 31-37** Posts a stream of events to the EventProcessor instance
 
 ## Example execution output
 ```text
