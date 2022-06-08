@@ -24,21 +24,21 @@ interface methods for the user code to invoke depending on the usecase.
 ### Event input 
 Sends an incoming even to the EventProcessor to trigger a new stream calculation
 
-```java
+{% highlight java %}
 EventProcessor processor = Fluxtion.interpret(Main::buildProcessingLogic);
 processor.init();
 processor.onEvent("test");
-```
+{% endhighlight %}
 
 ### Signal input
 A utility method that sends signals to any registered listeners in the processor. 
 A signal can contain optionally contain a value. A String filter on the signal routes the signal to a handler that has 
 a matching filter.
-```java
+{% highlight java %}
 EventProcessor processor = Fluxtion.interpret(cfg -> EventFlow.subscribeToIntSignal("myIntSignal"));
 processor.init();
 processor.publishSignal("myIntSignal", 10);
-```
+{% endhighlight %}
 
 ### Re-entrant events
 Events can be added for processing from inside the graph for processing in the next available cycle. Internal events
@@ -47,19 +47,19 @@ new input events are queued if there is processing currently acting. Support for
 into the streaming api.
 
 Maps an int signal to a String and republishes to the graph
-```java
+{% highlight java %}
 EventProcessor processor = Fluxtion.interpret(cfg -> EventFlow.subscribeToIntSignal("myIntSignal")
         .mapToObj(d -> "intValue:" + d)
         .processAsNewGraphEvent()
 );
-```
+{% endhighlight %}
 
 ### Processing output
 An application can register for output from the EventProcessor by supplying a consumer
 to addSink. Support for publishing to a sink is built into the streaming api, ```EventStreamBuilder#sink```. 
 A consumer has a string key to partition outputs.
 
-```java
+{% highlight java %}
 EventProcessor processor = Fluxtion.interpret(cfg -> EventFlow.subscribeToIntSignal("myIntSignal")
         .mapToObj(d -> "intValue:" + d)
         .sink("mySink")
@@ -67,12 +67,12 @@ EventProcessor processor = Fluxtion.interpret(cfg -> EventFlow.subscribeToIntSig
 processor.init();
 processor.addSink("mySink", (Consumer<String>) System.out::println);
 processor.publishSignal("myIntSignal", 10);
-```
+{% endhighlight %}
 
 Output
-```
+{% highlight console %}
 intValue:10
-```
+{% endhighlight %}
 
 An application can remove sink using the call ```EventProcessor#removeSink```
 
@@ -87,13 +87,12 @@ The tearDown calls are invoked reverse topological order.
 ### Attaching a user node to lifecycle callback
 User nodes that are added to the processing graph can attach to the lifecycle callbacks
 
-```java
+{% highlight java %}
 public static class MyNode{
     @Initialise
     public void myInitMethod(){}
     
     @TearDown
     public void myTearDownMethod(){}
-    
 }
-```
+{% endhighlight %}

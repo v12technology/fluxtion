@@ -19,7 +19,7 @@ Graphical representation of the processing graph that Fluxtion will generate.
 
 ## Maven pom file
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -45,7 +45,7 @@ Graphical representation of the processing graph that Fluxtion will generate.
         </dependency>
     </dependencies>
 </project>
-```
+{% endhighlight %}
 
 ## Java code
 
@@ -113,9 +113,9 @@ public class HelloWorld {
 
 ## Example execution output
 
-```text
+{% highlight console %}
 rcvd -> Data1[value=20.5]
 rcvd -> Data2[value=63.0]
 rcvd -> Data1[value=56.8]
 OUT: sum 119.8 > 100
-```
+{% endhighlight %}
