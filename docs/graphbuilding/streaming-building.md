@@ -1,5 +1,5 @@
 ---
-title: Streaming graph building
+title: Streaming api
 parent: Describe processing logic
 has_children: false
 nav_order: 1
