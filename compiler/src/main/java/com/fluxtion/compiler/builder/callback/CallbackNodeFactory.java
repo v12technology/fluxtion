@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.callback;
 
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.callback.Callback;
 import com.fluxtion.runtime.callback.CallbackImpl;
 import com.google.auto.service.AutoService;

@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.RootInjectedNode;
+import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -38,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 

@@ -17,8 +17,8 @@
 package com.fluxtion.compiler.builder.time;
 
 import com.fluxtion.runtime.time.Clock;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;

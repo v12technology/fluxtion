@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.builder.node;
+package com.fluxtion.compiler.builder.factory;
 
 import lombok.Value;
 

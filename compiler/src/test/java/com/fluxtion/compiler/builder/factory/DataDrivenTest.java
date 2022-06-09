@@ -1,6 +1,5 @@
 package com.fluxtion.compiler.builder.factory;
 
-import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;

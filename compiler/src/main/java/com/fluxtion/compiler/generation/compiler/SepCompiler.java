@@ -19,9 +19,8 @@ package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.RootInjectedNode;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
@@ -42,8 +41,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

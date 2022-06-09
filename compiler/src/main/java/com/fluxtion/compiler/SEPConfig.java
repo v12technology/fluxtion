@@ -17,8 +17,8 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.RootInjectedNode;
+import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;

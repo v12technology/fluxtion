@@ -1,6 +1,6 @@
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.node.RootInjectedNode;
+import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;

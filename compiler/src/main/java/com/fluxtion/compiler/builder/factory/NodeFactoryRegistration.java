@@ -14,13 +14,11 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.node;
+package com.fluxtion.compiler.builder.factory;
 
 import lombok.EqualsAndHashCode;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**

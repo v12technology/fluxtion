@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.builder.node;
+package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.runtime.audit.NodeNameLookup;
 import com.google.auto.service.AutoService;
