@@ -2,28 +2,17 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.SepContext;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.partition.LambdaReflection.*;
+import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
+
+import java.util.function.LongSupplier;
 
 public class LongStreamBuilder {
 
@@ -32,6 +21,10 @@ public class LongStreamBuilder {
     LongStreamBuilder(LongEventStream eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public LongSupplier longStream() {
+        return eventStream;
     }
 
     //TRIGGERS - START
@@ -56,7 +49,7 @@ public class LongStreamBuilder {
 
     public <S> LongStreamBuilder filter(
             SerializableBiLongPredicate predicate,
-            LongStreamBuilder secondArgument){
+            LongStreamBuilder secondArgument) {
         return new LongStreamBuilder(
                 new FilterDynamicEventStream.LongFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -124,7 +117,7 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new NotifyEventStream.LongNotifyEventStream(eventStream, target));
     }
 
-    public LongStreamBuilder sink(String sinkId){
+    public LongStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishLong);
     }
 

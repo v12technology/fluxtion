@@ -18,6 +18,8 @@ import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
+import java.util.function.IntSupplier;
+
 import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
 import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntPredicate;
 import static com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
@@ -35,6 +37,10 @@ public class IntStreamBuilder {
     IntStreamBuilder(IntEventStream eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public IntSupplier intStream(){
+        return eventStream;
     }
 
     //TRIGGERS - START

@@ -3,27 +3,28 @@ package com.fluxtion.runtime.stream;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
-public interface EventStream <R> {
+public interface EventStream<R> extends Supplier<R> {
 
-    R get();
-
-    default boolean hasDefaultValue(){
+    default boolean hasDefaultValue() {
         return false;
     }
 
-    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier{
-        default Integer get(){
+    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier {
+        default Integer get() {
             return getAsInt();
         }
     }
+
     interface DoubleEventStream extends TriggeredEventStream<Double>, DoubleSupplier {
-        default Double get(){
+        default Double get() {
             return getAsDouble();
         }
     }
+
     interface LongEventStream extends TriggeredEventStream<Long>, LongSupplier {
-        default Long get(){
+        default Long get() {
             return getAsLong();
         }
     }

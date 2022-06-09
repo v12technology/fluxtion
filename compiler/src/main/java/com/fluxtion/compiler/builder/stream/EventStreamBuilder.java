@@ -37,6 +37,8 @@ import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
+import java.util.function.Supplier;
+
 public class EventStreamBuilder<T> {
 
     final TriggeredEventStream<T> eventStream;
@@ -44,6 +46,10 @@ public class EventStreamBuilder<T> {
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public Supplier<T> eventStream(){
+        return eventStream;
     }
 
     //TRIGGERS - START
