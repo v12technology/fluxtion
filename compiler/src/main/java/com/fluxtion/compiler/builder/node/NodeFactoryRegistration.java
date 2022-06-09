@@ -18,6 +18,7 @@ package com.fluxtion.compiler.builder.node;
 
 import lombok.EqualsAndHashCode;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,7 @@ public final class NodeFactoryRegistration {
      * The root nodes to create and the variable names they should be mapped to.
      *
      */
-    public Map<Class<?>, String> rootNodeMappings;
+    public Map<Class<?>, String> rootNodeMappings = new HashMap<>();
 
     /**
      * The set of factory classes used for node creation, each factory must
