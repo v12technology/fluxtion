@@ -8,7 +8,7 @@ published: true
 # Introduction to Fluxtion
 Welcome to Fluxtion, and thanks for coming, hope you enjoy exploring :) 
 
-Fluxtion is a java utility that builds embeddable, reactive complex event processors for data in motion streaming
+Fluxtion is a java library utility that builds embeddable, reactive complex event processors for data in motion streaming
 applications. Suitable use cases include:
 
 - **Real-time applications** processing multiple event streams
