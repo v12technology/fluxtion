@@ -42,4 +42,9 @@ public interface Fluxtion {
     static EventProcessor interpret(SerializableConsumer<SEPConfig> sepConfig){
         return InProcessSepCompiler.interpreted(sepConfig);
     }
+
+    @SneakyThrows
+    static EventProcessor compile(Class<?> rootNode){
+        return (EventProcessor) InProcessSepCompiler.compile(rootNode);
+    }
 }

@@ -16,8 +16,10 @@
  */
 package com.fluxtion.compiler.builder.node;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,7 +27,14 @@ import java.util.Set;
  * annotation
  *
  */
+@EqualsAndHashCode
 public final class NodeFactoryRegistration {
+
+    /**
+     * The root nodes to create and the variable names they should be mapped to.
+     *
+     */
+    public Map<Class<?>, String> rootNodeMappings;
 
     /**
      * The set of factory classes used for node creation, each factory must
@@ -49,32 +58,6 @@ public final class NodeFactoryRegistration {
     public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList, Set<NodeFactory<?>> factorySet) {
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.factoryClassSet);
-        hash = 89 * hash + Objects.hashCode(this.factorySet);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final NodeFactoryRegistration other = (NodeFactoryRegistration) obj;
-        if (!Objects.equals(this.factoryClassSet, other.factoryClassSet)) {
-            return false;
-        }
-        if (!Objects.equals(this.factorySet, other.factorySet)) {
-            return false;
-        }
-        return true;
     }
     
 }

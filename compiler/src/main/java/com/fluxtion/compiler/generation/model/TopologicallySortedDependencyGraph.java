@@ -529,6 +529,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             for (NodeFactory<?> factory : nodeFactoryRegistration.factorySet) {
                 registerNodeFactory(factory);
             }
+            //loop through root instance and
+            for (Map.Entry<Class<?>, String> rootNode : nodeFactoryRegistration.rootNodeMappings.entrySet()) {
+                Object newNode = findOrCreateNode(rootNode.getKey(), new HashMap<>(), rootNode.getValue());
+                publicNodeList.add(newNode);
+            }
         }
         //add injected instances created by factories
         addNodesFromContext();

@@ -174,7 +174,7 @@ public class SepCompilerConfig {
         config.outputDirectory = System.getProperty("fluxtion.outputDirectory");
         config.resourcesOutputDirectory = System.getProperty("fluxtion.resourcesOutputDirectory");
         config.templateSep = System.getProperty("fluxtion.templateSep", config.templateSep);
-        config.supportDirtyFiltering = Boolean.valueOf(System.getProperty("fluxtion.supportDirtyFiltering", "true"));
+        config.supportDirtyFiltering = Boolean.parseBoolean(System.getProperty("fluxtion.supportDirtyFiltering", "true"));
         config.generateDescription = Boolean.getBoolean("fluxtion.generateDescription");
         config.assignNonPublicMembers = Boolean.getBoolean("fluxtion.assignNonPublicMembers");
         config.buildOutputdirectory = System.getProperty("fluxtion.build.outputdirectory", "");

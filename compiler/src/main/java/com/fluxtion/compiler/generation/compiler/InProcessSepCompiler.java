@@ -95,6 +95,10 @@ public class InProcessSepCompiler {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
     }
 
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String rootFactoryClass,  String pckg, String sepName) throws Exception {
+        return sepInstance(cfgBuilder, rootFactoryClass, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
+    }
+
     public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, true);
     }
@@ -168,6 +172,19 @@ public class InProcessSepCompiler {
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
         return (compile(name, pkg, builder));
+    }
+
+    public static StaticEventProcessor compile(Class<?> rootNode) throws Exception {
+        SerializableConsumer<SEPConfig> builder = (SEPConfig cfg) ->{};
+        String name = "Processor";
+        String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
+        String dir = System.getProperty("fluxtion.cacheDirectory");
+        buildClasspath();
+        if (dir != null) {
+            System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
+            return InProcessSepCompiler.sepInstance(builder, rootNode.getName(), pkg, name, dir + "/source/", dir + "/resources/", true);
+        }
+        return InProcessSepCompiler.sepInstance(builder, rootNode.getName(), pkg, name);
     }
     
     /**
@@ -260,7 +277,7 @@ public class InProcessSepCompiler {
 
     /**
      * Compiles and instantiates a SEP described with the provided {@link SEPConfig}, optionally initialising the SEP
-     * instance. See {@link #compileSep(Consumer, String, String, String, String)
+     * instance. See {@link #compileSep(Consumer, String, String, String, String, String)
      * } for a description of compilation.
      *
      * @param cfgBuilder - A client consumer to buld sep using the provided
@@ -274,8 +291,8 @@ public class InProcessSepCompiler {
      * @throws IllegalAccessException
      * @throws Exception
      */
-    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
-        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder,  String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
+        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir, null);
         StaticEventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
         if (initialise) {
             if (sep instanceof Lifecycle) {
@@ -285,13 +302,24 @@ public class InProcessSepCompiler {
         return sep;
     }
 
-    public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
-        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR);
+    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String rootFactoryClass,  String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
+        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir, rootFactoryClass);
+        StaticEventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
+        if (initialise) {
+            if (sep instanceof Lifecycle) {
+                ((Lifecycle) sep).init();
+            }
+        }
+        return sep;
     }
 
-    public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
-        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR);
-    }
+//    public static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
+//        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR);
+//    }
+//
+//    public static Class<StaticEventProcessor> CompileTestSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
+//        return compileSep(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR);
+//    }
 
     /**
      * Compiles a SEP in the current process of the caller. The provided {@link SEPConfig} is used by the Fluxtion event
@@ -309,9 +337,9 @@ public class InProcessSepCompiler {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, String rootFactoryClass) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
-        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
+        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir, rootFactoryClass);
         return (Class<StaticEventProcessor>) compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
     }
 
@@ -330,7 +358,7 @@ public class InProcessSepCompiler {
 
     }
 
-    public static SepCompilerConfig getSepCompileConfig(String packageName, String className, String srcGenDir, String resGenDir) throws IOException {
+    public static SepCompilerConfig getSepCompileConfig(String packageName, String className, String srcGenDir, String resGenDir, String rootFactoryClass) throws IOException {
         File outputDir = new File(srcGenDir);
         File resourcesDir = new File(resGenDir);
         GenerationContext.setupStaticContext(packageName, className, outputDir, resourcesDir);
@@ -340,6 +368,7 @@ public class InProcessSepCompiler {
         cfg.setPackageName(packageName);
         cfg.setClassName(className);
         cfg.setConfigClass(InProcessSepConfig.class.getCanonicalName());
+        cfg.setRootFactoryClass(rootFactoryClass);
         return cfg;
     }
 }

@@ -41,6 +41,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -162,13 +164,23 @@ public class SepCompiler {
     private void processRootFactoryConfig() throws Exception {
         LOG.debug("processRootFactoryConfig");
         if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
-            if (builderConfig.getDeclarativeConfig() == null) {
-                SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-                cfgActual.factoryClassSet.addAll(class2Factory);
-                builderConfig.setDeclarativeConfig(cfgActual);
+            Map<Class<?>, String> rootNodeMappings = new HashMap<>();
+            Class clazz;
+            if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
+                clazz = Class.forName(compilerConfig.getRootFactoryClass());
+//                clazz = Class.forName(compilerConfig.getRootFactoryClass(), true, GenerationContext.SINGLETON.getClassLoader());
+            } else {
+                clazz = Class.forName(compilerConfig.getRootFactoryClass());
             }
+            rootNodeMappings.put(clazz, "root");
+            builderConfig.getDeclarativeConfig().rootNodeMappings = rootNodeMappings;
+//            if (builderConfig.getDeclarativeConfig() == null) {
+//                SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
+//                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+//                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+//                cfgActual.factoryClassSet.addAll(class2Factory);
+//                builderConfig.setDeclarativeConfig(cfgActual);
+//            }
         }
     }
 
