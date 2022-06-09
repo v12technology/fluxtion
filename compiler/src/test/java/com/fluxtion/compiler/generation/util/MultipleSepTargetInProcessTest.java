@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -28,6 +29,7 @@ import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.JULLogRecordListener;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.EventStream;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
@@ -95,6 +97,10 @@ public class MultipleSepTargetInProcessTest {
     @After
     public void afterTest() {
         tearDown();
+    }
+
+    protected StaticEventProcessor sep(RootInjectedNode rootNode) {
+        return sep((SEPConfig cfg) -> cfg.setRootInjectedNode(rootNode));
     }
 
     @SuppressWarnings("unchecked")

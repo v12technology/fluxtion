@@ -22,7 +22,7 @@ import com.fluxtion.compiler.SEPConfig;
 import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
 /**
- * Configuration for the SEP compiler process. Initial calues can be read from 
+ * Configuration for the SEP compiler process. Initial values can be read from
  * System properties using the static method 
  * {@link SepCompilerConfig#initFromSystemProperties() } .
  * System properties read for initialisation:
@@ -53,13 +53,7 @@ public class SepCompilerConfig {
      * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
      */
     private String configClass;
-    /**
-     * root factory class to instantiate and use to generate the SEP, if factory
-     * generation is used.
-     * 
-     * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
-     */
-    private String rootFactoryClass;
+
     /**
      * location of yaml file to use when generating SEP by factories specified 
      * in config.
@@ -169,7 +163,6 @@ public class SepCompilerConfig {
         config.configClass = System.getProperty("fluxtion.configClass", CONFIGCLASSDEFAULT);
         config.className = System.getProperty("fluxtion.className");
         config.packageName = System.getProperty("fluxtion.packageName");
-        config.rootFactoryClass = System.getProperty("fluxtion.rootFactoryClass");
         config.yamlFactoryConfig = System.getProperty("fluxtion.yamlFactoryConfig");
         config.outputDirectory = System.getProperty("fluxtion.outputDirectory");
         config.resourcesOutputDirectory = System.getProperty("fluxtion.resourcesOutputDirectory");
@@ -184,10 +177,6 @@ public class SepCompilerConfig {
 
     public String getConfigClass() {
         return configClass;
-    }
-
-    public String getRootFactoryClass() {
-        return rootFactoryClass;
     }
 
     public String getYamlFactoryConfig() {
@@ -246,10 +235,6 @@ public class SepCompilerConfig {
         this.configClass = configClass;
     }
 
-    public void setRootFactoryClass(String rootFactoryClass) {
-        this.rootFactoryClass = rootFactoryClass;
-    }
-
     public void setYamlFactoryConfig(String yamlFactoryConfig) {
         this.yamlFactoryConfig = yamlFactoryConfig;
     }
@@ -301,8 +286,7 @@ public class SepCompilerConfig {
     @Override
     public String toString() {
         return "SepCompilerConfig{" 
-                + "configClass=" + configClass 
-                + ", rootFactoryClass=" + rootFactoryClass 
+                + "configClass=" + configClass
                 + ", yamlFactoryConfig=" + yamlFactoryConfig 
                 + ", packageName=" + packageName 
                 + ", className=" + className 

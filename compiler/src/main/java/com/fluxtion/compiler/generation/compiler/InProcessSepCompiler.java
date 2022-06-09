@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -37,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -95,10 +97,6 @@ public class InProcessSepCompiler {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
     }
 
-    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String rootFactoryClass,  String pckg, String sepName) throws Exception {
-        return sepInstance(cfgBuilder, rootFactoryClass, pckg, sepName, OutputRegistry.JAVA_GEN_DIR, OutputRegistry.RESOURCE_DIR, true);
-    }
-
     public static StaticEventProcessor sepTestInstance(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName) throws Exception {
         return sepInstance(cfgBuilder, pckg, sepName, OutputRegistry.JAVA_TESTGEN_DIR, OutputRegistry.RESOURCE_TEST_DIR, true);
     }
@@ -126,6 +124,10 @@ public class InProcessSepCompiler {
         Generator generator = new Generator();
         InMemoryEventProcessor inMemorySep = generator.inMemoryProcessor(cfg);
         return inMemorySep;
+    }
+    @SneakyThrows
+    public static InMemoryEventProcessor interpreted(RootInjectedNode rootNode){
+        return interpreted((SEPConfig cfg) -> cfg.setRootInjectedNode(rootNode));
     }
 
     @SneakyThrows
@@ -174,17 +176,17 @@ public class InProcessSepCompiler {
         return (compile(name, pkg, builder));
     }
 
-    public static StaticEventProcessor compile(Class<?> rootNode) throws Exception {
-        SerializableConsumer<SEPConfig> builder = (SEPConfig cfg) ->{};
+    public static StaticEventProcessor compile(RootInjectedNode rootNode) throws Exception {
+        SerializableConsumer<SEPConfig> builder = (SEPConfig cfg) -> cfg.setRootInjectedNode(rootNode);
         String name = "Processor";
         String pkg = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
         String dir = System.getProperty("fluxtion.cacheDirectory");
         buildClasspath();
         if (dir != null) {
             System.setProperty("fluxtion.build.outputdirectory", dir + "/classes/");
-            return InProcessSepCompiler.sepInstance(builder, rootNode.getName(), pkg, name, dir + "/source/", dir + "/resources/", true);
+            return InProcessSepCompiler.sepInstance(builder, pkg, name, dir + "/source/", dir + "/resources/", true);
         }
-        return InProcessSepCompiler.sepInstance(builder, rootNode.getName(), pkg, name);
+        return InProcessSepCompiler.sepInstance(builder, pkg, name);
     }
     
     /**
@@ -277,7 +279,7 @@ public class InProcessSepCompiler {
 
     /**
      * Compiles and instantiates a SEP described with the provided {@link SEPConfig}, optionally initialising the SEP
-     * instance. See {@link #compileSep(Consumer, String, String, String, String, String)
+     * instance. See {@link #compileSep(Consumer, String, String, String, String)
      * } for a description of compilation.
      *
      * @param cfgBuilder - A client consumer to buld sep using the provided
@@ -292,18 +294,7 @@ public class InProcessSepCompiler {
      * @throws Exception
      */
     public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder,  String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
-        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir, null);
-        StaticEventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        if (initialise) {
-            if (sep instanceof Lifecycle) {
-                ((Lifecycle) sep).init();
-            }
-        }
-        return sep;
-    }
-
-    public static StaticEventProcessor sepInstance(Consumer<SEPConfig> cfgBuilder, String rootFactoryClass,  String pckg, String sepName, String srcGenDir, String resGenDir, boolean initialise) throws InstantiationException, IllegalAccessException, Exception {
-        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir, rootFactoryClass);
+        Class<StaticEventProcessor> sepClass = compileSep(cfgBuilder, pckg, sepName, srcGenDir, resGenDir);
         StaticEventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
         if (initialise) {
             if (sep instanceof Lifecycle) {
@@ -337,9 +328,9 @@ public class InProcessSepCompiler {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir, String rootFactoryClass) throws IOException, InstantiationException, IllegalAccessException, Exception {
+    private static Class<StaticEventProcessor> compileSep(Consumer<SEPConfig> cfgBuilder, String pckg, String sepName, String srcGenDir, String resGenDir) throws IOException, InstantiationException, IllegalAccessException, Exception {
         SepCompiler compiler = new SepCompiler();
-        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir, rootFactoryClass);
+        final SepCompilerConfig compilerCfg = getSepCompileConfig(pckg, sepName, srcGenDir, resGenDir);
         return (Class<StaticEventProcessor>) compiler.compile(compilerCfg, new InProcessSepConfig(cfgBuilder));
     }
 
@@ -358,7 +349,7 @@ public class InProcessSepCompiler {
 
     }
 
-    public static SepCompilerConfig getSepCompileConfig(String packageName, String className, String srcGenDir, String resGenDir, String rootFactoryClass) throws IOException {
+    public static SepCompilerConfig getSepCompileConfig(String packageName, String className, String srcGenDir, String resGenDir) throws IOException {
         File outputDir = new File(srcGenDir);
         File resourcesDir = new File(resGenDir);
         GenerationContext.setupStaticContext(packageName, className, outputDir, resourcesDir);
@@ -368,7 +359,6 @@ public class InProcessSepCompiler {
         cfg.setPackageName(packageName);
         cfg.setClassName(className);
         cfg.setConfigClass(InProcessSepConfig.class.getCanonicalName());
-        cfg.setRootFactoryClass(rootFactoryClass);
         return cfg;
     }
 }

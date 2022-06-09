@@ -24,6 +24,7 @@ import com.fluxtion.compiler.builder.generation.NodeNameProducer;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -530,8 +531,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 registerNodeFactory(factory);
             }
             //loop through root instance and
-            for (Map.Entry<Class<?>, String> rootNode : nodeFactoryRegistration.rootNodeMappings.entrySet()) {
-                Object newNode = findOrCreateNode(rootNode.getKey(), new HashMap<>(), rootNode.getValue());
+            RootInjectedNode rootInjectedNode = config.getRootInjectedNode();
+            if(rootInjectedNode != null){
+                Object newNode = findOrCreateNode(
+                        rootInjectedNode.getRootClass(), rootInjectedNode.getConfig(), rootInjectedNode.getName());
                 publicNodeList.add(newNode);
             }
         }

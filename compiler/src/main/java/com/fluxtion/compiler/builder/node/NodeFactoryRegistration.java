@@ -32,12 +32,6 @@ import java.util.Set;
 public final class NodeFactoryRegistration {
 
     /**
-     * The root nodes to create and the variable names they should be mapped to.
-     *
-     */
-    public Map<Class<?>, String> rootNodeMappings = new HashMap<>();
-
-    /**
      * The set of factory classes used for node creation, each factory must
      * have default constructor so the SEP can instantiate the factory. 
      * The classes in factoryClassSet are instantiated and merged into the 
@@ -51,7 +45,6 @@ public final class NodeFactoryRegistration {
      */
     public final Set<NodeFactory<?>> factorySet;
 
-
     public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList) {
         this(factoryList, null);
     }
@@ -60,5 +53,4 @@ public final class NodeFactoryRegistration {
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
     }
-    
 }

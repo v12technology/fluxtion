@@ -21,6 +21,7 @@ import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.node.NodeFactory;
 import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
@@ -103,7 +104,6 @@ public class SepCompiler {
         initialiseGenerator(configOverride);
         locateFactories();
         processYamlConfig();
-        processRootFactoryConfig();
         Class<?> returnClass = generateSep();
         LOG.debug("finished SEP compiler");
         return returnClass;
@@ -139,6 +139,7 @@ public class SepCompiler {
         builderConfig.setAssignPrivateMembers(compilerConfig.isAssignNonPublicMembers());
     }
 
+    //TODO - rewrite so can override the RootInjectedNode in SEPConfig
     private void processYamlConfig() throws Exception {
         LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
@@ -158,29 +159,6 @@ public class SepCompiler {
             }
         } else {
             LOG.debug("no yaml factory config file specified");
-        }
-    }
-
-    private void processRootFactoryConfig() throws Exception {
-        LOG.debug("processRootFactoryConfig");
-        if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
-            Map<Class<?>, String> rootNodeMappings = new HashMap<>();
-            Class clazz;
-            if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
-                clazz = Class.forName(compilerConfig.getRootFactoryClass());
-//                clazz = Class.forName(compilerConfig.getRootFactoryClass(), true, GenerationContext.SINGLETON.getClassLoader());
-            } else {
-                clazz = Class.forName(compilerConfig.getRootFactoryClass());
-            }
-            rootNodeMappings.put(clazz, "root");
-            builderConfig.getDeclarativeConfig().rootNodeMappings = rootNodeMappings;
-//            if (builderConfig.getDeclarativeConfig() == null) {
-//                SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-//                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-//                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-//                cfgActual.factoryClassSet.addAll(class2Factory);
-//                builderConfig.setDeclarativeConfig(cfgActual);
-//            }
         }
     }
 

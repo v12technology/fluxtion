@@ -1,5 +1,6 @@
 package com.fluxtion.compiler;
 
+import com.fluxtion.compiler.builder.node.RootInjectedNode;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -44,7 +45,12 @@ public interface Fluxtion {
     }
 
     @SneakyThrows
-    static EventProcessor compile(Class<?> rootNode){
+    static EventProcessor compile(RootInjectedNode rootNode){
         return (EventProcessor) InProcessSepCompiler.compile(rootNode);
+    }
+
+    @SneakyThrows
+    static EventProcessor interpret(RootInjectedNode rootNode){
+        return (EventProcessor) InProcessSepCompiler.interpreted(rootNode);
     }
 }
