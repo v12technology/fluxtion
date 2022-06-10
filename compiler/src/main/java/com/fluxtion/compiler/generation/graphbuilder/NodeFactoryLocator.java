@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.graphbuilder;
 
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -19,8 +19,8 @@ package com.fluxtion.compiler.generation;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.compiler.SepFactoryConfigBean;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;

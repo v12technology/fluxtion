@@ -5,16 +5,11 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.generation.compiler.SepCompiler;
-import com.fluxtion.compiler.generation.compiler.SepCompilerConfig;
-import com.fluxtion.runtime.StaticEventProcessor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,45 +18,6 @@ import java.util.stream.Collectors;
  * @author Greg Higgins
  */
 public interface JavaTestGeneratorHelper {
-    
-    static final String TEST_SOURCE_GEN_DIR = "target/generated-test-sources/fluxtion/";
-
-    static void setupDefaultTestContext(String packageName, String className){
-        GenerationContext.setupStaticContext(packageName, className, new File(TEST_SOURCE_GEN_DIR), new File("target/generated-test-sources/resources/"));
-    }
-    
-    /**
-     * 
-     * @param packageName
-     * @param className
-     * @return 
-     */
-    static SepCompilerConfig getTestSepCompileConfig(String packageName, String className){
-        SepCompilerConfig cfg = new SepCompilerConfig();
-        cfg.setOutputDirectory(TEST_SOURCE_GEN_DIR);
-        cfg.setResourcesOutputDirectory("target/generated-test-sources/resources/");
-        cfg.setPackageName(packageName);
-        cfg.setClassName(className);
-        cfg.setGenerateDescription(false);
-        return cfg;
-    }
-    
-    /**
-     *
-     * @param config
-     * @throws Exception
-     */
-    static Class generateAndCompile(SepCompilerConfig config) throws Exception{
-        SepCompiler compiler = new SepCompiler();
-        return compiler.compile(config);
-    }
-    
-    static StaticEventProcessor generateAndInstantiate(SepCompilerConfig config) throws Exception{
-        Class<StaticEventProcessor> resultProcessorClass = generateAndCompile(config);
-        return resultProcessorClass.newInstance();
-    }
-
-
 
     /**
      * Tests that the classes in the traceList are the same as thos in the

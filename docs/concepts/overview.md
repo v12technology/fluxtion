@@ -1,8 +1,8 @@
 ---
 title: Concepts
 has_children: false
-nav_order: 3
-published: true
+nav_order: 13
+published: false
 ---
 # Introduction
 

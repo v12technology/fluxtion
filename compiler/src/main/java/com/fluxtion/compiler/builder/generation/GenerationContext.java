@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,20 +61,16 @@ public class GenerationContext {
     }
 
     public int nextId(String className) {
-        Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap());
+        @SuppressWarnings("unchecked")
+        Map<String, Integer> classCount = cacheMap.computeIfAbsent(X.class, k -> new HashMap<String, Integer>());
         String key = packageName + "." + className;
-        Integer nextId = classCount.compute(key, (String k, Integer v) -> {
+        return classCount.compute(key, (String k, Integer v) -> {
             int ret = 0;
             if (v != null) {
                 ret = v + 1;
             }
             return ret;
         });
-        return nextId;
-    }
-
-    public static void updateContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
-        setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);
     }
 
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
@@ -128,7 +126,7 @@ public class GenerationContext {
     /**
      * Nodes that are to be added to the SEP
      */
-    private final List<?> nodeList = new ArrayList<>();
+    private final List<Object> nodeList = new ArrayList<>();
 
     /**
      * public named nodes to be added to the generated SEP
@@ -180,7 +178,7 @@ public class GenerationContext {
             this.classLoader = DEFAULT_CLASSLOADER;
         }
         log.info("classloader:{}", this.classLoader);
-        log.debug("built GenerationContext: {}", toString());
+        log.debug("built GenerationContext: {}", this);
         cacheMap = new HashMap<>();
     }
 
@@ -191,7 +189,7 @@ public class GenerationContext {
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = classLoasder;
         cacheMap = new HashMap<>();
-        log.debug("built GenerationContext: {}", toString());
+        log.debug("built GenerationContext: {}", this);
     }
 
     private void createDirectories() {
@@ -205,10 +203,11 @@ public class GenerationContext {
         resourcesOutputDirectory.mkdirs();
     }
 
-    public List getNodeList() {
+    public List<Object> getNodeList() {
         return nodeList;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T addOrUseExistingNode(T node) {
         if (getNodeList().contains(node)) {
             return (T) getNodeList().get(getNodeList().indexOf(node));
@@ -226,8 +225,9 @@ public class GenerationContext {
      * @param key the cache key
      * @return the newly created map
      */
+    @SuppressWarnings("unchecked")
     public <K, V> Map<K, V> getCache(Object key) {
-        return cacheMap.computeIfAbsent(key, (k) -> new HashMap());
+        return cacheMap.computeIfAbsent(key, (k) -> new HashMap<>());
     }
 
     public <T> T nameNode(T node, String name) {
@@ -243,6 +243,7 @@ public class GenerationContext {
      * @param key the cache key
      * @return The mapping of the map removed or null if no mapping
      */
+    @SuppressWarnings("unchecked")
     public <K, V> Map<K, V> removeCache(Object key) {
         return cacheMap.remove(key);
     }
@@ -272,9 +273,9 @@ public class GenerationContext {
         }
     }
 
-    private static InputStream getInputStream(@NotNull String filename) throws FileNotFoundException {
+    private static InputStream getInputStream(@NotNull String filename) throws IOException {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        InputStream is = null;
+        InputStream is;
         try {
             is = contextClassLoader.getResourceAsStream(filename);
             if (is != null) {
@@ -287,7 +288,7 @@ public class GenerationContext {
         }catch(Exception e){
             //problem reading - continue
         }
-        return new FileInputStream(filename);
+        return Files.newInputStream(Paths.get(filename));
     }
 
 }
