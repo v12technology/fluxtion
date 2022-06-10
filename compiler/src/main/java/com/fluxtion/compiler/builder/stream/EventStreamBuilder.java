@@ -7,12 +7,14 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -37,8 +39,6 @@ import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-import java.util.function.Supplier;
-
 public class EventStreamBuilder<T> {
 
     final TriggeredEventStream<T> eventStream;
@@ -48,8 +48,8 @@ public class EventStreamBuilder<T> {
         this.eventStream = eventStream;
     }
 
-    public Supplier<T> eventStream(){
-        return eventStream;
+    public EventSupplier<T> eventStream(){
+        return SepContext.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
     //TRIGGERS - START

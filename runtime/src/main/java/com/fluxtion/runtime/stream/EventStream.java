@@ -29,5 +29,25 @@ public interface EventStream<R> extends Supplier<R> {
         }
     }
 
+    interface EventSupplier<R> extends Supplier<R> {
+        boolean hasChanged();
+    }
 
+    interface IntEventSupplier extends EventSupplier<Integer>, IntSupplier {
+        default Integer get() {
+            return getAsInt();
+        }
+    }
+
+    interface DoubleEventSupplier extends EventSupplier<Double>, DoubleSupplier {
+        default Double get() {
+            return getAsDouble();
+        }
+    }
+
+    interface LongEventSupplier extends EventSupplier<Long>, LongSupplier {
+        default Long get() {
+            return getAsLong();
+        }
+    }
 }
