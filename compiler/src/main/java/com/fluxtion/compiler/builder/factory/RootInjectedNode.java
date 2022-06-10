@@ -6,11 +6,10 @@ import java.util.Map;
 
 /**
  * Configuration for a root node to be injected into the graph
- * @param <T>
  */
 @Value
-public class RootInjectedNode<T> {
+public class RootInjectedNode {
     String name;
-    Class<T> rootClass;
+    Class<?> rootClass;
     Map<String, ?> config;
 }

@@ -13,7 +13,7 @@ public class EventDispatcherFactory implements NodeFactory<EventDispatcher> {
     private static final EventDispatcherImpl SINGLETON = new EventDispatcherImpl();
 
     @Override
-    public EventDispatcher createNode(Map<?, ?> config, NodeRegistry registry) {
+    public EventDispatcher createNode(Map<String, Object> config, NodeRegistry registry) {
         return SINGLETON;
     }
 }

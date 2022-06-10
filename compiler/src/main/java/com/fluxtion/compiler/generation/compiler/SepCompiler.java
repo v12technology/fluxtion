@@ -130,10 +130,8 @@ public class SepCompiler {
             builderConfig = configOverride;
         }
         builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
-        builderConfig.setSupportDirtyFiltering(compilerConfig.isSupportDirtyFiltering());
         //TODO add configuration back in when split png and debug generation
         builderConfig.setGenerateDescription(compilerConfig.isGenerateDescription());
-        builderConfig.setAssignPrivateMembers(compilerConfig.isAssignNonPublicMembers());
     }
 
     //TODO - rewrite so can override the RootInjectedNode in SEPConfig

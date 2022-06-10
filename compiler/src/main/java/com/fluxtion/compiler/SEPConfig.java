@@ -54,7 +54,7 @@ public class SEPConfig {
     private RootInjectedNode rootInjectedNode;
     private Map<Object, Integer> filterMap;
     private boolean inlineEventHandling = false;
-    private boolean supportDirtyFiltering = false;
+    private boolean supportDirtyFiltering = true;
     private boolean generateDescription = true;
     private boolean assignPrivateMembers;
     private boolean formatSource = true;

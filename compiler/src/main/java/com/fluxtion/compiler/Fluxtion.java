@@ -44,13 +44,41 @@ public interface Fluxtion {
         return InProcessSepCompiler.interpreted(sepConfig);
     }
 
+    /**
+     * Generates and compiles Java source code for a {@link StaticEventProcessor}. The compiled version only requires
+     * the Fluxtion runtime dependencies to operate and process events.
+     *
+     * {@link Lifecycle#init()} has not been called on the returned instance. The caller must invoke init before
+     * sending events to the processor using {@link StaticEventProcessor#onEvent(Object)}
+     *
+     * The root node is injected into the graph. If the node has any injected dependencies these are added to the
+     * graph. If a custom builder for the root node exists this will called and additional nodes can be added to the
+     * graph in the factory method.
+     *
+     * @param rootNode the root node of this graph
+     * @return An uninitialized instance of a {@link StaticEventProcessor}
+     */
     @SneakyThrows
     static EventProcessor compile(RootInjectedNode rootNode){
         return (EventProcessor) InProcessSepCompiler.compile(rootNode);
     }
 
+    /**
+     * Generates an in memory version of a {@link StaticEventProcessor}. The in memory version is transient and requires
+     * the runtime and compiler Fluxtion libraries to operate.
+     *
+     * {@link Lifecycle#init()} has not been called on the returned instance. The caller must invoke init before
+     * sending events to the processor using {@link StaticEventProcessor#onEvent(Object)}
+     *
+     * The root node is injected into the graph. If the node has any injected dependencies these are added to the
+     * graph. If a custom builder for the root node exists this will called and additional nodes can be added to the
+     * graph in the factory method.
+     *
+     * @param rootNode the root node of this graph0
+     * @return An uninitialized instance of a {@link StaticEventProcessor}
+     */
     @SneakyThrows
     static EventProcessor interpret(RootInjectedNode rootNode){
-        return (EventProcessor) InProcessSepCompiler.interpreted(rootNode);
+        return InProcessSepCompiler.interpreted(rootNode);
     }
 }

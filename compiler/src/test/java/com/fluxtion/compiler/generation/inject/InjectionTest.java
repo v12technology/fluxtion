@@ -256,16 +256,15 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
     public static class Char2IntFactory implements NodeFactory<Char2Int> {
 
         @Override
-        public Char2Int createNode(Map<?,?> arg0, NodeRegistry arg1) {
+        public Char2Int createNode(Map<String, ? super Object> config, NodeRegistry registry) {
             return new Char2Int();
         }
-
     }
 
     public static class CharHandlerFactory implements NodeFactory<CharHandler> {
 
         @Override
-        public CharHandler createNode(Map<?,?> arg0, NodeRegistry arg1) {
+        public CharHandler createNode(Map<String, ? super Object> arg0, NodeRegistry arg1) {
             if (arg0.containsKey("char")) {
                 return new CharHandler(((String) arg0.get("char")).charAt(0));
             }

@@ -19,9 +19,10 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  *
@@ -37,9 +38,9 @@ public class AccumulatorFactory implements NodeFactory<Accumulator> {
     private Accumulator base10;
     private static final Logger LOG = LoggerFactory.getLogger(Accumulator.class);
     private boolean createdKeys = false;
-    private char[] operations = new char[]{'+','-','*','/'};
+    private final char[] operations = new char[]{'+','-','*','/'};
     @Override
-    public Accumulator createNode(Map config, NodeRegistry registry) {
+    public Accumulator createNode(Map<String, Object> config, NodeRegistry registry) {
         if (base10 == null) {
             base10 = new Accumulator();
         }
@@ -47,7 +48,7 @@ public class AccumulatorFactory implements NodeFactory<Accumulator> {
     }
 
     @Override
-    public void postInstanceRegistration(Map<? super Object, ? super Object> config, NodeRegistry registry, Accumulator instance) {
+    public void postInstanceRegistration(Map<String, Object> config, NodeRegistry registry, Accumulator instance) {
         LOG.info("postInstanceRegistration");
         if (!createdKeys) {
             createdKeys = true;

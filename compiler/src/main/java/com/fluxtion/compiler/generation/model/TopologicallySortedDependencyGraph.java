@@ -67,6 +67,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -499,7 +500,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 if (isPublic) {
                     publicNodeList.add(newNode);
                 }
-                factory.postInstanceRegistration((Map<Object,Object>)config, this, (T)newNode);
+                factory.postInstanceRegistration((Map<String,Object>)config, this, (T)newNode);
             }
             return (T) newNode;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -752,7 +753,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
     }
 
-    private Predicate annotationPredicate(){
+    private Predicate<AnnotatedElement> annotationPredicate(){
         return ReflectionUtils.withAnnotation(AfterEvent.class)
                 .or(ReflectionUtils.withAnnotation(OnEventHandler.class))
                 .or(ReflectionUtils.withAnnotation(Inject.class))

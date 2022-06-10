@@ -11,7 +11,7 @@ public class NodeNameLookupFactory implements NodeFactory<NodeNameLookup> {
     static NodeNameLookup SINGLETON = new NodeNameLookup();
 
     @Override
-    public NodeNameLookup createNode(Map<?, ?> config, NodeRegistry registry) {
+    public NodeNameLookup createNode(Map<String, Object>config, NodeRegistry registry) {
         registry.registerAuditor(SINGLETON, "nodeNameLookup");
         return SINGLETON;
     }

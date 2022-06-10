@@ -14,9 +14,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 
-public class DataDrivenTest extends MultipleSepTargetInProcessTest {
+public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
 
-    public DataDrivenTest(boolean compiledSep) {
+    public RootClassDrivenTest(boolean compiledSep) {
         super(compiledSep);
     }
 
