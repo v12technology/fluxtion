@@ -19,8 +19,8 @@ package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
@@ -101,7 +101,6 @@ public class SepCompiler {
         initialiseGenerator(configOverride);
         locateFactories();
         processYamlConfig();
-        processRootFactoryConfig();
         Class<?> returnClass = generateSep();
         LOG.debug("finished SEP compiler");
         return returnClass;
@@ -131,12 +130,11 @@ public class SepCompiler {
             builderConfig = configOverride;
         }
         builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
-        builderConfig.setSupportDirtyFiltering(compilerConfig.isSupportDirtyFiltering());
         //TODO add configuration back in when split png and debug generation
         builderConfig.setGenerateDescription(compilerConfig.isGenerateDescription());
-        builderConfig.setAssignPrivateMembers(compilerConfig.isAssignNonPublicMembers());
     }
 
+    //TODO - rewrite so can override the RootInjectedNode in SEPConfig
     private void processYamlConfig() throws Exception {
         LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
         if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
@@ -156,19 +154,6 @@ public class SepCompiler {
             }
         } else {
             LOG.debug("no yaml factory config file specified");
-        }
-    }
-
-    private void processRootFactoryConfig() throws Exception {
-        LOG.debug("processRootFactoryConfig");
-        if (compilerConfig.getRootFactoryClass() != null && !compilerConfig.getRootFactoryClass().isEmpty()) {
-            if (builderConfig.getDeclarativeConfig() == null) {
-                SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-                cfgActual.factoryClassSet.addAll(class2Factory);
-                builderConfig.setDeclarativeConfig(cfgActual);
-            }
         }
     }
 

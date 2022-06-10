@@ -14,10 +14,11 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.node;
+package com.fluxtion.compiler.builder.factory;
+
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -25,6 +26,7 @@ import java.util.Set;
  * annotation
  *
  */
+@EqualsAndHashCode
 public final class NodeFactoryRegistration {
 
     /**
@@ -41,7 +43,6 @@ public final class NodeFactoryRegistration {
      */
     public final Set<NodeFactory<?>> factorySet;
 
-
     public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList) {
         this(factoryList, null);
     }
@@ -50,31 +51,4 @@ public final class NodeFactoryRegistration {
         this.factoryClassSet = factoryList == null ? new HashSet<>() : factoryList;
         this.factorySet = factorySet == null ? new HashSet<>() : factorySet;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.factoryClassSet);
-        hash = 89 * hash + Objects.hashCode(this.factorySet);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final NodeFactoryRegistration other = (NodeFactoryRegistration) obj;
-        if (!Objects.equals(this.factoryClassSet, other.factoryClassSet)) {
-            return false;
-        }
-        if (!Objects.equals(this.factorySet, other.factorySet)) {
-            return false;
-        }
-        return true;
-    }
-    
 }

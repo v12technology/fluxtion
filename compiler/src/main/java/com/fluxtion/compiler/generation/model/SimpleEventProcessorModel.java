@@ -1158,6 +1158,9 @@ public class SimpleEventProcessorModel {
             node2UpdateMethodMap.put(eh, cbMethodHandle);
             for (int i = 1; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
+                if(object == eh){
+                    continue;
+                }
                 name = dependencyGraph.variableName(object);
                 Method[] methodList = object.getClass().getMethods();
                 for (Method method : methodList) {
@@ -1274,6 +1277,9 @@ public class SimpleEventProcessorModel {
 
             for (int i = 0; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
+                if(object == instance){
+                    continue;
+                }
                 name = dependencyGraph.variableName(object);
                 methodList = object.getClass().getMethods();
                 for (Method method : methodList) {
