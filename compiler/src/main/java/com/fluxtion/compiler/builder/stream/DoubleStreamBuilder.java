@@ -12,6 +12,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOp
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -20,6 +21,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingDoubleEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
@@ -34,6 +36,10 @@ public class DoubleStreamBuilder {
     DoubleStreamBuilder(DoubleEventStream eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public DoubleEventSupplier doubleStream(){
+        return SepContext.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -58,7 +64,7 @@ public class DoubleStreamBuilder {
 
     public <S> DoubleStreamBuilder filter(
             SerializableBiDoublePredicate predicate,
-            DoubleStreamBuilder secondArgument){
+            DoubleStreamBuilder secondArgument) {
         return new DoubleStreamBuilder(
                 new FilterDynamicEventStream.DoubleFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -126,7 +132,7 @@ public class DoubleStreamBuilder {
         return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
-    public DoubleStreamBuilder sink(String sinkId){
+    public DoubleStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishDouble);
     }
 

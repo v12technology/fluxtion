@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -95,6 +96,10 @@ public class MultipleSepTargetInProcessTest {
     @After
     public void afterTest() {
         tearDown();
+    }
+
+    protected StaticEventProcessor sep(RootInjectedNode rootNode) {
+        return sep((SEPConfig cfg) -> cfg.setRootInjectedNode(rootNode));
     }
 
     @SuppressWarnings("unchecked")
