@@ -73,7 +73,8 @@ public class MapDrivenTest extends MultipleSepTargetInProcessTest {
     public static class SignalGroupCalculatorFactory implements NodeFactory<SignalGroupCalculator>{
 
         @Override
-        public SignalGroupCalculator createNode(Map<String, ? super Object> config, NodeRegistry registry) {
+        public SignalGroupCalculator createNode(Map<String, Object> config, NodeRegistry registry) {
+            @SuppressWarnings("unchecked")
             List<String> keys = (List<String>) config.get("keys");
             return new SignalGroupCalculator(keys.stream().map(SignalHandler::new).collect(Collectors.toList()));
         }
