@@ -17,8 +17,8 @@
 package com.fluxtion.compiler.builder.time;
 
 import com.fluxtion.runtime.time.Clock;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;
@@ -33,7 +33,7 @@ public class ClockFactory implements NodeFactory<Clock> {
     public static final Clock SINGLETON = new Clock();
 
     @Override
-    public Clock createNode(Map<?, ?> config, NodeRegistry registry) {
+    public Clock createNode(Map<String, ? super Object> config, NodeRegistry registry) {
         registry.registerAuditor(SINGLETON, "clock");
         return SINGLETON;
     }

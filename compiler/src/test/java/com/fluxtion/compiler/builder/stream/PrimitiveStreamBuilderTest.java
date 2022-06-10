@@ -4,6 +4,9 @@ import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
+import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
+import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
 import com.fluxtion.runtime.stream.SinkRegistration;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
@@ -17,10 +20,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToDoubleSignal;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToIntSignal;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToLongSignal;
+import static com.fluxtion.compiler.builder.stream.EventFlow.*;
 import static com.fluxtion.runtime.stream.helpers.Aggregates.counting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,6 +51,30 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("230");
         assertThat(notifyTarget.getOnEventCount(), is(1));
         assertThat(notifyTarget.getIntPushValue(), is(2300));
+    }
+
+    @Test
+    public void streamMembersTest(){
+        sep(c -> c.addNode(new StreamMembers(
+                subscribe(Integer.class).mapToInt(Integer::intValue).intStream(),
+                subscribe(Double.class).mapToDouble(Double::doubleValue).doubleStream(),
+                subscribe(Long.class).mapToLong(Long::longValue).longStream()
+        ), "root"));
+        StreamMembers wrapper = getField("root");
+        onEvent(10);
+        assertThat(wrapper.getIntEventSupplier().getAsInt(), is(10));
+        assertThat(wrapper.getDoubleEventSupplier().getAsDouble(), is(0.0));
+        assertThat(wrapper.getLongEventSupplier().getAsLong(), is(0L));
+
+        onEvent(10.9);
+        assertThat(wrapper.getIntEventSupplier().getAsInt(), is(10));
+        assertThat(wrapper.getDoubleEventSupplier().getAsDouble(), is(10.9));
+        assertThat(wrapper.getLongEventSupplier().getAsLong(), is(0L));
+
+        onEvent(10L);
+        assertThat(wrapper.getIntEventSupplier().getAsInt(), is(10));
+        assertThat(wrapper.getDoubleEventSupplier().getAsDouble(), is(10.9));
+        assertThat(wrapper.getLongEventSupplier().getAsLong(), is(10L));
     }
 
     @Test
@@ -845,6 +869,13 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         public String getName() {
             return DEFAULT_NAME;
         }
+    }
+
+    @Data
+    public static class StreamMembers{
+        private final IntEventSupplier intEventSupplier;
+        private final DoubleEventSupplier doubleEventSupplier;
+        private final LongEventSupplier longEventSupplier;
     }
 
 }

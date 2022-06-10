@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.callback;
 
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.callback.EventDispatcher;
 import com.fluxtion.runtime.callback.EventDispatcherImpl;
 import com.google.auto.service.AutoService;
@@ -13,7 +13,7 @@ public class EventDispatcherFactory implements NodeFactory<EventDispatcher> {
     private static final EventDispatcherImpl SINGLETON = new EventDispatcherImpl();
 
     @Override
-    public EventDispatcher createNode(Map<?, ?> config, NodeRegistry registry) {
+    public EventDispatcher createNode(Map<String, Object> config, NodeRegistry registry) {
         return SINGLETON;
     }
 }
