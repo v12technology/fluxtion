@@ -194,13 +194,13 @@ public class GenerationContext {
 
     private void createDirectories() {
         packageDirectory = new File(GenerationContext.SINGLETON.sourceRootDirectory, packageName.replace(".", "/"));
-        packageDirectory.mkdirs();
+//        packageDirectory.mkdirs();
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
     }
 
     public void createResourceDirectory() {
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
-        resourcesOutputDirectory.mkdirs();
+//        resourcesOutputDirectory.mkdirs();
     }
 
     public List<Object> getNodeList() {

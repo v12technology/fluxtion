@@ -30,11 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -52,7 +54,7 @@ public class SepCompiler {
     private SepCompilerConfig compilerConfig;
     private SEPConfig builderConfig;
 
-    public Class<?> compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws Exception {
+    public <T> Class<T> compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws Exception {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
@@ -60,7 +62,7 @@ public class SepCompiler {
         processYamlConfig();
         Class<?> returnClass = generateSep();
         LOG.debug("finished SEP compiler");
-        return returnClass;
+        return (Class<T>) returnClass;
     }
 
     private void initialiseGenerator(SEPConfig configOverride) {
@@ -113,20 +115,33 @@ public class SepCompiler {
     private Class<?> generateSep() throws Exception {
         LOG.debug("generateSep");
         Class<?> returnClass = null;
+        Writer writer;
+        if(compilerConfig.isWriteSourceToFile()){
+            File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
+            outFile.getParentFile().mkdirs();
+            writer = new FileWriter(outFile);
+        }else{
+            writer = new StringWriter();
+        }
+
         Generator generator = new Generator();
-        generator.templateSep(builderConfig, compilerConfig.isGenerateDescription());
+        generator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         LOG.info("generated sep: " + file.getCanonicalPath());
-        if (compilerConfig.isFormatSource()) {
+        if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");
             Generator.formatSource(file);
             LOG.debug("completed formatting source");
         }
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-            returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
+            if(compilerConfig.isWriteSourceToFile()){
+                returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
+            }else{
+                returnClass = StringCompilation.compile(fqn, writer.toString());
+            }
             LOG.debug("completed compiling source");
         }
         return returnClass;

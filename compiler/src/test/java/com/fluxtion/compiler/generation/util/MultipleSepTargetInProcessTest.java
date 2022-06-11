@@ -18,8 +18,8 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -63,6 +63,7 @@ public class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep;
     protected boolean generateMetaInformation = false;
+    protected boolean writeSourceFile = false;
     protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
@@ -145,9 +146,19 @@ public class MultipleSepTargetInProcessTest {
                 simpleEventProcessorModel = generator.getSimpleEventProcessorModel();
             } else {
                 if (reuseSep) {
-                    sep(wrappedBuilder, fqn());
-                } else {
-                    sep = sepTestInstance(wrappedBuilder, pckName(), sepClassName());
+//                    sep(wrappedBuilder, fqn());
+                    try {
+                        GenerationContext.setupStaticContext("", "",
+                                new File(OutputRegistry.JAVA_TESTGEN_DIR),
+                                new File(OutputRegistry.RESOURCE_TEST_DIR));
+                        sep = (StaticEventProcessor) Class.forName(fqn()).getDeclaredConstructor().newInstance();
+                        if (sep instanceof Lifecycle) {
+                            ((Lifecycle) sep).init();
+                        }
+                    } catch (Exception e) {  }
+                }
+                if(sep == null) {
+                    sep = sepTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
                 }
             }
             return sep;
@@ -156,39 +167,9 @@ public class MultipleSepTargetInProcessTest {
         }
     }
 
-    /**
-     * Lazily generates a SEP using the supplied String as the generated fully qualified class name. If a SEP cannot be
-     * loaded then a new SEP is generated and initialised, using the supplied builder.
-     *
-     * @param <T>          The subclass of the generated StaticEventProcessor
-     * @param cfgBuilder   The user supplied builder that adds nodes to the generation context
-     * @param handlerClass The fqn of the SEP that will be generated if it cannot be loaded
-     * @return The SEP that the user can interact with in the test
-     */
-    @SuppressWarnings("unchecked")
-    protected <T extends StaticEventProcessor> T sep(Consumer<SEPConfig> cfgBuilder, String handlerClass) {
-        try {
-            try {
-                GenerationContext.setupStaticContext("", "",
-                        new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                        new File(OutputRegistry.RESOURCE_TEST_DIR));
-                sep = (StaticEventProcessor) Class.forName(handlerClass).getDeclaredConstructor().newInstance();
-                if (sep instanceof Lifecycle) {
-                    ((Lifecycle) sep).init();
-                }
-                return (T) sep;
-            } catch (Exception e) {
-                String pckName = org.apache.commons.lang3.ClassUtils.getPackageName(handlerClass);
-                String className = org.apache.commons.lang3.ClassUtils.getShortCanonicalName(handlerClass);
-                GenerationContext.setupStaticContext(pckName, className,
-                        new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                        new File(OutputRegistry.RESOURCE_TEST_DIR));
-                sep = sepTestInstance(cfgBuilder, pckName, className);
-                return (T) sep;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    protected void writeOutputsToFile(boolean write){
+        generateMetaInformation = write;
+        writeSourceFile = write;
     }
 
     protected StaticEventProcessor init() {

@@ -46,6 +46,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
@@ -89,9 +90,8 @@ public class Generator {
         return new InMemoryEventProcessor(simpleEventProcessorModel);
     }
 
-    public void templateSep(SEPConfig config, boolean generateDescription) throws Exception {
+    public void templateSep(SEPConfig config, boolean generateDescription, Writer writer) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
-//        execSvc.submit(Generator::warmupCompiler);
         config.buildConfig();
         this.config = config;
         LOG.debug("init velocity");
@@ -107,7 +107,6 @@ public class Generator {
                 config.getAuditorMap(),
                 config
         );
-//        graph.registrationListenerMap = config.auditorMap;
         LOG.debug("start model gen");
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), context.getProxyClassMap());
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
@@ -122,7 +121,7 @@ public class Generator {
             });
         }
         LOG.debug("start template output");
-        templateJavaOutput();
+        templateJavaOutput(writer);
         LOG.debug("completed template output");
         execSvc.shutdown();
     }
@@ -141,50 +140,49 @@ public class Generator {
         Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
 
-    private File templateJavaOutput() throws Exception {
-        JavaSourceGenerator srcModel = new JavaSourceGenerator(
-                simpleEventProcessorModel,
-                config.isInlineEventHandling(),
-                config.isAssignPrivateMembers()
-        );
-        srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
-        LOG.debug("building source model");
-        srcModel.buildSourceModel();
-        //set up defaults
-        if (config.getTemplateFile() == null) {
-            config.setTemplateFile(JAVA_TEMPLATE);
-        }
-
-        LOG.debug("templating output source - start");
-        String templateFile = config.getTemplateFile();
-        Template template;//= Velocity.getTemplate(config.templateFile);
-
+    private void templateJavaOutput(Writer templateWriter) throws Exception {
         try {
-            template = Velocity.getTemplate(templateFile);
-        } catch (Exception e) {
-            System.out.println("failed to load template, setting threadcontext class loader");
-            ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(GenerationContext.SINGLETON.getClassLoader());
-                template = Velocity.getTemplate(templateFile);
-            } finally {
-                Thread.currentThread().setContextClassLoader(originalClassLoader);
+            JavaSourceGenerator srcModel = new JavaSourceGenerator(
+                    simpleEventProcessorModel,
+                    config.isInlineEventHandling(),
+                    config.isAssignPrivateMembers()
+            );
+            srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
+            LOG.debug("building source model");
+            srcModel.buildSourceModel();
+            //set up defaults
+            if (config.getTemplateFile() == null) {
+                config.setTemplateFile(JAVA_TEMPLATE);
             }
-        }
 
-        Context ctx = new VelocityContext();
-        addVersionInformation(ctx);
-        ctx.put("MODEL", srcModel);
-        ctx.put("package", GenerationContext.SINGLETON.getPackageName());
-        ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
-        File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
-        FileWriter templateWriter = new FileWriter(outFile);
-        template.merge(ctx, templateWriter);
-        templateWriter.flush();
-        LOG.debug("templating output source - finish");
-        //add some formatting
-        templateWriter.close();
-        return outFile;
+            LOG.debug("templating output source - start");
+            String templateFile = config.getTemplateFile();
+            Template template;//= Velocity.getTemplate(config.templateFile);
+
+            try {
+                template = Velocity.getTemplate(templateFile);
+            } catch (Exception e) {
+                System.out.println("failed to load template, setting threadcontext class loader");
+                ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+                try {
+                    Thread.currentThread().setContextClassLoader(GenerationContext.SINGLETON.getClassLoader());
+                    template = Velocity.getTemplate(templateFile);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(originalClassLoader);
+                }
+            }
+
+            Context ctx = new VelocityContext();
+            addVersionInformation(ctx);
+            ctx.put("MODEL", srcModel);
+            ctx.put("package", GenerationContext.SINGLETON.getPackageName());
+            ctx.put("className", GenerationContext.SINGLETON.getSepClassName());
+            template.merge(ctx, templateWriter);
+            templateWriter.flush();
+            LOG.debug("templating output source - finish");
+        } finally {
+            templateWriter.close();
+        }
     }
 
     private void addVersionInformation(Context ctx) {

@@ -78,10 +78,18 @@ public class SepCompilerConfig {
      */
     private boolean generateDescription;
 
+    /**
+     * Flag controlling where the templated source file is written or the source is transient
+     *
+     * not requires, default = true;
+     */
+    private boolean writeSourceToFile;
+
     private ClassLoader classLoader;
 
     public SepCompilerConfig() {
         generateDescription = false;
+        writeSourceToFile = true;
         compileSource = true;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
@@ -126,6 +134,14 @@ public class SepCompilerConfig {
 
     public String getFqn(){
         return getPackageName() + "." + getClassName();
+    }
+
+    public boolean isWriteSourceToFile() {
+        return writeSourceToFile;
+    }
+
+    public void setWriteSourceToFile(boolean writeSourceToFile) {
+        this.writeSourceToFile = writeSourceToFile;
     }
 
     public void setPackageName(String packageName) {
