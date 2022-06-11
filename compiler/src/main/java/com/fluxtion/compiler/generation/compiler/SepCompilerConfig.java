@@ -17,50 +17,15 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.compiler.SEPConfig;
-
 import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
 /**
- * Configuration for the SEP compiler process. Initial values can be read from
- * System properties using the static method 
- * {@link SepCompilerConfig#initFromSystemProperties() } .
- * System properties read for initialisation:
- * <pre>
- * fluxtion.configClass
- * fluxtion.className
- * fluxtion.packageName
- * fluxtion.rootFactoryClass
- * fluxtion.yamlFactoryConfig
- * fluxtion.outputDirectory
- * fluxtion.resourcesOutputDirectory
- * fluxtion.templateSep
- * fluxtion.supportDirtyFiltering
- * fluxtion.assignNonPublicMembers
- * fluxtion.nodeNamingClass
- * fluxtion.filterNamingClass 
- * </pre>
+ * Configuration for the SEP compiler process.
+ *
  * @author Greg Higgins
  */
 public class SepCompilerConfig {
-    
-    private static final String CONFIGCLASSDEFAULT = SEPConfig.class.getCanonicalName();
-    
-    /**
-     * SepConfig class, to instantiate and use to generate the SEP, if config
-     * generation is used.
-     * 
-     * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
-     */
-    private String configClass;
 
-    /**
-     * location of yaml file to use when generating SEP by factories specified 
-     * in config.
-     * 
-     * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
-     */
-    private String yamlFactoryConfig;
     /**
      * output package for generated SEP
      * 
@@ -83,7 +48,7 @@ public class SepCompilerConfig {
      * Output directory where compiled artifacts should be written. If null 
      * no artifacts are written.
      */
-    private String buildOutputdirectory;
+    private String buildOutputDirectory;
     /**
      * Attempt to compile the generated source files
      */
@@ -114,55 +79,13 @@ public class SepCompilerConfig {
     private boolean generateDescription;
 
     private ClassLoader classLoader;
-    
+
     public SepCompilerConfig() {
-        configClass = CONFIGCLASSDEFAULT;
-        generateDescription = true;
+        generateDescription = false;
         compileSource = true;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
         classLoader = SepCompilerConfig.class.getClassLoader();
-    }
-    
-    /**
-     * Creates and initialises a SepCompilerConfig with system properties:
-     * 
-     * <pre>
-     * fluxtion.configClass
-     * fluxtion.className
-     * fluxtion.packageName
-     * fluxtion.rootFactoryClass
-     * fluxtion.yamlFactoryConfig
-     * fluxtion.outputDirectory
-     * fluxtion.resourcesOutputDirectory
-     * fluxtion.templateSep
-     * fluxtion.supportDirtyFiltering
-     * fluxtion.assignNonPublicMembers
-     * </pre>
-     *        
-     * @return SepCompilerConfig configured by system properties
-     */
-    public static SepCompilerConfig initFromSystemProperties(){
-        SepCompilerConfig config = new SepCompilerConfig();
-        config.configClass = System.getProperty("fluxtion.configClass", CONFIGCLASSDEFAULT);
-        config.className = System.getProperty("fluxtion.className");
-        config.packageName = System.getProperty("fluxtion.packageName");
-        config.yamlFactoryConfig = System.getProperty("fluxtion.yamlFactoryConfig");
-        config.outputDirectory = System.getProperty("fluxtion.outputDirectory");
-        config.resourcesOutputDirectory = System.getProperty("fluxtion.resourcesOutputDirectory");
-        config.templateSep = System.getProperty("fluxtion.templateSep", config.templateSep);
-        config.generateDescription = Boolean.getBoolean("fluxtion.generateDescription");
-        config.buildOutputdirectory = System.getProperty("fluxtion.build.outputdirectory", "");
-        config.buildOutputdirectory = config.buildOutputdirectory.isEmpty()?null:config.buildOutputdirectory;
-        return config;
-    }
-
-    public String getConfigClass() {
-        return configClass;
-    }
-
-    public String getYamlFactoryConfig() {
-        return yamlFactoryConfig;
     }
 
     public String getPackageName() {
@@ -177,8 +100,8 @@ public class SepCompilerConfig {
         return outputDirectory;
     }
 
-    public String getBuildOutputdirectory() {
-        return buildOutputdirectory;
+    public String getBuildOutputDirectory() {
+        return buildOutputDirectory;
     }
 
     public String getResourcesOutputDirectory() {
@@ -205,14 +128,6 @@ public class SepCompilerConfig {
         return getPackageName() + "." + getClassName();
     }
 
-    public void setConfigClass(String configClass) {
-        this.configClass = configClass;
-    }
-
-    public void setYamlFactoryConfig(String yamlFactoryConfig) {
-        this.yamlFactoryConfig = yamlFactoryConfig;
-    }
-
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
@@ -225,8 +140,8 @@ public class SepCompilerConfig {
         this.outputDirectory = outputDirectory;
     }
 
-    public void setBuildOutputdirectory(String buildOutputdirectory) {
-        this.buildOutputdirectory = buildOutputdirectory;
+    public void setBuildOutputDirectory(String buildOutputDirectory) {
+        this.buildOutputDirectory = buildOutputDirectory;
     }
 
     public void setResourcesOutputDirectory(String resourcesOutputDirectory) {
@@ -251,14 +166,12 @@ public class SepCompilerConfig {
     
     @Override
     public String toString() {
-        return "SepCompilerConfig{" 
-                + "configClass=" + configClass
-                + ", yamlFactoryConfig=" + yamlFactoryConfig 
+        return "SepCompilerConfig{"
                 + ", packageName=" + packageName 
                 + ", className=" + className 
                 + ", resourcesOutputDirectory=" + resourcesOutputDirectory 
                 + ", outputDirectory=" + outputDirectory 
-                + ", buildOutputdirectory=" + buildOutputdirectory
+                + ", buildOutputdirectory=" + buildOutputDirectory
                 + ", compileSource=" + compileSource
                 + ", formatSource=" + formatSource
                 + ", templateSep=" + templateSep

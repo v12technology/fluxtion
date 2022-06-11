@@ -18,9 +18,8 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
@@ -28,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.Closeable;
 import java.io.File;
@@ -37,11 +35,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -57,44 +52,6 @@ public class SepCompiler {
     private SepCompilerConfig compilerConfig;
     private SEPConfig builderConfig;
 
-    public static void main(String[] args) throws Exception {
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        URL[] urls = ((URLClassLoader) cl).getURLs();
-        LOG.debug("classpath");
-        for (URL url : urls) {
-            LOG.debug(url.getFile());
-        }
-        SepCompiler compiler = new SepCompiler();
-        compiler.compile();
-    }
-
-    /**
-     * Compile method initialising SepCompilerConfig from system properties, see
-     *
-     * @throws ClassNotFoundException exception during compile
-     * @throws InstantiationException exception during compile
-     * @throws IllegalAccessException exception during compile
-     * @throws Exception              exception during compile
-     * @see SepCompilerConfig#initFromSystemProperties() System properties
-     * mapping.
-     */
-    public Class<?> compile() throws Exception {
-        return compile(SepCompilerConfig.initFromSystemProperties());
-    }
-
-    /**
-     * Compile method using a provided SepCompilerConfig
-     *
-     * @param compilerConfig the config to drive the SEP generation process
-     * @throws ClassNotFoundException exception during compile
-     * @throws InstantiationException exception during compile
-     * @throws IllegalAccessException exception during compile
-     * @throws Exception              exception during compile
-     */
-    public Class<?> compile(SepCompilerConfig compilerConfig) throws Exception {
-        return compile(compilerConfig, null);
-    }
-
     public Class<?> compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws Exception {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
@@ -109,7 +66,7 @@ public class SepCompiler {
     private void initialiseGenerator(SEPConfig configOverride) {
         LOG.debug("initialiseGenerator");
         LOG.debug(compilerConfig.toString());
-        File buildDir = compilerConfig.getBuildOutputdirectory() == null ? null : new File(compilerConfig.getBuildOutputdirectory());
+        File buildDir = compilerConfig.getBuildOutputDirectory() == null ? null : new File(compilerConfig.getBuildOutputDirectory());
         GenerationContext.setupStaticContext(compilerConfig.getClassLoader(), compilerConfig.getPackageName(),
                 compilerConfig.getClassName(),
                 new File(compilerConfig.getOutputDirectory()),
@@ -117,56 +74,39 @@ public class SepCompiler {
                 compilerConfig.isGenerateDescription(),
                 buildDir,
                 true);
-        //compiler
-        if (configOverride == null) {
-            Class<?> rootClazz;
-            try {
-                rootClazz = compilerConfig.getClassLoader().loadClass(compilerConfig.getConfigClass());
-                builderConfig = (SEPConfig) rootClazz.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                LOG.info("loading class from cached compiler");
-            }
-        } else {
-            builderConfig = configOverride;
-        }
+        builderConfig = configOverride;
         builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
-        //TODO add configuration back in when split png and debug generation
-        builderConfig.setGenerateDescription(compilerConfig.isGenerateDescription());
     }
 
     //TODO - rewrite so can override the RootInjectedNode in SEPConfig
     private void processYamlConfig() throws Exception {
-        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
-        if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
-            File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
-            LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());
-            try (InputStream input = Files.newInputStream(yamlFactoryConfig.toPath())) {
-                Yaml beanLoader = new Yaml();
-                LOG.debug("loading SepFactoryConfigBean with beanLoader");
-                SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
-                LOG.debug("DeclarativeNodeConfiguration load");
-                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-                LOG.debug("searching for NodeFactory's");
-                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-                cfgActual.factoryClassSet.addAll(class2Factory);
-                builderConfig.setDeclarativeConfig(cfgActual);
-                LOG.debug("completed :: processYamlConfig ");
-            }
-        } else {
-            LOG.debug("no yaml factory config file specified");
-        }
+//        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
+//        if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
+//            File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
+//            LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());
+//            try (InputStream input = Files.newInputStream(yamlFactoryConfig.toPath())) {
+//                Yaml beanLoader = new Yaml();
+//                LOG.debug("loading SepFactoryConfigBean with beanLoader");
+//                SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
+//                LOG.debug("DeclarativeNodeConfiguration load");
+//                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
+//                LOG.debug("searching for NodeFactory's");
+//                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
+//                cfgActual.factoryClassSet.addAll(class2Factory);
+//                builderConfig.setDeclarativeConfig(cfgActual);
+//                LOG.debug("completed :: processYamlConfig ");
+//            }
+//        } else {
+//            LOG.debug("no yaml factory config file specified");
+//        }
     }
 
-    private void locateFactories() throws Exception {
+    private void locateFactories() {
         LOG.debug("locateFactories");
-        SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-        if (builderConfig.getDeclarativeConfig() == null) {
-            cfgActual.factoryClassSet.addAll(class2Factory);
-            builderConfig.setDeclarativeConfig(cfgActual);
+        if (builderConfig.getNodeFactoryRegistration() == null) {
+            builderConfig.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
         } else {
-            builderConfig.getDeclarativeConfig().factoryClassSet.addAll(class2Factory);
+            builderConfig.getNodeFactoryRegistration().factoryClassSet.addAll(NodeFactoryLocator.nodeFactorySet());
         }
     }
 
@@ -174,8 +114,7 @@ public class SepCompiler {
         LOG.debug("generateSep");
         Class<?> returnClass = null;
         Generator generator = new Generator();
-        builderConfig.setFormatSource(compilerConfig.isFormatSource());
-        generator.templateSep(builderConfig);
+        generator.templateSep(builderConfig, compilerConfig.isGenerateDescription());
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");

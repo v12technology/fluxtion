@@ -142,7 +142,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     public TopologicallySortedDependencyGraph(SEPConfig config) {
         this(config.getNodeList(),
                 config.getPublicNodes(),
-                config.getDeclarativeConfig(),
+                config.getNodeFactoryRegistration(),
                 GenerationContext.SINGLETON,
                 config.getAuditorMap(),
                 config);

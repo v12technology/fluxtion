@@ -1,13 +1,11 @@
 package com.fluxtion.compiler.generation.inmemory;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.TearDown;
-import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.generation.Generator;
 import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.TearDown;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +26,10 @@ public class InMemoryTest {
     }
 
     @Test
-    public void test1() throws Exception {
-        SEPConfig cfg = new SEPConfig();
-        cfg.addNode(new ChildNode(new StringHandler()));
-        Generator generator = new Generator();
-        InMemoryEventProcessor inMemoryEventProcessor = generator.inMemoryProcessor(cfg);
+    public void test1() {
+        InMemoryEventProcessor inMemoryEventProcessor = InProcessSepCompiler.interpretedTest(
+                cfg ->  cfg.addNode(new ChildNode(new StringHandler()))
+        );
         assertTrue(recorder.allFalse());
 
         inMemoryEventProcessor.init();

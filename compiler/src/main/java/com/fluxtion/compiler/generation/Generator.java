@@ -18,10 +18,8 @@
 package com.fluxtion.compiler.generation;
 
 import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.generation.compiler.SepFactoryConfigBean;
+import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
 import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -50,7 +48,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,19 +62,10 @@ public class Generator {
     private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
     private SimpleEventProcessorModel simpleEventProcessorModel;
 
-    public InMemoryEventProcessor inMemoryProcessor(SEPConfig config) throws Exception {
+    public InMemoryEventProcessor inMemoryProcessor(SEPConfig config, boolean generateDescription) throws Exception {
         config.buildConfig();
-
-        //Loading factories
         LOG.debug("locateFactories");
-        SepFactoryConfigBean loadedConfig = new SepFactoryConfigBean();
-        Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-        NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-        cfgActual.factoryClassSet.addAll(class2Factory);
-        config.setDeclarativeConfig(cfgActual);
-        config.getDeclarativeConfig().factoryClassSet.addAll(class2Factory);
-        //Loading factories
-
+        config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
         this.config = config;
         if (GenerationContext.SINGLETON == null) {
             GenerationContext.setupStaticContext("", "", null, null);
@@ -88,20 +76,20 @@ public class Generator {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
                 config.getNodeList(),
                 config.getPublicNodes(),
-                config.getDeclarativeConfig(),
+                config.getNodeFactoryRegistration(),
                 GenerationContext.SINGLETON,
                 config.getAuditorMap(),
                 config
         );
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), GenerationContext.SINGLETON.getProxyClassMap());
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
-        if (config.isGenerateDescription() || GenerationContext.SINGLETON.getPackageName().isEmpty()) {
+        if (generateDescription && !GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
         return new InMemoryEventProcessor(simpleEventProcessorModel);
     }
 
-    public void templateSep(SEPConfig config) throws Exception {
+    public void templateSep(SEPConfig config, boolean generateDescription) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
 //        execSvc.submit(Generator::warmupCompiler);
         config.buildConfig();
@@ -114,7 +102,7 @@ public class Generator {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
                 config.getNodeList(),
                 config.getPublicNodes(),
-                config.getDeclarativeConfig(),
+                config.getNodeFactoryRegistration(),
                 context,
                 config.getAuditorMap(),
                 config
@@ -125,12 +113,14 @@ public class Generator {
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
         //TODO add conditionality for different target languages
         //buildJava output
-        execSvc.submit(() -> {
-            LOG.debug("start exporting graphML/images");
-            exportGraphMl(graph);
-            LOG.debug("completed exporting graphML/images");
-            LOG.debug("finished generating SEP");
-        });
+        if (generateDescription) {
+            execSvc.submit(() -> {
+                LOG.debug("start exporting graphML/images");
+                exportGraphMl(graph);
+                LOG.debug("completed exporting graphML/images");
+                LOG.debug("finished generating SEP");
+            });
+        }
         LOG.debug("start template output");
         templateJavaOutput();
         LOG.debug("completed template output");
@@ -217,21 +207,19 @@ public class Generator {
     }
 
     private void exportGraphMl(TopologicallySortedDependencyGraph graph) {
-        if (config.isGenerateDescription()) {
-            try {
-                LOG.debug("generating event images and graphml");
-                File graphMl = new File(GenerationContext.SINGLETON.getResourcesOutputDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".graphml");
-                File pngFile = new File(GenerationContext.SINGLETON.getResourcesOutputDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".png");
-                if (graphMl.getParentFile() != null) {
-                    graphMl.getParentFile().mkdirs();
-                }
-                try (FileWriter graphMlWriter = new FileWriter(graphMl)) {
-                    graph.exportAsGraphMl(graphMlWriter, true);
-                }
-                PngGenerator.generatePNG(graphMl, pngFile);
-            } catch (IOException | TransformerConfigurationException | SAXException iOException) {
-                LOG.error("error writing png and graphml:", iOException);
+        try {
+            LOG.debug("generating event images and graphml");
+            File graphMl = new File(GenerationContext.SINGLETON.getResourcesOutputDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".graphml");
+            File pngFile = new File(GenerationContext.SINGLETON.getResourcesOutputDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".png");
+            if (graphMl.getParentFile() != null) {
+                graphMl.getParentFile().mkdirs();
             }
+            try (FileWriter graphMlWriter = new FileWriter(graphMl)) {
+                graph.exportAsGraphMl(graphMlWriter, true);
+            }
+            PngGenerator.generatePNG(graphMl, pngFile);
+        } catch (IOException | TransformerConfigurationException | SAXException iOException) {
+            LOG.error("error writing png and graphml:", iOException);
         }
     }
 

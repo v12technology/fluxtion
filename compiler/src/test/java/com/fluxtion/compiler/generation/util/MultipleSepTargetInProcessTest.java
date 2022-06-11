@@ -62,6 +62,7 @@ import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 public class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep;
+    protected boolean generateMetaInformation = false;
     protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
@@ -138,7 +139,7 @@ public class MultipleSepTargetInProcessTest {
                 cfg.setSupportDirtyFiltering(true);
                 wrappedBuilder.accept(cfg);
                 Generator generator = new Generator();
-                inMemorySep = generator.inMemoryProcessor(cfg);
+                inMemorySep = generator.inMemoryProcessor(cfg, generateMetaInformation);
                 inMemorySep.init();
                 sep = inMemorySep;
                 simpleEventProcessorModel = generator.getSimpleEventProcessorModel();
