@@ -52,8 +52,8 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
  * @author V12 Technology Ltd.
  */
 public interface Event {
-    public static final int NO_INT_FILTER = Integer.MAX_VALUE;
-    public static final String NO_STRING_FILTER = "";
+    int NO_INT_FILTER = Integer.MAX_VALUE;
+    String NO_STRING_FILTER = "";
     /**
      * The integer id of a filter for this event, can be used interchangeably
      * with filterString. The event handler decides whether it will filter using

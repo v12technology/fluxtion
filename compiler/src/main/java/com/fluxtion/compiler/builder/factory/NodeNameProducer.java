@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.generation;
+package com.fluxtion.compiler.builder.factory;
 
 import java.util.ServiceLoader;
 

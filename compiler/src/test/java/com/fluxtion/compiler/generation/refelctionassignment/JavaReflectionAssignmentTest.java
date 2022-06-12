@@ -27,7 +27,7 @@ public class JavaReflectionAssignmentTest extends CompiledOnlySepTest {
     }
 
     @Test
-    public void test_privateAssignment() throws Exception {
+    public void test_privateAssignment() {
         sep(cfg -> {
             int[] intArr = new int[]{1, 2, 3, 4};
             Handler_TraceEvent_PrivateMembers parent = cfg.addPublicNode(new Handler_TraceEvent_PrivateMembers(null, null, 89, -200, 'o', null, null, null, null), "testParent");
@@ -41,7 +41,6 @@ public class JavaReflectionAssignmentTest extends CompiledOnlySepTest {
                             new Handler_TraceEvent_PrivateMembers[]{arrRef_1}
                     ), "testNode");
             cfg.setAssignPrivateMembers(true);
-            cfg.setGenerateDescription(false);
         });
 
         Handler_TraceEvent_PrivateMembers testParent = getField("testParent");
@@ -61,12 +60,11 @@ public class JavaReflectionAssignmentTest extends CompiledOnlySepTest {
     }
 
     @Test
-    public void test_dispatchWithReflectionAssignment() throws Exception {
+    public void test_dispatchWithReflectionAssignment() {
         sep(cfg -> {
             TimeHandler timeHandler = cfg.addNode(new TimeHandler());
             cfg.addPublicNode(new TimeRecorder(timeHandler, 100), "timerecorder");
             cfg.setAssignPrivateMembers(true);
-            cfg.setGenerateDescription(false);
         });
         TimeRecorder recorder = getField("timerecorder");
         assertEquals(100, recorder.getRecordedTime());

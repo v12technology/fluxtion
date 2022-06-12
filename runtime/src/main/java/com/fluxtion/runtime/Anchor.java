@@ -31,10 +31,10 @@ public class Anchor {
      * @return The after anchor node
      */
     public static <S, T> S anchor(T anchor, S afterAnchor) {
-        SepContext.service().addOrReuse(
+        EventProcessorConfigService.service().addOrReuse(
                 new Anchor(
-                        SepContext.service().addOrReuse(anchor),
-                        SepContext.service().addOrReuse(afterAnchor)
+                        EventProcessorConfigService.service().addOrReuse(anchor),
+                        EventProcessorConfigService.service().addOrReuse(afterAnchor)
                 )
         );
         return afterAnchor;

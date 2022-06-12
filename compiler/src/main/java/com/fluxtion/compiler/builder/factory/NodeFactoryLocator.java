@@ -15,10 +15,9 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.graphbuilder;
+package com.fluxtion.compiler.builder.factory;
 
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.generation.GenerationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

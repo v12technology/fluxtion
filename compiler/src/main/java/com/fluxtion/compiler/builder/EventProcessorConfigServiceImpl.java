@@ -14,10 +14,10 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation;
+package com.fluxtion.compiler.builder;
 
-import com.fluxtion.runtime.SepContext;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.google.auto.service.AutoService;
 import java.util.ArrayList;
 
@@ -25,11 +25,10 @@ import java.util.ArrayList;
  *
  * @author V12 Technology Ltd.
  */
-@AutoService(SepContext.class)
-public class SepContextService implements SepContext {
+@AutoService(EventProcessorConfigService.class)
+public class EventProcessorConfigServiceImpl implements EventProcessorConfigService {
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T add(T node) {
         GenerationContext.SINGLETON.getNodeList().add(node);
         return node;

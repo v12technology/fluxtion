@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.order;
 
-import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;

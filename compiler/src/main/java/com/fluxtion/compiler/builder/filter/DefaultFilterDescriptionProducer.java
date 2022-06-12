@@ -15,16 +15,15 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.model;
+package com.fluxtion.compiler.builder.filter;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.builder.generation.FilterDescription;
-import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import java.util.ArrayList;
-import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.ServiceLoader;
 
 /**
  *
