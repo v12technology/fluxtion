@@ -15,10 +15,11 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation;
+package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -51,7 +52,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
+import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
 /**
  * @author Greg Higgins

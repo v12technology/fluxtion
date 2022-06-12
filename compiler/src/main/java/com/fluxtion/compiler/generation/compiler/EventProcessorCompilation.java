@@ -20,7 +20,6 @@ package com.fluxtion.compiler.generation.compiler;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.EventProcessorGenerator;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
@@ -49,9 +48,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * @author Greg Higgins
  */
-public class FluxtionCompiler {
+public class EventProcessorCompilation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FluxtionCompiler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventProcessorCompilation.class);
     private FluxtionCompilerConfig compilerConfig;
     private EventProcessorConfig builderConfig;
 

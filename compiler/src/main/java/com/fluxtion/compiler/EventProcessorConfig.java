@@ -35,9 +35,7 @@ import java.util.Set;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
- * control the output of the generated static event processor. The properties
- * control the logical configuration of the compilation and not the physical
- * location of input/output resources.
+ * control the processing logic of the {@link com.fluxtion.runtime.EventProcessor}
  *
  * @author Greg Higgins
  */

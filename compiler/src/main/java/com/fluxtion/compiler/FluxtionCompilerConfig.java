@@ -17,10 +17,10 @@
  */
 package com.fluxtion.compiler;
 
-import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
+import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
 /**
- * Configuration for the SEP compiler process.
+ * Configuration for the EventProcessor compilation process.
  *
  * @author Greg Higgins
  */

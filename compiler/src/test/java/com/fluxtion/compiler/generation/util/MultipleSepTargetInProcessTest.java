@@ -20,8 +20,8 @@ package com.fluxtion.compiler.generation.util;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.EventProcessorGenerator;
-import com.fluxtion.compiler.generation.compiler.OutputRegistry;
+import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
+import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -49,7 +49,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
-import static com.fluxtion.compiler.generation.compiler.InProcessCompiler.sepTestInstance;
+import static com.fluxtion.compiler.generation.EventProcessorFactory.compileTestInstance;
 import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 
 /**
@@ -158,7 +158,7 @@ public class MultipleSepTargetInProcessTest {
                     } catch (Exception e) {  }
                 }
                 if(sep == null) {
-                    sep = sepTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
+                    sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
                 }
             }
             return sep;

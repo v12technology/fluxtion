@@ -1,7 +1,7 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
-import com.fluxtion.compiler.generation.compiler.InProcessCompiler;
+import com.fluxtion.compiler.generation.EventProcessorFactory;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
@@ -26,7 +26,7 @@ public interface Fluxtion {
      */
     @SneakyThrows
     static EventProcessor compile(SerializableConsumer<EventProcessorConfig> sepConfig){
-       return (EventProcessor) InProcessCompiler.compile(sepConfig);
+       return (EventProcessor) EventProcessorFactory.compile(sepConfig);
     }
 
     /**
@@ -41,7 +41,7 @@ public interface Fluxtion {
      * @return An uninitialized instance of a {@link StaticEventProcessor}
      */
     static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig){
-        return InProcessCompiler.interpreted(sepConfig);
+        return EventProcessorFactory.interpreted(sepConfig);
     }
 
     /**
@@ -60,7 +60,7 @@ public interface Fluxtion {
      */
     @SneakyThrows
     static EventProcessor compile(RootInjectedNode rootNode){
-        return (EventProcessor) InProcessCompiler.compile(rootNode);
+        return (EventProcessor) EventProcessorFactory.compile(rootNode);
     }
 
     /**
@@ -79,6 +79,6 @@ public interface Fluxtion {
      */
     @SneakyThrows
     static EventProcessor interpret(RootInjectedNode rootNode){
-        return InProcessCompiler.interpreted(rootNode);
+        return EventProcessorFactory.interpreted(rootNode);
     }
 }
