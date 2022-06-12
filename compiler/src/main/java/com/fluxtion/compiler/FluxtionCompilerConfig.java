@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.compiler;
+package com.fluxtion.compiler;
 
 import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
@@ -24,7 +24,7 @@ import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
  *
  * @author Greg Higgins
  */
-public class SepCompilerConfig {
+public class FluxtionCompilerConfig {
 
     /**
      * output package for generated SEP
@@ -87,13 +87,13 @@ public class SepCompilerConfig {
 
     private ClassLoader classLoader;
 
-    public SepCompilerConfig() {
+    public FluxtionCompilerConfig() {
         generateDescription = false;
         writeSourceToFile = true;
         compileSource = true;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
-        classLoader = SepCompilerConfig.class.getClassLoader();
+        classLoader = FluxtionCompilerConfig.class.getClassLoader();
     }
 
     public String getPackageName() {

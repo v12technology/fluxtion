@@ -18,9 +18,9 @@
 package com.fluxtion.compiler.generation.model;
 //      com.fluxtion.generation.model
 
-import com.fluxtion.compiler.SEPConfig;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
@@ -117,7 +117,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final List<Object> publicNodeList;
     private final GenerationContext generationContext;
     private final NodeNameProducer nameStrategy;
-    private final SEPConfig config;
+    private final EventProcessorConfig config;
 
     public TopologicallySortedDependencyGraph(Object... obj) {
         this(Arrays.asList(obj));
@@ -139,7 +139,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         this(nodes, publicNodes, null, null, null, null);
     }
 
-    public TopologicallySortedDependencyGraph(SEPConfig config) {
+    public TopologicallySortedDependencyGraph(EventProcessorConfig config) {
         this(config.getNodeList(),
                 config.getPublicNodes(),
                 config.getNodeFactoryRegistration(),
@@ -163,7 +163,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
      */
     public TopologicallySortedDependencyGraph(List<?> nodes, Map<Object, String> publicNodes,
                                               NodeFactoryRegistration nodeFactoryRegistration,
-                                              GenerationContext context, Map<String, Auditor> auditorMap, SEPConfig config) {
+                                              GenerationContext context, Map<String, Auditor> auditorMap, EventProcessorConfig config) {
         this.config = config;
         this.nameStrategy = new NamingStrategy();
         this.inst2Name = HashBiMap.create();
@@ -891,7 +891,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return publicNodeList.contains(node);
     }
 
-    public SEPConfig getConfig() {
+    public EventProcessorConfig getConfig() {
         return config;
     }
 

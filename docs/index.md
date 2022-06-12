@@ -77,7 +77,7 @@ set the scope to provided in maven.
 
 ## Steps to create an EventProcessor instance
 1. **Describe** the processing logic in user code
-2. **Generate** the EventProcessor by supplying a description to the Fluxtion generator
+2. **Generate** the EventProcessor by supplying a description to the Fluxtion eventProcessorGenerator
 3. **Process** events in the Fluxtion generated EventProcessor instance from (2)
 
 # Processing events in a stream processor
@@ -93,9 +93,9 @@ that mark members of user written classes as being managed by the event processo
 , that can describe processing with a fluent functional style
 
 ## Step 2: Build an EventProcessor
-Fluxtion provides a generator that converts the description into an executable
+Fluxtion provides a eventProcessorGenerator that converts the description into an executable
 [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-instance. The generator
+instance. The eventProcessorGenerator
 is invoked from 
 [Fluxtion](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java)
 with one of two utility methods:

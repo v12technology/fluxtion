@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -40,7 +40,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
-            streamFunctionInstance = SepContext.service().addOrReuse(methodReferenceReflection.captured()[0]);
+            streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(methodReferenceReflection.captured()[0]);
             statefulFunction = Stateful.class.isAssignableFrom(streamFunctionInstance.getClass());
         } else {
             streamFunctionInstance = null;

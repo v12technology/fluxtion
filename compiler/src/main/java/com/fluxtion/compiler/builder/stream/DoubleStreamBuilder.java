@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
@@ -34,12 +34,12 @@ public class DoubleStreamBuilder {
     final DoubleEventStream eventStream;
 
     DoubleStreamBuilder(DoubleEventStream eventStream) {
-        SepContext.service().add(eventStream);
+        EventProcessorConfigService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public DoubleEventSupplier doubleStream(){
-        return SepContext.service().add(new WrappingDoubleEventSupplier(eventStream));
+        return EventProcessorConfigService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -128,7 +128,7 @@ public class DoubleStreamBuilder {
 
     //OUTPUTS - START
     public DoubleStreamBuilder notify(Object target) {
-        SepContext.service().add(target);
+        EventProcessorConfigService.service().add(target);
         return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
@@ -137,7 +137,7 @@ public class DoubleStreamBuilder {
     }
 
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
-        SepContext.service().add(pushFunction.captured()[0]);
+        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new DoubleStreamBuilder(new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 
@@ -155,7 +155,7 @@ public class DoubleStreamBuilder {
 
     //META-DATA
     public DoubleStreamBuilder id(String nodeId) {
-        SepContext.service().add(eventStream, nodeId);
+        EventProcessorConfigService.service().add(eventStream, nodeId);
         return this;
     }
 

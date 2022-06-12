@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.builder.time.ClockFactory;
@@ -42,7 +42,7 @@ import java.util.Set;
  * @author Greg Higgins
  */
 @ToString
-public class SEPConfig {
+public class EventProcessorConfig {
 
     private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;

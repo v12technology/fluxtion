@@ -17,12 +17,13 @@
  */
 package com.fluxtion.compiler.generation.compiler;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.generation.Generator;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.EventProcessorGenerator;
+import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
-import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
+import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -48,13 +49,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * @author Greg Higgins
  */
-public class SepCompiler {
+public class FluxtionCompiler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SepCompiler.class);
-    private SepCompilerConfig compilerConfig;
-    private SEPConfig builderConfig;
+    private static final Logger LOG = LoggerFactory.getLogger(FluxtionCompiler.class);
+    private FluxtionCompilerConfig compilerConfig;
+    private EventProcessorConfig builderConfig;
 
-    public <T> Class<T> compile(SepCompilerConfig compilerConfig, SEPConfig configOverride) throws Exception {
+    public <T> Class<T> compile(FluxtionCompilerConfig compilerConfig, EventProcessorConfig configOverride) throws Exception {
         LOG.debug("starting SEP compiler");
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
@@ -65,7 +66,7 @@ public class SepCompiler {
         return (Class<T>) returnClass;
     }
 
-    private void initialiseGenerator(SEPConfig configOverride) {
+    private void initialiseGenerator(EventProcessorConfig configOverride) {
         LOG.debug("initialiseGenerator");
         LOG.debug(compilerConfig.toString());
         File buildDir = compilerConfig.getBuildOutputDirectory() == null ? null : new File(compilerConfig.getBuildOutputDirectory());
@@ -124,15 +125,15 @@ public class SepCompiler {
             writer = new StringWriter();
         }
 
-        Generator generator = new Generator();
-        generator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
+        EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
+        eventProcessorGenerator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
         LOG.info("generated sep: " + file.getCanonicalPath());
         if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");
-            Generator.formatSource(file);
+            EventProcessorGenerator.formatSource(file);
             LOG.debug("completed formatting source");
         }
         if (compilerConfig.isCompileSource()) {

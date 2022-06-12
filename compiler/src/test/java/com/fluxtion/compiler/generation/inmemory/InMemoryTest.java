@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.inmemory;
 
-import com.fluxtion.compiler.generation.compiler.InProcessSepCompiler;
+import com.fluxtion.compiler.generation.compiler.InProcessCompiler;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -27,7 +27,7 @@ public class InMemoryTest {
 
     @Test
     public void test1() {
-        InMemoryEventProcessor inMemoryEventProcessor = InProcessSepCompiler.interpretedTest(
+        InMemoryEventProcessor inMemoryEventProcessor = InProcessCompiler.interpretedTest(
                 cfg ->  cfg.addNode(new ChildNode(new StringHandler()))
         );
         assertTrue(recorder.allFalse());
@@ -59,7 +59,7 @@ public class InMemoryTest {
 
     @Test
     public void testInterpretedBuilder() {
-        InMemoryEventProcessor interpreted = InProcessSepCompiler.interpretedTest(
+        InMemoryEventProcessor interpreted = InProcessCompiler.interpretedTest(
                 cfg -> cfg.addNode(new ChildNode(new StringHandler()))
         );
 

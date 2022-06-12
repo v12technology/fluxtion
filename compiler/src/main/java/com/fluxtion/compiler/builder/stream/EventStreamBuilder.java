@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
@@ -44,12 +44,12 @@ public class EventStreamBuilder<T> {
     final TriggeredEventStream<T> eventStream;
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
-        SepContext.service().add(eventStream);
+        EventProcessorConfigService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public EventSupplier<T> eventStream(){
-        return SepContext.service().add(new WrappingEventSupplier<>(eventStream));
+        return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
     //TRIGGERS - START
@@ -228,7 +228,7 @@ public class EventStreamBuilder<T> {
 
     //OUTPUTS - START
     public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
-        SepContext.service().add(pushFunction.captured()[0]);
+        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
     }
 
@@ -237,7 +237,7 @@ public class EventStreamBuilder<T> {
     }
 
     public EventStreamBuilder<T> notify(Object target) {
-        SepContext.service().add(target);
+        EventProcessorConfigService.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
     }
 
@@ -259,7 +259,7 @@ public class EventStreamBuilder<T> {
 
     //META-DATA
     public EventStreamBuilder<T> id(String nodeId) {
-        SepContext.service().add(eventStream, nodeId);
+        EventProcessorConfigService.service().add(eventStream, nodeId);
         return this;
     }
 

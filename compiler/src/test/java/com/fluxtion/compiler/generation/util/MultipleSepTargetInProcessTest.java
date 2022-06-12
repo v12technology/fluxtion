@@ -17,10 +17,10 @@
  */
 package com.fluxtion.compiler.generation.util;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.generation.Generator;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.compiler.OutputRegistry;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
@@ -49,7 +49,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
-import static com.fluxtion.compiler.generation.compiler.InProcessSepCompiler.sepTestInstance;
+import static com.fluxtion.compiler.generation.compiler.InProcessCompiler.sepTestInstance;
 import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 
 /**
@@ -101,7 +101,7 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected StaticEventProcessor sep(RootInjectedNode rootNode) {
-        return sep((SEPConfig cfg) -> cfg.setRootInjectedNode(rootNode));
+        return sep((EventProcessorConfig cfg) -> cfg.setRootInjectedNode(rootNode));
     }
 
     @SuppressWarnings("unchecked")
@@ -120,8 +120,8 @@ public class MultipleSepTargetInProcessTest {
         }
     }
 
-    protected StaticEventProcessor sep(Consumer<SEPConfig> cfgBuilder) {
-        Consumer<SEPConfig> wrappedBuilder = cfgBuilder;
+    protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder) {
+        Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
         if (addAuditor || inlineCompiled) {
             wrappedBuilder = cfg -> {
                 cfgBuilder.accept(cfg);
@@ -136,14 +136,14 @@ public class MultipleSepTargetInProcessTest {
                 GenerationContext.setupStaticContext(pckName(), sepClassName(),
                         new File(OutputRegistry.JAVA_TESTGEN_DIR),
                         new File(OutputRegistry.RESOURCE_TEST_DIR));
-                SEPConfig cfg = new SEPConfig();
+                EventProcessorConfig cfg = new EventProcessorConfig();
                 cfg.setSupportDirtyFiltering(true);
                 wrappedBuilder.accept(cfg);
-                Generator generator = new Generator();
-                inMemorySep = generator.inMemoryProcessor(cfg, generateMetaInformation);
+                EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
+                inMemorySep = eventProcessorGenerator.inMemoryProcessor(cfg, generateMetaInformation);
                 inMemorySep.init();
                 sep = inMemorySep;
-                simpleEventProcessorModel = generator.getSimpleEventProcessorModel();
+                simpleEventProcessorModel = eventProcessorGenerator.getSimpleEventProcessorModel();
             } else {
                 if (reuseSep) {
 //                    sep(wrappedBuilder, fqn());

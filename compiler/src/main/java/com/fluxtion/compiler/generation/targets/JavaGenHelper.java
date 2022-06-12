@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.generation.FilterDescription;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
 import org.apache.commons.lang3.StringUtils;
 
 /**

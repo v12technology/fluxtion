@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.model.EventListeners.ChildConfigEventListener;
 import com.fluxtion.compiler.generation.model.EventListeners.ConfigEventListener;
 import com.fluxtion.compiler.generation.model.EventListeners.Node1Parent1ObjectListener;
@@ -56,7 +56,7 @@ public class ParentListenerModelTest {
     public void testParent_1() throws Exception {
         //System.out.println("testParent_1");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
         node1.testEventSource = test1Listener;
@@ -72,7 +72,7 @@ public class ParentListenerModelTest {
     public void testParent_1a() throws Exception {
         //System.out.println("testParent_1a");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         ConfigEventListener configListener = config.addNode(new ConfigEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
@@ -91,7 +91,7 @@ public class ParentListenerModelTest {
     public void testParent_2() throws Exception {
         //System.out.println("testParent_2");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
         Node1Parent1ObjectListener node2 = config.addNode(new Node1Parent1ObjectListener());
@@ -110,7 +110,7 @@ public class ParentListenerModelTest {
     public void testParent_3() throws Exception {
         //System.out.println("testParent_3");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
         Node1Parent1ObjectListener node2 = config.addNode(new Node1Parent1ObjectListener());
@@ -129,7 +129,7 @@ public class ParentListenerModelTest {
     public void testParent_4() throws Exception {
         //System.out.println("testParent_4");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         UnknownTestEventListener unknownListener = config.addNode(new UnknownTestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
@@ -153,7 +153,7 @@ public class ParentListenerModelTest {
     public void testParent_5() throws Exception {
         //System.out.println("testParent_5");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
         Node1Parent1ObjectListener node2 = config.addNode(new Node1Parent1ObjectListener());
@@ -173,7 +173,7 @@ public class ParentListenerModelTest {
     public void testParent_6() throws Exception {
         //System.out.println("testParent_6");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         ConfigEventListener configListener = config.addNode(new ConfigEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener());
@@ -196,7 +196,7 @@ public class ParentListenerModelTest {
     public void testParent_7() throws Exception {
         //System.out.println("testParent_7");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         ConfigEventListener configListener = config.addNode(new ConfigEventListener());
         ConfigEventListener configListener2 = config.addNode(new ConfigEventListener());
@@ -223,7 +223,7 @@ public class ParentListenerModelTest {
     public void testParent_8() throws Exception {
         //System.out.println("testParent_8");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         ConfigEventListener configListener = config.addNode(new ConfigEventListener());
         ChildConfigEventListener childConfigListener = config.addNode(new ChildConfigEventListener());
@@ -250,7 +250,7 @@ public class ParentListenerModelTest {
     public void testParent_9() throws Exception {
         //System.out.println("testParent_9");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         ConfigEventListener configListener = config.addNode(new ConfigEventListener());
         ConfigEventListener configListener2 = config.addNode(new ConfigEventListener());
         NodeNameFilterListener node1 = config.addNode(new NodeNameFilterListener());
@@ -272,7 +272,7 @@ public class ParentListenerModelTest {
     public void testParent_10() throws Exception {
         //System.out.println("testParent_10");
         //set up modes
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
         Node1ParentListener node1 = config.addNode(new Node1ParentListener(test1Listener));
         Node1ParentListener node2 = config.addNode(new Node1ParentListener(test1Listener, node1));
@@ -287,7 +287,7 @@ public class ParentListenerModelTest {
                 ));
     }
 
-    private Map<Object, List<CbMethodHandle>> generateListnerMap(SEPConfig config) throws Exception {
+    private Map<Object, List<CbMethodHandle>> generateListnerMap(EventProcessorConfig config) throws Exception {
         graph = new TopologicallySortedDependencyGraph(config);
         sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();

@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder;
 
 import com.fluxtion.runtime.Anchor;
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 
 public interface Builder {
 
@@ -16,10 +16,10 @@ public interface Builder {
      * @return The after anchor node
      */
     static <S, T> S anchor(T anchor, S afterAnchor) {
-        SepContext.service().addOrReuse(
+        EventProcessorConfigService.service().addOrReuse(
                 new Anchor(
-                        SepContext.service().addOrReuse(anchor),
-                        SepContext.service().addOrReuse(afterAnchor)
+                        EventProcessorConfigService.service().addOrReuse(anchor),
+                        EventProcessorConfigService.service().addOrReuse(afterAnchor)
                 )
         );
         return afterAnchor;

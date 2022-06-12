@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.builder.generation.FilterDescription;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
 
 /**
  * A target for an invoker holding a call tree for a filtered event. 

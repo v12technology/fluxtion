@@ -94,7 +94,7 @@ public class TradeMonitor {
 - Line 8 Filters the list of trades to the top 3 by volume.
 - Line 9 Applies a user defined mapping function to pretty print the filtered list of trades.
 - Line 10 Logs the output of the pretty print function every second.
-- Line 12 Passes the event processor to the trade event generator.
+- Line 12 Passes the event processor to the trade event eventProcessorGenerator.
 
 5 seconds must pass before the first log is printed.
 

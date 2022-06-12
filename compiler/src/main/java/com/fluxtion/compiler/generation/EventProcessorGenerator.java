@@ -17,11 +17,10 @@
  */
 package com.fluxtion.compiler.generation;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
-import com.fluxtion.compiler.generation.graphbuilder.NodeFactoryLocator;
+import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
@@ -57,13 +56,13 @@ import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 /**
  * @author Greg Higgins
  */
-public class Generator {
+public class EventProcessorGenerator {
 
-    private SEPConfig config;
-    private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
+    private EventProcessorConfig config;
+    private static final Logger LOG = LoggerFactory.getLogger(EventProcessorGenerator.class);
     private SimpleEventProcessorModel simpleEventProcessorModel;
 
-    public InMemoryEventProcessor inMemoryProcessor(SEPConfig config, boolean generateDescription) throws Exception {
+    public InMemoryEventProcessor inMemoryProcessor(EventProcessorConfig config, boolean generateDescription) throws Exception {
         config.buildConfig();
         LOG.debug("locateFactories");
         config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
@@ -90,7 +89,7 @@ public class Generator {
         return new InMemoryEventProcessor(simpleEventProcessorModel);
     }
 
-    public void templateSep(SEPConfig config, boolean generateDescription, Writer writer) throws Exception {
+    public void templateSep(EventProcessorConfig config, boolean generateDescription, Writer writer) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
         config.buildConfig();
         this.config = config;
