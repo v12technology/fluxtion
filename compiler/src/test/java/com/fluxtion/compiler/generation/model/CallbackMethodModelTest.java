@@ -10,7 +10,7 @@ import static com.fluxtion.runtime.partition.LambdaReflection.getMethod;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CallbackMaethodModelTest extends BaseModelTest {
+public class CallbackMethodModelTest extends BaseModelTest {
 
     @Test
     public void childNotEventHandler() {

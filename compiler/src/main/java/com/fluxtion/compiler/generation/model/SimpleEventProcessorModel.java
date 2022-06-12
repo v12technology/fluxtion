@@ -17,8 +17,9 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.builder.generation.FilterDescription;
-import com.fluxtion.compiler.builder.generation.FilterDescriptionProducer;
+import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
+import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -1066,8 +1067,8 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(filterDescriptionList);
     }
 
-    public CallbackDispatcherImpl getCallbackDispatcher(){
-        return dependencyGraph.CALLBACK_DISPATCHER;
+    public static CallbackDispatcherImpl getCallbackDispatcher(){
+        return TopologicallySortedDependencyGraph.CALLBACK_DISPATCHER;
     }
 
     public Set<Class<?>> getImportClasses() {

@@ -16,7 +16,7 @@
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.builder.time.ClockFactory;
@@ -35,14 +35,12 @@ import java.util.Set;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
- * control the output of the generated static event processor. The properties
- * control the logical configuration of the compilation and not the physical
- * location of input/output resources.
+ * control the processing logic of the {@link com.fluxtion.runtime.EventProcessor}
  *
  * @author Greg Higgins
  */
 @ToString
-public class SEPConfig {
+public class EventProcessorConfig {
 
     private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;
@@ -50,14 +48,12 @@ public class SEPConfig {
     private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
-    private NodeFactoryRegistration declarativeConfig;
+    private NodeFactoryRegistration nodeFactoryRegistration;
     private RootInjectedNode rootInjectedNode;
     private Map<Object, Integer> filterMap;
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
-    private boolean generateDescription = true;
-    private boolean assignPrivateMembers;
-    private boolean formatSource = true;
+    private boolean assignPrivateMembers = false;
     private final Map<String, String> class2replace = new HashMap<>();
 
     /**
@@ -229,12 +225,12 @@ public class SEPConfig {
     /**
      * Node Factory configuration
      */
-    public NodeFactoryRegistration getDeclarativeConfig() {
-        return declarativeConfig;
+    public NodeFactoryRegistration getNodeFactoryRegistration() {
+        return nodeFactoryRegistration;
     }
 
-    public void setDeclarativeConfig(NodeFactoryRegistration declarativeConfig) {
-        this.declarativeConfig = declarativeConfig;
+    public void setNodeFactoryRegistration(NodeFactoryRegistration nodeFactoryRegistration) {
+        this.nodeFactoryRegistration = nodeFactoryRegistration;
     }
 
     public RootInjectedNode getRootInjectedNode() {
@@ -279,19 +275,6 @@ public class SEPConfig {
     }
 
     /**
-     * Flag controlling generation of meta data description resources.
-     *
-     * not required, default = true.
-     */
-    public boolean isGenerateDescription() {
-        return generateDescription;
-    }
-
-    public void setGenerateDescription(boolean generateDescription) {
-        this.generateDescription = generateDescription;
-    }
-
-    /**
      * attempt to assign private member variables, some platforms will support
      * access to non-public scoped members. e.g. reflection utilities in Java.
      */
@@ -301,14 +284,6 @@ public class SEPConfig {
 
     public void setAssignPrivateMembers(boolean assignPrivateMembers) {
         this.assignPrivateMembers = assignPrivateMembers;
-    }
-
-    public boolean isFormatSource() {
-        return formatSource;
-    }
-
-    public void setFormatSource(boolean formatSource) {
-        this.formatSource = formatSource;
     }
 
     /**

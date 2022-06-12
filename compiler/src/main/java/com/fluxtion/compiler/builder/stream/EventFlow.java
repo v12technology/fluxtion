@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
@@ -29,7 +29,7 @@ public interface EventFlow {
      */
     static <T> EventStreamBuilder<T> subscribe(Class<T> classSubscription) {
         return new EventStreamBuilder<>(
-                SepContext.service().addOrReuse(new DefaultFilteredEventHandler<>(classSubscription))
+                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(classSubscription))
         );
     }
 
@@ -45,7 +45,7 @@ public interface EventFlow {
      */
     static <T extends Event> EventStreamBuilder<T> subscribe(Class<T> classSubscription, String filter) {
         return new EventStreamBuilder<>(
-                SepContext.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
+                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
         );
     }
 
@@ -61,7 +61,7 @@ public interface EventFlow {
      */
     static <T extends Event> EventStreamBuilder<T> subscribe(Class<T> classSubscription, int filter) {
         return new EventStreamBuilder<>(
-                SepContext.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
+                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
         );
     }
 
@@ -115,7 +115,7 @@ public interface EventFlow {
     }
 
     static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier){
-        SepContext.service().addOrReuse(propertySupplier.captured()[0]);
+        EventProcessorConfigService.service().addOrReuse(propertySupplier.captured()[0]);
         return new EventStreamBuilder<>(new NodePropertyStream<>(propertySupplier));
     }
 

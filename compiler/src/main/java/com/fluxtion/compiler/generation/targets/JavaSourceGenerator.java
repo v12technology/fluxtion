@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.builder.generation.FilterDescription;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;

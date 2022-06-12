@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
@@ -27,12 +27,12 @@ public class IntStreamBuilder {
     final IntEventStream eventStream;
 
     IntStreamBuilder(IntEventStream eventStream) {
-        SepContext.service().add(eventStream);
+        EventProcessorConfigService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public IntEventSupplier intStream(){
-        return SepContext.service().add(new WrappingIntEventSupplier(eventStream));
+        return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -121,7 +121,7 @@ public class IntStreamBuilder {
 
     //OUTPUTS - START
     public IntStreamBuilder notify(Object target) {
-        SepContext.service().add(target);
+        EventProcessorConfigService.service().add(target);
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
@@ -131,7 +131,7 @@ public class IntStreamBuilder {
 
     public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
         if (pushFunction.captured().length > 0) {
-            SepContext.service().add(pushFunction.captured()[0]);
+            EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         }
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
@@ -150,7 +150,7 @@ public class IntStreamBuilder {
 
     //META-DATA
     public IntStreamBuilder id(String nodeId){
-        SepContext.service().add(eventStream, nodeId);
+        EventProcessorConfigService.service().add(eventStream, nodeId);
          return this;
     }
 
