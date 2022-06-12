@@ -18,7 +18,7 @@
  */
 package com.fluxtion.compiler.generation.propagation;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -96,7 +96,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static void buildFilteringLog(SEPConfig cfg){
+    public static void buildFilteringLog(EventProcessorConfig cfg){
         TimeProcessor timeNode = new TimeProcessor();
         LogNotifier logNotifier = new LogNotifier();
         MsgBuilder msgBuilder = cfg.addPublicNode(new MsgBuilder(timeNode, logNotifier), "msgBuilder");
@@ -104,7 +104,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
         cfg.addPublicNode(new ConsolePrinter(msgBuilder), "root");
     }
 
-    public static class EventFilteringLogBuilder extends SEPConfig {
+    public static class EventFilteringLogBuilder extends EventProcessorConfig {
 
         {
             TimeProcessor timeNode = addNode(new TimeProcessor());

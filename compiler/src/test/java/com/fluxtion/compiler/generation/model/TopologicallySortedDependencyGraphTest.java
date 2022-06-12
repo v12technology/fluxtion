@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.test.event.*;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;
@@ -96,7 +96,7 @@ public class TopologicallySortedDependencyGraphTest {
                     IsIterableContainingInOrder.contains(Arrays.copyOfRange(allNumbers, i, allNumbers.length)));
         }
         
-        Set nodes = nodeMap.keySet();
+        Set<Object> nodes = nodeMap.keySet();
         for (Map.Entry<Object, String> entry: nodeMap.entrySet()) {
             Object inst = entry.getKey();
             String expectedName = entry.getValue();
@@ -282,7 +282,7 @@ public class TopologicallySortedDependencyGraphTest {
     public void testDirectParentsSharedFluentApi() throws Exception {
         //System.out.println("testDirectParentsSharedFluentApi");
         //
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         
         //set up modes
         EventHandlerCb e1 = config.addNode(new EventHandlerCb("e1", 1));
@@ -315,7 +315,7 @@ public class TopologicallySortedDependencyGraphTest {
     public void testArrayListParents() throws Exception{
         //System.out.println("testArrayListParents");
         //
-        SEPConfig config = new SEPConfig();
+        EventProcessorConfig config = new EventProcessorConfig();
         //set up modes
         EventHandlerCb e1 = config.addNode(new EventHandlerCb("e1", 1));
         EventHandlerCb eshared = config.addNode(new EventHandlerCb("eshared", 2));

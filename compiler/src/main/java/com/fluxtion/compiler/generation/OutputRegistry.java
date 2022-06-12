@@ -15,7 +15,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.generation.compiler;
+package com.fluxtion.compiler.generation;
 
 import lombok.extern.java.Log;
 import org.apache.commons.io.FileUtils;

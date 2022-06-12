@@ -21,9 +21,8 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testRootCompiled() throws ClassNotFoundException {
-        RootInjectedNode rootNode = new RootInjectedNode("root", MyHandler.class, new HashMap<>());
-        sep(rootNode);
+    public void testRootCompiled() {
+        sep(new RootInjectedNode("root", MyHandler.class, new HashMap<>()));
         MyHandler myHandler = getField("root");
         onEvent(25);
         assertThat(myHandler.intValue, Matchers.is(25));
