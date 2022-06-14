@@ -139,7 +139,11 @@ public interface Fluxtion {
     static EventProcessor compileFromReader(Reader reader){
         Yaml yaml = new Yaml();
         DataDrivenGenerationConfig rootInjectedConfig = yaml.loadAs(reader, DataDrivenGenerationConfig.class);
-        return EventProcessorFactory.compile(rootInjectedConfig.getEventProcessorConfig(), rootInjectedConfig.getCompilerConfig());
+        if(rootInjectedConfig.getCompilerConfig().isCompileSource()) {
+            return EventProcessorFactory.compile(rootInjectedConfig.getEventProcessorConfig(), rootInjectedConfig.getCompilerConfig());
+        }else{
+            return interpret(rootInjectedConfig.getRootNodeConfig());
+        }
     }
 
     /**

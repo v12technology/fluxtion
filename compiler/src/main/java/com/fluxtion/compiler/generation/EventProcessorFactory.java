@@ -160,6 +160,7 @@ public class EventProcessorFactory {
         compilerCfg.setPackageName(packageName);
         compilerCfg.setClassName(className);
         compilerCfg.setWriteSourceToFile(writeSourceFile);
+        compilerCfg.setFormatSource(writeSourceFile);
         compilerCfg.setGenerateDescription(generateMetaInformation);
 
         Class<EventProcessor> sepClass = compiler.compile(compilerCfg, new InProcessEventProcessorConfig(cfgBuilder));

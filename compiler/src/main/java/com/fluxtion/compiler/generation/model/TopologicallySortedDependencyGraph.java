@@ -440,13 +440,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 ReflectionUtils.getFields(clazz).forEach(TopologicallySortedDependencyGraph::trySetAccessible);
                 //set none string properties
                 entrySet.stream().filter((Map.Entry<String, ?> keyValue) -> {
-                            //TODO this should filter for keys that are not fields
                             Field field = reflect.field(keyValue.getKey());
-//                            if(field == null){
-//                                return false;
-//                            }
-                            return field.getType() != String.class
-                                    && keyValue.getValue().getClass() != String.class;
+                            return field.getType() != String.class && keyValue.getValue().getClass() != String.class;
                         })
                         .forEach((Map.Entry<String, ?> map) -> mirror.set().field(map.getKey()).withValue(map.getValue()));
                 //set where source and target are string
@@ -454,8 +449,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         .filter(map -> reflect.field(map.getKey()).getType() == String.class
                         && map.getValue().getClass() == String.class)
                         .forEach(map -> mirror.set().field(map.getKey()).withValue(map.getValue()));
-//                        .forEach(map -> mirror.set().field(map.getKey));
-                //convert where 
                 entrySet.stream()
                         .filter(map -> reflect.field(map.getKey()).getType() != String.class
                         && map.getValue().getClass() == String.class)
@@ -505,7 +498,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 if (isPublic) {
                     publicNodeList.add(newNode);
                 }
-                factory.postInstanceRegistration((Map<String,Object>)config, this, (T)newNode);
+                factory.postInstanceRegistration(config, this, (T)newNode);
             }
             return (T) newNode;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
