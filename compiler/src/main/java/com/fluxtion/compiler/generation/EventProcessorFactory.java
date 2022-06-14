@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation;
 
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
-import com.fluxtion.compiler.builder.factory.RootInjectedNode;
+import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.compiler.EventProcessorCompilation;
 import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
@@ -58,8 +58,8 @@ public class EventProcessorFactory {
     }
 
     @SneakyThrows
-    public static InMemoryEventProcessor interpreted(RootInjectedNode rootNode) {
-        return interpreted((EventProcessorConfig cfg) -> cfg.setRootInjectedNode(rootNode));
+    public static InMemoryEventProcessor interpreted(RootNodeConfig rootNode) {
+        return interpreted((EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode));
     }
 
     @SneakyThrows
@@ -79,16 +79,16 @@ public class EventProcessorFactory {
         return compile(name, pkg, builder);
     }
 
-    public static EventProcessor compile(RootInjectedNode rootNode) throws Exception {
-        SerializableConsumer<EventProcessorConfig> builder = (EventProcessorConfig cfg) -> cfg.setRootInjectedNode(rootNode);
+    public static EventProcessor compile(RootNodeConfig rootNode) throws Exception {
+        SerializableConsumer<EventProcessorConfig> builder = (EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode);
         String name = "Processor";
         String pkg = (rootNode.getClass().getCanonicalName() + "." + rootNode.getName()).toLowerCase();
         return compile(pkg, name, builder);
     }
 
     @SneakyThrows
-    public static EventProcessor compile(RootInjectedNode rootNode, SerializableConsumer<FluxtionCompilerConfig> cfgBuilder) {
-        SerializableConsumer<EventProcessorConfig> builder = (EventProcessorConfig cfg) -> cfg.setRootInjectedNode(rootNode);
+    public static EventProcessor compile(RootNodeConfig rootNode, SerializableConsumer<FluxtionCompilerConfig> cfgBuilder) {
+        SerializableConsumer<EventProcessorConfig> builder = (EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode);
         return compile(builder, cfgBuilder);
     }
 
@@ -160,6 +160,7 @@ public class EventProcessorFactory {
         compilerCfg.setPackageName(packageName);
         compilerCfg.setClassName(className);
         compilerCfg.setWriteSourceToFile(writeSourceFile);
+        compilerCfg.setFormatSource(writeSourceFile);
         compilerCfg.setGenerateDescription(generateMetaInformation);
 
         Class<EventProcessor> sepClass = compiler.compile(compilerCfg, new InProcessEventProcessorConfig(cfgBuilder));
@@ -187,6 +188,17 @@ public class EventProcessorFactory {
         cfgBuilder.accept(fluxtionCompilerConfig);
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, new InProcessEventProcessorConfig(sepConfig));
+        EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
+        sep.init();
+        return sep;
+    }
+
+    public static EventProcessor compile(
+            EventProcessorConfig eventProcessorConfig,
+            FluxtionCompilerConfig fluxtionCompilerConfig)
+            throws Exception {
+        EventProcessorCompilation compiler = new EventProcessorCompilation();
+        Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
         sep.init();
         return sep;

@@ -45,7 +45,7 @@ public interface NodeRegistry {
      *
      * @return The node that is referenced by the config map.
      */
-    <T> T findOrCreateNode(Class<T> clazz, Map<?,?> config, String variableName);
+    <T> T findOrCreateNode(Class<T> clazz, Map<String, Object> config, String variableName);
 
     /**
      * Find or create a node using a registered {@link NodeFactory}. The
@@ -59,7 +59,7 @@ public interface NodeRegistry {
      *
      * @return The node that is referenced by the config map.
      */
-    <T> T findOrCreatePublicNode(Class<T> clazz, Map<?,?> config, String variableName);
+    <T> T findOrCreatePublicNode(Class<T> clazz, Map<String, Object> config, String variableName);
 
     /**
      * Register a user created node with Fluxtion generator, no

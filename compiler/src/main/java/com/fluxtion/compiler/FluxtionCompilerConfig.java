@@ -17,6 +17,8 @@
  */
 package com.fluxtion.compiler;
 
+import com.fluxtion.compiler.generation.OutputRegistry;
+
 import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
 /**
@@ -85,15 +87,17 @@ public class FluxtionCompilerConfig {
      */
     private boolean writeSourceToFile;
 
-    private ClassLoader classLoader;
+    private transient ClassLoader classLoader;
 
     public FluxtionCompilerConfig() {
         generateDescription = false;
-        writeSourceToFile = true;
+        writeSourceToFile = false;
         compileSource = true;
-        formatSource = true;
+        formatSource = false;
         templateSep = JAVA_TEMPLATE;
         classLoader = FluxtionCompilerConfig.class.getClassLoader();
+        outputDirectory = OutputRegistry.JAVA_SRC_DIR;
+        resourcesOutputDirectory = OutputRegistry.RESOURCE_DIR;
     }
 
     public String getPackageName() {
@@ -183,11 +187,12 @@ public class FluxtionCompilerConfig {
     @Override
     public String toString() {
         return "SepCompilerConfig{"
-                + ", packageName=" + packageName 
+                + "packageName=" + packageName
                 + ", className=" + className 
                 + ", resourcesOutputDirectory=" + resourcesOutputDirectory 
                 + ", outputDirectory=" + outputDirectory 
                 + ", buildOutputdirectory=" + buildOutputDirectory
+                + ", writeSourceToFile=" + writeSourceToFile
                 + ", compileSource=" + compileSource
                 + ", formatSource=" + formatSource
                 + ", templateSep=" + templateSep

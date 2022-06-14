@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.factory;
 
+import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -22,7 +23,7 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testRootCompiled() {
-        sep(new RootInjectedNode("root", MyHandler.class, new HashMap<>()));
+        sep(new RootNodeConfig("root", MyHandler.class, new HashMap<>()));
         MyHandler myHandler = getField("root");
         onEvent(25);
         assertThat(myHandler.intValue, Matchers.is(25));
