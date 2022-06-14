@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.factory;
 
+import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -25,7 +26,7 @@ public class MapDrivenTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void graphFromMapTest(){
-        sep(new RootInjectedNode(
+        sep(new RootNodeConfig(
                 "root",
                 SignalGroupCalculator.class,
                 ImmutableMap.of("keys", Arrays.asList("key1", "key2", "key3"))));

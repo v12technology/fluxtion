@@ -59,7 +59,6 @@ public class EventProcessorCompilation {
         this.compilerConfig = compilerConfig;
         initialiseGenerator(configOverride);
         locateFactories();
-        processYamlConfig();
         Class<?> returnClass = generateSep();
         LOG.debug("finished SEP compiler");
         return (Class<T>) returnClass;
@@ -78,29 +77,6 @@ public class EventProcessorCompilation {
                 true);
         builderConfig = configOverride;
         builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
-    }
-
-    //TODO - rewrite so can override the RootInjectedNode in SEPConfig
-    private void processYamlConfig() throws Exception {
-//        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
-//        if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
-//            File yamlFactoryConfig = new File(compilerConfig.getYamlFactoryConfig());
-//            LOG.debug("processing yaml factory config file:" + yamlFactoryConfig.getCanonicalPath());
-//            try (InputStream input = Files.newInputStream(yamlFactoryConfig.toPath())) {
-//                Yaml beanLoader = new Yaml();
-//                LOG.debug("loading SepFactoryConfigBean with beanLoader");
-//                SepFactoryConfigBean loadedConfig = beanLoader.loadAs(input, SepFactoryConfigBean.class);
-//                LOG.debug("DeclarativeNodeConfiguration load");
-//                NodeFactoryRegistration cfgActual = loadedConfig.asDeclarativeNodeConfiguration();
-//                LOG.debug("searching for NodeFactory's");
-//                Set<Class<? extends NodeFactory<?>>> class2Factory = NodeFactoryLocator.nodeFactorySet();
-//                cfgActual.factoryClassSet.addAll(class2Factory);
-//                builderConfig.setDeclarativeConfig(cfgActual);
-//                LOG.debug("completed :: processYamlConfig ");
-//            }
-//        } else {
-//            LOG.debug("no yaml factory config file specified");
-//        }
     }
 
     private void locateFactories() {
@@ -129,7 +105,11 @@ public class EventProcessorCompilation {
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
-        LOG.info("generated sep: " + file.getCanonicalPath());
+        if(compilerConfig.isWriteSourceToFile()){
+            LOG.info("generated EventProcessor file: " + file.getCanonicalPath());
+        }else{
+            LOG.info("generated EventProcessor in memory");
+        }
         if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");
             EventProcessorGenerator.formatSource(file);

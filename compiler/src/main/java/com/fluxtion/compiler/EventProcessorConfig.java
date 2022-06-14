@@ -18,7 +18,6 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -49,7 +48,7 @@ public class EventProcessorConfig {
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
     private NodeFactoryRegistration nodeFactoryRegistration;
-    private RootInjectedNode rootInjectedNode;
+    private RootNodeConfig rootNodeConfig;
     private Map<Object, Integer> filterMap;
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
@@ -233,12 +232,12 @@ public class EventProcessorConfig {
         this.nodeFactoryRegistration = nodeFactoryRegistration;
     }
 
-    public RootInjectedNode getRootInjectedNode() {
-        return rootInjectedNode;
+    public RootNodeConfig getRootNodeConfig() {
+        return rootNodeConfig;
     }
 
-    public void setRootInjectedNode(RootInjectedNode rootInjectedNode) {
-        this.rootInjectedNode = rootInjectedNode;
+    public void setRootNodeConfig(RootNodeConfig rootNodeConfig) {
+        this.rootNodeConfig = rootNodeConfig;
     }
 
     /**

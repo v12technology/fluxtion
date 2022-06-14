@@ -19,12 +19,12 @@ package com.fluxtion.compiler.generation.model;
 //      com.fluxtion.generation.model
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -86,6 +86,7 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.reflections.ReflectionUtils.getAllFields;
@@ -397,21 +398,21 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     @Override
-    public <T> T findOrCreatePublicNode(Class<T> clazz, Map<?,?> config, String variableName) {
+    public <T> T findOrCreatePublicNode(Class<T> clazz, Map<String,Object> config, String variableName) {
         return findOrCreateNode(clazz, config, variableName, true);
     }
 
     @Override
-    public <T> T findOrCreateNode(Class<T> clazz, Map<?,?> config, String variableName) {
+    public <T> T findOrCreateNode(Class<T> clazz, Map<String,Object> config, String variableName) {
         return findOrCreateNode(clazz, config, variableName, false);
     }
 
-    public <T> T findOrCreateNode(Class<T> clazz, Map<?,?> config, String variableName, boolean isPublic) {
+    public <T> T findOrCreateNode(Class<T> clazz, Map<String, Object> config, String variableName, boolean isPublic) {
         return findOrCreateNode(clazz, config, variableName, isPublic, false);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T findOrCreateNode(Class<T> clazz, Map<?,?> config, String variableName, boolean isPublic, boolean useTempMap) {
+    private <T> T findOrCreateNode(Class<T> clazz, Map<String,Object> config, String variableName, boolean isPublic, boolean useTempMap) {
         try {
             CbMethodHandle handle = class2FactoryMethod.get(clazz);
             Object newNode;
@@ -430,18 +431,17 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     final net.vidageek.mirror.dsl.Mirror constructor = new Mirror();
                     newNode = constructor.on(clazz).invoke().constructor().bypasser();
                 }
-
                 AccessorsController mirror = new Mirror().on(newNode);
                 ReflectionHandler<T> reflect = new Mirror().on(clazz).reflect();
-                Set<? extends Map.Entry<String, ?>> entrySet = (Set<? extends Map.Entry<String, ?>>) (Object)config.entrySet();
+                Set<Map.Entry<String, Object>> entrySet = config.entrySet().stream()
+                        .filter(keyValue -> reflect.field(keyValue.getKey()) != null)
+                        .collect(Collectors.toSet());
                 //set all fields accessible
                 ReflectionUtils.getFields(clazz).forEach(TopologicallySortedDependencyGraph::trySetAccessible);
                 //set none string properties
-                entrySet.stream()
-                        .filter((Map.Entry<String, ?> map) -> {
-                            Field field = reflect.field(map.getKey());
-                            return field.getType() != String.class
-                                    && map.getValue().getClass() != String.class;
+                entrySet.stream().filter((Map.Entry<String, ?> keyValue) -> {
+                            Field field = reflect.field(keyValue.getKey());
+                            return field.getType() != String.class && keyValue.getValue().getClass() != String.class;
                         })
                         .forEach((Map.Entry<String, ?> map) -> mirror.set().field(map.getKey()).withValue(map.getValue()));
                 //set where source and target are string
@@ -449,8 +449,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         .filter(map -> reflect.field(map.getKey()).getType() == String.class
                         && map.getValue().getClass() == String.class)
                         .forEach(map -> mirror.set().field(map.getKey()).withValue(map.getValue()));
-//                        .forEach(map -> mirror.set().field(map.getKey));
-                //convert where 
                 entrySet.stream()
                         .filter(map -> reflect.field(map.getKey()).getType() != String.class
                         && map.getValue().getClass() == String.class)
@@ -500,7 +498,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 if (isPublic) {
                     publicNodeList.add(newNode);
                 }
-                factory.postInstanceRegistration((Map<String,Object>)config, this, (T)newNode);
+                factory.postInstanceRegistration(config, this, (T)newNode);
             }
             return (T) newNode;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -532,10 +530,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 registerNodeFactory(factory);
             }
             //loop through root instance and
-            RootInjectedNode rootInjectedNode = config.getRootInjectedNode();
-            if(rootInjectedNode != null){
+            RootNodeConfig rootNodeConfig = config.getRootNodeConfig();
+            if(rootNodeConfig != null){
                 Object newNode = findOrCreateNode(
-                        rootInjectedNode.getRootClass(), rootInjectedNode.getConfig(), rootInjectedNode.getName());
+                        rootNodeConfig.getRootClass(), rootNodeConfig.getConfig(), rootNodeConfig.getName());
                 publicNodeList.add(newNode);
             }
         }
@@ -844,8 +842,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
             if (injecting != null & refName == null & field.get(object) == null) {
-                HashMap<Object, Object> map = new HashMap<>();
-                HashMap<Object, Object> overrideMap = new HashMap<>();
+                HashMap<String, Object> map = new HashMap<>();
+                HashMap<String, Object> overrideMap = new HashMap<>();
 
                 ConfigVariable[] overrideConfigs = field.getAnnotationsByType(ConfigVariable.class);
                 for (ConfigVariable overrideConfig : overrideConfigs) {
@@ -860,7 +858,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     map.put(config.key(), config.value());
                 }
                 //inject config from variables over global + annotation
-                Set<Map.Entry<Object, Object>> entrySet = overrideMap.entrySet();
+                Set<Map.Entry<String, Object>> entrySet = overrideMap.entrySet();
                 entrySet.forEach((overrideEntry) -> map.put(overrideEntry.getKey(), overrideEntry.getValue()));
                 //merge configs to single map
                 //a hack to get inject working - this needs to be re-factored!!
