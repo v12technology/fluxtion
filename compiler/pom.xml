@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>6.0.2-SNAPSHOT</version>
+        <version>6.0.1</version>
         <relativePath>../poms/parent-root/pom.xml</relativePath>
     </parent>
     
