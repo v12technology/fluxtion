@@ -80,7 +80,7 @@ public class EventProcessorCompilation {
         builderConfig.setTemplateFile(compilerConfig.getTemplateSep());
     }
 
-    //TODO - rewrite so can override the RootInjectedNode in SEPConfig
+    //TODO - rewrite so can override the RootNodeConfig in SEPConfig
     private void processYamlConfig() throws Exception {
 //        LOG.debug("starting :: processYamlConfig - cfg{}", compilerConfig.getYamlFactoryConfig());
 //        if (compilerConfig.getYamlFactoryConfig() != null && !compilerConfig.getYamlFactoryConfig().isEmpty()) {
