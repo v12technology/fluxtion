@@ -91,4 +91,8 @@ public interface NodeFactory<T> {
     default void preSepGeneration(GenerationContext context) {
     }
 
+    default String factoryName(){
+        return "";
+    }
+
 }
