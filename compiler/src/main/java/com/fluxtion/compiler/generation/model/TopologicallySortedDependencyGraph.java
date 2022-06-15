@@ -132,14 +132,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         this(null, publicNodes, null, null, null, null);
     }
 
-    public TopologicallySortedDependencyGraph(NodeFactoryRegistration nodeFactoryRegistration) {
-        this(null, null, nodeFactoryRegistration, null, null, null);
-    }
-
-    public TopologicallySortedDependencyGraph(List<?> nodes, Map<Object, String> publicNodes) {
-        this(nodes, publicNodes, null, null, null, null);
-    }
-
     public TopologicallySortedDependencyGraph(EventProcessorConfig config) {
         this(config.getNodeList(),
                 config.getPublicNodes(),
