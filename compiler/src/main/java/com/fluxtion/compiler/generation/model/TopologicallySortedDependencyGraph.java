@@ -21,9 +21,10 @@ package com.fluxtion.compiler.generation.model;
 import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.compiler.builder.generation.GenerationContext;
 import com.fluxtion.compiler.builder.generation.NodeNameProducer;
-import com.fluxtion.compiler.builder.node.NodeFactory;
-import com.fluxtion.compiler.builder.node.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.node.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.builder.factory.RootInjectedNode;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -66,6 +67,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -498,7 +500,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 if (isPublic) {
                     publicNodeList.add(newNode);
                 }
-                factory.postInstanceRegistration((Map<Object,Object>)config, this, (T)newNode);
+                factory.postInstanceRegistration((Map<String,Object>)config, this, (T)newNode);
             }
             return (T) newNode;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -528,6 +530,13 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //override any classes with pre-initialised NodeFactories
             for (NodeFactory<?> factory : nodeFactoryRegistration.factorySet) {
                 registerNodeFactory(factory);
+            }
+            //loop through root instance and
+            RootInjectedNode rootInjectedNode = config.getRootInjectedNode();
+            if(rootInjectedNode != null){
+                Object newNode = findOrCreateNode(
+                        rootInjectedNode.getRootClass(), rootInjectedNode.getConfig(), rootInjectedNode.getName());
+                publicNodeList.add(newNode);
             }
         }
         //add injected instances created by factories
@@ -744,7 +753,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
     }
 
-    private Predicate annotationPredicate(){
+    private Predicate<AnnotatedElement> annotationPredicate(){
         return ReflectionUtils.withAnnotation(AfterEvent.class)
                 .or(ReflectionUtils.withAnnotation(OnEventHandler.class))
                 .or(ReflectionUtils.withAnnotation(Inject.class))

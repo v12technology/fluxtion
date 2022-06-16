@@ -22,7 +22,7 @@ import com.fluxtion.compiler.SEPConfig;
 import static com.fluxtion.compiler.generation.Templates.JAVA_TEMPLATE;
 
 /**
- * Configuration for the SEP compiler process. Initial calues can be read from 
+ * Configuration for the SEP compiler process. Initial values can be read from
  * System properties using the static method 
  * {@link SepCompilerConfig#initFromSystemProperties() } .
  * System properties read for initialisation:
@@ -53,13 +53,7 @@ public class SepCompilerConfig {
      * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
      */
     private String configClass;
-    /**
-     * root factory class to instantiate and use to generate the SEP, if factory
-     * generation is used.
-     * 
-     * One of configClass, rootFactoryClass, yamlFactoryConfig is required.
-     */
-    private String rootFactoryClass;
+
     /**
      * location of yaml file to use when generating SEP by factories specified 
      * in config.
@@ -111,12 +105,6 @@ public class SepCompilerConfig {
      * required.
      */
     private String templateSep;
-    /**
-     * Flag controlling generation of conditional branching in the generated SEP.
-     * 
-     * not required, default = true.
-     */
-    private boolean supportDirtyFiltering;
 
     /**
      * Flag controlling generation of meta data description resources.
@@ -125,21 +113,11 @@ public class SepCompilerConfig {
      */
     private boolean generateDescription;
 
-    /**
-     * Flag controlling use of non public fields in the generated SEP for setting
-     * members. Not all platforms support "reflection" style mutators.
-     * 
-     * not required, default = false.
-     */
-    private boolean assignNonPublicMembers;
-
     private ClassLoader classLoader;
     
     public SepCompilerConfig() {
         configClass = CONFIGCLASSDEFAULT;
-        supportDirtyFiltering = true;
         generateDescription = true;
-        assignNonPublicMembers = false;
         compileSource = true;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
@@ -169,14 +147,11 @@ public class SepCompilerConfig {
         config.configClass = System.getProperty("fluxtion.configClass", CONFIGCLASSDEFAULT);
         config.className = System.getProperty("fluxtion.className");
         config.packageName = System.getProperty("fluxtion.packageName");
-        config.rootFactoryClass = System.getProperty("fluxtion.rootFactoryClass");
         config.yamlFactoryConfig = System.getProperty("fluxtion.yamlFactoryConfig");
         config.outputDirectory = System.getProperty("fluxtion.outputDirectory");
         config.resourcesOutputDirectory = System.getProperty("fluxtion.resourcesOutputDirectory");
         config.templateSep = System.getProperty("fluxtion.templateSep", config.templateSep);
-        config.supportDirtyFiltering = Boolean.valueOf(System.getProperty("fluxtion.supportDirtyFiltering", "true"));
         config.generateDescription = Boolean.getBoolean("fluxtion.generateDescription");
-        config.assignNonPublicMembers = Boolean.getBoolean("fluxtion.assignNonPublicMembers");
         config.buildOutputdirectory = System.getProperty("fluxtion.build.outputdirectory", "");
         config.buildOutputdirectory = config.buildOutputdirectory.isEmpty()?null:config.buildOutputdirectory;
         return config;
@@ -184,10 +159,6 @@ public class SepCompilerConfig {
 
     public String getConfigClass() {
         return configClass;
-    }
-
-    public String getRootFactoryClass() {
-        return rootFactoryClass;
     }
 
     public String getYamlFactoryConfig() {
@@ -218,16 +189,8 @@ public class SepCompilerConfig {
         return templateSep;
     }
 
-    public boolean isSupportDirtyFiltering() {
-        return supportDirtyFiltering;
-    }
-
     public boolean isGenerateDescription() {
         return generateDescription;
-    }
-
-    public boolean isAssignNonPublicMembers() {
-        return assignNonPublicMembers;
     }
 
     public boolean isCompileSource() {
@@ -244,10 +207,6 @@ public class SepCompilerConfig {
 
     public void setConfigClass(String configClass) {
         this.configClass = configClass;
-    }
-
-    public void setRootFactoryClass(String rootFactoryClass) {
-        this.rootFactoryClass = rootFactoryClass;
     }
 
     public void setYamlFactoryConfig(String yamlFactoryConfig) {
@@ -278,16 +237,8 @@ public class SepCompilerConfig {
         this.templateSep = templateSep;
     }
 
-    public void setSupportDirtyFiltering(boolean supportDirtyFiltering) {
-        this.supportDirtyFiltering = supportDirtyFiltering;
-    }
-
     public void setGenerateDescription(boolean generateDescription) {
         this.generateDescription = generateDescription;
-    }
-
-    public void setAssignNonPublicMembers(boolean assignNonPublicMembers) {
-        this.assignNonPublicMembers = assignNonPublicMembers;
     }
 
     public void setCompileSource(boolean compileSource) {
@@ -301,8 +252,7 @@ public class SepCompilerConfig {
     @Override
     public String toString() {
         return "SepCompilerConfig{" 
-                + "configClass=" + configClass 
-                + ", rootFactoryClass=" + rootFactoryClass 
+                + "configClass=" + configClass
                 + ", yamlFactoryConfig=" + yamlFactoryConfig 
                 + ", packageName=" + packageName 
                 + ", className=" + className 
@@ -312,9 +262,7 @@ public class SepCompilerConfig {
                 + ", compileSource=" + compileSource
                 + ", formatSource=" + formatSource
                 + ", templateSep=" + templateSep
-                + ", supportDirtyFiltering=" + supportDirtyFiltering
-                + ", generateDescription=" + generateDescription 
-                + ", assignNonPublicMembers=" + assignNonPublicMembers
+                + ", generateDescription=" + generateDescription
                 + '}';
     }
 

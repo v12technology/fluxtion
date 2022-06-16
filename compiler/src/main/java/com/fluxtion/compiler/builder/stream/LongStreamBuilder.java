@@ -10,6 +10,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOper
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
+import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -18,6 +19,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingLongEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
@@ -32,6 +34,10 @@ public class LongStreamBuilder {
     LongStreamBuilder(LongEventStream eventStream) {
         SepContext.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public LongEventSupplier longStream(){
+        return SepContext.service().add(new WrappingLongEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -56,7 +62,7 @@ public class LongStreamBuilder {
 
     public <S> LongStreamBuilder filter(
             SerializableBiLongPredicate predicate,
-            LongStreamBuilder secondArgument){
+            LongStreamBuilder secondArgument) {
         return new LongStreamBuilder(
                 new FilterDynamicEventStream.LongFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -124,7 +130,7 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new NotifyEventStream.LongNotifyEventStream(eventStream, target));
     }
 
-    public LongStreamBuilder sink(String sinkId){
+    public LongStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishLong);
     }
 
