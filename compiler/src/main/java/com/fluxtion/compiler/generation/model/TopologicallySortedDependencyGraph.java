@@ -115,6 +115,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private boolean processed = false;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
+    private final HashMap<String, CbMethodHandle> name2FactoryMethod;
     private final List<Object> publicNodeList;
     private final GenerationContext generationContext;
     private final NodeNameProducer nameStrategy;
@@ -162,6 +163,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         this.inst2Name = HashBiMap.create();
         this.inst2NameTemp = HashBiMap.create();
         this.class2FactoryMethod = new HashMap<>();
+        this.name2FactoryMethod = new HashMap<>();
         if (nodes == null) {
             nodes = Collections.EMPTY_LIST;
         }
@@ -400,13 +402,19 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     public <T> T findOrCreateNode(Class<T> clazz, Map<String, Object> config, String variableName, boolean isPublic) {
-        return findOrCreateNode(clazz, config, variableName, isPublic, false);
+        return findOrCreateNode(clazz, config, variableName, isPublic, false, null);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T findOrCreateNode(Class<T> clazz, Map<String,Object> config, String variableName, boolean isPublic, boolean useTempMap) {
+    private <T> T findOrCreateNode(
+            Class<T> clazz, Map<String,Object> config, String variableName, boolean isPublic, boolean useTempMap, String factoryName) {
         try {
-            CbMethodHandle handle = class2FactoryMethod.get(clazz);
+            final CbMethodHandle handle;
+            if(factoryName == null || factoryName.isEmpty()){
+                handle = class2FactoryMethod.get(clazz);
+            }else{
+                handle = name2FactoryMethod.get(factoryName);
+            }
             Object newNode;
             if (handle != null) {
                 newNode = handle.method.invoke(handle.instance, config, this);
@@ -622,6 +630,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
         class2FactoryMethod.put(targetClass, new CbMethodHandle(createMethod, obj, "node_factory_" + targetClass.getName()));
         //
+        if(obj.factoryName()!=null && !obj.factoryName().isEmpty()){
+            name2FactoryMethod.put(obj.factoryName(),
+                    new CbMethodHandle(createMethod, obj, "node_factory_" + targetClass.getName()));
+        }
         obj.preSepGeneration(generationContext);
         //set target language
     }
@@ -834,6 +846,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
             if (injecting != null & refName == null & field.get(object) == null) {
+                String factoryName = injecting.factoryName();
                 HashMap<String, Object> map = new HashMap<>();
                 HashMap<String, Object> overrideMap = new HashMap<>();
 
@@ -864,7 +877,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
                 }
                 if (newNode == null) {
-                    newNode = findOrCreateNode(field.getType(), map, injecting.singletonName(), false, true);
+                    newNode = findOrCreateNode(field.getType(), map, injecting.singletonName(), false, true, factoryName);
                 }
                 inst2Name = oldMap;
                 addNodesFromContext();
