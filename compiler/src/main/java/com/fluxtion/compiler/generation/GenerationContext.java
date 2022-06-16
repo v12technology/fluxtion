@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.generation;
+package com.fluxtion.compiler.generation;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -194,13 +194,13 @@ public class GenerationContext {
 
     private void createDirectories() {
         packageDirectory = new File(GenerationContext.SINGLETON.sourceRootDirectory, packageName.replace(".", "/"));
-        packageDirectory.mkdirs();
+//        packageDirectory.mkdirs();
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
     }
 
     public void createResourceDirectory() {
         resourcesOutputDirectory = new File(resourcesRootDirectory, packageName.replace(".", "/"));
-        resourcesOutputDirectory.mkdirs();
+//        resourcesOutputDirectory.mkdirs();
     }
 
     public List<Object> getNodeList() {

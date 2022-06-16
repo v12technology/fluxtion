@@ -18,7 +18,7 @@
  */
 package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.nodes.KeyTracker;
@@ -38,11 +38,11 @@ public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
         super(compiledSep);
     }
 
-    private static void buildFactory(SEPConfig cfg) {
+    private static void buildFactory(EventProcessorConfig cfg) {
         cfg.addPublicNode(new KeyTracker(), "keyTracker1");
     }
 
-    private static void buildFactoryWithConfig(SEPConfig cfg) {
+    private static void buildFactoryWithConfig(EventProcessorConfig cfg) {
         cfg.addPublicNode(new KeyTrackerWithVariableConfig(), "keyTracker1");
     }
 

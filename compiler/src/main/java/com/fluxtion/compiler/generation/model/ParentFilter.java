@@ -23,7 +23,7 @@ package com.fluxtion.compiler.generation.model;
  * 
  * @author Greg Higgins
  */
-public class ParentFilter {
+class ParentFilter {
     
     public Class<?> parentType;
     public String parentName;

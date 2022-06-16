@@ -17,7 +17,8 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.compiler.builder.generation.FilterDescription;
+import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.*;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;

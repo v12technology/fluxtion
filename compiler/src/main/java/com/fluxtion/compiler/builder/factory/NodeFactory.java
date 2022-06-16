@@ -18,7 +18,7 @@ package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
+import com.fluxtion.compiler.generation.GenerationContext;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -89,6 +89,10 @@ public interface NodeFactory<T> {
      * @param context The context the Fluxtion SEC compiler uses
      */
     default void preSepGeneration(GenerationContext context) {
+    }
+
+    default String factoryName(){
+        return "";
     }
 
 }

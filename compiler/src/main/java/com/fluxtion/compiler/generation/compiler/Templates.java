@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License..
  */
-package com.fluxtion.compiler.generation;
+package com.fluxtion.compiler.generation.compiler;
 
 /**
  *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class Templates {
+public interface Templates {
 
-    private static final String PACKAGE = "template/base";
-    public static final String JAVA_TEMPLATE = PACKAGE + "/javaTemplate.vsl";
+    String PACKAGE = "template/base";
+    String JAVA_TEMPLATE = PACKAGE + "/javaTemplate.vsl";
 }

@@ -17,20 +17,21 @@
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.Named;
-import com.fluxtion.compiler.builder.generation.GenerationContext;
-import com.fluxtion.compiler.builder.generation.NodeNameProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ServiceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author gregp
  */
-public class NamingStrategy implements NodeNameProducer {
+class NamingStrategy implements NodeNameProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NamingStrategy.class);
     private ArrayList<NodeNameProducer> namingStrategies ;

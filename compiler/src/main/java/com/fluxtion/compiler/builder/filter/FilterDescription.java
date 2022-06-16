@@ -14,7 +14,7 @@
  * along with this program.  If not, see 
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.generation;
+package com.fluxtion.compiler.builder.filter;
 
 import com.fluxtion.runtime.event.Event;
 import lombok.ToString;
@@ -179,7 +179,7 @@ public class FilterDescription {
         if (this.isIntFilter != other.isIntFilter) {
             return false;
         }
-        if (this.nullId != other.nullId) {
+        if (!Objects.equals(this.nullId, other.nullId)) {
             return false;
         }
         if (!Objects.equals(this.eventClass, other.eventClass)) {

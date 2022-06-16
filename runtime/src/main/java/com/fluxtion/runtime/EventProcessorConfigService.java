@@ -24,7 +24,7 @@ import java.util.ServiceLoader;
  *
  * @author V12 Technology Ltd.
  */
-public interface SepContext {
+public interface EventProcessorConfigService {
 
     <T> T add(T node);
 
@@ -46,7 +46,7 @@ public interface SepContext {
         return false;
     }
 
-    SepContext NULL_CONTEXT = new SepContext() {
+    EventProcessorConfigService NULL_CONTEXT = new EventProcessorConfigService() {
         @Override
         public <T> T add(T node) {
             return node;
@@ -89,14 +89,14 @@ public interface SepContext {
 
     };
 
-    static SepContext service() {
-        ServiceLoader<SepContext> load = ServiceLoader.load(SepContext.class, SepContext.class.getClassLoader());
-        SepContext service = NULL_CONTEXT;
+    static EventProcessorConfigService service() {
+        ServiceLoader<EventProcessorConfigService> load = ServiceLoader.load(EventProcessorConfigService.class, EventProcessorConfigService.class.getClassLoader());
+        EventProcessorConfigService service = NULL_CONTEXT;
         if (load.iterator().hasNext()) {
             service = load.iterator().next();
             return service.buildTime()?service:NULL_CONTEXT;
         } else {
-            load = ServiceLoader.load(SepContext.class);
+            load = ServiceLoader.load(EventProcessorConfigService.class);
             if (load.iterator().hasNext()) {
                 service = load.iterator().next();
                 return service.buildTime()?service:NULL_CONTEXT;

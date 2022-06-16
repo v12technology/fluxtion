@@ -86,6 +86,18 @@ public interface Mappers {
         return new CountNode();
     }
 
+    static int parseInt(String input){
+        return Integer.parseInt(input);
+    }
+
+    static double parseDouble(String input){
+        return Double.parseDouble(input);
+    }
+
+    static long parseLong(String input){
+        return Long.parseLong(input);
+    }
+
     @ToString
     class CountNode implements Stateful<Integer>{
         int count;

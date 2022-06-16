@@ -28,7 +28,7 @@ ${MODEL.imports}
 /*
 * <pre>
 * generation time   : ${build_time}
-* generator version : ${generator_version_information}
+* eventProcessorGenerator version : ${generator_version_information}
 * api version       : ${api_version_information}
 * </pre>
 * @author Greg Higgins 
