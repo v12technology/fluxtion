@@ -32,18 +32,4 @@ public class DataDrivenGenerationConfig {
         eventProcessorConfig.setRootNodeConfig(getRootNodeConfig());
         return eventProcessorConfig;
     }
-
-//    public static void main(String[] args) {
-//        Yaml yaml = new Yaml();
-//        Map<String, Object> configMap = new HashMap<>();
-//        configMap.put("firstKey", 12);
-//        configMap.put("anotherKey", "my value");
-//        FluxtionCompilerConfig compilerConfig = new FluxtionCompilerConfig();
-//        compilerConfig.setPackageName("mypackage.whatever");
-//        DataDrivenGenerationConfig myRootConfig = new DataDrivenGenerationConfig("myRoot", MyRootClass.class.getCanonicalName(), configMap, compilerConfig);
-//        System.out.println("dumpAsMap:\n" + yaml.dumpAsMap(myRootConfig));
-//    }
-//
-//    public static final class MyRootClass{}
-
 }

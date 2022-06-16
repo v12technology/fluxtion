@@ -38,7 +38,6 @@ public class YamlReaderDrivenTest {
         assertThat(myList, Matchers.is(Matchers.contains("hello world")));
     }
 
-
     private static final String compileString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
             "  packageName: com.mypackage\n" +

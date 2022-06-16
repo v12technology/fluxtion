@@ -62,4 +62,6 @@ public @interface Inject {
      * @return singleton name
      */
     String singletonName() default "";
+
+    String factoryName() default "";
 }
