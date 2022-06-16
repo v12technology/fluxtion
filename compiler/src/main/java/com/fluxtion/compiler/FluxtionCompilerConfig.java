@@ -93,7 +93,7 @@ public class FluxtionCompilerConfig {
         generateDescription = false;
         writeSourceToFile = false;
         compileSource = true;
-        formatSource = false;
+        formatSource = true;
         templateSep = JAVA_TEMPLATE;
         classLoader = FluxtionCompilerConfig.class.getClassLoader();
         outputDirectory = OutputRegistry.JAVA_SRC_DIR;
