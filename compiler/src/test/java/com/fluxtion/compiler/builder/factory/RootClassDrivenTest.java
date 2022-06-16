@@ -2,9 +2,12 @@ package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.ExcludeNode;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -34,6 +37,21 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
         assertThat(myHandler.stringValue, is("TEST"));
     }
 
+    @Test
+    public void noRootNode(){
+        writeOutputsToFile(true);
+        sep(new RootNodeConfig("root", ExcludeMeNode.class, new HashMap<>()));
+        onEvent("test");
+        boolean failed = false;
+        try{
+            getField("excluded");
+        }catch (Exception e){
+            failed = true;
+        }
+        if(!failed)
+            throw new RuntimeException("Lookup for excluded node should fail");
+    }
+
     public static class MyHandler {
 
         @Inject
@@ -58,7 +76,7 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class ParentHandler{
+    public static class ParentHandler implements Named {
         int intValue;
         @OnEventHandler
         public void newInteger(Integer s) {
@@ -68,6 +86,22 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
         @OnTrigger
         public boolean parentTriggered(){
             return true;
+        }
+
+        @Override
+        public String getName() {
+            return "parentHandler";
+        }
+    }
+
+    @ExcludeNode
+    public static class ExcludeMeNode implements Named{
+        @NoTriggerReference
+        public ParentHandler parentHandler = new ParentHandler();
+
+        @Override
+        public String getName() {
+            return "excluded";
         }
     }
 }

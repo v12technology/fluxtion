@@ -183,6 +183,7 @@ public class EventProcessorFactory {
         fluxtionCompilerConfig.setPackageName(packageName);
         fluxtionCompilerConfig.setClassName(className);
         fluxtionCompilerConfig.setWriteSourceToFile(true);
+        fluxtionCompilerConfig.setFormatSource(true);
         fluxtionCompilerConfig.setGenerateDescription(true);
 
         cfgBuilder.accept(fluxtionCompilerConfig);
