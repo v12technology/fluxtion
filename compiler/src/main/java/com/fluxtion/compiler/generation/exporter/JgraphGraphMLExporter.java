@@ -18,25 +18,25 @@
 package com.fluxtion.compiler.generation.exporter;
 
 import com.fluxtion.runtime.FilteredEventHandler;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.reflect.Method;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import org.jgrapht.Graph;
+import org.jgrapht.ext.EdgeNameProvider;
+import org.jgrapht.ext.IntegerEdgeNameProvider;
+import org.jgrapht.ext.IntegerNameProvider;
+import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.graph.SimpleGraph;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
-
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.Graph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.IntegerEdgeNameProvider;
-import org.jgrapht.ext.IntegerNameProvider;
-import org.jgrapht.ext.VertexNameProvider;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
 
 
 /**
@@ -174,7 +174,7 @@ public class JgraphGraphMLExporter<V, E> {
                 "",
                 "edgedefault",
                 "CDATA",
-                (g instanceof DirectedGraph<?, ?>) ? "directed" : "undirected");
+                (g instanceof SimpleGraph<?, ?>) ? "directed" : "undirected");
         handler.startElement("", "", "graph", attr);
 
         // Add all the vertices as <node> elements...

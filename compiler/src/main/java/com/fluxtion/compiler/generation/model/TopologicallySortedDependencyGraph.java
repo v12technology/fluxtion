@@ -20,11 +20,11 @@ package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.RootNodeConfig;
-import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.FilteredEventHandler;
@@ -53,7 +53,6 @@ import com.googlecode.gentyref.GenericTypeReflector;
 import net.vidageek.mirror.dsl.AccessorsController;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.reflect.dsl.ReflectionHandler;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.IntegerEdgeNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
 import org.jgrapht.graph.DefaultEdge;
@@ -83,7 +82,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,7 +106,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private BiMap<Object, String> inst2Name;
     private final BiMap<Object, String> inst2NameTemp;
     private final SimpleDirectedGraph<Object, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
-    private final DirectedGraph<Object, DefaultEdge> eventGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
+    private final SimpleDirectedGraph<Object, DefaultEdge> eventGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
@@ -552,8 +550,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
 
         //create a topological sortedset and put into list
-        PriorityQueue<Object> pq = new PriorityQueue<>(Math.max(1, inst2Name.size()), new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
-        for (Iterator<Object> topologicalIter = new TopologicalOrderIterator<>(graph, pq);
+//        PriorityQueue<Object> pq = new PriorityQueue<>(Math.max(1, inst2Name.size()), new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
+        for (Iterator<Object> topologicalIter = new TopologicalOrderIterator<>(graph, new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
                 //        for (Iterator topologicalIter = new TopologicalOrderIterator<>(graph);
                 topologicalIter.hasNext();) {
             Object value = topologicalIter.next();
@@ -582,7 +580,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     @SuppressWarnings("unchecked")
     private void buildNonPushSortedHandlers(){
-        DirectedGraph<Object, DefaultEdge>  cloneGraph = (DirectedGraph<Object, DefaultEdge>) graph.clone();
+        SimpleDirectedGraph<Object, DefaultEdge>  cloneGraph = (SimpleDirectedGraph<Object, DefaultEdge>) graph.clone();
         pushEdges.stream()
                 .filter(Objects::nonNull)
                 .forEach((DefaultEdge edge) -> {
@@ -593,8 +591,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 });
 
         //create a topological sortedset and put into list
-        PriorityQueue<Object> pq = new PriorityQueue<>(Math.max(1, inst2Name.size()), new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
-        for (Iterator<Object> topologicalIter = new TopologicalOrderIterator<>(cloneGraph, pq);
+//        PriorityQueue<Object> pq = new PriorityQueue<>(Math.max(1, inst2Name.size()), new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
+        for (Iterator<Object> topologicalIter = new TopologicalOrderIterator<>(cloneGraph,  new NaturalOrderComparator<>(Collections.unmodifiableMap(inst2Name)));
             //        for (Iterator topologicalIter = new TopologicalOrderIterator<>(graph);
              topologicalIter.hasNext();) {
             Object value = topologicalIter.next();
