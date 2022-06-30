@@ -91,7 +91,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
-<!--            <version>1.5.1</version>-->
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
