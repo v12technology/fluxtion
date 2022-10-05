@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
@@ -12,6 +12,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOp
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
+import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -20,6 +21,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingDoubleEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
@@ -32,8 +34,12 @@ public class DoubleStreamBuilder {
     final DoubleEventStream eventStream;
 
     DoubleStreamBuilder(DoubleEventStream eventStream) {
-        SepContext.service().add(eventStream);
+        EventProcessorConfigService.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public DoubleEventSupplier doubleStream(){
+        return EventProcessorConfigService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -58,7 +64,7 @@ public class DoubleStreamBuilder {
 
     public <S> DoubleStreamBuilder filter(
             SerializableBiDoublePredicate predicate,
-            DoubleStreamBuilder secondArgument){
+            DoubleStreamBuilder secondArgument) {
         return new DoubleStreamBuilder(
                 new FilterDynamicEventStream.DoubleFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -122,16 +128,16 @@ public class DoubleStreamBuilder {
 
     //OUTPUTS - START
     public DoubleStreamBuilder notify(Object target) {
-        SepContext.service().add(target);
+        EventProcessorConfigService.service().add(target);
         return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
-    public DoubleStreamBuilder sink(String sinkId){
+    public DoubleStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishDouble);
     }
 
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
-        SepContext.service().add(pushFunction.captured()[0]);
+        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new DoubleStreamBuilder(new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 
@@ -149,7 +155,7 @@ public class DoubleStreamBuilder {
 
     //META-DATA
     public DoubleStreamBuilder id(String nodeId) {
-        SepContext.service().add(eventStream, nodeId);
+        EventProcessorConfigService.service().add(eventStream, nodeId);
         return this;
     }
 

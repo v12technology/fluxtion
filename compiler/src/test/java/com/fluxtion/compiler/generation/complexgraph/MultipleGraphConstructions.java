@@ -21,7 +21,7 @@ public class MultipleGraphConstructions extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void test_wc() throws Exception {
+    public void test_wc() {
         sep(c ->{
             WordCounter root = c.addPublicNode(new WordCounter(), "result");
             root.anyCharHandler = (new CharHandler());

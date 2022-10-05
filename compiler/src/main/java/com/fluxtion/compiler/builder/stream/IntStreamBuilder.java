@@ -1,8 +1,9 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.SepContext;
+import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
+import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -11,6 +12,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingIntEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
@@ -18,23 +20,19 @@ import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntPredicate;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntConsumer;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntToDoubleFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntToLongFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntUnaryOperator;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public class IntStreamBuilder {
 
     final IntEventStream eventStream;
 
     IntStreamBuilder(IntEventStream eventStream) {
-        SepContext.service().add(eventStream);
+        EventProcessorConfigService.service().add(eventStream);
         this.eventStream = eventStream;
+    }
+
+    public IntEventSupplier intStream(){
+        return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -123,7 +121,7 @@ public class IntStreamBuilder {
 
     //OUTPUTS - START
     public IntStreamBuilder notify(Object target) {
-        SepContext.service().add(target);
+        EventProcessorConfigService.service().add(target);
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
@@ -133,7 +131,7 @@ public class IntStreamBuilder {
 
     public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
         if (pushFunction.captured().length > 0) {
-            SepContext.service().add(pushFunction.captured()[0]);
+            EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         }
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
@@ -152,7 +150,7 @@ public class IntStreamBuilder {
 
     //META-DATA
     public IntStreamBuilder id(String nodeId){
-        SepContext.service().add(eventStream, nodeId);
+        EventProcessorConfigService.service().add(eventStream, nodeId);
          return this;
     }
 

@@ -7,6 +7,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
@@ -32,10 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.LongAdder;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNode;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToNodeProperty;
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribeToSignal;
+import static com.fluxtion.compiler.builder.stream.EventFlow.*;
+import static junit.framework.TestCase.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,8 +67,28 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void nodePropertyStreamTest(){
-        sep(c ->{
+    public void streamAsMemberTest() {
+        sep(c -> c.addNode(new StreamAsMemberClass(subscribe(String.class).eventStream(), "target")));
+        StreamAsMemberClass target = getField("target");
+        assertFalse(target.isHasChanged());
+        assertFalse(target.isTriggered());
+        assertNull(target.stringValue());
+
+        onEvent("test");
+        assertTrue(target.isHasChanged());
+        assertTrue(target.isTriggered());
+        assertThat(target.stringValue(), is("test"));
+
+        target.setTriggered(false);
+        publishSignal("*");
+        assertFalse(target.isHasChanged());
+        assertTrue(target.isTriggered());
+        assertThat(target.stringValue(), is("test"));
+    }
+
+    @Test
+    public void nodePropertyStreamTest() {
+        sep(c -> {
             MyStringHandler myStringHandler = new MyStringHandler();
             NotifyAndPushTarget target = new NotifyAndPushTarget();
 
@@ -128,7 +147,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void sinkTest(){
+    public void sinkTest() {
         List<Object> myList = new ArrayList<>();
         sep(c -> subscribe(String.class)
                 .sink("mySink")
@@ -144,7 +163,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void signalTest(){
+    public void signalTest() {
         List<String> myList = new ArrayList<>();
         sep(c -> subscribeToSignal("myfilter", String.class).sink("strings"));
         addSink("strings", (String s) -> myList.add(s));
@@ -203,7 +222,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void filterByPropertyTest(){
+    public void filterByPropertyTest() {
         sep(c -> subscribe(String.class)
                 .filterByProperty(String::length, StreamBuildTest::gt5)
                 .notify(new NotifyAndPushTarget())
@@ -302,7 +321,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void dynamicFilterTest(){
+    public void dynamicFilterTest() {
         sep(c -> subscribe(MyData.class)
                 .filter(StreamBuildTest::myDataTooBig, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
@@ -319,7 +338,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void dynamicFilterByPropertyTest(){
+    public void dynamicFilterByPropertyTest() {
         sep(c -> subscribe(MyData.class)
                 .filterByProperty(StreamBuildTest::myDataIntTooBig, MyData::getValue, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
@@ -336,7 +355,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void dynamicFilterWithDefaultValueTest(){
+    public void dynamicFilterWithDefaultValueTest() {
         sep(c -> subscribe(MyData.class)
                 .filter(StreamBuildTest::myDataTooBig,
                         subscribe(FilterConfig.class).defaultValue(new FilterConfig(4)))
@@ -406,7 +425,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void defaultPrimitiveWrapperValueTest() {
         sep(c -> subscribe(Integer.class)
-            .defaultValue(1).id("defaultValue"));
+                .defaultValue(1).id("defaultValue"));
         Integer defaultValue = getStreamed("defaultValue");
         assertThat(defaultValue, is(1));
     }
@@ -459,7 +478,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void mergeTest(){
+    public void mergeTest() {
         LongAdder adder = new LongAdder();
         sep(c -> subscribe(Long.class)
                 .merge(subscribe(String.class).map(StreamBuildTest::parseLong))
@@ -500,7 +519,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), is(0));
     }
 
-
     @Test
     public void slidingWindowNonDecuctTest() {
         sep(c -> subscribe(String.class)
@@ -533,20 +551,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tickDelta(100);
         assertThat(getStreamed("max"), is(0));
-    }
-
-    @Value
-    public static class CastFunction<T> {
-
-        public static <S> LambdaReflection.SerializableFunction<?, S> cast(Class<S> in) {
-            return new CastFunction<>(in)::castInstance;
-        }
-
-        Class<T> clazz;
-
-        public T castInstance(Object o) {
-            return clazz.cast(o);
-        }
     }
 
     @Test
@@ -609,8 +613,9 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(getStreamed("sum"), is(0));
     }
+
     @Test
-    public void groupByTest(){
+    public void groupByTest() {
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
         sep(c -> subscribe(KeyedData.class)
@@ -672,7 +677,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void groupByTumblingTest(){
+    public void groupByTumblingTest() {
 //        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
@@ -682,7 +687,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                 .map(GroupBy::map)
                 .sink("map"));
 
-        addSink("map", (Map<String, Integer> in) ->{
+        addSink("map", (Map<String, Integer> in) -> {
             results.clear();
             expected.clear();
             results.putAll(in);
@@ -742,7 +747,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void groupBySlidingTest(){
+    public void groupBySlidingTest() {
 //        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
@@ -754,7 +759,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 //                .console("OUT eventTime:%t {} ")
                 .sink("map"));
 
-        addSink("map", (Map<String, Integer> in) ->{
+        addSink("map", (Map<String, Integer> in) -> {
             results.clear();
             expected.clear();
             results.putAll(in);
@@ -823,16 +828,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(results, is(expected));
     }
 
-    public static KeyValue<String, Double> markToMarket(KeyValue<String, Double> assetPosition, Map<String, Double> assetPriceMap){
-        if(assetPosition == null || assetPriceMap == null){
-            return  null;
-        }
-        Double price = assetPriceMap.getOrDefault(assetPosition.getKey(), Double.NaN);
-        return new KeyValue<>(assetPosition.getKey(), price * assetPosition.getValue());
-    }
-
-//    @Test
-    public void flatMapFollowedByGroupByTest(){
+    //    @Test
+    public void flatMapFollowedByGroupByTest() {
 //        addAuditor();
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, Double>> assetPosition = subscribe(Trade.class)
@@ -892,12 +889,26 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent("publish");
     }
 
+    @Value
+    public static class CastFunction<T> {
+
+        Class<T> clazz;
+
+        public static <S> LambdaReflection.SerializableFunction<?, S> cast(Class<S> in) {
+            return new CastFunction<>(in)::castInstance;
+        }
+
+        public T castInstance(Object o) {
+            return clazz.cast(o);
+        }
+    }
+
     @EqualsAndHashCode
-    public static class ConvertToBasePrice{
+    public static class ConvertToBasePrice {
         private final String baseCurrency;
         private transient boolean hasPublished = false;
 
-        public ConvertToBasePrice(){
+        public ConvertToBasePrice() {
             this("USD");
         }
 
@@ -905,15 +916,15 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
             this.baseCurrency = baseCurrency;
         }
 
-        public List<AssetPrice> toCrossRate(PairPrice pairPrice){
+        public List<AssetPrice> toCrossRate(PairPrice pairPrice) {
             List<AssetPrice> list = new ArrayList<>();
-            if(!hasPublished){
+            if (!hasPublished) {
                 list.add(new AssetPrice(baseCurrency, 1.0));
             }
-            if(pairPrice.id.startsWith(baseCurrency)){
-                list.add(new AssetPrice(pairPrice.id.substring(3), 1.0/pairPrice.price));
-            }else if(pairPrice.id.contains(baseCurrency)){
-                list.add(new AssetPrice(pairPrice.id.substring(0,3), pairPrice.price));
+            if (pairPrice.id.startsWith(baseCurrency)) {
+                list.add(new AssetPrice(pairPrice.id.substring(3), 1.0 / pairPrice.price));
+            } else if (pairPrice.id.contains(baseCurrency)) {
+                list.add(new AssetPrice(pairPrice.id.substring(0, 3), pairPrice.price));
             }
             hasPublished = true;
             return list;
@@ -921,13 +932,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Value
-    public static class PairPrice{
+    public static class PairPrice {
         String id;
         double price;
 
     }
+
     @Value
-    public static class AssetPrice{
+    public static class AssetPrice {
         String id;
         double price;
     }
@@ -937,32 +949,35 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         String id;
         double amount;
     }
-    @Value
-    public static class Trade{
-        public static Trade bought(String dealtId, double dealtAmount, String contraId, double contraAmount){
-            return new Trade(new AssetAmountTraded(dealtId, dealtAmount), new AssetAmountTraded(contraId, -1.0 * contraAmount));
-        }
 
-        public static Trade sold(String dealtId, double dealtAmount, String contraId, double contraAmount){
-            return new Trade(new AssetAmountTraded(dealtId, -1.0 * dealtAmount), new AssetAmountTraded(contraId, contraAmount));
-        }
+    @Value
+    public static class Trade {
         AssetAmountTraded dealt;
         AssetAmountTraded contra;
 
-        public List<AssetAmountTraded> tradeLegs(){
+        public static Trade bought(String dealtId, double dealtAmount, String contraId, double contraAmount) {
+            return new Trade(new AssetAmountTraded(dealtId, dealtAmount), new AssetAmountTraded(contraId, -1.0 * contraAmount));
+        }
+
+        public static Trade sold(String dealtId, double dealtAmount, String contraId, double contraAmount) {
+            return new Trade(new AssetAmountTraded(dealtId, -1.0 * dealtAmount), new AssetAmountTraded(contraId, contraAmount));
+        }
+
+        public List<AssetAmountTraded> tradeLegs() {
             return Arrays.asList(dealt, contra);
         }
     }
+
     @Data
     public static class NotifyAndPushTarget implements Named {
         public static final String DEFAULT_NAME = "notifyTarget";
+        private final String name;
         private transient int onEventCount;
         private transient int intPushValue;
         private transient double doublePushValue;
         private transient long longPushValue;
         private transient String stringPushValue;
         private transient List<String> strings = new ArrayList<>();
-        private final String name;
 
         public NotifyAndPushTarget(String name) {
             this.name = name;
@@ -1000,14 +1015,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         String lastName;
     }
 
-    public static String lookupFunction(String in) {
-        return in.toUpperCase();
-    }
-
-    public static PostMap mapToPostMap(PreMap preMap, String lookupValue) {
-        return new PostMap(preMap.getName(), lookupValue);
-    }
-
     @Data
     public static class MyStringHandler {
         private String inputString;
@@ -1022,11 +1029,63 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    @Data
+    public static class Adder {
+        int sum;
+
+        public int add(int value) {
+            return sum += value;
+        }
+    }
+
+    @Data
+    public static class FilteredInteger extends DefaultEvent {
+        private final int value;
+
+        public FilteredInteger(String filterId, int value) {
+            super(filterId);
+            this.value = value;
+        }
+    }
+
+    @Value
+    public static class FilterConfig {
+        int limit;
+    }
+
+    @Value
+    public static class MyData {
+        int value;
+    }
+
+    @Value
+    public static class KeyedData {
+        String id;
+        int amount;
+    }
+
+
+    public static KeyValue<String, Double> markToMarket(KeyValue<String, Double> assetPosition, Map<String, Double> assetPriceMap) {
+        if (assetPosition == null || assetPriceMap == null) {
+            return null;
+        }
+        Double price = assetPriceMap.getOrDefault(assetPosition.getKey(), Double.NaN);
+        return new KeyValue<>(assetPosition.getKey(), price * assetPosition.getValue());
+    }
+
+    public static String lookupFunction(String in) {
+        return in.toUpperCase();
+    }
+
+    public static PostMap mapToPostMap(PreMap preMap, String lookupValue) {
+        return new PostMap(preMap.getName(), lookupValue);
+    }
+
     public static boolean isTrue(String in) {
         return Boolean.parseBoolean(in);
     }
 
-    public static boolean gt5(int val){
+    public static boolean gt5(int val) {
         return val > 5;
     }
 
@@ -1054,53 +1113,47 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         return input.split(",");
     }
 
-    @Data
-    public static class Adder {
-        int sum;
-
-        public int add(int value) {
-            return sum += value;
-        }
-    }
-
-    @Data
-    public static class FilteredInteger extends DefaultEvent {
-        private final int value;
-
-        public FilteredInteger(String filterId, int value) {
-            super(filterId);
-            this.value = value;
-        }
-    }
-
-    @Value
-    public static class FilterConfig{
-        int limit;
-    }
-
-    @Value
-    public static class MyData{
-        int value;
-    }
-
-    @Value
-    public static class KeyedData{
-        String id;
-        int amount;
-    }
-
-    public static boolean myDataTooBig(MyData myData, FilterConfig config){
-        if(myData==null || config == null){
+    public static boolean myDataTooBig(MyData myData, FilterConfig config) {
+        if (myData == null || config == null) {
             return false;
         }
         return myData.getValue() > config.getLimit();
     }
 
-    public static boolean myDataIntTooBig(int myData, FilterConfig config){
-        if(config == null){
+    public static boolean myDataIntTooBig(int myData, FilterConfig config) {
+        if (config == null) {
             return false;
         }
         return myData > config.getLimit();
+    }
+
+    @Data
+    public static class StreamAsMemberClass implements Named {
+        private final EventSupplier<String> stringStream;
+        private final String name;
+        private boolean triggered;
+        private boolean hasChanged;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @OnEventHandler
+        public void signal(Signal signal){
+            triggered = true;
+            hasChanged = stringStream.hasChanged();
+        }
+
+        @OnTrigger
+        public void trigger() {
+            triggered = true;
+            hasChanged = stringStream.hasChanged();
+        }
+
+        public String stringValue() {
+            return stringStream.get();
+        }
     }
 
 }

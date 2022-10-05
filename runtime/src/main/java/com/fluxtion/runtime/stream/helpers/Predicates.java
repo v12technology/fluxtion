@@ -16,6 +16,30 @@ import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Predicates {
 
+    static boolean isInteger(String in){
+        try {
+            Integer.parseInt(in);
+            return true;
+        }catch(Exception e){}
+        return false;
+    }
+
+    static boolean isDouble(String in){
+        try {
+            Double.parseDouble(in);
+            return true;
+        }catch(Exception e){}
+        return false;
+    }
+
+    static boolean isLong(String in){
+        try {
+            Long.parseLong(in);
+            return true;
+        }catch(Exception e){}
+        return false;
+    }
+
     static <T> LambdaReflection.SerializableFunction<T, Boolean> hasChangedFilter() {
         return new HasChanged()::objChanged;
     }

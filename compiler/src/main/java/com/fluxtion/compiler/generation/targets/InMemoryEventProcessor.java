@@ -7,7 +7,7 @@ import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.compiler.builder.generation.FilterDescription;
+import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
