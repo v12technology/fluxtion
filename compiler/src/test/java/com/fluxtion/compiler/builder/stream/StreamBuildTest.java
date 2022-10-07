@@ -22,8 +22,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.CoreMatchers;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,11 +40,16 @@ import static junit.framework.TestCase.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     public StreamBuildTest(boolean compiledSep) {
         super(compiledSep);
+    }
+
+    public static void logMap1(GroupBy<String, String> g) {
+        System.out.println("mapped group altered:" + g.map());
     }
 
     @Test
@@ -657,25 +664,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         String gender;
     }
 
-    //TBD fix nested keys
-//    @Test
-    public void nestedGroupBy(){
-        sep(c ->{
-            EventStreamBuilder<Map<String, GroupByStreamed<String, Person>>> filtered = subscribe(Person.class)
-                    .console("->{}")
-                    .groupBy(Person::getCountry, Mappers::valueIdentity)
-                    .console("country key:{}")
-                    .groupBy(stream -> stream.value().getGender(), Mappers::valueIdentity)
-                    .map(GroupBy::map)
-                    .console();
-        });
-
-        onEvent(new Person("greg", "UK", "male"));
-        onEvent(new Person("josie", "UK", "female"));
-        onEvent(new Person("Freddie", "UK", "male"));
-        onEvent(new Person("Soren", "DK", "male"));
-    }
-
     @Test
     public void groupByTumblingTest() {
 //        addAuditor();
@@ -744,6 +732,93 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tickDelta(200);
         assertThat(results, is(expected));
+    }
+
+    @Test
+    public void mapGroupByValuesTest(){
+
+        writeSourceFile = true;
+        sep(c ->{
+            subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId, KeyedData::getAmount)
+                    .map(Aggregates.mapGroupBy(StreamBuildTest::prefixInt))
+                    .peek(StreamBuildTest::logMap1)
+                    .map(Aggregates.mapGroupBy(StreamBuildTest::toUpperCase))
+                    .map(GroupBy::map)
+                    .console("mapped groupBy uppercase: {}")
+            ;
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 1000));
+        onEvent(new KeyedData("B", 233));
+        onEvent(new KeyedData("B", 2));
+        onEvent(new KeyedData("C", 100));
+    }
+
+//    private static Object prefixInt(Object o) {
+//        return null;
+//    }
+
+    public static String toUpperCase(String s){
+        return s.toUpperCase();
+    }
+
+    public static String prefixInt(Integer input){
+        return "altered-" + input;
+    }
+    @Test
+    public void groupBySlidingTopNTest(){
+        List<Map.Entry<String, Integer>> results = new ArrayList<>();
+        List<Map.Entry<String, Integer>> expected = new ArrayList<>();
+        writeSourceFile = true;
+
+        sep(c -> subscribe(KeyedData.class)
+//                .console("\t\tIN eventTime:%t -> {}")
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .map(Aggregates.topNByValue(2))
+//                .console("OUT eventTime:%t {} ")
+                .sink("list")
+        );
+
+        addSink("list", (List<Map.Entry<String, Integer>> in) -> {
+            results.clear();
+            expected.clear();
+            results.addAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 1000));
+        onEvent(new KeyedData("C", 100));
+
+        tick(500);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+        onEvent(new KeyedData("D", 2000));
+
+        tick(700);
+        onEvent(new KeyedData("A", 500));
+        onEvent(new KeyedData("B", 100));
+
+        tick(900);
+        onEvent(new KeyedData("C", 400));
+        onEvent(new KeyedData("B", 100));
+
+        tick(1000);
+        assertThat(results, contains(new SimpleEntry<>("D", 2000), new SimpleEntry<>("B", 1300)));
+
+        tick(1101);
+        assertThat(results, contains(new SimpleEntry<>("D", 2000), new SimpleEntry<>("A", 540)));
+
+        tick(1600);
+        assertThat(results, contains(new SimpleEntry<>("A", 500), new SimpleEntry<>("C", 400)));
+
+        tick(1800);
+        assertThat(results, contains(new SimpleEntry<>("C", 400), new SimpleEntry<>("B", 100)));
+
+        tick(2000);
+        assertTrue(results.isEmpty());
     }
 
     @Test
@@ -1059,9 +1134,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Value
-    public static class KeyedData {
+    public static class KeyedData implements Comparable<KeyedData>{
         String id;
         int amount;
+
+        @Override
+        public int compareTo(@NotNull KeyedData other) {
+            return amount - other.amount;
+        }
     }
 
 

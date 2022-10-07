@@ -17,6 +17,7 @@ import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongValue;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.TopNByValue;
 
 import java.util.List;
@@ -87,9 +88,16 @@ public class Aggregates {
     }
 
     public static <K, V, T extends Comparable<T>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(
-            int count, SerializableFunction<V, T> propertyAccesor) {
+            int count, SerializableFunction<V, T> propertyAccessor) {
         TopNByValue topNByValue = new TopNByValue(count);
-        topNByValue.comparing = propertyAccesor;
+        topNByValue.comparing = propertyAccessor;
         return topNByValue::filter;
     }
+
+    public static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, O>> mapGroupBy(
+            SerializableFunction<V, O> mappingFunction){
+        return new MapGroupByFunctionInvoker(mappingFunction)::mapValues;
+    }
+
+
 }
