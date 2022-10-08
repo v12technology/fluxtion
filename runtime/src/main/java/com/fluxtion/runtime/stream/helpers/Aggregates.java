@@ -17,7 +17,6 @@ import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongValue;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.TopNByValue;
 
 import java.util.List;
@@ -25,61 +24,61 @@ import java.util.Map.Entry;
 
 public class Aggregates {
 
-    public  static <T> SerializableSupplier<AggregateIdentity<T>> identity(){
+    public static <T> SerializableSupplier<AggregateIdentity<T>> identity() {
         return AggregateIdentity::new;
     }
 
-    public static SerializableSupplier<AggregateIntValue> intIdentity(){
+    public static SerializableSupplier<AggregateIntValue> intIdentity() {
         return AggregateIntValue::new;
     }
 
-    public static SerializableSupplier<AggregateDoubleValue> doubleIdentity(){
+    public static SerializableSupplier<AggregateDoubleValue> doubleIdentity() {
         return AggregateDoubleValue::new;
     }
 
-    public static SerializableSupplier<AggregateLongValue> longIdentity(){
+    public static SerializableSupplier<AggregateLongValue> longIdentity() {
         return AggregateLongValue::new;
     }
 
-    public  static <T> SerializableSupplier<AggregateCounting<T>> counting(){
+    public static <T> SerializableSupplier<AggregateCounting<T>> counting() {
         return AggregateCounting::new;
     }
 
-    public static SerializableSupplier<AggregateIntSum> intSum(){
+    public static SerializableSupplier<AggregateIntSum> intSum() {
         return AggregateIntSum::new;
     }
 
-    public static SerializableSupplier<AggregateDoubleSum> doubleSum(){
+    public static SerializableSupplier<AggregateDoubleSum> doubleSum() {
         return AggregateDoubleSum::new;
     }
 
-    public static SerializableSupplier<AggregateLongSum> longSum(){
+    public static SerializableSupplier<AggregateLongSum> longSum() {
         return AggregateLongSum::new;
     }
 
     //max
-    public static SerializableSupplier<AggregateIntMax> intMax(){
+    public static SerializableSupplier<AggregateIntMax> intMax() {
         return AggregateIntMax::new;
     }
 
-    public static SerializableSupplier<AggregateLongMax> longMax(){
+    public static SerializableSupplier<AggregateLongMax> longMax() {
         return AggregateLongMax::new;
     }
 
-    public static SerializableSupplier<AggregateDoubleMax> doubleMax(){
+    public static SerializableSupplier<AggregateDoubleMax> doubleMax() {
         return AggregateDoubleMax::new;
     }
 
     //min
-    public static SerializableSupplier<AggregateIntMin> intMin(){
+    public static SerializableSupplier<AggregateIntMin> intMin() {
         return AggregateIntMin::new;
     }
 
-    public static SerializableSupplier<AggregateLongMin> longMin(){
+    public static SerializableSupplier<AggregateLongMin> longMin() {
         return AggregateLongMin::new;
     }
 
-    public static SerializableSupplier<AggregateDoubleMin> doubleMin(){
+    public static SerializableSupplier<AggregateDoubleMin> doubleMin() {
         return AggregateDoubleMin::new;
     }
 
@@ -93,11 +92,5 @@ public class Aggregates {
         topNByValue.comparing = propertyAccessor;
         return topNByValue::filter;
     }
-
-    public static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, O>> mapGroupBy(
-            SerializableFunction<V, O> mappingFunction){
-        return new MapGroupByFunctionInvoker(mappingFunction)::mapValues;
-    }
-
 
 }

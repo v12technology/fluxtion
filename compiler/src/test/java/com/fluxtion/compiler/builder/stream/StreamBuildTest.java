@@ -658,7 +658,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
 
     @Value
-    public static class Person{
+    public static class Person {
         String name;
         String country;
         String gender;
@@ -735,50 +735,66 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void mapGroupByValuesTest(){
-
-        writeSourceFile = true;
-        sep(c ->{
+    public void mapGroupByValuesTest() {
+//        writeSourceFile = true;
+        sep(c -> {
             subscribe(KeyedData.class)
+                    .console("input:{}")
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
-                    .map(Aggregates.mapGroupBy(StreamBuildTest::prefixInt))
-                    .peek(StreamBuildTest::logMap1)
-                    .map(Aggregates.mapGroupBy(StreamBuildTest::toUpperCase))
-                    .map(GroupBy::map)
-                    .console("mapped groupBy uppercase: {}")
-            ;
+                    .console("groupBy no map    : {}")
+//                    .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt)) TODO fix anonymous instance lambdas
+                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
+                    .console("groupBy filtered  : {}")
+                    .map(GroupByFunction.mapValues(StreamBuildTest::prefixInt))
+                    .console("groupBy prefix    : {}")
+                    .map(GroupByFunction.mapValues(StreamBuildTest::toUpperCase))
+                    .console("groupBy uppercase : {}\n");
         });
 
         onEvent(new KeyedData("A", 400));
-        onEvent(new KeyedData("B", 1000));
         onEvent(new KeyedData("B", 233));
-        onEvent(new KeyedData("B", 2));
-        onEvent(new KeyedData("C", 100));
+        onEvent(new KeyedData("B", 1000));
+        onEvent(new KeyedData("B", 2000));
+        onEvent(new KeyedData("C", 1000));
+        onEvent(new KeyedData("B", 50));
     }
 
-//    private static Object prefixInt(Object o) {
-//        return null;
-//    }
+    public static boolean gt500Integer(Integer val) {
+        return val > 500;
+    }
 
-    public static String toUpperCase(String s){
+    public static class MyIntFilter {
+        private final int limit;
+
+        public MyIntFilter(int limit) {
+            this.limit = limit;
+        }
+
+        public boolean gt(Integer testValue) {
+            return testValue > limit;
+        }
+    }
+
+    public static String toUpperCase(String s) {
         return s.toUpperCase();
     }
 
-    public static String prefixInt(Integer input){
+    public static String prefixInt(Integer input) {
         return "altered-" + input;
     }
+
     @Test
-    public void groupBySlidingTopNTest(){
+    public void groupBySlidingTopNTest() {
         List<Map.Entry<String, Integer>> results = new ArrayList<>();
         List<Map.Entry<String, Integer>> expected = new ArrayList<>();
         writeSourceFile = true;
 
         sep(c -> subscribe(KeyedData.class)
 //                .console("\t\tIN eventTime:%t -> {}")
-                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
-                .map(Aggregates.topNByValue(2))
+                        .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                        .map(Aggregates.topNByValue(2))
 //                .console("OUT eventTime:%t {} ")
-                .sink("list")
+                        .sink("list")
         );
 
         addSink("list", (List<Map.Entry<String, Integer>> in) -> {
@@ -1134,7 +1150,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Value
-    public static class KeyedData implements Comparable<KeyedData>{
+    public static class KeyedData implements Comparable<KeyedData> {
         String id;
         int amount;
 
@@ -1220,7 +1236,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void signal(Signal signal){
+        public void signal(Signal signal) {
             triggered = true;
             hasChanged = stringStream.hasChanged();
         }
