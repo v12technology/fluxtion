@@ -29,7 +29,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(Data_1.class)
                         .mapToInt(Data_1::getIntValue)
-                        .map(BinaryMapTest::add, subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
+                        .mapBiFunction(BinaryMapTest::add, subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
                         .push(new NotifyAndPushTarget()::setIntPushValue)
         );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -46,7 +46,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(MutableDouble.class)
                         .mapToDouble(MutableDouble::doubleValue)
-                        .map(BinaryMapTest::multiply,
+                        .mapBiFunction(BinaryMapTest::multiply,
                                 subscribe(MutableInt.class).mapToDouble(MutableInt::doubleValue)
                         )
                         .push(new NotifyAndPushTarget()::setDoublePushValue)
@@ -64,7 +64,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(MutableLong.class)
                         .mapToLong(MutableLong::longValue)
-                        .map(BinaryMapTest::addLong,
+                        .mapBiFunction(BinaryMapTest::addLong,
                                 subscribe(MutableInt.class).mapToLong(MutableInt::longValue)
                         )
                         .push(new NotifyAndPushTarget()::setLongPushValue)
@@ -81,7 +81,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(Data_1.class)
                         .mapToInt(Data_1::getIntValue)
-                        .map(BinaryMapTest::add,
+                        .mapBiFunction(BinaryMapTest::add,
                                 subscribe(Data_2.class).mapToInt(Data_2::getIntValue).defaultValue(50)
                         )
                         .push(new NotifyAndPushTarget()::setIntPushValue)
@@ -100,9 +100,9 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             IntStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue);
             IntStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue);
-            int1.map(Mappers.ADD_INTS, int2).id("add");
-            int1.map(Mappers.SUBTRACT_INTS, int2).id("subtract");
-            int1.map(Mappers.MULTIPLY_INTS, int2).id("multiply");
+            int1.mapBiFunction(Mappers.ADD_INTS, int2).id("add");
+            int1.mapBiFunction(Mappers.SUBTRACT_INTS, int2).id("subtract");
+            int1.mapBiFunction(Mappers.MULTIPLY_INTS, int2).id("multiply");
         });
 
         onEvent(new Data_1(10));
@@ -121,9 +121,9 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
             DoubleStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue).box().mapToDouble(Integer::doubleValue);
             DoubleStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue).box().mapToDouble(Integer::doubleValue);
 
-            int1.map(Mappers.ADD_DOUBLES, int2).id("add");
-            int1.map(Mappers.SUBTRACT_DOUBLES, int2).id("subtract");
-            int1.map(Mappers.MULTIPLY_DOUBLES, int2).id("multiply");
+            int1.mapBiFunction(Mappers.ADD_DOUBLES, int2).id("add");
+            int1.mapBiFunction(Mappers.SUBTRACT_DOUBLES, int2).id("subtract");
+            int1.mapBiFunction(Mappers.MULTIPLY_DOUBLES, int2).id("multiply");
         });
 
         onEvent(new Data_1(10));
@@ -143,9 +143,9 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
             LongStreamBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue).box().mapToLong(Integer::longValue);
             LongStreamBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue).box().mapToLong(Integer::longValue);
 
-            int1.map(Mappers.ADD_LONGS, int2).id("add");
-            int1.map(Mappers.SUBTRACT_LONGS, int2).id("subtract");
-            int1.map(Mappers.MULTIPLY_LONGS, int2).id("multiply");
+            int1.mapBiFunction(Mappers.ADD_LONGS, int2).id("add");
+            int1.mapBiFunction(Mappers.SUBTRACT_LONGS, int2).id("subtract");
+            int1.mapBiFunction(Mappers.MULTIPLY_LONGS, int2).id("multiply");
         });
 
         onEvent(new Data_1(10));
@@ -161,7 +161,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
     @Test
     public void referenceTypesBiFunctionTest() {
         sep(c -> subscribe(String.class)
-                .map(BinaryMapTest::dateFormat, subscribe(Date.class)).id("formattedDate"));
+                .mapBiFunction(BinaryMapTest::dateFormat, subscribe(Date.class)).id("formattedDate"));
         Calendar calendar = Calendar.getInstance(Locale.UK);
         calendar.set(2022, 06, 28);
 

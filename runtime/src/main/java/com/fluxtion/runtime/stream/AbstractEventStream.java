@@ -19,6 +19,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
 
     private final S inputEventStream;
     private final transient MethodReferenceReflection streamFunction;
+
     @NoTriggerReference
     private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
@@ -30,6 +31,8 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     private transient boolean publishTriggered;
     private transient boolean publishOverrideTriggered;
     private transient boolean resetTriggered;
+    @NoTriggerReference
+    protected transient Stateful<R> resetFunction;
 
     private Object updateTriggerNode;
     private Object publishTriggerNode;
@@ -45,6 +48,10 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         } else {
             streamFunctionInstance = null;
             statefulFunction = false;
+        }
+
+        if (methodReferenceReflection != null && isStatefulFunction()) {
+            resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
         }
     }
 
@@ -67,10 +74,11 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
                 | resetTriggered;
         overrideTriggered = false;
         publishTriggered = false;
+        publishOverrideTriggered = false;
         resetTriggered = false;
         inputStreamTriggered = false;
         auditLog.info("fireNotification", fireNotification);
-        return fireNotification && get()!=null;
+        return fireNotification && get() != null;
     }
 
     /**
@@ -115,6 +123,8 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     @OnParentUpdate("resetTriggerNode")
     public final void resetTriggerNodeUpdated(Object triggerNode) {
         resetTriggered = true;
+        inputStreamTriggered = false;
+        inputStreamTriggered_1 = false;
         resetOperation();
     }
 
@@ -204,7 +214,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         }
 
         protected boolean executeUpdate() {
-            return (!overrideUpdateTrigger && inputStreamTriggered && inputStreamTriggered_2) | overrideTriggered;
+            return (!overrideUpdateTrigger && inputStreamTriggered_1 && inputStreamTriggered_2) | overrideTriggered;
         }
 
         public S getInputEventStream_1() {

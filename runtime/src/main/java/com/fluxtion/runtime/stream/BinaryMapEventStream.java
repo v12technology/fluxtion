@@ -38,7 +38,7 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         if (executeUpdate()) {
             auditLog.info("invokeMapFunction", true);
             mapOperation();
-        } else if(reset()) {
+        } else if (reset()) {
             auditLog.info("invokeMapFunction", false);
             auditLog.info("reset", true);
             resetOperation();
@@ -55,8 +55,12 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
 
     abstract protected void mapOperation();
 
-    protected void resetOperation(){
-        System.out.println("Call to binary function reset - not implemented");
+    protected void resetOperation() {
+        inputStreamTriggered_2 = false;
+        if (resetFunction != null)
+            result = resetFunction.reset();
+//        super.resetOperation();
+//        System.out.println("Call to binary function reset - not implemented");
     }
 
     public static class BinaryMapToRefEventStream<R, Q, T, S extends EventStream<R>, U extends EventStream<Q>>

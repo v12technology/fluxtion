@@ -14,6 +14,7 @@ import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.AllArgsConstructor;
@@ -240,6 +241,17 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getOnEventCount(), is(0));
         onEvent("loooong");
         assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
+    @Test
+    public void mapWithInstanceFunctionTest() {
+        writeSourceFile = true;
+        sep(c -> subscribe(Integer.class).map(new Adder()::add).id("cumsum"));
+        onEvent(10);
+        onEvent(10);
+        onEvent(10);
+        int cumsum = getStreamed("cumsum");
+        assertThat(30, is(cumsum));
     }
 
     @Test
@@ -562,6 +574,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void aggregateTest() {
+        writeSourceFile = true;
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
                 .aggregate(AggregateIntSum::new).id("sum")
@@ -736,14 +749,14 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void mapGroupByValuesTest() {
-//        writeSourceFile = true;
+        writeSourceFile = true;
         sep(c -> {
             subscribe(KeyedData.class)
                     .console("input:{}")
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
                     .console("groupBy no map    : {}")
-//                    .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt)) TODO fix anonymous instance lambdas
-                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
+                    .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt)) //TODO fix anonymous instance lambdas
+//                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
                     .console("groupBy filtered  : {}")
                     .map(GroupByFunction.mapValues(StreamBuildTest::prefixInt))
                     .console("groupBy prefix    : {}")
@@ -757,6 +770,37 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent(new KeyedData("B", 2000));
         onEvent(new KeyedData("C", 1000));
         onEvent(new KeyedData("B", 50));
+    }
+
+    @Test
+    public void joinGroupByTest() {
+        writeSourceFile = true;
+        sep(c -> {
+            EventStreamBuilder<GroupByStreamed<String, String>> stringGroupBy = subscribe(String.class)
+                    .groupBy(String::toString, Mappers::valueIdentity);
+
+            subscribe(KeyedData.class)
+                    .console("input:{}")
+                    .groupBy(KeyedData::getId, KeyedData::getAmount)
+                    .mapBiFunction(GroupByFunction::innerJoin, stringGroupBy)
+                    .map(GroupByFunction.mapValues(StreamBuildTest::mergedTypefromTuple))
+                    .console();
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent("A");
+    }
+
+    @Value
+    public static class MergedType {
+        int value;
+        String name;
+    }
+
+    public static MergedType mergedTypefromTuple(Tuple<Integer, String> t) {
+        Tuple<Integer, String> t1 = t;
+        return new MergedType(t1.getFirst(), t1.getSecond());
     }
 
     public static boolean gt500Integer(Integer val) {
@@ -933,10 +977,10 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                     .groupBy(AssetPrice::getId, AssetPrice::getPrice, AggregateDoubleSum::new);
 
             EventStreamBuilder<KeyValue<String, Double>> posDrivenMtmStream = assetPosition.map(GroupByStreamed::keyValue)
-                    .map(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map));
+                    .mapBiFunction(StreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map));
 
             EventStreamBuilder<KeyValue<String, Double>> priceDrivenMtMStream = assetPriceMap.map(GroupByStreamed::keyValue)
-                    .map(StreamBuildTest::markToMarket, assetPosition.map(GroupBy::map)).updateTrigger(assetPriceMap);
+                    .mapBiFunction(StreamBuildTest::markToMarket, assetPosition.map(GroupBy::map)).updateTrigger(assetPriceMap);
 
             //Mark to market
             posDrivenMtmStream.merge(priceDrivenMtMStream)

@@ -36,7 +36,7 @@ public class LongStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public LongEventSupplier longStream(){
+    public LongEventSupplier longStream() {
         return EventProcessorConfigService.service().add(new WrappingLongEventSupplier(eventStream));
     }
 
@@ -76,7 +76,7 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new MapEventStream.MapLong2ToLongEventStream(eventStream, int2IntFunction));
     }
 
-    public LongStreamBuilder map(SerializableBiLongFunction int2IntFunction, LongStreamBuilder stream2Builder) {
+    public LongStreamBuilder mapBiFunction(SerializableBiLongFunction int2IntFunction, LongStreamBuilder stream2Builder) {
         return new LongStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToLongEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)

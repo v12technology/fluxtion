@@ -14,8 +14,8 @@ public class RateTriggerTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void rateTest(){
-        sep(c ->{
+    public void rateTest() {
+        sep(c -> {
 //            FixedRateTrigger fixedRateTrigger = c.addNode(new FixedRateTrigger(null, 100));
 
             subscribe(MutableInt.class)

@@ -5,13 +5,14 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 
 import java.util.Map.Entry;
 
-public class FilterGroupByFunctionInvoker {
+public class FilterGroupByFunctionInvoker extends GroupByInvoker {
 
     @NoTriggerReference
     private final SerializableFunction mapFunction;
     private final transient GroupByCollection outputCollection = new GroupByCollection();
 
     public <T> FilterGroupByFunctionInvoker(SerializableFunction<T, Boolean> mapFunction) {
+        super(mapFunction);
         this.mapFunction = mapFunction;
     }
 

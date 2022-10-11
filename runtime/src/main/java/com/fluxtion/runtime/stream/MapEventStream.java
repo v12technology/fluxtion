@@ -21,19 +21,13 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     protected transient String auditInfo;
     protected transient R result;
-    @NoTriggerReference
-    protected transient Stateful<R> resetFunction;
-
 
     @SuppressWarnings("unchecked")
     public MapEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
         super(inputEventStream, methodReferenceReflection);
-        if(methodReferenceReflection!=null){
+        if (methodReferenceReflection != null) {
             Method method = methodReferenceReflection.method();
             auditInfo = method.getDeclaringClass().getSimpleName() + "->" + method.getName();
-            if(isStatefulFunction()){
-                resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
-            }
         }
     }
 
@@ -43,7 +37,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         if (executeUpdate()) {
             auditLog.info("invokeMapFunction", true);
             mapOperation();
-        } else if(reset()) {
+        } else if (reset()) {
             auditLog.info("invokeMapFunction", false);
             auditLog.info("reset", true);
             resetOperation();
@@ -73,7 +67,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
     abstract protected void mapOperation();
 
-    protected void resetOperation(){
+    protected void resetOperation() {
         result = resetFunction.reset();
     }
 
@@ -162,7 +156,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             super(inputEventStream, method);
         }
 
-        protected void resetOperation(){
+        protected void resetOperation() {
             result = resetFunction.reset();
         }
 
@@ -261,7 +255,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             super(inputEventStream, method);
         }
 
-        protected void resetOperation(){
+        protected void resetOperation() {
             result = resetFunction.reset();
         }
 
@@ -359,7 +353,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
             super(inputEventStream, method);
         }
 
-        protected void resetOperation(){
+        protected void resetOperation() {
             result = resetFunction.reset();
         }
 

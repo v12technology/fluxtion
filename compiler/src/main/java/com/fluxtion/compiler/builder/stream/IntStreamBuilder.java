@@ -31,7 +31,7 @@ public class IntStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public IntEventSupplier intStream(){
+    public IntEventSupplier intStream() {
         return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 
@@ -57,7 +57,7 @@ public class IntStreamBuilder {
 
     public <S> IntStreamBuilder filter(
             SerializableBiIntPredicate predicate,
-            IntStreamBuilder secondArgument){
+            IntStreamBuilder secondArgument) {
         return new IntStreamBuilder(
                 new FilterDynamicEventStream.IntFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -71,7 +71,7 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
     }
 
-    public IntStreamBuilder map(SerializableBiIntFunction int2IntFunction, IntStreamBuilder stream2Builder) {
+    public IntStreamBuilder mapBiFunction(SerializableBiIntFunction int2IntFunction, IntStreamBuilder stream2Builder) {
         return new IntStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToIntEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
@@ -79,18 +79,18 @@ public class IntStreamBuilder {
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder aggregate(
-            SerializableSupplier<F> aggregateFunction){
-        return new IntStreamBuilder( new AggregateIntStream<>(eventStream, aggregateFunction));
+            SerializableSupplier<F> aggregateFunction) {
+        return new IntStreamBuilder(new AggregateIntStream<>(eventStream, aggregateFunction));
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder tumblingAggregate(
-            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new IntStreamBuilder(
                 new TumblingIntWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder slidingAggregate(
-            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets){
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
         return new IntStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowIntStream<>(
                         eventStream,
@@ -99,11 +99,11 @@ public class IntStreamBuilder {
                         numberOfBuckets));
     }
 
-    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+    public <T> EventStreamBuilder<T> mapOnNotify(T target) {
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
 
-    public EventStreamBuilder<Integer> box(){
+    public EventStreamBuilder<Integer> box() {
         return mapToObj(Integer::valueOf);
     }
 
@@ -125,7 +125,7 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
-    public IntStreamBuilder sink(String sinkId){
+    public IntStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishInt);
     }
 
@@ -140,7 +140,7 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new PeekEventStream.IntPeekEventStream(eventStream, peekFunction));
     }
 
-    public IntStreamBuilder console(String in){
+    public IntStreamBuilder console(String in) {
         return peek(Peekers.console(in));
     }
 
@@ -149,9 +149,9 @@ public class IntStreamBuilder {
     }
 
     //META-DATA
-    public IntStreamBuilder id(String nodeId){
+    public IntStreamBuilder id(String nodeId) {
         EventProcessorConfigService.service().add(eventStream, nodeId);
-         return this;
+        return this;
     }
 
 }

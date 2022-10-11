@@ -69,7 +69,7 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void redispatchMultipleEventFromStreamTest(){
+    public void redispatchMultipleEventFromStreamTest() {
         sep(c -> {
             EventFlow.subscribe(String.class)
                     .flatMap(EventDispatchTest::csvToIterable)
@@ -109,7 +109,7 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
         return new MyEvent();
     }
 
-    public static Iterable<String> csvToIterable(String input){
+    public static Iterable<String> csvToIterable(String input) {
         return Arrays.asList(input.split(","));
     }
 

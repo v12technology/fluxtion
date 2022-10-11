@@ -38,7 +38,7 @@ public class DoubleStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public DoubleEventSupplier doubleStream(){
+    public DoubleEventSupplier doubleStream() {
         return EventProcessorConfigService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
@@ -78,7 +78,7 @@ public class DoubleStreamBuilder {
         return new DoubleStreamBuilder(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
-    public DoubleStreamBuilder map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
+    public DoubleStreamBuilder mapBiFunction(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
         return new DoubleStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)

@@ -37,10 +37,12 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     private final int bucketSizeMillis;
     private final int bucketCount;
     public FixedRateTrigger rollTrigger;
-    private final transient SerializableSupplier<GroupByWindowedCollection<T, K, V, R, F>> groupBySupplier;
-    private final transient BucketedSlidingWindowedFunction<T, GroupByStreamed<K, R>, GroupByWindowedCollection<T, K, V, R, F>> slidingCalculator;
+    private transient SerializableSupplier<GroupByWindowedCollection<T, K, V, R, F>> groupBySupplier;
+    private transient BucketedSlidingWindowedFunction<T, GroupByStreamed<K, R>, GroupByWindowedCollection<T, K, V, R, F>> slidingCalculator;
     private transient final Map<K, R> mapOfValues = new HashMap<>();
     private transient final MyGroupBy results = new MyGroupBy();
+    private Object resetTriggerNode;
+    private boolean resetTriggered;
 
     public SlidingGroupByWindowStream(
             S inputEventStream,
@@ -55,6 +57,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         this.valueFunction = valueFunction;
         this.bucketSizeMillis = bucketSizeMillis;
         this.bucketCount = bucketCount;
+        resetTriggered = false;
         rollTrigger = FixedRateTrigger.atMillis(bucketSizeMillis);
         groupBySupplier = () -> new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
         slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
@@ -79,13 +82,19 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     @OnTrigger
     public boolean triggered() {
         boolean publish = slidingCalculator.isAllBucketsFilled();
-        if (publish) {
+        if (resetTriggered) {
+            groupBySupplier = () -> new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
+            slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
+            rollTrigger.init();
+            mapOfValues.clear();
+            publish = true;
+        } else if (publish) {
             GroupByStreamed<K, R> value = slidingCalculator.get();
             mapOfValues.clear();
             mapOfValues.putAll(value.map());
         }
+        resetTriggered = false;
         return publish;
-
     }
 
     @Override
@@ -100,12 +109,18 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
 
     @Override
     public void setResetTriggerNode(Object resetTriggerNode) {
-
+        this.resetTriggerNode = resetTriggerNode;
     }
 
     @Override
     public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
 
+    }
+
+
+    @OnParentUpdate("resetTriggerNode")
+    public final void resetTriggerNodeUpdated(Object triggerNode) {
+        resetTriggered = true;
     }
 
     private class MyGroupBy implements GroupBy<K, R> {
