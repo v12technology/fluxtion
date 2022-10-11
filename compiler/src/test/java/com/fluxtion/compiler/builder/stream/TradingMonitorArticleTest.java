@@ -1,10 +1,17 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.helpers.Aggregates;
+import com.fluxtion.runtime.stream.helpers.Predicates;
+import com.fluxtion.runtime.time.FixedRateTrigger;
 import lombok.Value;
 import org.junit.Test;
 
 import java.util.Date;
+
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 
 public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
@@ -16,29 +23,29 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
     @Test
     public void mergeTradeData() {
 //        writeSourceFile = true;
-//        sep(c -> {
-//            EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
-//                    .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
-//                    .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
-//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
-////                    .console("triggered cumSum time:%t volume:{}")
-//                    ;
-//
-//            EventStreamBuilder<GroupBy<String, Integer>> tradeVolumeEvery20Seconds = subscribe(Trade.class)
-//                    .groupBySliding(
-//                            Trade::getTickerId, Trade::getVolume, Aggregates.intSum(), 5_000, 4)
-//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
-//                    .map(GroupByFunction.filterValues(Predicates.gtBoxed(25000)));
-////                    .console("max volume in window:{}");
-//
-//            GroupByFunction.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
-//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
-//                    .console("joined time:%t data:{}")
-//            ;
-//
-//        });
+        sep(c -> {
+            EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
+                    .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
+                    .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
+                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+//                    .console("triggered cumSum time:%t volume:{}")
+                    ;
 
-        sep(TestSep_mergeTradeData.class);
+            EventStreamBuilder<GroupBy<String, Integer>> tradeVolumeEvery20Seconds = subscribe(Trade.class)
+                    .groupBySliding(
+                            Trade::getTickerId, Trade::getVolume, Aggregates.intSum(), 5_000, 4)
+                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+                    .map(GroupByFunction.filterValues(Predicates.gtBoxed(25000)));
+//                    .console("max volume in window:{}");
+
+            GroupByFunction.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
+                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+                    .console("joined time:%t data:{}")
+            ;
+
+        });
+
+//        sep(TestSep_mergeTradeData.class);
 
         setTime(0);
 
