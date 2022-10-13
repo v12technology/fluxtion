@@ -1,11 +1,13 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.groupby.FilterGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Predicates;
 import com.fluxtion.runtime.time.FixedRateTrigger;
+import lombok.Data;
 import lombok.Value;
 import org.junit.Test;
 
@@ -21,8 +23,37 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
 
     @Test
+    public void testAnchor() {
+        writeSourceFile = true;
+        sep(c -> {
+//            GreaterThan greaterThan_5 = new GreaterThan(25000L, Double.NaN);
+            FilterGroupByFunctionInvoker fg = new FilterGroupByFunctionInvoker(Predicates.greaterThanBoxed(25000));
+            c.addNode(fg);
+
+
+//            EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
+//                    .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
+//                    .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
+//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+////                    .console("triggered cumSum time:%t volume:{}")
+//                    ;
+//
+//            EventStreamBuilder<GroupBy<String, Integer>> tradeVolumeEvery20Seconds = subscribe(Trade.class)
+//                    .groupBySliding(
+//                            Trade::getTickerId, Trade::getVolume, Aggregates.intSum(), 5_000, 4)
+//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+//                    .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(25000)));
+//
+//            GroupByFunction.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
+//                    .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
+//                    .console("joined time:%t data:{}")
+//            ;
+        });
+    }
+
+    @Test
     public void mergeTradeData() {
-//        writeSourceFile = true;
+        writeSourceFile = true;
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
                     .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
@@ -35,7 +66,7 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
                     .groupBySliding(
                             Trade::getTickerId, Trade::getVolume, Aggregates.intSum(), 5_000, 4)
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
-                    .map(GroupByFunction.filterValues(Predicates.gtBoxed(25000)));
+                    .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(25000)));
 //                    .console("max volume in window:{}");
 
             GroupByFunction.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
@@ -67,7 +98,6 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-
     @Value
     public static class MarketTick {
         String tickerId;
@@ -93,5 +123,14 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
         String tickerId;
         String article;
         Date publishTime;
+    }
+
+    @Data
+    public static class CompanyTradeInfo {
+        double bidPrice;
+        double offerPrice;
+        String tickerId;
+        String companyName;
+        String url;
     }
 }

@@ -36,6 +36,6 @@ along with this program.  If not, see
 <!--<root level="DEBUG">-->
 <root level="OFF">
     <appender-ref ref="STDOUT" />
-  </root>  
-  
+  </root>
+
 </configuration>

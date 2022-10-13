@@ -1,18 +1,20 @@
 package com.fluxtion.runtime.stream.groupby;
 
+import com.fluxtion.runtime.Anchor;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class MapGroupByFunctionInvoker extends GroupByInvoker {
+public class MapGroupByFunctionInvoker {//extends GroupByInvoker {
 
     private final SerializableFunction mapFunction;
     private final transient GroupByCollection outputCollection = new GroupByCollection();
 
     public <T, R> MapGroupByFunctionInvoker(SerializableFunction<T, R> mapFunction) {
-        super(mapFunction);
+//        super(mapFunction);
         this.mapFunction = mapFunction;
+        Anchor.anchorCaptured(this, mapFunction);
     }
 
     //required for serialised version

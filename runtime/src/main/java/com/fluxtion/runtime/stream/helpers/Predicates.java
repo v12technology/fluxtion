@@ -67,11 +67,11 @@ public interface Predicates {
         return new GreaterThan(limit, Double.NaN)::check;
     }
 
-    static SerializableFunction<Integer, Boolean> gtBoxed(Integer limit) {
+    static SerializableFunction<Integer, Boolean> greaterThanBoxed(Integer limit) {
         return new GreaterThan(limit, Double.NaN)::checkBoxedInteger;
     }
 
-    static SerializableFunction<Long, Boolean> gtBoxed(Long limit) {
+    static SerializableFunction<Long, Boolean> greaterThanBoxed(Long limit) {
         return new GreaterThan(limit, Double.NaN)::checkBoxedLong;
     }
 

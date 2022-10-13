@@ -11,6 +11,7 @@ import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateToList;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
@@ -574,7 +575,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void aggregateTest() {
-        writeSourceFile = true;
+//        writeSourceFile = true;
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
                 .aggregate(AggregateIntSum::new).id("sum")
@@ -595,6 +596,25 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(notifyTarget.getIntPushValue(), is(0));
         assertThat(notifyTarget.getOnEventCount(), is(4));
         assertThat(getStreamed("sum"), is(0));
+    }
+
+    @Test
+    public void aggregateToLIstTest() {
+        writeSourceFile = true;
+        sep(c -> {
+            subscribe(String.class)
+                    .aggregate(AggregateToList.newList(4))
+                    .console("current list:{}");
+        });
+
+        onEvent("A");
+        onEvent("F");
+        onEvent("B");
+        onEvent("A1");
+        onEvent("A2");
+        onEvent("A3");
+        onEvent("A4");
+        onEvent("N");
     }
 
     @Test
