@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,13 +11,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
+import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
+import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -55,6 +56,10 @@ public class EventProcessorConfig {
     private boolean assignPrivateMembers = false;
     private final Map<String, String> class2replace = new HashMap<>();
 
+    public EventProcessorConfig() {
+        addAuditor(NodeNameLookupFactory.SINGLETON, "nodeNameLookup");
+    }
+
     /**
      * Add a node to the SEP. The node will have private final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -62,7 +67,7 @@ public class EventProcessorConfig {
      * Fluxtion will check if this node is already in the node set and will
      * return the previously added node.
      *
-     * @param <T> The type of the node to add to the SEP
+     * @param <T>  The type of the node to add to the SEP
      * @param node the node instance to add
      * @return The de-duplicated added node
      */
@@ -85,7 +90,7 @@ public class EventProcessorConfig {
      * Fluxtion will check if this node is already in the node set and will
      * return the previously added node.
      *
-     * @param <T> The type of the node to add to the SEP
+     * @param <T>  The type of the node to add to the SEP
      * @param node the node instance to add
      * @param name the variable name of the node
      * @return The de-duplicated added node
@@ -104,7 +109,7 @@ public class EventProcessorConfig {
      * Fluxtion will check if this node is already in the node set and will
      * return the previously added node.
      *
-     * @param <T> The type of the node to add to the SEP
+     * @param <T>  The type of the node to add to the SEP
      * @param node the node instance to add
      * @param name the variable name of the node
      * @return The de-duplicated added node
@@ -121,9 +126,9 @@ public class EventProcessorConfig {
      * Adds an {@link Auditor} to this SEP. The Auditor will have public final
      * scope and can be accessed via the provided variable name.
      *
-     * @param <T> The type of the Auditor
+     * @param <T>      The type of the Auditor
      * @param listener Auditor instance
-     * @param name public name of Auditor
+     * @param name     public name of Auditor
      * @return the added Auditor
      */
     public <T extends Auditor> T addAuditor(T listener, String name) {
@@ -138,7 +143,7 @@ public class EventProcessorConfig {
      * Maps a class name from one String to another in the generated output.
      *
      * @param originalFqn Class name to replace
-     * @param mappedFqn Class name replacement
+     * @param mappedFqn   Class name replacement
      */
     public void mapClass(String originalFqn, String mappedFqn) {
         getClass2replace().put(originalFqn, mappedFqn);
@@ -146,10 +151,10 @@ public class EventProcessorConfig {
 
     /**
      * adds a clock to the generated SEP.
+     *
      * @return the clock in generated SEP
      */
-    public Clock clock(){
-        addNode(clock, "clock");
+    public Clock clock() {
         addAuditor(clock, "clock");
         return clock;
     }
@@ -158,25 +163,26 @@ public class EventProcessorConfig {
      * Add an {@link EventLogManager} auditor to the generated SEP. Specify
      * the level at which method tracing will take place.
      */
-    public void addEventAudit(LogLevel tracingLogLevel){
+    public void addEventAudit(LogLevel tracingLogLevel) {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
 
-    public void addInterfaceImplementation(Class<?> clazz){
+    public void addInterfaceImplementation(Class<?> clazz) {
         interfaces.add(clazz);
     }
-    
-    public Set<Class<?>> interfacesToImplement(){
+
+    public Set<Class<?>> interfacesToImplement() {
         return interfaces;
     }
-    
+
     /**
      * Users can override this method and add SEP description logic here. The
      * buildConfig method will be called by the Fluxtion generator at build
      * time.
      */
-    public void buildConfig() {}
+    public void buildConfig() {
+    }
 
 
     /**

@@ -8,7 +8,7 @@ import com.fluxtion.runtime.audit.NodeNameLookup;
 import lombok.ToString;
 
 @ToString
-public class MapOnNotifyEventStream <R, T, S extends EventStream<R>> extends AbstractEventStream<R, T, S> {
+public class MapOnNotifyEventStream<R, T, S extends EventStream<R>> extends AbstractEventStream<R, T, S> {
 
     @PushReference
     private final T target;
@@ -25,7 +25,7 @@ public class MapOnNotifyEventStream <R, T, S extends EventStream<R>> extends Abs
     }
 
     protected void initialise() {
-        instanceNameToNotify = nodeNameLookup.lookup(target);
+        instanceNameToNotify = nodeNameLookup.lookupInstanceName(target);
     }
 
     @OnTrigger

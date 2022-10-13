@@ -51,6 +51,11 @@ public class LongStreamBuilder {
         return this;
     }
 
+    public LongStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        return this;
+    }
+
     public LongStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;

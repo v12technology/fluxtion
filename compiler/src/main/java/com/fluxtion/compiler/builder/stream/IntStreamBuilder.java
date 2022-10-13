@@ -46,6 +46,11 @@ public class IntStreamBuilder {
         return this;
     }
 
+    public IntStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        return this;
+    }
+
     public IntStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;

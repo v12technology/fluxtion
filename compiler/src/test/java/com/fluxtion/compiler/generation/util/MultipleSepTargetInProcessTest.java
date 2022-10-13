@@ -20,8 +20,8 @@ package com.fluxtion.compiler.generation.util;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.OutputRegistry;
+import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -155,9 +155,10 @@ public class MultipleSepTargetInProcessTest {
                         if (sep instanceof Lifecycle) {
                             ((Lifecycle) sep).init();
                         }
-                    } catch (Exception e) {  }
+                    } catch (Exception e) {
+                    }
                 }
-                if(sep == null) {
+                if (sep == null) {
                     sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
                 }
             }
@@ -167,7 +168,7 @@ public class MultipleSepTargetInProcessTest {
         }
     }
 
-    protected void writeOutputsToFile(boolean write){
+    protected void writeOutputsToFile(boolean write) {
         generateMetaInformation = write;
         writeSourceFile = write;
     }
@@ -189,7 +190,7 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected String sepClassName() {
-        return "TestSep_" + testName.getMethodName().replaceAll("\\[([0-9]*?)]", "") + (inlineCompiled?"Inline":"");
+        return "TestSep_" + testName.getMethodName().replaceAll("\\[([0-9]*?)]", "") + (inlineCompiled ? "Inline" : "");
     }
 
     protected String fqn() {
@@ -197,11 +198,20 @@ public class MultipleSepTargetInProcessTest {
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     protected <T> T getField(String name) {
+        if (compiledSep) {
+            return sep.getNodeById(name);//T) new Mirror().on(sep).get().field(name);
+        }
+        return inMemorySep.getNodeById(name);
+    }
+
+    @SneakyThrows
+    protected <T> T getAuditor(String name) {
         if (compiledSep) {
             return (T) new Mirror().on(sep).get().field(name);
         }
-        return (T) inMemorySep.getFieldByName(name).instance;
+        return getField(name);
     }
 
     protected <T> T getStreamed(String name) {
@@ -213,32 +223,32 @@ public class MultipleSepTargetInProcessTest {
         sep.onEvent(e);
     }
 
-    protected void onEvent(byte value){
-        onEvent((Byte)value);
+    protected void onEvent(byte value) {
+        onEvent((Byte) value);
     }
 
-    protected void onEvent(char value){
-        onEvent((Character)value);
+    protected void onEvent(char value) {
+        onEvent((Character) value);
     }
 
-    protected void onEvent(short value){
-        onEvent((Short)value);
+    protected void onEvent(short value) {
+        onEvent((Short) value);
     }
 
-    protected void onEvent(int value){
-        onEvent((Integer)value);
+    protected void onEvent(int value) {
+        onEvent((Integer) value);
     }
 
-    protected void onEvent(float value){
-        onEvent((Float)value);
+    protected void onEvent(float value) {
+        onEvent((Float) value);
     }
 
-    protected void onEvent(double value){
-        onEvent((Double)value);
+    protected void onEvent(double value) {
+        onEvent((Double) value);
     }
 
-    protected void onEvent(long value){
-        onEvent((Long)value);
+    protected void onEvent(long value) {
+        onEvent((Long) value);
     }
 
     protected void onGenericEvent(Object e) {
@@ -249,7 +259,7 @@ public class MultipleSepTargetInProcessTest {
         sep.addSink(id, sink);
     }
 
-    protected void addIntSink(String id, IntConsumer sink){
+    protected void addIntSink(String id, IntConsumer sink) {
         sep.addSink(id, sink);
     }
 
@@ -361,6 +371,7 @@ public class MultipleSepTargetInProcessTest {
             tickDelta(deltaTime);
         }
     }
+
     public void addClock() {
         if (!timeAdded) {
             time = new TestMutableNumber();

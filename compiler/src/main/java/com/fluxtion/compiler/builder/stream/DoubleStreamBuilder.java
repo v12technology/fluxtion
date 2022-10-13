@@ -53,6 +53,11 @@ public class DoubleStreamBuilder {
         return this;
     }
 
+    public DoubleStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        return this;
+    }
+
     public DoubleStreamBuilder resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
         return this;
