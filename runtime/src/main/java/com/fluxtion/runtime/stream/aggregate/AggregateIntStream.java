@@ -52,7 +52,7 @@ public class AggregateIntStream<F extends IntAggregateFunction<F>>
         return getAsInt();
     }
 
-    public static class TumblingIntWindowStream <F extends IntAggregateFunction<F>>
+    public static class TumblingIntWindowStream<F extends IntAggregateFunction<F>>
             extends EventLogNode
             implements IntEventStream {
 
@@ -101,24 +101,24 @@ public class AggregateIntStream<F extends IntAggregateFunction<F>>
             return true;
         }
 
-        @Override
-        public void setUpdateTriggerNode(Object updateTriggerNode) {
-
-        }
-
-        @Override
-        public void setPublishTriggerNode(Object publishTriggerNode) {
-
-        }
-
-        @Override
-        public void setResetTriggerNode(Object resetTriggerNode) {
-
-        }
-
-        @Override
-        public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-
-        }
+//        @Override
+//        public void setUpdateTriggerNode(Object updateTriggerNode) {
+//
+//        }
+//
+//        @Override
+//        public void setPublishTriggerNode(Object publishTriggerNode) {
+//
+//        }
+//
+//        @Override
+//        public void setResetTriggerNode(Object resetTriggerNode) {
+//
+//        }
+//
+//        @Override
+//        public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+//
+//        }
     }
 }

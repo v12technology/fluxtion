@@ -540,10 +540,12 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void slidingWindowNonDecuctTest() {
+    public void slidingWindowNonDeductTest() {
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
-                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max"));
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max")
+                .resetTrigger(EventFlow.subscribeToSignal("reset"))
+        );
         addClock();
         onEvent("70");
         onEvent("50");
@@ -569,6 +571,17 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         tickDelta(100);
         assertThat(getStreamed("max"), is(30));
 
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+
+        onEvent("70");
+        onEvent("50");
+        assertThat(getStreamed("max"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(70));
+
+        publishSignal("reset");
         tickDelta(100);
         assertThat(getStreamed("max"), is(0));
     }

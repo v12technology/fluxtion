@@ -12,6 +12,7 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingIntEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
@@ -37,22 +38,38 @@ public class IntStreamBuilder {
 
     //TRIGGERS - START
     public IntStreamBuilder updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        Object source = StreamHelper.getSource(updateTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setUpdateTriggerNode(source);
+        }
         return this;
     }
 
     public IntStreamBuilder publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerNode(source);
+        }
         return this;
     }
 
     public IntStreamBuilder publishTriggerOverride(Object publishTrigger) {
-        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerOverrideNode(source);
+        }
         return this;
     }
 
     public IntStreamBuilder resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        Object source = StreamHelper.getSource(resetTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setResetTriggerNode(source);
+        }
         return this;
     }
 

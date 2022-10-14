@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.aggregate.functions;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
-public class AggregateCounting<T> implements AggregateFunction<T, Integer, AggregateCounting<T>>,  IntEventStream {
+public class AggregateCounting<T> implements AggregateFunction<T, Integer, AggregateCounting<T>>, IntEventStream {
     private int count;
 
     @Override
@@ -27,7 +27,7 @@ public class AggregateCounting<T> implements AggregateFunction<T, Integer, Aggre
         return ++count;
     }
 
-    public int increment(int input){
+    public int increment(int input) {
         count++;
         return getAsInt();
     }
@@ -42,31 +42,31 @@ public class AggregateCounting<T> implements AggregateFunction<T, Integer, Aggre
         count -= add.count;
     }
 
-    public int increment(double input){
+    public int increment(double input) {
         return increment(1);
     }
 
-    public int increment(long input){
+    public int increment(long input) {
         return increment(1);
     }
 
-    @Override
-    public void setUpdateTriggerNode(Object updateTriggerNode) {
-
-    }
-
-    @Override
-    public void setPublishTriggerNode(Object publishTriggerNode) {
-
-    }
-
-    @Override
-    public void setResetTriggerNode(Object resetTriggerNode) {
-
-    }
-
-    @Override
-    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-
-    }
+//    @Override
+//    public void setUpdateTriggerNode(Object updateTriggerNode) {
+//
+//    }
+//
+//    @Override
+//    public void setPublishTriggerNode(Object publishTriggerNode) {
+//
+//    }
+//
+//    @Override
+//    public void setResetTriggerNode(Object resetTriggerNode) {
+//
+//    }
+//
+//    @Override
+//    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+//
+//    }
 }

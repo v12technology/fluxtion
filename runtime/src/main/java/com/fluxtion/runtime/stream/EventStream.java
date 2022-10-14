@@ -11,7 +11,7 @@ public interface EventStream<R> extends Supplier<R> {
         return false;
     }
 
-    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier {
+    interface IntEventStream extends EventStream<Integer>, IntSupplier {
         default Integer get() {
             return getAsInt();
         }
