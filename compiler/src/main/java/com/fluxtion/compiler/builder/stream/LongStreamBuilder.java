@@ -19,11 +19,12 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingLongEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
+import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
@@ -42,22 +43,38 @@ public class LongStreamBuilder {
 
     //TRIGGERS - START
     public LongStreamBuilder updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        Object source = StreamHelper.getSource(updateTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setUpdateTriggerNode(source);
+        }
         return this;
     }
 
     public LongStreamBuilder publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerNode(source);
+        }
         return this;
     }
 
     public LongStreamBuilder publishTriggerOverride(Object publishTrigger) {
-        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerOverrideNode(source);
+        }
         return this;
     }
 
     public LongStreamBuilder resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        Object source = StreamHelper.getSource(resetTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setResetTriggerNode(source);
+        }
         return this;
     }
 

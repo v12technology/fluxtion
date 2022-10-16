@@ -17,13 +17,13 @@ public interface EventStream<R> extends Supplier<R> {
         }
     }
 
-    interface DoubleEventStream extends TriggeredEventStream<Double>, DoubleSupplier {
+    interface DoubleEventStream extends EventStream<Double>, DoubleSupplier {
         default Double get() {
             return getAsDouble();
         }
     }
 
-    interface LongEventStream extends TriggeredEventStream<Long>, LongSupplier {
+    interface LongEventStream extends EventStream<Long>, LongSupplier {
         default Long get() {
             return getAsLong();
         }

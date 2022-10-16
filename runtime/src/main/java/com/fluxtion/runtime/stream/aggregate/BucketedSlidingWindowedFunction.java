@@ -31,7 +31,13 @@ public class BucketedSlidingWindowedFunction<T, R, F extends AggregateFunction<T
         }
     }
 
-    public void aggregate(T input) {
+    public void init() {
+        aggregatedFunction.reset();
+        currentFunction.reset();
+        buckets.forEach(AggregateFunction::reset);
+    }
+
+    public final void aggregate(T input) {
         currentFunction.aggregate(input);
     }
 
@@ -52,7 +58,7 @@ public class BucketedSlidingWindowedFunction<T, R, F extends AggregateFunction<T
                 allBucketsFilled = allBucketsFilled | writePointer == buckets.size();
                 writePointer = writePointer % buckets.size();
             }
-        }else{
+        } else {
             aggregatedFunction.reset();
             //clear and then combine
             for (int i = 0; i < windowsToRoll; i++) {
