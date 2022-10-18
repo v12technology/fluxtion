@@ -6,34 +6,13 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.*;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
-import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
-import com.fluxtion.runtime.stream.FlatMapEventStream;
-import com.fluxtion.runtime.stream.InternalEventDispatcher;
-import com.fluxtion.runtime.stream.LookupEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.MergeEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
-import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
-import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
-import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
-import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
+import com.fluxtion.runtime.stream.groupby.*;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
@@ -244,7 +223,7 @@ public class EventStreamBuilder<T> {
 
     //OUTPUTS - START
     public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
-        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
     }
 

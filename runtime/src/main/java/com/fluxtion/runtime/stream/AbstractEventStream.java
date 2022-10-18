@@ -20,8 +20,8 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     private final S inputEventStream;
     private final transient MethodReferenceReflection streamFunction;
 
-    @NoTriggerReference
-    private final transient Object streamFunctionInstance;
+    //    @NoTriggerReference
+//    private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
     protected transient boolean overrideUpdateTrigger;
     private transient boolean overridePublishTrigger;
@@ -43,10 +43,10 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
-            streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(methodReferenceReflection.captured()[0]);
+            Object streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(methodReferenceReflection.captured()[0]);
             statefulFunction = Stateful.class.isAssignableFrom(streamFunctionInstance.getClass());
         } else {
-            streamFunctionInstance = null;
+//            streamFunctionInstance = null;
             statefulFunction = false;
         }
 

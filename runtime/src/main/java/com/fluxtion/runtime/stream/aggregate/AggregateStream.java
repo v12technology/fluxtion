@@ -1,6 +1,5 @@
 package com.fluxtion.runtime.stream.aggregate;
 
-import com.fluxtion.runtime.Anchor;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -17,7 +16,7 @@ public class AggregateStream<T, R, S extends EventStream<T>, F extends Aggregate
         super(inputEventStream, null);
         this.windowFunctionSupplier = windowFunctionSupplier;
         this.mapFunction = windowFunctionSupplier.get();
-        Anchor.anchorCaptured(this, windowFunctionSupplier);
+//        Anchor.anchorCaptured(this, windowFunctionSupplier);
         auditInfo = mapFunction.getClass().getSimpleName() + "->aggregate";
     }
 

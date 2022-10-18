@@ -28,13 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.*;
@@ -617,7 +611,8 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             subscribe(String.class)
                     .aggregate(AggregateToList.newList(4))
-                    .console("current list:{}");
+                    .console("current list:{}")
+            ;
         });
 
         onEvent("A");

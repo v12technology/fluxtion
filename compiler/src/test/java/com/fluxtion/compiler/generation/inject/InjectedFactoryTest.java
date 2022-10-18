@@ -29,7 +29,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Greg Higgins
  */
 public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
@@ -48,6 +47,7 @@ public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test_injected_factory() throws Exception {
+        writeSourceFile = true;
         sep(InjectedFactoryTest::buildFactory);
         KeyTracker tracker = getField("keyTracker1");
         Assert.assertEquals('1', tracker.keyProcessor_1.myChar);
@@ -69,7 +69,7 @@ public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void validateEventHandling() throws Exception{
+    public void validateEventHandling() throws Exception {
         sep(InjectedFactoryTest::buildFactory);
         KeyTracker tracker = getField("keyTracker1");
         CharEvent event_a = new CharEvent('a');
@@ -100,7 +100,7 @@ public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void validateEventHandlingOverride() throws Exception{
+    public void validateEventHandlingOverride() throws Exception {
         sep(InjectedFactoryTest::buildFactoryWithConfig);
         KeyTrackerWithVariableConfig tracker = getField("keyTracker1");
 
