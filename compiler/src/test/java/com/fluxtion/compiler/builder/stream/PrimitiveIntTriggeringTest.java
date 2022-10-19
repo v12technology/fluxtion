@@ -1,12 +1,17 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
 
@@ -294,4 +299,108 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
     }
 
     //SLIDING
+    @Test
+    public void slidingWindowNonDeductTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(Mappers::parseInt)
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max")
+                .resetTrigger(EventFlow.subscribeToSignal("reset"))
+        );
+        addClock();
+        onEvent("70");
+        onEvent("50");
+        onEvent("100");
+        tickDelta(100);
+
+        assertThat(getStreamed("max"), is(0));
+
+        onEvent("90");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+
+        onEvent("30");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(100));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(90));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(30));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+
+        onEvent("70");
+        onEvent("50");
+        assertThat(getStreamed("max"), is(0));
+
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(70));
+
+        publishSignal("reset");
+        tickDelta(100);
+        assertThat(getStreamed("max"), is(0));
+    }
+
+    @Test
+    public void additionalPublishSlidingWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(Mappers::parseInt)
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max")
+                .publishTrigger(EventFlow.subscribeToSignal("publish"))
+                .sink("out"));
+
+        MutableInt result = new MutableInt();
+        addIntSink("out", result::setValue);
+
+        addClock();
+        onEvent("70");
+        onEvent("50");
+        onEvent("100");
+        tickDelta(100);
+        Assert.assertEquals(0, result.intValue());
+
+
+        tickDelta(300);
+        Assert.assertEquals(100, result.intValue());
+
+        result.setValue(0);
+        onEvent(150);
+        Assert.assertEquals(0, result.intValue());
+
+        publishSignal("publish");
+        Assert.assertEquals(100, result.intValue());
+    }
+
+    @Test
+    public void overridePublishSlidingWindowTest() {
+        sep(c -> subscribe(String.class)
+                .mapToInt(Mappers::parseInt)
+                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max")
+                .updateTrigger(EventFlow.subscribeToSignal("update"))
+                .sink("out"));
+
+        MutableInt result = new MutableInt();
+        addIntSink("out", result::setValue);
+
+        addClock();
+        onEvent("70");
+        onEvent("50");
+        onEvent("100");
+        tickDelta(100);
+        Assert.assertEquals(0, result.intValue());
+
+        tickDelta(300);
+        Assert.assertEquals(0, result.intValue());
+
+        onEvent(150);
+        Assert.assertEquals(0, result.intValue());
+
+        publishSignal("update");
+        Assert.assertEquals(100, result.intValue());
+    }
 }

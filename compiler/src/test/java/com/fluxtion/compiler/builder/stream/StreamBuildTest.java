@@ -9,7 +9,6 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
-import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateToList;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
@@ -28,7 +27,13 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.*;
@@ -534,52 +539,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), is(0));
     }
 
-    @Test
-    public void slidingWindowNonDeductTest() {
-        sep(c -> subscribe(String.class)
-                .map(StreamBuildTest::valueOfInt)
-                .slidingAggregate(AggregateIntMax::new, 100, 4).id("max")
-                .resetTrigger(EventFlow.subscribeToSignal("reset"))
-        );
-        addClock();
-        onEvent("70");
-        onEvent("50");
-        onEvent("100");
-        tickDelta(100);
-
-        assertThat(getStreamed("max"), is(nullValue()));
-
-        onEvent("90");
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(nullValue()));
-
-        onEvent("30");
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(nullValue()));
-
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(100));
-
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(90));
-
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(30));
-
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(0));
-
-        onEvent("70");
-        onEvent("50");
-        assertThat(getStreamed("max"), is(0));
-
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(70));
-
-        publishSignal("reset");
-        tickDelta(100);
-        assertThat(getStreamed("max"), is(0));
-    }
 
     @Test
     public void aggregateTest() {

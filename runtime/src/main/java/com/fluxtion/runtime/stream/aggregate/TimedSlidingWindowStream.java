@@ -34,36 +34,39 @@ public class TimedSlidingWindowStream
         this.windowFunction = new BucketedSlidingWindowedFunction<>(windowFunctionSupplier, buckets);
     }
 
+    @Override
+    public R get() {
+        return value;//windowFunction.get();
+    }
+
+    protected void cacheWindowValue() {
+        value = windowFunction.get();
+    }
+
+    protected void aggregateInputValue(S inputEventStream) {
+        windowFunction.aggregate(inputEventStream.get());
+    }
+
     @OnParentUpdate
     public void timeTriggerFired(FixedRateTrigger rollTrigger) {
         windowFunction.roll(rollTrigger.getTriggerCount());
-        inputStreamTriggered_1 = true;
-        inputStreamTriggered = true;
+        if (windowFunction.isAllBucketsFilled()) {
+            cacheWindowValue();
+            inputStreamTriggered_1 = true;
+            inputStreamTriggered = true;
+        }
     }
 
     @OnParentUpdate
     public void inputUpdated(S inputEventStream) {
-        windowFunction.aggregate(inputEventStream.get());
+        aggregateInputValue(inputEventStream);
         inputStreamTriggered_1 = false;
         inputStreamTriggered = false;
     }
 
     @OnTrigger
     public boolean triggered() {
-        if (executeUpdate()) {
-            boolean publish = windowFunction.isAllBucketsFilled();
-            if (publish) value = windowFunction.get();
-        }
         return fireEventUpdateNotification();
-    }
-
-    @Override
-    public R get() {
-        return value;//windowFunction.get();
-    }
-
-    @Override
-    public void setUpdateTriggerNode(Object updateTriggerNode) {
     }
 
     @Override
@@ -104,21 +107,31 @@ public class TimedSlidingWindowStream
             intSlidingFunction = new BucketedSlidingWindowedIntFunction<>(windowFunctionSupplier, buckets);
         }
 
+//        @OnParentUpdate
+//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+//        }
+
+//        @OnParentUpdate
+//        public void updateData(IntEventStream inputEventStream) {
+//            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
+//        }
+//
+//        @OnTrigger
+//        public boolean triggered() {
+//            boolean publish = intSlidingFunction.isAllBucketsFilled();
+//            if (publish) value = intSlidingFunction.getAsInt();
+//            return publish;
+//        }
+
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
             intSlidingFunction.roll(rollTrigger.getTriggerCount());
-        }
-
-        @OnParentUpdate
-        public void updateData(IntEventStream inputEventStream) {
-            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
-        }
-
-        @OnTrigger
-        public boolean triggered() {
-            boolean publish = intSlidingFunction.isAllBucketsFilled();
-            if (publish) value = intSlidingFunction.getAsInt();
-            return publish;
+            if (intSlidingFunction.isAllBucketsFilled()) {
+                cacheWindowValue();
+                inputStreamTriggered_1 = true;
+                inputStreamTriggered = true;
+            }
         }
 
         @Override
@@ -129,6 +142,21 @@ public class TimedSlidingWindowStream
         @Override
         public int getAsInt() {
             return value;
+        }
+
+        protected void cacheWindowValue() {
+            value = intSlidingFunction.getAsInt();
+        }
+
+        protected void aggregateInputValue(IntEventStream inputEventStream) {
+            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
+        }
+
+        @Override
+        protected void resetOperation() {
+            intSlidingFunction.init();
+            rollTrigger.init();
+            value = 0;
         }
     }
 
@@ -157,21 +185,31 @@ public class TimedSlidingWindowStream
             intSlidingFunction = new BucketedSlidingWindowedDoubleFunction<>(windowFunctionSupplier, buckets);
         }
 
+//        @OnParentUpdate
+//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+//        }
+//
+//        @OnParentUpdate
+//        public void updateData(DoubleEventStream inputEventStream) {
+//            intSlidingFunction.aggregateDouble(inputEventStream.getAsDouble());
+//        }
+//
+//        @OnTrigger
+//        public boolean triggered() {
+//            boolean publish = intSlidingFunction.isAllBucketsFilled();
+//            if (publish) value = intSlidingFunction.getAsDouble();
+//            return publish;
+//        }
+
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
             intSlidingFunction.roll(rollTrigger.getTriggerCount());
-        }
-
-        @OnParentUpdate
-        public void updateData(DoubleEventStream inputEventStream) {
-            intSlidingFunction.aggregateDouble(inputEventStream.getAsDouble());
-        }
-
-        @OnTrigger
-        public boolean triggered() {
-            boolean publish = intSlidingFunction.isAllBucketsFilled();
-            if (publish) value = intSlidingFunction.getAsDouble();
-            return publish;
+            if (intSlidingFunction.isAllBucketsFilled()) {
+                cacheWindowValue();
+                inputStreamTriggered_1 = true;
+                inputStreamTriggered = true;
+            }
         }
 
         @Override
@@ -182,6 +220,21 @@ public class TimedSlidingWindowStream
         @Override
         public double getAsDouble() {
             return value;
+        }
+
+        protected void cacheWindowValue() {
+            value = intSlidingFunction.getAsDouble();
+        }
+
+        protected void aggregateInputValue(DoubleEventStream inputEventStream) {
+            intSlidingFunction.aggregateDouble(inputEventStream.getAsDouble());
+        }
+
+        @Override
+        protected void resetOperation() {
+            intSlidingFunction.init();
+            rollTrigger.init();
+            value = 0;
         }
     }
 
@@ -210,21 +263,31 @@ public class TimedSlidingWindowStream
             intSlidingFunction = new BucketedSlidingWindowedLongFunction<>(windowFunctionSupplier, buckets);
         }
 
+//        @OnParentUpdate
+//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
+//        }
+//
+//        @OnParentUpdate
+//        public void updateData(LongEventStream inputEventStream) {
+//            intSlidingFunction.aggregateLong(inputEventStream.getAsLong());
+//        }
+//
+//        @OnTrigger
+//        public boolean triggered() {
+//            boolean publish = intSlidingFunction.isAllBucketsFilled();
+//            if (publish) value = intSlidingFunction.getAsLong();
+//            return publish;
+//        }
+
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
             intSlidingFunction.roll(rollTrigger.getTriggerCount());
-        }
-
-        @OnParentUpdate
-        public void updateData(LongEventStream inputEventStream) {
-            intSlidingFunction.aggregateLong(inputEventStream.getAsLong());
-        }
-
-        @OnTrigger
-        public boolean triggered() {
-            boolean publish = intSlidingFunction.isAllBucketsFilled();
-            if (publish) value = intSlidingFunction.getAsLong();
-            return publish;
+            if (intSlidingFunction.isAllBucketsFilled()) {
+                cacheWindowValue();
+                inputStreamTriggered_1 = true;
+                inputStreamTriggered = true;
+            }
         }
 
         @Override
@@ -235,6 +298,21 @@ public class TimedSlidingWindowStream
         @Override
         public long getAsLong() {
             return value;
+        }
+
+        protected void cacheWindowValue() {
+            value = intSlidingFunction.getAsLong();
+        }
+
+        protected void aggregateInputValue(LongEventStream inputEventStream) {
+            intSlidingFunction.aggregateLong(inputEventStream.getAsLong());
+        }
+
+        @Override
+        protected void resetOperation() {
+            intSlidingFunction.init();
+            rollTrigger.init();
+            value = 0;
         }
     }
 }
