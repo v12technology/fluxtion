@@ -41,7 +41,7 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         } else if (reset()) {
             auditLog.info("invokeMapFunction", false);
             auditLog.info("reset", true);
-            resetOperation();
+//            resetOperation();
         } else {
             auditLog.info("invokeMapFunction", false);
         }

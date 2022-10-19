@@ -40,7 +40,7 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
         } else if (reset()) {
             auditLog.info("invokeMapFunction", false);
             auditLog.info("reset", true);
-            resetOperation();
+//            resetOperation();
         } else {
             auditLog.info("invokeMapFunction", false);
         }

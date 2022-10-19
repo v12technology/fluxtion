@@ -353,6 +353,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dynamicFilterByPropertyTest() {
+        writeSourceFile = true;
         sep(c -> subscribe(MyData.class)
                 .filterByProperty(StreamBuildTest::myDataIntTooBig, MyData::getValue, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
@@ -784,12 +785,13 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
                     .console("groupBy no map    : {}")
                     .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt)) //TODO fix anonymous instance lambdas
-//                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
+////                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
                     .console("groupBy filtered  : {}")
                     .map(GroupByFunction.mapValues(StreamBuildTest::prefixInt))
                     .console("groupBy prefix    : {}")
                     .map(GroupByFunction.mapValues(StreamBuildTest::toUpperCase))
                     .console("groupBy uppercase : {}\n");
+            ;
         });
 
         onEvent(new KeyedData("A", 400));
@@ -911,16 +913,16 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void groupBySlidingTest() {
+        writeSourceFile = true;
 //        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 
         sep(c -> subscribe(KeyedData.class)
-//                .console("\t\tIN eventTime:%t -> {}")
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .map(GroupBy::map)
-//                .console("OUT eventTime:%t {} ")
-                .sink("map"));
+                .sink("map")
+        );
 
         addSink("map", (Map<String, Integer> in) -> {
             results.clear();

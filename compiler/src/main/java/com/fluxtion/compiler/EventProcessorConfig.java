@@ -26,12 +26,7 @@ import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
@@ -82,6 +77,10 @@ public class EventProcessorConfig {
         }
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
+
+//    public void addNode(MethodReferenceReflection methodReference){
+//
+//    }
 
     /**
      * Add a node to the SEP. The node will have public final scope, the

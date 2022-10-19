@@ -88,7 +88,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        onEvent(SinkRegistration.intSink("sink", target::add));
         addIntSink("sink", target::add);
         assertThat(target.intValue(), is(0));
-        onEvent("12");
+        onEvent("1");
         assertThat(target.intValue(), is(0));
 //        onEvent(Signal.intSignal("test", 5));
         publishSignal("test", 5);
@@ -98,14 +98,15 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
 //        onEvent(Signal.intSignal("test", 7));
         publishSignal("test", 7);
-        assertThat(target.intValue(), is(12));
+        assertThat(target.intValue(), is(24));
 
         onEvent("8");
-        assertThat(target.intValue(), is(20));
+        assertThat(target.intValue(), is(32));
     }
 
     @Test
     public void dynamicDoubleFilterTest() {
+        writeSourceFile = true;
         MutableDouble target = new MutableDouble();
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
@@ -114,18 +115,19 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
         onEvent(SinkRegistration.doubleSink("sink", target::add));
         assertThat(target.doubleValue(), closeTo(0, 0.0001));
-        onEvent("12");
+        onEvent("3");
         assertThat(target.doubleValue(), closeTo(0, 0.0001));
         onEvent(Signal.doubleSignal("test", 5));
         assertThat(target.doubleValue(), closeTo(0, 0.0001));
+
         onEvent("12");
         assertThat(target.doubleValue(), closeTo(12, 0.0001));
 
         onEvent(Signal.doubleSignal("test", 7));
-        assertThat(target.doubleValue(), closeTo(12, 0.0001));
+        assertThat(target.doubleValue(), closeTo(24, 0.0001));
 
         onEvent("8.5");
-        assertThat(target.doubleValue(), closeTo(20.5, 0.0001));
+        assertThat(target.doubleValue(), closeTo(32.5, 0.0001));
     }
 
 
@@ -139,7 +141,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
         onEvent(SinkRegistration.longSink("sink", target::add));
         assertThat(target.longValue(), is(0L));
-        onEvent("12");
+        onEvent("1");
         assertThat(target.longValue(), is(0L));
         onEvent(Signal.longSignal("test", 5));
         assertThat(target.longValue(), is(0L));
@@ -147,10 +149,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(target.longValue(), is(12L));
 
         onEvent(Signal.longSignal("test", 7));
-        assertThat(target.longValue(), is(12L));
+        assertThat(target.longValue(), is(24L));
 
         onEvent("8");
-        assertThat(target.longValue(), is(20L));
+        assertThat(target.longValue(), is(32L));
     }
 
     public static boolean gt(int inputVariable, int limitToCompare) {

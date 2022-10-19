@@ -1,21 +1,20 @@
 package com.fluxtion.runtime.stream.groupby;
 
-import com.fluxtion.runtime.Anchor;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 
 import java.util.Map.Entry;
 
 public class FilterGroupByFunctionInvoker {//extends GroupByInvoker {
 
-    //    @NoTriggerReference
-//    @SepNode
+    @NoTriggerReference
     private final SerializableFunction mapFunction;
     private final transient GroupByCollection outputCollection = new GroupByCollection();
 
     public <T> FilterGroupByFunctionInvoker(SerializableFunction<T, Boolean> mapFunction) {
 //        super(mapFunction);
         this.mapFunction = mapFunction;
-        Anchor.anchorCaptured(this, mapFunction);
+//        Anchor.anchorCaptured(this, mapFunction);
 //        Anchor.anchorCaptured(this, mapFunction);
     }
 

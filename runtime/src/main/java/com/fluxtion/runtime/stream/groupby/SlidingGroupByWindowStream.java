@@ -15,6 +15,7 @@ import com.fluxtion.runtime.time.FixedRateTrigger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 
 /**
@@ -37,7 +38,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     private final int bucketSizeMillis;
     private final int bucketCount;
     public FixedRateTrigger rollTrigger;
-    private transient SerializableSupplier<GroupByWindowedCollection<T, K, V, R, F>> groupBySupplier;
+    private transient Supplier<GroupByWindowedCollection<T, K, V, R, F>> groupBySupplier;
     private transient BucketedSlidingWindowedFunction<T, GroupByStreamed<K, R>, GroupByWindowedCollection<T, K, V, R, F>> slidingCalculator;
     private transient final Map<K, R> mapOfValues = new HashMap<>();
     private transient final MyGroupBy results = new MyGroupBy();

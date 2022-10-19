@@ -94,7 +94,8 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
         publishSignal("startOfDay");
         for (int i = 30_500; i < 50_000; i += 500) {
             tick(i);
-            break;
+            onEvent(new Trade("MSFT", 1.03, 3000));
+//            break;
         }
     }
 
