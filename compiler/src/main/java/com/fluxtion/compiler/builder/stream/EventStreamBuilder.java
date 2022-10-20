@@ -6,20 +6,42 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.*;
+import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
+import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
+import com.fluxtion.runtime.stream.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.FilterEventStream;
+import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
+import com.fluxtion.runtime.stream.FlatMapEventStream;
+import com.fluxtion.runtime.stream.InternalEventDispatcher;
+import com.fluxtion.runtime.stream.LookupEventStream;
+import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.MergeEventStream;
+import com.fluxtion.runtime.stream.NotifyEventStream;
+import com.fluxtion.runtime.stream.PeekEventStream;
+import com.fluxtion.runtime.stream.PushEventStream;
+import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.*;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
+import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
+import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-public class EventStreamBuilder<T> {
+public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplier<T>> {
 
     final TriggeredEventStream<T> eventStream;
 
@@ -28,7 +50,7 @@ public class EventStreamBuilder<T> {
         this.eventStream = eventStream;
     }
 
-    public EventSupplier<T> eventStream() {
+    public EventSupplier<T> getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 

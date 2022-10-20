@@ -20,9 +20,6 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     private final S inputEventStream;
     @NoTriggerReference
     private final transient MethodReferenceReflection streamFunction;
-
-    //    @NoTriggerReference
-//    private final transient Object streamFunctionInstance;
     private transient final boolean statefulFunction;
     protected transient boolean overrideUpdateTrigger;
     protected transient boolean overridePublishTrigger;
@@ -34,7 +31,6 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     protected transient boolean resetTriggered;
     @NoTriggerReference
     protected transient Stateful<R> resetFunction;
-
     private Object updateTriggerNode;
     private Object publishTriggerNode;
     private Object publishTriggerOverrideNode;

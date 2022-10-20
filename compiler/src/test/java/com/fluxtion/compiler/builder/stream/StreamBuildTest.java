@@ -76,7 +76,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void streamAsMemberTest() {
-        sep(c -> c.addNode(new StreamAsMemberClass(subscribe(String.class).eventStream(), "target")));
+        sep(c -> c.addNode(new StreamAsMemberClass(subscribe(String.class).getEventSupplier(), "target")));
         StreamAsMemberClass target = getField("target");
         assertFalse(target.isHasChanged());
         assertFalse(target.isTriggered());

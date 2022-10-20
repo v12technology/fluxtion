@@ -56,9 +56,9 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void streamMembersTest() {
         sep(c -> c.addNode(new StreamMembers(
-                subscribe(Integer.class).mapToInt(Integer::intValue).intStream(),
-                subscribe(Double.class).mapToDouble(Double::doubleValue).doubleStream(),
-                subscribe(Long.class).mapToLong(Long::longValue).longStream()
+                subscribe(Integer.class).mapToInt(Integer::intValue).getEventSupplier(),
+                subscribe(Double.class).mapToDouble(Double::doubleValue).getEventSupplier(),
+                subscribe(Long.class).mapToLong(Long::longValue).getEventSupplier()
         ), "root"));
         StreamMembers wrapper = getField("root");
         onEvent(10);

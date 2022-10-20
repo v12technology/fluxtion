@@ -9,6 +9,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
 import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
@@ -28,7 +29,7 @@ import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingLongWi
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-public class LongStreamBuilder {
+public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplier> {
 
     final LongEventStream eventStream;
 
@@ -37,7 +38,7 @@ public class LongStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public LongEventSupplier longStream() {
+    public LongEventSupplier getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingLongEventSupplier(eventStream));
     }
 

@@ -2,6 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
@@ -23,7 +24,7 @@ import com.fluxtion.runtime.stream.helpers.Peekers;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
-public class IntStreamBuilder {
+public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier> {
 
     final IntEventStream eventStream;
 
@@ -32,7 +33,8 @@ public class IntStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public IntEventSupplier intStream() {
+    @Override
+    public IntEventSupplier getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 

@@ -50,4 +50,8 @@ public interface EventStream<R> extends Supplier<R> {
             return getAsLong();
         }
     }
+
+    interface EventSupplierAccessor<T extends EventSupplier> {
+        T getEventSupplier();
+    }
 }
