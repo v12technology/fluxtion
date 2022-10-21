@@ -35,8 +35,8 @@ import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,7 +58,6 @@ import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @RunWith(Parameterized.class)
-@Ignore
 public class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep;
@@ -98,6 +97,10 @@ public class MultipleSepTargetInProcessTest {
     @After
     public void afterTest() {
         tearDown();
+    }
+
+    @Test
+    public void doNothingTest() {
     }
 
     protected StaticEventProcessor sep(RootNodeConfig rootNode) {

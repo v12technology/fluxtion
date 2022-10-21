@@ -260,8 +260,6 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
 
     @Test
     public void updateTriggerTumblingMapTest() {
-        writeSourceFile = true;
-        generateMetaInformation = true;
         sep(c -> EventFlow.subscribeToLongSignal("in")
                 .tumblingAggregate(AggregateLongSum::new, 100).id("sum")
                 .updateTrigger(EventFlow.subscribeToSignal("update"))

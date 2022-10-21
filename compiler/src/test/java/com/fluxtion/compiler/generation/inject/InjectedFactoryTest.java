@@ -47,7 +47,6 @@ public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test_injected_factory() throws Exception {
-        writeSourceFile = true;
         sep(InjectedFactoryTest::buildFactory);
         KeyTracker tracker = getField("keyTracker1");
         Assert.assertEquals('1', tracker.keyProcessor_1.myChar);

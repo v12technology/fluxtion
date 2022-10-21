@@ -245,7 +245,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void mapWithInstanceFunctionTest() {
-        writeSourceFile = true;
         sep(c -> subscribe(Integer.class).map(new Adder()::add).id("cumsum"));
         onEvent(10);
         onEvent(10);
@@ -358,7 +357,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dynamicFilterByPropertyTest() {
-        writeSourceFile = true;
         sep(c -> subscribe(MyData.class)
                 .filterByProperty(StreamBuildTest::myDataIntTooBig, MyData::getValue, subscribe(FilterConfig.class))
                 .map(MyData::getValue)
@@ -542,7 +540,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void aggregateTest() {
-//        writeSourceFile = true;
         sep(c -> subscribe(String.class)
                 .map(StreamBuildTest::valueOfInt)
                 .aggregate(AggregateIntSum::new).id("sum")
@@ -567,22 +564,20 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void aggregateToLIstTest() {
-        writeSourceFile = true;
-        sep(c -> {
-            subscribe(String.class)
-                    .aggregate(AggregateToList.newList(4))
-                    .console("current list:{}")
-            ;
-        });
+        sep(c -> subscribe(String.class)
+                .aggregate(AggregateToList.newList(4))
+                .id("myList"));
 
         onEvent("A");
         onEvent("F");
         onEvent("B");
+        assertThat(getStreamed("myList"), contains("A", "F", "B"));
         onEvent("A1");
         onEvent("A2");
         onEvent("A3");
         onEvent("A4");
         onEvent("N");
+        assertThat(getStreamed("myList"), contains("A2", "A3", "A4", "N"));
     }
 
     @Test
@@ -737,20 +732,21 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void mapGroupByValuesTest() {
-        writeSourceFile = true;
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
         sep(c -> {
             subscribe(KeyedData.class)
-                    .console("input:{}")
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
-                    .console("groupBy no map    : {}")
-                    .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt)) //TODO fix anonymous instance lambdas
-////                    .map(GroupByFunction.filterValues(StreamBuildTest::gt500Integer))
-                    .console("groupBy filtered  : {}")
-                    .map(GroupByFunction.mapValues(StreamBuildTest::prefixInt))
-                    .console("groupBy prefix    : {}")
-                    .map(GroupByFunction.mapValues(StreamBuildTest::toUpperCase))
-                    .console("groupBy uppercase : {}\n");
-            ;
+                    .map(GroupByFunction.mapValues(StreamBuildTest::doubleInt))
+                    .map(GroupBy::map)
+                    .sink("keyValue");
+        });
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
         });
 
         onEvent(new KeyedData("A", 400));
@@ -759,26 +755,79 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
         onEvent(new KeyedData("B", 2000));
         onEvent(new KeyedData("C", 1000));
         onEvent(new KeyedData("B", 50));
+
+        expected.put("A", 800);
+        expected.put("B", 100);
+        expected.put("C", 2000);
+        assertThat(results, is(expected));
+    }
+
+    public static int doubleInt(int value) {
+        return value * 2;
+    }
+
+    @Test
+    public void filterGroupByTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> {
+            EventStreamBuilder<Map<String, Integer>> obj = subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId, KeyedData::getAmount)
+                    .map(GroupByFunction.filterValues(new MyIntFilter(500)::gt))
+                    .map(GroupBy::map)
+                    .sink("keyValue");
+        });
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent(new KeyedData("B", 1000));
+        onEvent(new KeyedData("B", 2000));
+        onEvent(new KeyedData("C", 1000));
+        onEvent(new KeyedData("B", 50));
+        onEvent(new KeyedData("A", 1400));
+
+        expected.put("A", 1400);
+        expected.put("C", 1000);
+        assertThat(results, is(expected));
     }
 
     @Test
     public void joinGroupByTest() {
-        writeSourceFile = true;
+        Map<String, MergedType> results = new HashMap<>();
+        Map<String, MergedType> expected = new HashMap<>();
+
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, String>> stringGroupBy = subscribe(String.class)
                     .groupBy(String::toString, Mappers::valueIdentity);
 
-            subscribe(KeyedData.class)
-                    .console("input:{}")
-                    .groupBy(KeyedData::getId, KeyedData::getAmount)
-                    .mapBiFunction(GroupByFunction::innerJoin, stringGroupBy)
+            EventStreamBuilder<GroupByStreamed<String, Integer>> keyedGroupBy = subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId, KeyedData::getAmount);
+
+            GroupByFunction.innerJoinStreams(keyedGroupBy, stringGroupBy)
                     .map(GroupByFunction.mapValues(StreamBuildTest::mergedTypefromTuple))
-                    .console();
+                    .map(GroupBy::map)
+                    .sink("merged");
+        });
+
+        addSink("merged", (Map<String, MergedType> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
         });
 
         onEvent(new KeyedData("A", 400));
         onEvent(new KeyedData("B", 233));
         onEvent("A");
+
+        expected.put("A", new MergedType(400, "A"));
+        assertThat(results, is(expected));
     }
 
     @Value
@@ -820,14 +869,11 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
     public void groupBySlidingTopNTest() {
         List<Map.Entry<String, Integer>> results = new ArrayList<>();
         List<Map.Entry<String, Integer>> expected = new ArrayList<>();
-        writeSourceFile = true;
 
         sep(c -> subscribe(KeyedData.class)
-//                .console("\t\tIN eventTime:%t -> {}")
-                        .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
-                        .map(Aggregates.topNByValue(2))
-//                .console("OUT eventTime:%t {} ")
-                        .sink("list")
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .map(Aggregates.topNByValue(2))
+                .sink("list")
         );
 
         addSink("list", (List<Map.Entry<String, Integer>> in) -> {
@@ -872,8 +918,6 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void groupBySlidingTest() {
-        writeSourceFile = true;
-//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 

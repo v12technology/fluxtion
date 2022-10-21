@@ -107,8 +107,6 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void updateTriggerumblingMapTest() {
-        writeSourceFile = true;
-        generateMetaInformation = true;
         sep(c -> subscribe(String.class)
                 .map(Mappers::parseInt)
                 .tumblingAggregate(AggregateIntSum::new, 100).id("sum")
@@ -404,8 +402,6 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
     //GROUPBY SLIDING
     @Test
     public void resetTriggerGroupBySlidingTest() {
-//        writeSourceFile = true;
-//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 
@@ -444,8 +440,6 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void publishTriggerGroupBySlidingTest() {
-//        writeSourceFile = true;
-//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 
@@ -488,8 +482,6 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void publishOverrideTriggerGroupBySlidingTest() {
-//        writeSourceFile = true;
-//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 
@@ -530,8 +522,6 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void updateTriggerGroupBySlidingTest() {
-//        writeSourceFile = true;
-//        addAuditor();
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
 

@@ -28,7 +28,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addEnclosingMethodInstanceTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyInstanceFunction("test")::toCaps), "result"));
 
@@ -40,7 +39,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void instanceLambdaWithEventHandlerTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyInstanceFunctionWithHandler()::toCaps), "result"));
 
@@ -52,7 +50,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noTriggerInstanceLambdaWithEventHandlerTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyNoTriggerFunctionHolder(new MyIntegerInstanceFunctionWithHandler()::toCaps), "result"));
 
@@ -68,7 +65,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void instanceLambdaWithEventHandlerDifferentTypesTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyIntegerInstanceFunctionWithHandler()::toCaps), "result"));
 
@@ -84,7 +80,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void instancePushLambdaWithEventHandlerTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyPushFunctionHolder(new MyInstanceFunctionWithTriggerAndHandler()::toCaps), "result"));
 
@@ -97,7 +92,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void staticMethodReferenceTest() {
-//        writeSourceFile = true;
         sep(c -> c.addNode(
                 new MyFunctionHolder(SerializedLambdaTest::staticToCaps), "result"));
 
@@ -108,7 +102,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void regressionTest() {
-        writeSourceFile = true;
         sep(c -> {
             subscribe(String.class)
 //                    .mapToInt(MutableInt::intValue)
@@ -122,7 +115,7 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void regressionTriggerPush() {
-        writeSourceFile = true;
+        ;
         sep(c -> {
             subscribe(String.class)
                     .push(new NotifyAndPushTarget()::setStringPushValue);

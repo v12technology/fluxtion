@@ -20,7 +20,6 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
     //TBD fix nested keys
     @Test
     public void nestedGroupBy() {
-        writeSourceFile = true;
         sep(c -> {
             EventStreamBuilder<Map<String, GroupByStreamed<String, Person>>> filtered = subscribe(Person.class)
                     .console("->{}")
@@ -31,10 +30,10 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
                     .console("secondary gender key:{}");
         });
 
-        onEvent(new Person("greg", "UK", "male"));
-        onEvent(new Person("josie", "UK", "female"));
-        onEvent(new Person("Freddie", "UK", "male"));
-        onEvent(new Person("Soren", "DK", "male"));
+//        onEvent(new Person("greg", "UK", "male"));
+//        onEvent(new Person("josie", "UK", "female"));
+//        onEvent(new Person("Freddie", "UK", "male"));
+//        onEvent(new Person("Soren", "DK", "male"));
     }
 
     public static String getGender(GroupByStreamed<String, Person> stream) {

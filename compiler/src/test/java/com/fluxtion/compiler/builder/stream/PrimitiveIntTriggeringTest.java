@@ -260,8 +260,6 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void updateTriggerTumblingMapTest() {
-        writeSourceFile = true;
-        generateMetaInformation = true;
         sep(c -> EventFlow.subscribeToIntSignal("in")
                 .tumblingAggregate(AggregateIntSum::new, 100).id("sum")
                 .updateTrigger(EventFlow.subscribeToSignal("update"))

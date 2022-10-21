@@ -260,8 +260,6 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
 
     @Test
     public void updateTriggerTumblingMapTest() {
-        writeSourceFile = true;
-        generateMetaInformation = true;
         sep(c -> EventFlow.subscribeToDoubleSignal("in")
                 .tumblingAggregate(AggregateDoubleSum::new, 100).id("sum")
                 .updateTrigger(EventFlow.subscribeToSignal("update"))

@@ -24,7 +24,6 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testAnchor() {
-        writeSourceFile = true;
         sep(c -> {
 //            GreaterThan greaterThan_5 = new GreaterThan(25000L, Double.NaN);
             FilterGroupByFunctionInvoker fg = new FilterGroupByFunctionInvoker(Predicates.greaterThanBoxed(25000));
@@ -53,7 +52,6 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void mergeTradeData() {
-        writeSourceFile = true;
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
                     .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
@@ -76,27 +74,21 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
         });
 
-//        sep(TestSep_mergeTradeData.class);
 
         setTime(0);
-
-//        for (int i = 0; i < 30; i++) {
-//            setTime(i * 100);
+//
+//        for (int i = 0; i < 30_000; i += 500) {
+//            setTime(i);
 //            onEvent(new Trade("IBM", 1.03, 200));
+//            onEvent(new Trade("MSFT", 1.03, 3000));
+//            onEvent(new Trade("ORCL", 1.03, 1000));
 //        }
-
-        for (int i = 0; i < 30_000; i += 500) {
-            setTime(i);
-            onEvent(new Trade("IBM", 1.03, 200));
-            onEvent(new Trade("MSFT", 1.03, 3000));
-            onEvent(new Trade("ORCL", 1.03, 1000));
-        }
-        publishSignal("startOfDay");
-        for (int i = 30_500; i < 50_000; i += 500) {
-            tick(i);
-            onEvent(new Trade("MSFT", 1.03, 3000));
-//            break;
-        }
+//        publishSignal("startOfDay");
+//        for (int i = 30_500; i < 50_000; i += 500) {
+//            tick(i);
+//            onEvent(new Trade("MSFT", 1.03, 3000));
+////            break;
+//        }
     }
 
     @Value

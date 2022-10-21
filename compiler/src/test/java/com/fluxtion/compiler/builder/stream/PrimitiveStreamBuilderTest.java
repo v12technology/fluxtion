@@ -106,7 +106,6 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dynamicDoubleFilterTest() {
-        writeSourceFile = true;
         MutableDouble target = new MutableDouble();
         sep(c -> subscribe(String.class)
                 .mapToDouble(StreamBuildTest::parseDouble)
