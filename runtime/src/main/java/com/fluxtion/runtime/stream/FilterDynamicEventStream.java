@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.stream;
 
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
@@ -26,7 +27,6 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         boolean filter = inputStreamTriggered_1
                 & (inputStreamTriggered_2)
                 && (isPublishTriggered() || filterFunction.apply(getInputEventStream().get(), secondArgument()));
-        inputStreamTriggered_1 = false;
         boolean fireNotification = filter & fireEventUpdateNotification();
         auditLog.info("filterFunction", auditInfo);
         auditLog.info("filterPass", filter);
@@ -63,7 +63,6 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
             boolean filter = inputStreamTriggered_1
                     & (inputStreamTriggered_2)
                     && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsInt(), getInputEventStream_2().getAsInt()));
-            inputStreamTriggered_1 = false;
             boolean fireNotification = filter & fireEventUpdateNotification();
             auditLog.info("filterFunction", auditInfo);
             auditLog.info("filterPass", filter);
@@ -88,6 +87,7 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
             implements DoubleEventStream {
 
         transient final String auditInfo;
+        @NoTriggerReference
         private final SerializableBiDoublePredicate filterFunction;
 
         public DoubleFilterDynamicEventStream(DoubleEventStream inputEventStream,
@@ -102,7 +102,6 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         public boolean filter() {
             boolean filter = inputStreamTriggered_1 & (inputStreamTriggered_2)
                     && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsDouble(), getInputEventStream_2().getAsDouble()));
-            inputStreamTriggered_1 = false;
             boolean fireNotification = filter & fireEventUpdateNotification();
             auditLog.info("filterFunction", auditInfo);
             auditLog.info("filterPass", filter);
@@ -141,7 +140,6 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
             boolean filter = inputStreamTriggered_1
                     & (inputStreamTriggered_2)
                     && (isPublishTriggered() || filterFunction.apply(getInputEventStream().getAsLong(), getInputEventStream_2().getAsLong()));
-            inputStreamTriggered_1 = false;
             boolean fireNotification = filter & fireEventUpdateNotification();
             auditLog.info("filterFunction", auditInfo);
             auditLog.info("filterPass", filter);
@@ -159,7 +157,6 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
             return getInputEventStream().getAsLong();
         }
     }
-
 
 
 }

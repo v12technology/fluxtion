@@ -8,13 +8,13 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -25,6 +25,7 @@ import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
+import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
@@ -37,9 +38,10 @@ import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-public class EventStreamBuilder<T> {
+public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplier<T>> {
 
     final TriggeredEventStream<T> eventStream;
 
@@ -48,7 +50,7 @@ public class EventStreamBuilder<T> {
         this.eventStream = eventStream;
     }
 
-    public EventSupplier<T> eventStream(){
+    public EventSupplier<T> getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
@@ -115,15 +117,15 @@ public class EventStreamBuilder<T> {
         return new EventStreamBuilder<>(new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
     }
 
-    public <S, R> EventStreamBuilder<R> map(SerializableBiFunction<T, S, R> int2IntFunction,
-                                            EventStreamBuilder<S> stream2Builder) {
+    public <S, R> EventStreamBuilder<R> mapBiFunction(SerializableBiFunction<T, S, R> int2IntFunction,
+                                                      EventStreamBuilder<S> stream2Builder) {
         return new EventStreamBuilder<>(
                 new BinaryMapEventStream.BinaryMapToRefEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
     }
 
-    public EventStreamBuilder<T> merge(EventStreamBuilder<? extends T> streamToMerge){
+    public EventStreamBuilder<T> merge(EventStreamBuilder<? extends T> streamToMerge) {
         return new EventStreamBuilder<>(new MergeEventStream<>(eventStream, streamToMerge.eventStream));
     }
 
@@ -188,10 +190,10 @@ public class EventStreamBuilder<T> {
 
     public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
     groupBySliding(SerializableFunction<T, K> keyFunction,
-                    SerializableFunction<T, V> valueFunction,
-                    SerializableSupplier<F> aggregateFunctionSupplier,
-                    int bucketSizeMillis,
-                    int numberOfBuckets) {
+                   SerializableFunction<T, V> valueFunction,
+                   SerializableSupplier<F> aggregateFunctionSupplier,
+                   int bucketSizeMillis,
+                   int numberOfBuckets) {
         return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
                 eventStream,
                 aggregateFunctionSupplier,
@@ -208,6 +210,21 @@ public class EventStreamBuilder<T> {
                    int bucketSizeMillis,
                    int numberOfBuckets) {
         return groupBySliding(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis, numberOfBuckets);
+    }
+
+    public <K, A, F extends AggregateFunction<T, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    groupBySliding(SerializableFunction<T, K> keyFunction,
+                   SerializableSupplier<F> aggregateFunctionSupplier,
+                   int bucketSizeMillis,
+                   int numberOfBuckets) {
+        return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
+                eventStream,
+                aggregateFunctionSupplier,
+                keyFunction,
+                Mappers::valueIdentity,
+                bucketSizeMillis,
+                numberOfBuckets
+        ));
     }
 
     public <R> EventStreamBuilder<R> mapOnNotify(R target) {
@@ -228,7 +245,7 @@ public class EventStreamBuilder<T> {
 
     //OUTPUTS - START
     public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
-        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
     }
 
@@ -266,11 +283,12 @@ public class EventStreamBuilder<T> {
     /*
     TODO:
     ================
-    join
+    outer joins
     co-group joining multiple aggregates into a single row/object
 
     Done:
     ================
+    innerjoin
     groupBy - sliding window
     add peek to primitive streams
     stateful support for functions

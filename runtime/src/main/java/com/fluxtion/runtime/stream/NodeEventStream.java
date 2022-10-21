@@ -20,13 +20,13 @@ public class NodeEventStream<T> extends EventLogNode implements TriggeredEventSt
     }
 
     @OnTrigger
-    public void sourceUpdated(){
+    public void sourceUpdated() {
         auditLog.info("sourceInstance", instanceName);
     }
 
     @Initialise
-    public void init(){
-        instanceName = nodeNameLookup.lookup(source);
+    public void init() {
+        instanceName = nodeNameLookup.lookupInstanceName(source);
     }
 
     @Override

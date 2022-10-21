@@ -27,7 +27,6 @@ public class FilterByPropertyDynamicEventStream<T, P, A, S extends EventStream<T
         boolean filter = inputStreamTriggered_1
                 & (inputStreamTriggered_2)
                 && (isPublishTriggered() || filterFunction.apply(propertyAccessor.apply(getInputEventStream().get()), secondArgument()));
-        inputStreamTriggered_1 = false;
         boolean fireNotification = filter & fireEventUpdateNotification();
         auditLog.info("filterFunction", auditInfo);
         auditLog.info("filterPass", filter);

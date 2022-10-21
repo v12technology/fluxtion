@@ -93,4 +93,7 @@ ${MODEL.batchPauseMethods}
 ${MODEL.batchEndMethods}
     }
 
+    public <T> T getNodeById(String id) throws NoSuchFieldException {
+        return nodeNameLookup.getInstanceById(id);
+    }
 }

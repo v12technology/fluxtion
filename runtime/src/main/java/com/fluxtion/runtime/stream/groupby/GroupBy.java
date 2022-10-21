@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.Collection;
 import java.util.Map;
 
-public interface GroupBy<K, V>  {
+public interface  GroupBy<K, V>  {
 
     Map<K, V> map();
 

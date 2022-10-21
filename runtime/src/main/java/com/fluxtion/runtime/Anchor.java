@@ -1,8 +1,6 @@
 package com.fluxtion.runtime;
 
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.builder.ExcludeNode;
+import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import lombok.Value;
 
 /**
@@ -12,12 +10,9 @@ import lombok.Value;
  * @author V12 Technology Ltd.
  */
 @Value
-@ExcludeNode
 public class Anchor {
 
-    @NoTriggerReference
     Object anchor;
-    @PushReference
     Object afterAnchor;
 
     /**
@@ -40,13 +35,27 @@ public class Anchor {
         return afterAnchor;
     }
 
+    public static <S> S anchorToCaptured(MethodReferenceReflection methodReference, S afterAnchor) {
+        if (methodReference != null && methodReference.captured().length > 0) {
+            return anchor(methodReference.captured()[0], afterAnchor);
+        }
+        return afterAnchor;
+    }
+
+    public static <S> MethodReferenceReflection anchorCaptured(S anchor, MethodReferenceReflection methodReference) {
+        if (methodReference != null && methodReference.captured().length > 0) {
+            anchor(anchor, methodReference.captured()[0]);
+        }
+        return methodReference;
+    }
+
     /**
      * Anchor multiple instances to a single anchor, {@link Anchor#anchor}
      *
      * @param anchor       The anchor node that will be invoked first
      * @param afterAnchors The list of nodes that will be notified after the anchor node
      */
-    public static void anchor(Object anchor, Object... afterAnchors) {
+    public static void anchorMany(Object anchor, Object... afterAnchors) {
         for (Object afterAnchor : afterAnchors) {
             anchor(anchor, afterAnchor);
             anchor = afterAnchor;

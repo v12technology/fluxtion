@@ -120,4 +120,11 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
         keyValue = null;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "GroupByWindowedCollection{" +
+                "mapOfValues=" + mapOfValues +
+                '}';
+    }
 }

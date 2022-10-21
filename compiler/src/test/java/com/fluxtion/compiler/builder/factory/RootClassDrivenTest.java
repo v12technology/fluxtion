@@ -38,17 +38,16 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void noRootNode(){
-        writeOutputsToFile(true);
+    public void noRootNode() {
         sep(new RootNodeConfig("root", ExcludeMeNode.class, new HashMap<>()));
         onEvent("test");
         boolean failed = false;
-        try{
+        try {
             getField("excluded");
-        }catch (Exception e){
+        } catch (Exception e) {
             failed = true;
         }
-        if(!failed)
+        if (!failed)
             throw new RuntimeException("Lookup for excluded node should fail");
     }
 
@@ -66,25 +65,26 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnParentUpdate
-        public void parentUpdated(ParentHandler parent){
+        public void parentUpdated(ParentHandler parent) {
             intValue = parent.intValue;
         }
 
         @OnTrigger
-        public boolean triggered(){
+        public boolean triggered() {
             return true;
         }
     }
 
     public static class ParentHandler implements Named {
         int intValue;
+
         @OnEventHandler
         public void newInteger(Integer s) {
             intValue = s;
         }
 
         @OnTrigger
-        public boolean parentTriggered(){
+        public boolean parentTriggered() {
             return true;
         }
 
@@ -95,7 +95,7 @@ public class RootClassDrivenTest extends MultipleSepTargetInProcessTest {
     }
 
     @ExcludeNode
-    public static class ExcludeMeNode implements Named{
+    public static class ExcludeMeNode implements Named {
         @NoTriggerReference
         public ParentHandler parentHandler = new ParentHandler();
 

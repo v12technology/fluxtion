@@ -129,4 +129,8 @@ public interface StaticEventProcessor {
     default void publishSignal(String filter, long value) {
         onEvent(Signal.longSignal(filter, value));
     }
+
+    default <T> T getNodeById(String id) throws NoSuchFieldException {
+        throw new NoSuchFieldException(id);
+    }
 }
