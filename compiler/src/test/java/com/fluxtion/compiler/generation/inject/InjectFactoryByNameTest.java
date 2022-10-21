@@ -6,7 +6,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.google.auto.service.AutoService;
-import lombok.Value;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
@@ -19,15 +19,17 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void multipleFactoryTest(){
-        writeOutputsToFile(true);
+    public void multipleNamedFactoriesOfSameTypeTest() {
         sep(c -> {
-            c.addNode(new ChildClass());
+            c.addNode(new ChildClass(), "child");
         });
+        Assert.assertFalse(((ChildClass) getField("child")).matched);
         onEvent("test");
+        Assert.assertTrue(((ChildClass) getField("child")).matched);
     }
 
-    public static class ChildClass{
+    public static class ChildClass {
+        public boolean matched = false;
 
         @Inject(factoryName = "green")
         public MyUniqueData greenData;
@@ -36,14 +38,13 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         public MyUniqueData blueData;
 
         @OnEventHandler
-        public void onEvent(String in){
-            System.out.println("greenData -> " + greenData.key);
-            System.out.println("blueData -> " + blueData.key);
+        public void onEvent(String in) {
+            matched = greenData.key.equals("green") && blueData.key.equals("blue");
         }
     }
 
 
-    public static class MyUniqueData{
+    public static class MyUniqueData {
         public String key;
 
         public MyUniqueData(String key) {
@@ -55,7 +56,7 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
     }
 
     @AutoService(NodeFactory.class)
-    public static class MyUniqueDataGreenFactory implements NodeFactory<MyUniqueData>{
+    public static class MyUniqueDataGreenFactory implements NodeFactory<MyUniqueData> {
         @Override
         public MyUniqueData createNode(Map<String, Object> config, NodeRegistry registry) {
             return new MyUniqueData("green");
@@ -68,7 +69,7 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
     }
 
     @AutoService(NodeFactory.class)
-    public static class MyUniqueDataBlueFactory implements NodeFactory<MyUniqueData>{
+    public static class MyUniqueDataBlueFactory implements NodeFactory<MyUniqueData> {
         @Override
         public MyUniqueData createNode(Map<String, Object> config, NodeRegistry registry) {
             return new MyUniqueData("blue");

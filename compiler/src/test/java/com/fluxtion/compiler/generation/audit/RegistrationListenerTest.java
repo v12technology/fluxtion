@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,16 +12,16 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.TestEvent;
@@ -34,7 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 @Slf4j
@@ -56,7 +55,7 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
             c.addAuditor(new MyNodeAudit(), "myAuditor");
         });
 
-        MyNodeAudit auditNode = getField("myAuditor");
+        MyNodeAudit auditNode = getAuditor("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         if (compiledSep) {
@@ -77,7 +76,7 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor");
         });
-        MyNodeAudit auditNode = getField("myAuditor");
+        MyNodeAudit auditNode = getAuditor("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         if (compiledSep) {
@@ -98,7 +97,7 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor").audit = false;
         });
-        MyNodeAudit auditNode = getField("myAuditor");
+        MyNodeAudit auditNode = getAuditor("myAuditor");
         assertThat(auditNode.registeredNodes.size(), is(5));
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(0));

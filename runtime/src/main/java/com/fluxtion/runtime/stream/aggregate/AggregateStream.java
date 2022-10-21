@@ -6,8 +6,8 @@ import com.fluxtion.runtime.stream.MapEventStream;
 
 import java.util.function.Supplier;
 
-public class AggregateStream <T, R, S extends EventStream<T>, F extends AggregateFunction<T, R, F>>
-extends MapEventStream<T, R, S> {
+public class AggregateStream<T, R, S extends EventStream<T>, F extends AggregateFunction<T, R, F>>
+        extends MapEventStream<T, R, S> {
 
     private final Supplier<F> windowFunctionSupplier;
     private transient final F mapFunction;
@@ -16,10 +16,12 @@ extends MapEventStream<T, R, S> {
         super(inputEventStream, null);
         this.windowFunctionSupplier = windowFunctionSupplier;
         this.mapFunction = windowFunctionSupplier.get();
+//        Anchor.anchorCaptured(this, windowFunctionSupplier);
         auditInfo = mapFunction.getClass().getSimpleName() + "->aggregate";
     }
 
-    protected void initialise() {    }
+    protected void initialise() {
+    }
 
     @Override
     public boolean isStatefulFunction() {

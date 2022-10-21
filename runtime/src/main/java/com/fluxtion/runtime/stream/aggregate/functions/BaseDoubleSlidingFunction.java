@@ -33,20 +33,20 @@ public abstract class BaseDoubleSlidingFunction<T extends BaseDoubleSlidingFunct
         return value;
     }
 
-    @Override
-    public void setUpdateTriggerNode(Object updateTriggerNode) {
-    }
-
-    @Override
-    public void setPublishTriggerNode(Object publishTriggerNode) {
-    }
-
-    @Override
-    public void setResetTriggerNode(Object resetTriggerNode) {
-    }
-
-    @Override
-    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-    }
+//    @Override
+//    public void setUpdateTriggerNode(Object updateTriggerNode) {
+//    }
+//
+//    @Override
+//    public void setPublishTriggerNode(Object publishTriggerNode) {
+//    }
+//
+//    @Override
+//    public void setResetTriggerNode(Object resetTriggerNode) {
+//    }
+//
+//    @Override
+//    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
+//    }
 
 }

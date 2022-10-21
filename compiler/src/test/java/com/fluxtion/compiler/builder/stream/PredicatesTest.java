@@ -144,7 +144,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             LongStreamBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue).box().mapToLong(Integer::longValue);
             LongStreamBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue).box().mapToLong(Integer::longValue);
-            int1.map(Mappers.DIVIDE_LONGS, int2).id("divide")
+            int1.mapBiFunction(Mappers.DIVIDE_LONGS, int2).id("divide")
                     .updateTrigger(new AllUpdatedPredicate(StreamHelper.getSourcesAsList(int1, int2)));
         });
         onEvent(new BinaryMapTest.Data_1(100));
@@ -164,7 +164,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             AllUpdatedPredicate allUpdatedPredicate = new AllUpdatedPredicate(
                     StreamHelper.getSourcesAsList(int1, int2)
             );
-            int1.map(Mappers.DIVIDE_INTS, int2).id("divide")
+            int1.mapBiFunction(Mappers.DIVIDE_INTS, int2).id("divide")
                     .updateTrigger(allUpdatedPredicate)
                     .resetTrigger(subscribe(String.class));
         });

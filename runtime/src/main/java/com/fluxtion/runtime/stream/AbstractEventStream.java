@@ -18,19 +18,19 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         implements TriggeredEventStream<R> {
 
     private final S inputEventStream;
-    private final transient MethodReferenceReflection streamFunction;
     @NoTriggerReference
-    private final transient Object streamFunctionInstance;
+    private final transient MethodReferenceReflection streamFunction;
     private transient final boolean statefulFunction;
     protected transient boolean overrideUpdateTrigger;
-    private transient boolean overridePublishTrigger;
+    protected transient boolean overridePublishTrigger;
     protected transient boolean inputStreamTriggered;
     protected transient boolean inputStreamTriggered_1;
     protected transient boolean overrideTriggered;
-    private transient boolean publishTriggered;
-    private transient boolean publishOverrideTriggered;
-    private transient boolean resetTriggered;
-
+    protected transient boolean publishTriggered;
+    protected transient boolean publishOverrideTriggered;
+    protected transient boolean resetTriggered;
+    @NoTriggerReference
+    protected transient Stateful<R> resetFunction;
     private Object updateTriggerNode;
     private Object publishTriggerNode;
     private Object publishTriggerOverrideNode;
@@ -40,10 +40,13 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
-            streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(methodReferenceReflection.captured()[0]);
+            Object streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(methodReferenceReflection.captured()[0]);
             statefulFunction = Stateful.class.isAssignableFrom(streamFunctionInstance.getClass());
+            if (statefulFunction) {
+                resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
+            }
         } else {
-            streamFunctionInstance = null;
+//            streamFunctionInstance = null;
             statefulFunction = false;
         }
     }
@@ -59,7 +62,7 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
      *
      * @return flag indicating fire a notification to child nodes for any upstream change
      */
-    protected final boolean fireEventUpdateNotification() {
+    protected boolean fireEventUpdateNotification() {
         boolean fireNotification = (!overridePublishTrigger && !overrideUpdateTrigger && inputStreamTriggered)
                 | (!overridePublishTrigger && overrideTriggered)
                 | publishOverrideTriggered
@@ -67,10 +70,11 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
                 | resetTriggered;
         overrideTriggered = false;
         publishTriggered = false;
+        publishOverrideTriggered = false;
         resetTriggered = false;
         inputStreamTriggered = false;
         auditLog.info("fireNotification", fireNotification);
-        return fireNotification && get()!=null;
+        return fireNotification && get() != null;
     }
 
     /**
@@ -92,13 +96,13 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     }
 
     @OnParentUpdate("inputEventStream")
-    public final void inputUpdated(Object inputEventStream) {
-        inputStreamTriggered_1 = true;
-        inputStreamTriggered = true;
+    public void inputUpdated(S inputEventStream) {
+        inputStreamTriggered_1 = !resetTriggered;
+        inputStreamTriggered = !resetTriggered;
     }
 
     @OnParentUpdate("updateTriggerNode")
-    public final void updateTriggerNodeUpdated(Object triggerNode) {
+    public void updateTriggerNodeUpdated(Object triggerNode) {
         overrideTriggered = true;
     }
 
@@ -115,7 +119,9 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     @OnParentUpdate("resetTriggerNode")
     public final void resetTriggerNodeUpdated(Object triggerNode) {
         resetTriggered = true;
-        resetOperation();
+        inputStreamTriggered = false;
+        inputStreamTriggered_1 = false;
+        if (isStatefulFunction()) resetOperation();
     }
 
     @Initialise
@@ -204,7 +210,23 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         }
 
         protected boolean executeUpdate() {
-            return (!overrideUpdateTrigger && inputStreamTriggered && inputStreamTriggered_2) | overrideTriggered;
+            return (!overrideUpdateTrigger && inputStreamTriggered_1 && inputStreamTriggered_2) | overrideTriggered;
+        }
+
+        protected boolean fireEventUpdateNotification() {
+            boolean fireNotification = (!overridePublishTrigger && !overrideUpdateTrigger
+                    && inputStreamTriggered_1 && inputStreamTriggered_2)
+                    | (!overridePublishTrigger && overrideTriggered)
+                    | publishOverrideTriggered
+                    | publishTriggered
+                    | resetTriggered;
+            overrideTriggered = false;
+            publishTriggered = false;
+            publishOverrideTriggered = false;
+            resetTriggered = false;
+            inputStreamTriggered = false;
+            auditLog.info("fireNotification", fireNotification);
+            return fireNotification && get() != null;
         }
 
         public S getInputEventStream_1() {
@@ -217,8 +239,8 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
 
         @OnParentUpdate("inputEventStream_2")
         public final void input2Updated(Object inputEventStream) {
-            inputStreamTriggered_2 = true;
-            inputStreamTriggered = true;
+            inputStreamTriggered_2 = !resetTriggered;
+            inputStreamTriggered = !resetTriggered;
         }
 
         @Override

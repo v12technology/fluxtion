@@ -5,13 +5,13 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.CharEvent;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +22,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
@@ -33,8 +32,8 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test() {
-        sep(c ->c.addNode(new ParentNode()));
-        MyNode myNode = getField("myNode");
+        sep(c -> c.addNode(new ParentNode(), "parent"));
+        MyNode myNode = getAuditor("myNode");
         Assert.assertTrue(myNode.registerCalled);
         onEvent(new CharEvent('a'));
         assertThat(myNode.eventAuditCount, is(1));

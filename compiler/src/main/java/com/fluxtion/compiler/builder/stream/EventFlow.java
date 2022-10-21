@@ -65,23 +65,23 @@ public interface EventFlow {
         );
     }
 
-    static EventStreamBuilder<Object> subscribeToSignal(String filterId){
+    static EventStreamBuilder<Object> subscribeToSignal(String filterId) {
         return subscribeToSignal(filterId, Object.class);
     }
 
-    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType){
+    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType) {
         return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
     }
 
-    static IntStreamBuilder subscribeToIntSignal(String filterId){
+    static IntStreamBuilder subscribeToIntSignal(String filterId) {
         return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
     }
 
-    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId){
+    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId) {
         return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
     }
 
-    static LongStreamBuilder subscribeToLongSignal(String filterId){
+    static LongStreamBuilder subscribeToLongSignal(String filterId) {
         return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
     }
 
@@ -99,7 +99,7 @@ public interface EventFlow {
 
     static <T, R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableFunction<T, R> sourceProperty) {
         T source;
-        if(sourceProperty.captured().length == 0){
+        if (sourceProperty.captured().length == 0) {
             try {
                 source = (T) sourceProperty.getContainingClass().getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
@@ -108,13 +108,13 @@ public interface EventFlow {
                         + sourceProperty.getContainingClass()
                         + " either add default constructor or pass in a node instance");
             }
-        }else{
+        } else {
             source = (T) sourceProperty.captured()[0];
         }
         return subscribeToNode(source).map(sourceProperty);
     }
 
-    static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier){
+    static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier) {
         EventProcessorConfigService.service().addOrReuse(propertySupplier.captured()[0]);
         return new EventStreamBuilder<>(new NodePropertyStream<>(propertySupplier));
     }

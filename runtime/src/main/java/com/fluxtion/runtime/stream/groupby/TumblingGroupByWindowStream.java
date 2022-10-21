@@ -4,9 +4,9 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.SepNode;
-import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.AbstractEventStream;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
@@ -26,11 +26,9 @@ import java.util.Map;
  * @param <F>
  */
 public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends AggregateFunction<V, R, F>>
-        extends EventLogNode
+        extends AbstractEventStream<T, GroupBy<K, R>, S>
         implements TriggeredEventStream<GroupBy<K, R>> {
 
-    @NoTriggerReference
-    private final S inputEventStream;
     @SepNode
     @NoTriggerReference
     public GroupByWindowedCollection<T, K, V, R, F> groupByWindowedCollection;
@@ -51,7 +49,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
     }
 
     public TumblingGroupByWindowStream(S inputEventStream) {
-        this.inputEventStream = inputEventStream;
+        super(inputEventStream, null);
     }
 
     @Override
@@ -59,42 +57,52 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
         return results;
     }
 
-    @OnParentUpdate
-    public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+    protected void cacheWindowValue() {
         mapOfValues.clear();
         mapOfValues.putAll(groupByWindowedCollection.map());
+    }
+
+    protected void aggregateInputValue(S inputEventStream) {
+        groupByWindowedCollection.aggregate(inputEventStream.get());
+    }
+
+    @OnParentUpdate
+    public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+        cacheWindowValue();
+        inputStreamTriggered_1 = true;
+        inputStreamTriggered = true;
         groupByWindowedCollection.reset();
     }
 
     @OnParentUpdate
-    public void updateData(S inputEventStream) {
-        groupByWindowedCollection.aggregate(inputEventStream.get());
+    public void inputUpdated(S inputEventStream) {
+        aggregateInputValue(inputEventStream);
+        inputStreamTriggered_1 = false;
+        inputStreamTriggered = false;
+    }
+
+    @OnParentUpdate("updateTriggerNode")
+    public void updateTriggerNodeUpdated(Object triggerNode) {
+        super.updateTriggerNodeUpdated(triggerNode);
+        cacheWindowValue();
+    }
+
+    @Override
+    protected void resetOperation() {
+        mapOfValues.clear();
+        groupByWindowedCollection.reset();
+    }
+
+    @Override
+    public boolean isStatefulFunction() {
+        return true;
     }
 
     @OnTrigger
     public boolean triggered() {
-        return true;
+        return fireEventUpdateNotification();
     }
 
-    @Override
-    public void setUpdateTriggerNode(Object updateTriggerNode) {
-
-    }
-
-    @Override
-    public void setPublishTriggerNode(Object publishTriggerNode) {
-
-    }
-
-    @Override
-    public void setResetTriggerNode(Object resetTriggerNode) {
-
-    }
-
-    @Override
-    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-
-    }
 
     private class MyGroupBy implements GroupBy<K, R> {
 

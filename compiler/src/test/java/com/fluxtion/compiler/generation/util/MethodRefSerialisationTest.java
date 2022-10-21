@@ -46,7 +46,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     private static String result;
 
     @Test
-    public void testRunnableMethodRef(){
+    public void testRunnableMethodRef() {
         sep(c -> c.addNode(new RunnableExecutor(MethodRefSerialisationTest::failingTask)));
         onEvent("fail please");
         assertThat(result, is(SUCCESS));
@@ -79,7 +79,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
     public void testInstanceMethodRefConsumer() {
         sep((c) -> {
             MyPush transform = c.addPublicNode(new MyPush(), "transform");
-            transform.setConsumer(c.addNode(new MyConsumer())::consumeMyPush);
+            transform.setConsumer(new MyConsumer()::consumeMyPush);
         });
         onEvent("hello");
     }
@@ -175,13 +175,13 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
     @Data
     public static class MyPush {
-        private LambdaReflection.SerializableConsumer<String> f;
-        private String out;
-        @PushReference
-        private transient Object pushRef;
 
-        public void setConsumer(LambdaReflection.SerializableConsumer<String> f){
-            pushRef = f.captured()[0];
+        private LambdaReflection.SerializableConsumer<String> f;
+
+        @PushReference
+        private String out;
+
+        public void setConsumer(LambdaReflection.SerializableConsumer<String> f) {
             this.f = f;
         }
 
@@ -218,28 +218,29 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static class MyConsumer{
-        public void consumeMyPush(String in){
+    public static class MyConsumer {
+        public void consumeMyPush(String in) {
 
         }
 
         @OnTrigger
-        public void onEven(){}
+        public void onEven() {
+        }
 
     }
 
     @Value
-    public static class RunnableExecutor{
+    public static class RunnableExecutor {
         LambdaReflection.SerializableRunnable runnable;
 
         @OnEventHandler
-        public void executeTask(String in){
+        public void executeTask(String in) {
             runnable.run();
         }
 
     }
 
-    public static void failingTask(){
+    public static void failingTask() {
         result = SUCCESS;
     }
 }

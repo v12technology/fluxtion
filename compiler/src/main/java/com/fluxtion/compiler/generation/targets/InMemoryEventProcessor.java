@@ -1,5 +1,9 @@
 package com.fluxtion.compiler.generation.targets;
 
+import com.fluxtion.compiler.builder.filter.FilterDescription;
+import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.model.Field;
+import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.AfterTrigger;
@@ -7,10 +11,6 @@ import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.compiler.builder.filter.FilterDescription;
-import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -18,7 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -52,7 +60,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         log.debug("dirtyBitset, before:{}", dirtyBitset);
         auditNewEvent(event);
         filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
-        if(dirtyBitset.isEmpty()){
+        if (dirtyBitset.isEmpty()) {
             noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
         }
 
@@ -69,8 +77,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             eventHandlers.get(i).onEvent(event);
         }
         log.debug("======== eventComplete ========");
-        for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i-1)) >= 0; ) {
-            if(eventHandlers.get(i).willInvokeEventComplet()){
+        for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i - 1)) >= 0; ) {
+            if (eventHandlers.get(i).willInvokeEventComplet()) {
                 log.debug("event dispatch bitset id[{}] handler[{}::{}]",
                         i,
                         eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
@@ -93,22 +101,22 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = null;
     }
 
-    private void auditNewEvent(Object event){
-            if(Event.class.isAssignableFrom(event.getClass())){
-                auditors.stream()
-                        .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
-                        .forEach(a -> a.eventReceived((Event) event));
-                auditors.stream()
-                        .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
-                        .forEach(a -> a.eventReceived((Event) event));
-            }else{
-                auditors.stream()
-                        .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
-                        .forEach(a -> a.eventReceived( event));
-                auditors.stream()
-                        .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
-                        .forEach(a -> a.eventReceived( event));
-            }
+    private void auditNewEvent(Object event) {
+        if (Event.class.isAssignableFrom(event.getClass())) {
+            auditors.stream()
+                    .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
+                    .forEach(a -> a.eventReceived((Event) event));
+            auditors.stream()
+                    .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
+                    .forEach(a -> a.eventReceived((Event) event));
+        } else {
+            auditors.stream()
+                    .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
+                    .forEach(a -> a.eventReceived(event));
+            auditors.stream()
+                    .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
+                    .forEach(a -> a.eventReceived(event));
+        }
     }
 
     @Override
@@ -135,7 +143,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @SneakyThrows
     private void invokeRunnable(CbMethodHandle callBackHandle) {
         callBackHandle.method.setAccessible(true);
-        if(currentEvent!=null) {
+        if (currentEvent != null) {
             auditors.stream()
                     .filter(Auditor::auditInvocations)
                     .forEachOrdered(a -> a.nodeInvoked(
@@ -148,6 +156,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     public Field getFieldByName(String name) {
         return simpleEventProcessorModel.getFieldForName(name);
+    }
+
+    @Override
+    public <T> T getNodeById(String id) throws NoSuchFieldException {
+        return (T) getFieldByName(id).instance;
     }
 
     /**
@@ -230,7 +243,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getCallbackDispatcher().processor = this::onEventInternal;
     }
 
-    private void registerAuditors(){
+    private void registerAuditors() {
         //register auditors
         List<Object> auditorFields = simpleEventProcessorModel.getNodeRegistrationListenerFields().stream()
                 .map(Field::getInstance).collect(Collectors.toList());
@@ -283,7 +296,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             dependents.forEach(n -> n.parentUpdated(dirty));
 
             for (CbMethodHandle cb : parentListeners) {
-                if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent() ) {
+                if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent()) {
                     //audit
                     auditors.stream()
                             .filter(Auditor::auditInvocations)
@@ -295,12 +308,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
         }
 
-        public boolean willInvokeEventComplet(){
-            return dirty && onEventCompleteMethod!=null;
+        public boolean willInvokeEventComplet() {
+            return dirty && onEventCompleteMethod != null;
         }
+
         @SneakyThrows
-        public void eventComplete(){
-            if(willInvokeEventComplet()){
+        public void eventComplete() {
+            if (willInvokeEventComplet()) {
                 auditors.stream()
                         .filter(Auditor::auditInvocations)
                         .forEachOrdered(a -> a.nodeInvoked(
@@ -333,24 +347,24 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             dirtyBitset.clear(position);
             dirty = false;
             callbackHandle.method.setAccessible(true);
-            if(callbackHandle.isNoPropagateEventHandler()){
+            if (callbackHandle.isNoPropagateEventHandler()) {
                 parentListeners.clear();
-            }else{
+            } else {
                 parentListeners.forEach(cb -> cb.method.setAccessible(true));
             }
             onEventCompleteMethod = ReflectionUtils.getAllMethods(
                     callbackHandle.getInstance().getClass(),
                     ReflectionUtils.withAnnotation(AfterTrigger.class)
             ).stream().findFirst().orElse(null);
-            if(onEventCompleteMethod!=null){
+            if (onEventCompleteMethod != null) {
                 onEventCompleteMethod.setAccessible(true);
             }
         }
 
-        private void deDuplicateOnEventComplete(Set<Object> onCompleteCallbackSet){
-            if(onCompleteCallbackSet.contains(callbackHandle.getInstance())){
+        private void deDuplicateOnEventComplete(Set<Object> onCompleteCallbackSet) {
+            if (onCompleteCallbackSet.contains(callbackHandle.getInstance())) {
                 onEventCompleteMethod = null;
-            }else{
+            } else {
                 onCompleteCallbackSet.add(callbackHandle.getInstance());
             }
 

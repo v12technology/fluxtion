@@ -13,6 +13,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
 import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
@@ -21,15 +22,16 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingDoubleEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
+import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-public class DoubleStreamBuilder {
+public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSupplier> {
 
     final DoubleEventStream eventStream;
 
@@ -38,23 +40,44 @@ public class DoubleStreamBuilder {
         this.eventStream = eventStream;
     }
 
-    public DoubleEventSupplier doubleStream(){
+    public DoubleEventSupplier getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
     public DoubleStreamBuilder updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        Object source = StreamHelper.getSource(updateTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setUpdateTriggerNode(source);
+        }
         return this;
     }
 
     public DoubleStreamBuilder publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerNode(source);
+        }
+        return this;
+    }
+
+    public DoubleStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerOverrideNode(source);
+        }
         return this;
     }
 
     public DoubleStreamBuilder resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        Object source = StreamHelper.getSource(resetTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setResetTriggerNode(source);
+        }
         return this;
     }
 
@@ -78,7 +101,7 @@ public class DoubleStreamBuilder {
         return new DoubleStreamBuilder(new MapEventStream.MapDouble2ToDoubleEventStream(eventStream, int2IntFunction));
     }
 
-    public DoubleStreamBuilder map(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
+    public DoubleStreamBuilder mapBiFunction(SerializableBiDoubleFunction int2IntFunction, DoubleStreamBuilder stream2Builder) {
         return new DoubleStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToDoubleEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
@@ -137,7 +160,7 @@ public class DoubleStreamBuilder {
     }
 
     public DoubleStreamBuilder push(SerializableDoubleConsumer pushFunction) {
-        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
         return new DoubleStreamBuilder(new PushEventStream.DoublePushEventStream(eventStream, pushFunction));
     }
 

@@ -54,11 +54,11 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void streamMembersTest(){
+    public void streamMembersTest() {
         sep(c -> c.addNode(new StreamMembers(
-                subscribe(Integer.class).mapToInt(Integer::intValue).intStream(),
-                subscribe(Double.class).mapToDouble(Double::doubleValue).doubleStream(),
-                subscribe(Long.class).mapToLong(Long::longValue).longStream()
+                subscribe(Integer.class).mapToInt(Integer::intValue).getEventSupplier(),
+                subscribe(Double.class).mapToDouble(Double::doubleValue).getEventSupplier(),
+                subscribe(Long.class).mapToLong(Long::longValue).getEventSupplier()
         ), "root"));
         StreamMembers wrapper = getField("root");
         onEvent(10);
@@ -88,7 +88,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 //        onEvent(SinkRegistration.intSink("sink", target::add));
         addIntSink("sink", target::add);
         assertThat(target.intValue(), is(0));
-        onEvent("12");
+        onEvent("1");
         assertThat(target.intValue(), is(0));
 //        onEvent(Signal.intSignal("test", 5));
         publishSignal("test", 5);
@@ -98,10 +98,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
 //        onEvent(Signal.intSignal("test", 7));
         publishSignal("test", 7);
-        assertThat(target.intValue(), is(12));
+        assertThat(target.intValue(), is(24));
 
         onEvent("8");
-        assertThat(target.intValue(), is(20));
+        assertThat(target.intValue(), is(32));
     }
 
     @Test
@@ -114,18 +114,19 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
         onEvent(SinkRegistration.doubleSink("sink", target::add));
         assertThat(target.doubleValue(), closeTo(0, 0.0001));
-        onEvent("12");
-        assertThat(target.doubleValue(),  closeTo(0, 0.0001));
+        onEvent("3");
+        assertThat(target.doubleValue(), closeTo(0, 0.0001));
         onEvent(Signal.doubleSignal("test", 5));
-        assertThat(target.doubleValue(),  closeTo(0, 0.0001));
-        onEvent("12");
-        assertThat(target.doubleValue(),  closeTo(12, 0.0001));
+        assertThat(target.doubleValue(), closeTo(0, 0.0001));
 
-        onEvent(Signal.doubleSignal("test", 7));
+        onEvent("12");
         assertThat(target.doubleValue(), closeTo(12, 0.0001));
 
+        onEvent(Signal.doubleSignal("test", 7));
+        assertThat(target.doubleValue(), closeTo(24, 0.0001));
+
         onEvent("8.5");
-        assertThat(target.doubleValue(), closeTo(20.5, 0.0001));
+        assertThat(target.doubleValue(), closeTo(32.5, 0.0001));
     }
 
 
@@ -139,7 +140,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
         onEvent(SinkRegistration.longSink("sink", target::add));
         assertThat(target.longValue(), is(0L));
-        onEvent("12");
+        onEvent("1");
         assertThat(target.longValue(), is(0L));
         onEvent(Signal.longSignal("test", 5));
         assertThat(target.longValue(), is(0L));
@@ -147,16 +148,17 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(target.longValue(), is(12L));
 
         onEvent(Signal.longSignal("test", 7));
-        assertThat(target.longValue(), is(12L));
+        assertThat(target.longValue(), is(24L));
 
         onEvent("8");
-        assertThat(target.longValue(), is(20L));
+        assertThat(target.longValue(), is(32L));
     }
-    public static boolean gt(int inputVariable, int limitToCompare){
+
+    public static boolean gt(int inputVariable, int limitToCompare) {
         return inputVariable > limitToCompare;
     }
 
-    public static boolean gt(double inputVariable, double limitToCompare){
+    public static boolean gt(double inputVariable, double limitToCompare) {
         return inputVariable > limitToCompare;
     }
 
@@ -203,10 +205,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void aggregateCountTest(){
+    public void aggregateCountTest() {
         sep(c -> subscribe(String.class)
-            .aggregate(counting())
-            .push(new NotifyAndPushTarget()::setIntPushValue));
+                .aggregate(counting())
+                .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
         assertThat(notifyTarget.getIntPushValue(), is(0));
 
@@ -251,11 +253,11 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateDoubleTest() {
         sep(c -> subscribe(String.class)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                        .mapToDouble(StreamBuildTest::parseDouble)
 //                .aggregate(AggregateDoubleSum::new).id("sum")
-                .aggregate(Aggregates.doubleSum()).id("sum")
-                .resetTrigger(subscribe(Signal.class))
-                .push(new NotifyAndPushTarget()::setDoublePushValue)
+                        .aggregate(Aggregates.doubleSum()).id("sum")
+                        .resetTrigger(subscribe(Signal.class))
+                        .push(new NotifyAndPushTarget()::setDoublePushValue)
         );
 
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -558,12 +560,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testSink(){
+    public void testSink() {
         MutableDouble d = new MutableDouble();
         MutableInt i = new MutableInt();
         MutableLong l = new MutableLong();
 
-        sep( c-> subscribe(String.class)
+        sep(c -> subscribe(String.class)
                 .mapToDouble(Double::parseDouble)
                 .sink("doubleSink")
                 .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
@@ -800,7 +802,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         return (int) input;
     }
 
-    public static long castIntToLong(int input){
+    public static long castIntToLong(int input) {
         return input;
     }
 
@@ -872,7 +874,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class StreamMembers{
+    public static class StreamMembers {
         private final IntEventSupplier intEventSupplier;
         private final DoubleEventSupplier doubleEventSupplier;
         private final LongEventSupplier longEventSupplier;

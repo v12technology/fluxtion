@@ -27,7 +27,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     }
 
     protected void initialise() {
-        instanceNameToNotify = nodeNameLookup.lookup(target);
+        instanceNameToNotify = nodeNameLookup.lookupInstanceName(target);
     }
 
     @OnTrigger
