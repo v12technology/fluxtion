@@ -1,12 +1,18 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.builder.stream.StreamBuildTest.KeyedData;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,9 +33,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         setTime(0);
         onEvent("20");
@@ -57,9 +61,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         setTime(0);
         onEvent("20");
@@ -88,9 +90,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         setTime(0);
         onEvent("20");
@@ -116,9 +116,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         setTime(0);
         onEvent("20");
@@ -205,9 +203,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         addClock();
         onEvent("70");
@@ -237,9 +233,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
                 .sink("out"));
 
         MutableInt result = new MutableInt();
-        addSink("out", (Integer i) -> {
-            result.setValue(i);
-        });
+        addSink("out", (Integer i) -> result.setValue(i));
 
         addClock();
         onEvent("70");
@@ -256,5 +250,153 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
 
         publishSignal("update");
         Assert.assertEquals(100, result.intValue());
+    }
+
+    //GROUPBY
+    @Test
+    public void resetGroupByTumblingTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
+                .resetTrigger(EventFlow.subscribeToSignal("reset"))
+                .map(GroupBy::map)
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(75);//100
+        expected.put("A", 40);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        publishSignal("reset");
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void publishGroupByTumblingTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
+                .publishTrigger(EventFlow.subscribeToSignal("publish"))
+                .map(GroupBy::map)
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(75);//100
+        expected.put("A", 40);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        expected.clear();
+        assertThat(expected.values(), is(Matchers.empty()));
+
+        publishSignal("publish");
+        expected.put("A", 40);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        tickDelta(750);//100
+        expected.clear();
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void publishOverrideGroupByTumblingTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
+                .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
+                .map(GroupBy::map)
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tickDelta(125);//100
+        assertThat(results, is(expected));
+
+        publishSignal("publish");
+        expected.put("A", 40);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void updateTriggerGroupByTumblingTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
+                .updateTrigger(EventFlow.subscribeToSignal("update"))
+                .map(GroupBy::map)
+                .sink("map"));
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+
+        tickDelta(25);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        publishSignal("update");
+        expected.put("A", 40);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+        tickDelta(500);
+        onEvent(new KeyedData("A", 4));
+        onEvent(new KeyedData("B", 10));
+
+        assertThat(results, is(expected));
+
+        publishSignal("update");
+        expected.put("A", 4);
+        expected.put("B", 10);
+        assertThat(results, is(expected));
     }
 }

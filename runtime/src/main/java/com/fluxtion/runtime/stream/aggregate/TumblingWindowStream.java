@@ -5,12 +5,10 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.AbstractEventStream;
 import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TumblingWindowStream<T, R, S extends EventStream<T>, F extends AggregateFunction<T, R, F>>
-        extends AbstractEventStream<T, R, S>
-        implements TriggeredEventStream<R> {
+        extends AbstractEventStream<T, R, S> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     protected final transient F windowFunction;

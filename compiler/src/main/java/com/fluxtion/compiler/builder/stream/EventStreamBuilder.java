@@ -283,11 +283,12 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
     /*
     TODO:
     ================
-    join
+    outer joins
     co-group joining multiple aggregates into a single row/object
 
     Done:
     ================
+    innerjoin
     groupBy - sliding window
     add peek to primitive streams
     stateful support for functions
