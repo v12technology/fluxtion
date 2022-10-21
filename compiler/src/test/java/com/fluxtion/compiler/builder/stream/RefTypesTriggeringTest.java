@@ -252,7 +252,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(100, result.intValue());
     }
 
-    //GROUPBY
+    //GROUPBY TUMBLING
     @Test
     public void resetGroupByTumblingTest() {
         Map<String, Integer> results = new HashMap<>();
@@ -282,6 +282,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         assertThat(results, is(expected));
 
         publishSignal("reset");
+        expected.clear();
         assertThat(results, is(expected));
     }
 
@@ -397,6 +398,176 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         publishSignal("update");
         expected.put("A", 4);
         expected.put("B", 10);
+        assertThat(results, is(expected));
+    }
+
+    //GROUPBY SLIDING
+    @Test
+    public void resetTriggerGroupBySlidingTest() {
+//        writeSourceFile = true;
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .resetTrigger(EventFlow.subscribeToSignal("reset"))
+                .map(GroupBy::map)
+                .sink("map")
+        );
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tick(100);
+        onEvent(new KeyedData("A", 40));
+
+        tick(300);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tick(1000);
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        publishSignal("reset");
+        expected.clear();
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void publishTriggerGroupBySlidingTest() {
+//        writeSourceFile = true;
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .publishTrigger(EventFlow.subscribeToSignal("publish"))
+                .map(GroupBy::map)
+                .sink("map")
+        );
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tick(100);
+        onEvent(new KeyedData("A", 40));
+
+        tick(300);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tick(1000);
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+
+        tick(1050);
+        assertThat(results, is(expected));
+
+        publishSignal("publish");
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void publishOverrideTriggerGroupBySlidingTest() {
+//        writeSourceFile = true;
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
+                .map(GroupBy::map)
+                .sink("map")
+        );
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tick(100);
+        onEvent(new KeyedData("A", 40));
+
+        tick(300);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tick(1000);
+        assertThat(results, is(expected));
+
+        tick(1050);
+        assertThat(results, is(expected));
+
+        publishSignal("publish");
+        expected.put("A", 4080);
+        expected.put("B", 100);
+        assertThat(results, is(expected));
+    }
+
+    @Test
+    public void updateTriggerGroupBySlidingTest() {
+//        writeSourceFile = true;
+//        addAuditor();
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
+                .updateTrigger(EventFlow.subscribeToSignal("update"))
+                .map(GroupBy::map)
+                .sink("map")
+        );
+
+        addSink("map", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        setTime(0);
+        onEvent(new KeyedData("A", 4000));
+
+        tick(100);
+        onEvent(new KeyedData("A", 40));
+
+        tick(300);
+        onEvent(new KeyedData("A", 40));
+        onEvent(new KeyedData("B", 100));
+
+        tick(400);
+        assertThat(results, is(expected));
+
+//        tick(450);
+//        onEvent(new KeyedData("B", 100));
+//        assertThat(results, is(expected));
+//
+        publishSignal("update");
+        expected.put("A", 4080);
+        expected.put("B", 100);
         assertThat(results, is(expected));
     }
 }

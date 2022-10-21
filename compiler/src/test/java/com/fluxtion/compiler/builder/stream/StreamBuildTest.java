@@ -901,6 +901,7 @@ public class StreamBuildTest extends MultipleSepTargetInProcessTest {
 
         tick(900);
         onEvent(new KeyedData("C", 40));
+        assertThat(results, is(expected));
 
         tick(1000);
         expected.put("A", 4080);

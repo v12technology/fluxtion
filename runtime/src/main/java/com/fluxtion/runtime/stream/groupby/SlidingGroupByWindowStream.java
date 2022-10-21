@@ -1,11 +1,10 @@
 package com.fluxtion.runtime.stream.groupby;
 
-import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.AbstractEventStream;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
@@ -27,11 +26,9 @@ import java.util.function.Supplier;
  * @param <F>
  */
 public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends AggregateFunction<V, R, F>>
-        extends EventLogNode
+        extends AbstractEventStream<T, GroupBy<K, R>, S>
         implements TriggeredEventStream<GroupBy<K, R>> {
 
-    @NoTriggerReference
-    private final S inputEventStream;
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final SerializableFunction<T, K> keyFunction;
     private final SerializableFunction<T, V> valueFunction;
@@ -42,8 +39,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     private transient BucketedSlidingWindowedFunction<T, GroupByStreamed<K, R>, GroupByWindowedCollection<T, K, V, R, F>> slidingCalculator;
     private transient final Map<K, R> mapOfValues = new HashMap<>();
     private transient final MyGroupBy results = new MyGroupBy();
-    private Object resetTriggerNode;
-    private boolean resetTriggered;
+
 
     public SlidingGroupByWindowStream(
             S inputEventStream,
@@ -52,7 +48,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
             SerializableFunction<T, V> valueFunction,
             int bucketSizeMillis,
             int bucketCount) {
-        this.inputEventStream = inputEventStream;
+        super(inputEventStream, null);
         this.windowFunctionSupplier = windowFunctionSupplier;
         this.keyFunction = keyFunction;
         this.valueFunction = valueFunction;
@@ -64,64 +60,60 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
     }
 
-
     @Override
     public GroupBy<K, R> get() {
         return results;
     }
 
-    @OnParentUpdate
-    public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-        slidingCalculator.roll(rollTrigger.getTriggerCount());
+    protected void cacheWindowValue() {
+        GroupByStreamed<K, R> value = slidingCalculator.get();
+        mapOfValues.clear();
+        mapOfValues.putAll(value.map());
+    }
+
+    protected void aggregateInputValue(S inputEventStream) {
+        slidingCalculator.aggregate(inputEventStream.get());
     }
 
     @OnParentUpdate
-    public void updateData(S inputEventStream) {
-        slidingCalculator.aggregate(inputEventStream.get());
+    public void timeTriggerFired(FixedRateTrigger rollTrigger) {
+        slidingCalculator.roll(rollTrigger.getTriggerCount());
+        if (slidingCalculator.isAllBucketsFilled()) {
+            cacheWindowValue();
+            inputStreamTriggered_1 = true;
+            inputStreamTriggered = true;
+        }
+    }
+
+    @OnParentUpdate
+    public void inputUpdated(S inputEventStream) {
+        aggregateInputValue(inputEventStream);
+        inputStreamTriggered_1 = false;
+        inputStreamTriggered = false;
+    }
+
+    @OnParentUpdate("updateTriggerNode")
+    public void updateTriggerNodeUpdated(Object triggerNode) {
+        super.updateTriggerNodeUpdated(triggerNode);
+        cacheWindowValue();
+    }
+
+    @Override
+    protected void resetOperation() {
+        groupBySupplier = () -> new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
+        slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
+        rollTrigger.init();
+        mapOfValues.clear();
+    }
+
+    @Override
+    public boolean isStatefulFunction() {
+        return true;
     }
 
     @OnTrigger
     public boolean triggered() {
-        boolean publish = slidingCalculator.isAllBucketsFilled();
-        if (resetTriggered) {
-            groupBySupplier = () -> new GroupByWindowedCollection<>(keyFunction, valueFunction, windowFunctionSupplier);
-            slidingCalculator = new BucketedSlidingWindowedFunction<>(groupBySupplier, bucketCount);
-            rollTrigger.init();
-            mapOfValues.clear();
-            publish = true;
-        } else if (publish) {
-            GroupByStreamed<K, R> value = slidingCalculator.get();
-            mapOfValues.clear();
-            mapOfValues.putAll(value.map());
-        }
-        resetTriggered = false;
-        return publish;
-    }
-
-    @Override
-    public void setUpdateTriggerNode(Object updateTriggerNode) {
-
-    }
-
-    @Override
-    public void setPublishTriggerNode(Object publishTriggerNode) {
-
-    }
-
-    @Override
-    public void setResetTriggerNode(Object resetTriggerNode) {
-        this.resetTriggerNode = resetTriggerNode;
-    }
-
-    @Override
-    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-
-    }
-
-
-    @OnParentUpdate("resetTriggerNode")
-    public final void resetTriggerNodeUpdated(Object triggerNode) {
-        resetTriggered = true;
+        return fireEventUpdateNotification();
     }
 
     private class MyGroupBy implements GroupBy<K, R> {
