@@ -35,6 +35,7 @@ import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -100,6 +101,7 @@ public class MultipleSepTargetInProcessTest {
     }
 
     @Test
+    @Ignore
     public void doNothingTest() {
     }
 
@@ -286,15 +288,15 @@ public class MultipleSepTargetInProcessTest {
         sep.publishSignal(filter, value);
     }
 
-    protected void publishSignal(String filter, int value) {
+    protected void publishIntSignal(String filter, int value) {
         sep.publishSignal(filter, value);
     }
 
-    protected void publishSignal(String filter, double value) {
+    protected void publishDoubleSignal(String filter, double value) {
         sep.publishSignal(filter, value);
     }
 
-    protected void publishSignal(String filter, long value) {
+    protected void publishLongSignal(String filter, long value) {
         sep.publishSignal(filter, value);
     }
 

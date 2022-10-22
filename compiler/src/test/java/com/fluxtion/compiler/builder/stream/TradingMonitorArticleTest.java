@@ -54,7 +54,7 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
     public void mergeTradeData() {
         sep(c -> {
             EventStreamBuilder<GroupByStreamed<String, Integer>> tradeStatsDaily = subscribe(Trade.class)
-                    .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSum()).id("groupedTradeDaily")
+                    .groupBy(Trade::getTickerId, Trade::getVolume, Aggregates.intSumFactory()).id("groupedTradeDaily")
                     .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
 //                    .console("triggered cumSum time:%t volume:{}")
@@ -62,7 +62,7 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
             EventStreamBuilder<GroupBy<String, Integer>> tradeVolumeEvery20Seconds = subscribe(Trade.class)
                     .groupBySliding(
-                            Trade::getTickerId, Trade::getVolume, Aggregates.intSum(), 5_000, 4)
+                            Trade::getTickerId, Trade::getVolume, Aggregates.intSumFactory(), 5_000, 4)
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
                     .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(25000)));
 //                    .console("max volume in window:{}");

@@ -30,15 +30,15 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(70, result.intValue());
 
         publishSignal("reset");
         Assert.assertEquals(0, result.intValue());
 
-        publishSignal("in", 90);
-        publishSignal("in", 50);
+        publishIntSignal("in", 90);
+        publishIntSignal("in", 50);
         Assert.assertEquals(140, result.intValue());
     }
 
@@ -52,8 +52,8 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(70, result.intValue());
 
         result.setValue(0);
@@ -71,8 +71,8 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(0, result.intValue());
 
         publishSignal("publish");
@@ -89,8 +89,8 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(0, result.intValue());
 
         publishSignal("update");
@@ -103,37 +103,37 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
     @Test
     public void resetAggregateTest() {
         sep(c -> EventFlow.subscribeToIntSignal("in")
-                .aggregate(Aggregates.intSum())
+                .aggregate(Aggregates.intSumFactory())
                 .resetTrigger(EventFlow.subscribeToSignal("reset"))
                 .sink("out"));
 
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(70, result.intValue());
 
         publishSignal("reset");
         Assert.assertEquals(0, result.intValue());
 
-        publishSignal("in", 90);
-        publishSignal("in", 50);
+        publishIntSignal("in", 90);
+        publishIntSignal("in", 50);
         Assert.assertEquals(140, result.intValue());
     }
 
     @Test
     public void additionalPublishAggregateTest() {
         sep(c -> EventFlow.subscribeToIntSignal("in")
-                .aggregate(Aggregates.intSum())
+                .aggregate(Aggregates.intSumFactory())
                 .publishTrigger(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(70, result.intValue());
 
         result.setValue(0);
@@ -144,15 +144,15 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
     @Test
     public void overridePublishAggregateTest() {
         sep(c -> EventFlow.subscribeToIntSignal("in")
-                .aggregate(Aggregates.intSum())
+                .aggregate(Aggregates.intSumFactory())
                 .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(0, result.intValue());
 
         publishSignal("publish");
@@ -162,15 +162,15 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
     @Test
     public void updateAggregateOnTriggerTest() {
         sep(c -> EventFlow.subscribeToIntSignal("in")
-                .aggregate(Aggregates.intSum())
+                .aggregate(Aggregates.intSumFactory())
                 .updateTrigger(EventFlow.subscribeToSignal("update"))
                 .sink("out"));
 
         MutableInt result = new MutableInt();
         addIntSink("out", result::setValue);
 
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(0, result.intValue());
 
         publishSignal("update");
@@ -191,18 +191,18 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         addIntSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
         tickDelta(100);
         Assert.assertEquals(60, result.intValue());
 
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
         publishSignal("reset");
         tickDelta(100);
         Assert.assertEquals(0, result.intValue());
 
-        publishSignal("in", 40);
+        publishIntSignal("in", 40);
         tickDelta(100);
         Assert.assertEquals(40, result.intValue());
     }
@@ -218,14 +218,14 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         addIntSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
         tickDelta(100);
         Assert.assertEquals(60, result.intValue());
 
         result.setValue(0);
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
         tickDelta(20);
         Assert.assertEquals(0, result.intValue());
         publishSignal("publish");
@@ -246,13 +246,13 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         addIntSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
         tickDelta(100);
         Assert.assertEquals(0, result.intValue());
 
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
         tickDelta(20);
         publishSignal("publish");
         Assert.assertEquals(60, result.intValue());
@@ -269,7 +269,7 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         addIntSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20);
+        publishIntSignal("in", 20);
         Assert.assertEquals(0, result.intValue());
 
         tickDelta(30);
@@ -279,19 +279,19 @@ public class PrimitiveIntTriggeringTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(20, result.intValue());
 
         tickDelta(30);
-        publishSignal("in", 20);
-        publishSignal("in", 50);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 50);
         Assert.assertEquals(20, result.intValue());
 
         publishSignal("update");
         Assert.assertEquals(90, result.intValue());
 
-        publishSignal("in", 50);
+        publishIntSignal("in", 50);
         result.setValue(0);
         tickDelta(100);
         Assert.assertEquals(0, result.intValue());
 
-        publishSignal("in", 50);
+        publishIntSignal("in", 50);
         publishSignal("update");
         Assert.assertEquals(50, result.intValue());
     }

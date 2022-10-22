@@ -45,6 +45,17 @@ public interface Fluxtion {
         return compile(cfgBuilder, compilerCfg -> compilerCfg.setPackageName(packageName));
     }
 
+
+    @SneakyThrows
+    static EventProcessor compileAot(SerializableConsumer<EventProcessorConfig> cfgBuilder,
+                                     String packageName,
+                                     String className) {
+        return compile(cfgBuilder, compilerCfg -> {
+            compilerCfg.setPackageName(packageName);
+            compilerCfg.setClassName(className);
+        });
+    }
+
     /**
      * Generates an in memory version of a {@link StaticEventProcessor}. The in memory version is transient and requires
      * the runtime and compiler Fluxtion libraries to operate.
@@ -98,9 +109,9 @@ public interface Fluxtion {
 
     /**
      * Generates an EventProcessor from a yaml document read from a supplied reader.
-     *
+     * <p>
      * Format:
-     *
+     * <p>
      * Example yaml output for a definition
      * <pre>
      * Yaml yaml = new Yaml();
@@ -136,12 +147,12 @@ public interface Fluxtion {
      * @return A compile EventProcessor
      */
     @SneakyThrows
-    static EventProcessor compileFromReader(Reader reader){
+    static EventProcessor compileFromReader(Reader reader) {
         Yaml yaml = new Yaml();
         DataDrivenGenerationConfig rootInjectedConfig = yaml.loadAs(reader, DataDrivenGenerationConfig.class);
-        if(rootInjectedConfig.getCompilerConfig().isCompileSource()) {
+        if (rootInjectedConfig.getCompilerConfig().isCompileSource()) {
             return EventProcessorFactory.compile(rootInjectedConfig.getEventProcessorConfig(), rootInjectedConfig.getCompilerConfig());
-        }else{
+        } else {
             return interpret(rootInjectedConfig.getRootNodeConfig());
         }
     }

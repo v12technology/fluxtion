@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,14 +11,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.time;
 
 /**
  * Mutable numeric value
- * 
+ *
  * @author Greg Higgins
  */
 public class MutableNumber extends Number {
@@ -27,11 +27,29 @@ public class MutableNumber extends Number {
     public long longValue;
     public double doubleValue;
 
-    @Override
-    public float floatValue(){
-        return (float)doubleValue();
+    public static MutableNumber fromInt(int number) {
+        MutableNumber mutableNumber = new MutableNumber();
+        mutableNumber.set(number);
+        return mutableNumber;
     }
-    
+
+    public static MutableNumber fromLong(long number) {
+        MutableNumber mutableNumber = new MutableNumber();
+        mutableNumber.set(number);
+        return mutableNumber;
+    }
+
+    public static MutableNumber fromDouble(double number) {
+        MutableNumber mutableNumber = new MutableNumber();
+        mutableNumber.set(number);
+        return mutableNumber;
+    }
+
+    @Override
+    public float floatValue() {
+        return (float) doubleValue();
+    }
+
     @Override
     public int intValue() {
         return intValue;
@@ -47,36 +65,36 @@ public class MutableNumber extends Number {
         return doubleValue;
     }
 
-    public void set(Number number){
+    public void set(Number number) {
         intValue = number.intValue();
         longValue = number.longValue();
-        doubleValue = number.doubleValue(); 
+        doubleValue = number.doubleValue();
     }
-    
-    public void set(int value){
+
+    public void set(int value) {
         setIntValue(value);
     }
-    
-    public void set(long value){
+
+    public void set(long value) {
         setLongValue(value);
     }
-    
-    public void set(double value){
+
+    public void set(double value) {
         setDoubleValue(value);
     }
-    
-    public void setCharValue(char charValue){
+
+    public void setCharValue(char charValue) {
         setIntValue(charValue);
     }
 
-    public void setByteValue(byte byteValue){
+    public void setByteValue(byte byteValue) {
         setIntValue(byteValue);
     }
 
-    public void setShortValue(short shortValue){
+    public void setShortValue(short shortValue) {
         setIntValue(shortValue);
     }
-    
+
     public void setIntValue(int intValue) {
         this.intValue = intValue;
         this.longValue = intValue;
@@ -89,23 +107,23 @@ public class MutableNumber extends Number {
         this.doubleValue = longValue;
     }
 
-    public void setfloatValue(float floatValue){
+    public void setfloatValue(float floatValue) {
         setDoubleValue(floatValue);
     }
-    
+
     public void setDoubleValue(double doubleValue) {
         this.doubleValue = doubleValue;
         this.longValue = (long) doubleValue;
         this.intValue = (int) doubleValue;
     }
-    
+
 //    public void copyFrom(NumericValue source){
 //        intValue = source.intValue();
 //        longValue = source.longValue();
 //        doubleValue = source.doubleValue();
 //    }
-    
-    public void copyFrom(Number source){
+
+    public void copyFrom(Number source) {
         intValue = source.intValue();
         longValue = source.longValue();
         doubleValue = source.doubleValue();

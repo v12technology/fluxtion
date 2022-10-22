@@ -19,11 +19,37 @@ public class MapGroupByFunctionInvoker {
         return mapValues((GroupBy) inputMap);
     }
 
+    public <K, V> GroupBy<K, V> mapKeys(Object inputMap) {
+        return mapKeys((GroupBy) inputMap);
+    }
+
+    public <K, V> GroupBy<K, V> mapEntry(Object inputMap) {
+        return mapEntry((GroupBy) inputMap);
+    }
+
     public <K, V> GroupBy<K, V> mapValues(GroupBy inputMap) {
         outputCollection.reset();
         inputMap.map().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) e;
             outputCollection.map().put(entry.getKey(), mapFunction.apply(entry.getValue()));
+        });
+        return outputCollection;
+    }
+
+    public <K, V> GroupBy<K, V> mapKeys(GroupBy inputMap) {
+        outputCollection.reset();
+        inputMap.map().entrySet().forEach(e -> {
+            Map.Entry entry = (Entry) e;
+            outputCollection.map().put(mapFunction.apply(entry.getKey()), entry.getValue());
+        });
+        return outputCollection;
+    }
+
+    public <K, V> GroupBy<K, V> mapEntry(GroupBy inputMap) {
+        outputCollection.reset();
+        inputMap.map().entrySet().forEach(e -> {
+            Map.Entry entry = (Entry) mapFunction.apply(e);
+            outputCollection.map().put(entry.getKey(), entry.getValue());
         });
         return outputCollection;
     }

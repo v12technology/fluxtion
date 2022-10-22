@@ -1,12 +1,16 @@
 package com.fluxtion.runtime.stream.helpers;
 
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.groupby.GroupByCollection;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateToList;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateToList.AggregateToListFactory;
 
 public interface Collectors {
 
-    static <K, V> SerializableFunction<KeyValue<K, V>, GroupByCollection<K, V>> toGroupBy(){
-        return new GroupByCollection<K, V>()::add;
+    static <T> SerializableSupplier<AggregateToList<T>> listFactory(int maximumElementCount) {
+        return new AggregateToListFactory(maximumElementCount)::newList;
+    }
+
+    static <T> SerializableSupplier<AggregateToList<T>> listFactory() {
+        return listFactory(-1);
     }
 }

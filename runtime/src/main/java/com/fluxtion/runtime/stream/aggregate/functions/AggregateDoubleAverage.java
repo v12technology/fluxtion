@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-public class AggregateDoubleAvg extends BaseDoubleSlidingFunction<AggregateDoubleAvg> {
+public class AggregateDoubleAverage extends BaseDoubleSlidingFunction<AggregateDoubleAverage> {
 
     private int count;
     private double sum;
@@ -14,14 +14,14 @@ public class AggregateDoubleAvg extends BaseDoubleSlidingFunction<AggregateDoubl
     }
 
     @Override
-    public void combine(AggregateDoubleAvg combine) {
+    public void combine(AggregateDoubleAverage combine) {
         sum += combine.sum;
         count += combine.count;
         value = sum / count;
     }
 
     @Override
-    public void deduct(AggregateDoubleAvg deduct) {
+    public void deduct(AggregateDoubleAverage deduct) {
         sum -= deduct.sum;
         count -= deduct.count;
         value = sum / count;
