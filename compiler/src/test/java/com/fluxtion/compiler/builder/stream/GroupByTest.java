@@ -14,6 +14,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,6 +249,76 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         expected.put("B", 100);
         expected.put("C", 2000);
         assertThat(results, CoreMatchers.is(expected));
+    }
+
+    @Test
+    public void mapGroupByKeysTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> {
+            subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId, KeyedData::getAmount)
+                    .map(GroupByFunction.mapKeys(EventStreamBuildTest::toUpperCase))
+                    .map(GroupBy::map)
+                    .sink("keyValue");
+        });
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("a", 400));
+        onEvent(new KeyedData("b", 233));
+        onEvent(new KeyedData("b", 1000));
+        onEvent(new KeyedData("b", 2000));
+        onEvent(new KeyedData("c", 1000));
+        onEvent(new KeyedData("b", 50));
+
+        expected.put("A", 400);
+        expected.put("B", 50);
+        expected.put("C", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+
+    @Test
+    public void mapGroupByEntriesTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> {
+            subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId)
+                    .map(GroupByFunction.mapEntry(GroupByTest::mapKeyData))
+                    .map(GroupBy::map)
+                    .sink("keyValue");
+        });
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("a", 400));
+        onEvent(new KeyedData("b", 233));
+        onEvent(new KeyedData("b", 1000));
+        onEvent(new KeyedData("b", 2000));
+        onEvent(new KeyedData("c", 1000));
+        onEvent(new KeyedData("b", 50));
+
+        expected.put("A", 800);
+        expected.put("B", 100);
+        expected.put("C", 2000);
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+    public static Map.Entry<String, Integer> mapKeyData(Map.Entry<String, KeyedData> input) {
+        return new AbstractMap.SimpleEntry<>(
+                input.getKey().toUpperCase(), input.getValue().getAmount() * 2);
     }
 
     @Test
