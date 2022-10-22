@@ -85,6 +85,19 @@ public interface Mappers {
         return Aggregates.longMaxFactory().get()::aggregateLong;
     }
 
+    //AVERAGE
+    static SerializableIntUnaryOperator averageInt() {
+        return Aggregates.intAverageFactory().get()::aggregateInt;
+    }
+
+    static SerializableDoubleUnaryOperator averageDouble() {
+        return Aggregates.doubleAverageFactory().get()::aggregateDouble;
+    }
+
+    static SerializableLongUnaryOperator averageLong() {
+        return Aggregates.longAverageFactory().get()::aggregateLong;
+    }
+
     static CountNode newCountNode() {
         return new CountNode();
     }
@@ -184,4 +197,28 @@ public interface Mappers {
         return a / b;
     }
 
+    //cast
+    static double int2Double(int in) {
+        return in;
+    }
+
+    static long int2Long(int in) {
+        return in;
+    }
+
+    static double long2Double(long in) {
+        return in;
+    }
+
+    static int long2Int(long in) {
+        return (int) in;
+    }
+
+    static int double2Int(double in) {
+        return (int) in;
+    }
+
+    static long double2Long(double in) {
+        return (long) in;
+    }
 }

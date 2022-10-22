@@ -50,23 +50,4 @@ public class AggregateCounting<T> implements AggregateFunction<T, Integer, Aggre
         return increment(1);
     }
 
-//    @Override
-//    public void setUpdateTriggerNode(Object updateTriggerNode) {
-//
-//    }
-//
-//    @Override
-//    public void setPublishTriggerNode(Object publishTriggerNode) {
-//
-//    }
-//
-//    @Override
-//    public void setResetTriggerNode(Object resetTriggerNode) {
-//
-//    }
-//
-//    @Override
-//    public void setPublishTriggerOverrideNode(Object publishTriggerOverrideNode) {
-//
-//    }
 }

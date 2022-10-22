@@ -2,15 +2,18 @@ package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateCounting;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleAverage;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleValue;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIdentity;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntAverage;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntValue;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongAverage;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongMin;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
@@ -38,6 +41,7 @@ public class Aggregates {
         return AggregateCounting::new;
     }
 
+    //SUM
     public static SerializableSupplier<AggregateIntSum> intSumFactory() {
         return AggregateIntSum::new;
     }
@@ -76,4 +80,16 @@ public class Aggregates {
         return AggregateDoubleMin::new;
     }
 
+    //AVERAGE
+    public static SerializableSupplier<AggregateIntAverage> intAverageFactory() {
+        return AggregateIntAverage::new;
+    }
+
+    public static SerializableSupplier<AggregateDoubleAverage> doubleAverageFactory() {
+        return AggregateDoubleAverage::new;
+    }
+
+    public static SerializableSupplier<AggregateLongAverage> longAverageFactory() {
+        return AggregateLongAverage::new;
+    }
 }
