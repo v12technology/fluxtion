@@ -17,6 +17,7 @@ package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 
@@ -122,15 +123,32 @@ public interface StaticEventProcessor {
         onEvent(Signal.intSignal(filter, value));
     }
 
+    default void publishIntSignal(String filter, int value) {
+        publishSignal(filter, value);
+    }
+
     default void publishSignal(String filter, double value) {
         onEvent(Signal.doubleSignal(filter, value));
+    }
+
+    default void publishDoubleSignal(String filter, double value) {
+        publishSignal(filter, value);
     }
 
     default void publishSignal(String filter, long value) {
         onEvent(Signal.longSignal(filter, value));
     }
 
+    default void publishLongSignal(String filter, long value) {
+        publishSignal(filter, value);
+    }
+
     default <T> T getNodeById(String id) throws NoSuchFieldException {
         throw new NoSuchFieldException(id);
+    }
+
+    default <T> T getStreamed(String name) throws NoSuchFieldException {
+        EventStream<T> stream = getNodeById(name);
+        return stream.get();
     }
 }

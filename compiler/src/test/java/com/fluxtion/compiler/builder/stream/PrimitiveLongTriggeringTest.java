@@ -30,15 +30,15 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(70, result.longValue());
 
         publishSignal("reset");
         Assert.assertEquals(0, result.longValue());
 
-        publishSignal("in", 90L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 90L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(140, result.longValue());
     }
 
@@ -52,8 +52,8 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(70, result.longValue());
 
         result.setValue(0);
@@ -71,8 +71,8 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(0, result.longValue());
 
         publishSignal("publish");
@@ -89,8 +89,8 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(0, result.longValue());
 
         publishSignal("update");
@@ -103,37 +103,37 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
     @Test
     public void resetAggregateTest() {
         sep(c -> EventFlow.subscribeToLongSignal("in")
-                .aggregate(Aggregates.longSum())
+                .aggregate(Aggregates.longSumFactory())
                 .resetTrigger(EventFlow.subscribeToSignal("reset"))
                 .sink("out"));
 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(70, result.longValue());
 
         publishSignal("reset");
         Assert.assertEquals(0, result.longValue());
 
-        publishSignal("in", 90L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 90L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(140, result.longValue());
     }
 
     @Test
     public void additionalPublishAggregateTest() {
         sep(c -> EventFlow.subscribeToLongSignal("in")
-                .aggregate(Aggregates.longSum())
+                .aggregate(AggregateLongSum::new)
                 .publishTrigger(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(70, result.longValue());
 
         result.setValue(0);
@@ -144,15 +144,15 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
     @Test
     public void overridePublishAggregateTest() {
         sep(c -> EventFlow.subscribeToLongSignal("in")
-                .aggregate(Aggregates.longSum())
+                .aggregate(Aggregates.longSumFactory())
                 .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(0, result.longValue());
 
         publishSignal("publish");
@@ -162,15 +162,15 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
     @Test
     public void updateAggregateOnTriggerTest() {
         sep(c -> EventFlow.subscribeToLongSignal("in")
-                .aggregate(Aggregates.longSum())
+                .aggregate(Aggregates.longSumFactory())
                 .updateTrigger(EventFlow.subscribeToSignal("update"))
                 .sink("out"));
 
         MutableLong result = new MutableLong();
         addLongSink("out", result::setValue);
 
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(0, result.longValue());
 
         publishSignal("update");
@@ -191,18 +191,18 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         addLongSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
         tickDelta(100);
         Assert.assertEquals(60, result.longValue());
 
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
         publishSignal("reset");
         tickDelta(100);
         Assert.assertEquals(0, result.longValue());
 
-        publishSignal("in", 40L);
+        publishLongSignal("in", 40L);
         tickDelta(100);
         Assert.assertEquals(40, result.longValue());
     }
@@ -218,14 +218,14 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         addLongSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
         tickDelta(100);
         Assert.assertEquals(60, result.longValue());
 
         result.setValue(0);
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
         tickDelta(20);
         Assert.assertEquals(0, result.longValue());
         publishSignal("publish");
@@ -246,13 +246,13 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         addLongSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 20L);
         tickDelta(100);
         Assert.assertEquals(0, result.longValue());
 
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
         tickDelta(20);
         publishSignal("publish");
         Assert.assertEquals(60, result.longValue());
@@ -269,7 +269,7 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         addLongSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20L);
+        publishLongSignal("in", 20L);
         Assert.assertEquals(0, result.longValue());
 
         tickDelta(30);
@@ -279,19 +279,19 @@ public class PrimitiveLongTriggeringTest extends MultipleSepTargetInProcessTest 
         Assert.assertEquals(20, result.longValue());
 
         tickDelta(30);
-        publishSignal("in", 20L);
-        publishSignal("in", 50L);
+        publishLongSignal("in", 20L);
+        publishLongSignal("in", 50L);
         Assert.assertEquals(20, result.longValue());
 
         publishSignal("update");
         Assert.assertEquals(90, result.longValue());
 
-        publishSignal("in", 50L);
+        publishLongSignal("in", 50L);
         result.setValue(0);
         tickDelta(100);
         Assert.assertEquals(0, result.longValue());
 
-        publishSignal("in", 50L);
+        publishLongSignal("in", 50L);
         publishSignal("update");
         Assert.assertEquals(50, result.longValue());
     }

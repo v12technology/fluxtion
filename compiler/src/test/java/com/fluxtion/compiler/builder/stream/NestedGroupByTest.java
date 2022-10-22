@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.compiler.builder.stream.StreamBuildTest.Person;
+import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.Person;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
@@ -23,9 +23,9 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventStreamBuilder<Map<String, GroupByStreamed<String, Person>>> filtered = subscribe(Person.class)
                     .console("->{}")
-                    .groupBy(Person::getCountry, Mappers::valueIdentity)
+                    .groupBy(Person::getCountry, Mappers::identity)
                     .console("country key:{}")
-                    .groupBy(NestedGroupByTest::getGender, Mappers::valueIdentity)
+                    .groupBy(NestedGroupByTest::getGender, Mappers::identity)
                     .map(GroupBy::map)
                     .console("secondary gender key:{}");
         });

@@ -25,23 +25,23 @@ public class MapDrivenTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void graphFromMapTest(){
+    public void graphFromMapTest() {
         sep(new RootNodeConfig(
                 "root",
                 SignalGroupCalculator.class,
                 ImmutableMap.of("keys", Arrays.asList("key1", "key2", "key3"))));
 
         SignalGroupCalculator calculator = getField("root");
-        publishSignal("key1", 20);
+        publishIntSignal("key1", 20);
         assertThat(calculator.getSum(), is(20));
 
-        publishSignal("key2", 500);
+        publishIntSignal("key2", 500);
         assertThat(calculator.getSum(), is(520));
 
-        publishSignal("key3", 480);
+        publishIntSignal("key3", 480);
         assertThat(calculator.getSum(), is(1000));
 
-        publishSignal("keyXXXX", 545484);
+        publishIntSignal("keyXXXX", 545484);
         assertThat(calculator.getSum(), is(1000));
     }
 
@@ -57,21 +57,21 @@ public class MapDrivenTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class SignalGroupCalculator{
+    public static class SignalGroupCalculator {
         private final List<SignalHandler> handlers;
         private int sum;
 
         @OnTrigger
-        public void calculate(){
+        public void calculate() {
             sum = 0;
-            for (SignalHandler handler: handlers) {
+            for (SignalHandler handler : handlers) {
                 sum += handler.getValue();
             }
         }
     }
 
     @AutoService(NodeFactory.class)
-    public static class SignalGroupCalculatorFactory implements NodeFactory<SignalGroupCalculator>{
+    public static class SignalGroupCalculatorFactory implements NodeFactory<SignalGroupCalculator> {
 
         @Override
         public SignalGroupCalculator createNode(Map<String, Object> config, NodeRegistry registry) {

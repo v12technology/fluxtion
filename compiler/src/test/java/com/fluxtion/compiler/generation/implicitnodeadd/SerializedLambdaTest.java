@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
-import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;

@@ -73,16 +73,35 @@ public interface EventFlow {
         return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
     }
 
+    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType, T defaultValue) {
+        return subscribe(Signal.class, filterId).map(Signal<T>::getValue).defaultValue(defaultValue);
+    }
+
     static IntStreamBuilder subscribeToIntSignal(String filterId) {
         return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
+    }
+
+    static IntStreamBuilder subscribeToIntSignal(String filterId, int defaultValue) {
+        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue)
+                .defaultValue(defaultValue);
     }
 
     static DoubleStreamBuilder subscribeToDoubleSignal(String filterId) {
         return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
     }
 
+    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId, double defaultValue) {
+        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
     static LongStreamBuilder subscribeToLongSignal(String filterId) {
         return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
+    }
+
+    static LongStreamBuilder subscribeToLongSignal(String filterId, long defaultValue) {
+        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue)
+                .defaultValue(defaultValue);
     }
 
     /**

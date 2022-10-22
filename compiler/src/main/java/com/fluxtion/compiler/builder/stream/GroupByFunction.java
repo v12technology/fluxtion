@@ -7,11 +7,23 @@ import com.fluxtion.runtime.stream.groupby.GroupByCollection;
 import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.Tuple;
 
+import java.util.Map;
+
 public interface GroupByFunction {
 
     static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, O>> mapValues(
             SerializableFunction<V, O> mappingFunction) {
         return new MapGroupByFunctionInvoker(mappingFunction)::mapValues;
+    }
+
+    static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<O, V>> mapKeys(
+            SerializableFunction<K, O> mappingFunction) {
+        return new MapGroupByFunctionInvoker(mappingFunction)::mapKeys;
+    }
+
+    static <K, V, K1, V1, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K1, V1>> mapEntry(
+            SerializableFunction<Map.Entry<K, V>, Map.Entry<K1, V1>> mappingFunction) {
+        return new MapGroupByFunctionInvoker(mappingFunction)::mapEntry;
     }
 
     static <K, V, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, V>> filterValues(

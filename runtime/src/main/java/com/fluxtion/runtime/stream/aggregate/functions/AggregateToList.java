@@ -1,6 +1,5 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
 import java.util.ArrayList;
@@ -18,10 +17,6 @@ public class AggregateToList<T> implements AggregateFunction<T, List<T>, Aggrega
 
     public AggregateToList(int maxElementCount) {
         this.maxElementCount = maxElementCount;
-    }
-
-    public static <T> SerializableSupplier<AggregateToList<T>> newList(int maximumElementCount) {
-        return new AggregateToListFactory(maximumElementCount)::newList;
     }
 
     @Override
