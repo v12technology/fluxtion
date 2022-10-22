@@ -16,6 +16,18 @@ import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Predicates {
 
+    static boolean greaterThanInt(int a, int b) {
+        return a > b;
+    }
+
+    static boolean greaterThanDouble(double a, double b) {
+        return a > b;
+    }
+
+    static boolean greaterThanLong(long a, long b) {
+        return a > b;
+    }
+
     static boolean isInteger(String in) {
         try {
             Integer.parseInt(in);

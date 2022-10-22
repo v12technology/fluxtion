@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;

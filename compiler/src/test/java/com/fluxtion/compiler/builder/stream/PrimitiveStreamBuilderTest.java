@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.compiler.builder.stream.StreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Signal;
@@ -21,7 +21,7 @@ import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.*;
-import static com.fluxtion.runtime.stream.helpers.Aggregates.counting;
+import static com.fluxtion.runtime.stream.helpers.Aggregates.countFactory;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -34,10 +34,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void intTest() {
 //        addAuditor();
-        StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
+        EventStreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
                 .filter(PrimitiveStreamBuilderTest::gt10_withRefType)
@@ -45,7 +45,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
                 .push(notifyAndPushTarget::setIntPushValue)
         );
 //        auditToFile("intTest");
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("sdsdsd 230");
         onEvent("230");
@@ -81,7 +81,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void dynamicIntFilterTest() {
         MutableInt target = new MutableInt();
         sep(c -> subscribe(String.class)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .filter(PrimitiveStreamBuilderTest::gt, subscribeToIntSignal("test"))
                 .sink("sink"));
 
@@ -91,13 +91,13 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("1");
         assertThat(target.intValue(), is(0));
 //        onEvent(Signal.intSignal("test", 5));
-        publishSignal("test", 5);
+        publishIntSignal("test", 5);
         assertThat(target.intValue(), is(0));
         onEvent("12");
         assertThat(target.intValue(), is(12));
 
 //        onEvent(Signal.intSignal("test", 7));
-        publishSignal("test", 7);
+        publishIntSignal("test", 7);
         assertThat(target.intValue(), is(24));
 
         onEvent("8");
@@ -108,7 +108,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void dynamicDoubleFilterTest() {
         MutableDouble target = new MutableDouble();
         sep(c -> subscribe(String.class)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                .mapToDouble(EventStreamBuildTest::parseDouble)
                 .filter(PrimitiveStreamBuilderTest::gt, subscribeToDoubleSignal("test"))
                 .sink("sink"));
 
@@ -134,7 +134,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void dynamicLongFilterTest() {
         MutableLong target = new MutableLong();
         sep(c -> subscribe(String.class)
-                .mapToLong(StreamBuildTest::parseLong)
+                .mapToLong(EventStreamBuildTest::parseLong)
                 .filter(PrimitiveStreamBuilderTest::gt, subscribeToLongSignal("test"))
                 .sink("sink"));
 
@@ -165,17 +165,17 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void doubleTest() {
 //        addAuditor();
-        StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
+        EventStreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                .mapToDouble(EventStreamBuildTest::parseDouble)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
                 .filter(PrimitiveStreamBuilderTest::gt10_withRefType)
                 .notify(notifyAndPushTarget)
                 .push(notifyAndPushTarget::setDoublePushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("sdsdsd 230");
         onEvent("230");
@@ -186,17 +186,17 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void longTest() {
 //        addAuditor();
-        StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
+        EventStreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
-                .mapToLong(StreamBuildTest::parseLong)
+                .mapToLong(EventStreamBuildTest::parseLong)
                 .map(PrimitiveStreamBuilderTest::multiplyX10)
                 .filter(PrimitiveStreamBuilderTest::gt10)
                 .filter(PrimitiveStreamBuilderTest::gt10_withRefType)
                 .notify(notifyAndPushTarget)
                 .push(notifyAndPushTarget::setLongPushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("sdsdsd 230");
         onEvent("230");
@@ -207,7 +207,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateCountTest() {
         sep(c -> subscribe(String.class)
-                .aggregate(counting())
+                .aggregate(countFactory())
                 .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
         assertThat(notifyTarget.getIntPushValue(), is(0));
@@ -227,8 +227,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateIntTest() {
         sep(c -> subscribe(String.class)
-                .mapToInt(StreamBuildTest::parseInt)
-                .aggregate(Aggregates.intSum()).id("sum")
+                .mapToInt(EventStreamBuildTest::parseInt)
+                .aggregate(Aggregates.intSumFactory()).id("sum")
                 .resetTrigger(subscribe(Signal.class))
                 .push(new NotifyAndPushTarget()::setIntPushValue)
         );
@@ -253,9 +253,9 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateDoubleTest() {
         sep(c -> subscribe(String.class)
-                        .mapToDouble(StreamBuildTest::parseDouble)
+                        .mapToDouble(EventStreamBuildTest::parseDouble)
 //                .aggregate(AggregateDoubleSum::new).id("sum")
-                        .aggregate(Aggregates.doubleSum()).id("sum")
+                        .aggregate(Aggregates.doubleSumFactory()).id("sum")
                         .resetTrigger(subscribe(Signal.class))
                         .push(new NotifyAndPushTarget()::setDoublePushValue)
         );
@@ -280,8 +280,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateLongTest() {
         sep(c -> subscribe(String.class)
-                .mapToLong(StreamBuildTest::parseLong)
-                .aggregate(Aggregates.longSum()).id("sum")
+                .mapToLong(EventStreamBuildTest::parseLong)
+                .aggregate(Aggregates.longSumFactory()).id("sum")
                 .resetTrigger(subscribe(Signal.class))
                 .push(new NotifyAndPushTarget()::setLongPushValue)
         );
@@ -307,7 +307,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void tumblingIntMap() {
         sep(c -> subscribe(String.class)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .tumblingAggregate(AggregateIntSum::new, 300).id("sum")
                 .push(new NotifyAndPushTarget()::setIntPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -344,7 +344,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void tumblingDoubleMap() {
         sep(c -> subscribe(String.class)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                .mapToDouble(EventStreamBuildTest::parseDouble)
                 .tumblingAggregate(AggregateDoubleSum::new, 300).id("sum")
                 .push(new NotifyAndPushTarget()::setDoublePushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -381,7 +381,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void tumblingLongMap() {
         sep(c -> subscribe(String.class)
-                .mapToLong(StreamBuildTest::parseLong)
+                .mapToLong(EventStreamBuildTest::parseLong)
                 .tumblingAggregate(AggregateLongSum::new, 300).id("sum")
                 .push(new NotifyAndPushTarget()::setLongPushValue));
         NotifyAndPushTarget notifyTarget = getField(NotifyAndPushTarget.DEFAULT_NAME);
@@ -418,7 +418,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void slidingIntWindowTest() {
         sep(c -> subscribe(String.class)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .slidingAggregate(AggregateIntSum::new, 100, 4).id("sum")
                 .push(new NotifyAndPushTarget()::setIntPushValue));
         setTime(0);
@@ -449,7 +449,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void slidingDoubleWindowTest() {
         sep(c -> subscribe(String.class)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                .mapToDouble(EventStreamBuildTest::parseDouble)
                 .slidingAggregate(AggregateDoubleSum::new, 100, 4).id("sum")
                 .push(new NotifyAndPushTarget()::setDoublePushValue));
         setTime(0);
@@ -480,7 +480,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void slidingLongWindowTest() {
         sep(c -> subscribe(String.class)
-                .mapToLong(StreamBuildTest::parseLong)
+                .mapToLong(EventStreamBuildTest::parseLong)
                 .slidingAggregate(AggregateLongSum::new, 100, 4).id("sum")
                 .push(new NotifyAndPushTarget()::setLongPushValue));
         setTime(0);
@@ -511,10 +511,10 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testMultipleIntConversions() {
 //        addAuditor();
-        StreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new StreamBuildTest.NotifyAndPushTarget();
+        EventStreamBuildTest.NotifyAndPushTarget notifyAndPushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
         sep(c -> subscribe(String.class)
                 .filter(NumberUtils::isCreatable)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .mapToLong(PrimitiveStreamBuilderTest::addMaxInteger)
                 .push(notifyAndPushTarget::setLongPushValue)
                 .mapToDouble(PrimitiveStreamBuilderTest::divideLongBy1_000)
@@ -522,7 +522,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
                 .mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt)
                 .push(notifyAndPushTarget::setIntPushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent("1");
         assertThat(notifyTarget.getLongPushValue(), is(2147483648L));
         assertThat(notifyTarget.getDoublePushValue(), closeTo(2147483.648, 0.00001));
@@ -533,12 +533,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void testDoubleConversions() {
 //        addAuditor();
         sep(c -> {
-            StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
+            EventStreamBuildTest.NotifyAndPushTarget pushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
             DoubleStreamBuilder doubleStreamBuilder = subscribe(Double.class).mapToDouble(Double::doubleValue);
             doubleStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castDoubleToInt).push(pushTarget::setIntPushValue);
             doubleStreamBuilder.mapToLong(PrimitiveStreamBuilderTest::castDoubleToLong).push(pushTarget::setLongPushValue);
         });
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent(234.8);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getLongPushValue(), is(234L));
@@ -548,12 +548,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void testLongConversions() {
 //        addAuditor();
         sep(c -> {
-            StreamBuildTest.NotifyAndPushTarget pushTarget = new StreamBuildTest.NotifyAndPushTarget();
+            EventStreamBuildTest.NotifyAndPushTarget pushTarget = new EventStreamBuildTest.NotifyAndPushTarget();
             LongStreamBuilder longStreamBuilder = subscribe(Long.class).mapToLong(Long::longValue);
             longStreamBuilder.mapToInt(PrimitiveStreamBuilderTest::castLongToInt).push(pushTarget::setIntPushValue);
             longStreamBuilder.mapToDouble(PrimitiveStreamBuilderTest::castLongToDouble).push(pushTarget::setDoublePushValue);
         });
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         onEvent(234L);
         assertThat(notifyTarget.getIntPushValue(), is(234));
         assertThat(notifyTarget.getDoublePushValue(), closeTo(234.0, 0.0001));
@@ -597,12 +597,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void defaultIntValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
-                .mapToInt(StreamBuildTest::parseInt)
+                .mapToInt(EventStreamBuildTest::parseInt)
                 .defaultValue(100)
                 .publishTrigger(subscribe(Signal.class))
-                .push(new StreamBuildTest.NotifyAndPushTarget()::setIntPushValue)
+                .push(new EventStreamBuildTest.NotifyAndPushTarget()::setIntPushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField(EventStreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
 
         onEvent(new Signal<>());
         assertThat(notifyTarget.getIntPushValue(), is(100));
@@ -618,12 +618,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void defaultDoubleValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
-                .mapToDouble(StreamBuildTest::parseDouble)
+                .mapToDouble(EventStreamBuildTest::parseDouble)
                 .defaultValue(100)
                 .publishTrigger(subscribe(Signal.class))
-                .push(new StreamBuildTest.NotifyAndPushTarget()::setDoublePushValue)
+                .push(new EventStreamBuildTest.NotifyAndPushTarget()::setDoublePushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField(EventStreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
 
         onEvent(new Signal<>());
         assertThat(notifyTarget.getDoublePushValue(), is(100.0));
@@ -639,12 +639,12 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void defaultLongValueTest() {
 //        addAuditor();
         sep(c -> subscribe(String.class)
-                .mapToLong(StreamBuildTest::parseLong)
+                .mapToLong(EventStreamBuildTest::parseLong)
                 .defaultValue(100)
                 .publishTrigger(subscribe(Signal.class))
-                .push(new StreamBuildTest.NotifyAndPushTarget()::setLongPushValue)
+                .push(new EventStreamBuildTest.NotifyAndPushTarget()::setLongPushValue)
         );
-        StreamBuildTest.NotifyAndPushTarget notifyTarget = getField(StreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
+        EventStreamBuildTest.NotifyAndPushTarget notifyTarget = getField(EventStreamBuildTest.NotifyAndPushTarget.DEFAULT_NAME);
 
         onEvent(new Signal<>());
         assertThat(notifyTarget.getLongPushValue(), is(100L));

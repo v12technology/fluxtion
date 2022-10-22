@@ -30,15 +30,15 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(70, result.doubleValue(), 0.0001);
 
         publishSignal("reset");
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 90d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 90d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(140, result.doubleValue(), 0.0001);
     }
 
@@ -52,8 +52,8 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(70, result.doubleValue(), 0.0001);
 
         result.setValue(0);
@@ -71,8 +71,8 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
         publishSignal("publish");
@@ -89,8 +89,8 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
         publishSignal("update");
@@ -103,37 +103,37 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
     @Test
     public void resetAggregateTest() {
         sep(c -> EventFlow.subscribeToDoubleSignal("in")
-                .aggregate(Aggregates.doubleSum())
+                .aggregate(Aggregates.doubleSumFactory())
                 .resetTrigger(EventFlow.subscribeToSignal("reset"))
                 .sink("out"));
 
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(70, result.doubleValue(), 0.0001);
 
         publishSignal("reset");
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 90d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 90d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(140, result.doubleValue(), 0.0001);
     }
 
     @Test
     public void additionalPublishAggregateTest() {
         sep(c -> EventFlow.subscribeToDoubleSignal("in")
-                .aggregate(Aggregates.doubleSum())
+                .aggregate(Aggregates.doubleSumFactory())
                 .publishTrigger(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(70, result.doubleValue(), 0.0001);
 
         result.setValue(0);
@@ -144,15 +144,15 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
     @Test
     public void overridePublishAggregateTest() {
         sep(c -> EventFlow.subscribeToDoubleSignal("in")
-                .aggregate(Aggregates.doubleSum())
+                .aggregate(Aggregates.doubleSumFactory())
                 .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
                 .sink("out"));
 
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
         publishSignal("publish");
@@ -162,15 +162,15 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
     @Test
     public void updateAggregateOnTriggerTest() {
         sep(c -> EventFlow.subscribeToDoubleSignal("in")
-                .aggregate(Aggregates.doubleSum())
+                .aggregate(Aggregates.doubleSumFactory())
                 .updateTrigger(EventFlow.subscribeToSignal("update"))
                 .sink("out"));
 
         MutableDouble result = new MutableDouble();
         addDoubleSink("out", result::setValue);
 
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
         publishSignal("update");
@@ -191,18 +191,18 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         addDoubleSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         tickDelta(100);
         Assert.assertEquals(60, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         publishSignal("reset");
         tickDelta(100);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 40d);
+        publishDoubleSignal("in", 40d);
         tickDelta(100);
         Assert.assertEquals(40, result.doubleValue(), 0.0001);
     }
@@ -218,14 +218,14 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         addDoubleSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         tickDelta(100);
         Assert.assertEquals(60, result.doubleValue(), 0.0001);
 
         result.setValue(0);
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         tickDelta(20);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
         publishSignal("publish");
@@ -246,13 +246,13 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         addDoubleSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         tickDelta(100);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         tickDelta(20);
         publishSignal("publish");
         Assert.assertEquals(60, result.doubleValue(), 0.0001);
@@ -269,7 +269,7 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         addDoubleSink("out", result::setValue);
 
         setTime(0);
-        publishSignal("in", 20d);
+        publishDoubleSignal("in", 20d);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
         tickDelta(30);
@@ -279,19 +279,19 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         Assert.assertEquals(20, result.doubleValue(), 0.0001);
 
         tickDelta(30);
-        publishSignal("in", 20d);
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 20d);
+        publishDoubleSignal("in", 50d);
         Assert.assertEquals(20, result.doubleValue(), 0.0001);
 
         publishSignal("update");
         Assert.assertEquals(90, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 50d);
         result.setValue(0);
         tickDelta(100);
         Assert.assertEquals(0, result.doubleValue(), 0.0001);
 
-        publishSignal("in", 50d);
+        publishDoubleSignal("in", 50d);
         publishSignal("update");
         Assert.assertEquals(50, result.doubleValue(), 0.0001);
     }

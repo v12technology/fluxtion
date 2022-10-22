@@ -36,10 +36,13 @@ import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
 import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
 import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
+import com.fluxtion.runtime.stream.helpers.Collectors;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Peekers;
+
+import java.util.List;
 
 public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplier<T>> {
 
@@ -90,10 +93,55 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
                 new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
     }
 
+    public <S> EventStreamBuilder<T> filter(
+            SerializableBiFunction<T, Integer, Boolean> predicate,
+            IntStreamBuilder secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
+    }
+
+    public <S> EventStreamBuilder<T> filter(
+            SerializableBiFunction<T, Double, Boolean> predicate,
+            DoubleStreamBuilder secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
+    }
+
+    public <S> EventStreamBuilder<T> filter(
+            SerializableBiFunction<T, Long, Boolean> predicate,
+            LongStreamBuilder secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
+    }
+
     public <P, S> EventStreamBuilder<T> filterByProperty(
             SerializableBiFunction<P, S, Boolean> predicate,
             SerializableFunction<T, P> accessor,
             EventStreamBuilder<S> secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
+    }
+
+    public <P, S> EventStreamBuilder<T> filterByProperty(
+            SerializableBiFunction<P, Integer, Boolean> predicate,
+            SerializableFunction<T, P> accessor,
+            IntStreamBuilder secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
+    }
+
+    public <P, S> EventStreamBuilder<T> filterByProperty(
+            SerializableBiFunction<P, Double, Boolean> predicate,
+            SerializableFunction<T, P> accessor,
+            DoubleStreamBuilder secondArgument) {
+        return new EventStreamBuilder<>(
+                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
+    }
+
+    public <P, S> EventStreamBuilder<T> filterByProperty(
+            SerializableBiFunction<P, Long, Boolean> predicate,
+            SerializableFunction<T, P> accessor,
+            LongStreamBuilder secondArgument) {
         return new EventStreamBuilder<>(
                 new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
     }
@@ -164,7 +212,22 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
     public <V, K> EventStreamBuilder<GroupByStreamed<K, V>>
     groupBy(SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction) {
-        return groupBy(keyFunction, valueFunction, Aggregates.identity());
+        return groupBy(keyFunction, valueFunction, Aggregates.identityFactory());
+    }
+
+    public <V, K> EventStreamBuilder<GroupByStreamed<K, T>>
+    groupBy(SerializableFunction<T, K> keyFunction) {
+        return groupBy(keyFunction, Mappers::identity);
+    }
+
+    public <V, K> EventStreamBuilder<GroupByStreamed<K, List<T>>>
+    groupByAsList(SerializableFunction<T, K> keyFunction) {
+        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory());
+    }
+
+    public <V, K> EventStreamBuilder<GroupByStreamed<K, List<T>>>
+    groupByAsList(SerializableFunction<T, K> keyFunction, int maxElementsInList) {
+        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory(maxElementsInList));
     }
 
     public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
@@ -185,7 +248,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
     groupByTumbling(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
                     int bucketSizeMillis) {
-        return groupByTumbling(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis);
+        return groupByTumbling(keyFunction, valueFunction, Aggregates.identityFactory(), bucketSizeMillis);
     }
 
     public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
@@ -209,7 +272,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
                    SerializableFunction<T, V> valueFunction,
                    int bucketSizeMillis,
                    int numberOfBuckets) {
-        return groupBySliding(keyFunction, valueFunction, Aggregates.identity(), bucketSizeMillis, numberOfBuckets);
+        return groupBySliding(keyFunction, valueFunction, Aggregates.identityFactory(), bucketSizeMillis, numberOfBuckets);
     }
 
     public <K, A, F extends AggregateFunction<T, A, F>> EventStreamBuilder<GroupBy<K, A>>
@@ -221,7 +284,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
                 eventStream,
                 aggregateFunctionSupplier,
                 keyFunction,
-                Mappers::valueIdentity,
+                Mappers::identity,
                 bucketSizeMillis,
                 numberOfBuckets
         ));
