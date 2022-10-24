@@ -10,11 +10,13 @@ import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;
+import lombok.val;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -392,4 +394,82 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         int value;
     }
 
+
+    public enum System {REFERENCE, MARKET}
+
+    public enum Change_type {CREATE, UPDATE, DELETE}
+
+    @Value
+    public static class MyEvent {
+        System system;
+        Change_type change_type;
+        String id;
+        String data;
+
+        public static boolean isCreate(MyEvent myEvent) {
+            return myEvent.change_type == Change_type.CREATE;
+        }
+
+        public static boolean isDelete(MyEvent myEvent) {
+            return myEvent.change_type == Change_type.DELETE;
+        }
+    }
+
+
+    @Value
+    public static class MyModel {
+        System system;
+
+        transient List<String> myData = new ArrayList<>();
+
+        public void createItem(String newData) {
+            myData.add(newData);
+        }
+
+        public void removeItem(String deleteData) {
+            myData.remove(deleteData);
+        }
+    }
+
+
+    @Test
+    public void maintainModel() {
+        sep(c -> {
+            val modelStream = subscribe(MyModel.class)
+                    .groupBy(MyModel::getSystem);
+
+
+            modelStream.mapBiFunction(GroupByTest::deleteItem,
+                            EventFlow.subscribe(MyEvent.class).filter(MyEvent::isDelete)
+                    )
+                    .merge(modelStream.mapBiFunction(GroupByTest::updateItem,
+                            EventFlow.subscribe(MyEvent.class).filter(MyEvent::isCreate)
+                    ))
+                    .console("model after change:{}");
+
+
+        });
+
+
+        onEvent(new MyModel(System.REFERENCE));
+        onEvent(new MyModel(System.REFERENCE));
+        onEvent(new MyModel(System.MARKET));
+
+        onEvent(new MyEvent(System.REFERENCE, Change_type.CREATE, "ID_1", "greg-1"));
+        onEvent(new MyEvent(System.REFERENCE, Change_type.CREATE, "ID_2", "john"));
+        onEvent(new MyEvent(System.MARKET, Change_type.CREATE, "ID_2", "BBC"));
+        onEvent(new MyEvent(System.REFERENCE, Change_type.DELETE, "ID_1", "greg-1"));
+    }
+
+    public static GroupByStreamed<System, MyModel> updateItem(GroupByStreamed<System, MyModel> modelMap, MyEvent myEvent) {
+        modelMap.map().get(myEvent.getSystem())
+                .createItem(myEvent.getData());
+        return modelMap;
+    }
+
+    public static GroupByStreamed<System, MyModel> deleteItem(GroupByStreamed<System, MyModel> modelMap, MyEvent myEvent) {
+        modelMap.map().get(myEvent.getSystem())
+                .removeItem(myEvent.getData());
+        return modelMap;
+    }
 }
