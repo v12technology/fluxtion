@@ -1,27 +1,40 @@
 package com.fluxtion.runtime.stream.groupby;
 
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class MapGroupByFunctionInvoker {
 
     private final SerializableFunction mapFunction;
-    public SerializableFunction keyFunction;
-    public SerializableBiFunction mapBiFunction;
+    private final SerializableBiFunction mapFrom2MapsBiFunction;
+    @SepNode
+    public Object defaultValue;
 
     private final transient GroupByCollection outputCollection = new GroupByCollection();
 
     public <T, R> MapGroupByFunctionInvoker(SerializableFunction<T, R> mapFunction) {
+        this(mapFunction, null);
+    }
+
+    public <A, B, R> MapGroupByFunctionInvoker(SerializableBiFunction<A, B, R> mapFrom2MapsBiFunction) {
+        this(null, mapFrom2MapsBiFunction);
+    }
+
+    public <K, V, A, O> MapGroupByFunctionInvoker(SerializableFunction<A, K> mapFunction, SerializableBiFunction<V, A, O> mapFrom2MapsBiFunction) {
         this.mapFunction = mapFunction;
+        this.mapFrom2MapsBiFunction = mapFrom2MapsBiFunction;
     }
 
-    public <T, R> MapGroupByFunctionInvoker() {
-        this(null);
+    public <K, V, A, O> MapGroupByFunctionInvoker(SerializableFunction<A, K> mapFunction, SerializableBiFunction<V, A, O> mapFrom2MapsBiFunction, Object defaultValue) {
+        this.mapFunction = mapFunction;
+        this.mapFrom2MapsBiFunction = mapFrom2MapsBiFunction;
+        this.defaultValue = defaultValue;
     }
-
 
     //required for serialised version
     public <K, V> GroupBy<K, V> mapValues(Object inputMap) {
@@ -30,6 +43,10 @@ public class MapGroupByFunctionInvoker {
 
     public <K, V> GroupBy<K, V> mapKeyedValue(Object inputMap, Object secondArgument) {
         return mapKeyedValue((GroupBy) inputMap, secondArgument);
+    }
+
+    public <K, V> GroupBy<K, V> biMapWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
+        return biMapWithParamMap((GroupBy) firstArgGroupBy, (GroupBy) secondArgGroupBY);
     }
 
     public <K, V> GroupBy<K, V> mapKeys(Object inputMap) {
@@ -67,12 +84,25 @@ public class MapGroupByFunctionInvoker {
         return outputCollection;
     }
 
-    public <K, V> GroupBy<K, V> mapKeyedValue(GroupBy inputMap, Object argumentProvider) {
+    public <K, G extends GroupBy, R> GroupBy<K, R> mapKeyedValue(G inputMap, Object argumentProvider) {
         outputCollection.reset();
-        Object item = inputMap.map().get(keyFunction.apply(argumentProvider));
+        Object key = mapFunction.apply(argumentProvider);
+        Object item = inputMap.map().get(key);
         if (item != null) {
-            mapBiFunction.apply(item, argumentProvider);
+            outputCollection.map().put(key, mapFrom2MapsBiFunction.apply(item, argumentProvider));
         }
+        return outputCollection;
+    }
+
+    public <K, G extends GroupBy, H extends GroupBy, R> GroupBy<K, R> biMapWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
+        outputCollection.reset();
+        Map arg2Map = (secondArgGroupBY == null && defaultValue != null) ? Collections.emptyMap() : secondArgGroupBY.map();
+        firstArgGroupBy.map().forEach((key, arg1) -> {
+            Object arg2 = arg2Map.getOrDefault(key, defaultValue);
+            if (arg2 != null) {
+                outputCollection.map().put(key, mapFrom2MapsBiFunction.apply(arg1, arg2));
+            }
+        });
         return outputCollection;
     }
 }

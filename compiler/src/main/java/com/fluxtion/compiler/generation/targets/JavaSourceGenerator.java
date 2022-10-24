@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.targets;
@@ -22,8 +22,8 @@ import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import net.vidageek.mirror.dsl.Mirror;
@@ -41,7 +41,6 @@ import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperT
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
 /**
- *
  * @author Greg Higgins
  */
 public class JavaSourceGenerator {
@@ -142,7 +141,6 @@ public class JavaSourceGenerator {
 
     /**
      * String representation of top level event dispatch, branches on event type
-     *
      */
     private String eventDispatch;
 
@@ -168,12 +166,12 @@ public class JavaSourceGenerator {
     private final ArrayList<String> publicNodeIdentifierList;
 
     private final SimpleEventProcessorModel model;
-    
+
     /**
      * use reflection to assign private members
      */
     private final boolean assignPrivateMembers;
-    
+
     /**
      * are any auditors registered for this SEP
      */
@@ -182,7 +180,7 @@ public class JavaSourceGenerator {
     private boolean auditingInvocations;
 
     private String auditMethodString;
-    
+
     private String additionalInterfaces;
 
     private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
@@ -290,7 +288,7 @@ public class JavaSourceGenerator {
             resetDirtyFlags += String.format("%8s%s = false;%n", "", flag.name);
         }
         for (DirtyFlag flag : values) {
-            if(flag.requiresInvert){
+            if (flag.requiresInvert) {
                 dirtyFlagDeclarations += String.format("%4sprivate boolean not%s = false;%n", "", flag.name);
                 resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
             }
@@ -302,7 +300,7 @@ public class JavaSourceGenerator {
     private String getClassName(Class<?> clazzName) {
         return getClassName(clazzName.getCanonicalName());
     }
-    
+
     private String getClassName(String clazzName) {
         clazzName = model.getMappedClass(clazzName);
         String[] split = clazzName.split("\\.");
@@ -311,10 +309,10 @@ public class JavaSourceGenerator {
             String simpleName = split[split.length - 1];
             String pkgName = clazzName.replace("." + simpleName, "");
             ret = simpleName;
-            if(clazzName.startsWith("java.lang")
-                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)){
+            if (clazzName.startsWith("java.lang")
+                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)) {
                 //ignore java.lang
-            }else if (importMap.containsKey(simpleName)) {
+            } else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(clazzName)) {
                     ret = clazzName;
                 }
@@ -353,28 +351,31 @@ public class JavaSourceGenerator {
                         .append(" = constructor.on(").append(fqnBuilder).append(".class).invoke().constructor().bypasser();");
             } else {
                 List<Field.MappedField> constructorArgs = model.constructorArgs(field.instance);
-                if(String.class.isAssignableFrom(fieldClass)){
+                if (String.class.isAssignableFrom(fieldClass)) {
                     declarationRoot
                             .append(" = ").append("\"")
                             .append(escapeJava((String) field.instance))
                             .append("\";");
-                }else if(Integer.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append(";");
-                }else if(Float.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("f;");
-                }else if(Double.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("d;");
-                }else if(Long.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("L;");
-                }else if(Short.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = (short)").append( field.instance).append(";");
-                }else if(Byte.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = (byte)").append( field.instance).append(";");
-                }else if(Character.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = '").append( field.instance).append("';");
-                }
-                else{
-                    String generic = field.isGeneric()?"<>":"";
+                } else if (Integer.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append(";");
+                } else if (Float.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append("f;");
+                } else if (Double.class.isAssignableFrom(fieldClass)) {
+                    if (!Double.isNaN((double) field.instance)) {
+                        declarationRoot.append(" = ").append(field.instance).append("d;");
+                    } else {
+                        declarationRoot.append(" = Double.NaN;");
+                    }
+                } else if (Long.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append("L;");
+                } else if (Short.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = (short)").append(field.instance).append(";");
+                } else if (Byte.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = (byte)").append(field.instance).append(";");
+                } else if (Character.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = '").append(field.instance).append("';");
+                } else {
+                    String generic = field.isGeneric() ? "<>" : "";
                     String args = constructorArgs.stream().map(Field.MappedField::value).collect(Collectors.joining(", "));
                     declarationRoot.append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
@@ -416,7 +417,7 @@ public class JavaSourceGenerator {
                 }
                 filterVariableMap.put(variableName, value);
                 final String declaration = String.format("    "
-                        + "public static final int %s = %d;",
+                                + "public static final int %s = %d;",
                         variableName, value);
                 filterConstantDeclarations += (firstLine ? "" : "\n") + declaration;
                 firstLine = false;
@@ -426,7 +427,7 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
-        if(auditingEvent){
+        if (auditingEvent) {
             eventHandlers += auditMethodString;
         }
     }
@@ -437,7 +438,6 @@ public class JavaSourceGenerator {
      * called, and dispatches methods internally. The generated method, switches
      * on class type, casts to the correct object and then invokes specific
      * event handling for that type.
-     *
      */
     private void generateClassBasedDispatcher() {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
@@ -483,8 +483,8 @@ public class JavaSourceGenerator {
     private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
 
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
-            Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
-            boolean intFilter, boolean noFilter) {
+                                       Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
+                                       boolean intFilter, boolean noFilter) {
         Set<FilterDescription> filterIdSet = cbMap.keySet();
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
         clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
@@ -542,9 +542,9 @@ public class JavaSourceGenerator {
                     DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
                     String dirtyAssignment = "";
                     if (dirtyFlagForUpdateCb != null) {
-                        if(dirtyFlagForUpdateCb.alwaysDirty){
-                            dirtyAssignment =  dirtyFlagForUpdateCb.name + " = true;\n" + s24;
-                        }else{
+                        if (dirtyFlagForUpdateCb.alwaysDirty) {
+                            dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                        } else {
                             dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
                         }
                     }
@@ -556,7 +556,7 @@ public class JavaSourceGenerator {
                         //callTree += String.format("%24sif(", "");
                         OnTrigger onTrigger = method.method.getAnnotation(OnTrigger.class);
                         String invert = "";
-                        if(onTrigger !=null && !onTrigger.dirty()){
+                        if (onTrigger != null && !onTrigger.dirty()) {
                             invert = " not";
                         }
                         ct.append(s24).append("if(");
@@ -570,7 +570,7 @@ public class JavaSourceGenerator {
                     }
 
                     //add audit
-                    if(auditingInvocations){
+                    if (auditingInvocations) {
                         ct.append(s24).append("auditInvocation(")
                                 .append(method.variableName)
                                 .append(", \"").append(method.variableName).append("\"")
@@ -600,7 +600,7 @@ public class JavaSourceGenerator {
                     //do not generate the parent callback
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
                     final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
-                    if (handlerAnnotation != null && (!handlerAnnotation.propagate() )) {
+                    if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
                     } else {
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
@@ -611,17 +611,17 @@ public class JavaSourceGenerator {
                         StringBuilder sbUnguarded = new StringBuilder();
                         for (CbMethodHandle cbMethod : updateListenerCbList) {
                             //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
-                            if(!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()){
+                            if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
                                 unguarded = true;
                                 sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
-                            }else{
+                            } else {
                                 ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
                             }
                         }
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20s}\n", "", parentFlag.name);
                             ct.append(s20).append("}\n");
-                            if(unguarded){
+                            if (unguarded) {
                                 ct.append(sbUnguarded);
                             }
                         }
@@ -811,9 +811,9 @@ public class JavaSourceGenerator {
                         } else {
                             nodeMemberAssignmentList.add(String.format("%4s%s.%s = '%s';", "", varName, instanceField.getName(), value));
                         }
-                    } else if (instanceField.getType().isPrimitive() ) {
+                    } else if (instanceField.getType().isPrimitive()) {
                         String value = instanceField.get(object).toString();
-                        value = value.equalsIgnoreCase("NaN")?"Double.NaN":value;
+                        value = value.equalsIgnoreCase("NaN") ? "Double.NaN" : value;
                         value = "(" + instanceField.getType().toString() + ")" + value;
                         if (useRefelction) {
                             nodeMemberAssignmentList.add(String.format("%4sassigner.on(%s).set().field(\"%s\").withValue(%s);", "", varName, instanceField.getName(), value));
@@ -855,8 +855,8 @@ public class JavaSourceGenerator {
                                 if (instanceField.getGenericType() instanceof ParameterizedType) {
                                     ParameterizedType integerListType = (ParameterizedType) instanceField.getGenericType();
                                     Class<?> classType = Object.class;
-                                    if(integerListType.getActualTypeArguments()[0] instanceof Class){
-                                            classType = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                    if (integerListType.getActualTypeArguments()[0] instanceof Class) {
+                                        classType = (Class<?>) integerListType.getActualTypeArguments()[0];
                                     }
                                     Field nodeParentReference = model.getFieldForInstance(parent);
                                     if (nodeParentReference != null) {
@@ -935,7 +935,7 @@ public class JavaSourceGenerator {
     }
 
     public String getAdditionalInterfaces() {
-        return additionalInterfaces==null?"":additionalInterfaces;
+        return additionalInterfaces == null ? "" : additionalInterfaces;
     }
 
     /**
@@ -945,7 +945,7 @@ public class JavaSourceGenerator {
      * <p>
      * <code>
      * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
+     * [eventHandlers]
      * }
      * </code>
      *
@@ -964,7 +964,7 @@ public class JavaSourceGenerator {
      * <p>
      * <code>
      * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
+     * [eventHandlers]
      * }
      * </code>
      *
@@ -1005,7 +1005,7 @@ public class JavaSourceGenerator {
     public String getImports() {
         Collections.sort(importList);
         StringBuilder sb = new StringBuilder(2048);
-        importList.stream().forEach(s ->{
+        importList.stream().forEach(s -> {
             sb.append("import ")
                     .append(s)
                     .append(";\n");
@@ -1044,13 +1044,13 @@ public class JavaSourceGenerator {
         String auditInvocation = "private void auditInvocation(Object node, String nodeName, String methodName, Object typedEvent){\n";
         String initialiseAuditor = "private void initialiseAuditor(" + getClassName(Auditor.class.getName()) + " auditor){\n"
                 + "\tauditor.init();\n";
-            for (Field nodeField : nodeFields) {
-                String nodeName = nodeField.name;
-                if(listenerFields.stream().anyMatch((t) -> t.name.equals(nodeName))){
-                    continue;
-                }
-                initialiseAuditor += (String.format("auditor.nodeRegistered(%s, \"%s\");", nodeName, nodeName));
+        for (Field nodeField : nodeFields) {
+            String nodeName = nodeField.name;
+            if (listenerFields.stream().anyMatch((t) -> t.name.equals(nodeName))) {
+                continue;
             }
+            initialiseAuditor += (String.format("auditor.nodeRegistered(%s, \"%s\");", nodeName, nodeName));
+        }
         eventAuditDispatch = "";
         nodeMemberAssignmentList.add("\t//node auditors");
         for (Field listenerField : listenerFields) {
@@ -1065,14 +1065,14 @@ public class JavaSourceGenerator {
             //add event audit
             eventAuditDispatch += String.format("%8s%s.eventReceived(typedEvent);%n", "", listenerName);
             //node invocation audit
-            if(((Auditor)listenerField.instance).auditInvocations()){
+            if (((Auditor) listenerField.instance).auditInvocations()) {
                 auditInvocation += String.format("%8s%s.nodeInvoked(node, nodeName, methodName, typedEvent);%n", "", listenerName);
                 auditingInvocations = true;
             }
         }
         auditEvent += eventAuditDispatch + "}\n";
         auditObjet += eventAuditDispatch + "}\n";
-        if(auditingInvocations){
+        if (auditingInvocations) {
             auditEvent += auditInvocation + "}\n";
         }
         initialiseAuditor += "}\n";
@@ -1091,7 +1091,7 @@ public class JavaSourceGenerator {
     }
 
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
-        if(!interfacesToImplement.isEmpty()){
+        if (!interfacesToImplement.isEmpty()) {
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassName)
                     .collect(Collectors.joining(", ", ", ", ""));
