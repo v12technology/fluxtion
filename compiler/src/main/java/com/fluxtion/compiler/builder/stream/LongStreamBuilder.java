@@ -167,7 +167,8 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
     }
 
     public LongStreamBuilder console(String in) {
-        return peek(Peekers.console(in));
+        peek(Peekers.console(in));
+        return this;
     }
 
     public LongStreamBuilder console() {

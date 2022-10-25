@@ -169,7 +169,8 @@ public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSup
     }
 
     public DoubleStreamBuilder console(String in) {
-        return peek(Peekers.console(in));
+        peek(Peekers.console(in));
+        return this;
     }
 
     public DoubleStreamBuilder console() {

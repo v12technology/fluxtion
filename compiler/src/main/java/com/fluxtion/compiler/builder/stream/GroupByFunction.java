@@ -4,7 +4,12 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
-import com.fluxtion.runtime.stream.groupby.*;
+import com.fluxtion.runtime.stream.groupby.FilterGroupByFunctionInvoker;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
+import com.fluxtion.runtime.stream.groupby.ReduceGroupByFunctionInvoker;
+import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 
 import java.util.Map;
@@ -17,7 +22,7 @@ public interface GroupByFunction {
     }
 
     static <K, V, A, O, G extends GroupBy<K, V>> SerializableBiFunction<
-            G, A, GroupBy<K, O>> mapValueByKey(
+            G, A, GroupByStreamed<K, O>> mapValueByKey(
             SerializableBiFunction<V, A, O> mappingBiFunction,
             SerializableFunction<A, K> keyFunction
     ) {

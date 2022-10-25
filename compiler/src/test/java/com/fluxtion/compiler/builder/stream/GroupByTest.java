@@ -18,7 +18,11 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -391,11 +395,12 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     @Test
     public void biMapKeyedItemFromAnotherStreamTest() {
         sep(c -> {
-            subscribe(KeyedData.class)
+            val mapped = subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId)
-                    .mapBiFunction(GroupByFunction.mapValueByKey(GroupByTest::applyFactor, Data::getName), subscribe(Data.class))
-                    .map(GroupBy::map).id("rs").console()
-            ;
+                    .mapBiFunction(GroupByFunction.mapValueByKey(GroupByTest::applyFactor, Data::getName), subscribe(Data.class));
+
+            mapped.map(GroupBy::map).id("rs");
+            mapped.map(GroupByStreamed::value).id("value");
         });
 
         Map<String, KeyedData> expected = new HashMap<>();
@@ -407,7 +412,9 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
         onEvent(new Data("B", 5));
         expected.put("B", new KeyedData("B", 50));
+        expected.put("A", new KeyedData("A", 400));
         MatcherAssert.assertThat(getStreamed("rs"), is(expected));
+        MatcherAssert.assertThat(getStreamed("value"), is(new KeyedData("B", 50)));
     }
 
     @Test
@@ -459,15 +466,10 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     public static class MyEvent {
         SubSystem subSystem;
         Change_type change_type;
-        String id;
         String data;
 
         public static boolean isCreate(MyEvent myEvent) {
             return myEvent.change_type == Change_type.CREATE;
-        }
-
-        public static boolean isDelete(MyEvent myEvent) {
-            return myEvent.change_type == Change_type.DELETE;
         }
     }
 
@@ -482,48 +484,48 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             myData.add(newData);
         }
 
-        public void removeItem(String deleteData) {
-            myData.remove(deleteData);
-        }
     }
-
 
     @Test
     public void maintainModel() {
         sep(c -> {
-            val modelStream = subscribe(MyModel.class).groupBy(MyModel::getSubSystem);
-
-            modelStream.mapBiFunction(
+            subscribe(MyModel.class).groupBy(MyModel::getSubSystem)
+                    .mapBiFunction(
                             GroupByFunction.mapValueByKey(GroupByTest::updateItemScalar, MyEvent::getSubSystem),
                             subscribe(MyEvent.class).filter(MyEvent::isCreate))
-                    .merge(modelStream.mapBiFunction(
-                            GroupByFunction.mapValueByKey(GroupByTest::deleteItemScalar, MyEvent::getSubSystem),
-                            subscribe(MyEvent.class).filter(MyEvent::isDelete))
-                    )
                     .map(GroupBy::map)
-                    .console("model after change:{}");
-            ;
+                    .id("results");
 
         });
 
+        Map<SubSystem, MyModel> expected = new HashMap<>();
+        MyModel refModel = new MyModel(SubSystem.REFERENCE);
+        MyModel marketModel = new MyModel(SubSystem.MARKET);
 
-        onEvent(new MyModel(SubSystem.REFERENCE));
+
         onEvent(new MyModel(SubSystem.REFERENCE));
         onEvent(new MyModel(SubSystem.MARKET));
+        MatcherAssert.assertThat(getStreamed("results"), is(nullValue()));
 
-        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "ID_1", "greg-1"));
-        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "ID_2", "john"));
-        onEvent(new MyEvent(SubSystem.MARKET, Change_type.CREATE, "ID_2", "BBC"));
-        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.DELETE, "ID_1", "greg-1"));
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "greg-1"));
+        refModel.myData.add("greg-1");
+        expected.put(SubSystem.REFERENCE, refModel);
+        expected.put(SubSystem.MARKET, marketModel);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "john"));
+        refModel.myData.add("john");
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.MARKET, Change_type.CREATE, "BBC"));
+        marketModel.myData.add("BBC");
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.DELETE, "greg-1"));
     }
 
     public static MyModel updateItemScalar(MyModel model, MyEvent myEvent) {
         model.createItem(myEvent.getData());
-        return model;
-    }
-
-    public static MyModel deleteItemScalar(MyModel model, MyEvent myEvent) {
-        model.removeItem(myEvent.getData());
         return model;
     }
 
@@ -580,7 +582,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void comnplexGroupByJoinWithReduceTest() {
+    public void complexGroupByJoinThenBiMapThenReduceTest() {
         sep(c -> {
             val tradeStream = subscribe(Trade.class);
 

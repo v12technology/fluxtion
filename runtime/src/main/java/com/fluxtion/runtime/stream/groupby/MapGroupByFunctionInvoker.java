@@ -3,6 +3,7 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,6 +17,7 @@ public class MapGroupByFunctionInvoker {
     public Object defaultValue;
 
     private final transient GroupByCollection outputCollection = new GroupByCollection();
+    private final transient WrappingGroupByStreamed wrappedCollection = new WrappingGroupByStreamed();
 
     public <T, R> MapGroupByFunctionInvoker(SerializableFunction<T, R> mapFunction) {
         this(mapFunction, null);
@@ -41,7 +43,7 @@ public class MapGroupByFunctionInvoker {
         return mapValues((GroupBy) inputMap);
     }
 
-    public <K, V> GroupBy<K, V> mapKeyedValue(Object inputMap, Object secondArgument) {
+    public <K, V> GroupByStreamed<K, V> mapKeyedValue(Object inputMap, Object secondArgument) {
         return mapKeyedValue((GroupBy) inputMap, secondArgument);
     }
 
@@ -84,14 +86,18 @@ public class MapGroupByFunctionInvoker {
         return outputCollection;
     }
 
-    public <K, G extends GroupBy, R> GroupBy<K, R> mapKeyedValue(G inputMap, Object argumentProvider) {
-        outputCollection.reset();
+    public <K, G extends GroupBy, R> GroupByStreamed<K, R> mapKeyedValue(G inputMap, Object argumentProvider) {
+        wrappedCollection.reset();
         Object key = mapFunction.apply(argumentProvider);
         Object item = inputMap.map().get(key);
         if (item != null) {
-            outputCollection.map().put(key, mapFrom2MapsBiFunction.apply(item, argumentProvider));
+            KeyValue kv = new KeyValue(key, mapFrom2MapsBiFunction.apply(item, argumentProvider));
+            outputCollection.fromMap(inputMap.map());
+            outputCollection.add(kv);
+            wrappedCollection.setGroupBy(outputCollection);
+            wrappedCollection.setKeyValue(kv);
         }
-        return outputCollection;
+        return wrappedCollection;
     }
 
     public <K, G extends GroupBy, H extends GroupBy, R> GroupBy<K, R> biMapWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
