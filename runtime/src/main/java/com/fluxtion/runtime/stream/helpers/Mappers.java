@@ -257,6 +257,30 @@ public interface Mappers {
         return joinedGroup;
     }
 
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> leftJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+            });
+        }
+        return joinedGroup;
+    }
+
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> rightJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (rightGroupBY != null) {
+            rightGroupBY.map().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            });
+        }
+        return joinedGroup;
+    }
+
     //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
     static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
         return Mappers.innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
@@ -264,5 +288,13 @@ public interface Mappers {
 
     static GroupBy outerJoin(Object leftGroup, Object rightGroup) {
         return Mappers.outerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy leftJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.leftJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy rightJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.rightJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
     }
 }
