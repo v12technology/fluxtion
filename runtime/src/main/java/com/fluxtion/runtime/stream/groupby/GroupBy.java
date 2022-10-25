@@ -5,29 +5,32 @@ import lombok.Value;
 import java.util.Collection;
 import java.util.Map;
 
-public interface  GroupBy<K, V>  {
+public interface GroupBy<K, V> {
+
+    KeyValue KV_KEY_VALUE = new KeyValue<>(null, null);
 
     Map<K, V> map();
 
     Collection<V> values();
 
-    static <K,V> KeyValue<K, V> emptyKey(){
-        return new KeyValue<>(null, null);
+    static <K, V> KeyValue<K, V> emptyKey() {
+        return KV_KEY_VALUE;
     }
 
     @Value
-    class KeyValue<K, V>{
+    class KeyValue<K, V> {
         K key;
         V value;
-        public Double getValueAsDouble(){
+
+        public Double getValueAsDouble() {
             return (Double) value;
         }
 
-        public Long getValueAsLong(){
+        public Long getValueAsLong() {
             return (Long) value;
         }
 
-        public Integer getValueAsInt(){
+        public Integer getValueAsInt() {
             return (Integer) value;
         }
     }

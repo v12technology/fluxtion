@@ -14,6 +14,12 @@ public class GroupByCollection<K, V> implements GroupBy<K, V>, Stateful<GroupBy<
         return this;
     }
 
+    public GroupByCollection<K, V> fromMap(Map<K, V> fromMap) {
+        reset();
+        map.putAll(fromMap);
+        return this;
+    }
+
     @Override
     public GroupBy<K, V> reset() {
         map.clear();

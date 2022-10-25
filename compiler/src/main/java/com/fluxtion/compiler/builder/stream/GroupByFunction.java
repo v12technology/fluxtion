@@ -1,11 +1,16 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.groupby.FilterGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupByCollection;
+import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
+import com.fluxtion.runtime.stream.groupby.ReduceGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.Tuple;
+import com.fluxtion.runtime.stream.helpers.Mappers;
 
 import java.util.Map;
 
@@ -14,6 +19,36 @@ public interface GroupByFunction {
     static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, O>> mapValues(
             SerializableFunction<V, O> mappingFunction) {
         return new MapGroupByFunctionInvoker(mappingFunction)::mapValues;
+    }
+
+    static <K, V, A, O, G extends GroupBy<K, V>> SerializableBiFunction<
+            G, A, GroupByStreamed<K, O>> mapValueByKey(
+            SerializableBiFunction<V, A, O> mappingBiFunction,
+            SerializableFunction<A, K> keyFunction
+    ) {
+        MapGroupByFunctionInvoker invoker = new MapGroupByFunctionInvoker(keyFunction, mappingBiFunction, null);
+        return invoker::mapKeyedValue;
+    }
+
+    static <K, V, R, G extends GroupBy<K, V>, F extends AggregateFunction<V, R, F>> SerializableFunction<G, R> reduceValues(
+            SerializableSupplier<F> aggregateFactory) {
+        return new ReduceGroupByFunctionInvoker(aggregateFactory.get())::reduceValues;
+    }
+
+    static <K, V, A, O, G extends GroupBy<K, V>, H extends GroupBy<K, A>> SerializableBiFunction<
+            G, H, GroupBy<K, O>> biMapWithParamMap(
+            SerializableBiFunction<V, A, O> mappingBiFunction
+    ) {
+        MapGroupByFunctionInvoker invoker = new MapGroupByFunctionInvoker(null, mappingBiFunction, null);
+        return invoker::biMapWithParamMap;
+    }
+
+    static <K, V, A, O, G extends GroupBy<K, V>, H extends GroupBy<K, A>> SerializableBiFunction<
+            G, H, GroupBy<K, O>> biMapWithParamMap(
+            SerializableBiFunction<V, A, O> mappingBiFunction, A defaultValue
+    ) {
+        MapGroupByFunctionInvoker invoker = new MapGroupByFunctionInvoker(null, mappingBiFunction, defaultValue);
+        return invoker::biMapWithParamMap;
     }
 
     static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<O, V>> mapKeys(
@@ -31,29 +66,15 @@ public interface GroupByFunction {
         return new FilterGroupByFunctionInvoker(mappingFunction)::filterValues;
     }
 
-    //TODO replace with instance version that re-uses the map - although tuple creation will be source of garbage
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
-        if (leftGroupBy != null && rightGroupBY != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY.map().get(e.getKey());
-                if (value2 != null) {
-                    joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-                }
-            });
-        }
-        return joinedGroup;
-    }
-
     static <K1, V1, K2 extends K1, V2> EventStreamBuilder<GroupBy<K1, Tuple<V1, V2>>> innerJoinStreams(
             EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
             EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(GroupByFunction::innerJoin, rightGroupBy);
+        return leftGroupBy.mapBiFunction(Mappers::innerJoin, rightGroupBy);
     }
 
-    //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
-    static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
-        return innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    static <K1, V1, K2 extends K1, V2> EventStreamBuilder<GroupBy<K1, Tuple<V1, V2>>> outerJoinStreams(
+            EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
+            EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
+        return leftGroupBy.mapBiFunction(Mappers::outerJoin, rightGroupBy);
     }
 }
