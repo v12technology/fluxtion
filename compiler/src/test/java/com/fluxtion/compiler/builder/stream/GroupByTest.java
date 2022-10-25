@@ -4,17 +4,22 @@ import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.KeyedData;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MergedType;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MyIntFilter;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
+import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;
+import lombok.val;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +27,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 
 
@@ -385,11 +392,231 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         assertThat(results, CoreMatchers.is(expected));
     }
 
+    @Test
+    public void biMapKeyedItemFromAnotherStreamTest() {
+        sep(c -> {
+            val mapped = subscribe(KeyedData.class)
+                    .groupBy(KeyedData::getId)
+                    .mapBiFunction(GroupByFunction.mapValueByKey(GroupByTest::applyFactor, Data::getName), subscribe(Data.class));
+
+            mapped.map(GroupBy::map).id("rs");
+            mapped.map(GroupByStreamed::value).id("value");
+        });
+
+        Map<String, KeyedData> expected = new HashMap<>();
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 10));
+
+        MatcherAssert.assertThat(getStreamed("rs"), is(nullValue()));
+
+        onEvent(new Data("B", 5));
+        expected.put("B", new KeyedData("B", 50));
+        expected.put("A", new KeyedData("A", 400));
+        MatcherAssert.assertThat(getStreamed("rs"), is(expected));
+        MatcherAssert.assertThat(getStreamed("value"), is(new KeyedData("B", 50)));
+    }
+
+    @Test
+    public void bimapKeyedParamStream() {
+        Map<String, KeyedData> expected = new HashMap<>();
+        sep(c -> {
+            subscribe(KeyedData.class).groupBy(KeyedData::getId)
+                    .mapBiFunction(
+                            GroupByFunction.biMapWithParamMap(GroupByTest::applyFactor, new Data("default", 3)),
+                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupByStreamed.emptyCollection()))
+                    .map(GroupBy::map)
+                    .id("results");
+        });
+
+        onEvent(new KeyedData("A", 400));
+        expected.put("A", new KeyedData("A", 1200));
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new KeyedData("B", 10));
+        expected.put("B", new KeyedData("B", 30));
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new Data("B", 5));
+        expected.put("B", new KeyedData("B", 50));
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new Data("A", 1));
+        expected.put("A", new KeyedData("A", 400));
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+    }
+
+    public static KeyedData applyFactor(KeyedData keyedData, Data factor) {
+        return new KeyedData(keyedData.getId(), keyedData.getAmount() * factor.getValue());
+    }
+
 
     @Value
     public static class Data {
         String name;
         int value;
+    }
+
+
+    public enum SubSystem {REFERENCE, MARKET}
+
+    public enum Change_type {CREATE, UPDATE, DELETE}
+
+    @Value
+    public static class MyEvent {
+        SubSystem subSystem;
+        Change_type change_type;
+        String data;
+
+        public static boolean isCreate(MyEvent myEvent) {
+            return myEvent.change_type == Change_type.CREATE;
+        }
+    }
+
+
+    @Value
+    public static class MyModel {
+        SubSystem subSystem;
+
+        transient List<String> myData = new ArrayList<>();
+
+        public void createItem(String newData) {
+            myData.add(newData);
+        }
+
+    }
+
+    @Test
+    public void maintainModel() {
+        sep(c -> {
+            subscribe(MyModel.class).groupBy(MyModel::getSubSystem)
+                    .mapBiFunction(
+                            GroupByFunction.mapValueByKey(GroupByTest::updateItemScalar, MyEvent::getSubSystem),
+                            subscribe(MyEvent.class).filter(MyEvent::isCreate))
+                    .map(GroupBy::map)
+                    .id("results");
+
+        });
+
+        Map<SubSystem, MyModel> expected = new HashMap<>();
+        MyModel refModel = new MyModel(SubSystem.REFERENCE);
+        MyModel marketModel = new MyModel(SubSystem.MARKET);
+
+
+        onEvent(new MyModel(SubSystem.REFERENCE));
+        onEvent(new MyModel(SubSystem.MARKET));
+        MatcherAssert.assertThat(getStreamed("results"), is(nullValue()));
+
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "greg-1"));
+        refModel.myData.add("greg-1");
+        expected.put(SubSystem.REFERENCE, refModel);
+        expected.put(SubSystem.MARKET, marketModel);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.CREATE, "john"));
+        refModel.myData.add("john");
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.MARKET, Change_type.CREATE, "BBC"));
+        marketModel.myData.add("BBC");
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.DELETE, "greg-1"));
+    }
+
+    public static MyModel updateItemScalar(MyModel model, MyEvent myEvent) {
+        model.createItem(myEvent.getData());
+        return model;
+    }
+
+
+    @Value
+    public static class Trade {
+        String ccyPair;
+        double dealtVolume;
+        double contraVolume;
+
+        public String getDealtCcy() {
+            return ccyPair.substring(0, 3);
+        }
+
+        public String getContraCcy() {
+            return ccyPair.substring(3);
+        }
+    }
+
+    @Value
+    public static class MidPrice {
+        String ccyPair;
+        double rate;
+
+        public double getRateForCcy(String ccy) {
+            if (ccyPair.startsWith(ccy)) {
+                return 1 / rate;
+            } else if (ccyPair.contains(ccy)) {
+                return rate;
+            }
+            return Double.NaN;
+        }
+
+        public String getOppositeCcy(String searchCcy) {
+            if (ccyPair.startsWith(searchCcy)) {
+                return ccyPair.substring(3);
+            } else if (ccyPair.contains(searchCcy)) {
+                return ccyPair.substring(0, 3);
+            }
+            return null;
+        }
+
+        public double getUsdRate() {
+            return getRateForCcy("USD");
+        }
+
+        public String getUsdContraCcy() {
+            return getOppositeCcy("USD");
+        }
+
+        public boolean hasUsdRate() {
+            return getUsdContraCcy() != null;
+        }
+    }
+
+    @Test
+    public void complexGroupByJoinThenBiMapThenReduceTest() {
+        sep(c -> {
+            val tradeStream = subscribe(Trade.class);
+
+            val positionMap = GroupByFunction.outerJoinStreams(
+                            tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, AggregateDoubleSum::new),
+                            tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, AggregateDoubleSum::new))
+                    .map(GroupByFunction.mapValues(GroupByTest::addTupleValues));
+
+            val rateMap = subscribe(MidPrice.class)
+                    .filter(MidPrice::hasUsdRate)
+                    .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
+                    .defaultValue(GroupByStreamed.emptyCollection());
+
+            positionMap.mapBiFunction(GroupByFunction.biMapWithParamMap(Mappers::multiplyDoubles, Double.NaN), rateMap)
+                    .map(GroupByFunction.reduceValues(AggregateDoubleSum::new)).id("pnl");
+        });
+
+        onEvent(new Trade("EURUSD", 100, -200));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        onEvent(new Trade("EURUSD", 100, -200));
+        onEvent(new Trade("USDJPY", 500, -200000));
+
+        onEvent(new MidPrice("USDUSD", 1));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        onEvent(new MidPrice("GBPUSD", 1.2));
+        onEvent(new MidPrice("EURUSD", 1.5));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+
+        onEvent(new MidPrice("USDJPY", 100));
+        MatcherAssert.assertThat(getStreamed("pnl"), is(closeTo(-1600, 0.01)));
+    }
+
+    public static double addTupleValues(Tuple<Double, Double> tuple) {
+        return (tuple.getFirst() == null ? 0 : tuple.getFirst()) + (tuple.getSecond() == null ? 0 : tuple.getSecond());
     }
 
 }

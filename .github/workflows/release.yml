@@ -15,13 +15,13 @@ jobs:
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
           
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: develop
           fetch-depth: 0
           
       - name: Cache the Maven packages to speed up build
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}

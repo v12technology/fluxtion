@@ -3,7 +3,9 @@ package com.fluxtion.runtime.stream.helpers;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.stream.Stateful;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByCollection;
 import com.fluxtion.runtime.stream.groupby.TopNByValue;
+import com.fluxtion.runtime.stream.groupby.Tuple;
 import lombok.ToString;
 
 import java.util.List;
@@ -220,5 +222,47 @@ public interface Mappers {
 
     static long double2Long(double in) {
         return (long) in;
+    }
+
+    //GroupBy
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null && rightGroupBY != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY.map().get(e.getKey());
+                if (value2 != null) {
+                    joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+                }
+            });
+        }
+        return joinedGroup;
+    }
+
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> outerJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+            });
+        }
+        if (rightGroupBY != null) {
+            rightGroupBY.map().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            });
+        }
+        return joinedGroup;
+    }
+
+    //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
+    static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy outerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.outerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
     }
 }

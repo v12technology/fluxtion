@@ -329,8 +329,13 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
         return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
     }
 
+    public <R> EventStreamBuilder<T> console(String in, SerializableFunction<T, R> transformFunction) {
+        peek(Peekers.console(in, transformFunction));
+        return this;
+    }
+
     public EventStreamBuilder<T> console(String in) {
-        return peek(Peekers.console(in));
+        return console(in, null);
     }
 
     public EventStreamBuilder<T> console() {
