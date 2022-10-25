@@ -9,7 +9,6 @@ import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
-import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;
 import lombok.val;
@@ -589,7 +588,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             val positionMap = GroupByFunction.outerJoinStreams(
                             tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, AggregateDoubleSum::new),
                             tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, AggregateDoubleSum::new))
-                    .map(GroupByFunction.mapValues(GroupByTest::addTupleValues));
+                    .map(GroupByFunction.replaceTupleNullInGroupBy(0d, 0d))
+                    .map(GroupByFunction.mapTuplesInGroupBy(Mappers::addDoubles));
 
             val rateMap = subscribe(MidPrice.class)
                     .filter(MidPrice::hasUsdRate)
@@ -615,8 +615,43 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(getStreamed("pnl"), is(closeTo(-1600, 0.01)));
     }
 
-    public static double addTupleValues(Tuple<Double, Double> tuple) {
-        return (tuple.getFirst() == null ? 0 : tuple.getFirst()) + (tuple.getSecond() == null ? 0 : tuple.getSecond());
-    }
+    @Test
+    public void multipleJoinsTheTupleMapThenReduceTest(){
+        sep(c -> {
+            val tradeStream = subscribe(Trade.class);
 
+            val positionMap = GroupByFunction.outerJoinStreams(
+                            tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, AggregateDoubleSum::new),
+                            tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, AggregateDoubleSum::new))
+                    .map(GroupByFunction.replaceTupleNullInGroupBy(0d, 0d))
+                    .map(GroupByFunction.mapTuplesInGroupBy(Mappers::addDoubles));
+
+            val rateMap = subscribe(MidPrice.class)
+                    .filter(MidPrice::hasUsdRate)
+                    .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
+                    .defaultValue(GroupByStreamed.emptyCollection());
+
+            GroupByFunction.leftJoinStreams(positionMap, rateMap).id("leftJoin")
+                    .map(GroupByFunction.replaceTupleNullInGroupBy(0d, Double.NaN))
+                    .map(GroupByFunction.mapTuplesInGroupBy(Mappers::multiplyDoubles))
+                    .map(GroupByFunction.reduceValues(AggregateDoubleSum::new))
+                    .id("pnl");
+
+        });
+
+        onEvent(new Trade("EURUSD", 100, -200));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        onEvent(new Trade("EURUSD", 100, -200));
+        onEvent(new Trade("USDJPY", 500, -200000));
+
+
+        onEvent(new MidPrice("USDUSD", 1));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        onEvent(new MidPrice("GBPUSD", 1.2));
+        onEvent(new MidPrice("EURUSD", 1.5));
+        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+
+        onEvent(new MidPrice("USDJPY", 100));
+        MatcherAssert.assertThat(getStreamed("pnl"), is(closeTo(-1600, 0.01)));
+    }
 }

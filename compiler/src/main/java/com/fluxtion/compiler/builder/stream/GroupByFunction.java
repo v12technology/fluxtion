@@ -11,10 +11,25 @@ import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.ReduceGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Tuples;
+import com.fluxtion.runtime.stream.helpers.Tuples.ReplaceNull;
 
 import java.util.Map;
 
 public interface GroupByFunction {
+
+
+    static <K, F, S, TIN extends Tuple<? extends F, ? extends S>>
+    SerializableFunction<GroupBy<K, TIN>, GroupBy<K, Tuple<F, S>>>replaceTupleNullInGroupBy(F first, S second){
+        return mapValues( new ReplaceNull<>(first, second)::replaceNull);
+    }
+
+    static <K, F, S, R>
+    SerializableFunction<GroupBy<K, Tuple<F, S>>, GroupBy<K, R>>  mapTuplesInGroupBy(SerializableBiFunction<F, S, R> tupleMapFunction ){
+        return mapValues(Tuples.mapTuple(tupleMapFunction));
+    }
+
+
 
     static <K, V, O, G extends GroupBy<K, V>> SerializableFunction<G, GroupBy<K, O>> mapValues(
             SerializableFunction<V, O> mappingFunction) {
@@ -76,5 +91,17 @@ public interface GroupByFunction {
             EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
             EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
         return leftGroupBy.mapBiFunction(Mappers::outerJoin, rightGroupBy);
+    }
+
+    static <K1, V1, K2 extends K1, V2> EventStreamBuilder<GroupBy<K1, Tuple<V1, V2>>> leftJoinStreams(
+            EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
+            EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
+        return leftGroupBy.mapBiFunction(Mappers::leftJoin, rightGroupBy);
+    }
+
+    static <K1, V1, K2 extends K1, V2> EventStreamBuilder<GroupBy<K1, Tuple<V1, V2>>> rightJoinStreams(
+            EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
+            EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
+        return leftGroupBy.mapBiFunction(Mappers::rightJoin, rightGroupBy);
     }
 }
