@@ -67,7 +67,7 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
                     .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(25000)));
 //                    .console("max volume in window:{}");
 
-            GroupByFunction.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
+            GroupByStreamBuilder.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
                     .console("joined time:%t data:{}")
             ;
