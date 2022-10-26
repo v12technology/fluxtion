@@ -47,8 +47,8 @@ public class MapGroupByFunctionInvoker {
         return mapKeyedValue((GroupBy) inputMap, secondArgument);
     }
 
-    public <K, V> GroupBy<K, V> biMapWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
-        return biMapWithParamMap((GroupBy) firstArgGroupBy, (GroupBy) secondArgGroupBY);
+    public <K, V> GroupBy<K, V> biMapValuesWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
+        return biMapValuesWithParamMap((GroupBy) firstArgGroupBy, (GroupBy) secondArgGroupBY);
     }
 
     public <K, V> GroupBy<K, V> mapKeys(Object inputMap) {
@@ -100,7 +100,7 @@ public class MapGroupByFunctionInvoker {
         return wrappedCollection;
     }
 
-    public <K, G extends GroupBy, H extends GroupBy, R> GroupBy<K, R> biMapWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
+    public <K, G extends GroupBy, H extends GroupBy, R> GroupBy<K, R> biMapValuesWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
         outputCollection.reset();
         Map arg2Map = (secondArgGroupBY == null && defaultValue != null) ? Collections.emptyMap() : secondArgGroupBY.map();
         firstArgGroupBy.map().forEach((key, arg1) -> {
