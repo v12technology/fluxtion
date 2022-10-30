@@ -549,9 +549,8 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         String name;
     }
 
-    public static MergedType mergedTypefromTuple(Tuple<Integer, String> t) {
-        Tuple<Integer, String> t1 = t;
-        return new MergedType(t1.getFirst(), t1.getSecond());
+    public static MergedType mergedTypeFromTuple(Tuple<Integer, String> t) {
+        return new MergedType(t.getFirst(), t.getSecond());
     }
 
     public static boolean gt500Integer(Integer val) {

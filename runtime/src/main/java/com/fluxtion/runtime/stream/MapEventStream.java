@@ -78,7 +78,9 @@ public abstract class MapEventStream<T, R, S extends EventStream<T>> extends Abs
 
         private final SerializableFunction<T, R> mapFunction;
 
-        public MapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction) {
+        public
+
+        MapRef2RefEventStream(S inputEventStream, SerializableFunction<T, R> mapFunction) {
             super(inputEventStream, mapFunction);
             this.mapFunction = mapFunction;
         }

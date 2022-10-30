@@ -1,36 +1,24 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorConfigService;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
-import com.fluxtion.runtime.stream.FilterByPropertyDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterByPropertyEventStream;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
 import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
 import com.fluxtion.runtime.stream.FlatMapEventStream;
-import com.fluxtion.runtime.stream.InternalEventDispatcher;
 import com.fluxtion.runtime.stream.LookupEventStream;
 import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.MapEventStream.MapRef2RefEventStream;
 import com.fluxtion.runtime.stream.MergeEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
 import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
@@ -40,111 +28,40 @@ import com.fluxtion.runtime.stream.helpers.Collectors;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Mappers;
-import com.fluxtion.runtime.stream.helpers.Peekers;
 
 import java.util.List;
 
-public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplier<T>> {
+public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T,  EventStreamBuilder<T>> implements EventSupplierAccessor<EventSupplier<T>> {
 
-    final TriggeredEventStream<T> eventStream;
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
+        super(eventStream);
         EventProcessorConfigService.service().add(eventStream);
-        this.eventStream = eventStream;
+    }
+
+    @Override
+    protected  EventStreamBuilder<T> connect(TriggeredEventStream<T> stream) {
+        return new EventStreamBuilder<>(stream);
+    }
+
+
+    @Override
+    protected <R>  EventStreamBuilder<R> connectMap(TriggeredEventStream<R> stream) {
+        EventStreamBuilder<R> e = new EventStreamBuilder<>(stream);
+        return new EventStreamBuilder<>(stream);
+    }
+
+
+    @Override
+    protected EventStreamBuilder<T> identity(){
+        return this;
     }
 
     public EventSupplier<T> getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
-    //TRIGGERS - START
-    public EventStreamBuilder<T> updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
-        return this;
-    }
 
-    public EventStreamBuilder<T> publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
-        return this;
-    }
-
-    public EventStreamBuilder<T> publishTriggerOverride(Object publishTrigger) {
-        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
-        return this;
-    }
-
-    public EventStreamBuilder<T> resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
-        return this;
-    }
-
-    public EventStreamBuilder<T> filter(SerializableFunction<T, Boolean> filterFunction) {
-        return new EventStreamBuilder<>(new FilterEventStream<>(eventStream, filterFunction));
-    }
-
-    public <P> EventStreamBuilder<T> filterByProperty(SerializableFunction<T, P> accessor, SerializableFunction<P, Boolean> filterFunction) {
-        return new EventStreamBuilder<>(new FilterByPropertyEventStream<>(eventStream, accessor, filterFunction));
-    }
-
-    public <S> EventStreamBuilder<T> filter(
-            SerializableBiFunction<T, S, Boolean> predicate,
-            EventStreamBuilder<S> secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
-    }
-
-    public <S> EventStreamBuilder<T> filter(
-            SerializableBiFunction<T, Integer, Boolean> predicate,
-            IntStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
-    }
-
-    public <S> EventStreamBuilder<T> filter(
-            SerializableBiFunction<T, Double, Boolean> predicate,
-            DoubleStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
-    }
-
-    public <S> EventStreamBuilder<T> filter(
-            SerializableBiFunction<T, Long, Boolean> predicate,
-            LongStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterDynamicEventStream<>(eventStream, secondArgument.eventStream, predicate));
-    }
-
-    public <P, S> EventStreamBuilder<T> filterByProperty(
-            SerializableBiFunction<P, S, Boolean> predicate,
-            SerializableFunction<T, P> accessor,
-            EventStreamBuilder<S> secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
-    }
-
-    public <P, S> EventStreamBuilder<T> filterByProperty(
-            SerializableBiFunction<P, Integer, Boolean> predicate,
-            SerializableFunction<T, P> accessor,
-            IntStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
-    }
-
-    public <P, S> EventStreamBuilder<T> filterByProperty(
-            SerializableBiFunction<P, Double, Boolean> predicate,
-            SerializableFunction<T, P> accessor,
-            DoubleStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
-    }
-
-    public <P, S> EventStreamBuilder<T> filterByProperty(
-            SerializableBiFunction<P, Long, Boolean> predicate,
-            SerializableFunction<T, P> accessor,
-            LongStreamBuilder secondArgument) {
-        return new EventStreamBuilder<>(
-                new FilterByPropertyDynamicEventStream<>(eventStream, accessor, secondArgument.eventStream, predicate));
-    }
 
     public EventStreamBuilder<T> defaultValue(T defaultValue) {
         return map(new DefaultValue<>(defaultValue)::getOrDefault);
@@ -162,11 +79,13 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
 
     //PROCESSING - START
     public <R> EventStreamBuilder<R> map(SerializableFunction<T, R> mapFunction) {
-        return new EventStreamBuilder<>(new MapEventStream.MapRef2RefEventStream<>(eventStream, mapFunction));
+        return super.mapBase(mapFunction);
     }
 
     public <S, R> EventStreamBuilder<R> mapBiFunction(SerializableBiFunction<T, S, R> int2IntFunction,
                                                       EventStreamBuilder<S> stream2Builder) {
+
+        TriggeredEventStream<T> e1 = eventStream;
         return new EventStreamBuilder<>(
                 new BinaryMapEventStream.BinaryMapToRefEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
@@ -202,40 +121,46 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
                 new TimedSlidingWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
     }
 
-    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupByStreamed<K, A>>
-    groupBy(SerializableFunction<T, K> keyFunction,
+    public <V, K1, A, F extends AggregateFunction<V, A, F>> GroupByStreamBuilder<K1, A>
+    groupBy(SerializableFunction<T, K1> keyFunction,
             SerializableFunction<T, V> valueFunction,
             SerializableSupplier<F> aggregateFunctionSupplier) {
-        return map(new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+//        return map(new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+
+        MapEventStream<T, GroupByStreamed<K1, A>, TriggeredEventStream<T>> x = new MapRef2RefEventStream<>(eventStream,
+                new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+
+
+        return  new GroupByStreamBuilder<>(x);
     }
 
-    public <V, K> EventStreamBuilder<GroupByStreamed<K, V>>
-    groupBy(SerializableFunction<T, K> keyFunction,
+    public <V, K1> GroupByStreamBuilder<K1, V>
+    groupBy(SerializableFunction<T, K1> keyFunction,
             SerializableFunction<T, V> valueFunction) {
         return groupBy(keyFunction, valueFunction, Aggregates.identityFactory());
     }
 
-    public <V, K> EventStreamBuilder<GroupByStreamed<K, T>>
+    public <K> GroupByStreamBuilder<K, T>
     groupBy(SerializableFunction<T, K> keyFunction) {
         return groupBy(keyFunction, Mappers::identity);
     }
 
-    public <V, K> EventStreamBuilder<GroupByStreamed<K, List<T>>>
+    public <V, K> GroupByStreamBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction) {
         return groupBy(keyFunction, Mappers::identity, Collectors.listFactory());
     }
 
-    public <V, K> EventStreamBuilder<GroupByStreamed<K, List<T>>>
+    public <V, K> GroupByStreamBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction, int maxElementsInList) {
         return groupBy(keyFunction, Mappers::identity, Collectors.listFactory(maxElementsInList));
     }
 
-    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    public <V, K, A, F extends AggregateFunction<V, A, F>> GroupByStreamBuilder<K, A>
     groupByTumbling(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
                     SerializableSupplier<F> aggregateFunctionSupplier,
                     int bucketSizeMillis) {
-        return new EventStreamBuilder<>(new TumblingGroupByWindowStream<>(
+        return new GroupByStreamBuilder<>(new TumblingGroupByWindowStream<>(
                 eventStream,
                 aggregateFunctionSupplier,
                 keyFunction,
@@ -244,20 +169,20 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
         ));
     }
 
-    public <V, K> EventStreamBuilder<GroupBy<K, V>>
+    public <V, K> GroupByStreamBuilder<K, V>
     groupByTumbling(SerializableFunction<T, K> keyFunction,
                     SerializableFunction<T, V> valueFunction,
                     int bucketSizeMillis) {
         return groupByTumbling(keyFunction, valueFunction, Aggregates.identityFactory(), bucketSizeMillis);
     }
 
-    public <V, K, A, F extends AggregateFunction<V, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    public <V, K, A, F extends AggregateFunction<V, A, F>> GroupByStreamBuilder<K, A>
     groupBySliding(SerializableFunction<T, K> keyFunction,
                    SerializableFunction<T, V> valueFunction,
                    SerializableSupplier<F> aggregateFunctionSupplier,
                    int bucketSizeMillis,
                    int numberOfBuckets) {
-        return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
+        return new GroupByStreamBuilder<>(new SlidingGroupByWindowStream<>(
                 eventStream,
                 aggregateFunctionSupplier,
                 keyFunction,
@@ -267,7 +192,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
         ));
     }
 
-    public <V, K> EventStreamBuilder<GroupBy<K, V>>
+    public <V, K> GroupByStreamBuilder<K, V>
     groupBySliding(SerializableFunction<T, K> keyFunction,
                    SerializableFunction<T, V> valueFunction,
                    int bucketSizeMillis,
@@ -275,12 +200,12 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
         return groupBySliding(keyFunction, valueFunction, Aggregates.identityFactory(), bucketSizeMillis, numberOfBuckets);
     }
 
-    public <K, A, F extends AggregateFunction<T, A, F>> EventStreamBuilder<GroupBy<K, A>>
+    public <K, A, F extends AggregateFunction<T, A, F>> GroupByStreamBuilder<K, A>
     groupBySliding(SerializableFunction<T, K> keyFunction,
                    SerializableSupplier<F> aggregateFunctionSupplier,
                    int bucketSizeMillis,
                    int numberOfBuckets) {
-        return new EventStreamBuilder<>(new SlidingGroupByWindowStream<>(
+        return new GroupByStreamBuilder<>(new SlidingGroupByWindowStream<>(
                 eventStream,
                 aggregateFunctionSupplier,
                 keyFunction,
@@ -290,63 +215,12 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
         ));
     }
 
-    public <R> EventStreamBuilder<R> mapOnNotify(R target) {
-        return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
+    public <I, Z extends EventStreamBuilder<I>> Z mapOnNotify(I target) {
+        return super.mapOnNotifyBase(target);
     }
 
-    public IntStreamBuilder mapToInt(LambdaReflection.SerializableToIntFunction<T> mapFunction) {
-        return new IntStreamBuilder(new MapEventStream.MapRef2ToIntEventStream<>(eventStream, mapFunction));
-    }
 
-    public DoubleStreamBuilder mapToDouble(LambdaReflection.SerializableToDoubleFunction<T> mapFunction) {
-        return new DoubleStreamBuilder(new MapEventStream.MapRef2ToDoubleEventStream<>(eventStream, mapFunction));
-    }
 
-    public LongStreamBuilder mapToLong(LambdaReflection.SerializableToLongFunction<T> mapFunction) {
-        return new LongStreamBuilder(new MapEventStream.MapRef2ToLongEventStream<>(eventStream, mapFunction));
-    }
-
-    //OUTPUTS - START
-    public EventStreamBuilder<T> push(SerializableConsumer<T> pushFunction) {
-//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
-        return new EventStreamBuilder<>(new PushEventStream<>(eventStream, pushFunction));
-    }
-
-    public EventStreamBuilder<T> sink(String sinkId) {
-        return push(new SinkPublisher<>(sinkId)::publish);
-    }
-
-    public EventStreamBuilder<T> notify(Object target) {
-        EventProcessorConfigService.service().add(target);
-        return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
-    }
-
-    public EventStreamBuilder<T> processAsNewGraphEvent() {
-        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, new InternalEventDispatcher()::dispatchToGraph));
-    }
-
-    public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {
-        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
-    }
-
-    public <R> EventStreamBuilder<T> console(String in, SerializableFunction<T, R> transformFunction) {
-        peek(Peekers.console(in, transformFunction));
-        return this;
-    }
-
-    public EventStreamBuilder<T> console(String in) {
-        return console(in, null);
-    }
-
-    public EventStreamBuilder<T> console() {
-        return console("{}");
-    }
-
-    //META-DATA
-    public EventStreamBuilder<T> id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
-        return this;
-    }
 
     /*
     TODO:

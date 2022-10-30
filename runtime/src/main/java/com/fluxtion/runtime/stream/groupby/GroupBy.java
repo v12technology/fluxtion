@@ -13,6 +13,14 @@ public interface GroupBy<K, V> {
 
     Collection<V> values();
 
+    default V value(){
+        return null;
+    }
+
+    default KeyValue<K, V> keyValue(){
+        return emptyKey();
+    }
+
     static <K, V> KeyValue<K, V> emptyKey() {
         return KV_KEY_VALUE;
     }

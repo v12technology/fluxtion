@@ -26,8 +26,8 @@ import java.util.Map;
  * @param <F>
  */
 public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends AggregateFunction<V, R, F>>
-        extends AbstractEventStream<T, GroupBy<K, R>, S>
-        implements TriggeredEventStream<GroupBy<K, R>> {
+        extends AbstractEventStream<T, GroupByStreamed<K, R>, S>
+        implements TriggeredEventStream<GroupByStreamed<K, R>> {
 
     @SepNode
     @NoTriggerReference
@@ -53,7 +53,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
     }
 
     @Override
-    public GroupBy<K, R> get() {
+    public GroupByStreamed<K, R> get() {
         return results;
     }
 
@@ -104,7 +104,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
     }
 
 
-    private class MyGroupBy implements GroupBy<K, R> {
+    private class MyGroupBy implements GroupByStreamed<K, R> {
 
         @Override
         public Map<K, R> map() {
@@ -114,6 +114,16 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
         @Override
         public Collection<R> values() {
             return mapOfValues.values();
+        }
+
+        @Override
+        public R value() {
+            return groupByWindowedCollection.value();
+        }
+
+        @Override
+        public KeyValue<K, R> keyValue() {
+            return groupByWindowedCollection.keyValue();
         }
     }
 }

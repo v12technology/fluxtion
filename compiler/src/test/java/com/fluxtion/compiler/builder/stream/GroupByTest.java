@@ -233,7 +233,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
-                    .map(GroupByFunction.mapValues(EventStreamBuildTest::doubleInt))
+                    .mapValues(EventStreamBuildTest::doubleInt)
                     .map(GroupBy::map)
                     .sink("keyValue");
         });
@@ -265,7 +265,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
-                    .map(GroupByFunction.mapKeys(EventStreamBuildTest::toUpperCase))
+                    .mapKeys(EventStreamBuildTest::toUpperCase)
                     .map(GroupBy::map)
                     .sink("keyValue");
         });
@@ -365,14 +365,14 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, MergedType> expected = new HashMap<>();
 
         sep(c -> {
-            EventStreamBuilder<GroupByStreamed<String, String>> stringGroupBy = subscribe(String.class)
+            GroupByStreamBuilder<String, String> stringGroupBy = subscribe(String.class)
                     .groupBy(String::toString, Mappers::identity);
 
-            EventStreamBuilder<GroupByStreamed<String, Integer>> keyedGroupBy = subscribe(KeyedData.class)
+            GroupByStreamBuilder<String, Integer> keyedGroupBy = subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount);
 
-            GroupByStreamBuilder.innerJoinStreams(keyedGroupBy, stringGroupBy)
-                    .map(GroupByFunction.mapValues(EventStreamBuildTest::mergedTypefromTuple))
+            keyedGroupBy.innerJoin(stringGroupBy)
+                    .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
                     .map(GroupBy::map)
                     .sink("merged");
         });

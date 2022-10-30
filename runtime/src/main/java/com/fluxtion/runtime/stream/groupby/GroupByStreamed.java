@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Map;
 
 public interface GroupByStreamed<K, V> extends GroupBy<K, V> {
-    V value();
-
-    KeyValue<K, V> keyValue();
+//    V value();
+//
+//    KeyValue<K, V> keyValue();
 
 
     static <K, V> GroupByStreamed<K, V> emptyCollection() {

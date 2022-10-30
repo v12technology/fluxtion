@@ -26,8 +26,8 @@ import java.util.function.Supplier;
  * @param <F>
  */
 public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F extends AggregateFunction<V, R, F>>
-        extends AbstractEventStream<T, GroupBy<K, R>, S>
-        implements TriggeredEventStream<GroupBy<K, R>> {
+        extends AbstractEventStream<T, GroupByStreamed<K, R>, S>
+        implements TriggeredEventStream<GroupByStreamed<K, R>> {
 
     private final SerializableSupplier<F> windowFunctionSupplier;
     private final SerializableFunction<T, K> keyFunction;
@@ -61,7 +61,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     }
 
     @Override
-    public GroupBy<K, R> get() {
+    public GroupByStreamed<K, R> get() {
         return results;
     }
 
@@ -116,7 +116,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         return fireEventUpdateNotification();
     }
 
-    private class MyGroupBy implements GroupBy<K, R> {
+    private class MyGroupBy implements GroupByStreamed<K, R> {
 
         @Override
         public Map<K, R> map() {
@@ -126,6 +126,16 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         @Override
         public Collection<R> values() {
             return mapOfValues.values();
+        }
+
+        @Override
+        public R value() {
+            return slidingCalculator.get().value();
+        }
+
+        @Override
+        public KeyValue<K, R> keyValue() {
+            return slidingCalculator.get().keyValue();
         }
     }
 }

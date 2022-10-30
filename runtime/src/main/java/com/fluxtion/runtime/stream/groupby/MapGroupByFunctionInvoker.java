@@ -39,7 +39,7 @@ public class MapGroupByFunctionInvoker {
     }
 
     //required for serialised version
-    public <K, V> GroupBy<K, V> mapValues(Object inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapValues(Object inputMap) {
         return mapValues((GroupBy) inputMap);
     }
 
@@ -59,7 +59,7 @@ public class MapGroupByFunctionInvoker {
         return mapEntry((GroupBy) inputMap);
     }
 
-    public <K, V> GroupBy<K, V> mapValues(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapValues(GroupBy inputMap) {
         outputCollection.reset();
         inputMap.map().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) e;
@@ -68,7 +68,7 @@ public class MapGroupByFunctionInvoker {
         return outputCollection;
     }
 
-    public <K, V> GroupBy<K, V> mapKeys(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapKeys(GroupBy inputMap) {
         outputCollection.reset();
         inputMap.map().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) e;
@@ -77,7 +77,7 @@ public class MapGroupByFunctionInvoker {
         return outputCollection;
     }
 
-    public <K, V> GroupBy<K, V> mapEntry(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapEntry(GroupBy inputMap) {
         outputCollection.reset();
         inputMap.map().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) mapFunction.apply(e);
