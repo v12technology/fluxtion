@@ -47,15 +47,19 @@ public class MapGroupByFunctionInvoker {
         return mapKeyedValue((GroupBy) inputMap, secondArgument);
     }
 
-    public <K, V> GroupBy<K, V> biMapValuesWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
-        return biMapValuesWithParamMap((GroupBy) firstArgGroupBy, (GroupBy) secondArgGroupBY);
+    public <K, R> GroupByStreamed<K, R> mapValueWithKeyValue(Object inputMap, KeyValue secondArgument) {
+        return mapValueWithKeyValue((GroupBy) inputMap, secondArgument);
     }
 
-    public <K, V> GroupBy<K, V> mapKeys(Object inputMap) {
+    public <K, V> GroupByStreamed<K, V> biMapValuesWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
+        return biMapValuesWithParamMap((GroupByStreamed) firstArgGroupBy, (GroupByStreamed) secondArgGroupBY);
+    }
+
+    public <K, V> GroupByStreamed<K, V> mapKeys(Object inputMap) {
         return mapKeys((GroupBy) inputMap);
     }
 
-    public <K, V> GroupBy<K, V> mapEntry(Object inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapEntry(Object inputMap) {
         return mapEntry((GroupBy) inputMap);
     }
 
@@ -100,7 +104,21 @@ public class MapGroupByFunctionInvoker {
         return wrappedCollection;
     }
 
-    public <K, G extends GroupBy, H extends GroupBy, R> GroupBy<K, R> biMapValuesWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
+    public <K, G extends GroupBy, R> GroupByStreamed<K, R> mapValueWithKeyValue(G inputMap, KeyValue argumentProvider) {
+        wrappedCollection.reset();
+        Object key = argumentProvider.getKey();
+        Object item = inputMap.map().get(key);
+        if (item != null) {
+            KeyValue kv = new KeyValue(key, mapFrom2MapsBiFunction.apply(item, argumentProvider.getValue()));
+            outputCollection.fromMap(inputMap.map());
+            outputCollection.add(kv);
+            wrappedCollection.setGroupBy(outputCollection);
+            wrappedCollection.setKeyValue(kv);
+        }
+        return wrappedCollection;
+    }
+
+    public <K, G extends GroupByStreamed, H extends GroupByStreamed, R> GroupByStreamed<K, R> biMapValuesWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
         outputCollection.reset();
         Map arg2Map = (secondArgGroupBY == null && defaultValue != null) ? Collections.emptyMap() : secondArgGroupBY.map();
         firstArgGroupBy.map().forEach((key, arg1) -> {

@@ -31,7 +31,7 @@ import com.fluxtion.runtime.stream.helpers.Mappers;
 
 import java.util.List;
 
-public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T,  EventStreamBuilder<T>> implements EventSupplierAccessor<EventSupplier<T>> {
+public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventStreamBuilder<T>> implements EventSupplierAccessor<EventSupplier<T>> {
 
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
@@ -40,28 +40,25 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T,  EventS
     }
 
     @Override
-    protected  EventStreamBuilder<T> connect(TriggeredEventStream<T> stream) {
+    protected EventStreamBuilder<T> connect(TriggeredEventStream<T> stream) {
         return new EventStreamBuilder<>(stream);
     }
 
 
     @Override
-    protected <R>  EventStreamBuilder<R> connectMap(TriggeredEventStream<R> stream) {
-        EventStreamBuilder<R> e = new EventStreamBuilder<>(stream);
+    protected <R> EventStreamBuilder<R> connectMap(TriggeredEventStream<R> stream) {
         return new EventStreamBuilder<>(stream);
     }
 
 
     @Override
-    protected EventStreamBuilder<T> identity(){
+    protected EventStreamBuilder<T> identity() {
         return this;
     }
 
     public EventSupplier<T> getEventSupplier() {
         return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
     }
-
-
 
     public EventStreamBuilder<T> defaultValue(T defaultValue) {
         return map(new DefaultValue<>(defaultValue)::getOrDefault);
@@ -131,7 +128,7 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T,  EventS
                 new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
 
 
-        return  new GroupByStreamBuilder<>(x);
+        return new GroupByStreamBuilder<>(x);
     }
 
     public <V, K1> GroupByStreamBuilder<K1, V>

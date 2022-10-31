@@ -38,6 +38,25 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void addEnclosingMethodMultipleInstanceTest() {
+        writeSourceFile = true;
+        sep(c -> {
+
+            SerializableFunction<String, String> function = new MyInstanceFunction("test")::toCaps;
+            c.addNode(
+                    new MyFunctionHolder(function), "result");
+
+            c.addNode(
+                    new MyFunctionHolder(function), "result2");
+        });
+
+        onEvent("test");
+        MyFunctionHolder result = getField("result");
+        Assert.assertEquals("TEST", result.output);
+        Assert.assertFalse(result.triggered);
+    }
+
+    @Test
     public void instanceLambdaWithEventHandlerTest() {
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyInstanceFunctionWithHandler()::toCaps), "result"));
@@ -115,11 +134,8 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void regressionTriggerPush() {
-        ;
-        sep(c -> {
-            subscribe(String.class)
-                    .push(new NotifyAndPushTarget()::setStringPushValue);
-        });
+        sep(c -> subscribe(String.class)
+                .push(new NotifyAndPushTarget()::setStringPushValue));
     }
 
 

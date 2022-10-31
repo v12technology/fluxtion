@@ -8,13 +8,13 @@ public class ReduceGroupByFunctionInvoker {
 
     AggregateFunction aggregateFunction;
 
-    public <R> R reduceValues(GroupBy inputMap) {
+    public <R> R reduceValues(GroupByStreamed inputMap) {
         aggregateFunction.reset();
         inputMap.map().values().forEach(aggregateFunction::aggregate);
         return (R) aggregateFunction.get();
     }
 
     public Object reduceValues(Object inputMap) {
-        return reduceValues((GroupBy) inputMap);
+        return reduceValues((GroupByStreamed) inputMap);
     }
 }

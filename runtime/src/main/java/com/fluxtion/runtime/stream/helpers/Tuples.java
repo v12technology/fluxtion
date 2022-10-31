@@ -8,23 +8,26 @@ import lombok.Value;
 public class Tuples {
 
     public static <F, S, TIN extends Tuple<? extends F, ? extends S>> SerializableFunction<TIN, Tuple<F, S>>
-    replaceNull(F first, S second){
+    replaceNull(F first, S second) {
         return new ReplaceNull<>(first, second)::replaceNull;
     }
 
-    public static <F, S, R> SerializableFunction<Tuple< F, S>, R>
-    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction){
+    public static <F, S, R> SerializableFunction<Tuple<F, S>, R>
+    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction) {
         return new MapTuple<>(tupleMapFunction)::mapTuple;
     }
 
 
+    public static class ReplaceNull<F, S> {
+        private final F firstValue;
+        private final S secondValue;
 
-    @Value
-    public static class ReplaceNull<F, S>{
-        F firstValue;
-        S secondValue;
+        public ReplaceNull(F firstValue, S secondValue) {
+            this.firstValue = firstValue;
+            this.secondValue = secondValue;
+        }
 
-        public Tuple<F, S> replaceNull(Tuple<? extends F, ? extends S> in){
+        public Tuple<F, S> replaceNull(Tuple<? extends F, ? extends S> in) {
             F first = in.getFirst() == null ? firstValue : in.getFirst();
             S second = in.getSecond() == null ? secondValue : in.getSecond();
             return new Tuple<>(first, second);
@@ -32,10 +35,10 @@ public class Tuples {
     }
 
     @Value
-    public static class MapTuple<F, S, R>{
+    public static class MapTuple<F, S, R> {
         SerializableBiFunction<F, S, R> tupleMapFunction;
 
-        public R mapTuple(Tuple< ? extends F, ? extends S> tuple){
+        public R mapTuple(Tuple<? extends F, ? extends S> tuple) {
             return tupleMapFunction.apply(tuple.getFirst(), tuple.getSecond());
         }
 

@@ -16,11 +16,11 @@ public class FilterGroupByFunctionInvoker {
     }
 
     //required for serialised version
-    public <K, V> GroupBy<K, V> filterValues(Object inputMap) {
+    public <K, V> GroupByStreamed<K, V> filterValues(Object inputMap) {
         return filterValues((GroupBy) inputMap);
     }
 
-    public <K, V> GroupBy<K, V> filterValues(GroupBy<K, V> inputMap) {
+    public <K, V> GroupByStreamed<K, V> filterValues(GroupBy<K, V> inputMap) {
         outputCollection.reset();
         inputMap.map().entrySet().forEach(e -> {
             Entry entry = (Entry) e;
