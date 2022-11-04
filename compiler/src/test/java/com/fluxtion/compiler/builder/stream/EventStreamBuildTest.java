@@ -59,6 +59,23 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(1, is(notifyTarget.getOnEventCount()));
     }
 
+    @Data
+    public static class MyPushTarget {
+        String data;
+    }
+
+    @Test
+    public void pushToNodeAddedWithId() {
+        sep(c -> {
+            MyPushTarget target = c.addNode(new MyPushTarget(), "target");
+            EventFlow.subscribe(String.class)
+                    .push(target::setData);
+        });
+
+        MyPushTarget target = getField("target");
+        assertNotNull(target);
+    }
+
     @Test
     public void wrapNodeAndPushStreamPropertyStreamTest() {
         sep(c -> subscribeToNodeProperty(MyStringHandler::getInputString)
