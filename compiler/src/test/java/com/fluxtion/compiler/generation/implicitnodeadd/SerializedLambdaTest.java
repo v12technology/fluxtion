@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
@@ -31,6 +32,22 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyInstanceFunction("test")::toCaps), "result"));
 
+        onEvent("test");
+        MyFunctionHolder result = getField("result");
+        Assert.assertEquals("TEST", result.output);
+        Assert.assertFalse(result.triggered);
+    }
+
+    @Test
+    public void addEnclosingMethodNamedInstanceTest() {
+        sep(c -> {
+            MyInstanceFunction myInstanceFunction = c.addNode(
+                    new MyInstanceFunction("test"), "myInstanceFunction");
+            c.addNode(new MyFunctionHolder(myInstanceFunction::toCaps), "result");
+        });
+
+        MyInstanceFunction myInstanceFunction = getField("myInstanceFunction");
+        assertNotNull(myInstanceFunction);
         onEvent("test");
         MyFunctionHolder result = getField("result");
         Assert.assertEquals("TEST", result.output);
