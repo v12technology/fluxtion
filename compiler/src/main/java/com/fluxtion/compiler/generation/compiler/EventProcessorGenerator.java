@@ -18,10 +18,10 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
-import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
@@ -124,6 +125,7 @@ public class EventProcessorGenerator {
         templateJavaOutput(writer);
         LOG.debug("completed template output");
         execSvc.shutdown();
+        execSvc.awaitTermination(2, TimeUnit.SECONDS);
     }
 
     public SimpleEventProcessorModel getSimpleEventProcessorModel() {

@@ -16,6 +16,8 @@
 package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
@@ -150,5 +152,9 @@ public interface StaticEventProcessor {
     default <T> T getStreamed(String name) throws NoSuchFieldException {
         EventStream<T> stream = getNodeById(name);
         return stream.get();
+    }
+
+    default void setAuditLogLevel(LogLevel logLevel) {
+        onEvent(new EventLogControlEvent(logLevel));
     }
 }
