@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.exporter;
@@ -58,6 +58,7 @@ public class JgraphGraphMLExporter<V, E> {
     private final EdgeNameProvider<E> edgeLabelProvider;
 
     //~ Constructors -----------------------------------------------------------
+
     /**
      * Constructs a new GraphMLExporter object with integer name providers for
      * the vertex and edge IDs and null providers for the vertex and edge
@@ -75,12 +76,12 @@ public class JgraphGraphMLExporter<V, E> {
      * Constructs a new GraphMLExporter object with the given ID and label
      * providers.
      *
-     * @param vertexIDProvider for generating vertex IDs. Must not be null.
+     * @param vertexIDProvider    for generating vertex IDs. Must not be null.
      * @param vertexLabelProvider for generating vertex labels. If null, vertex
-     * labels will not be written to the file.
-     * @param edgeIDProvider for generating vertex IDs. Must not be null.
-     * @param edgeLabelProvider for generating edge labels. If null, edge labels
-     * will not be written to the file.
+     *                            labels will not be written to the file.
+     * @param edgeIDProvider      for generating vertex IDs. Must not be null.
+     * @param edgeLabelProvider   for generating edge labels. If null, edge labels
+     *                            will not be written to the file.
      */
     public JgraphGraphMLExporter(
             VertexNameProvider<V> vertexIDProvider,
@@ -94,13 +95,14 @@ public class JgraphGraphMLExporter<V, E> {
     }
 
     //~ Methods ----------------------------------------------------------------
+
     /**
      * Exports a graph into a plain text file in GraphML format.
      *
      * @param writer the writer to which the graph to be exported
-     * @param g the graph to be exported
-     * @throws org.xml.sax.SAXException  exception during reading
-     * @throws javax.xml.transform.TransformerConfigurationException  exception during reading
+     * @param g      the graph to be exported
+     * @throws org.xml.sax.SAXException                              exception during reading
+     * @throws javax.xml.transform.TransformerConfigurationException exception during reading
      */
     public void export(Writer writer, Graph<V, E> g)
             throws SAXException, TransformerConfigurationException {
@@ -129,15 +131,15 @@ public class JgraphGraphMLExporter<V, E> {
                 "xsi:schemaLocation",
                 "CDATA",
                 "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd");
-        
+
         attr.addAttribute(
                 "",
                 "",
                 "xmlns:jGraph",
                 "CDATA",
                 "http://www.jgraph.com/");
-        
-        
+
+
         handler.startElement(
                 "http://graphml.graphdrawing.org/xmlns",
                 "",
@@ -179,9 +181,9 @@ public class JgraphGraphMLExporter<V, E> {
 
         // Add all the vertices as <node> elements...
         for (V v : g.vertexSet()) {
-            boolean isHandler  = v  instanceof FilteredEventHandler;
+            boolean isHandler = v instanceof FilteredEventHandler;
             boolean isEventClass = v instanceof Class;
-            if(!isHandler){
+            if (!isHandler) {
                 Method[] methodList = v.getClass().getMethods();
                 for (Method method : methodList) {
                     if (method.getAnnotation(OnEventHandler.class) != null) {
@@ -220,39 +222,39 @@ public class JgraphGraphMLExporter<V, E> {
                 handler.endElement("", "", "jGraph:Geometry");
                 //<jGraph:label text="Hello"/>
                 attr.clear();
-                if(isHandler){
-                    attr.addAttribute("", "", "text", "CDATA", "<<EventHandle>>\n" 
+                if (isHandler) {
+                    attr.addAttribute("", "", "text", "CDATA", "<<EventHandle>>\n"
                             + vertexLabel + ":\n"
-                            + v.getClass().getSimpleName() 
+                            + v.getClass().getSimpleName()
                     );
-                }else if(isEventClass){
-                    attr.addAttribute("", "", "text", "CDATA", "<<Event>>\n" 
-                            + vertexLabel 
+                } else if (isEventClass) {
+                    attr.addAttribute("", "", "text", "CDATA", "<<Event>>\n"
+                            + vertexLabel
                     );
-                }else{
-                    attr.addAttribute("", "", "text", "CDATA", "" 
+                } else {
+                    attr.addAttribute("", "", "text", "CDATA", ""
                             + vertexLabel + ":\n"
-                            + v.getClass().getSimpleName() 
+                            + v.getClass().getSimpleName()
                     );
                 }
                 handler.startElement("", "", "jGraph:label", attr);
                 handler.endElement("", "", "jGraph:label");
-                
-                
+
+
                 attr.clear();
-                if(isHandler){
+                if (isHandler) {
                     attr.addAttribute("", "", "properties", "CDATA", "EVENTHANDLER");
-                }else if(isEventClass){
+                } else if (isEventClass) {
                     attr.addAttribute("", "", "properties", "CDATA", "EVENT");
-                }else{
+                } else {
                     attr.addAttribute("", "", "properties", "CDATA", "NODE");
                 }
                 handler.startElement("", "", "jGraph:Style", attr);
                 handler.endElement("", "", "jGraph:label");
                 //</jGraph:ShapeNode> 
                 handler.endElement("", "", "jGraph:ShapeNode");
-                
-                
+
+
                 handler.endElement("", "", "data");
             }
 
@@ -288,7 +290,7 @@ public class JgraphGraphMLExporter<V, E> {
                 attr.clear();
                 attr.addAttribute("", "", "key", "CDATA", "edge_label");
                 handler.startElement("", "", "data", attr);
-                
+
                 handler.startElement("", "", "jGraph:ShapeEdge", null);
                 handler.endElement("", "", "jGraph:ShapeEdge");
 
@@ -301,7 +303,6 @@ public class JgraphGraphMLExporter<V, E> {
         handler.endElement("", "", "graph");
         handler.endElement("", "", "graphml");
         handler.endDocument();
-
         out.flush();
     }
 }
