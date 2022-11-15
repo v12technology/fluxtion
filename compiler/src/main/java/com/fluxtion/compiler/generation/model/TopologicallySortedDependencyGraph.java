@@ -31,6 +31,7 @@ import com.fluxtion.runtime.Anchor;
 import com.fluxtion.runtime.FilteredEventHandler;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
 import com.fluxtion.runtime.annotations.OnBatchPause;
@@ -724,13 +725,17 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
         Object refField = field.get(node);
         String refName = inst2Name.get(refField);
-        boolean addNode = field.getAnnotation(SepNode.class) != null;
+        boolean addNode = field.getAnnotation(SepNode.class) != null
+                && !field.getType().isArray()
+                && !Collection.class.isAssignableFrom(field.getType());
         if (refField != null && field.getAnnotation(ExcludeNode.class) == null) {
             addNode |= !ReflectionUtils.getAllMethods(
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
+            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass())
+                    | refField.getClass().getAnnotation(SepNode.class) != null;
+            ;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
@@ -745,30 +750,32 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private void implicitAddVectorMember(Object refField) {
+    private void implicitAddVectorMember(Object refField, Field collection) {
         boolean addNode;
         if (refField != null && !inst2Name.containsKey(refField) && !inst2NameTemp.containsKey(refField)) {
             addNode = !ReflectionUtils.getAllMethods(
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
-            if (addNode) {
+            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass())
+                    | refField.getClass().getAnnotation(SepNode.class) != null;
+            if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
             }
         }
     }
 
     private Predicate<AnnotatedElement> annotationPredicate() {
-        return ReflectionUtils.withAnnotation(AfterEvent.class)
-                .or(ReflectionUtils.withAnnotation(OnEventHandler.class))
-                .or(ReflectionUtils.withAnnotation(Inject.class))
-                .or(ReflectionUtils.withAnnotation(OnBatchEnd.class))
-                .or(ReflectionUtils.withAnnotation(OnBatchPause.class))
-                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
-                .or(ReflectionUtils.withAnnotation(AfterTrigger.class))
-                .or(ReflectionUtils.withAnnotation(OnParentUpdate.class))
-                .or(ReflectionUtils.withAnnotation(TearDown.class))
+        return withAnnotation(AfterEvent.class)
+                .or(withAnnotation(OnEventHandler.class))
+                .or(withAnnotation(Inject.class))
+                .or(withAnnotation(OnBatchEnd.class))
+                .or(withAnnotation(OnBatchPause.class))
+                .or(withAnnotation(OnTrigger.class))
+                .or(withAnnotation(AfterTrigger.class))
+                .or(withAnnotation(OnParentUpdate.class))
+                .or(withAnnotation(TearDown.class))
+                .or(withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
                 ;
     }
@@ -796,7 +803,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    implicitAddVectorMember(refField);
+                    implicitAddVectorMember(refField, field);
                     if (inst2Name.containsKey(refField) || inst2NameTemp.containsKey(refField)) {
                         graph.addVertex(object);
                         graph.addVertex(refField);
@@ -814,15 +821,14 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         }
                     }
                 }
-            } else if (Collection.class
-                    .isAssignableFrom(field.getType())) {
+            } else if (Collection.class.isAssignableFrom(field.getType())) {
                 Collection<?> list = (Collection<?>) field.get(object);
                 if (list == null) {
                     continue;
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    implicitAddVectorMember(parent);
+                    implicitAddVectorMember(parent, field);
                     if (inst2Name.containsKey(parent) || inst2NameTemp.containsKey(parent)) {
                         graph.addVertex(object);
                         graph.addVertex(parent);
