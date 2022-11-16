@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,22 +12,26 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.parent;
 
+import com.fluxtion.compiler.generation.model.CallbackMethodModelTest.StringHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.test.event.EventHandlerCb;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.NodeWithPrivateParentList;
 import com.fluxtion.test.event.TestEvent;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
@@ -98,6 +102,39 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
         sep.onEvent(new TestEvent(2));
         assertEquals(1, root.parentUpdateCount);
         assertEquals(1, root.onEventCount);
+    }
+
+    @Test
+    public void testNamedCollection() {
+        writeSourceFile = true;
+        sep(c -> {
+            c.addNode(new NamedParentCollection(), "test");
+        });
+        onEvent("g");
+        onEvent("g");
+        assertEquals(2, getField("test", NamedParentCollection.class).count);
+    }
+
+    public static class NamedParentCollection {
+
+        public List<EventHandlerCb> eventHandlerCollection = new ArrayList<>();
+        public List<StringHandler> stringCollection = new ArrayList<>();
+
+        public int count;
+//        public IntegerHandler stringHandler = new IntegerHandler(new StringHandler());
+
+        public NamedParentCollection() {
+            eventHandlerCollection.add(new EventHandlerCb("a", 1));
+            eventHandlerCollection.add(new EventHandlerCb("b", 2));
+            eventHandlerCollection.add(new EventHandlerCb("c", 3));
+            stringCollection.add(new StringHandler());
+        }
+
+        @OnParentUpdate("stringCollection")
+        public void update(Object stringHandler) {
+            count++;
+        }
+
     }
 
 }

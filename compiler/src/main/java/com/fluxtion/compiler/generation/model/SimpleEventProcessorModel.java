@@ -366,7 +366,7 @@ public class SimpleEventProcessorModel {
                     return false;
                 }
                 try {
-                    if(!TopologicallySortedDependencyGraph.trySetAccessible(input)){
+                    if (!TopologicallySortedDependencyGraph.trySetAccessible(input)) {
                         return false;
                     }
                     final Object parent = input.get(field);
@@ -440,7 +440,7 @@ public class SimpleEventProcessorModel {
         /*
           Add inexact match
          */
-        for (Object object: objectTopologicalHandler){
+        for (Object object : objectTopologicalHandler) {
             String name = inst2Name.get(object);
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
@@ -540,7 +540,7 @@ public class SimpleEventProcessorModel {
                                 int length = Array.getLength(parent);
                                 for (int i = 0; i < length; i++) {
                                     ParentFilter testFilter = new ParentFilter(classType, val, null);
-                                    if (testFilter.exactmatch(filter)) {
+                                    if (testFilter.match(filter)) {
                                         //store in exact match map for merging later
                                         parentListenerMultiMap.put(Array.get(parent, i), cbMethodHandle);
                                     }
@@ -557,7 +557,7 @@ public class SimpleEventProcessorModel {
                                 @SuppressWarnings("unchecked") Collection<Object> list = (Collection<Object>) field.get(object);
                                 list.forEach((parent1) -> {
                                     ParentFilter testFilter = new ParentFilter(classType, val, null);
-                                    if (testFilter.exactmatch(filter)) {
+                                    if (testFilter.match(filter)) {
                                         parentListenerMultiMap.put(parent1, cbMethodHandle);
                                     }
                                 });
@@ -977,23 +977,24 @@ public class SimpleEventProcessorModel {
         return ret;
     }
 
-    public Field getFieldForName(String name){
+    public Field getFieldForName(String name) {
         return nodeFields.stream().filter(f -> f.name.equals(name)).findFirst().orElse(null);
     }
 
     /**
      * returns all the {@link OnTrigger} {@link CbMethodHandle}'s that depend upon this node.
+     *
      * @return dependents that will be notified with methods @{@link OnTrigger}
      */
     public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
-        if(callSource.isNoPropagateEventHandler()){
+        if (callSource.isNoPropagateEventHandler()) {
             return Collections.emptySet();
         }
         return getOnEventDependenciesForNode(callSource.getInstance());
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Object> getOnEventDependenciesForNode(Object instance){
+    public Set<Object> getOnEventDependenciesForNode(Object instance) {
         return getDirectChildrenListeningForEvent(instance).stream()
                 .peek(o -> log.debug("checking for OnEvent instance:{}", o))
                 .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnTrigger.class)).isEmpty())
@@ -1044,7 +1045,7 @@ public class SimpleEventProcessorModel {
     }
 
     public List<CbMethodHandle> getDispatchMapForGraph() {
-        return  Collections.unmodifiableList(allEventCallBacks);
+        return Collections.unmodifiableList(allEventCallBacks);
     }
 
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
@@ -1067,7 +1068,7 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(filterDescriptionList);
     }
 
-    public static CallbackDispatcherImpl getCallbackDispatcher(){
+    public static CallbackDispatcherImpl getCallbackDispatcher() {
         return TopologicallySortedDependencyGraph.CALLBACK_DISPATCHER;
     }
 
@@ -1159,7 +1160,7 @@ public class SimpleEventProcessorModel {
             node2UpdateMethodMap.put(eh, cbMethodHandle);
             for (int i = 1; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
-                if(object == eh){
+                if (object == eh) {
                     continue;
                 }
                 name = dependencyGraph.variableName(object);
@@ -1278,7 +1279,7 @@ public class SimpleEventProcessorModel {
 
             for (int i = 0; i < sortedDependents.size(); i++) {
                 Object object = sortedDependents.get(i);
-                if(object == instance){
+                if (object == instance) {
                     continue;
                 }
                 name = dependencyGraph.variableName(object);

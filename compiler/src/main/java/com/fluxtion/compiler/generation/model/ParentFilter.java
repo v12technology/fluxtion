@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -20,11 +20,11 @@ package com.fluxtion.compiler.generation.model;
 /**
  * A filter class for a parent class, a match will occur if both instances are
  * equal or both instances are null and the class types are equal.
- * 
+ *
  * @author Greg Higgins
  */
 class ParentFilter {
-    
+
     public Class<?> parentType;
     public String parentName;
     public CbMethodHandle callBack;
@@ -34,22 +34,24 @@ class ParentFilter {
         this.parentName = parentName;
         this.callBack = callBack;
     }
-   
-    public boolean match(ParentFilter other){
-        if(other.parentName==null || parentName==null || other.parentName.length()==0 || parentName.length()==0){
-            return parentType.isAssignableFrom(other.parentType);
+
+    public boolean match(ParentFilter other) {
+        if (other.parentName == null || parentName == null || other.parentName.length() == 0 || parentName.length() == 0) {
+            return parentType.isAssignableFrom(other.parentType) || other.parentType.isAssignableFrom(parentType);
         }
-        return other.parentName.equals(parentName) && other.parentType.isAssignableFrom(parentType);
+        return other.parentName.equals(parentName) &&
+                (other.parentType.isAssignableFrom(parentType) || parentType.isAssignableFrom(other.parentType));
     }
-    public boolean exactmatch(ParentFilter other){
-        if(other.parentName==null & parentName==null){
+
+    public boolean exactmatch(ParentFilter other) {
+        if (other.parentName == null & parentName == null) {
             return parentType == (other.parentType);
         }
-        
-        if(other.parentName!=null & parentName!=null){
+
+        if (other.parentName != null & parentName != null) {
             return other.parentName.equals(parentName) && other.parentType == parentType;
         }
         return false;
     }
-    
+
 }
