@@ -19,7 +19,7 @@ along with this program.  If not, see
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>6.3.5</version>
+    <version>6.3.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
     
