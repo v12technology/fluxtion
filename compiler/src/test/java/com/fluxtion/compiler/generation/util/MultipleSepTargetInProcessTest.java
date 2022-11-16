@@ -211,6 +211,10 @@ public class MultipleSepTargetInProcessTest {
         return inMemorySep.getNodeById(name);
     }
 
+    protected <T> T getField(String name, Class<T> clazz) {
+        return getField(name);
+    }
+
     @SneakyThrows
     protected <T> T getAuditor(String name) {
         if (compiledSep) {
