@@ -38,6 +38,17 @@ public class YamlReaderDrivenTest {
         assertThat(myList, Matchers.is(Matchers.contains("hello world")));
     }
 
+    @Test
+    public void interpretNoConfigFromStringTest() {
+        EventProcessor eventProcessor = Fluxtion.compileFromReader(new StringReader(interpretNoConfigString));
+        eventProcessor.init();
+
+        List<String> myList = new ArrayList<>();
+        eventProcessor.addSink("sinkA", (Consumer<String>) myList::add);
+        eventProcessor.onEvent("hello world");
+        assertThat(myList, Matchers.is(Matchers.contains("hello world")));
+    }
+
     private static final String compileString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
             "  packageName: com.mypackage\n" +
@@ -64,9 +75,20 @@ public class YamlReaderDrivenTest {
             "name: myRoot\n" +
             "rootClass: com.fluxtion.compiler.builder.factory.YamlReaderDrivenTest$MyRootClass";
 
+    private static final String interpretNoConfigString = "compilerConfig:\n" +
+            "  className: MyProcessor\n" +
+            "  packageName: com.mypackage\n" +
+            "  compileSource: false\n" +
+            "  formatSource: false\n" +
+            "  generateDescription: false\n" +
+            "  writeSourceToFile: false\n" +
+            "name: myRoot\n" +
+            "rootClass: com.fluxtion.compiler.builder.factory.YamlReaderDrivenTest$MyRootClass";
+
     public static class MyRootClass {
 
         public SinkPublisher<String> publisher = new SinkPublisher<>("sinkA");
+
         @OnEventHandler
         public void updated(String in) {
             publisher.publish(in);
