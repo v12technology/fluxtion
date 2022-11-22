@@ -45,3 +45,4 @@
 /examples/learning-streaming/src/main/resources/lambda.ser/
 /compiler/target/
 /runtime/target/
+/parent-root/target
