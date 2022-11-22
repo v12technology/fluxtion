@@ -430,7 +430,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 }
                 AccessorsController mirror = new Mirror().on(newNode);
                 ReflectionHandler<T> reflect = new Mirror().on(clazz).reflect();
-                Set<Map.Entry<String, Object>> entrySet = config.entrySet().stream()
+                Set<Map.Entry<String, Object>> entrySet = config == null ? Collections.EMPTY_SET : config.entrySet().stream()
                         .filter(keyValue -> reflect.field(keyValue.getKey()) != null)
                         .collect(Collectors.toSet());
                 //set all fields accessible
