@@ -84,4 +84,9 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     public void processReentrantEvents(Iterable<Object> iterator) {
         callBackDispatcher.processReentrantEvents(iterator);
     }
+
+    @Override
+    public void processAsNewEventCycle(Object event) {
+        callBackDispatcher.processAsNewEventCycle(event);
+    }
 }

@@ -47,7 +47,8 @@ ${MODEL.filterConstantDeclarations}
     public ${className} () {
 ${MODEL.nodeMemberAssignments}
         //callback wiring
-        callbackDispatcher.processor = this::onEventInternal;
+        callbackDispatcher.internalEventProcessor = this::onEventInternal;
+        callbackDispatcher.externalEventProcessor = this::onEvent;
     }
 
     @Override

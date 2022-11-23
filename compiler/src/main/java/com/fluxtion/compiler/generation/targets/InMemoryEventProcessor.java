@@ -240,7 +240,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        simpleEventProcessorModel.getCallbackDispatcher().processor = this::onEventInternal;
+        simpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
+        simpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
     }
 
     private void registerAuditors() {

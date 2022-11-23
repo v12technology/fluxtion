@@ -10,4 +10,6 @@ public interface EventDispatcher {
     void processReentrantEvent(Object event);
 
     void processReentrantEvents(Iterable<Object> iterable);
+
+    void processAsNewEventCycle(Object event);
 }
