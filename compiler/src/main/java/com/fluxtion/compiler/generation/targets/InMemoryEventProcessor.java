@@ -46,7 +46,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @SneakyThrows
     public void onEvent(Object event) {
         if (processing) {
-            simpleEventProcessorModel.getCallbackDispatcher().processEvent(event);
+            simpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
         } else {
             processing = true;
             onEventInternal(event);
@@ -240,7 +240,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        simpleEventProcessorModel.getCallbackDispatcher().processor = this::onEventInternal;
+        simpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
+        simpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
     }
 
     private void registerAuditors() {

@@ -9,13 +9,18 @@ public class EventDispatcherImpl implements EventDispatcher, CallbackDispatcherL
     }
 
     @Override
-    public void processEvent(Object event) {
-        callBackDispatcher.processEvent(event);
+    public void processReentrantEvent(Object event) {
+        callBackDispatcher.processReentrantEvent(event);
     }
 
     @Override
-    public void processEvents(Iterable<Object> iterable) {
-        callBackDispatcher.processEvents(iterable);
+    public void processReentrantEvents(Iterable<Object> iterable) {
+        callBackDispatcher.processReentrantEvents(iterable);
 
+    }
+
+    @Override
+    public void processAsNewEventCycle(Object event) {
+        callBackDispatcher.processAsNewEventCycle(event);
     }
 }
