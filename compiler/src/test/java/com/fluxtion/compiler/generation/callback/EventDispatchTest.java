@@ -98,9 +98,9 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler
         public void handleString(String s) {
             if (s.startsWith("test")) {
-                eventDispatcher.processEvent(new MyEvent());
+                eventDispatcher.processReentrantEvent(new MyEvent());
             } else if (s.startsWith("repeat")) {
-                eventDispatcher.processEvents(Arrays.asList(new MyEvent(), new MyEvent(), new MyEvent()));
+                eventDispatcher.processReentrantEvents(Arrays.asList(new MyEvent(), new MyEvent(), new MyEvent()));
             }
         }
     }

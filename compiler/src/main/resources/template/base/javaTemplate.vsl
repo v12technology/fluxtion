@@ -53,7 +53,7 @@ ${MODEL.nodeMemberAssignments}
     @Override
     public void onEvent(Object event) {
         if(processing){
-            callbackDispatcher.processEvent(event);
+            callbackDispatcher.processReentrantEvent(event);
         }else{
             processing = true;
             onEventInternal(event);

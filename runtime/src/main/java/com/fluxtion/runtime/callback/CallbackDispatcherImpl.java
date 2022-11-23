@@ -76,13 +76,14 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
     }
 
     @Override
-    public void processEvent(Object event) {
+    public void processReentrantEvent(Object event) {
         SingleEventPublishWrapper<Object> callBackWrapper = new SingleEventPublishWrapper<>();
         callBackWrapper.data = event;
         myStack.add(callBackWrapper::dispatch);
     }
 
-    public void processEvents(Iterable<Object> iterable) {
+    @Override
+    public void processReentrantEvents(Iterable<Object> iterable) {
         IteratingEventPublishWrapper publishingWrapper = new IteratingEventPublishWrapper();
         publishingWrapper.dataIterator = iterable.iterator();
         myStack.add(publishingWrapper::dispatch);

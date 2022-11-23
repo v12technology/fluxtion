@@ -46,7 +46,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @SneakyThrows
     public void onEvent(Object event) {
         if (processing) {
-            simpleEventProcessorModel.getCallbackDispatcher().processEvent(event);
+            simpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
         } else {
             processing = true;
             onEventInternal(event);
