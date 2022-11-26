@@ -101,6 +101,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = null;
     }
 
+    public boolean isDirty(Object node) {
+        //TODO replace with map
+        return eventHandlers.stream()
+                .filter(n -> n.getCallbackHandle().getInstance() == node)
+                .map(Node::isDirty)
+                .findFirst()
+                .orElse(false);
+    }
+
     private void auditNewEvent(Object event) {
         if (Event.class.isAssignableFrom(event.getClass())) {
             auditors.stream()
@@ -242,6 +251,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         registerAuditors();
         simpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
         simpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
+        simpleEventProcessorModel.getCallbackDispatcher().isDirtyPredicate = this::isDirty;
     }
 
     private void registerAuditors() {
@@ -323,6 +333,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                         ));
                 onEventCompleteMethod.invoke(callbackHandle.getInstance());
             }
+            dirty = false;
         }
 
         private void addDependent(Node dependent) {

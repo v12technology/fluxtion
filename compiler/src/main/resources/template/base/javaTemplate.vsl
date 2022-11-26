@@ -49,6 +49,9 @@ ${MODEL.nodeMemberAssignments}
         //callback wiring
         callbackDispatcher.internalEventProcessor = this::onEventInternal;
         callbackDispatcher.externalEventProcessor = this::onEvent;
+        callbackDispatcher.isDirtyPredicate = this::isDirty;
+        //initialise dirty lookup map
+        isDirty("test");
     }
 
     @Override
@@ -92,6 +95,11 @@ ${MODEL.batchPauseMethods}
     @Override
     public void batchEnd() {
 ${MODEL.batchEndMethods}
+    }
+
+    private boolean isDirty(Object node) {
+        //cache result using IdentityHashMap and BooleanSupplier as value
+${MODEL.dirtyFlagLookup}
     }
 
     public <T> T getNodeById(String id) throws NoSuchFieldException {
