@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.callback.DirtyStateMonitor.Implementation;
+import com.fluxtion.runtime.callback.DirtyStateMonitor.DirtyStateMonitorImp;
 import lombok.ToString;
 
 import java.util.ArrayDeque;
@@ -26,8 +26,8 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
             CallbackDispatcherListener callbackReceiver = (CallbackDispatcherListener) node;
             callbackReceiver.registerCallbackDispatcher(this);
         }
-        if (DirtyStateMonitor.Implementation.class.isAssignableFrom(node.getClass())) {
-            ((Implementation) node).callbackDispatcher = this;
+        if (DirtyStateMonitorImp.class.isAssignableFrom(node.getClass())) {
+            ((DirtyStateMonitorImp) node).callbackDispatcher = this;
         }
     }
 

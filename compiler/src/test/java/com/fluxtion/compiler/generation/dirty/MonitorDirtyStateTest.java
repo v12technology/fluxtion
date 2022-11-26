@@ -16,7 +16,6 @@ public class MonitorDirtyStateTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void validateDirtyMonitorTest() {
-//        writeSourceFile = true;
         sep(c -> {
             MyDirtChecker dirtChecker = new MyDirtChecker();
             dirtChecker.stringEventStream = EventFlow.subscribe(String.class).getEventSupplier();

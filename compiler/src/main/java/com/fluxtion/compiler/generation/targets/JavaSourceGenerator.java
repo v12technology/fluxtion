@@ -313,12 +313,8 @@ public class JavaSourceGenerator {
             }
         }
         model.getDirtyFieldMap().forEach((k, v) -> {
-            dirtyFlagLookup += String.format(
-                    "        if(node == %s){\n" +
-                            "            return %s;\n" +
-                            "        }\n", k.getName(), v.name);
+            dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "", k.getName(), v.name);
         });
-        dirtyFlagLookup += "return false;";
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
@@ -1014,6 +1010,10 @@ public class JavaSourceGenerator {
 
     public String getDirtyFlagLookup() {
         return dirtyFlagLookup;
+    }
+
+    public int getDirtyFlagCount() {
+        return model.getDirtyFieldMap() == null ? 32 : model.getDirtyFieldMap().size();
     }
 
     public String getBatchEndMethods() {

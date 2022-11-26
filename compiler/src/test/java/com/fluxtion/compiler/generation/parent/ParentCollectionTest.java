@@ -106,7 +106,6 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testNamedCollection() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new NamedParentCollection(), "test");
         });

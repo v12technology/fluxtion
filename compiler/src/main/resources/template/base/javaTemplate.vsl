@@ -24,6 +24,8 @@ import com.fluxtion.runtime.EventProcessor;
 #if(${MODEL.imports})
 ${MODEL.imports}
 #end
+import java.util.IdentityHashMap;
+import java.util.function.BooleanSupplier;
 
 /*
 * <pre>
@@ -40,6 +42,7 @@ public class ${className} implements EventProcessor, StaticEventProcessor, Batch
 ${MODEL.nodeDeclarations}
 //Dirty flags
     private boolean processing = false;
+    private IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
 ${MODEL.dirtyFlagDeclarations}
 //Filter constants
 ${MODEL.filterConstantDeclarations}
@@ -98,8 +101,10 @@ ${MODEL.batchEndMethods}
     }
 
     private boolean isDirty(Object node) {
-        //cache result using IdentityHashMap and BooleanSupplier as value
+        if(dirtyFlagSupplierMap.isEmpty()){
 ${MODEL.dirtyFlagLookup}
+        }
+        return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE).getAsBoolean();
     }
 
     public <T> T getNodeById(String id) throws NoSuchFieldException {
