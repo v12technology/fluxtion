@@ -23,6 +23,7 @@ import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -57,6 +58,8 @@ public interface StaticEventProcessor {
 
     StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };
+
+    BooleanSupplier ALWAYS_FALSE = () -> false;
 
     /**
      * Called when a new event e is ready to be processed.

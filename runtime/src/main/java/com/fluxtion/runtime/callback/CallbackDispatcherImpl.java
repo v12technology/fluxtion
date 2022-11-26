@@ -1,12 +1,14 @@
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.callback.DirtyStateMonitor.DirtyStateMonitorImp;
 import lombok.ToString;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @ToString
@@ -14,8 +16,8 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
 
     public Consumer<Object> internalEventProcessor;
     public Consumer<Object> externalEventProcessor;
+    public Predicate<Object> isDirtyPredicate;
     Deque<Supplier<Boolean>> myStack = new ArrayDeque<>();
-
     private boolean dispatching = false;
 
     @Override
@@ -23,6 +25,9 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
         if (CallbackDispatcherListener.class.isAssignableFrom(node.getClass())) {
             CallbackDispatcherListener callbackReceiver = (CallbackDispatcherListener) node;
             callbackReceiver.registerCallbackDispatcher(this);
+        }
+        if (DirtyStateMonitorImp.class.isAssignableFrom(node.getClass())) {
+            ((DirtyStateMonitorImp) node).callbackDispatcher = this;
         }
     }
 
