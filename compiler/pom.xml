@@ -75,6 +75,15 @@ Copyright (C) 2018 V12 Technology Ltd.
     
     <dependencies>
         <dependency>
+            <groupId>com.fluxtion.csv-compiler</groupId>
+            <artifactId>csv-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.csv-compiler</groupId>
+            <artifactId>csv-compiler-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>runtime</artifactId>
             <version>${project.version}</version>
