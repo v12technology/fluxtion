@@ -14,12 +14,12 @@ import java.util.function.Supplier;
  * Example demonstrating using data to drive wall clock time in the graph. The {@link Clock} in the graph
  * can be data driven
  */
-public class ValidationWithSyntheticTimeTest extends BaseEventProcessorRowBasedTest {
+public class ValidateSInkWithSyntheticTimeTest extends BaseEventProcessorRowBasedTest {
 
     @Test
     public void dataControlledClockTime() {
         useSyntheticTime();
-        validate(
+        validateSinkOutput(
                 Fluxtion.interpret(c -> c.addNode(new DeltaTime())),
                 "timeDelta",
                 DeltaValidation.class,

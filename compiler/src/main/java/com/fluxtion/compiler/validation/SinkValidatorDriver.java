@@ -9,35 +9,41 @@ import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class RowValidatorDriver<IN, EXPECTED> {
+/**
+ * Validates a named sink from a supplied {@link EventProcessor} with a supplied {@link BiPredicate} or an equality
+ * test
+ *
+ * @param <EXPECTED> The output type of the sink
+ */
+public class SinkValidatorDriver<EXPECTED> {
     private final EventProcessor eventProcessor;
     private final String sinkName;
     private final Stream<? extends Supplier<TestRowValidationRecord<EXPECTED>>> validationStream;
-    private final BiPredicate<EXPECTED, EXPECTED> validator;
+    private final BiPredicate<EXPECTED, EXPECTED> sinkValidator;
     private boolean useSyntheticTime;
     private boolean stopOnFirstFailure = true;
     private EXPECTED actualOutput;
     private MutableNumber syntheticTime = new MutableNumber();
     private LongAdder rowCount = new LongAdder();
 
-    public RowValidatorDriver(
+    public SinkValidatorDriver(
             EventProcessor eventProcessor,
             String sinkName,
             Stream<? extends Supplier<TestRowValidationRecord<EXPECTED>>> validationStream,
-            BiPredicate<EXPECTED, EXPECTED> validator) {
-        this(eventProcessor, sinkName, validationStream, validator, false);
+            BiPredicate<EXPECTED, EXPECTED> sinkValidator) {
+        this(eventProcessor, sinkName, validationStream, sinkValidator, false);
     }
 
-    public RowValidatorDriver(
+    public SinkValidatorDriver(
             EventProcessor eventProcessor,
             String sinkName,
             Stream<? extends Supplier<TestRowValidationRecord<EXPECTED>>> validationStream,
-            BiPredicate<EXPECTED, EXPECTED> validator,
+            BiPredicate<EXPECTED, EXPECTED> sinkValidator,
             boolean useSyntheticTime) {
         this.eventProcessor = eventProcessor;
         this.sinkName = sinkName;
         this.validationStream = validationStream;
-        this.validator = validator;
+        this.sinkValidator = sinkValidator;
         this.useSyntheticTime = useSyntheticTime;
         syntheticTime.setLongValue(0);
         rowCount.reset();
@@ -47,7 +53,7 @@ public class RowValidatorDriver<IN, EXPECTED> {
         return useSyntheticTime;
     }
 
-    public RowValidatorDriver<IN, EXPECTED> useSyntheticTime(boolean useSyntheticTime) {
+    public SinkValidatorDriver<EXPECTED> useSyntheticTime(boolean useSyntheticTime) {
         this.useSyntheticTime = useSyntheticTime;
         return this;
     }
@@ -56,7 +62,7 @@ public class RowValidatorDriver<IN, EXPECTED> {
         return stopOnFirstFailure;
     }
 
-    public RowValidatorDriver<IN, EXPECTED> stopOnFirstFailure(boolean stopOnFirstFailure) {
+    public SinkValidatorDriver<EXPECTED> stopOnFirstFailure(boolean stopOnFirstFailure) {
         this.stopOnFirstFailure = stopOnFirstFailure;
         return this;
     }
@@ -76,7 +82,7 @@ public class RowValidatorDriver<IN, EXPECTED> {
         }
         eventProcessor.onEvent(row.inputEvent());
         EXPECTED expectedOutput = row.expected();
-        if (expectedOutput != null && validator == null) {
+        if (expectedOutput != null && sinkValidator == null) {
             if (!objectsAreEqual(actualOutput, expectedOutput)) {
                 throw new AssertionError("validation error on row:" + rowCount.longValue()
                         + " objects not equal ["
@@ -85,7 +91,7 @@ public class RowValidatorDriver<IN, EXPECTED> {
                         + "]"
                 );
             }
-        } else if (expectedOutput != null && validator.test(expectedOutput, actualOutput)) {
+        } else if (expectedOutput != null && sinkValidator.test(expectedOutput, actualOutput)) {
             throw new AssertionError("validation error on row:" + rowCount.longValue()
                     + " objects failed vaildation["
                     + expectedOutput

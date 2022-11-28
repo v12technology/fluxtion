@@ -16,14 +16,14 @@ import static org.junit.Assert.fail;
 
 
 /**
- * An example demonstrating use of {@link RowValidatorDriver}
+ * An example demonstrating use of {@link SinkValidatorDriver}
  */
-public class ValidationTest extends BaseEventProcessorRowBasedTest {
+public class ValidateSinkTest extends BaseEventProcessorRowBasedTest {
 
     @Test
     public void parseAndFailCsvTest() {
         try {
-            validate(generateSampleParser(), "doubledOutput", ParseValidationRow.class,
+            validateSinkOutput(generateSampleParser(), "doubledOutput", ParseValidationRow.class,
                     "intIn,answerString\n" +
                             "2,doubled:4\n" +
                             "5,This will fail\n" +
@@ -34,34 +34,34 @@ public class ValidationTest extends BaseEventProcessorRowBasedTest {
         }
     }
 
+    @Test
+    public void parseAndSucceedYamlTest() {
+        List<ParseValidationRow> rows = new ArrayList<>();
+        Yaml yaml = new Yaml();
+        String yamlData = "!!com.fluxtion.compiler.validation.ValidateSinkTest$ParseValidationRow {answerString: 'doubled:4', intIn: '2'}\n" +
+                "---\n" +
+                "!!com.fluxtion.compiler.validation.ValidateSinkTest$ParseValidationRow {answerString: 'doubled:10', intIn: '5'}\n" +
+                "---\n" +
+                "!!com.fluxtion.compiler.validation.ValidateSinkTest$ParseValidationRow {answerString: 'doubled:4', intIn: '2'}";
+        yaml.loadAll(yamlData).forEach(i -> rows.add((ParseValidationRow) i));
+        validateSinkOutput(generateSampleParser(), "doubledOutput", rows.stream());
+    }
+
+    @Test
+    public void parseAndSucceedCsvTest() {
+        validateSinkOutput(generateSampleParser(), "doubledOutput", ParseValidationRow.class,
+                "intIn,answerString\n" +
+                        "2,doubled:4\n" +
+                        "5,doubled:10\n" +
+                        "2,doubled:4");
+    }
+
     private static EventProcessor generateSampleParser() {
         return Fluxtion.interpret(c -> EventFlow.subscribe(String.class)
                 .mapToInt(Integer::parseInt)
                 .map(i -> i * 2)
                 .mapToObj(i -> "doubled:" + i)
                 .sink("doubledOutput"));
-    }
-
-    @Test
-    public void parseAndSucceedYamlTest() {
-        List<ParseValidationRow> rows = new ArrayList<>();
-        Yaml yaml = new Yaml();
-        String yamlData = "!!com.fluxtion.compiler.validation.ValidationTest$ParseValidationRow {answerString: 'doubled:4', intIn: '2'}\n" +
-                "---\n" +
-                "!!com.fluxtion.compiler.validation.ValidationTest$ParseValidationRow {answerString: 'doubled:10', intIn: '5'}\n" +
-                "---\n" +
-                "!!com.fluxtion.compiler.validation.ValidationTest$ParseValidationRow {answerString: 'doubled:4', intIn: '2'}";
-        yaml.loadAll(yamlData).forEach(i -> rows.add((ParseValidationRow) i));
-        validate(generateSampleParser(), "doubledOutput", rows.stream());
-    }
-
-    @Test
-    public void parseAndSucceedCsvTest() {
-        validate(generateSampleParser(), "doubledOutput", ParseValidationRow.class,
-                "intIn,answerString\n" +
-                        "2,doubled:4\n" +
-                        "5,doubled:10\n" +
-                        "2,doubled:4");
     }
 
     @CsvMarshaller(trim = true)
