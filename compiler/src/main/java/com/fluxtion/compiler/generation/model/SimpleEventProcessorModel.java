@@ -1266,7 +1266,7 @@ public class SimpleEventProcessorModel {
             }
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
-            eventTypeClass = onEventMethod.getParameterTypes()[0];
+            eventTypeClass = annotation.ofType() == void.class ? onEventMethod.getParameterTypes()[0] : annotation.ofType();
             String name = dependencyGraph.variableName(instance);
             dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true));
             //check for @OnEventComplete on the root of the event tree
