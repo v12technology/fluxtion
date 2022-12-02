@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>6.4.3-SNAPSHOT</version>
+    <version>6.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
 
@@ -387,12 +387,12 @@
             <dependency>
                 <groupId>com.fluxtion.csv-compiler</groupId>
                 <artifactId>csv-compiler</artifactId>
-                <version>0.1.3</version>
+                <version>0.1.6</version>
             </dependency>
             <dependency>
                 <groupId>com.fluxtion.csv-compiler</groupId>
                 <artifactId>csv-compiler-processor</artifactId>
-                <version>0.1.3</version>
+                <version>0.1.6</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
