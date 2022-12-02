@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,12 +11,13 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.annotations;
 
 import com.fluxtion.runtime.event.Event;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +33,7 @@ import java.lang.annotation.Target;
  * order
  * </ul>
  * <p>
- *
+ * <p>
  * Fluxtion reads the set
  * of entry points and constructs an execution graph at build time. A valid
  * event handler method accepts a single parameter of type
@@ -52,7 +53,7 @@ import java.lang.annotation.Target;
  * <li>return = void : assumes a change has occurred processing the event
  * </ul>
  * <p>
- * 
+ * <p>
  * Conditional branching execution behaves as follows:
  * <ul>
  * <li>if a change is indicated the execution will propagate along the execution
@@ -61,7 +62,7 @@ import java.lang.annotation.Target;
  * path.
  * </ul>
  *
-* <h2>Filtering</h2>
+ * <h2>Filtering</h2>
  * An EventHandler can optionally provide a filter value and match strategy to
  * specialise the events that are accepted for processing, see {@link #value()
  * }. An
@@ -71,7 +72,7 @@ import java.lang.annotation.Target;
  * propagate
  * the Event conditional upon the {@link FilterType}.
  * .<p>
- *
+ * <p>
  * A node must be in the execution graph to be included in the invocation chain.
  * The Fluxtion builder api provides methods to register an instance in the
  * event processor.
@@ -87,10 +88,10 @@ public @interface OnEventHandler {
      * events. The default filtering behaviour of the EventHandler is to pass
      * through events where the filter id matches the filter id of the event
      * handler.
-     *
+     * <p>
      * If no filter is supplied then the EventHandler matches against all
      * filters, and will be notified of any incoming event.
-     *
+     * <p>
      * Available strategies are:
      * <ul>
      * <li> {@link FilterType#matched} Only matching filters allow event
@@ -98,7 +99,6 @@ public @interface OnEventHandler {
      * <li> {@link FilterType#defaultCase} Invoked when no filter match is found,
      * acts as a default case.
      * </ul>
-     *
      *
      * @return FilterType matching strategy
      */
@@ -139,6 +139,14 @@ public @interface OnEventHandler {
      * event
      */
     Class filterStringFromClass() default void.class;
+
+    /**
+     * Overrides the event type this event handler will process. Fluxtion dispatches based on concrete type. Mark a method
+     * with the concrete type using this value, the handler parameter can be any super type of this value.
+     *
+     * @return The concrete type to dispatch to this handler
+     */
+    Class ofType() default void.class;
 
     /**
      * Determines whether the SEP will invoke dependents as part of the event
