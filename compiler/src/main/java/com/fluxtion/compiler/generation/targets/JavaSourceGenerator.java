@@ -482,6 +482,12 @@ public class JavaSourceGenerator {
             dispatchStringNoId += String.format("%16sbreak;%n", "");
             dispatchStringNoId += String.format("%12s}%n", "");
         }
+        //default handling
+        if (keySet.contains(Object.class)) {
+            dispatchStringNoId += String.format("%12sdefault :{%n", "");
+            dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
+            dispatchStringNoId += String.format("%12s}%n", "");
+        }
         dispatchStringNoId += String.format("%8s}%n", "");
         if (isInlineEventHandling) {
             dispatchStringNoId += String.format("%8safterEvent();%n", "");

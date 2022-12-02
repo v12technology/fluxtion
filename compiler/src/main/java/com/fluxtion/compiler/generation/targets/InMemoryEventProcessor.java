@@ -41,6 +41,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private final List<Auditor> auditors = new ArrayList<>();
     private Object currentEvent;
     private boolean processing = false;
+    private boolean isDefaultHandling;
 
     @Override
     @SneakyThrows
@@ -57,11 +58,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     public void onEventInternal(Object event) {
         currentEvent = event;
+        Object defaultEvent = checkForDefaultEventHandling(event);
         log.debug("dirtyBitset, before:{}", dirtyBitset);
         auditNewEvent(event);
-        filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(event), Collections.emptyList()).forEach(dirtyBitset::set);
+        filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(defaultEvent), Collections.emptyList()).forEach(dirtyBitset::set);
         if (dirtyBitset.isEmpty()) {
-            noFilterEventHandlerToBitsetMap.getOrDefault(event.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
+            noFilterEventHandlerToBitsetMap.getOrDefault(defaultEvent.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
         }
 
         //now actually dispatch
@@ -108,6 +110,14 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .map(Node::isDirty)
                 .findFirst()
                 .orElse(false);
+    }
+
+    private Object checkForDefaultEventHandling(Object event) {
+        Object mapped = event;
+        if (isDefaultHandling && !simpleEventProcessorModel.getDispatchMap().containsKey(event.getClass())) {
+            mapped = new Object();
+        }
+        return mapped;
     }
 
     private void auditNewEvent(Object event) {
@@ -181,6 +191,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
      * </ul>
      */
     private void buildDispatch() {
+        isDefaultHandling = simpleEventProcessorModel.getDispatchMap().containsKey(Object.class);
         List<CbMethodHandle> dispatchMapForGraph = new ArrayList<>(simpleEventProcessorModel.getDispatchMapForGraph());
         if (log.isDebugEnabled()) {
             log.debug("======== callbacks for graph =============");
