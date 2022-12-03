@@ -269,15 +269,15 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected void addIntSink(String id, IntConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addIntSink(id, sink);
     }
 
     protected void addDoubleSink(String id, DoubleConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addDoubleSink(id, sink);
     }
 
     protected void addLongSink(String id, LongConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addLongSink(id, sink);
     }
 
     protected void removeSink(String id) {

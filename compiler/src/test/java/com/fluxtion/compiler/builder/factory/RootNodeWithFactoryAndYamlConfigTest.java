@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class YamlReaderDrivenTest {
+public class RootNodeWithFactoryAndYamlConfigTest {
 
     @Test
     public void compileFromStringTest() {
@@ -60,7 +60,7 @@ public class YamlReaderDrivenTest {
             "  anotherKey: hello\n" +
             "  test: 12\n" +
             "name: myRoot\n" +
-            "rootClass: com.fluxtion.compiler.builder.factory.YamlReaderDrivenTest$MyRootClass";
+            "rootClass: com.fluxtion.compiler.builder.factory.RootNodeWithFactoryAndYamlConfigTest$MyRootClass";
 
     private static final String interpretString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
@@ -73,7 +73,7 @@ public class YamlReaderDrivenTest {
             "  anotherKey: hello\n" +
             "  test: 12\n" +
             "name: myRoot\n" +
-            "rootClass: com.fluxtion.compiler.builder.factory.YamlReaderDrivenTest$MyRootClass";
+            "rootClass: com.fluxtion.compiler.builder.factory.RootNodeWithFactoryAndYamlConfigTest$MyRootClass";
 
     private static final String interpretNoConfigString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
@@ -83,7 +83,7 @@ public class YamlReaderDrivenTest {
             "  generateDescription: false\n" +
             "  writeSourceToFile: false\n" +
             "name: myRoot\n" +
-            "rootClass: com.fluxtion.compiler.builder.factory.YamlReaderDrivenTest$MyRootClass";
+            "rootClass: com.fluxtion.compiler.builder.factory.RootNodeWithFactoryAndYamlConfigTest$MyRootClass";
 
     public static class MyRootClass {
 
