@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
@@ -20,11 +20,12 @@ package com.fluxtion.compiler.generation.util;
 import com.fluxtion.runtime.audit.LogRecord;
 import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.audit.StructuredLogRecord;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * Utility for reading {@link LogRecord} yaml and converting to a
@@ -34,7 +35,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class YamlLogRecordListener implements LogRecordListener {
 
-    private List<StructuredLogRecord> eventList = new ArrayList<>();
+    private final List<StructuredLogRecord> eventList = new ArrayList<>();
     private final Yaml yaml;
 
     public List<StructuredLogRecord> getEventList() {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.builder.factory;
@@ -37,11 +37,11 @@ public class NodeFactoryLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeFactoryLocator.class);
 
     @SuppressWarnings("unchecked")
-    public static Set<Class<? extends NodeFactory<?>>> nodeFactorySet(){
+    public static Set<Class<? extends NodeFactory<?>>> nodeFactorySet() {
         LOGGER.debug("NodeFactory locator");
         ServiceLoader<NodeFactory<?>> loadServices;
         Set<Class<? extends NodeFactory<?>>> subTypes = new HashSet<>();
-        Class<NodeFactory<?>> clazz =  (Class<NodeFactory<?>>)(Object)NodeFactory.class;
+        Class<NodeFactory<?>> clazz = (Class<NodeFactory<?>>) (Object) NodeFactory.class;
         if (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getClassLoader() != null) {
             LOGGER.debug("using custom class loader to search for factories");
             loadServices = ServiceLoader.load(clazz, GenerationContext.SINGLETON.getClassLoader());

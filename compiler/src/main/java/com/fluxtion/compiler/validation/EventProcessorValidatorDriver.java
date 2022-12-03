@@ -22,8 +22,8 @@ public class EventProcessorValidatorDriver<EXPECTED> {
     private boolean useSyntheticTime;
     private boolean stopOnFirstFailure = true;
     private EXPECTED actualOutput;
-    private MutableNumber syntheticTime = new MutableNumber();
-    private LongAdder rowCount = new LongAdder();
+    private final MutableNumber syntheticTime = new MutableNumber();
+    private final LongAdder rowCount = new LongAdder();
 
     public EventProcessorValidatorDriver(
             EventProcessor eventProcessor,

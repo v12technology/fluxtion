@@ -26,7 +26,7 @@ public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testRootCompiled() {
-        sep(new RootNodeConfig("root", MyHandler.class, new HashMap<>()));
+        sep(new RootNodeConfig("root", MyHandler.class, new HashMap<>(), null));
         MyHandler myHandler = getField("root");
         onEvent(25);
         assertThat(myHandler.intValue, Matchers.is(25));
@@ -39,7 +39,7 @@ public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noRootNode() {
-        sep(new RootNodeConfig("root", ExcludeMeNode.class, new HashMap<>()));
+        sep(new RootNodeConfig("root", ExcludeMeNode.class, new HashMap<>(), null));
         onEvent("test");
         boolean failed = false;
         try {

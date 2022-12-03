@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation;
@@ -21,7 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -90,13 +96,13 @@ public class GenerationContext {
     }
 
     public static void setupStaticContext(ClassLoader classLoader,
-            String packageName,
-            String className,
-            File outputDirectory,
-            File resourcesRootDirectory,
-            boolean createResourceDirectory,
-            File buildOutputDirectory,
-            boolean createBuildOutputDirectory) {
+                                          String packageName,
+                                          String className,
+                                          File outputDirectory,
+                                          File resourcesRootDirectory,
+                                          boolean createResourceDirectory,
+                                          File buildOutputDirectory,
+                                          boolean createBuildOutputDirectory) {
         SINGLETON = new GenerationContext(
                 classLoader,
                 packageName,
@@ -119,7 +125,6 @@ public class GenerationContext {
      * model processing phase and then replaced with the actual class reference
      * during the code generation phase. The real class name is only known after
      * the proxy has been generated.
-     *
      */
     private final Map<Object, String> proxyClassMap = new HashMap<>();
 
@@ -160,7 +165,7 @@ public class GenerationContext {
      */
     public File resourcesRootDirectory;
     public File resourcesOutputDirectory;
-    
+
     public GenerationContext(String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory) {
         this(packageName, sepClassName, outputDirectory, resourcesRootDirectory, null);
     }
@@ -170,10 +175,10 @@ public class GenerationContext {
         this.sepClassName = sepClassName;
         this.sourceRootDirectory = outputDirectory;
         this.resourcesRootDirectory = resourcesRootDirectory;
-        if(DEFAULT_CLASSLOADER ==null){
+        if (DEFAULT_CLASSLOADER == null) {
             log.debug("DEFAULT_CLASSLOADER is null using this classloader");
             this.classLoader = this.getClass().getClassLoader();
-        }else{
+        } else {
             log.debug("DEFAULT_CLASSLOADER is classloader");
             this.classLoader = DEFAULT_CLASSLOADER;
         }
@@ -285,7 +290,7 @@ public class GenerationContext {
             if (is2 != null) {
                 return is2;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             //problem reading - continue
         }
         return Files.newInputStream(Paths.get(filename));

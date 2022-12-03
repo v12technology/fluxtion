@@ -2,6 +2,7 @@ package com.fluxtion.compiler;
 
 import lombok.Value;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,4 +13,5 @@ public class RootNodeConfig {
     String name;
     Class<?> rootClass;
     Map<String, Object> config;
+    List<Object> nodes;
 }

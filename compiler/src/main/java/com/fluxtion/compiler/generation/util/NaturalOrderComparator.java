@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
@@ -22,10 +22,9 @@ import java.util.Comparator;
 import java.util.Map;
 
 /**
- *
  * @author Greg Higgins
  */
-public class NaturalOrderComparator<T>  implements Comparator<T> {
+public class NaturalOrderComparator<T> implements Comparator<T> {
 
     private final Map<Object, String> inst2Name;
 
@@ -46,7 +45,7 @@ public class NaturalOrderComparator<T>  implements Comparator<T> {
         // value wins, but we can't know that it will until we've scanned
         // both numbers to know that they have the same magnitude, so we
         // remember it in BIAS.
-        for (;; ia++, ib++) {
+        for (; ; ia++, ib++) {
             char ca = charAt(a, ia);
             char cb = charAt(b, ib);
 

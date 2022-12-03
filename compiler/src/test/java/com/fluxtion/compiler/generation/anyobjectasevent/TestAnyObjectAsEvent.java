@@ -89,7 +89,6 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler
         public boolean defaultHandler(Object object) {
-            System.out.println("received:" + object);
             count++;
             return true;
         }

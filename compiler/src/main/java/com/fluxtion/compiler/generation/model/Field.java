@@ -122,7 +122,7 @@ public class Field {
             }
         }
 
-        public Class<?> realClass(){
+        public Class<?> realClass() {
             if (collection) {
                 return List.class;
             } else if (primitive) {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * A flag that represents the state of a node in a SEP.
- * 
+ *
  * @author Greg Higgins
  */
 public class DirtyFlag {
@@ -75,10 +75,7 @@ public class DirtyFlag {
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.node, other.node)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.node, other.node);
     }
-    
+
 }
