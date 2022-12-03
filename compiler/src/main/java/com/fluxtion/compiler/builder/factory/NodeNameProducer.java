@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.builder.factory;
@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
  * Implementing this interface allow users to extend the generation of the SEP
  * with customisable variable names for nodes. A default naming strategy will be
  * used if the registered NodeNameProducer returns null.<p>
- *
+ * <p>
  * An optional {@link #priority() } can be returned to Fluxtion generator,
  * allowing control of naming strategy resolution.
  *

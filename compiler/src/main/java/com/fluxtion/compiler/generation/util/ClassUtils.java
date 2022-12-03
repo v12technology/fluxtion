@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Greg Higgins
  */
 public interface ClassUtils {
@@ -52,11 +51,11 @@ public interface ClassUtils {
     /**
      * finds the CbMethodHandle whose parameter most closely matches the class
      * of the parent in the inheritance tree.
-     *
+     * <p>
      * If no match is found a null is returned.
      *
      * @param parent node to interrogate
-     * @param cbs collection of callbacks
+     * @param cbs    collection of callbacks
      * @return The best matched callback handle
      */
     static CbMethodHandle findBestParentCB(Object parent, Collection<CbMethodHandle> cbs) {
@@ -90,7 +89,8 @@ public interface ClassUtils {
         try {
             type.getDeclaredConstructor();
             zeroArg = true;
-        } catch (NoSuchMethodException | SecurityException ex) {}
+        } catch (NoSuchMethodException | SecurityException ex) {
+        }
         return type.isPrimitive()
                 || type == String.class
                 || type == Class.class
@@ -160,10 +160,10 @@ public interface ClassUtils {
             primitiveVal = ((Class) primitiveVal).getSimpleName() + ".class";
         }
         boolean foundMatch = false;
-        if(MergeProperty.class.isAssignableFrom(clazz)){
+        if (MergeProperty.class.isAssignableFrom(clazz)) {
             importList.add(MergeProperty.class);
-            MergeProperty<?,?> mergeProperty = (MergeProperty<?, ?>) primitiveVal;
-            LambdaReflection.SerializableBiConsumer<?,?> setValue = mergeProperty.getSetValue();
+            MergeProperty<?, ?> mergeProperty = (MergeProperty<?, ?>) primitiveVal;
+            LambdaReflection.SerializableBiConsumer<?, ?> setValue = mergeProperty.getSetValue();
             String containingClass = setValue.getContainingClass().getSimpleName();
             String methodName = setValue.method().getName();
             String lambda = containingClass + "::" + methodName;
@@ -179,13 +179,13 @@ public interface ClassUtils {
             primitiveVal = "new MergeProperty<>("
                     + triggerName + ", " + lambda + "," + mergeProperty.isTriggering() + "," + mergeProperty.isMandatory() + ")";
         }
-        if(MethodReferenceReflection.class.isAssignableFrom(clazz)){
-            MethodReferenceReflection ref = (MethodReferenceReflection)primitiveVal;
+        if (MethodReferenceReflection.class.isAssignableFrom(clazz)) {
+            MethodReferenceReflection ref = (MethodReferenceReflection) primitiveVal;
             importList.add(ref.getContainingClass());
-            
-            if(ref.isDefaultConstructor()){
+
+            if (ref.isDefaultConstructor()) {
                 primitiveVal = ref.getContainingClass().getSimpleName() + "::new";
-            }else if(ref.captured().length>0){
+            } else if (ref.captured().length > 0) {
                 //see if we can find the reference and set the instance
                 Object functionInstance = ref.captured()[0];
                 for (Field nodeField : nodeFields) {
@@ -195,18 +195,18 @@ public interface ClassUtils {
                         break;
                     }
                 }
-                if(!foundMatch){
+                if (!foundMatch) {
                     primitiveVal = "new " + ref.getContainingClass().getSimpleName() + "()::" + ref.method().getName();
                 }
-            }else{
-                if(ref.getContainingClass().getTypeParameters().length > 0){
+            } else {
+                if (ref.getContainingClass().getTypeParameters().length > 0) {
                     String typeParam = "<Object";
                     for (int i = 1; i < ref.getContainingClass().getTypeParameters().length; i++) {
                         typeParam += ", Object";
                     }
                     typeParam += ">";
                     primitiveVal = ref.getContainingClass().getSimpleName() + typeParam + "::" + ref.method().getName();
-                }else {
+                } else {
                     primitiveVal = ref.getContainingClass().getSimpleName() + "::" + ref.method().getName();
                 }
             }
@@ -218,20 +218,20 @@ public interface ClassUtils {
                 break;
             }
         }
-        
-        if(!foundMatch && original==primitiveVal
+
+        if (!foundMatch && original == primitiveVal
                 && !org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper(clazz)
                 && !String.class.isAssignableFrom(clazz)
                 && clazz.getCanonicalName() != null
-        ){
+        ) {
             importList.add(clazz);
-            primitiveVal = "new " + (clazz).getSimpleName() + "()";  
+            primitiveVal = "new " + (clazz).getSimpleName() + "()";
         }
         return primitivePrefix + primitiveVal.toString() + primitiveSuffix;
     }
 
     static String mapPropertyToJavaSource(PropertyDescriptor property, Field field, List<Field> nodeFields,
-        Set<Class<?>> importList) {
+                                          Set<Class<?>> importList) {
         String ret = null;
         if (!isPropertyTransient(property, field)) {
             try {

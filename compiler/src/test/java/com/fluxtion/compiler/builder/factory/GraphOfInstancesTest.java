@@ -146,7 +146,7 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
     public static class StringHandler implements DoubleSupplier, Named {
 
         private String id;
-        private transient int value;
+        transient int value;
 
         public StringHandler(String id) {
             this.id = id;
@@ -209,7 +209,7 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
     public static class DoubleSum implements Named {
 
         private List<DoubleSupplier> doubleSuppliers = new ArrayList<>();
-        private double sum;
+        double sum;
 
         @OnParentUpdate
         public void doubleSupplierUpdated(DoubleSupplier doubleSupplier) {

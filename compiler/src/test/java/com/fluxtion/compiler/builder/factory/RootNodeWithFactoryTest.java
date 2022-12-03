@@ -29,7 +29,8 @@ public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
         sep(new RootNodeConfig(
                 "root",
                 SignalGroupCalculator.class,
-                ImmutableMap.of("keys", Arrays.asList("key1", "key2", "key3"))));
+                ImmutableMap.of("keys", Arrays.asList("key1", "key2", "key3")),
+                null));
 
         SignalGroupCalculator calculator = getField("root");
         publishIntSignal("key1", 20);
