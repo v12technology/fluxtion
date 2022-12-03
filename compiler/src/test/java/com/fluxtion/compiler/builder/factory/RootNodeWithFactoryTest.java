@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class MapDrivenTest extends MultipleSepTargetInProcessTest {
+public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
 
-    public MapDrivenTest(boolean compiledSep) {
+    public RootNodeWithFactoryTest(boolean compiledSep) {
         super(compiledSep);
     }
 
