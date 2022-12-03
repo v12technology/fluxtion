@@ -100,15 +100,15 @@ public interface StaticEventProcessor {
         onEvent(SinkRegistration.sink(id, sink));
     }
 
-    default void addSink(String id, IntConsumer sink) {
+    default void addIntSink(String id, IntConsumer sink) {
         onEvent(SinkRegistration.intSink(id, sink));
     }
 
-    default void addSink(String id, DoubleConsumer sink) {
+    default void addDoubleSink(String id, DoubleConsumer sink) {
         onEvent(SinkRegistration.doubleSink(id, sink));
     }
 
-    default void addSink(String id, LongConsumer sink) {
+    default void addLongSink(String id, LongConsumer sink) {
         onEvent(SinkRegistration.longSink(id, sink));
     }
 
