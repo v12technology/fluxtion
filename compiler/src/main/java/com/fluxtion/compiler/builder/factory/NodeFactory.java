@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,14 +11,15 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.builder.factory;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.compiler.generation.GenerationContext;
+
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -43,8 +44,8 @@ import java.util.ServiceLoader;
  * meta-data a factory implementor must provide to register a factory using the
  * {@link ServiceLoader} pattern.
  *
- * @author Greg Higgins
  * @param <T>
+ * @author Greg Higgins
  */
 public interface NodeFactory<T> {
 
@@ -54,7 +55,7 @@ public interface NodeFactory<T> {
      * instance is created. {@link Config} variables are used to populate the
      * config map.
      *
-     * @param config map configuration
+     * @param config   map configuration
      * @param registry The node registry of the current generation contextß
      * @return The newly created node instance
      */
@@ -64,7 +65,7 @@ public interface NodeFactory<T> {
      * Callback invoked by Fluxtion generator after the generated SEP has been
      * registered in the{@link GenerationContext}
      *
-     * @param config map configuration
+     * @param config   map configuration
      * @param registry The node registry of the current generation context
      * @param instance the newly created instance
      */
@@ -72,7 +73,6 @@ public interface NodeFactory<T> {
     }
 
     /**
-     *
      * If the node generates a class for this SEP, this callback will indicate
      * the desired target.
      *
@@ -82,7 +82,6 @@ public interface NodeFactory<T> {
     }
 
     /**
-     *
      * If the node generates a class for this SEP, this callback gives the node
      * access to the GenerationContext before generation.
      *
@@ -91,7 +90,7 @@ public interface NodeFactory<T> {
     default void preSepGeneration(GenerationContext context) {
     }
 
-    default String factoryName(){
+    default String factoryName() {
         return "";
     }
 

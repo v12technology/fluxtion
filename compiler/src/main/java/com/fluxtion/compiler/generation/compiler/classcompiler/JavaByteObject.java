@@ -11,7 +11,7 @@ public class JavaByteObject extends SimpleJavaFileObject {
     private final ByteArrayOutputStream outputStream;
 
     protected JavaByteObject(String name) throws URISyntaxException {
-        super(URI.create("bytes:///"+name + name.replaceAll("\\.", "/")), Kind.CLASS);
+        super(URI.create("bytes:///" + name + name.replaceAll("\\.", "/")), Kind.CLASS);
         outputStream = new ByteArrayOutputStream();
     }
 

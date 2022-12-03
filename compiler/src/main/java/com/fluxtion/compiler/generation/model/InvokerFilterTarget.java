@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -20,7 +20,8 @@ package com.fluxtion.compiler.generation.model;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 
 /**
- * A target for an invoker holding a call tree for a filtered event. 
+ * A target for an invoker holding a call tree for a filtered event.
+ *
  * @author Greg Higgins
  */
 public class InvokerFilterTarget {
@@ -35,7 +36,7 @@ public class InvokerFilterTarget {
      */
     public String methodName;
     /**
-     * the name of the map holding the invokers for this Event class 
+     * the name of the map holding the invokers for this Event class
      */
     public String intMapName;
     /**

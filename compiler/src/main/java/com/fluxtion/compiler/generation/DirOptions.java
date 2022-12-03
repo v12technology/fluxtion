@@ -12,18 +12,17 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public enum DirOptions {
-    TEST_DIR_OUTPUT, 
-    JAVA_GENDIR_OUTPUT, 
+    TEST_DIR_OUTPUT,
+    JAVA_GENDIR_OUTPUT,
     JAVA_SRCDIR_OUTPUT
-    
+
 }
