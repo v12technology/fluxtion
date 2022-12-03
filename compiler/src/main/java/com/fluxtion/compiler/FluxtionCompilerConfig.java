@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler;
@@ -30,24 +30,24 @@ public class FluxtionCompilerConfig {
 
     /**
      * output package for generated SEP
-     * 
+     * <p>
      * required.
      */
     private String packageName;
     /**
      * class name for generated SEP
-     * 
+     * <p>
      * required.
      */
     private String className;
     /**
      * Output directory for generated SEP.
-     * 
+     * <p>
      * not required.
      */
     private String outputDirectory;
     /**
-     * Output directory where compiled artifacts should be written. If null 
+     * Output directory where compiled artifacts should be written. If null
      * no artifacts are written.
      */
     private String buildOutputDirectory;
@@ -61,28 +61,28 @@ public class FluxtionCompilerConfig {
     private boolean formatSource;
     /**
      * Output for any resources generated with the SEP, such as debug information.
-     * 
+     * <p>
      * not required.
      */
     private String resourcesOutputDirectory;
     /**
-     * The velocity template file to use in the SEP generation process. Default 
+     * The velocity template file to use in the SEP generation process. Default
      * value will be used if not supplied.
-     * 
+     * <p>
      * required.
      */
     private String templateSep;
 
     /**
      * Flag controlling generation of meta data description resources.
-     * 
+     * <p>
      * not required, default = true.
      */
     private boolean generateDescription;
 
     /**
      * Flag controlling where the templated source file is written or the source is transient
-     *
+     * <p>
      * not requires, default = true;
      */
     private boolean writeSourceToFile;
@@ -136,7 +136,7 @@ public class FluxtionCompilerConfig {
         return formatSource;
     }
 
-    public String getFqn(){
+    public String getFqn() {
         return getPackageName() + "." + getClassName();
     }
 
@@ -183,14 +183,14 @@ public class FluxtionCompilerConfig {
     public void setFormatSource(boolean formatSource) {
         this.formatSource = formatSource;
     }
-    
+
     @Override
     public String toString() {
         return "SepCompilerConfig{"
                 + "packageName=" + packageName
-                + ", className=" + className 
-                + ", resourcesOutputDirectory=" + resourcesOutputDirectory 
-                + ", outputDirectory=" + outputDirectory 
+                + ", className=" + className
+                + ", resourcesOutputDirectory=" + resourcesOutputDirectory
+                + ", outputDirectory=" + outputDirectory
                 + ", buildOutputdirectory=" + buildOutputDirectory
                 + ", writeSourceToFile=" + writeSourceToFile
                 + ", compileSource=" + compileSource

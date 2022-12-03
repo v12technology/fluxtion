@@ -8,9 +8,9 @@ package com.fluxtion.compiler.validation;
  * @param expected   output from the event processor to match, if null no match is carried out
  */
 public class TestRowValidationRecord<EXPECTED> {
-    private long timeMillis;
-    private Object inputEvent;
-    private EXPECTED expected;
+    private final long timeMillis;
+    private final Object inputEvent;
+    private final EXPECTED expected;
 
     public TestRowValidationRecord(long timeMillis, Object inputEvent, EXPECTED expected) {
         this.timeMillis = timeMillis;

@@ -30,7 +30,7 @@ public class MergeMapStreamBuilder<T> {
         return this;
     }
 
-    public MergeMapEventStream<T> build(){
+    public MergeMapEventStream<T> build() {
         MergeMapEventStream<T> stream = new MergeMapEventStream<>(resultFactory);
         required.forEach(stream::registerTrigger);
         return stream;

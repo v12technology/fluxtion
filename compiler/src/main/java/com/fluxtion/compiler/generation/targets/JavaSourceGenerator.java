@@ -842,7 +842,7 @@ public class JavaSourceGenerator {
                     } else if (instanceField.getType().isPrimitive()) {
                         String value = instanceField.get(object).toString();
                         value = value.equalsIgnoreCase("NaN") ? "Double.NaN" : value;
-                        value = "(" + instanceField.getType().toString() + ")" + value;
+                        value = "(" + instanceField.getType() + ")" + value;
                         if (useRefelction) {
                             nodeMemberAssignmentList.add(String.format("%4sassigner.on(%s).set().field(\"%s\").withValue(%s);", "", varName, instanceField.getName(), value));
                         } else {

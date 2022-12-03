@@ -47,11 +47,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @SneakyThrows
     public void onEvent(Object event) {
         if (processing) {
-            simpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
+            SimpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
         } else {
             processing = true;
             onEventInternal(event);
-            simpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
+            SimpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
             processing = false;
         }
     }
@@ -260,9 +260,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        simpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
-        simpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
-        simpleEventProcessorModel.getCallbackDispatcher().isDirtyPredicate = this::isDirty;
+        SimpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
+        SimpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
+        SimpleEventProcessorModel.getCallbackDispatcher().isDirtyPredicate = this::isDirty;
     }
 
     private void registerAuditors() {

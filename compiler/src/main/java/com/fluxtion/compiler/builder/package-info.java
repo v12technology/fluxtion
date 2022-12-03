@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 /**
@@ -32,7 +32,7 @@
  * Fluxtion generator at generation time. Building is a <b>compile time only</b>
  * operation. The builder module is not referenced by the generated SEP and
  * should not be distributed with the generated SEP.<p>
- *
+ * <p>
  * The goal is to reduce the dependencies of the final application to the
  * minimum possible. This will simplify integration, testing and deployment
  * reducing development costs. The generator and builder may have complex

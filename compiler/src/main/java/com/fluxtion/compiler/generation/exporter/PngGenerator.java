@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.exporter;
@@ -133,7 +133,7 @@ public class PngGenerator {
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
         if (pngFile.getParentFile() != null && pngFile.getParentFile().mkdirs()) {
         } else {
-            if(!pngFile.getParentFile().exists()){
+            if (!pngFile.getParentFile().exists()) {
                 LOG.error("failed to make parent directories for image output");
             }
         }
@@ -142,7 +142,7 @@ public class PngGenerator {
         } else {
             try {
                 ImageIO.write(image, "PNG", pngFile);
-                LOG.debug( "png image generated:{}", pngFile.getCanonicalPath());
+                LOG.debug("png image generated:{}", pngFile.getCanonicalPath());
             } catch (IOException ex) {
                 Logger.getLogger(PngGenerator.class.getName()).log(Level.SEVERE, null, ex);
             }

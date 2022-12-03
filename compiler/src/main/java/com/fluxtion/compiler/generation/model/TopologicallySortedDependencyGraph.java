@@ -101,19 +101,14 @@ import static org.reflections.ReflectionUtils.withAnnotation;
 public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     public static final CallbackDispatcherImpl CALLBACK_DISPATCHER = new CallbackDispatcherImpl();
-    //TODO move this to constructor
-    private Map<String, Auditor> registrationListenerMap;
-
     //TODO check there are no variable name clashes
     private final Logger LOGGER = LoggerFactory.getLogger(TopologicallySortedDependencyGraph.class);
-    private BiMap<Object, String> inst2Name;
     private final BiMap<Object, String> inst2NameTemp;
     private final SimpleDirectedGraph<Object, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final SimpleDirectedGraph<Object, DefaultEdge> eventGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
-    private boolean processed = false;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final HashMap<String, CbMethodHandle> name2FactoryMethod;
@@ -121,6 +116,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final GenerationContext generationContext;
     private final NodeNameProducer nameStrategy;
     private final EventProcessorConfig config;
+    //TODO move this to constructor
+    private Map<String, Auditor> registrationListenerMap;
+    private BiMap<Object, String> inst2Name;
+    private boolean processed = false;
 
     public TopologicallySortedDependencyGraph(Object... obj) {
         this(Arrays.asList(obj));
@@ -179,6 +178,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             nodes = context.getNodeList();
         }
         addNodeList(nodes);
+        if (config != null && config.getRootNodeConfig() != null) {
+            addNodeList(config.getRootNodeConfig().getNodes());
+        }
 
         //override node names
         publicNodeList = new ArrayList<>();
@@ -202,6 +204,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         //declarative nodes - add arguments to method and make defensive copy
         this.nodeFactoryRegistration = nodeFactoryRegistration;
         this.generationContext = context;
+    }
+
+    public static boolean trySetAccessible(Field field) {
+        try {
+            field.setAccessible(true);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     private void addNodeList(List<?> nodes) {
@@ -528,7 +539,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             }
             //loop through root instance and
             RootNodeConfig rootNodeConfig = config.getRootNodeConfig();
-            if (rootNodeConfig != null) {
+            if (rootNodeConfig != null && rootNodeConfig.getRootClass() != null) {
                 Object newNode = findOrCreateNode(
                         rootNodeConfig.getRootClass(), rootNodeConfig.getConfig(), rootNodeConfig.getName());
                 publicNodeList.add(newNode);
@@ -735,7 +746,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             ).isEmpty();
             addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null;
-            ;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
@@ -1007,15 +1017,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private String nameNode(Object node) {
         return nameStrategy.mappedNodeName(node);
-    }
-
-    public static boolean trySetAccessible(Field field) {
-        try {
-            field.setAccessible(true);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
     }
 
 }

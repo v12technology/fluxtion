@@ -1,31 +1,38 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
-import javax.tools.*;
+import javax.tools.DiagnosticCollector;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 
 public interface StringCompilation {
 
 
     /**
-     *
      * @param source java source to compile
-     * @param <T> The compiled class type
+     * @param <T>    The compiled class type
      * @return Compiled class
-     * @throws URISyntaxException if fails to compile
-     * @throws IOException if fails to compile
+     * @throws URISyntaxException     if fails to compile
+     * @throws IOException            if fails to compile
      * @throws ClassNotFoundException if fails to compile
      */
     @SuppressWarnings({"unchecked"})
-    static<T>  Class<T> compile(String className, String source) throws URISyntaxException, IOException, ClassNotFoundException {
+    static <T> Class<T> compile(String className, String source) throws URISyntaxException, IOException, ClassNotFoundException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         final JavaByteObject byteObject = new JavaByteObject(className);
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaFileManager fileManager = createFileManager(standardFileManager, byteObject);
         JavaCompiler.CompilationTask task = compiler.getTask(
-                null, fileManager, diagnostics, null, null, Arrays.asList(new JavaStringObject(className, source))
+                null, fileManager, diagnostics, null, null, Collections.singletonList(new JavaStringObject(className, source))
         );
 
         if (!task.call()) {

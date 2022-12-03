@@ -12,34 +12,41 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
-    
-import java.util.*;
-import java.lang.reflect.*;
-import java.lang.annotation.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class SuperMethodAnnotationScanner {
-    private SuperMethodAnnotationScanner() {}
+    private SuperMethodAnnotationScanner() {
+    }
 
     /**
      * Returns the 0th element of the list returned by
      * {@code getAnnotations}, or {@code null} if the
      * list would be empty.
-     * 
-     * @param  <A> the type of the annotation to find.
-     * @param  m   the method to begin the search from.
-     * @param  t   the type of the annotation to find.
+     *
+     * @param <A> the type of the annotation to find.
+     * @param m   the method to begin the search from.
+     * @param t   the type of the annotation to find.
      * @return the first annotation found of the specified type which
-     *         is present on {@code m}, or present on any methods which
-     *         {@code m} overrides.
+     * is present on {@code m}, or present on any methods which
+     * {@code m} overrides.
      * @throws NullPointerException if any argument is {@code null}.
      */
     public static <A extends Annotation> A getAnnotation(Method m, Class<A> t) {
@@ -68,13 +75,13 @@ public class SuperMethodAnnotationScanner {
      * recursively. For example, if {@code class D implements X, Y} and
      * {@code interface X extends Z}, then annotations will appear in the
      * list in the order of {@code [D, X, Z, Y]}.
-     * 
-     * @param  <A> the type of the annotation to find.
-     * @param  m   the method to begin the search from.
-     * @param  t   the type of the annotation to find.
+     *
+     * @param <A> the type of the annotation to find.
+     * @param m   the method to begin the search from.
+     * @param t   the type of the annotation to find.
      * @return a list of all of the annotations of the specified type
-     *         which are either present on {@code m}, or present on any
-     *         methods which {@code m} overrides.
+     * which are either present on {@code m}, or present on any
+     * methods which {@code m} overrides.
      * @throws NullPointerException if any argument is {@code null}.
      */
     public static <A extends Annotation> List<A> getAnnotations(Method m, Class<A> t) {
@@ -82,7 +89,7 @@ public class SuperMethodAnnotationScanner {
         Collections.addAll(list, m.getAnnotationsByType(t));
         Class<?> decl = m.getDeclaringClass();
 
-        for (Class<?> supr = decl; (supr = supr.getSuperclass()) != null;) {
+        for (Class<?> supr = decl; (supr = supr.getSuperclass()) != null; ) {
             addAnnotations(list, m, t, supr);
         }
         for (Class<?> face : getAllInterfaces(decl)) {
@@ -91,8 +98,8 @@ public class SuperMethodAnnotationScanner {
 
         return list;
     }
-    
-    public static  <A extends Annotation> boolean annotationInHierarchy(Method m, Class<A> t){
+
+    public static <A extends Annotation> boolean annotationInHierarchy(Method m, Class<A> t) {
         return getAnnotations(m, t).size() > 0;
     }
 
@@ -103,6 +110,7 @@ public class SuperMethodAnnotationScanner {
         } while ((c = c.getSuperclass()) != null);
         return set;
     }
+
     private static void addAllInterfaces(Set<Class<?>> set, Class<?> c) {
         for (Class<?> i : c.getInterfaces()) {
             if (set.add(i)) {
@@ -110,6 +118,7 @@ public class SuperMethodAnnotationScanner {
             }
         }
     }
+
     private static <A extends Annotation> void addAnnotations
             (List<A> list, Method m, Class<A> t, Class<?> decl) {
         try {
@@ -122,10 +131,10 @@ public class SuperMethodAnnotationScanner {
     }
 
     /**
-     * @param  a the method which may override {@code b}.
-     * @param  b the method which may be overridden by {@code a}.
+     * @param a the method which may override {@code b}.
+     * @param b the method which may be overridden by {@code a}.
      * @return {@code true} if {@code a} probably overrides {@code b}
-     *         and {@code false} otherwise.
+     * and {@code false} otherwise.
      * @throws NullPointerException if any argument is {@code null}.
      */
     public static boolean overrides(Method a, Method b) {
@@ -148,7 +157,7 @@ public class SuperMethodAnnotationScanner {
         if (compareAccess(modsA, modsB) < 0)
             return false;
         if ((isPackageAccess(modsA) || isPackageAccess(modsB))
-            && !Objects.equals(classA.getPackage(), classB.getPackage()))
+                && !Objects.equals(classA.getPackage(), classB.getPackage()))
             return false;
         if (!b.getReturnType().isAssignableFrom(a.getReturnType()))
             return false;
@@ -167,14 +176,15 @@ public class SuperMethodAnnotationScanner {
     }
 
     private static final int ACCESS_MODIFIERS =
-        Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
+            Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
     private static final List<Integer> ACCESS_ORDER =
-        Arrays.asList(Modifier.PRIVATE,
-                      0,
-                      Modifier.PROTECTED,
-                      Modifier.PUBLIC);
+            Arrays.asList(Modifier.PRIVATE,
+                    0,
+                    Modifier.PROTECTED,
+                    Modifier.PUBLIC);
+
     public static int compareAccess(int lhs, int rhs) {
         return Integer.compare(ACCESS_ORDER.indexOf(lhs & ACCESS_MODIFIERS),
-                               ACCESS_ORDER.indexOf(rhs & ACCESS_MODIFIERS));
+                ACCESS_ORDER.indexOf(rhs & ACCESS_MODIFIERS));
     }
 }
