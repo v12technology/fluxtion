@@ -312,9 +312,13 @@ public class JavaSourceGenerator {
                 resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
             }
         }
-        model.getDirtyFieldMap().forEach((k, v) -> {
-            dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "", k.getName(), v.name);
-        });
+        model.getDirtyFieldMap().entrySet().stream()
+                .sorted(Comparator.comparing(e -> e.getKey().getName()))
+                .collect(Collectors.toList())
+                .forEach(e -> {
+                    dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "",
+                            e.getKey().getName(), e.getValue().name);
+                });
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
