@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,13 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     if (parameters[i] == null) {
                         continue;
                     }
-                    String paramName = parameters[i].getName();
+                    Parameter parameter = parameters[i];
+                    String paramName = parameter.getName();
+                    if (parameter.getAnnotation(AssignToField.class) != null) {
+                        paramName = parameter.getAnnotation(AssignToField.class).value();
+                        LOGGER.debug("assigning parameter name from annotation AssignToField " +
+                                "fieldName:'{}' overriding:'{}'", paramName, parameter.getName());
+                    }
                     Class<?> parameterType = parameters[i].getType();
                     LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
                     if (parameterType != null && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass)) && paramName.equals(varName)) {
