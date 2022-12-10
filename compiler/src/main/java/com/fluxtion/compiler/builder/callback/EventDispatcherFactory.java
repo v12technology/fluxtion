@@ -14,6 +14,6 @@ public class EventDispatcherFactory implements NodeFactory<EventDispatcher> {
 
     @Override
     public EventDispatcher createNode(Map<String, Object> config, NodeRegistry registry) {
-        return SINGLETON;
+        return registry.registerNode(SINGLETON, "eventDispatcher");
     }
 }

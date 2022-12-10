@@ -42,7 +42,7 @@ public class ${className} implements EventProcessor, StaticEventProcessor, Batch
 ${MODEL.nodeDeclarations}
 //Dirty flags
     private boolean processing = false;
-    private IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
+    private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
 ${MODEL.dirtyFlagDeclarations}
 //Filter constants
 ${MODEL.filterConstantDeclarations}
@@ -106,6 +106,8 @@ ${MODEL.dirtyFlagLookup}
         }
         return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE).getAsBoolean();
     }
+
+${MODEL.guardCheckMethods}
 
     public <T> T getNodeById(String id) throws NoSuchFieldException {
         return nodeNameLookup.getInstanceById(id);

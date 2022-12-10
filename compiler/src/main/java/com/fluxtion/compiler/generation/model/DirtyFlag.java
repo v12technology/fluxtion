@@ -43,6 +43,28 @@ public class DirtyFlag {
         this.alwaysDirty = alwaysDirty;
     }
 
+    public DirtyFlag clone() {
+        DirtyFlag df = new DirtyFlag(node, name, alwaysDirty);
+        df.requiresInvert = requiresInvert;
+        return df;
+    }
+
+    public Field getNode() {
+        return node;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isAlwaysDirty() {
+        return alwaysDirty;
+    }
+
+    public boolean isRequiresInvert() {
+        return requiresInvert;
+    }
+
     @Override
     public String toString() {
         return "DirtyFlag{" + "node=" + node + ", name=" + name + ", defaultVal=" + alwaysDirty + '}';

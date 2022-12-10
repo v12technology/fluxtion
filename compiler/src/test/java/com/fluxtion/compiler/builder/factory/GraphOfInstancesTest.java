@@ -97,7 +97,6 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void driveAsListFromYaml() {
-//        writeSourceFile = true;
         String config = "" +
                 "- !doubleSum\n" +
                 "  doubleSuppliers:\n" +

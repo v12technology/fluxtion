@@ -96,7 +96,9 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     }
                     Class<?> parameterType = parameters[i].getType();
                     LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
-                    if (parameterType != null && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass)) && paramName.equals(varName)) {
+                    if (parameterType != null
+                            && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass))
+                            && paramName.equals(varName)) {
                         matchCount++;
                         parameters[i] = null;
                         cstrArgList[i] = mappedInstance;

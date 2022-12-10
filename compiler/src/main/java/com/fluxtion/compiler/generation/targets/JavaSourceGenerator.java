@@ -27,7 +27,6 @@ import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import net.vidageek.mirror.dsl.Mirror;
@@ -46,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -142,6 +142,10 @@ public class JavaSourceGenerator {
      * String representation of all dirty flag reset to false.
      */
     private String resetDirtyFlags;
+    /**
+     *
+     */
+    private String guardCheckMethods;
     /**
      * String representation of filter constants declarations.
      */
@@ -299,6 +303,7 @@ public class JavaSourceGenerator {
         dirtyFlagDeclarations = "";
         resetDirtyFlags = "";
         dirtyFlagLookup = "";
+        guardCheckMethods = "";
         final ArrayList<DirtyFlag> values = new ArrayList<>(model.getDirtyFieldMap().values());
         NaturalOrderComparator<DirtyFlag> comparator = new NaturalOrderComparator<>();
         values.sort((o1, o2) -> comparator.compare(o1.name, o2.name));
@@ -312,13 +317,27 @@ public class JavaSourceGenerator {
                 resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
             }
         }
-        model.getDirtyFieldMap().entrySet().stream()
+        List<Entry<Field, DirtyFlag>> sortedDirtyFlags = model.getDirtyFieldMap().entrySet().stream()
                 .sorted(Comparator.comparing(e -> e.getKey().getName()))
-                .collect(Collectors.toList())
+                .collect(Collectors.toList());
+        sortedDirtyFlags
                 .forEach(e -> {
                     dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "",
                             e.getKey().getName(), e.getValue().name);
                 });
+        //build guard methods
+        model.getNodeFields().forEach(field -> {
+                    String guardConditions = model.getNodeGuardConditions(field.instance).stream()
+                            .map(d -> (d.isRequiresInvert() ? "not" : "") + d.getName())
+                            .collect(Collectors.joining(" |\n"));
+
+                    if (!model.getNodeGuardConditions(field.instance).isEmpty()) {
+                        guardCheckMethods += String.format("%1$4sprivate boolean guardCheck_%2$s() {%n" +
+                                "%1$8sreturn %3$s;" +
+                                "}%n", "", field.getName(), guardConditions);
+                    }
+                }
+        );
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
@@ -585,20 +604,7 @@ public class JavaSourceGenerator {
                     //HERE TO JOIN THINGS
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
-                        //callTree += String.format("%24sif(", "");
-                        OnTrigger onTrigger = method.method.getAnnotation(OnTrigger.class);
-                        String invert = "";
-                        if (onTrigger != null && !onTrigger.dirty()) {
-                            invert = " not";
-                        }
-                        ct.append(s24).append("if(");
-                        for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
-                            //callTree += OR + nodeGuardCondition.name;
-                            ct.append(OR).append(invert).append(nodeGuardCondition.name);
-//                            OR = " || ";
-                            OR = " | ";
-                        }
-                        ct.append(") {\n");
+                        ct.append(s24).append("if(guardCheck_" + method.getVariableName() + "()) {\n");
                     }
 
                     //add audit
@@ -1020,6 +1026,10 @@ public class JavaSourceGenerator {
 
     public String getDirtyFlagLookup() {
         return dirtyFlagLookup;
+    }
+
+    public String getGuardCheckMethods() {
+        return guardCheckMethods;
     }
 
     public int getDirtyFlagCount() {

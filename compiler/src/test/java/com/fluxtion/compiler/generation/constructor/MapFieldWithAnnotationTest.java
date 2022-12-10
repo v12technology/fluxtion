@@ -17,11 +17,15 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
     public void namedParamsOfSameType() {
         sep(c -> c.addNode(new MyHandler("NY", "greg", "USA", "Smith", "YES")));
         Assert.assertNotNull(getField("gregSmithNYUSAYES"));
+    }
 
+    @Test
+    public void namedParamsOfSameTypeMixedFinalAndNonFInalFields() {
+        sep(c -> c.addNode(new MyHandlerMixedFinalAndNonFinal("NY", "greg", "USA", "Smith", "YES")));
+        Assert.assertNotNull(getField("gregSmithNYUSAYES"));
     }
 
     public static class MyHandler implements Named {
-
         private final String firstName;
         private final String city;
         private final String country;
@@ -43,29 +47,37 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler
         public void StringUpdate(String in) {
-
         }
 
-        public String getFirstName() {
-            return firstName;
+        @Override
+        public String getName() {
+            return firstName + name2 + city + country + person;
+        }
+    }
+
+    public static class MyHandlerMixedFinalAndNonFinal implements Named {
+        private String firstName;
+        private final String city;
+        private final String country;
+        private final String name2;
+        private final String person;
+
+        public MyHandlerMixedFinalAndNonFinal(
+                @AssignToField("city") String arg0,
+                @AssignToField("firstName") String arg1,
+                @AssignToField("country") String arg2,
+                @AssignToField("name2") String arg3,
+                @AssignToField("person") String arg4) {
+            this.city = arg0;
+            this.firstName = arg1;
+            this.country = arg2;
+            this.name2 = arg3;
+            this.person = arg4;
         }
 
-        public String getCity() {
-            return city;
+        @OnEventHandler
+        public void StringUpdate(String in) {
         }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public String getName2() {
-            return name2;
-        }
-
-        public String getPerson() {
-            return person;
-        }
-
 
         @Override
         public String getName() {
