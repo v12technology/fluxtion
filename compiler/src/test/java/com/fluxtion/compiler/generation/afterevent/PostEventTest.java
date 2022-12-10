@@ -2,9 +2,9 @@ package com.fluxtion.compiler.generation.afterevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.AfterTrigger;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void singleOnEventComplete(){
+    public void singleOnEventComplete() {
         sep(c -> {
             c.addNode(new ChildWithEventHandler(new Parent()));
         });
@@ -79,7 +79,7 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-   public static class Child {
+    public static class Child {
         final Parent parent;
 
         @OnTrigger

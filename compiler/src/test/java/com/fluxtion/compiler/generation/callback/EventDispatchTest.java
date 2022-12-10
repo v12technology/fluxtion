@@ -17,7 +17,6 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void nodeGeneratesNewEventCyclesTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(new EventGeneratingNode(), "target"));
         EventGeneratingNode target = getField("target");
         Assert.assertNull(target.in);
