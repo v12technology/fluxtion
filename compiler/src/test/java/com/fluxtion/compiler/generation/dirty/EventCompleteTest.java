@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,22 +12,21 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.compiler.generation.dirty.DirtyElseTest.NumberEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author gregp
  */
 public class EventCompleteTest extends MultipleSepTargetInProcessTest {
@@ -37,7 +36,7 @@ public class EventCompleteTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testComplete(){
+    public void testComplete() {
         sep((c) -> c.addPublicNode(new HandlerWithComplete(10), "completeHandler"));
         HandlerWithComplete handler = getField("completeHandler");
         onEvent(new NumberEvent(100));
@@ -47,9 +46,9 @@ public class EventCompleteTest extends MultipleSepTargetInProcessTest {
         assertThat(handler.completeCount, is(1));
         assertThat(handler.eventCount, is(2));
     }
-    
-    public static class HandlerWithComplete{
-        
+
+    public static class HandlerWithComplete {
+
         final int barrier;
         private int completeCount;
         private int eventCount;
@@ -57,17 +56,17 @@ public class EventCompleteTest extends MultipleSepTargetInProcessTest {
         public HandlerWithComplete(int barrier) {
             this.barrier = barrier;
         }
-        
+
         @OnEventHandler
-        public boolean numberEvent(NumberEvent event){
+        public boolean numberEvent(NumberEvent event) {
             eventCount++;
             return event.value > barrier;
         }
 
         @AfterTrigger
-        public void eventComplete(){
+        public void eventComplete() {
             completeCount++;
         }
     }
-    
+
 }
