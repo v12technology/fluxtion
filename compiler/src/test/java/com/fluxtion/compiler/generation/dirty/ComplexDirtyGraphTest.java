@@ -17,7 +17,7 @@ public class ComplexDirtyGraphTest extends CompiledAndInterpretedSepTest {
     @Test
     public void trace_dirty_test3() throws Exception {
 //        addAuditor();
-        sep(cfg ->{
+        sep(cfg -> {
             TraceEventHolder handler_A = cfg.addNode(new TraceEventHolder.TraceEventHandler_sub1("handler_A0", 1));
             TraceEventHolder handler_B = cfg.addNode(new TraceEventHolder.TraceEventHandler_sub2("handler_B0", 2));
 

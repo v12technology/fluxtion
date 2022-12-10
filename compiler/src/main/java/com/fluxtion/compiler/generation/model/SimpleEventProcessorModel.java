@@ -36,6 +36,7 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
@@ -52,6 +53,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -347,17 +349,25 @@ public class SimpleEventProcessorModel {
             Field.MappedField[] cstrArgList = new Field.MappedField[(directParents.size()) + 200];
             Class<?> fieldClass = field.getClass();
             boolean[] hasCstrAnnotations = new boolean[]{false};
+            Set<String> assignedFieldNames = getConstructors(fieldClass).stream()
+                    .map(Constructor::getParameters)
+                    .flatMap(Arrays::stream)
+                    .filter(p -> p.getAnnotation(AssignToField.class) != null)
+                    .map(p -> p.getAnnotation(AssignToField.class).value())
+                    .collect(Collectors.toSet());
+
             ReflectionUtils.getAllFields(fieldClass, (java.lang.reflect.Field input) -> {
                 final boolean isCstrArg = Objects.requireNonNull(input).getAnnotation(ConstructorArg.class) != null;
                 //TODO check is not public
-                if (isCstrArg && !Modifier.isStatic(input.getModifiers())) {
+                String fieldName = input.getName();
+                if ((isCstrArg || assignedFieldNames.contains(fieldName)) && !Modifier.isStatic(input.getModifiers())) {
                     hasCstrAnnotations[0] = true;
-                    LOGGER.debug("field marked as constructor arg: {}", input.getName());
+                    LOGGER.debug("field marked as constructor arg: {}", fieldName);
                     LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
                 } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
                     LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
-                            input.getName(),
+                            fieldName,
                             Modifier.isPublic(input.getModifiers()),
                             Modifier.isFinal(input.getModifiers()),
                             Modifier.isTransient(input.getModifiers()),
@@ -374,12 +384,12 @@ public class SimpleEventProcessorModel {
                         return false;
                     }
                     if (directParents.contains(parent)) {
-                        final Field.MappedField mappedField = new Field.MappedField(input.getName(), getFieldForInstance(parent));
+                        final Field.MappedField mappedField = new Field.MappedField(fieldName, getFieldForInstance(parent));
                         mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(mappedField);
                     } else if (List.class.isAssignableFrom(parent.getClass())) {
                         //
-                        Field.MappedField collectionField = new Field.MappedField(input.getName());
+                        Field.MappedField collectionField = new Field.MappedField(fieldName);
                         List<?> collection = (List<?>) parent;
                         for (Object element : collection) {
                             collectionField.addField(getFieldForInstance(element));
@@ -387,16 +397,16 @@ public class SimpleEventProcessorModel {
                         collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
                         if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
                             privateFields.add(collectionField);
-                            LOGGER.debug("collection field:{}, val:{}", input.getName(), input.get(field));
+                            LOGGER.debug("collection field:{}, val:{}", fieldName, input.get(field));
                         }
                     } else if (ClassUtils.typeSupported(input.getType())) {
-                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                        Field.MappedField primitiveField = new Field.MappedField(input.getName(), input.get(field));
+                        LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
+                        Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
-                        LOGGER.debug("primitive field:{}, val:{}", input.getName(), input.get(field));
-                        Field.MappedField primitiveField = new Field.MappedField(input.getName(), input.get(field));
+                        LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
+                        Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
                         primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     }
@@ -867,18 +877,26 @@ public class SimpleEventProcessorModel {
                 if (directParents.isEmpty()) {
                     continue;
                 }
+                CbMethodHandle cb = node2UpdateMethodMap.get(node);
+                final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
                 //get parents of node and loop through
                 Set<DirtyFlag> guardSet = new HashSet<>();
                 for (Object parent : directParents) {
-                    //get dirty field for node 
+                    //get dirty field for node
                     DirtyFlag parentDirtyFlag = getDirtyFlagForUpdateCb(node2UpdateMethodMap.get(parent));
+                    DirtyFlag methodFlag = null;
+                    if (parentDirtyFlag != null) {
+                        parentDirtyFlag.requiresInvert |= invertedDirtyHandler;
+                        methodFlag = parentDirtyFlag.clone();
+                        methodFlag.requiresInvert = invertedDirtyHandler;
+                    }
                     //get the guards for the parent using the multimap
                     Collection<DirtyFlag> parentDirtyFlags = nodeGuardMap.get(parent);
                     //if parent guard != null add as a guard to multimap, continue
                     //else if guards!=null add to multimap, continue
                     //else clear mutlimap, break
-                    if (parentDirtyFlag != null) {
-                        guardSet.add(parentDirtyFlag);
+                    if (methodFlag != null) {
+                        guardSet.add(methodFlag);
                     } else if (!parentDirtyFlags.isEmpty()) {
                         guardSet.addAll(parentDirtyFlags);
                     } else {
@@ -886,13 +904,7 @@ public class SimpleEventProcessorModel {
                         break;
                     }
                 }
-                CbMethodHandle cb = node2UpdateMethodMap.get(node);
-                final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
-                for (DirtyFlag d : guardSet) {
-                    d.requiresInvert |= invertedDirtyHandler;
-                }
                 nodeGuardMap.putAll(node, guardSet);
-                //
             }
 
         }
