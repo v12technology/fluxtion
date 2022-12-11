@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.NamedNode;
-import com.fluxtion.runtime.event.AbstractEventHandlerNode;
+import com.fluxtion.runtime.node.NamedNode;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import lombok.ToString;
 

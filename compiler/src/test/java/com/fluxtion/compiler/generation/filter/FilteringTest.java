@@ -23,7 +23,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.event.DefaultEventHandlerNode;
+import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

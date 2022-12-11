@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.NamedNode;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;

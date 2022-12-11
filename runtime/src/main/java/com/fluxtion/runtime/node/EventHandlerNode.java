@@ -14,8 +14,9 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.runtime;
+package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.event.Event;
 
 /**

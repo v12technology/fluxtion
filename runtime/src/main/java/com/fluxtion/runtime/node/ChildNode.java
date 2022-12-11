@@ -1,4 +1,4 @@
-package com.fluxtion.runtime;
+package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 

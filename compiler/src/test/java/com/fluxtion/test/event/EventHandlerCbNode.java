@@ -19,7 +19,7 @@ package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
-import com.fluxtion.runtime.event.AbstractEventHandlerNode;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 
 /**
  * @author Greg Higgins

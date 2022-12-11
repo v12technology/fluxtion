@@ -1,4 +1,6 @@
-package com.fluxtion.runtime;
+package com.fluxtion.runtime.node;
+
+import com.fluxtion.runtime.EventProcessor;
 
 /**
  * A unique name for a node in an instance {@link EventProcessor}. Advised to return a human-readable name that will make debugging

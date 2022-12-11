@@ -1,5 +1,6 @@
-package com.fluxtion.runtime;
+package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import lombok.Value;
 

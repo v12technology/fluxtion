@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.NamedNode;
+import com.fluxtion.runtime.node.NamedNode;
 
 /**
  * provides query capability to determine if a node indicates it was dirty during this calculation cycle. A dirty node

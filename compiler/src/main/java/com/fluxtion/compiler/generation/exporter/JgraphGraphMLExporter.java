@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.exporter;
 
-import com.fluxtion.runtime.EventHandlerNode;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.EdgeNameProvider;

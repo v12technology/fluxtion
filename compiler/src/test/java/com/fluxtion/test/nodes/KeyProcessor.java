@@ -19,7 +19,7 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.event.AbstractEventHandlerNode;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 import com.fluxtion.test.event.CharEvent;
 
 /**

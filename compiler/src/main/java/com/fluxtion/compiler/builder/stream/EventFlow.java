@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
-import com.fluxtion.runtime.event.DefaultEventHandlerNode;
+import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;

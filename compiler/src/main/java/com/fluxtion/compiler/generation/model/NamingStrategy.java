@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.runtime.NamedNode;
+import com.fluxtion.runtime.node.NamedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.EventHandlerNode;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.event.TimeHandlerExtends;
 import com.fluxtion.test.event.TimeHandlerImpl;

@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.generation.eventdispatch;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.EventHandlerNode;
-import com.fluxtion.runtime.ChildNode;
+import com.fluxtion.runtime.node.EventHandlerNode;
+import com.fluxtion.runtime.node.ChildNode;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
