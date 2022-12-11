@@ -1,4 +1,4 @@
-package com.fluxtion.runtime.lifecycle;
+package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 
@@ -8,7 +8,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
  *
  * @see OnTrigger
  */
-public interface Node {
+public interface ChildNode {
 
     /**
      * A callback invoked during a graph cycle when a parent indicates an event notification should be progagated.

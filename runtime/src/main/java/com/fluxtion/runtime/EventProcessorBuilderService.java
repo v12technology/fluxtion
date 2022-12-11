@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime;
@@ -19,12 +19,12 @@ package com.fluxtion.runtime;
 import java.util.ServiceLoader;
 
 /**
- * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the 
+ * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the
  * context.
  *
  * @author V12 Technology Ltd.
  */
-public interface EventProcessorConfigService {
+public interface EventProcessorBuilderService {
 
     <T> T add(T node);
 
@@ -41,12 +41,12 @@ public interface EventProcessorConfigService {
     <T> T addOrReuse(T node, String privateId);
 
     <T> T addPublicOrReuse(T node, String publicId);
-    
-    default boolean buildTime(){
+
+    default boolean buildTime() {
         return false;
     }
 
-    EventProcessorConfigService NULL_CONTEXT = new EventProcessorConfigService() {
+    EventProcessorBuilderService NULL_CONTEXT = new EventProcessorBuilderService() {
         @Override
         public <T> T add(T node) {
             return node;
@@ -89,17 +89,17 @@ public interface EventProcessorConfigService {
 
     };
 
-    static EventProcessorConfigService service() {
-        ServiceLoader<EventProcessorConfigService> load = ServiceLoader.load(EventProcessorConfigService.class, EventProcessorConfigService.class.getClassLoader());
-        EventProcessorConfigService service = NULL_CONTEXT;
+    static EventProcessorBuilderService service() {
+        ServiceLoader<EventProcessorBuilderService> load = ServiceLoader.load(EventProcessorBuilderService.class, EventProcessorBuilderService.class.getClassLoader());
+        EventProcessorBuilderService service = NULL_CONTEXT;
         if (load.iterator().hasNext()) {
             service = load.iterator().next();
-            return service.buildTime()?service:NULL_CONTEXT;
+            return service.buildTime() ? service : NULL_CONTEXT;
         } else {
-            load = ServiceLoader.load(EventProcessorConfigService.class);
+            load = ServiceLoader.load(EventProcessorBuilderService.class);
             if (load.iterator().hasNext()) {
                 service = load.iterator().next();
-                return service.buildTime()?service:NULL_CONTEXT;
+                return service.buildTime() ? service : NULL_CONTEXT;
             } else {
                 return NULL_CONTEXT;
             }

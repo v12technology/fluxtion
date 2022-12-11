@@ -19,13 +19,13 @@ package com.fluxtion.test.nodes;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtime.event.AbstractEventHandlerNode;
 import com.fluxtion.test.event.CharEvent;
 
 /**
  * @author Greg Higgins
  */
-public class KeyProcessor extends AbstractFilteredEventHandler<CharEvent> {
+public class KeyProcessor extends AbstractEventHandlerNode<CharEvent> {
 
     private int count = 0;
     public char myChar;

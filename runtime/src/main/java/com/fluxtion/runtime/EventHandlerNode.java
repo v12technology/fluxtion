@@ -47,7 +47,7 @@ import com.fluxtion.runtime.event.Event;
  * @param <T> The type of event processed by this handler
  * @author Greg Higgins
  */
-public interface FilteredEventHandler<T> {
+public interface EventHandlerNode<T> {
 
     default int filterId() {
         return Event.NO_INT_FILTER;

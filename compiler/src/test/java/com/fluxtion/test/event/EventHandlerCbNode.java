@@ -17,47 +17,48 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.FilteredEventHandler;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.event.AbstractEventHandlerNode;
 
 /**
- * @param <T>
  * @author Greg Higgins
  */
-public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T> {
+public class EventHandlerCbNode extends AbstractEventHandlerNode<TestEvent> {
 
-    private int filterId;
-    private Class<T> eventClass;
-    public T event;
+    public String id;
 
-    public DefaultFilteredEventHandler(Class<T> eventClass) {
-        this.eventClass = eventClass;
-        filterId = Event.NO_INT_FILTER;
+    public EventHandlerCbNode(String id, int filterId) {
+        super(filterId);
+        this.id = id;
     }
 
-
-    public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
-        this.filterId = filterId;
-        this.eventClass = eventClass;
-    }
-
-    public DefaultFilteredEventHandler() {
+    public EventHandlerCbNode() {
     }
 
     @Override
-    public int filterId() {
-        return filterId;
+    public Class<TestEvent> eventClass() {
+        return TestEvent.class;
+    }
+
+    @TearDown
+    public void tearDown() {
+
+    }
+
+    @OnTrigger
+    public void onParentChange() {
     }
 
     @Override
-    public boolean onEvent(T e) {
-        this.event = e;
+    public boolean onEvent(TestEvent e) {
         return true;
     }
 
     @Override
-    public Class<T> eventClass() {
-        return eventClass;
+    public String toString() {
+        return "EventHandlerCb{" + "id=" + id + ", filterId=" + filterId + '}';
     }
+
 
 }

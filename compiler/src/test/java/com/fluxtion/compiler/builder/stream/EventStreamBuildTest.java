@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
@@ -868,7 +868,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class NotifyAndPushTarget implements Named {
+    public static class NotifyAndPushTarget implements NamedNode {
         public static final String DEFAULT_NAME = "notifyTarget";
         private final String name;
         private transient int onEventCount;
@@ -1032,7 +1032,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class StreamAsMemberClass implements Named {
+    public static class StreamAsMemberClass implements NamedNode {
         private final EventSupplier<String> stringStream;
         private final String name;
         private boolean triggered;

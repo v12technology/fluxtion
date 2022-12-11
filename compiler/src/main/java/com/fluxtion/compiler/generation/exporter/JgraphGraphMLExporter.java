@@ -17,7 +17,7 @@
  */
 package com.fluxtion.compiler.generation.exporter;
 
-import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.EventHandlerNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.EdgeNameProvider;
@@ -181,7 +181,7 @@ public class JgraphGraphMLExporter<V, E> {
 
         // Add all the vertices as <node> elements...
         for (V v : g.vertexSet()) {
-            boolean isHandler = v instanceof FilteredEventHandler;
+            boolean isHandler = v instanceof EventHandlerNode;
             boolean isEventClass = v instanceof Class;
             if (!isHandler) {
                 Method[] methodList = v.getClass().getMethods();

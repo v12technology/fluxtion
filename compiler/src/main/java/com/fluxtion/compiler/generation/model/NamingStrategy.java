@@ -19,7 +19,7 @@ package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +63,8 @@ class NamingStrategy implements NodeNameProducer {
             if (mappedName != null)
                 break;
         }
-        if (mappedName == null && nodeToMap instanceof Named) {
-            mappedName = ((Named) nodeToMap).getName();
+        if (mappedName == null && nodeToMap instanceof NamedNode) {
+            mappedName = ((NamedNode) nodeToMap).getName();
         }
         if (mappedName == null) {
             mappedName = nodeToMap.getClass().getSimpleName() + "_" + count++;

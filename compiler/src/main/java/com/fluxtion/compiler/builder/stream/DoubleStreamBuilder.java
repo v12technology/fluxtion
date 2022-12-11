@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
@@ -36,12 +36,12 @@ public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSup
     final DoubleEventStream eventStream;
 
     DoubleStreamBuilder(DoubleEventStream eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public DoubleEventSupplier getEventSupplier() {
-        return EventProcessorConfigService.service().add(new WrappingDoubleEventSupplier(eventStream));
+        return EventProcessorBuilderService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -151,7 +151,7 @@ public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSup
 
     //OUTPUTS - START
     public DoubleStreamBuilder notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new DoubleStreamBuilder(new NotifyEventStream.DoubleNotifyEventStream(eventStream, target));
     }
 
@@ -179,7 +179,7 @@ public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSup
 
     //META-DATA
     public DoubleStreamBuilder id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
         return this;
     }
 

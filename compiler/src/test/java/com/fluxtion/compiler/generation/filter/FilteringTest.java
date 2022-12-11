@@ -23,7 +23,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
+import com.fluxtion.runtime.event.DefaultEventHandlerNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -96,14 +96,14 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void defaultFilterHandlerTest(){
+    public void defaultFilterHandlerTest() {
 
         sep(cfg -> {
-            cfg.addPublicNode(new DefaultFilteredEventHandler<>(String.class), "handler");
-            cfg.addPublicNode(new DefaultFilteredEventHandler<>("filter", WordEvent.class), "handlerFiltered");
+            cfg.addPublicNode(new DefaultEventHandlerNode<>(String.class), "handler");
+            cfg.addPublicNode(new DefaultEventHandlerNode<>("filter", WordEvent.class), "handlerFiltered");
         });
-        DefaultFilteredEventHandler<String> stringHandler = getField("handler");
-        DefaultFilteredEventHandler<WordEvent> filteredHandler = getField("handlerFiltered");
+        DefaultEventHandlerNode<String> stringHandler = getField("handler");
+        DefaultEventHandlerNode<WordEvent> filteredHandler = getField("handlerFiltered");
         onEvent("test");
         assertNull(filteredHandler.get());
         assertThat(stringHandler.get(), is("test"));
@@ -168,7 +168,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class UnMatchedHandler{
+    public static class UnMatchedHandler {
         public int wordACount = 0;
         public int wordUnmatched = 0;
         public int anyWord = 0;
@@ -180,7 +180,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processAnyWord(WordEvent anyWordEvent){
+        public void processAnyWord(WordEvent anyWordEvent) {
             anyWord++;
         }
 

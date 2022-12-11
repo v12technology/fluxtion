@@ -16,22 +16,22 @@
  */
 package com.fluxtion.runtime.event;
 
-import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.EventHandlerNode;
 
 
 /**
  * @param <T> The type of event processed by this handler
  * @author Greg Higgins
  */
-public abstract class AbstractFilteredEventHandler<T> implements FilteredEventHandler<T> {
+public abstract class AbstractEventHandlerNode<T> implements EventHandlerNode<T> {
 
     protected int filterId;
 
-    public AbstractFilteredEventHandler(int filterId) {
+    public AbstractEventHandlerNode(int filterId) {
         this.filterId = filterId;
     }
 
-    public AbstractFilteredEventHandler() {
+    public AbstractEventHandlerNode() {
         this(0);
     }
 

@@ -26,10 +26,10 @@ public class Anchor {
      * @return The after anchor node
      */
     public static <S, T> S anchor(T anchor, S afterAnchor) {
-        EventProcessorConfigService.service().addOrReuse(
+        EventProcessorBuilderService.service().addOrReuse(
                 new Anchor(
-                        EventProcessorConfigService.service().addOrReuse(anchor),
-                        EventProcessorConfigService.service().addOrReuse(afterAnchor)
+                        EventProcessorBuilderService.service().addOrReuse(anchor),
+                        EventProcessorBuilderService.service().addOrReuse(afterAnchor)
                 )
         );
         return afterAnchor;

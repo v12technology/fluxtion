@@ -2,7 +2,7 @@ package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -75,7 +75,7 @@ public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class ParentHandler implements Named {
+    public static class ParentHandler implements NamedNode {
         int intValue;
 
         @OnEventHandler
@@ -95,7 +95,7 @@ public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
     }
 
     @ExcludeNode
-    public static class ExcludeMeNode implements Named {
+    public static class ExcludeMeNode implements NamedNode {
         @NoTriggerReference
         public ParentHandler parentHandler = new ParentHandler();
 

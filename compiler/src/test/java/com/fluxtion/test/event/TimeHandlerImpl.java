@@ -17,7 +17,7 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.EventHandlerNode;
 
 import java.io.Serializable;
 
@@ -26,7 +26,7 @@ import java.io.Serializable;
  *
  * @author Greg Higgins
  */
-public class TimeHandlerImpl implements Serializable, FilteredEventHandler<TimeEvent> {
+public class TimeHandlerImpl implements Serializable, EventHandlerNode<TimeEvent> {
 
     public int filterId;
 

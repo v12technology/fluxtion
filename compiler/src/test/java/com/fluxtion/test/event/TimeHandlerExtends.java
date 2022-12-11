@@ -17,12 +17,12 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtime.event.AbstractEventHandlerNode;
 
 /**
  * @author Greg Higgins
  */
-public class TimeHandlerExtends extends AbstractFilteredEventHandler<TimeEvent> {
+public class TimeHandlerExtends extends AbstractEventHandlerNode<TimeEvent> {
 
     public TimeHandlerExtends(int filterId) {
         super(filterId);

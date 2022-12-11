@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 
 import java.util.function.Consumer;
@@ -8,7 +8,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
-public class SinkPublisher<T> implements Named {
+public class SinkPublisher<T> implements NamedNode {
 
     private final String filterString;
     private Consumer<T> sink;
@@ -31,7 +31,7 @@ public class SinkPublisher<T> implements Named {
     }
 
     @OnEventHandler(filterVariable = "filterString", propagate = false)
-    public void unregisterSink(SinkDeregister sinkDeregister){
+    public void unregisterSink(SinkDeregister sinkDeregister) {
         sink = null;
         intConsumer = null;
         longConsumer = null;

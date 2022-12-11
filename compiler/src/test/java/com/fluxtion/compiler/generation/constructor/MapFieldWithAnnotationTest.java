@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.constructor;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import org.junit.Assert;
@@ -25,7 +25,7 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         Assert.assertNotNull(getField("gregSmithNYUSAYES"));
     }
 
-    public static class MyHandler implements Named {
+    public static class MyHandler implements NamedNode {
         private final String firstName;
         private final String city;
         private final String country;
@@ -55,7 +55,7 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class MyHandlerMixedFinalAndNonFinal implements Named {
+    public static class MyHandlerMixedFinalAndNonFinal implements NamedNode {
         private String firstName;
         private final String city;
         private final String country;

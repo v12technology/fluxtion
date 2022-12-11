@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -142,7 +142,7 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
     }
 
 
-    public static class StringHandler implements DoubleSupplier, Named {
+    public static class StringHandler implements DoubleSupplier, NamedNode {
 
         private String id;
         transient int value;
@@ -205,7 +205,7 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
 
 
     @Data
-    public static class DoubleSum implements Named {
+    public static class DoubleSum implements NamedNode {
 
         private List<DoubleSupplier> doubleSuppliers = new ArrayList<>();
         double sum;
