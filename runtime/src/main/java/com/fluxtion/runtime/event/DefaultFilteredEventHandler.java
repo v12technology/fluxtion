@@ -76,9 +76,10 @@ public final class DefaultFilteredEventHandler<T>
     }
 
     @Override
-    public void onEvent(T e) {
+    public boolean onEvent(T e) {
         auditLog.info("inputEvent", e.getClass().getSimpleName());
         this.event = e;
+        return true;
     }
 
     @Override

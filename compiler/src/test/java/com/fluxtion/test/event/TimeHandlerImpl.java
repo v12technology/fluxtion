@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,19 +12,21 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.FilteredEventHandler;
+
 import java.io.Serializable;
 
 /**
  * Implements EventHandler interface
+ *
  * @author Greg Higgins
  */
-public class TimeHandlerImpl implements Serializable, FilteredEventHandler<TimeEvent>{
+public class TimeHandlerImpl implements Serializable, FilteredEventHandler<TimeEvent> {
 
     public int filterId;
 
@@ -36,14 +38,15 @@ public class TimeHandlerImpl implements Serializable, FilteredEventHandler<TimeE
     public Class<TimeEvent> eventClass() {
         return TimeEvent.class;
     }
-    
+
     @Override
     public int filterId() {
         return filterId;
     }
 
     @Override
-    public void onEvent(TimeEvent e) {
+    public boolean onEvent(TimeEvent e) {
+        return true;
     }
-    
+
 }

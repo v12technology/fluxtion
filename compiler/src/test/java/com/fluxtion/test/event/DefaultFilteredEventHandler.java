@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -21,9 +21,8 @@ import com.fluxtion.runtime.FilteredEventHandler;
 import com.fluxtion.runtime.event.Event;
 
 /**
- *
- * @author Greg Higgins
  * @param <T>
+ * @author Greg Higgins
  */
 public final class DefaultFilteredEventHandler<T> implements FilteredEventHandler<T> {
 
@@ -35,7 +34,7 @@ public final class DefaultFilteredEventHandler<T> implements FilteredEventHandle
         this.eventClass = eventClass;
         filterId = Event.NO_INT_FILTER;
     }
-    
+
 
     public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
         this.filterId = filterId;
@@ -44,20 +43,21 @@ public final class DefaultFilteredEventHandler<T> implements FilteredEventHandle
 
     public DefaultFilteredEventHandler() {
     }
-    
+
     @Override
     public int filterId() {
         return filterId;
     }
 
     @Override
-    public void onEvent(T e) {
+    public boolean onEvent(T e) {
         this.event = e;
+        return true;
     }
 
     @Override
     public Class<T> eventClass() {
         return eventClass;
     }
-    
+
 }

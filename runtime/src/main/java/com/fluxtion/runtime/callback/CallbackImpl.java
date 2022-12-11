@@ -25,8 +25,9 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     }
 
     @Override
-    public void onEvent(CallbackEvent e) {
+    public boolean onEvent(CallbackEvent e) {
         event = e;
+        return true;
     }
 
     @Override
