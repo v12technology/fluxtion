@@ -2,7 +2,7 @@ package com.fluxtion.compiler.generation.eventdispatch;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.node.EventHandlerNode;
-import com.fluxtion.runtime.node.ChildNode;
+import com.fluxtion.runtime.node.TriggeredNode;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class EventHandlerNodeTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class FormatterNode implements ChildNode {
+    public static class FormatterNode implements TriggeredNode {
         final Supplier<String> stringSupplier;
         String formatted;
 

@@ -44,6 +44,9 @@ import com.fluxtion.runtime.event.Event;
  * <li>String filter : null or "" = no filtering</li>
  * </ul>
  * </pre>
+ * <p>
+ * Child instances that refer to this instance receive update callbacks by invoking marking a method with an {@link com.fluxtion.runtime.annotations.OnTrigger}
+ * annotation or implementing the {@link TriggeredNode} interface
  *
  * @param <T> The type of event processed by this handler
  * @author Greg Higgins
