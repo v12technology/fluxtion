@@ -14,11 +14,10 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.runtime.event;
+package com.fluxtion.runtime.node;
 
-import com.fluxtion.runtime.FilteredEventHandler;
-import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 
 import java.util.Objects;
@@ -26,9 +25,9 @@ import java.util.Objects;
 /**
  * {@inheritDoc}
  */
-public final class DefaultFilteredEventHandler<T>
+public final class DefaultEventHandlerNode<T>
         extends EventLogNode
-        implements FilteredEventHandler<T>, TriggeredEventStream<T>, Named {
+        implements EventHandlerNode<T>, TriggeredEventStream<T>, NamedNode {
 
     private final int filterId;
     private final String filterString;
@@ -36,28 +35,28 @@ public final class DefaultFilteredEventHandler<T>
     private final transient String name;
     public T event;
 
-    public DefaultFilteredEventHandler(Class<T> eventClass) {
+    public DefaultEventHandlerNode(Class<T> eventClass) {
         this.eventClass = eventClass;
         this.filterId = Event.NO_INT_FILTER;
         this.filterString = Event.NO_STRING_FILTER;
         name = "handler" + eventClass.getSimpleName();
     }
 
-    public DefaultFilteredEventHandler(int filterId, Class<T> eventClass) {
+    public DefaultEventHandlerNode(int filterId, Class<T> eventClass) {
         this.filterId = filterId;
         this.filterString = Event.NO_STRING_FILTER;
         this.eventClass = eventClass;
         name = "handler" + eventClass.getSimpleName() + "_" + filterId;
     }
 
-    public DefaultFilteredEventHandler(String filterString, Class<T> eventClass) {
+    public DefaultEventHandlerNode(String filterString, Class<T> eventClass) {
         this.filterId = Event.NO_INT_FILTER;
         this.filterString = filterString;
         this.eventClass = eventClass;
         name = "handler" + eventClass.getSimpleName() + "_" + filterString;
     }
 
-    public DefaultFilteredEventHandler(int filterId, String filterString, Class<T> eventClass) {
+    public DefaultEventHandlerNode(int filterId, String filterString, Class<T> eventClass) {
         this.filterId = filterId;
         this.filterString = filterString;
         this.eventClass = eventClass;
@@ -76,9 +75,10 @@ public final class DefaultFilteredEventHandler<T>
     }
 
     @Override
-    public void onEvent(T e) {
+    public boolean onEvent(T e) {
         auditLog.info("inputEvent", e.getClass().getSimpleName());
         this.event = e;
+        return true;
     }
 
     @Override
@@ -110,7 +110,7 @@ public final class DefaultFilteredEventHandler<T>
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DefaultFilteredEventHandler<?> other = (DefaultFilteredEventHandler<?>) obj;
+        final DefaultEventHandlerNode<?> other = (DefaultEventHandlerNode<?>) obj;
         if (this.filterId != other.filterId) {
             return false;
         }

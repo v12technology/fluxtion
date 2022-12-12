@@ -27,8 +27,8 @@ import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.Anchor;
-import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.node.Anchor;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.Initialise;
@@ -744,7 +744,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass())
+            addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
@@ -767,7 +767,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass())
+            addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null;
             if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
@@ -992,8 +992,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventTypeClass, t);
                     }
                 }
-                if (t instanceof FilteredEventHandler) {
-                    FilteredEventHandler<?> eh = (FilteredEventHandler<?>) t;
+                if (t instanceof EventHandlerNode) {
+                    EventHandlerNode<?> eh = (EventHandlerNode<?>) t;
                     Class<?> eventClass = eh.eventClass();
                     if (eventClass != null) {
                         exportGraph.addVertex(eventClass);

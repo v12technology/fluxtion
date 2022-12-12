@@ -22,7 +22,7 @@ import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.FilteredEventHandler;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.FilterId;
@@ -621,8 +621,8 @@ public class SimpleEventProcessorModel {
         List<Object> topologicalHandlers = dependencyGraph.getSortedDependents();
         List<EventCallList> eventCbList = new ArrayList<>();
         for (Object object : topologicalHandlers) {
-            if (object instanceof FilteredEventHandler) {
-                eventCbList.add(new EventCallList((FilteredEventHandler<?>) object));
+            if (object instanceof EventHandlerNode) {
+                eventCbList.add(new EventCallList((EventHandlerNode<?>) object));
             }
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
@@ -1146,7 +1146,7 @@ public class SimpleEventProcessorModel {
          */
         private final List<CbMethodHandle> postDispatchMethods;
 
-        EventCallList(FilteredEventHandler<?> eh) throws Exception {
+        EventCallList(EventHandlerNode<?> eh) throws Exception {
             if (filterMap.containsKey(eh)) {
                 filterId = filterMap.get(eh);
             } else {
@@ -1156,7 +1156,7 @@ public class SimpleEventProcessorModel {
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
             if (eh.eventClass() == null) {
-                eventTypeClass = (TypeResolver.resolveRawArguments(FilteredEventHandler.class, eh.getClass()))[0];
+                eventTypeClass = (TypeResolver.resolveRawArguments(EventHandlerNode.class, eh.getClass()))[0];
             } else {
                 eventTypeClass = eh.eventClass();
             }

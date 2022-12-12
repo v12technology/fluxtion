@@ -1,15 +1,15 @@
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtime.node.NamedNode;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import lombok.ToString;
 
 import java.util.Iterator;
 
 @ToString
-public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFilteredEventHandler<CallbackEvent>
-        implements TriggeredEventStream<R>, Named, Callback<R>, EventDispatcher, CallbackDispatcherListener {
+public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHandlerNode<CallbackEvent>
+        implements TriggeredEventStream<R>, NamedNode, Callback<R>, EventDispatcher, CallbackDispatcherListener {
     private final int callbackId;
     private CallbackDispatcher callBackDispatcher;
     private CallbackEvent<R> event;
@@ -25,8 +25,9 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractFiltere
     }
 
     @Override
-    public void onEvent(CallbackEvent e) {
+    public boolean onEvent(CallbackEvent e) {
         event = e;
+        return true;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
@@ -34,12 +34,12 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
     final LongEventStream eventStream;
 
     LongStreamBuilder(LongEventStream eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public LongEventSupplier getEventSupplier() {
-        return EventProcessorConfigService.service().add(new WrappingLongEventSupplier(eventStream));
+        return EventProcessorBuilderService.service().add(new WrappingLongEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -149,7 +149,7 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
 
     //OUTPUTS - START
     public LongStreamBuilder notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new LongStreamBuilder(new NotifyEventStream.LongNotifyEventStream(eventStream, target));
     }
 
@@ -158,7 +158,7 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
     }
 
     public LongStreamBuilder push(SerializableLongConsumer pushFunction) {
-        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+        EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
         return new LongStreamBuilder(new PushEventStream.LongPushEventStream(eventStream, pushFunction));
     }
 
@@ -177,7 +177,7 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
 
     //META-DATA
     public LongStreamBuilder id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
         return this;
     }
 }

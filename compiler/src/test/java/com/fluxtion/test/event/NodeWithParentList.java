@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,28 +12,28 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class NodeWithParentList {
 
-    public ArrayList<EventHandlerCb> parents;
+    public ArrayList<EventHandlerCbNode> parents;
     public ArrayList parentsNoType;
     public int parentUpdateCount = 0;
     public int onEventCount = 0;
 
-    public NodeWithParentList(EventHandlerCb... cbs) {
+    public NodeWithParentList(EventHandlerCbNode... cbs) {
         parents = new ArrayList<>();
         parentsNoType = new ArrayList();
         if (cbs != null) {
@@ -43,12 +43,12 @@ public class NodeWithParentList {
     }
 
     @OnParentUpdate
-    public void parentChanged(EventHandlerCb updated) {
+    public void parentChanged(EventHandlerCbNode updated) {
         parentUpdateCount++;
     }
-    
+
     @OnTrigger
-    public void onEvent(){
+    public void onEvent() {
         onEventCount++;
     }
 }

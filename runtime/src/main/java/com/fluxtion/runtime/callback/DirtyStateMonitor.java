@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 
 /**
  * provides query capability to determine if a node indicates it was dirty during this calculation cycle. A dirty node
@@ -9,7 +9,7 @@ import com.fluxtion.runtime.Named;
 public interface DirtyStateMonitor {
     boolean isDirty(Object node);
 
-    class DirtyStateMonitorImp implements DirtyStateMonitor, Named {
+    class DirtyStateMonitorImp implements DirtyStateMonitor, NamedNode {
         public CallbackDispatcherImpl callbackDispatcher;
 
         @Override
