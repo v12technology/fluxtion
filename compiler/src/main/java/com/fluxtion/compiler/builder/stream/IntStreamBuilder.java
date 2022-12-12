@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
 import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
@@ -29,13 +29,13 @@ public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier>
     final IntEventStream eventStream;
 
     IntStreamBuilder(IntEventStream eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     @Override
     public IntEventSupplier getEventSupplier() {
-        return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
+        return EventProcessorBuilderService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
@@ -145,7 +145,7 @@ public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier>
 
     //OUTPUTS - START
     public IntStreamBuilder notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
@@ -155,7 +155,7 @@ public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier>
 
     public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
         if (pushFunction.captured().length > 0) {
-            EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+            EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
         }
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
@@ -175,7 +175,7 @@ public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier>
 
     //META-DATA
     public IntStreamBuilder id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
         return this;
     }
 

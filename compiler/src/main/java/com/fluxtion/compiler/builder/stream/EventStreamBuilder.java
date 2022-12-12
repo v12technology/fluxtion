@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
@@ -49,12 +49,12 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
     final TriggeredEventStream<T> eventStream;
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
     public EventSupplier<T> getEventSupplier() {
-        return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
+        return EventProcessorBuilderService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
     //TRIGGERS - START
@@ -317,7 +317,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
     }
 
     public EventStreamBuilder<T> notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
     }
 
@@ -344,7 +344,7 @@ public class EventStreamBuilder<T> implements EventSupplierAccessor<EventSupplie
 
     //META-DATA
     public EventStreamBuilder<T> id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
         return this;
     }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,11 +11,12 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.runtime;
+package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.event.Event;
 
 /**
@@ -36,21 +37,23 @@ import com.fluxtion.runtime.event.Event;
  * } or as a String {@link Event#filterString() . The SEP will compare the filter
  * values in the {@link Event} and the handler and propagate the Event conditional upon the a match.
  * .<p>
- * 
+ *
  * Default values for filters indicate only match on type, no filters are applied:
  * <ul>
  * <li>int filter : Integer.MAX_VALUE = no filtering</li>
  * <li>String filter : null or "" = no filtering</li>
  * </ul>
  * </pre>
- *
- * @author Greg Higgins
+ * <p>
+ * Child instances that refer to this instance receive update callbacks by invoking marking a method with an {@link com.fluxtion.runtime.annotations.OnTrigger}
+ * annotation or implementing the {@link TriggeredNode} interface
  *
  * @param <T> The type of event processed by this handler
+ * @author Greg Higgins
  */
-public interface FilteredEventHandler<T> {
+public interface EventHandlerNode<T> {
 
-    default int filterId(){
+    default int filterId() {
         return Event.NO_INT_FILTER;
     }
 
@@ -59,24 +62,28 @@ public interface FilteredEventHandler<T> {
     }
 
     /**
-     * Called when a new event e is ready to be processed.
+     * Called when a new event e is ready to be processed. Return flag indicates if a notification should be broadcast
+     * and the onEvent methods of dependencies should be invoked
      *
      * @param e the {@link com.fluxtion.runtime.event.Event Event} to process.
+     * @return event propagtion flag
      */
-    void onEvent(T e);
+    boolean onEvent(T e);
 
     /**
      * called when all nodes that depend upon this EventHadler have successfully
      * completed their processing.
-     *
      */
     default void afterEvent() {
     }
 
     /**
-     * The class of the Event processed by this handler
+     * The class of the Event processed by this handler, overrides the generic type parameter class. If null then the class
+     * of the generic type T is used to determine the event type to be processed.
      *
      * @return Class of {@link com.fluxtion.runtime.event.Event Event} to process
      */
-    Class<T> eventClass();
+    default Class<T> eventClass() {
+        return null;
+    }
 }

@@ -2,7 +2,7 @@ package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
 import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
@@ -857,7 +857,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class ResultsHolder implements Named {
+    public static class ResultsHolder implements NamedNode {
         public static final String DEFAULT_NAME = "resultsHolder_Mutables";
         MutableInt mutableInt;
         MutableDouble mutableDouble;

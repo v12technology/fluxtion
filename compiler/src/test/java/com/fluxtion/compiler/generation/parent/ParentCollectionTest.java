@@ -20,7 +20,7 @@ package com.fluxtion.compiler.generation.parent;
 import com.fluxtion.compiler.generation.model.CallbackMethodModelTest.StringHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.test.event.EventHandlerCb;
+import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.NodeWithPrivateParentList;
 import com.fluxtion.test.event.TestEvent;
@@ -43,9 +43,9 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testParentList() {
         sep((c) -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
         });
 
@@ -62,9 +62,9 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testParentListNoType() {
         sep((c) -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(), "root");
             root.parentsNoType.add(e1);
             root.parentsNoType.add(e2);
@@ -83,9 +83,9 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testPrivateListParents() {
         sep((c) -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithPrivateParentList root = c.addPublicNode(new NodeWithPrivateParentList(e1, e2, e3), "root");
             root.intList.add(1);
             root.stringList.add("test val");
@@ -116,16 +116,16 @@ public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
 
     public static class NamedParentCollection {
 
-        public List<EventHandlerCb> eventHandlerCollection = new ArrayList<>();
+        public List<EventHandlerCbNode> eventHandlerCollection = new ArrayList<>();
         public List<StringHandler> stringCollection = new ArrayList<>();
 
         public int count;
 //        public IntegerHandler stringHandler = new IntegerHandler(new StringHandler());
 
         public NamedParentCollection() {
-            eventHandlerCollection.add(new EventHandlerCb("a", 1));
-            eventHandlerCollection.add(new EventHandlerCb("b", 2));
-            eventHandlerCollection.add(new EventHandlerCb("c", 3));
+            eventHandlerCollection.add(new EventHandlerCbNode("a", 1));
+            eventHandlerCollection.add(new EventHandlerCbNode("b", 2));
+            eventHandlerCollection.add(new EventHandlerCbNode("c", 3));
             stringCollection.add(new StringHandler());
         }
 

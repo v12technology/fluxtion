@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,13 +12,13 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
-import com.fluxtion.test.event.EventHandlerCb;
+import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
 import org.junit.Test;
@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
  * @author Greg Higgins
  */
 public class JavaSourceModelTest {
@@ -35,9 +34,9 @@ public class JavaSourceModelTest {
     @Test
     public void sortCbHandlerTest() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,47 +12,47 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
-import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 
 /**
- *
  * @author Greg Higgins
  */
-public class EventHandlerCb extends AbstractFilteredEventHandler<TestEvent>{
-    
+public class EventHandlerCbNode extends AbstractEventHandlerNode<TestEvent> {
+
     public String id;
 
-    public EventHandlerCb(String id, int filterId) {
+    public EventHandlerCbNode(String id, int filterId) {
         super(filterId);
         this.id = id;
     }
 
-    public EventHandlerCb() {
+    public EventHandlerCbNode() {
     }
 
     @Override
     public Class<TestEvent> eventClass() {
         return TestEvent.class;
     }
-      
+
     @TearDown
-    public void tearDown(){
-        
+    public void tearDown() {
+
     }
-    
+
     @OnTrigger
-    public void onParentChange(){
+    public void onParentChange() {
     }
 
     @Override
-    public void onEvent(TestEvent e) {
+    public boolean onEvent(TestEvent e) {
+        return true;
     }
 
     @Override

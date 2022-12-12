@@ -17,7 +17,7 @@
 package com.fluxtion.compiler.builder;
 
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.google.auto.service.AutoService;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 /**
  * @author V12 Technology Ltd.
  */
-@AutoService(EventProcessorConfigService.class)
-public class EventProcessorConfigServiceImpl implements EventProcessorConfigService {
+@AutoService(EventProcessorBuilderService.class)
+public class EventProcessorBuilderServiceImpl implements EventProcessorBuilderService {
 
     @Override
     public <T> T add(T node) {

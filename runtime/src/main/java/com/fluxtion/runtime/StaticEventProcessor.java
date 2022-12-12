@@ -19,6 +19,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
@@ -30,7 +31,7 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 /**
- * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
+ * Processes events of any type and dispatches to registered {@link EventHandlerNode}
  * and methods annotated with {@link OnEventHandler}. An subclass of a StaticEventProcessor is
  * the product of running the event stream compiler on user input. On receipt of an event
  * the processor selects an execution path that comprises a set of application nodes that

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -41,7 +41,6 @@ import static org.junit.Assert.*;
 import static org.reflections.ReflectionUtils.*;
 
 /**
- *
  * @author Greg Higgins
  */
 public class SepModelTest {
@@ -49,9 +48,9 @@ public class SepModelTest {
     @Test
     public void initCBTest() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -95,9 +94,9 @@ public class SepModelTest {
     @Test
     public void sharedFilterTest() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 2);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 2);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -134,9 +133,9 @@ public class SepModelTest {
     @Test
     public void overrideFilterIdTest() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 2);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 2);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -186,9 +185,9 @@ public class SepModelTest {
     @Test
     public void sortCbHandlerTest() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -281,11 +280,11 @@ public class SepModelTest {
 
         List<?> extList = timeCbMap.get(FilterDescription.NO_FILTER).stream().map((cb) -> cb.instance).collect(Collectors.toList());
         assertThat(extList, IsIterableContainingInAnyOrder.containsInAnyOrder(noFilterHandler, i1, root));
-        
+
         FilterDescription fd = new FilterDescription(TimeEvent.class, 10);
         extList = timeCbMap.get(fd).stream().map((cb) -> cb.instance).collect(Collectors.toList());
         assertThat(extList, IsIterableContainingInAnyOrder.containsInAnyOrder(noFilterHandler, filter_10_Handler, i1, i2, root));
-        
+
         extList = timeCbMap.get(FilterDescription.INVERSE_FILTER).stream().map((cb) -> cb.instance).collect(Collectors.toList());
         assertThat(extList, IsIterableContainingInAnyOrder.containsInAnyOrder(inverseHandler, i2, root));
 
@@ -433,12 +432,12 @@ public class SepModelTest {
         assertEquals(implList.get(1).instance, root);
 
     }
-    
+
     @Test
-    public void testFilterOverridesOnAnnotation() throws Exception{
+    public void testFilterOverridesOnAnnotation() throws Exception {
         AnnotatedTimeHandler thExt = new AnnotatedTimeHandler(1);
         AnnotatedEventHandlerWithOverrideFilter thImpl = new AnnotatedEventHandlerWithOverrideFilter();
-        
+
         RootCB root = new RootCB("root");
         root.parents = new Object[]{thExt, thImpl};
 
@@ -446,11 +445,11 @@ public class SepModelTest {
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
-        sep.generateMetaModel();  
-        
+        sep.generateMetaModel();
+
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
-        assertEquals(2, dispatchMap.size());  
-        
+        assertEquals(2, dispatchMap.size());
+
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
         assertEquals(4, typedMap.size());
@@ -458,7 +457,7 @@ public class SepModelTest {
         List<CbMethodHandle> extList = typedMap.get(filterProducer.getFilterDescription(TimeEvent.class, 1));
         assertEquals(extList.get(0).instance, thImpl);
         assertEquals(extList.get(1).instance, thExt);
-        assertEquals(extList.get(2).instance, root);  
+        assertEquals(extList.get(2).instance, root);
 
         List<CbMethodHandle> implList = typedMap.get(
                 filterProducer.getFilterDescription(TimeEvent.class,
@@ -475,7 +474,7 @@ public class SepModelTest {
                         AnnotatedEventHandlerWithOverrideFilter.FILTER_STRING_TEST));
         assertEquals(extList.get(0).instance, thImpl);
         assertEquals(extList.get(1).instance, root);
-        
+
         extList = typedMap.get(filterProducer.getFilterDescription(TestEvent.class, 1));
         assertEquals(2, extList.size());
         assertEquals(extList.get(0).instance, thExt);
@@ -483,28 +482,28 @@ public class SepModelTest {
     }
 
     @Test
-    public void testNoPropogationAnnotation() throws Exception{
+    public void testNoPropogationAnnotation() throws Exception {
         AnnotatedHandlerNoPropogate thImpl = new AnnotatedHandlerNoPropogate();
-        
+
         RootCB root = new RootCB("root");
-        root.parents = new Object[]{ thImpl};
+        root.parents = new Object[]{thImpl};
 
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(thImpl, root);
         graph.generateDependencyTree();
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
-        sep.generateMetaModel();  
-        
+        sep.generateMetaModel();
+
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
         assertEquals(2, dispatchMap.size());
 
         Map<FilterDescription, List<CbMethodHandle>> typedMap = dispatchMap.get(TimeEvent.class);
         assertEquals(2, typedMap.size());
-        
+
         List<CbMethodHandle> implList = typedMap.get(FilterDescription.NO_FILTER);
         assertEquals(1, implList.size());
     }
-    
+
     @Test
     public void testOnCompleteOnRootHandler() throws Exception {
         AnnotatedOnCompleteTestEventHandler handler = new AnnotatedOnCompleteTestEventHandler(1);
@@ -521,9 +520,9 @@ public class SepModelTest {
 
         //post dispatch map
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();
-        Map<FilterDescription, List<CbMethodHandle>>  typedMap = postDispatchMap.get(TestEvent.class);
+        Map<FilterDescription, List<CbMethodHandle>> typedMap = postDispatchMap.get(TestEvent.class);
         assertEquals(1, typedMap.size());
-        
+
         //post dispatch map
         List<CbMethodHandle> extList = typedMap.get(filterProducer.getFilterDescription(TestEvent.class, 1));
         ArrayList<Object> luu = new ArrayList<>();
@@ -651,9 +650,9 @@ public class SepModelTest {
     @Test
     public void testParentUpdateCbHandler() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         ParentUpdateListener pl_1 = new ParentUpdateListener("pl_1");
         ParentUpdateListener pl_2 = new ParentUpdateListener("pl_2");
@@ -690,9 +689,9 @@ public class SepModelTest {
     @Test
     public void testParentListUpdateCbHandler() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         NodeWithParentList root = new NodeWithParentList(e1, e2, e3);
 //        RootCB eRoot = new RootCB("eRoot");
 //        ParentUpdateListener pl_1 = new ParentUpdateListener("pl_1");
@@ -711,7 +710,7 @@ public class SepModelTest {
         sep.generateMetaModel();
         final Map<Object, List<CbMethodHandle>> listenerMethodMap = sep.getParentUpdateListenerMethodMap();
         //test
-        CbMethodHandle cb_pl_1 = new CbMethodHandle(NodeWithParentList.class.getMethod("parentChanged", EventHandlerCb.class), root, graph.variableName(root));
+        CbMethodHandle cb_pl_1 = new CbMethodHandle(NodeWithParentList.class.getMethod("parentChanged", EventHandlerCbNode.class), root, graph.variableName(root));
 
         assertThat(listenerMethodMap.get(e1),
                 containsInAnyOrder(cb_pl_1));
@@ -724,9 +723,9 @@ public class SepModelTest {
     @Test
     public void testCbDirtyMethodFlag() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         ParentUpdateListener pl_1 = new ParentUpdateListener("pl_1");
         DirtyNotifierNode dirty_2 = new DirtyNotifierNode("dirty_2");

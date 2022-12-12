@@ -6,13 +6,12 @@
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.test.event.DefaultFilteredEventHandler;
+import com.fluxtion.test.event.DefaultEventHandlerNode;
 import com.fluxtion.test.event.TestEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author Greg Higgins
  */
 public class DefaultEventHandlerTest extends MultipleSepTargetInProcessTest {
@@ -23,10 +22,10 @@ public class DefaultEventHandlerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testDefaultHandler() throws Exception {
-        sep(c ->{
-            c.addNode(new DefaultFilteredEventHandler<>(10, TestEvent.class), "testHandlerimpl");
+        sep(c -> {
+            c.addNode(new DefaultEventHandlerNode<>(10, TestEvent.class), "testHandlerimpl");
         });
-        DefaultFilteredEventHandler<TestEvent> handler = getField("testHandlerimpl");
+        DefaultEventHandlerNode<TestEvent> handler = getField("testHandlerimpl");
         onEvent(new TestEvent());
         Assert.assertNull(handler.event);
 

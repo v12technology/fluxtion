@@ -22,7 +22,7 @@ import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.test.event.EventHandlerCb;
+import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.TestEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +46,9 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testAudit() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
@@ -68,9 +68,9 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testAuditInline() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
@@ -89,9 +89,9 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testNoInvocationAuditInline() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -30,7 +30,6 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Greg Higgins
  */
 public class TopologicallySortedDependencyGraphTest {
@@ -66,11 +65,11 @@ public class TopologicallySortedDependencyGraphTest {
         }
 
     }
-    
+
     /**
      * test inserting nodes via a Map.
-     * 
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     @Test
     public void testOrderedDefinedVarNames() throws Exception {
@@ -95,14 +94,14 @@ public class TopologicallySortedDependencyGraphTest {
             assertThat(graph.getSortedDependents(allNumbers[i]),
                     IsIterableContainingInOrder.contains(Arrays.copyOfRange(allNumbers, i, allNumbers.length)));
         }
-        
+
         Set<Object> nodes = nodeMap.keySet();
-        for (Map.Entry<Object, String> entry: nodeMap.entrySet()) {
+        for (Map.Entry<Object, String> entry : nodeMap.entrySet()) {
             Object inst = entry.getKey();
             String expectedName = entry.getValue();
             assertEquals(expectedName, graph.variableName(inst));
         }
-        
+
     }
 
     /**
@@ -181,9 +180,9 @@ public class TopologicallySortedDependencyGraphTest {
     public void testDirectChildren() throws Exception {
         //System.out.println("directChildren");
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -205,11 +204,11 @@ public class TopologicallySortedDependencyGraphTest {
         assertThat(instance.getDirectChildren(i1),
                 containsInAnyOrder(eRoot));
     }
-    
+
     @Test
-    public void testDisconnectedNodes() throws Exception{
+    public void testDisconnectedNodes() throws Exception {
         //System.out.println("testDisconnectedNodes");
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
         AnnotatedTimeHandlerNoFilter noFilterEh = new AnnotatedTimeHandlerNoFilter();
         AnnotatedTimeHandler th = new AnnotatedTimeHandler(200);
         RootCB eRoot = new RootCB("eRoot", noFilterEh);
@@ -219,16 +218,16 @@ public class TopologicallySortedDependencyGraphTest {
         instance.generateDependencyTree();
         //includes a default callback instance
         assertEquals(5, instance.getSortedDependents().size());
-        
+
     }
 
     @Test
     public void testDirectParents() throws Exception {
         //System.out.println("directParents");
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -250,14 +249,14 @@ public class TopologicallySortedDependencyGraphTest {
         assertThat(instance.getDirectParents(eRoot),
                 containsInAnyOrder(i1, i3));
     }
-    
+
     @Test
     public void testDirectParentsShared() throws Exception {
         //System.out.println("directParents");
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb eshared = new EventHandlerCb("eshared", 2);
-        EventHandlerCb e3 = new EventHandlerCb("e3", 3);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode eshared = new EventHandlerCbNode("eshared", 2);
+        EventHandlerCbNode e3 = new EventHandlerCbNode("e3", 3);
         RootCB eRoot = new RootCB("eRoot");
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
@@ -277,17 +276,17 @@ public class TopologicallySortedDependencyGraphTest {
         assertThat(instance.getDirectParents(i2),
                 containsInAnyOrder(e3, eshared));
     }
-    
+
     @Test
     public void testDirectParentsSharedFluentApi() throws Exception {
         //System.out.println("testDirectParentsSharedFluentApi");
         //
         EventProcessorConfig config = new EventProcessorConfig();
-        
+
         //set up modes
-        EventHandlerCb e1 = config.addNode(new EventHandlerCb("e1", 1));
-        EventHandlerCb eshared = config.addNode(new EventHandlerCb("eshared", 2));
-        EventHandlerCb e3 = config.addNode(new EventHandlerCb("e3", 3));
+        EventHandlerCbNode e1 = config.addNode(new EventHandlerCbNode("e1", 1));
+        EventHandlerCbNode eshared = config.addNode(new EventHandlerCbNode("eshared", 2));
+        EventHandlerCbNode e3 = config.addNode(new EventHandlerCbNode("e3", 3));
         RootCB eRoot = config.addNode(new RootCB("eRoot"));
         InitCB i1 = config.addNode(new InitCB("i1"));
         InitCB i2 = config.addNode(new InitCB("i2"));
@@ -296,8 +295,7 @@ public class TopologicallySortedDependencyGraphTest {
         i2.parents = new Object[]{eshared, e3};
         eRoot.parents = new Object[]{i1, i2};
 
-        
-        
+
 //        GenerationContext context = new GenerationContext(config);
         //generate model
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
@@ -309,19 +307,19 @@ public class TopologicallySortedDependencyGraphTest {
         assertThat(instance.getDirectParents(i2),
                 containsInAnyOrder(e3, eshared));
     }
-    
-    
+
+
     @Test
-    public void testArrayListParents() throws Exception{
+    public void testArrayListParents() throws Exception {
         //System.out.println("testArrayListParents");
         //
         EventProcessorConfig config = new EventProcessorConfig();
         //set up modes
-        EventHandlerCb e1 = config.addNode(new EventHandlerCb("e1", 1));
-        EventHandlerCb eshared = config.addNode(new EventHandlerCb("eshared", 2));
-        EventHandlerCb e3 = config.addNode(new EventHandlerCb("e3", 3));
-        NodeWithParentList eRoot = config.addNode(new NodeWithParentList(e1,eshared, e3));
-        
+        EventHandlerCbNode e1 = config.addNode(new EventHandlerCbNode("e1", 1));
+        EventHandlerCbNode eshared = config.addNode(new EventHandlerCbNode("eshared", 2));
+        EventHandlerCbNode e3 = config.addNode(new EventHandlerCbNode("e3", 3));
+        NodeWithParentList eRoot = config.addNode(new NodeWithParentList(e1, eshared, e3));
+
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(config);
         instance.generateDependencyTree();
         assertThat(instance.getDirectParents(eRoot),
