@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.concurrent.atomic.LongAdder;
@@ -39,6 +40,22 @@ public interface Fluxtion {
     @SneakyThrows
     static EventProcessor compile(SerializableConsumer<EventProcessorConfig> sepConfig) {
         return EventProcessorFactory.compile(sepConfig);
+    }
+
+    /**
+     * Compiles the SEP in memory and captures the output to a user supplied {@link Writer}
+     *
+     * @param sepConfig    graph building config
+     * @param sourceWriter target source writer
+     * @return
+     */
+    @SneakyThrows
+    static EventProcessor compile(SerializableConsumer<EventProcessorConfig> sepConfig, Writer sourceWriter) {
+        return EventProcessorFactory.compile(sepConfig, c -> {
+            c.setSourceWriter(sourceWriter);
+            c.setWriteSourceToFile(false);
+            c.setFormatSource(true);
+        });
     }
 
     @SneakyThrows

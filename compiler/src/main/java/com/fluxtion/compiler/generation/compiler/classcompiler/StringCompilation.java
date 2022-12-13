@@ -1,5 +1,8 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventhandlerAnnotations;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations;
+
 import javax.tools.DiagnosticCollector;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -34,7 +37,7 @@ public interface StringCompilation {
         JavaCompiler.CompilationTask task = compiler.getTask(
                 null, fileManager, diagnostics, null, null, Collections.singletonList(new JavaStringObject(className, source))
         );
-
+        task.setProcessors(Arrays.asList(new ValidateEventhandlerAnnotations(), new ValidateLifecycleAnnotations()));
         if (!task.call()) {
             diagnostics.getDiagnostics().forEach(System.out::println);
             throw new RuntimeException("unable to compile source file to class:'" + className + "'");
