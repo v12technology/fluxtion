@@ -23,6 +23,7 @@ import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
+import com.google.googlejavaformat.java.Formatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -109,6 +110,15 @@ public class EventProcessorCompilation {
             LOG.info("generated EventProcessor file: " + file.getCanonicalPath());
         } else {
             LOG.info("generated EventProcessor in memory");
+            if (compilerConfig.isFormatSource()) {
+                String formatSource = new Formatter().formatSource(writer.toString());
+                writer = new StringWriter();
+                writer.write(formatSource);
+            }
+            if (compilerConfig.getSourceWriter() != null) {
+                compilerConfig.getSourceWriter().write(writer.toString());
+                writer = compilerConfig.getSourceWriter();
+            }
         }
         if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");

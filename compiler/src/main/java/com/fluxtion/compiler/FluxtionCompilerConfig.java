@@ -19,6 +19,9 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.OutputRegistry;
 
+import java.io.StringWriter;
+import java.io.Writer;
+
 import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
 /**
@@ -87,6 +90,11 @@ public class FluxtionCompilerConfig {
      */
     private boolean writeSourceToFile;
 
+    /**
+     * The if {@link #writeSourceToFile} is false this writer will capture the content of the generation process
+     */
+    private Writer sourceWriter;
+
     private transient ClassLoader classLoader;
 
     public FluxtionCompilerConfig() {
@@ -98,6 +106,7 @@ public class FluxtionCompilerConfig {
         classLoader = FluxtionCompilerConfig.class.getClassLoader();
         outputDirectory = OutputRegistry.JAVA_SRC_DIR;
         resourcesOutputDirectory = OutputRegistry.RESOURCE_DIR;
+        sourceWriter = new StringWriter();
     }
 
     public String getPackageName() {
@@ -182,6 +191,16 @@ public class FluxtionCompilerConfig {
 
     public void setFormatSource(boolean formatSource) {
         this.formatSource = formatSource;
+    }
+
+    public Writer getSourceWriter() {
+        return sourceWriter;
+    }
+
+    public void setSourceWriter(Writer sourceWriter) {
+        setFormatSource(true);
+        setWriteSourceToFile(false);
+        this.sourceWriter = sourceWriter;
     }
 
     @Override
