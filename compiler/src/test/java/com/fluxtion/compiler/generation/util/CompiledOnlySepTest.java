@@ -1,12 +1,11 @@
 package com.fluxtion.compiler.generation.util;
 
-import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class CompiledOnlySepTest extends MultipleSepTargetInProcessTest {
+public abstract class CompiledOnlySepTest extends MultipleSepTargetInProcessTest {
 
     public CompiledOnlySepTest(boolean compile) {
         super(true);
@@ -17,7 +16,4 @@ public class CompiledOnlySepTest extends MultipleSepTargetInProcessTest {
         return Arrays.asList(true);
     }
 
-    @Test
-    public void doNothingTest() {
-    }
 }

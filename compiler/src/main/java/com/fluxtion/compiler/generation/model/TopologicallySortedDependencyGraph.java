@@ -27,8 +27,6 @@ import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.node.Anchor;
-import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.Initialise;
@@ -49,6 +47,8 @@ import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.Anchor;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -800,6 +800,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 continue;
             }
             Object refField = field.get(object);
+            if (inst2Name.containsKey(refField) && refField != object) {
+                refField = inst2Name.inverse().get(inst2Name.get(refField));
+                try {
+                    field.set(object, refField);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    //throw new RuntimeException(e);
+                }
+            }
+
             String refName = getInstanceName(field, object);
             if (refField != null && refField.equals(object)) {
                 //no self reference loops
