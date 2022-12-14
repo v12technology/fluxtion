@@ -109,7 +109,22 @@ public interface ClassUtils {
         if (List.class.isAssignableFrom(clazz)) {
             importList.add(Arrays.class);
             List values = (List) primitiveVal;
-            primitiveVal = values.stream().map(f -> mapToJavaSource(f, nodeFields, importList)).collect(Collectors.joining(", ", "Arrays.asList(", ")"));
+            List newList = new ArrayList();
+            values.stream().forEach(item -> {
+                boolean foundMatch = false;
+                for (Field nodeField : nodeFields) {
+                    if (nodeField.instance.equals(item)) {
+                        newList.add(nodeField.instance);
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if (!foundMatch) {
+                    newList.add(item);
+                }
+
+            });
+            primitiveVal = newList.stream().map(f -> mapToJavaSource(f, nodeFields, importList)).collect(Collectors.joining(", ", "Arrays.asList(", ")"));
         }
         if (clazz.isArray()) {
             Class arrayType = clazz.getComponentType();
@@ -119,6 +134,12 @@ public interface ClassUtils {
             int length = Array.getLength(primitiveVal);
             for (int i = 0; i < length; i++) {
                 Object arrayElement = Array.get(primitiveVal, i);
+                for (Field nodeField : nodeFields) {
+                    if (nodeField.instance.equals(arrayElement)) {
+                        arrayElement = (nodeField.instance);
+                        break;
+                    }
+                }
                 strings.add(mapToJavaSource(arrayElement, nodeFields, importList));
             }
 //            Object[] values = (Object[]) primitiveVal;
