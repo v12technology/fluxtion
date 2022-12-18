@@ -814,7 +814,6 @@ public class SimpleEventProcessorModel {
         Collections.reverse(allPostEventCallBacks);
 
         handlerOnlyDispatchMap = new HashMap<>();
-        //TODO sort the classes by a deteministic comparator
         Set<Class<?>> keySet = dispatchMap.keySet();
         HashSet<Class<?>> classSet = new HashSet<>(keySet);
         ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
