@@ -230,6 +230,14 @@ public abstract class MultipleSepTargetInProcessTest {
         sep.onEvent(e);
     }
 
+    protected void bufferEvent(Object e) {
+        sep.bufferEvent(e);
+    }
+
+    protected void triggerCalculation() {
+        sep.triggerCalculation();
+    }
+
     protected void onEvent(byte value) {
         onEvent((Byte) value);
     }
