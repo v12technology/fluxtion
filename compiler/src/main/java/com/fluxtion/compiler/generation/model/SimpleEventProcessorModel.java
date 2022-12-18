@@ -22,19 +22,7 @@ import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.FilterId;
-import com.fluxtion.runtime.annotations.FilterType;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnBatchPause;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
@@ -52,21 +40,8 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -152,6 +127,12 @@ public class SimpleEventProcessorModel {
     private List<CbMethodHandle> allEventCallBacks;
 
     /**
+     * A topologically sorted list of all post event {@link CbMethodHandle} in this graph. These methods are
+     * annotated with {@link AfterTrigger}
+     */
+    private List<CbMethodHandle> allPostEventCallBacks;
+
+    /**
      * The dispatch map for event handling, grouped by event filter id's. Class
      * is the class of the Event. Integer is the filter Id. These methods are
      * annotated with {@link OnTrigger} or {@link OnEventHandler}
@@ -164,6 +145,8 @@ public class SimpleEventProcessorModel {
      * are annotated with {@link AfterTrigger}
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
+
+    private Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap;
 
     /**
      * Map of callback methods of a node's direct dependents that will be
@@ -791,6 +774,29 @@ public class SimpleEventProcessorModel {
                 .flatMap(Collection::stream)
                 .flatMap(List::stream).distinct().collect(Collectors.toList());
         dependencyGraph.sortNodeList(allEventCallBacks);
+
+        allPostEventCallBacks = postDispatchMap.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .flatMap(List::stream).distinct().collect(Collectors.toList());
+        dependencyGraph.sortNodeList(allPostEventCallBacks);
+        Collections.reverse(allPostEventCallBacks);
+
+        handlerOnlyDispatchMap = new HashMap<>();
+        //TODO sort the classes by a deteministic comparator
+        dispatchMap.forEach((evenClazz, originalFilterMap) -> {
+            HashMap<FilterDescription, List<CbMethodHandle>> filterDispatchMap = new HashMap<>();
+            handlerOnlyDispatchMap.put(evenClazz, filterDispatchMap);
+            originalFilterMap.forEach((filter, cbList) -> {
+                filterDispatchMap.put(
+                        filter,
+                        cbList.stream()
+                                .filter(cb -> cb.isEventHandler() || cb.isNoPropagateEventHandler())
+                                .collect(Collectors.toList())
+                );
+            });
+        });
+
     }
 
     public List<?> getDirectChildrenListeningForEvent(Object parent) {
@@ -1060,12 +1066,26 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(allEventCallBacks);
     }
 
+    public List<CbMethodHandle> getAllPostEventCallBacks() {
+        return Collections.unmodifiableList(allPostEventCallBacks);
+    }
+
+    public List<CbMethodHandle> getTriggerOnlyCallBacks() {
+        return allEventCallBacks.stream()
+                .filter(cb -> !(cb.isEventHandler() || cb.isNoPropagateEventHandler()))
+                .collect(Collectors.toList());
+    }
+
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
         return Collections.unmodifiableMap(dispatchMap);
     }
 
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getPostDispatchMap() {
         return Collections.unmodifiableMap(postDispatchMap);
+    }
+
+    public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getHandlerOnlyDispatchMap() {
+        return Collections.unmodifiableMap(handlerOnlyDispatchMap);
     }
 
     public Map<Object, List<CbMethodHandle>> getParentUpdateListenerMethodMap() {

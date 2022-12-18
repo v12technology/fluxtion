@@ -19,11 +19,7 @@ package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import com.fluxtion.compiler.generation.model.DirtyFlag;
-import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -37,17 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperToPrimitive;
@@ -175,7 +162,7 @@ public class JavaSourceGenerator {
     /**
      * determines whether separate delegate eventHandling methods are generated.
      */
-    private final boolean isInlineEventHandling;
+    private boolean isInlineEventHandling;
 
     /**
      * String representing event audit dispatch
@@ -472,9 +459,185 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
+        generateEventBufferedDispatcher();
         if (auditingEvent) {
             eventHandlers += auditMethodString;
         }
+    }
+
+    private void generateEventBufferedDispatcher() {
+        StringBuilder noTriggerDispatch = new StringBuilder();
+        //build buffer event method
+        String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
+                "        //dispatch without after event\n" +
+                "        switch (event.getClass().getName()) {\n";
+
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
+        //sort class so repeatable
+        boolean prev = isInlineEventHandling;
+        isInlineEventHandling = true;
+        handlerOnlyDispatchMap.forEach((c, m) -> {
+            String className = getClassName(c.getCanonicalName());
+            noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
+            noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
+            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), c));
+            noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+            noTriggerDispatch.append(String.format("%12s}%n", ""));
+        });
+        noTriggerDispatch.append(String.format("%8s}%n", ""));
+        noTriggerDispatch.append(String.format("%4s}%n", ""));
+        bufferEvents += noTriggerDispatch.toString();
+        ct.setLength(0);
+
+
+        //build buffered dispatch trigger
+        String bufferedTrigger = "\n    public void dispatchBufferedEvents(){\n";
+        Map<FilterDescription, List<CbMethodHandle>> cbMap = new HashMap<>();
+        cbMap.put(FilterDescription.DEFAULT_FILTER, model.getTriggerOnlyCallBacks());
+        Map<FilterDescription, List<CbMethodHandle>> cbMapPostDispatch = new HashMap<>();
+        cbMapPostDispatch.put(FilterDescription.DEFAULT_FILTER, model.getAllPostEventCallBacks());
+
+
+        StringBuilder triggeredDispatch = new StringBuilder();
+        triggeredDispatch.append(bufferedTrigger);
+
+        triggeredDispatch.append(buildFilteredSwitch(cbMap, cbMapPostDispatch, Object.class, false, true));
+
+//        triggeredDispatch.append(buildFilteredDispatch(cbMap, cbMapPostDispatch, Object.class));
+        triggeredDispatch.append("        afterEvent();\n");
+        triggeredDispatch.append("\n    }\n");
+        bufferedTrigger = triggeredDispatch.toString();
+
+        isInlineEventHandling = prev;
+
+
+//        List<CbMethodHandle> triggerOnlyCallBacks = model.getTriggerOnlyCallBacks();
+//        //inject
+//        for (CbMethodHandle method : triggerOnlyCallBacks) {
+//            //bufferedTrigger += String.format("%12s%s.%s();", "", method.getVariableName(), method.getMethod().getName());
+//
+//
+//            DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
+//            String dirtyAssignment = "";
+//            if (dirtyFlagForUpdateCb != null) {
+//                if (dirtyFlagForUpdateCb.alwaysDirty) {
+//                    dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+//                } else {
+//                    dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
+//                }
+//            }
+//            //protect with guards
+//            Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
+//            //HERE TO JOIN THINGS
+//            String OR = "";
+//            if (nodeGuardConditions.size() > 0) {
+//                ct.append(s24).append("if(guardCheck_" + method.getVariableName() + "()) {\n");
+//            }
+//
+//            //add audit
+//            if (auditingInvocations) {
+//                ct.append(s24).append("auditInvocation(")
+//                        .append(method.variableName)
+//                        .append(", \"").append(method.variableName).append("\"")
+//                        .append(", \"").append(method.method.getName()).append("\"")
+//                        .append(", typedEvent")
+//                        .append(");\n");
+//            }
+//            //assign return if appropriate
+//            if (method.parameterClass == null) {
+//                ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
+//            } else {
+//                ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+//            }
+//            if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
+//                ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
+//            }
+//            //child callbacks - listening to an individual parent change
+//            //if guards are in operation for the parent node, conditionally invoke only on a change
+//            final Map<Object, List<CbMethodHandle>> listenerMethodMap = model.getParentUpdateListenerMethodMap();
+//            Object parent = method.instance;
+//            String parentVar = method.variableName;
+//
+//            //guard
+//            DirtyFlag parentFlag = model.getDirtyFieldMap().get(model.getFieldForInstance(parent));
+//            //the parent listener map should be keyed on instance and event filter
+//            //we carry out filtering here so that no propagate annotations on parents
+//            //do not generate the parent callback
+//            List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
+//            final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
+//            if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
+//            } else {
+//                if (parentFlag != null && updateListenerCbList.size() > 0) {
+//                    //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
+//                    ct.append(s20 + "if(").append(parentFlag.name).append(") {\n");
+//                }
+//                //child callbacks
+//                boolean unguarded = false;
+//                StringBuilder sbUnguarded = new StringBuilder();
+//                for (CbMethodHandle cbMethod : updateListenerCbList) {
+//                    //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
+//                    if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
+//                        unguarded = true;
+//                        sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+//                    } else {
+//                        ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+//                    }
+//                }
+//                if (parentFlag != null && updateListenerCbList.size() > 0) {
+//                    //callTree += String.format("%20s}\n", "", parentFlag.name);
+//                    ct.append(s20).append("}\n");
+//                    if (unguarded) {
+//                        ct.append(sbUnguarded);
+//                    }
+//                }
+//                //close guards clause
+//                if (nodeGuardConditions.size() > 0) {
+//                    //callTree += String.format("%16s}\n", "");
+//                    ct.append(s16 + "}\n");
+//                }
+//            }
+//        }
+//
+//        //POST DISPATCH
+//        ct.append(s8 + "//event stack unwind callbacks\n");
+//        List<CbMethodHandle> allPostEventCallBacks = model.getAllPostEventCallBacks();
+//        for (CbMethodHandle method : allPostEventCallBacks) {
+//            //protect with guards
+//            Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
+//            String OR = "";
+//            if (nodeGuardConditions.size() > 0) {
+//                ct.append(s24 + "if(");
+//                for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
+//                    ct.append(OR).append(nodeGuardCondition.name);
+////                            OR = " || ";
+//                    OR = " | ";
+//                }
+//                ct.append(") {\n");
+//            }
+//
+//            //assign return if appropriate
+//            if (method.parameterClass == null) {
+//                ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
+//            } else {
+//                ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+//            }
+//            //close guarded clause
+//            if (nodeGuardConditions.size() > 0) {
+//                ct.append(s16 + "}\n");
+//            }
+//        }
+//
+//        //FINSIH METHOD
+//        bufferedTrigger += ct.toString();
+//        bufferedTrigger += "        afterEvent();\n";
+//        bufferedTrigger += "\n    }\n";
+
+        eventHandlers += bufferEvents;
+        eventHandlers += bufferedTrigger;
+    }
+
+    public void dispatchBufferedEvents() {
+
     }
 
     /**
