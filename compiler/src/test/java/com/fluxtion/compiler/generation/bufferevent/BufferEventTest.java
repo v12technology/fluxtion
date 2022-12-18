@@ -2,7 +2,12 @@ package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import lombok.Value;
 import org.junit.Assert;
 import org.junit.Test;

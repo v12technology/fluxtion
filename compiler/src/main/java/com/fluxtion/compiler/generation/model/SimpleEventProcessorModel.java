@@ -172,6 +172,11 @@ public class SimpleEventProcessorModel {
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
 
+    /**
+     * The dispatch map for event handling, grouped by event filter id's. Class
+     * is the class of the Event. Integer is the filter Id. These methods are
+     * annotated with {@link OnEventHandler}. Methods annotated with {@link OnTrigger} are not in this dispatchMap
+     */
     private Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap;
 
     /**
