@@ -63,7 +63,8 @@ public interface StaticEventProcessor {
     BooleanSupplier ALWAYS_FALSE = () -> false;
 
     /**
-     * Called when a new event e is ready to be processed.
+     * Called when a new event e is ready to be processed. Calls a {@link #triggerCalculation()} first if any events
+     * have been buffered.
      *
      * @param e the {@link com.fluxtion.runtime.event.Event Event} to process.
      */
@@ -97,10 +98,21 @@ public interface StaticEventProcessor {
         onEvent((Long) value);
     }
 
+    /**
+     * Buffers an event as part of a transaction only EventHandler methods are invoked, no OnTrigger methods are
+     * processed. EventHandlers are marked as dirty ready for {@link #triggerCalculation()} to invoke a full event cycle
+     *
+     * @param event
+     */
     default void bufferEvent(Object event) {
         throw new UnsupportedOperationException("buffering of events not supported");
     }
 
+    /**
+     * Runs a graph calculation cycle invoking any {@link com.fluxtion.runtime.annotations.OnTrigger} methods whose
+     * parents are marked dirty. Used in conjunction with {@link #bufferEvent(Object)}, this method marks event handlers
+     * as dirty.
+     */
     default void triggerCalculation() {
         throw new UnsupportedOperationException("buffering of events not supported");
     }

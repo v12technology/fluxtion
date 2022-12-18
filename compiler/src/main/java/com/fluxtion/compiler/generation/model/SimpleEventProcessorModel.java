@@ -833,20 +833,6 @@ public class SimpleEventProcessorModel {
                 );
             });
         }
-
-//        dispatchMap.forEach((evenClazz, originalFilterMap) -> {
-//            HashMap<FilterDescription, List<CbMethodHandle>> filterDispatchMap = new HashMap<>();
-//            handlerOnlyDispatchMap.put(evenClazz, filterDispatchMap);
-//            originalFilterMap.forEach((filter, cbList) -> {
-//                filterDispatchMap.put(
-//                        filter,
-//                        cbList.stream()
-//                                .filter(cb -> cb.isEventHandler() || cb.isNoPropagateEventHandler())
-//                                .collect(Collectors.toList())
-//                );
-//            });
-//        });
-
     }
 
     public List<?> getDirectChildrenListeningForEvent(Object parent) {

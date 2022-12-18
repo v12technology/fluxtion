@@ -456,7 +456,6 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
-//        String cachedAuditMethodString = auditMethodString;
         generateEventBufferedDispatcher();
         if (auditingEvent) {
             eventHandlers += auditMethodString;
