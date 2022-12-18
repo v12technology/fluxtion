@@ -97,6 +97,14 @@ public interface StaticEventProcessor {
         onEvent((Long) value);
     }
 
+    default void bufferEvent(Object event) {
+        throw new UnsupportedOperationException("buffering of events not supported");
+    }
+
+    default void dispatchBufferedEvents() {
+        throw new UnsupportedOperationException("buffering of events not supported");
+    }
+
     default <T> void addSink(String id, Consumer<T> sink) {
         onEvent(SinkRegistration.sink(id, sink));
     }
