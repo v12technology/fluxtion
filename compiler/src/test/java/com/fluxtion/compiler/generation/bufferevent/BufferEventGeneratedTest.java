@@ -61,6 +61,23 @@ public class BufferEventGeneratedTest extends CompiledOnlySepTest {
         MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(1));
     }
 
+    @Test
+    public void testBufferedDispatchImpliedTriggerFromExternalEvent() {
+        writeSourceFile = true;
+        sep(c -> {
+            c.addNode(new Combiner(), "combiner");
+        });
+
+        MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(0));
+        bufferEvent("test");
+        bufferEvent("dfsf");
+        bufferEvent("ff");
+        bufferEvent(12);
+        MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(0));
+        onEvent(14);
+        MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(2));
+    }
+
     public static class EventHolder {
 
         @OnEventHandler

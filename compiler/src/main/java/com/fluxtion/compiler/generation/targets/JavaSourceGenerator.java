@@ -467,7 +467,7 @@ public class JavaSourceGenerator {
         StringBuilder noTriggerDispatch = new StringBuilder();
         //build buffer event method
         String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
-                "        //dispatch without after event\n" +
+                "        buffering = true;\n" +
                 "        switch (event.getClass().getName()) {\n";
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
@@ -494,7 +494,8 @@ public class JavaSourceGenerator {
         Map<FilterDescription, List<CbMethodHandle>> cbMapPostDispatch = new HashMap<>();
         cbMapPostDispatch.put(FilterDescription.DEFAULT_FILTER, model.getAllPostEventCallBacks());
         String dispatchString = buildFilteredSwitch(cbMap, cbMapPostDispatch, Object.class, false, true);
-        String bufferedTrigger = "\n    public void dispatchBufferedEvents(){\n" +
+        String bufferedTrigger = "\n    public void triggerCalculation(){\n" +
+                "        buffering = false;\n" +
                 "        String typedEvent = \"No event information - buffered dispatch\";\n" +
                 (dispatchString == null ? "" : dispatchString) +
                 "        afterEvent();\n" +

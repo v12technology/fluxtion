@@ -101,7 +101,7 @@ public interface StaticEventProcessor {
         throw new UnsupportedOperationException("buffering of events not supported");
     }
 
-    default void dispatchBufferedEvents() {
+    default void triggerCalculation() {
         throw new UnsupportedOperationException("buffering of events not supported");
     }
 

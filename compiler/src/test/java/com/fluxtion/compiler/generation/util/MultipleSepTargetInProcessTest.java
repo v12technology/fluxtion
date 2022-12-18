@@ -235,7 +235,7 @@ public abstract class MultipleSepTargetInProcessTest {
     }
 
     protected void triggerCalculation() {
-        sep.dispatchBufferedEvents();
+        sep.triggerCalculation();
     }
 
     protected void onEvent(byte value) {
