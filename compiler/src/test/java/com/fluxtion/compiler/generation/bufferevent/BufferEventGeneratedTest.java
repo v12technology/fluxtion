@@ -1,7 +1,12 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import lombok.Value;
 import org.junit.Test;
 
@@ -18,6 +23,22 @@ public class BufferEventGeneratedTest extends CompiledOnlySepTest {
         writeSourceFile = true;
         sep(c -> {
             c.addNode(new Child(new EventHolder()));
+        });
+    }
+
+    @Test
+    public void noTriggerClassTest() {
+        writeSourceFile = true;
+        sep(c -> {
+            c.addNode(new DateHandler());
+        });
+    }
+
+    @Test
+    public void noTriggerClassWithAfterTest() {
+        writeSourceFile = true;
+        sep(c -> {
+            c.addNode(new EventHolder());
         });
     }
 
@@ -64,6 +85,12 @@ public class BufferEventGeneratedTest extends CompiledOnlySepTest {
 
         @Initialise
         public void initChild() {
+        }
+    }
+
+    public static class DateHandler {
+        @OnEventHandler
+        public void onDate(Date date) {
         }
     }
 }
