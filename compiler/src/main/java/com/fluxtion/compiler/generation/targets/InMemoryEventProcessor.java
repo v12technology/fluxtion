@@ -35,6 +35,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
     private final BitSet dirtyBitset = new BitSet();
+    private final BitSet eventOnlyBitset = new BitSet();
+    private boolean buffering = false;
     private final List<Node> eventHandlers = new ArrayList<>();
     private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
     private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
@@ -46,6 +48,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @Override
     @SneakyThrows
     public void onEvent(Object event) {
+        if (buffering) {
+            triggerCalculation();
+        }
         if (processing) {
             SimpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
         } else {
@@ -56,19 +61,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
     }
 
-    public void onEventInternal(Object event) {
-        currentEvent = event;
-        Object defaultEvent = checkForDefaultEventHandling(event);
-        log.debug("dirtyBitset, before:{}", dirtyBitset);
-        auditNewEvent(event);
-        filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(defaultEvent), Collections.emptyList()).forEach(dirtyBitset::set);
-        if (dirtyBitset.isEmpty()) {
-            noFilterEventHandlerToBitsetMap.getOrDefault(defaultEvent.getClass(), Collections.emptyList()).forEach(dirtyBitset::set);
-        }
+    @Override
+    public void bufferEvent(Object event) {
+        buffering = true;
+        processEvent(event, true);
+    }
 
-        //now actually dispatch
+    @Override
+    public void triggerCalculation() {
         log.debug("dirtyBitset, after:{}", dirtyBitset);
-        log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
+        log.debug("======== GRAPH CYCLE START BUFFER EVENT ========");
         log.debug("======== process event ========");
         for (int i = dirtyBitset.nextSetBit(0); i >= 0; i = dirtyBitset.nextSetBit(i + 1)) {
             log.debug("event dispatch bitset id[{}] handler[{}::{}]",
@@ -76,11 +78,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
                     eventHandlers.get(i).callbackHandle.getMethod().getName()
             );
-            eventHandlers.get(i).onEvent(event);
+            eventHandlers.get(i).onEvent(null);
         }
+        postEventProcessing();
+        buffering = false;
+    }
+
+    public void postEventProcessing() {
         log.debug("======== eventComplete ========");
         for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i - 1)) >= 0; ) {
-            if (eventHandlers.get(i).willInvokeEventComplet()) {
+            if (eventHandlers.get(i).willInvokeEventComplete()) {
                 log.debug("event dispatch bitset id[{}] handler[{}::{}]",
                         i,
                         eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
@@ -89,7 +96,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
             eventHandlers.get(i).eventComplete();
         }
-        log.debug("======== GRAPH CYCLE END   EVENT:[{}] ========", event);
+        log.debug("======== GRAPH CYCLE END   EVENT:[{}] ========", currentEvent);
         auditors.stream()
                 .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
                 .forEach(Auditor::processingComplete);
@@ -101,6 +108,40 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         dirtyBitset.clear();
         log.debug("dirtyBitset, afterClear:{}", dirtyBitset);
         currentEvent = null;
+    }
+
+    private void processEvent(Object event, boolean buffer) {
+        currentEvent = event;
+        Object defaultEvent = checkForDefaultEventHandling(event);
+        log.debug("dirtyBitset, before:{}", dirtyBitset);
+        auditNewEvent(event);
+        final BitSet updateBitset = buffer ? eventOnlyBitset : dirtyBitset;
+        filteredEventHandlerToBitsetMap.getOrDefault(FilterDescription.build(defaultEvent), Collections.emptyList()).forEach(updateBitset::set);
+        if (updateBitset.isEmpty()) {
+            noFilterEventHandlerToBitsetMap.getOrDefault(defaultEvent.getClass(), Collections.emptyList()).forEach(updateBitset::set);
+        }
+        //now actually dispatch
+        log.debug("dirtyBitset, after:{}", updateBitset);
+        log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
+        log.debug("======== process event ========");
+        for (int i = updateBitset.nextSetBit(0); i >= 0; i = updateBitset.nextSetBit(i + 1)) {
+            log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+                    i,
+                    eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                    eventHandlers.get(i).callbackHandle.getMethod().getName()
+            );
+            eventHandlers.get(i).onEvent(event);
+        }
+
+        if (!buffer) {
+            postEventProcessing();
+        }
+        updateBitset.clear();
+    }
+
+
+    public void onEventInternal(Object event) {
+        processEvent(event, false);
     }
 
     public boolean isDirty(Object node) {
@@ -203,6 +244,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
         dirtyBitset.clear(dispatchMapForGraph.size());
         dirtyBitset.clear();
+        eventOnlyBitset.clear(dispatchMapForGraph.size());
+        eventOnlyBitset.or(dirtyBitset);
 
         //set up array of all callback methods
         final Map<Object, List<CbMethodHandle>> parentUpdateListenerMethodMap = simpleEventProcessorModel.getParentUpdateListenerMethodMap();
@@ -330,13 +373,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             }
         }
 
-        public boolean willInvokeEventComplet() {
+        public boolean willInvokeEventComplete() {
             return dirty && onEventCompleteMethod != null;
         }
 
         @SneakyThrows
         public void eventComplete() {
-            if (willInvokeEventComplet()) {
+            if (willInvokeEventComplete()) {
                 auditors.stream()
                         .filter(Auditor::auditInvocations)
                         .forEachOrdered(a -> a.nodeInvoked(

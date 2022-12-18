@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -152,6 +153,12 @@ public class SimpleEventProcessorModel {
     private List<CbMethodHandle> allEventCallBacks;
 
     /**
+     * A topologically sorted list of all post event {@link CbMethodHandle} in this graph. These methods are
+     * annotated with {@link AfterTrigger}
+     */
+    private List<CbMethodHandle> allPostEventCallBacks;
+
+    /**
      * The dispatch map for event handling, grouped by event filter id's. Class
      * is the class of the Event. Integer is the filter Id. These methods are
      * annotated with {@link OnTrigger} or {@link OnEventHandler}
@@ -164,6 +171,13 @@ public class SimpleEventProcessorModel {
      * are annotated with {@link AfterTrigger}
      */
     private final Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap;
+
+    /**
+     * The dispatch map for event handling, grouped by event filter id's. Class
+     * is the class of the Event. Integer is the filter Id. These methods are
+     * annotated with {@link OnEventHandler}. Methods annotated with {@link OnTrigger} are not in this dispatchMap
+     */
+    private Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap;
 
     /**
      * Map of callback methods of a node's direct dependents that will be
@@ -791,6 +805,33 @@ public class SimpleEventProcessorModel {
                 .flatMap(Collection::stream)
                 .flatMap(List::stream).distinct().collect(Collectors.toList());
         dependencyGraph.sortNodeList(allEventCallBacks);
+
+        allPostEventCallBacks = postDispatchMap.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .flatMap(List::stream).distinct().collect(Collectors.toList());
+        dependencyGraph.sortNodeList(allPostEventCallBacks);
+        Collections.reverse(allPostEventCallBacks);
+
+        handlerOnlyDispatchMap = new HashMap<>();
+        Set<Class<?>> keySet = dispatchMap.keySet();
+        HashSet<Class<?>> classSet = new HashSet<>(keySet);
+        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
+        clazzList.sort(Comparator.comparing(Class::getName));
+
+        for (Class evenClazz : clazzList) {
+            Map<FilterDescription, List<CbMethodHandle>> originalFilterMap = dispatchMap.get(evenClazz);
+            HashMap<FilterDescription, List<CbMethodHandle>> filterDispatchMap = new HashMap<>();
+            handlerOnlyDispatchMap.put(evenClazz, filterDispatchMap);
+            originalFilterMap.forEach((filter, cbList) -> {
+                filterDispatchMap.put(
+                        filter,
+                        cbList.stream()
+                                .filter(cb -> cb.isEventHandler() || cb.isNoPropagateEventHandler())
+                                .collect(Collectors.toList())
+                );
+            });
+        }
     }
 
     public List<?> getDirectChildrenListeningForEvent(Object parent) {
@@ -1060,12 +1101,26 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(allEventCallBacks);
     }
 
+    public List<CbMethodHandle> getAllPostEventCallBacks() {
+        return Collections.unmodifiableList(allPostEventCallBacks);
+    }
+
+    public List<CbMethodHandle> getTriggerOnlyCallBacks() {
+        return allEventCallBacks.stream()
+                .filter(cb -> !(cb.isEventHandler() || cb.isNoPropagateEventHandler()))
+                .collect(Collectors.toList());
+    }
+
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
         return Collections.unmodifiableMap(dispatchMap);
     }
 
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getPostDispatchMap() {
         return Collections.unmodifiableMap(postDispatchMap);
+    }
+
+    public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getHandlerOnlyDispatchMap() {
+        return Collections.unmodifiableMap(handlerOnlyDispatchMap);
     }
 
     public Map<Object, List<CbMethodHandle>> getParentUpdateListenerMethodMap() {

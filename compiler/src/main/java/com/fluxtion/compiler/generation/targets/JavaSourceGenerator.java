@@ -58,86 +58,96 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
  */
 public class JavaSourceGenerator {
 
+    private static final String s4 = "    ";
+    private static final String s8 = "        ";
+    private static final String s12 = "            ";
+    private static final String s16 = "                ";
+    private static final String s20 = "                    ";
+    private static final String s24 = "                        ";
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order, in a list.
      */
     private final ArrayList<String> initialiseMethodList;
     /**
-     * String representation of life-cycle callback methods for initialise,
-     * sorted in call order.
-     */
-    private String initialiseMethods;
-
-    /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
     private final ArrayList<String> batchEndMethodList;
     /**
-     * String representation of life-cycle callback methods for end of batch,
-     * sorted in call order.
-     */
-    private String batchEndMethods;
-
-    /**
      * String representation of life-cycle callback methods for after event
      * processing, sorted in call order.
      */
     private final ArrayList<String> eventEndMethodList;
-
-    /**
-     * String representation of life-cycle callback methods for end of batch,
-     * sorted in call order.
-     */
-    private String eventEndMethods;
-
     /**
      * String representation of life-cycle callback methods for batch pause,
      * sorted in call order.
      */
     private final ArrayList<String> batchPauseMethodList;
-
-    /**
-     * String representation of life-cycle callback methods for batch pause,
-     * sorted in call order.
-     */
-    private String batchPauseMethods;
-
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
     private final ArrayList<String> tearDownMethodList;
-
+    /**
+     * String representation of node declarations as a list.
+     */
+    private final ArrayList<String> nodeDeclarationList;
+    private final ArrayList<String> importList;
+    /**
+     * String representation of the initial member assignments for each node
+     */
+    private final ArrayList<String> nodeMemberAssignmentList;
+    /**
+     * String representation of public nodes as a list.
+     */
+    private final ArrayList<String> publicNodeIdentifierList;
+    private final SimpleEventProcessorModel model;
+    /**
+     * use reflection to assign private members
+     */
+    private final boolean assignPrivateMembers;
+    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
+    private final HashMap<String, String> importMap = new HashMap<>();
+    private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
+    private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
+    /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order.
+     */
+    private String initialiseMethods;
+    /**
+     * String representation of life-cycle callback methods for end of batch,
+     * sorted in call order.
+     */
+    private String batchEndMethods;
+    /**
+     * String representation of life-cycle callback methods for end of batch,
+     * sorted in call order.
+     */
+    private String eventEndMethods;
+    /**
+     * String representation of life-cycle callback methods for batch pause,
+     * sorted in call order.
+     */
+    private String batchPauseMethods;
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
     private String tearDownMethods;
-
-    /**
-     * String representation of node declarations as a list.
-     */
-    private final ArrayList<String> nodeDeclarationList;
-
-    private final ArrayList<String> importList;
-
     /**
      * String representation of node declarations.
      */
     private String nodeDeclarations;
-
     /**
      * String representation of dirty flag.
      */
     private String dirtyFlagDeclarations;
-
     /**
      * String representation of looking up dirty flag by instance
      */
     private String dirtyFlagLookup;
-
     /**
      * String representation of all dirty flag reset to false.
      */
@@ -150,64 +160,34 @@ public class JavaSourceGenerator {
      * String representation of filter constants declarations.
      */
     private String filterConstantDeclarations;
-
-    /**
-     * String representation of the initial member assignments for each node
-     */
-    private final ArrayList<String> nodeMemberAssignmentList;
-
     /**
      * String representation of the initial member assignments for each node
      */
     private String nodeMemberAssignments;
-
     /**
      * String representation of top level event dispatch, branches on event type
      */
     private String eventDispatch;
-
     /**
      * String representing the delegated event handling methods for a specific
      * event type, will include branching based on filterId.
      */
     private String eventHandlers;
-
     /**
      * determines whether separate delegate eventHandling methods are generated.
      */
-    private final boolean isInlineEventHandling;
-
+    private boolean isInlineEventHandling;
     /**
      * String representing event audit dispatch
      */
     private String eventAuditDispatch;
-
-    /**
-     * String representation of public nodes as a list.
-     */
-    private final ArrayList<String> publicNodeIdentifierList;
-
-    private final SimpleEventProcessorModel model;
-
-    /**
-     * use reflection to assign private members
-     */
-    private final boolean assignPrivateMembers;
-
     /**
      * are any auditors registered for this SEP
      */
     private boolean auditingEvent;
-
     private boolean auditingInvocations;
-
     private String auditMethodString;
-
     private String additionalInterfaces;
-
-    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
-
-    private final HashMap<String, String> importMap = new HashMap<>();
 
     public JavaSourceGenerator(SimpleEventProcessorModel model) {
         this(model, false);
@@ -232,6 +212,10 @@ public class JavaSourceGenerator {
         nodeMemberAssignmentList = new ArrayList<>();
         publicNodeIdentifierList = new ArrayList<>();
         importList = new ArrayList<>();
+    }
+
+    private static boolean hasIdField(Class e) {
+        return false;
     }
 
     public void buildSourceModel() throws Exception {
@@ -472,9 +456,56 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
+        generateEventBufferedDispatcher();
         if (auditingEvent) {
             eventHandlers += auditMethodString;
         }
+    }
+
+    private void generateEventBufferedDispatcher() {
+        StringBuilder noTriggerDispatch = new StringBuilder();
+        //build buffer event method
+        String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
+                "        buffering = true;\n" +
+                "        switch (event.getClass().getName()) {\n";
+
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
+        //sort class so repeatable
+        boolean prev = isInlineEventHandling;
+        isInlineEventHandling = true;
+        handlerOnlyDispatchMap.forEach((c, m) -> {
+            String className = getClassName(c.getCanonicalName());
+            noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
+            noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
+            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), c));
+            noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+            noTriggerDispatch.append(String.format("%12s}%n", ""));
+        });
+        noTriggerDispatch.append(String.format("%8s}%n", ""));
+        noTriggerDispatch.append(String.format("%4s}%n", ""));
+        bufferEvents += noTriggerDispatch.toString();
+        //build buffered dispatch trigger
+        Map<FilterDescription, List<CbMethodHandle>> cbMap = new HashMap<>();
+        List<CbMethodHandle> triggerOnlyCallBacks = model.getTriggerOnlyCallBacks();
+        if (!triggerOnlyCallBacks.isEmpty()) {
+            cbMap.put(FilterDescription.DEFAULT_FILTER, triggerOnlyCallBacks);
+        }
+        Map<FilterDescription, List<CbMethodHandle>> cbMapPostDispatch = new HashMap<>();
+        cbMapPostDispatch.put(FilterDescription.DEFAULT_FILTER, model.getAllPostEventCallBacks());
+        String dispatchString = buildFilteredSwitch(cbMap, cbMapPostDispatch, Object.class, false, true);
+        String bufferedTrigger = "\n    public void triggerCalculation(){\n" +
+                "        buffering = false;\n" +
+                "        String typedEvent = \"No event information - buffered dispatch\";\n" +
+                (dispatchString == null ? "" : dispatchString) +
+                "        afterEvent();\n" +
+                "\n    }\n";
+        isInlineEventHandling = prev;
+        eventHandlers += bufferEvents;
+        eventHandlers += bufferedTrigger;
+    }
+
+    public void dispatchBufferedEvents() {
+
     }
 
     /**
@@ -519,19 +550,6 @@ public class JavaSourceGenerator {
         //process <Event>.ID free events.
         eventDispatch = dispatchStringNoId + "\n";
     }
-
-    private static boolean hasIdField(Class e) {
-        return false;
-    }
-
-    private static final String s4 = "    ";
-    private static final String s8 = "        ";
-    private static final String s12 = "            ";
-    private static final String s16 = "                ";
-    private static final String s20 = "                    ";
-    private static final String s24 = "                        ";
-    private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
-    private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
 
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
                                        Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
