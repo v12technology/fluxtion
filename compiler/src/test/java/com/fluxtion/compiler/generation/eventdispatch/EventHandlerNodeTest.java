@@ -17,7 +17,6 @@ public class EventHandlerNodeTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testFilteredHandler() throws NoSuchMethodException {
-        writeSourceFile = true;
         sep(c -> c.addNode(new FormatterNode(new MySubclass()), "node"));
         onEvent("hello");
         Assert.assertNull(getField("node", FormatterNode.class).formattedString());
