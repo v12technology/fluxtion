@@ -9,12 +9,19 @@ import com.fluxtion.runtime.node.NamedNode;
 public interface DirtyStateMonitor {
     boolean isDirty(Object node);
 
+    void markDirty(Object node);
+
     class DirtyStateMonitorImp implements DirtyStateMonitor, NamedNode {
         public CallbackDispatcherImpl callbackDispatcher;
 
         @Override
         public boolean isDirty(Object node) {
-            return node != null && callbackDispatcher.isDirtyPredicate.test(node);
+            return node != null && callbackDispatcher.eventProcessor.isDirty(node);
+        }
+
+        @Override
+        public void markDirty(Object node) {
+            callbackDispatcher.eventProcessor.setDirty(node, true);
         }
 
         @Override

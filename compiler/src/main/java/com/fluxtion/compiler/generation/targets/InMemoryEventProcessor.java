@@ -8,6 +8,7 @@ import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.callback.EventProcessorCallback;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
@@ -18,24 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
-public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, Lifecycle, BatchHandler {
+public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, EventProcessorCallback, Lifecycle, BatchHandler {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
     private final BitSet dirtyBitset = new BitSet();
     private final BitSet eventOnlyBitset = new BitSet();
+    private final BitSet postProcessBufferingBitset = new BitSet();
     private boolean buffering = false;
     private final List<Node> eventHandlers = new ArrayList<>();
     private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
@@ -80,6 +74,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             );
             eventHandlers.get(i).onEvent(null);
         }
+        dirtyBitset.clear();
+        dirtyBitset.or(postProcessBufferingBitset);
+        postProcessBufferingBitset.clear();
         postEventProcessing();
         buffering = false;
     }
@@ -120,6 +117,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (updateBitset.isEmpty()) {
             noFilterEventHandlerToBitsetMap.getOrDefault(defaultEvent.getClass(), Collections.emptyList()).forEach(updateBitset::set);
         }
+        postProcessBufferingBitset.or(updateBitset);
         //now actually dispatch
         log.debug("dirtyBitset, after:{}", updateBitset);
         log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
@@ -151,6 +149,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .map(Node::isDirty)
                 .findFirst()
                 .orElse(false);
+    }
+
+    @Override
+    public void setDirty(Object node, boolean dirtyFlag) {
+        if (dirtyFlag) {
+            eventHandlers.stream()
+                    .filter(n -> n.getCallbackHandle().getInstance() == node)
+                    .forEach(Node::markDirty);
+        }
     }
 
     private Object checkForDefaultEventHandling(Object event) {
@@ -303,9 +310,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        SimpleEventProcessorModel.getCallbackDispatcher().internalEventProcessor = this::onEventInternal;
-        SimpleEventProcessorModel.getCallbackDispatcher().externalEventProcessor = this::onEvent;
-        SimpleEventProcessorModel.getCallbackDispatcher().isDirtyPredicate = this::isDirty;
+        SimpleEventProcessorModel.getCallbackDispatcher().eventProcessor = this;
     }
 
     private void registerAuditors() {
@@ -371,6 +376,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     cb.method.invoke(cb.instance, callbackHandle.instance);
                 }
             }
+        }
+
+        private void markDirty() {
+            dirty = true;
+            dependents.forEach(n -> n.parentUpdated(dirty));
+            //TODO - decide whether to callback into the parentupdated listener - must be consistent with the generated version
         }
 
         public boolean willInvokeEventComplete() {
