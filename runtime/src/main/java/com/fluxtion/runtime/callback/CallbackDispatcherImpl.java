@@ -7,16 +7,12 @@ import lombok.ToString;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @ToString
 public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, EventDispatcher {
 
-    public Consumer<Object> internalEventProcessor;
-    public Consumer<Object> externalEventProcessor;
-    public Predicate<Object> isDirtyPredicate;
+    public EventProcessorCallback eventProcessor;
     Deque<Supplier<Boolean>> myStack = new ArrayDeque<>();
     private boolean dispatching = false;
 
@@ -32,7 +28,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
     }
 
     public void dispatchQueuedCallbacks() {
-        if (internalEventProcessor == null) {
+        if (eventProcessor == null) {
             //System.out.println("no event processor registered cannot publish callback");
         } else {
             while (!myStack.isEmpty()) {
@@ -97,7 +93,8 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
 
     @Override
     public void processAsNewEventCycle(Object event) {
-        externalEventProcessor.accept(event);
+        eventProcessor.onEvent(event);
+//        externalEventProcessor.accept(event);
     }
 
     @ToString(callSuper = true)
@@ -109,7 +106,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
             //System.out.println("dispatching this id:" + filterId);
             callbackEvent.setData(getData());
             callbackEvent.setFilterId(getFilterId());
-            internalEventProcessor.accept(callbackEvent);
+            eventProcessor.onEventInternal(callbackEvent);
             setData(null);
             setFilterId(Integer.MAX_VALUE);
             return false;
@@ -122,7 +119,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
         T data;
 
         boolean dispatch() {
-            internalEventProcessor.accept(data);
+            eventProcessor.onEventInternal(data);
             return false;
         }
     }
@@ -137,7 +134,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
             if (dataIterator.hasNext()) {
                 callbackEvent.setData(dataIterator.next());
                 callbackEvent.setFilterId(getFilterId());
-                internalEventProcessor.accept(callbackEvent);
+                eventProcessor.onEventInternal(callbackEvent);
                 return true;
             }
             return false;
@@ -149,7 +146,7 @@ public class CallbackDispatcherImpl implements Auditor, CallbackDispatcher, Even
 
         boolean dispatch() {
             if (dataIterator.hasNext()) {
-                internalEventProcessor.accept(dataIterator.next());
+                eventProcessor.onEventInternal(dataIterator.next());
                 return true;
             }
             return false;

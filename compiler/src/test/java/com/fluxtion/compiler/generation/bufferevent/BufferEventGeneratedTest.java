@@ -1,13 +1,9 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import lombok.Value;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.node.NamedNode;
+import lombok.Data;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -22,15 +18,49 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void triggeredOnlyCbListTest() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new Child(new EventHolder()));
         });
+        Child child = getField("child");
+        EventHolder eventHolder = getField("eventHolder");
+        bufferEvent("test");
+        bufferEvent("test");
+        bufferEvent("test");
+        //child
+        MatcherAssert.assertThat(child.parentCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(child.eventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(0));
+        //parent
+        MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
+
+
+        bufferEvent(new Date());
+        bufferEvent(new Date());
+        //child
+        MatcherAssert.assertThat(child.parentCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(child.eventCount, CoreMatchers.is(2));
+        MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(0));
+        //parent
+        MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
+
+
+        triggerCalculation();
+        //child
+        MatcherAssert.assertThat(child.parentCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(child.eventCount, CoreMatchers.is(2));
+        MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(1));
+        //parent
+        MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
+        MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(1));
     }
 
     @Test
     public void noTriggerClassTest() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new DateHandler());
         });
@@ -38,15 +68,25 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noTriggerClassWithAfterTest() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new EventHolder());
         });
+        bufferEvent("test");
+        bufferEvent("test");
+        bufferEvent("test");
+        EventHolder eventHolder = getField("eventHolder");
+        MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
+
+        triggerCalculation();
+        MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
+        MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(1));
     }
 
     @Test
     public void testBufferedDispatch() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new Combiner(), "combiner");
         });
@@ -63,7 +103,6 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testBufferedDispatchImpliedTriggerFromExternalEvent() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new Combiner(), "combiner");
         });
@@ -78,41 +117,60 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(2));
     }
 
-    public static class EventHolder {
+
+    public static class EventHolder implements NamedNode {
+
+        private int eventCount;
+        private int afterEventCount;
+        private int afterTriggerCount;
 
         @OnEventHandler
         public boolean onString(String in) {
+            eventCount++;
             return true;
         }
 
         @AfterEvent
         public void afterHolderEvent() {
+            afterEventCount++;
         }
 
         @AfterTrigger
         public void afterHolderTrigger() {
+            afterTriggerCount++;
         }
 
         @Initialise
         public void initHolder() {
         }
+
+        @Override
+        public String getName() {
+            return "eventHolder";
+        }
     }
 
-    @Value
-    public static class Child {
-        EventHolder parent;
+    @Data
+    public static class Child implements NamedNode {
+        final EventHolder parent;
+        private int eventCount = 0;
+        private int parentCount = 0;
+        private int triggerCount;
 
         @OnTrigger
         public boolean triggered() {
+            triggerCount++;
             return true;
         }
 
         @OnEventHandler
         public void onDate(Date date) {
+            eventCount++;
         }
 
         @OnParentUpdate
         public void onParent(EventHolder parent) {
+            parentCount++;
         }
 
         @AfterEvent
@@ -121,6 +179,11 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
         @Initialise
         public void initChild() {
+        }
+
+        @Override
+        public String getName() {
+            return "child";
         }
     }
 

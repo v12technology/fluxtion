@@ -19,11 +19,7 @@ package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import com.fluxtion.compiler.generation.model.DirtyFlag;
-import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -37,17 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperToPrimitive;
@@ -148,6 +135,10 @@ public class JavaSourceGenerator {
      * String representation of looking up dirty flag by instance
      */
     private String dirtyFlagLookup;
+    /**
+     * String representation of updating dirty flag by instance
+     */
+    private String dirtyFlagUpdate;
     /**
      * String representation of all dirty flag reset to false.
      */
@@ -287,6 +278,7 @@ public class JavaSourceGenerator {
         dirtyFlagDeclarations = "";
         resetDirtyFlags = "";
         dirtyFlagLookup = "";
+        dirtyFlagUpdate = "";
         guardCheckMethods = "";
         final ArrayList<DirtyFlag> values = new ArrayList<>(model.getDirtyFieldMap().values());
         NaturalOrderComparator<DirtyFlag> comparator = new NaturalOrderComparator<>();
@@ -307,6 +299,11 @@ public class JavaSourceGenerator {
         sortedDirtyFlags
                 .forEach(e -> {
                     dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "",
+                            e.getKey().getName(), e.getValue().name);
+                });
+        sortedDirtyFlags
+                .forEach(e -> {
+                    dirtyFlagUpdate += String.format("%12sdirtyFlagUpdateMap.put(%s, (b) -> %s = b);", "",
                             e.getKey().getName(), e.getValue().name);
                 });
         //build guard methods
@@ -554,7 +551,8 @@ public class JavaSourceGenerator {
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
                                        Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
                                        boolean intFilter, boolean noFilter) {
-        Set<FilterDescription> filterIdSet = cbMap.keySet();
+        Set<FilterDescription> filterIdSet = new HashSet<>(cbMap.keySet());
+        filterIdSet.addAll(cbMapPostEvent.keySet());
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
         clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
             int ret = o1.value - o2.value;
@@ -1044,6 +1042,10 @@ public class JavaSourceGenerator {
 
     public String getDirtyFlagLookup() {
         return dirtyFlagLookup;
+    }
+
+    public String getDirtyFlagUpdate() {
+        return dirtyFlagUpdate;
     }
 
     public String getGuardCheckMethods() {
