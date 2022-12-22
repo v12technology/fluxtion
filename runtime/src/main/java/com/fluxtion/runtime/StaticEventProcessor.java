@@ -24,11 +24,7 @@ import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
+import java.util.function.*;
 
 /**
  * Processes events of any type and dispatches to registered {@link EventHandlerNode}
@@ -106,6 +102,34 @@ public interface StaticEventProcessor {
      */
     default void bufferEvent(Object event) {
         throw new UnsupportedOperationException("buffering of events not supported");
+    }
+
+    default void bufferEvent(byte value) {
+        bufferEvent((Byte) value);
+    }
+
+    default void bufferEvent(char value) {
+        bufferEvent((Character) value);
+    }
+
+    default void bufferEvent(short value) {
+        bufferEvent((Short) value);
+    }
+
+    default void bufferEvent(int value) {
+        bufferEvent((Integer) value);
+    }
+
+    default void bufferEvent(float value) {
+        bufferEvent((Float) value);
+    }
+
+    default void bufferEvent(double value) {
+        bufferEvent((Double) value);
+    }
+
+    default void bufferEvent(long value) {
+        bufferEvent((Long) value);
     }
 
     /**

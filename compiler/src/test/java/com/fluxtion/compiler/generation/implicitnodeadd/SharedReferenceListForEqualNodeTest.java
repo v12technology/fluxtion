@@ -29,6 +29,25 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
     }
 
     @Test
+    public void equalNodeAddedMultipleTimesInMultipleListTest() {
+        writeSourceFile = true;
+        sep(c -> {
+                    c.addNode(
+                            new MyListHolder(Arrays.asList(new KeyedStringHandler("A"), new KeyedStringHandler("A"))),
+                            "holder");
+                    c.addNode(
+                            new MyListHolder2(Arrays.asList(new KeyedStringHandler("A"), new KeyedStringHandler("A"))),
+                            "holder2");
+                }
+        );
+        onEvent("TEST");
+        MyListHolder holder = getField("holder");
+        Assert.assertSame(holder.getHandler().get(0), holder.getHandler().get(1));
+        MyListHolder2 holder2 = getField("holder2");
+        Assert.assertSame(holder2.getHandler().get(0), holder2.getHandler().get(1));
+    }
+
+    @Test
     public void equalNodeAddedMultipleTimesInArrayTest() {
         sep(c -> {
             c.addNode(
@@ -43,6 +62,18 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
 
     @Value
     public static class MyListHolder {
+
+        List<KeyedStringHandler> handler;
+
+        @OnTrigger
+        public void update() {
+
+        }
+
+    }
+
+    @Value
+    public static class MyListHolder2 {
 
         List<KeyedStringHandler> handler;
 
