@@ -34,7 +34,6 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void accessClassOfInjectedFieldTest() {
-        writeSourceFile = true;
         sep(c -> c.addNode(new GenericHolder(), "holder"));
         GenericHolder holder = getField("holder");
         Assert.assertEquals(holder.stringService.className, String.class.getCanonicalName());
@@ -101,10 +100,6 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
             return new ServiceInjected<>(typeName);
         }
 
-        @Override
-        public String factoryName() {
-            return "green";
-        }
     }
 
     @AutoService(NodeFactory.class)
