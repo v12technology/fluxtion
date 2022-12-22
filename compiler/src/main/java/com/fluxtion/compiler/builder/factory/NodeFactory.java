@@ -50,6 +50,12 @@ import java.util.ServiceLoader;
 public interface NodeFactory<T> {
 
     /**
+     * The key in the map passed to the NodeFactory instance that holds the {@link java.lang.reflect.Field} type
+     * information for the target field.
+     */
+    String FIELD_KEY = "NodeFactory.InjectField.TypeInfo";
+
+    /**
      * NodeFactory writer must implement this method to generate instances of
      * nodes. The Fluxtion compiler will call this method when an {@link Inject}
      * instance is created. {@link Config} variables are used to populate the
