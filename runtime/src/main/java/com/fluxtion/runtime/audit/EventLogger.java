@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
@@ -23,9 +23,9 @@ import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
  * keys using one of the convenience methods. The {@link EventLogManager} will aggregate
  * all data into a {@link LogRecord} and publish to {@link LogRecordListener}.
  * <br>
- * 
+ * <p>
  * The generated {@code LogRecord} is a structure that can be read by machines
- * and humans. 
+ * and humans.
  *
  * @author Greg Higgins (greg.higgins@v12technology.com)
  */
@@ -92,7 +92,7 @@ public class EventLogger {
     public void warn(String key, boolean value) {
         log(key, value, LogLevel.WARN);
     }
-    
+
     public void error(String key, Object value) {
         log(key, value, LogLevel.ERROR);
     }
@@ -145,6 +145,46 @@ public class EventLogger {
         log(key, value, LogLevel.TRACE);
     }
 
+    public void error(String key, int value) {
+        log(key, value, LogLevel.ERROR);
+    }
+
+    public void warn(String key, int value) {
+        log(key, value, LogLevel.WARN);
+    }
+
+    public void info(String key, int value) {
+        log(key, value, LogLevel.INFO);
+    }
+
+    public void debug(String key, long value) {
+        log(key, value, LogLevel.DEBUG);
+    }
+
+    public void trace(String key, long value) {
+        log(key, value, LogLevel.TRACE);
+    }
+
+    public void error(String key, long value) {
+        log(key, value, LogLevel.ERROR);
+    }
+
+    public void warn(String key, long value) {
+        log(key, value, LogLevel.WARN);
+    }
+
+    public void info(String key, long value) {
+        log(key, value, LogLevel.INFO);
+    }
+
+    public void debug(String key, int value) {
+        log(key, value, LogLevel.DEBUG);
+    }
+
+    public void trace(String key, int value) {
+        log(key, value, LogLevel.TRACE);
+    }
+
     public void error(String key, char value) {
         log(key, value, LogLevel.ERROR);
     }
@@ -171,11 +211,23 @@ public class EventLogger {
         }
     }
 
-    public void log(String key, Object value, LogLevel logLevel){
-        log(key, value==null?"NULL":value.toString(), logLevel);
+    public void log(String key, Object value, LogLevel logLevel) {
+        log(key, value == null ? "NULL" : value.toString(), logLevel);
     }
-    
+
     public void log(String key, double value, LogLevel logLevel) {
+        if (this.logLevel.level >= logLevel.level) {
+            logrecord.addRecord(logSourceId, key, value);
+        }
+    }
+
+    public void log(String key, int value, LogLevel logLevel) {
+        if (this.logLevel.level >= logLevel.level) {
+            logrecord.addRecord(logSourceId, key, value);
+        }
+    }
+
+    public void log(String key, long value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);
         }
