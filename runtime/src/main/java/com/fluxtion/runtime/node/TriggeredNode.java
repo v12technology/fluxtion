@@ -24,6 +24,6 @@ public interface TriggeredNode {
      * @return Event propagation flag
      */
     @OnTrigger
-    public boolean triggered();
+    boolean triggered();
 
 }
