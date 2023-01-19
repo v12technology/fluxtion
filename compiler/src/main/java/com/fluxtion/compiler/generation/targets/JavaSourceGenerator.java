@@ -19,7 +19,11 @@ package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.*;
+import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.model.DirtyFlag;
+import com.fluxtion.compiler.generation.model.Field;
+import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
+import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -33,8 +37,17 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperToPrimitive;
@@ -1107,10 +1120,11 @@ public class JavaSourceGenerator {
         }
         this.auditingEvent = true;
         this.auditingInvocations = false;
+        String eventClassName = getClassName(Event.class);
         importList.add(Event.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
-        String auditEvent = "private void auditEvent(Event typedEvent){\n";
+        String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);
         String auditInvocation = "private void auditInvocation(Object node, String nodeName, String methodName, Object typedEvent){\n";
         String initialiseAuditor = "private void initialiseAuditor(" + getClassName(Auditor.class.getName()) + " auditor){\n"
                 + "\tauditor.init();\n";
