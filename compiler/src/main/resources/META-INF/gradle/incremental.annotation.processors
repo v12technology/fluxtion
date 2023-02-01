@@ -1,0 +1,2 @@
+com.fluxtion.compiler.generation.annotationprocessor.ValidateEventhandlerAnnotations,isolating
+com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations,isolating
