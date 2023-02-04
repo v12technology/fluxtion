@@ -11,10 +11,12 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
+
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 
 /**
  * No operation logger, has no side effects on any function call, ie no logging
@@ -38,15 +40,28 @@ public final class NullEventLogger extends EventLogger {
     }
 
     @Override
-    public void log(String key, double value, EventLogControlEvent.LogLevel logLevel) {
+    public void log(String key, int value, LogLevel logLevel) {
     }
-    
+
     @Override
-    public void logNodeInvocation(EventLogControlEvent.LogLevel logLevel) {
+    public void log(String key, long value, LogLevel logLevel) {
+    }
+
+
+    @Override
+    public void log(String key, double value, EventLogControlEvent.LogLevel logLevel) {
     }
 
     @Override
     public void log(String key, char value, EventLogControlEvent.LogLevel logLevel) {
+    }
+
+    @Override
+    public void log(String key, Object value, LogLevel logLevel) {
+    }
+
+    @Override
+    public void logNodeInvocation(EventLogControlEvent.LogLevel logLevel) {
     }
 
 }
