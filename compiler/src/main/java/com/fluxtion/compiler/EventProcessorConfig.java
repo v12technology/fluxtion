@@ -171,6 +171,10 @@ public class EventProcessorConfig {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
     }
 
+    public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
+        addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), "eventLogger");
+    }
+
 
     public void addInterfaceImplementation(Class<?> clazz) {
         interfaces.add(clazz);

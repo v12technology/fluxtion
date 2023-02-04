@@ -23,6 +23,7 @@ public class DataDrivenGenerationConfig {
     private Map<String, Object> configMap;
     private List<Object> nodes;
     private boolean enableAudit;
+    private boolean printEventToString = false;
     private LogLevel auditMethodTraceLogLevel = LogLevel.DEBUG;
     private FluxtionCompilerConfig compilerConfig;// = new FluxtionCompilerConfig();
 
@@ -36,7 +37,7 @@ public class DataDrivenGenerationConfig {
         EventProcessorConfig eventProcessorConfig = new EventProcessorConfig();
         eventProcessorConfig.setRootNodeConfig(getRootNodeConfig());
         if (enableAudit)
-            eventProcessorConfig.addEventAudit(auditMethodTraceLogLevel);
+            eventProcessorConfig.addEventAudit(auditMethodTraceLogLevel, printEventToString);
         return eventProcessorConfig;
     }
 }
