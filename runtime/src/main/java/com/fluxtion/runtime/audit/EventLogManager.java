@@ -11,15 +11,17 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -34,11 +36,11 @@ import java.util.logging.Logger;
  * The output from each EventLogSource is aggregated into the LogRecord and
  * published.
  * <br>
- *
+ * <p>
  * By default all data in the LogRecord is cleared after a publish. Clearing
  * behaviour is controlled with clearAfterPublish flag.
  * <br>
- *
+ * <p>
  * EventLogControlEvent events set the logging level for each registered
  * EventLogSource.
  *
@@ -56,7 +58,7 @@ public class EventLogManager implements Auditor {
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
     public Clock clock;
-    
+
 
     public EventLogManager() {
         this(new JULLogRecordListener());
@@ -64,7 +66,8 @@ public class EventLogManager implements Auditor {
 
     public EventLogManager(LogRecordListener sink) {
         if (sink == null) {
-            this.sink = l -> {};
+            this.sink = l -> {
+            };
         } else {
             this.sink = sink;
         }
@@ -77,12 +80,12 @@ public class EventLogManager implements Auditor {
     }
 
     public EventLogManager tracingOn(EventLogControlEvent.LogLevel level) {
-        trace = true;
+        trace = level != LogLevel.NONE;
         this.traceLevel = level;
         return this;
     }
-    
-    public EventLogManager printEventToString(boolean printEventToString){
+
+    public EventLogManager printEventToString(boolean printEventToString) {
         this.printEventToString = printEventToString;
         return this;
     }
