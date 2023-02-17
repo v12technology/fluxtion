@@ -69,7 +69,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -561,10 +560,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
         inst2Name.putAll(inst2NameTemp);
         inst2Name.entrySet().removeIf(o -> Anchor.class.isAssignableFrom(o.getKey().getClass()));
-        inst2Name.entrySet().removeIf(o -> {
-            Annotation[] annotations = o.getKey().getClass().getAnnotations();
-            return o.getKey().getClass().isAnnotationPresent(ExcludeNode.class);
-        });
+        inst2Name.entrySet().removeIf(o -> o.getKey().getClass().isAnnotationPresent(ExcludeNode.class));
 
         //all instances are in inst2Name, can now generate final graph
         for (Map.Entry<Object, String> entry : inst2Name.entrySet()) {
@@ -579,7 +575,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
              topologicalIter.hasNext(); ) {
             Object value = topologicalIter.next();
             if (value.getClass().isAnnotationPresent(ExcludeNode.class)) {
-//                topologicalIter.remove();
                 graph.removeVertex(value);
                 eventGraph.removeVertex(value);
             } else {
