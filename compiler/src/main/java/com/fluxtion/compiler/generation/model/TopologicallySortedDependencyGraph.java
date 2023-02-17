@@ -591,11 +591,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
 
         buildNonPushSortedHandlers();
-//        topologicalHandlers.removeIf(o -> o.getClass().getAnnotation(ExcludeNode.class) != null);
-
-        //clean the graph up
-
-
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("GRAPH:" + graph);
         }
