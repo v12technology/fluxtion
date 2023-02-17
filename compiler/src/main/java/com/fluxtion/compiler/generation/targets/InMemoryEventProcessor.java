@@ -19,7 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -227,7 +235,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public <T> T getNodeById(String id) throws NoSuchFieldException {
-        return (T) getFieldByName(id).instance;
+        Field fieldByName = getFieldByName(id);
+        if (fieldByName == null) {
+            throw new NoSuchFieldException(id);
+        }
+        return (T) fieldByName.instance;
     }
 
     /**
