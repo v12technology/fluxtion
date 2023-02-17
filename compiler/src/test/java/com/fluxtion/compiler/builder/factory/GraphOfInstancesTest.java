@@ -1,11 +1,11 @@
 package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.ExcludeNode;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.junit.Test;
 import org.yaml.snakeyaml.TypeDescription;
@@ -25,7 +25,7 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
         super(compiledSep);
     }
 
-    @Test
+    @Test(expected = NoSuchFieldException.class)
     public void buildWithoutYaml() {
         sep(c -> {
             StringHandler stringHandlerA = new StringHandler("A");
@@ -59,9 +59,11 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
         onEvent("C");
         assertThat(aggregator.sum, is(3.0));
         assertThat(handlerC.value, is(1));
+
+        getField("instanceHolder");
     }
 
-    @Test
+    @Test(expected = NoSuchFieldException.class)
     public void driveFromYaml() {
         String config = "nodeList:\n" +
                 "- !doubleSum\n" +
@@ -93,9 +95,11 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
         onEvent("C");
         assertThat(aggregator.sum, is(3.0));
         assertThat(handlerC.value, is(1));
+
+        getField("instanceHolder");
     }
 
-    @Test
+    @Test(expected = NoSuchFieldException.class)
     public void driveAsListFromYaml() {
         String config = "" +
                 "- !doubleSum\n" +
@@ -127,6 +131,8 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
         onEvent("C");
         assertThat(aggregator.sum, is(3.0));
         assertThat(handlerC.value, is(1));
+
+        getField("instanceHolder");
     }
 
     @Test
@@ -137,8 +143,13 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
 
     @Data
     @ExcludeNode
-    public static class InstanceHolder {
+    public static class InstanceHolder implements NamedNode {
         private List<Object> nodeList = new ArrayList<>();
+
+        @Override
+        public String getName() {
+            return "instanceHolder";
+        }
     }
 
 
