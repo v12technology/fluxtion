@@ -24,7 +24,11 @@ import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 
-import java.util.function.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 /**
  * Processes events of any type and dispatches to registered {@link EventHandlerNode}
@@ -159,6 +163,34 @@ public interface StaticEventProcessor {
 
     default void removeSink(String id) {
         onEvent(SinkDeregister.sink(id));
+    }
+
+    /**
+     * Publishes an instance wrapped in a Signal and applies a class filter to the published signal
+     * <p>
+     * receiving an event callback in a node
+     * <pre>
+     * {@literal @}OnEventHandler(filterStringFromClass = Date.class)
+     *  public void handleEvent(Signal<Date> date) {
+     *      count++;
+     *  }
+     *
+     * </pre>
+     * <p>
+     * publishing:
+     * <pre>
+     *     eventProcessorInstance.publishObjectSignal(new Date());
+     * </pre>
+     *
+     * @param instance
+     * @param <T>
+     */
+    default <T> void publishObjectSignal(T instance) {
+        onEvent(new Signal<>(instance));
+    }
+
+    default <S, T> void publishObjectSignal(Class<S> filterClass, T instance) {
+        onEvent(new Signal<>(filterClass, instance));
     }
 
     default void publishSignal(String filter) {
