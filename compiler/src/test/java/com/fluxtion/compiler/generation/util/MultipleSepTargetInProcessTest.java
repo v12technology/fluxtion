@@ -298,6 +298,14 @@ public abstract class MultipleSepTargetInProcessTest {
         sep.publishSignal(filter, value);
     }
 
+    protected <T> void publishInstance(T value) {
+        sep.publishObjectSignal(value);
+    }
+
+    protected <S, T> void publishInstance(Class<S> classFilter, T value) {
+        sep.publishObjectSignal(classFilter, value);
+    }
+
     protected void publishIntSignal(String filter, int value) {
         sep.publishSignal(filter, value);
     }

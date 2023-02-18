@@ -17,17 +17,20 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.compiler.generation.util.Slf4jAuditLogger;
 import com.fluxtion.runtime.annotations.FilterType;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.junit.Test;
+
+import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,6 +76,11 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         onEvent(new WordEvent("disregard"));
         assertThat(testHandler.wordACount, is(3));
         assertThat(testHandler.wordBCount, is(2));
+
+        publishInstance(new Date());
+        assertThat(testHandler.count, is(2));
+        publishInstance(String.class, new Integer(2));
+        assertThat(testHandler.count, is(3));
     }
 
     @Test
@@ -165,6 +173,16 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler(filterVariable = "filterB")
         public void processWordB(WordEvent wordB) {
             wordBCount++;
+        }
+
+        @OnEventHandler(filterStringFromClass = Date.class)
+        public void handleEvent(Signal<Date> date) {
+            count++;
+        }
+
+        @OnEventHandler(filterStringFromClass = String.class)
+        public void handleEventNonDate(Signal<Integer> date) {
+            count++;
         }
     }
 
