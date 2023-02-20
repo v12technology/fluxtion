@@ -212,7 +212,9 @@ public class EventLogger {
     }
 
     public void log(String key, Object value, LogLevel logLevel) {
-        log(key, value == null ? "NULL" : value.toString(), logLevel);
+        if (this.logLevel.level >= logLevel.level) {
+            log(key, value == null ? "NULL" : value.toString(), logLevel);
+        }
     }
 
     public void log(String key, double value, LogLevel logLevel) {
