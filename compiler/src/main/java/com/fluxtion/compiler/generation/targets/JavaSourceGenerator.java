@@ -25,10 +25,12 @@ import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -373,6 +375,9 @@ public class JavaSourceGenerator {
             declarationBuilder.append(s4).append("final net.vidageek.mirror.dsl.Mirror constructor = new net.vidageek.mirror.dsl.Mirror();\n");
         }
         for (Field field : model.getTopologicallySortedNodeFields()) {
+            if(field.getInstance() instanceof EventProcessorContext){
+                continue;
+            }
             final String access = field.publicAccess ? "public" : "private";
 
             fqnBuilder.append(getClassName(field.fqn));
@@ -1122,6 +1127,8 @@ public class JavaSourceGenerator {
         this.auditingInvocations = false;
         String eventClassName = getClassName(Event.class);
         importList.add(Event.class.getCanonicalName());
+        importList.add(EventProcessorContext.class.getCanonicalName());
+        importList.add(MutableEventProcessorContext.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);

@@ -42,6 +42,7 @@ import java.util.function.Consumer;
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
 public class ${className} implements EventProcessor, StaticEventProcessor, EventProcessorCallback, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
+public static final MutableEventProcessorContext CONTEXT = new MutableEventProcessorContext();
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
@@ -53,6 +54,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     ${MODEL.dirtyFlagDeclarations}
     //Filter constants
     ${MODEL.filterConstantDeclarations}
+
 
     public ${className} () {
         ${MODEL.nodeMemberAssignments}

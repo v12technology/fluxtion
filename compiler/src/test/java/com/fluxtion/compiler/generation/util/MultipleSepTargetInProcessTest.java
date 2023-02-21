@@ -43,6 +43,8 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -122,8 +124,10 @@ public abstract class MultipleSepTargetInProcessTest {
             throw new RuntimeException(ex);
         }
     }
-
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder) {
+        return sep(cfgBuilder, new HashMap<>());
+    }
+    protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
         Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
         if (addAuditor || inlineCompiled) {
             wrappedBuilder = cfg -> {
