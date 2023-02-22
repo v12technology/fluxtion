@@ -20,7 +20,6 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
-import com.fluxtion.runtime.time.Clock;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;
@@ -35,7 +34,7 @@ public class EvenProcessorContextFactory implements NodeFactory<EventProcessorCo
 
     @Override
     public EventProcessorContext createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        return SINGLETON;
+        return registry.registerNode(SINGLETON, EventProcessorContext.DEFAULT_NODE_NAME);
     }
 
 }

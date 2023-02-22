@@ -5,7 +5,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
-import com.fluxtion.runtime.audit.NodeNameLookup;
+import com.fluxtion.runtime.node.NodeNameLookup;
 
 public class NodeEventStream<T> extends EventLogNode implements TriggeredEventStream<T> {
 

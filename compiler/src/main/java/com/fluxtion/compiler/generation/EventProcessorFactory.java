@@ -103,7 +103,7 @@ public class EventProcessorFactory {
                 sepName,
                 OutputRegistry.JAVA_TESTGEN_DIR,
                 OutputRegistry.RESOURCE_TEST_DIR,
-                true,
+                false,
                 writeSourceFile,
                 generateMetaInformation);
     }
@@ -125,7 +125,7 @@ public class EventProcessorFactory {
                 name,
                 OutputRegistry.JAVA_SRC_DIR,
                 OutputRegistry.RESOURCE_DIR,
-                true,
+                false,
                 false,
                 false);
     }
@@ -190,7 +190,6 @@ public class EventProcessorFactory {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, new InProcessEventProcessorConfig(sepConfig));
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        sep.init();
         return sep;
     }
 
@@ -201,7 +200,6 @@ public class EventProcessorFactory {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        sep.init();
         return sep;
     }
 

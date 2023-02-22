@@ -7,6 +7,8 @@ package com.fluxtion.runtime.callback;
  */
 public interface EventDispatcher {
 
+    String DEFAULT_NODE_NAME = "eventDispatcher";
+
     void processReentrantEvent(Object event);
 
     void processReentrantEvents(Iterable<Object> iterable);

@@ -5,13 +5,17 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.callback.EventProcessorCallback;
+import com.fluxtion.runtime.callback.CallbackDispatcher;
+import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
+import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,7 +36,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
-public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, EventProcessorCallback, Lifecycle, BatchHandler {
+public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, InternalEventProcessor, Lifecycle, BatchHandler {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
     private final BitSet dirtyBitset = new BitSet();
@@ -46,6 +50,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private Object currentEvent;
     private boolean processing = false;
     private boolean isDefaultHandling;
+    private MutableEventProcessorContext context;
+    private EventProcessorCallbackInternal callbackDispatcher;
 
     @Override
     @SneakyThrows
@@ -54,11 +60,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             triggerCalculation();
         }
         if (processing) {
-            SimpleEventProcessorModel.getCallbackDispatcher().processReentrantEvent(event);
+            callbackDispatcher.processReentrantEvent(event);
         } else {
             processing = true;
             onEventInternal(event);
-            SimpleEventProcessorModel.getCallbackDispatcher().dispatchQueuedCallbacks();
+            callbackDispatcher.dispatchQueuedCallbacks();
             processing = false;
         }
     }
@@ -205,6 +211,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     }
 
     @Override
+    public void setContextParameterMap(Map<Object, Object> newContextMapping) {
+        try {
+            context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        context.replaceMappings(newContextMapping);
+    }
+
+    @Override
     public void init() {
         buildDispatch();
         simpleEventProcessorModel.getInitialiseMethods().forEach(this::invokeRunnable);
@@ -250,6 +266,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
      *     <li>A Bitset that holds the dirty state of nodes during an event cycle</li>
      * </ul>
      */
+    @SneakyThrows
     private void buildDispatch() {
         isDefaultHandling = simpleEventProcessorModel.getDispatchMap().containsKey(Object.class);
         List<CbMethodHandle> dispatchMapForGraph = new ArrayList<>(simpleEventProcessorModel.getDispatchMapForGraph());
@@ -322,7 +339,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        SimpleEventProcessorModel.getCallbackDispatcher().eventProcessor = this;
+        //build dispatch stuff here
+        context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
+        callbackDispatcher = getNodeById(CallbackDispatcher.DEFAULT_NODE_NAME);
+        context.setEventProcessorCallback(this);
     }
 
     private void registerAuditors() {

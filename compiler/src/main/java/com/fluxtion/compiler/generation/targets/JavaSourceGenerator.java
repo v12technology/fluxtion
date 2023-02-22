@@ -375,9 +375,6 @@ public class JavaSourceGenerator {
             declarationBuilder.append(s4).append("final net.vidageek.mirror.dsl.Mirror constructor = new net.vidageek.mirror.dsl.Mirror();\n");
         }
         for (Field field : model.getTopologicallySortedNodeFields()) {
-            if(field.getInstance() instanceof EventProcessorContext){
-                continue;
-            }
             final String access = field.publicAccess ? "public" : "private";
 
             fqnBuilder.append(getClassName(field.fqn));
@@ -1129,6 +1126,7 @@ public class JavaSourceGenerator {
         importList.add(Event.class.getCanonicalName());
         importList.add(EventProcessorContext.class.getCanonicalName());
         importList.add(MutableEventProcessorContext.class.getCanonicalName());
+        importList.add(Map.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);
