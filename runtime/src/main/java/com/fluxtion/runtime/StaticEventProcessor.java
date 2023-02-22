@@ -19,11 +19,13 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
@@ -61,6 +63,23 @@ public interface StaticEventProcessor {
     };
 
     BooleanSupplier ALWAYS_FALSE = () -> false;
+
+    /**
+     * The user can pass in a map of values to this instance. The map will be available in the graph by injecting
+     * an {@link EventProcessorContext}.
+     *
+     * <pre>
+     * {@literal @}Inject
+     *  public EventProcessorContext context;
+     *
+     * </pre>
+     * <p>
+     * Calling this method before {@link Lifecycle#init()} will ensure all the nodes
+     * see the context when their {@link com.fluxtion.runtime.annotations.Initialise} annotated methods are invoked
+     */
+    default void setContextParameterMap(Map<Object, Object> newContextMapping) {
+        throw new UnsupportedOperationException("this StaticEventProcessor does not accept updated context map");
+    }
 
     /**
      * Called when a new event e is ready to be processed. Calls a {@link #triggerCalculation()} first if any events

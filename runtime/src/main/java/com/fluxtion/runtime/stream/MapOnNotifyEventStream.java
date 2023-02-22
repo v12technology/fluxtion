@@ -4,7 +4,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.NodeNameLookup;
+import com.fluxtion.runtime.node.NodeNameLookup;
 import lombok.ToString;
 
 @ToString

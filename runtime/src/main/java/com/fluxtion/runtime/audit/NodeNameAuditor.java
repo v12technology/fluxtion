@@ -1,9 +1,11 @@
 package com.fluxtion.runtime.audit;
 
+import com.fluxtion.runtime.node.NodeNameLookup;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class NodeNameLookup implements Auditor {
+public class NodeNameAuditor implements Auditor, NodeNameLookup {
 
     private final Map<Object, String> node2NameMap = new HashMap<>();
     private final Map<String, Object> name2NodeMap = new HashMap<>();

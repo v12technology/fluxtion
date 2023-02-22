@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.callback;
 
-public interface EventProcessorCallback {
+public interface InternalEventProcessor {
 
     void onEvent(Object event);
 
