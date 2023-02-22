@@ -110,14 +110,21 @@ public class EventProcessorCompilation {
             LOG.info("generated EventProcessor file: " + file.getCanonicalPath());
         } else {
             LOG.info("generated EventProcessor in memory");
-            if (compilerConfig.isFormatSource()) {
-                String formatSource = new Formatter().formatSource(writer.toString());
-                writer = new StringWriter();
-                writer.write(formatSource);
-            }
-            if (compilerConfig.getSourceWriter() != null) {
-                compilerConfig.getSourceWriter().write(writer.toString());
-                writer = compilerConfig.getSourceWriter();
+            try {
+                if (compilerConfig.isFormatSource()) {
+                    String formatSource = new Formatter().formatSource(writer.toString());
+                    writer = new StringWriter();
+                    writer.write(formatSource);
+                }
+                if (compilerConfig.getSourceWriter() != null) {
+                    compilerConfig.getSourceWriter().write(writer.toString());
+                    writer = compilerConfig.getSourceWriter();
+                }
+            } catch (Throwable t) {
+                if (compilerConfig.getSourceWriter() != null) {
+                    compilerConfig.getSourceWriter().write(writer.toString());
+                    writer = compilerConfig.getSourceWriter();
+                }
             }
         }
         if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {

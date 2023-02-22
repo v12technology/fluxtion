@@ -16,6 +16,8 @@
  */
 package com.fluxtion.compiler;
 
+import com.fluxtion.compiler.builder.callback.CallBackDispatcherFactory;
+import com.fluxtion.compiler.builder.context.EvenProcessorContextFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
@@ -23,6 +25,7 @@ import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.node.NodeNameLookup;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
@@ -57,7 +60,9 @@ public class EventProcessorConfig {
     private final Map<String, String> class2replace = new HashMap<>();
 
     public EventProcessorConfig() {
-        addAuditor(NodeNameLookupFactory.SINGLETON, "nodeNameLookup");
+        addNode(EvenProcessorContextFactory.SINGLETON);
+        addNode(CallBackDispatcherFactory.SINGLETON);
+        addAuditor(NodeNameLookupFactory.SINGLETON, NodeNameLookup.DEFAULT_NODE_NAME);
     }
 
     /**
