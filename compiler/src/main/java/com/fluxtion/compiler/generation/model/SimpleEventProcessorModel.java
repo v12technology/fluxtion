@@ -37,7 +37,6 @@ import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
-import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.time.Clock;
@@ -1133,10 +1132,6 @@ public class SimpleEventProcessorModel {
 
     public List<FilterDescription> getFilterDescriptionList() {
         return Collections.unmodifiableList(filterDescriptionList);
-    }
-
-    public static CallbackDispatcherImpl getCallbackDispatcher() {
-        return TopologicallySortedDependencyGraph.CALLBACK_DISPATCHER;
     }
 
     public Set<Class<?>> getImportClasses() {

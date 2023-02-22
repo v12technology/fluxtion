@@ -6,8 +6,11 @@ import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.FluxtionGraphBuilder;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Disabled;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -19,6 +22,8 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,6 +42,42 @@ public class FluxtionBuilderTest {
         StringWriter writer = new StringWriter();
         Fluxtion.compile(c -> c.addNode(new MyStringHandler()), writer);
         Assert.assertFalse(writer.toString().isEmpty());
+    }
+
+    @Test
+    public void generateToStringWriterTestFailingCOmpile() {
+        StringWriter writer = new StringWriter();
+        try {
+            Fluxtion.compile(c -> c.addNode(new MyStringHandler(), "111_var"), writer);
+        } catch (Exception e) {
+        }
+        Assert.assertFalse(writer.toString().isEmpty());
+    }
+
+    @Test
+    public void setContext() throws NoSuchFieldException {
+        EventProcessor processor = Fluxtion.compile(c -> c.addNode(new MyStringHandler(), "handler"));
+        MyStringHandler handler = processor.getNodeById("handler");
+        Assert.assertNull(handler.in);
+        Map<Object, Object> m = new HashMap<>();
+        m.put("started", "BBB");
+        processor.setContextParameterMap(m);
+        Assert.assertNull(handler.in);
+        processor.init();
+        Assert.assertEquals("BBB", handler.in);
+    }
+
+    @Test
+    public void setContextInMemory() throws NoSuchFieldException {
+        EventProcessor processor = Fluxtion.interpret(c -> c.addNode(new MyStringHandler(), "handler"));
+        MyStringHandler handler = processor.getNodeById("handler");
+        Assert.assertNull(handler.in);
+        Map<Object, Object> m = new HashMap<>();
+        m.put("started", "BBB");
+        processor.setContextParameterMap(m);
+        Assert.assertNull(handler.in);
+        processor.init();
+        Assert.assertEquals("BBB", handler.in);
     }
 
     @SneakyThrows
@@ -120,11 +161,22 @@ public class FluxtionBuilderTest {
     }
 
     public static class MyStringHandler {
+        @Inject
+        public EventProcessorContext context;
         String in;
 
         @OnEventHandler
         public void stringUpdated(String in) {
             this.in = in;
+        }
+
+        public Object getValue() {
+            return context.getContextProperty(in);
+        }
+
+        @Initialise
+        public void init() {
+            in = context.getContextProperty("started");
         }
     }
 }

@@ -43,6 +43,8 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -70,7 +72,7 @@ public abstract class MultipleSepTargetInProcessTest {
     protected boolean timeAdded = false;
     //parametrized test config
     protected final boolean compiledSep;
-
+    protected boolean callInit;
     protected boolean inlineCompiled = false;
     private InMemoryEventProcessor inMemorySep;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
@@ -91,17 +93,14 @@ public abstract class MultipleSepTargetInProcessTest {
     public void beforeTest() {
         fixedPkg = true;
         addAuditor = false;
+        reuseSep = false;
+        callInit = true;
     }
 
     @After
     public void afterTest() {
         tearDown();
     }
-
-//    @Test
-//    @Ignore
-//    public void doNothingTest() {
-//    }
 
     protected StaticEventProcessor sep(RootNodeConfig rootNode) {
         return sep((EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode));
@@ -114,9 +113,7 @@ public abstract class MultipleSepTargetInProcessTest {
                 new File(OutputRegistry.RESOURCE_TEST_DIR));
         try {
             sep = handlerClass.getDeclaredConstructor().newInstance();
-            if (sep instanceof Lifecycle) {
-                ((Lifecycle) sep).init();
-            }
+            init();
             return (T) sep;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -124,6 +121,10 @@ public abstract class MultipleSepTargetInProcessTest {
     }
 
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder) {
+        return sep(cfgBuilder, new HashMap<>());
+    }
+
+    protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
         Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
         if (addAuditor || inlineCompiled) {
             wrappedBuilder = cfg -> {
@@ -144,25 +145,26 @@ public abstract class MultipleSepTargetInProcessTest {
                 wrappedBuilder.accept(cfg);
                 EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
                 inMemorySep = eventProcessorGenerator.inMemoryProcessor(cfg, generateMetaInformation);
+                inMemorySep.setContextParameterMap(contextMap);
                 inMemorySep.init();
                 sep = inMemorySep;
                 simpleEventProcessorModel = eventProcessorGenerator.getSimpleEventProcessorModel();
             } else {
                 if (reuseSep) {
-//                    sep(wrappedBuilder, fqn());
                     try {
                         GenerationContext.setupStaticContext("", "",
                                 new File(OutputRegistry.JAVA_TESTGEN_DIR),
                                 new File(OutputRegistry.RESOURCE_TEST_DIR));
                         sep = (StaticEventProcessor) Class.forName(fqn()).getDeclaredConstructor().newInstance();
-                        if (sep instanceof Lifecycle) {
-                            ((Lifecycle) sep).init();
-                        }
+                        sep.setContextParameterMap(contextMap);
+                        init();
                     } catch (Exception e) {
                     }
                 }
                 if (sep == null) {
                     sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
+                    sep.setContextParameterMap(contextMap);
+                    init();
                 }
             }
             return sep;
@@ -171,13 +173,17 @@ public abstract class MultipleSepTargetInProcessTest {
         }
     }
 
+    public void callInit(boolean callInit) {
+        this.callInit = callInit;
+    }
+
     protected void writeOutputsToFile(boolean write) {
         generateMetaInformation = write;
         writeSourceFile = write;
     }
 
     protected StaticEventProcessor init() {
-        if (sep instanceof Lifecycle) {
+        if (callInit && sep instanceof Lifecycle) {
             ((Lifecycle) sep).init();
         }
         return sep;

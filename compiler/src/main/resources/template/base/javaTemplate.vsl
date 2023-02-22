@@ -22,7 +22,7 @@ import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.EventProcessor;
-import com.fluxtion.runtime.callback.EventProcessorCallback;
+import com.fluxtion.runtime.callback.InternalEventProcessor;
 #if(${MODEL.imports})
     ${MODEL.imports}
 #end
@@ -32,15 +32,15 @@ import java.util.function.Consumer;
 
 /*
 *
-<pre>
-* generation time   : ${build_time}
+* <pre>
+* generation time                 : ${build_time}
 * eventProcessorGenerator version : ${generator_version_information}
-* api version       : ${api_version_information}
+* api version                     : ${api_version_information}
 * </pre>
 * @author Greg Higgins
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements EventProcessor, StaticEventProcessor, EventProcessorCallback, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+public class ${className} implements EventProcessor, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
 //Node declarations
 ${MODEL.nodeDeclarations}
@@ -54,12 +54,20 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     //Filter constants
     ${MODEL.filterConstantDeclarations}
 
-    public ${className} () {
+    public  ${className} (Map<Object, Object> contextMap) {
+        context.replaceMappings(contextMap);
         ${MODEL.nodeMemberAssignments}
-        //callback wiring
-        callbackDispatcher.eventProcessor = this;
         //initialise dirty lookup map
         isDirty("test");
+        context.setEventProcessorCallback(this);
+    }
+    public ${className} () {
+        this(null);
+    }
+
+    @Override
+    public void setContextParameterMap(Map<Object, Object> newContextMapping){
+        context.replaceMappings(newContextMapping);
     }
 
     @Override

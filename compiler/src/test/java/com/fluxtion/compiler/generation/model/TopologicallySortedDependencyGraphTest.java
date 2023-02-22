@@ -18,11 +18,22 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.EventProcessorConfig;
-import com.fluxtion.test.event.*;
+import com.fluxtion.test.event.AnnotatedTimeHandler;
+import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
+import com.fluxtion.test.event.DependencyChild;
+import com.fluxtion.test.event.EventHandlerCbNode;
+import com.fluxtion.test.event.InitCB;
+import com.fluxtion.test.event.NodeWithParentList;
+import com.fluxtion.test.event.RootCB;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -216,9 +227,7 @@ public class TopologicallySortedDependencyGraphTest {
         //generate model
         TopologicallySortedDependencyGraph instance = new TopologicallySortedDependencyGraph(nodeList);
         instance.generateDependencyTree();
-        //includes a default callback instance
-        assertEquals(5, instance.getSortedDependents().size());
-
+        assertEquals(4, instance.getSortedDependents().size());
     }
 
     @Test
