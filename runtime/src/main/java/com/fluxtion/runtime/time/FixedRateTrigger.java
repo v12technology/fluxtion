@@ -57,5 +57,6 @@ public class FixedRateTrigger {
     @Initialise
     public void init() {
         previousTime = clock.getWallClockTime();
+        triggerCount = 0;
     }
 }

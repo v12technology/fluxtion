@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,20 +12,25 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.*;
+import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.model.DirtyFlag;
+import com.fluxtion.compiler.generation.model.Field;
+import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
+import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -34,160 +39,161 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperToPrimitive;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
 /**
- *
  * @author Greg Higgins
  */
 public class JavaSourceGenerator {
 
+    private static final String s4 = "    ";
+    private static final String s8 = "        ";
+    private static final String s12 = "            ";
+    private static final String s16 = "                ";
+    private static final String s20 = "                    ";
+    private static final String s24 = "                        ";
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order, in a list.
      */
     private final ArrayList<String> initialiseMethodList;
     /**
-     * String representation of life-cycle callback methods for initialise,
-     * sorted in call order.
-     */
-    private String initialiseMethods;
-
-    /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
     private final ArrayList<String> batchEndMethodList;
     /**
-     * String representation of life-cycle callback methods for end of batch,
-     * sorted in call order.
-     */
-    private String batchEndMethods;
-
-    /**
      * String representation of life-cycle callback methods for after event
      * processing, sorted in call order.
      */
     private final ArrayList<String> eventEndMethodList;
-
-    /**
-     * String representation of life-cycle callback methods for end of batch,
-     * sorted in call order.
-     */
-    private String eventEndMethods;
-
     /**
      * String representation of life-cycle callback methods for batch pause,
      * sorted in call order.
      */
     private final ArrayList<String> batchPauseMethodList;
-
-    /**
-     * String representation of life-cycle callback methods for batch pause,
-     * sorted in call order.
-     */
-    private String batchPauseMethods;
-
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
     private final ArrayList<String> tearDownMethodList;
-
+    /**
+     * String representation of node declarations as a list.
+     */
+    private final ArrayList<String> nodeDeclarationList;
+    private final ArrayList<String> importList;
+    /**
+     * String representation of the initial member assignments for each node
+     */
+    private final ArrayList<String> nodeMemberAssignmentList;
+    /**
+     * String representation of public nodes as a list.
+     */
+    private final ArrayList<String> publicNodeIdentifierList;
+    private final SimpleEventProcessorModel model;
+    /**
+     * use reflection to assign private members
+     */
+    private final boolean assignPrivateMembers;
+    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
+    private final HashMap<String, String> importMap = new HashMap<>();
+    private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
+    private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
+    /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order.
+     */
+    private String initialiseMethods;
+    /**
+     * String representation of life-cycle callback methods for end of batch,
+     * sorted in call order.
+     */
+    private String batchEndMethods;
+    /**
+     * String representation of life-cycle callback methods for end of batch,
+     * sorted in call order.
+     */
+    private String eventEndMethods;
+    /**
+     * String representation of life-cycle callback methods for batch pause,
+     * sorted in call order.
+     */
+    private String batchPauseMethods;
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
     private String tearDownMethods;
-
-    /**
-     * String representation of node declarations as a list.
-     */
-    private final ArrayList<String> nodeDeclarationList;
-
-    private final ArrayList<String> importList;
-
     /**
      * String representation of node declarations.
      */
     private String nodeDeclarations;
-
     /**
      * String representation of dirty flag.
      */
     private String dirtyFlagDeclarations;
-
+    /**
+     * String representation of looking up dirty flag by instance
+     */
+    private String dirtyFlagLookup;
+    /**
+     * String representation of updating dirty flag by instance
+     */
+    private String dirtyFlagUpdate;
     /**
      * String representation of all dirty flag reset to false.
      */
     private String resetDirtyFlags;
     /**
+     *
+     */
+    private String guardCheckMethods;
+    /**
      * String representation of filter constants declarations.
      */
     private String filterConstantDeclarations;
-
-    /**
-     * String representation of the initial member assignments for each node
-     */
-    private final ArrayList<String> nodeMemberAssignmentList;
-
     /**
      * String representation of the initial member assignments for each node
      */
     private String nodeMemberAssignments;
-
     /**
      * String representation of top level event dispatch, branches on event type
-     *
      */
     private String eventDispatch;
-
     /**
      * String representing the delegated event handling methods for a specific
      * event type, will include branching based on filterId.
      */
     private String eventHandlers;
-
     /**
      * determines whether separate delegate eventHandling methods are generated.
      */
-    private final boolean isInlineEventHandling;
-
+    private boolean isInlineEventHandling;
     /**
      * String representing event audit dispatch
      */
     private String eventAuditDispatch;
-
-    /**
-     * String representation of public nodes as a list.
-     */
-    private final ArrayList<String> publicNodeIdentifierList;
-
-    private final SimpleEventProcessorModel model;
-    
-    /**
-     * use reflection to assign private members
-     */
-    private final boolean assignPrivateMembers;
-    
     /**
      * are any auditors registered for this SEP
      */
     private boolean auditingEvent;
-
     private boolean auditingInvocations;
-
     private String auditMethodString;
-    
     private String additionalInterfaces;
-
-    private final StringBuilder nodeDecBuilder = new StringBuilder(5 * 1000 * 1000);
-
-    private final HashMap<String, String> importMap = new HashMap<>();
 
     public JavaSourceGenerator(SimpleEventProcessorModel model) {
         this(model, false);
@@ -212,6 +218,10 @@ public class JavaSourceGenerator {
         nodeMemberAssignmentList = new ArrayList<>();
         publicNodeIdentifierList = new ArrayList<>();
         importList = new ArrayList<>();
+    }
+
+    private static boolean hasIdField(Class e) {
+        return false;
     }
 
     public void buildSourceModel() throws Exception {
@@ -282,6 +292,9 @@ public class JavaSourceGenerator {
     private void buildDirtyFlags() {
         dirtyFlagDeclarations = "";
         resetDirtyFlags = "";
+        dirtyFlagLookup = "";
+        dirtyFlagUpdate = "";
+        guardCheckMethods = "";
         final ArrayList<DirtyFlag> values = new ArrayList<>(model.getDirtyFieldMap().values());
         NaturalOrderComparator<DirtyFlag> comparator = new NaturalOrderComparator<>();
         values.sort((o1, o2) -> comparator.compare(o1.name, o2.name));
@@ -290,11 +303,37 @@ public class JavaSourceGenerator {
             resetDirtyFlags += String.format("%8s%s = false;%n", "", flag.name);
         }
         for (DirtyFlag flag : values) {
-            if(flag.requiresInvert){
+            if (flag.requiresInvert) {
                 dirtyFlagDeclarations += String.format("%4sprivate boolean not%s = false;%n", "", flag.name);
                 resetDirtyFlags += String.format("%8snot%s = false;%n", "", flag.name);
             }
         }
+        List<Entry<Field, DirtyFlag>> sortedDirtyFlags = model.getDirtyFieldMap().entrySet().stream()
+                .sorted(Comparator.comparing(e -> e.getKey().getName()))
+                .collect(Collectors.toList());
+        sortedDirtyFlags
+                .forEach(e -> {
+                    dirtyFlagLookup += String.format("%12sdirtyFlagSupplierMap.put(%s, () -> %s);", "",
+                            e.getKey().getName(), e.getValue().name);
+                });
+        sortedDirtyFlags
+                .forEach(e -> {
+                    dirtyFlagUpdate += String.format("%12sdirtyFlagUpdateMap.put(%s, (b) -> %s = b);", "",
+                            e.getKey().getName(), e.getValue().name);
+                });
+        //build guard methods
+        model.getNodeFields().forEach(field -> {
+                    String guardConditions = model.getNodeGuardConditions(field.instance).stream()
+                            .map(d -> (d.isRequiresInvert() ? "not" : "") + d.getName())
+                            .collect(Collectors.joining(" |\n"));
+
+                    if (!model.getNodeGuardConditions(field.instance).isEmpty()) {
+                        guardCheckMethods += String.format("%1$4sprivate boolean guardCheck_%2$s() {%n" +
+                                "%1$8sreturn %3$s;" +
+                                "}%n", "", field.getName(), guardConditions);
+                    }
+                }
+        );
         dirtyFlagDeclarations = StringUtils.chomp(dirtyFlagDeclarations);
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
@@ -302,7 +341,7 @@ public class JavaSourceGenerator {
     private String getClassName(Class<?> clazzName) {
         return getClassName(clazzName.getCanonicalName());
     }
-    
+
     private String getClassName(String clazzName) {
         clazzName = model.getMappedClass(clazzName);
         String[] split = clazzName.split("\\.");
@@ -311,10 +350,10 @@ public class JavaSourceGenerator {
             String simpleName = split[split.length - 1];
             String pkgName = clazzName.replace("." + simpleName, "");
             ret = simpleName;
-            if(clazzName.startsWith("java.lang")
-                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)){
+            if (clazzName.startsWith("java.lang")
+                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)) {
                 //ignore java.lang
-            }else if (importMap.containsKey(simpleName)) {
+            } else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(clazzName)) {
                     ret = clazzName;
                 }
@@ -353,28 +392,31 @@ public class JavaSourceGenerator {
                         .append(" = constructor.on(").append(fqnBuilder).append(".class).invoke().constructor().bypasser();");
             } else {
                 List<Field.MappedField> constructorArgs = model.constructorArgs(field.instance);
-                if(String.class.isAssignableFrom(fieldClass)){
+                if (String.class.isAssignableFrom(fieldClass)) {
                     declarationRoot
                             .append(" = ").append("\"")
                             .append(escapeJava((String) field.instance))
                             .append("\";");
-                }else if(Integer.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append(";");
-                }else if(Float.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("f;");
-                }else if(Double.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("d;");
-                }else if(Long.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = ").append( field.instance).append("L;");
-                }else if(Short.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = (short)").append( field.instance).append(";");
-                }else if(Byte.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = (byte)").append( field.instance).append(";");
-                }else if(Character.class.isAssignableFrom(fieldClass)){
-                    declarationRoot.append(" = '").append( field.instance).append("';");
-                }
-                else{
-                    String generic = field.isGeneric()?"<>":"";
+                } else if (Integer.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append(";");
+                } else if (Float.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append("f;");
+                } else if (Double.class.isAssignableFrom(fieldClass)) {
+                    if (!Double.isNaN((double) field.instance)) {
+                        declarationRoot.append(" = ").append(field.instance).append("d;");
+                    } else {
+                        declarationRoot.append(" = Double.NaN;");
+                    }
+                } else if (Long.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = ").append(field.instance).append("L;");
+                } else if (Short.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = (short)").append(field.instance).append(";");
+                } else if (Byte.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = (byte)").append(field.instance).append(";");
+                } else if (Character.class.isAssignableFrom(fieldClass)) {
+                    declarationRoot.append(" = '").append(field.instance).append("';");
+                } else {
+                    String generic = field.isGeneric() ? "<>" : "";
                     String args = constructorArgs.stream().map(Field.MappedField::value).collect(Collectors.joining(", "));
                     declarationRoot.append(" = new ").append(fqnBuilder).append(generic + "(" + args + ");");
                 }
@@ -416,7 +458,7 @@ public class JavaSourceGenerator {
                 }
                 filterVariableMap.put(variableName, value);
                 final String declaration = String.format("    "
-                        + "public static final int %s = %d;",
+                                + "public static final int %s = %d;",
                         variableName, value);
                 filterConstantDeclarations += (firstLine ? "" : "\n") + declaration;
                 firstLine = false;
@@ -426,9 +468,56 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
-        if(auditingEvent){
+        generateEventBufferedDispatcher();
+        if (auditingEvent) {
             eventHandlers += auditMethodString;
         }
+    }
+
+    private void generateEventBufferedDispatcher() {
+        StringBuilder noTriggerDispatch = new StringBuilder();
+        //build buffer event method
+        String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
+                "        buffering = true;\n" +
+                "        switch (event.getClass().getName()) {\n";
+
+        Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
+        //sort class so repeatable
+        boolean prev = isInlineEventHandling;
+        isInlineEventHandling = true;
+        handlerOnlyDispatchMap.forEach((c, m) -> {
+            String className = getClassName(c.getCanonicalName());
+            noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
+            noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
+            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), c));
+            noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+            noTriggerDispatch.append(String.format("%12s}%n", ""));
+        });
+        noTriggerDispatch.append(String.format("%8s}%n", ""));
+        noTriggerDispatch.append(String.format("%4s}%n", ""));
+        bufferEvents += noTriggerDispatch.toString();
+        //build buffered dispatch trigger
+        Map<FilterDescription, List<CbMethodHandle>> cbMap = new HashMap<>();
+        List<CbMethodHandle> triggerOnlyCallBacks = model.getTriggerOnlyCallBacks();
+        if (!triggerOnlyCallBacks.isEmpty()) {
+            cbMap.put(FilterDescription.DEFAULT_FILTER, triggerOnlyCallBacks);
+        }
+        Map<FilterDescription, List<CbMethodHandle>> cbMapPostDispatch = new HashMap<>();
+        cbMapPostDispatch.put(FilterDescription.DEFAULT_FILTER, model.getAllPostEventCallBacks());
+        String dispatchString = buildFilteredSwitch(cbMap, cbMapPostDispatch, Object.class, false, true);
+        String bufferedTrigger = "\n    public void triggerCalculation(){\n" +
+                "        buffering = false;\n" +
+                "        String typedEvent = \"No event information - buffered dispatch\";\n" +
+                (dispatchString == null ? "" : dispatchString) +
+                "        afterEvent();\n" +
+                "\n    }\n";
+        isInlineEventHandling = prev;
+        eventHandlers += bufferEvents;
+        eventHandlers += bufferedTrigger;
+    }
+
+    public void dispatchBufferedEvents() {
+
     }
 
     /**
@@ -437,7 +526,6 @@ public class JavaSourceGenerator {
      * called, and dispatches methods internally. The generated method, switches
      * on class type, casts to the correct object and then invokes specific
      * event handling for that type.
-     *
      */
     private void generateClassBasedDispatcher() {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
@@ -460,6 +548,12 @@ public class JavaSourceGenerator {
             dispatchStringNoId += String.format("%16sbreak;%n", "");
             dispatchStringNoId += String.format("%12s}%n", "");
         }
+        //default handling
+        if (keySet.contains(Object.class)) {
+            dispatchStringNoId += String.format("%12sdefault :{%n", "");
+            dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
+            dispatchStringNoId += String.format("%12s}%n", "");
+        }
         dispatchStringNoId += String.format("%8s}%n", "");
         if (isInlineEventHandling) {
             dispatchStringNoId += String.format("%8safterEvent();%n", "");
@@ -469,23 +563,11 @@ public class JavaSourceGenerator {
         eventDispatch = dispatchStringNoId + "\n";
     }
 
-    private static boolean hasIdField(Class e) {
-        return false;
-    }
-
-    private static final String s4 = "    ";
-    private static final String s8 = "        ";
-    private static final String s12 = "            ";
-    private static final String s16 = "                ";
-    private static final String s20 = "                    ";
-    private static final String s24 = "                        ";
-    private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
-    private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
-
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
-            Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
-            boolean intFilter, boolean noFilter) {
-        Set<FilterDescription> filterIdSet = cbMap.keySet();
+                                       Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent, Class eventClass,
+                                       boolean intFilter, boolean noFilter) {
+        Set<FilterDescription> filterIdSet = new HashSet<>(cbMap.keySet());
+        filterIdSet.addAll(cbMapPostEvent.keySet());
         ArrayList<FilterDescription> clazzList = new ArrayList<>(filterIdSet);
         clazzList.sort((FilterDescription o1, FilterDescription o2) -> {
             int ret = o1.value - o2.value;
@@ -542,9 +624,9 @@ public class JavaSourceGenerator {
                     DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
                     String dirtyAssignment = "";
                     if (dirtyFlagForUpdateCb != null) {
-                        if(dirtyFlagForUpdateCb.alwaysDirty){
-                            dirtyAssignment =  dirtyFlagForUpdateCb.name + " = true;\n" + s24;
-                        }else{
+                        if (dirtyFlagForUpdateCb.alwaysDirty) {
+                            dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                        } else {
                             dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
                         }
                     }
@@ -553,24 +635,11 @@ public class JavaSourceGenerator {
                     //HERE TO JOIN THINGS
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
-                        //callTree += String.format("%24sif(", "");
-                        OnTrigger onTrigger = method.method.getAnnotation(OnTrigger.class);
-                        String invert = "";
-                        if(onTrigger !=null && !onTrigger.dirty()){
-                            invert = " not";
-                        }
-                        ct.append(s24).append("if(");
-                        for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
-                            //callTree += OR + nodeGuardCondition.name;
-                            ct.append(OR).append(invert).append(nodeGuardCondition.name);
-//                            OR = " || ";
-                            OR = " | ";
-                        }
-                        ct.append(") {\n");
+                        ct.append(s24).append("if(guardCheck_" + method.getVariableName() + "()) {\n");
                     }
 
                     //add audit
-                    if(auditingInvocations){
+                    if (auditingInvocations) {
                         ct.append(s24).append("auditInvocation(")
                                 .append(method.variableName)
                                 .append(", \"").append(method.variableName).append("\"")
@@ -600,7 +669,7 @@ public class JavaSourceGenerator {
                     //do not generate the parent callback
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
                     final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
-                    if (handlerAnnotation != null && (!handlerAnnotation.propagate() )) {
+                    if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
                     } else {
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
@@ -611,17 +680,17 @@ public class JavaSourceGenerator {
                         StringBuilder sbUnguarded = new StringBuilder();
                         for (CbMethodHandle cbMethod : updateListenerCbList) {
                             //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
-                            if(!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()){
+                            if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
                                 unguarded = true;
                                 sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
-                            }else{
+                            } else {
                                 ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
                             }
                         }
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20s}\n", "", parentFlag.name);
                             ct.append(s20).append("}\n");
-                            if(unguarded){
+                            if (unguarded) {
                                 ct.append(sbUnguarded);
                             }
                         }
@@ -811,10 +880,10 @@ public class JavaSourceGenerator {
                         } else {
                             nodeMemberAssignmentList.add(String.format("%4s%s.%s = '%s';", "", varName, instanceField.getName(), value));
                         }
-                    } else if (instanceField.getType().isPrimitive() ) {
+                    } else if (instanceField.getType().isPrimitive()) {
                         String value = instanceField.get(object).toString();
-                        value = value.equalsIgnoreCase("NaN")?"Double.NaN":value;
-                        value = "(" + instanceField.getType().toString() + ")" + value;
+                        value = value.equalsIgnoreCase("NaN") ? "Double.NaN" : value;
+                        value = "(" + instanceField.getType() + ")" + value;
                         if (useRefelction) {
                             nodeMemberAssignmentList.add(String.format("%4sassigner.on(%s).set().field(\"%s\").withValue(%s);", "", varName, instanceField.getName(), value));
                         } else {
@@ -855,8 +924,8 @@ public class JavaSourceGenerator {
                                 if (instanceField.getGenericType() instanceof ParameterizedType) {
                                     ParameterizedType integerListType = (ParameterizedType) instanceField.getGenericType();
                                     Class<?> classType = Object.class;
-                                    if(integerListType.getActualTypeArguments()[0] instanceof Class){
-                                            classType = (Class<?>) integerListType.getActualTypeArguments()[0];
+                                    if (integerListType.getActualTypeArguments()[0] instanceof Class) {
+                                        classType = (Class<?>) integerListType.getActualTypeArguments()[0];
                                     }
                                     Field nodeParentReference = model.getFieldForInstance(parent);
                                     if (nodeParentReference != null) {
@@ -935,7 +1004,7 @@ public class JavaSourceGenerator {
     }
 
     public String getAdditionalInterfaces() {
-        return additionalInterfaces==null?"":additionalInterfaces;
+        return additionalInterfaces == null ? "" : additionalInterfaces;
     }
 
     /**
@@ -945,7 +1014,7 @@ public class JavaSourceGenerator {
      * <p>
      * <code>
      * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
+     * [eventHandlers]
      * }
      * </code>
      *
@@ -964,7 +1033,7 @@ public class JavaSourceGenerator {
      * <p>
      * <code>
      * public void handleEvent([specific event] event) {
-     *      [eventHandlers]
+     * [eventHandlers]
      * }
      * </code>
      *
@@ -986,6 +1055,22 @@ public class JavaSourceGenerator {
         return resetDirtyFlags;
     }
 
+    public String getDirtyFlagLookup() {
+        return dirtyFlagLookup;
+    }
+
+    public String getDirtyFlagUpdate() {
+        return dirtyFlagUpdate;
+    }
+
+    public String getGuardCheckMethods() {
+        return guardCheckMethods;
+    }
+
+    public int getDirtyFlagCount() {
+        return model.getDirtyFieldMap() == null ? 32 : model.getDirtyFieldMap().size();
+    }
+
     public String getBatchEndMethods() {
         return batchEndMethods;
     }
@@ -1005,7 +1090,7 @@ public class JavaSourceGenerator {
     public String getImports() {
         Collections.sort(importList);
         StringBuilder sb = new StringBuilder(2048);
-        importList.stream().forEach(s ->{
+        importList.stream().forEach(s -> {
             sb.append("import ")
                     .append(s)
                     .append(";\n");
@@ -1037,20 +1122,24 @@ public class JavaSourceGenerator {
         }
         this.auditingEvent = true;
         this.auditingInvocations = false;
+        String eventClassName = getClassName(Event.class);
         importList.add(Event.class.getCanonicalName());
+        importList.add(EventProcessorContext.class.getCanonicalName());
+        importList.add(MutableEventProcessorContext.class.getCanonicalName());
+        importList.add(Map.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
-        String auditEvent = "private void auditEvent(Event typedEvent){\n";
+        String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);
         String auditInvocation = "private void auditInvocation(Object node, String nodeName, String methodName, Object typedEvent){\n";
         String initialiseAuditor = "private void initialiseAuditor(" + getClassName(Auditor.class.getName()) + " auditor){\n"
                 + "\tauditor.init();\n";
-            for (Field nodeField : nodeFields) {
-                String nodeName = nodeField.name;
-                if(listenerFields.stream().anyMatch((t) -> t.name.equals(nodeName))){
-                    continue;
-                }
-                initialiseAuditor += (String.format("auditor.nodeRegistered(%s, \"%s\");", nodeName, nodeName));
+        for (Field nodeField : nodeFields) {
+            String nodeName = nodeField.name;
+            if (listenerFields.stream().anyMatch((t) -> t.name.equals(nodeName))) {
+                continue;
             }
+            initialiseAuditor += (String.format("auditor.nodeRegistered(%s, \"%s\");", nodeName, nodeName));
+        }
         eventAuditDispatch = "";
         nodeMemberAssignmentList.add("\t//node auditors");
         for (Field listenerField : listenerFields) {
@@ -1065,14 +1154,14 @@ public class JavaSourceGenerator {
             //add event audit
             eventAuditDispatch += String.format("%8s%s.eventReceived(typedEvent);%n", "", listenerName);
             //node invocation audit
-            if(((Auditor)listenerField.instance).auditInvocations()){
+            if (((Auditor) listenerField.instance).auditInvocations()) {
                 auditInvocation += String.format("%8s%s.nodeInvoked(node, nodeName, methodName, typedEvent);%n", "", listenerName);
                 auditingInvocations = true;
             }
         }
         auditEvent += eventAuditDispatch + "}\n";
         auditObjet += eventAuditDispatch + "}\n";
-        if(auditingInvocations){
+        if (auditingInvocations) {
             auditEvent += auditInvocation + "}\n";
         }
         initialiseAuditor += "}\n";
@@ -1091,7 +1180,7 @@ public class JavaSourceGenerator {
     }
 
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
-        if(!interfacesToImplement.isEmpty()){
+        if (!interfacesToImplement.isEmpty()) {
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassName)
                     .collect(Collectors.joining(", ", ", ", ""));

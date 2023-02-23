@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -17,7 +17,6 @@
 package com.fluxtion.compiler.generation.compiler;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public interface Templates {

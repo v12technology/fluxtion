@@ -4,7 +4,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.NodeNameLookup;
+import com.fluxtion.runtime.node.NodeNameLookup;
 import lombok.ToString;
 
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class NotifyEventStream<T, S extends EventStream<T>> extends AbstractEven
     }
 
     protected void initialise() {
-        instanceNameToNotify = nodeNameLookup.lookup(target);
+        instanceNameToNotify = nodeNameLookup.lookupInstanceName(target);
     }
 
     @OnTrigger

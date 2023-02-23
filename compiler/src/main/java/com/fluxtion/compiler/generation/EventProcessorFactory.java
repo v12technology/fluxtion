@@ -93,17 +93,17 @@ public class EventProcessorFactory {
     }
 
     public static EventProcessor compileTestInstance(Consumer<EventProcessorConfig> cfgBuilder,
-                                                           String pckg,
-                                                           String sepName,
-                                                           boolean writeSourceFile,
-                                                           boolean generateMetaInformation) throws Exception {
+                                                     String pckg,
+                                                     String sepName,
+                                                     boolean writeSourceFile,
+                                                     boolean generateMetaInformation) throws Exception {
         return compile(
                 cfgBuilder,
                 pckg,
                 sepName,
                 OutputRegistry.JAVA_TESTGEN_DIR,
                 OutputRegistry.RESOURCE_TEST_DIR,
-                true,
+                false,
                 writeSourceFile,
                 generateMetaInformation);
     }
@@ -125,7 +125,7 @@ public class EventProcessorFactory {
                 name,
                 OutputRegistry.JAVA_SRC_DIR,
                 OutputRegistry.RESOURCE_DIR,
-                true,
+                false,
                 false,
                 false);
     }
@@ -146,13 +146,13 @@ public class EventProcessorFactory {
      * @throws Exception
      */
     public static EventProcessor compile(Consumer<EventProcessorConfig> cfgBuilder,
-                                               String packageName,
-                                               String className,
-                                               String srcGenDir,
-                                               String resGenDir,
-                                               boolean initialise,
-                                               boolean writeSourceFile,
-                                               boolean generateMetaInformation) throws InstantiationException, IllegalAccessException, Exception {
+                                         String packageName,
+                                         String className,
+                                         String srcGenDir,
+                                         String resGenDir,
+                                         boolean initialise,
+                                         boolean writeSourceFile,
+                                         boolean generateMetaInformation) throws InstantiationException, IllegalAccessException, Exception {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         FluxtionCompilerConfig compilerCfg = new FluxtionCompilerConfig();
         compilerCfg.setOutputDirectory(new File(srcGenDir).getCanonicalPath());
@@ -190,7 +190,6 @@ public class EventProcessorFactory {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, new InProcessEventProcessorConfig(sepConfig));
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        sep.init();
         return sep;
     }
 
@@ -201,7 +200,6 @@ public class EventProcessorFactory {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        sep.init();
         return sep;
     }
 

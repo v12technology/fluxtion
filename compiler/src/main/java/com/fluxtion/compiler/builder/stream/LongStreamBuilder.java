@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
@@ -9,6 +9,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
 import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
@@ -19,40 +20,62 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingLongEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateLongStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
+import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
-public class LongStreamBuilder {
+public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplier> {
 
     final LongEventStream eventStream;
 
     LongStreamBuilder(LongEventStream eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
-    public LongEventSupplier longStream(){
-        return EventProcessorConfigService.service().add(new WrappingLongEventSupplier(eventStream));
+    public LongEventSupplier getEventSupplier() {
+        return EventProcessorBuilderService.service().add(new WrappingLongEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
     public LongStreamBuilder updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        Object source = StreamHelper.getSource(updateTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setUpdateTriggerNode(source);
+        }
         return this;
     }
 
     public LongStreamBuilder publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerNode(source);
+        }
+        return this;
+    }
+
+    public LongStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerOverrideNode(source);
+        }
         return this;
     }
 
     public LongStreamBuilder resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        Object source = StreamHelper.getSource(resetTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setResetTriggerNode(source);
+        }
         return this;
     }
 
@@ -76,7 +99,7 @@ public class LongStreamBuilder {
         return new LongStreamBuilder(new MapEventStream.MapLong2ToLongEventStream(eventStream, int2IntFunction));
     }
 
-    public LongStreamBuilder map(SerializableBiLongFunction int2IntFunction, LongStreamBuilder stream2Builder) {
+    public LongStreamBuilder mapBiFunction(SerializableBiLongFunction int2IntFunction, LongStreamBuilder stream2Builder) {
         return new LongStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToLongEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
@@ -126,7 +149,7 @@ public class LongStreamBuilder {
 
     //OUTPUTS - START
     public LongStreamBuilder notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new LongStreamBuilder(new NotifyEventStream.LongNotifyEventStream(eventStream, target));
     }
 
@@ -135,7 +158,7 @@ public class LongStreamBuilder {
     }
 
     public LongStreamBuilder push(SerializableLongConsumer pushFunction) {
-        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+        EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
         return new LongStreamBuilder(new PushEventStream.LongPushEventStream(eventStream, pushFunction));
     }
 
@@ -144,7 +167,8 @@ public class LongStreamBuilder {
     }
 
     public LongStreamBuilder console(String in) {
-        return peek(Peekers.console(in));
+        peek(Peekers.console(in));
+        return this;
     }
 
     public LongStreamBuilder console() {
@@ -153,7 +177,7 @@ public class LongStreamBuilder {
 
     //META-DATA
     public LongStreamBuilder id(String nodeId) {
-        EventProcessorConfigService.service().add(eventStream, nodeId);
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
         return this;
     }
 }

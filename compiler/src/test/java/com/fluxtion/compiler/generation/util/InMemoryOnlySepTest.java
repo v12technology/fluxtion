@@ -1,12 +1,11 @@
 package com.fluxtion.compiler.generation.util;
 
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-@Ignore
 public class InMemoryOnlySepTest extends MultipleSepTargetInProcessTest {
 
 
@@ -17,5 +16,9 @@ public class InMemoryOnlySepTest extends MultipleSepTargetInProcessTest {
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
         return Arrays.asList(false);
+    }
+
+    @Test
+    public void doNothingTest() {
     }
 }

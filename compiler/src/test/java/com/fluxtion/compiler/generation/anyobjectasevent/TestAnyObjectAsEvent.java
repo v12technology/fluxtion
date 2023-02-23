@@ -11,20 +11,23 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
+import java.util.Date;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
@@ -55,6 +58,20 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
         assertFalse(strHandler.notified);
     }
 
+    @Test
+    public void defaultHandler() {
+        sep(c -> {
+            c.addNode(new StringHandler(), "strHandler");
+            c.addNode(new ObjectHandler(), "defaultHandler");
+        });
+
+        MatcherAssert.assertThat(getField("defaultHandler", ObjectHandler.class).count, is(0));
+        onEvent("test");
+        onEvent(new Object());
+        onEvent(new Date());
+        MatcherAssert.assertThat(getField("defaultHandler", ObjectHandler.class).count, is(3));
+    }
+
     public static class StringHandler {
 
         boolean notified = false;
@@ -62,6 +79,17 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
         @OnEventHandler
         public boolean newString(String s) {
             notified = true;
+            return true;
+        }
+    }
+
+    public static class ObjectHandler {
+
+        int count;
+
+        @OnEventHandler
+        public boolean defaultHandler(Object object) {
+            count++;
             return true;
         }
     }

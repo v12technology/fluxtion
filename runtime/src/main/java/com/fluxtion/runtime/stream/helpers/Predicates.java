@@ -12,34 +12,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
+import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Predicates {
 
-    static boolean isInteger(String in){
+    static boolean greaterThanInt(int a, int b) {
+        return a > b;
+    }
+
+    static boolean greaterThanDouble(double a, double b) {
+        return a > b;
+    }
+
+    static boolean greaterThanLong(long a, long b) {
+        return a > b;
+    }
+
+    static boolean isInteger(String in) {
         try {
             Integer.parseInt(in);
             return true;
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         return false;
     }
 
-    static boolean isDouble(String in){
+    static boolean isDouble(String in) {
         try {
             Double.parseDouble(in);
             return true;
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         return false;
     }
 
-    static boolean isLong(String in){
+    static boolean isLong(String in) {
         try {
             Long.parseLong(in);
             return true;
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         return false;
     }
 
@@ -65,6 +77,14 @@ public interface Predicates {
 
     static SerializableIntFunction<Boolean> gt(int limit) {
         return new GreaterThan(limit, Double.NaN)::check;
+    }
+
+    static SerializableFunction<Integer, Boolean> greaterThanBoxed(Integer limit) {
+        return new GreaterThan(limit, Double.NaN)::checkBoxedInteger;
+    }
+
+    static SerializableFunction<Long, Boolean> greaterThanBoxed(Long limit) {
+        return new GreaterThan(limit, Double.NaN)::checkBoxedLong;
     }
 
     static SerializableLongFunction<Boolean> gt(long limit) {
@@ -108,7 +128,7 @@ public interface Predicates {
 
 
         public boolean doubleChanged(double newValue) {
-            if(Double.isNaN(newValue) && Double.isNaN(doublePrevious)){
+            if (Double.isNaN(newValue) && Double.isNaN(doublePrevious)) {
                 return false;
             }
             boolean changed = newValue != doublePrevious;
@@ -149,6 +169,14 @@ public interface Predicates {
 
         public boolean check(long input) {
             return input > limit;
+        }
+
+        public boolean checkBoxedInteger(Integer input) {
+            return check(input);
+        }
+
+        public boolean checkBoxedLong(Long input) {
+            return check(input);
         }
     }
 

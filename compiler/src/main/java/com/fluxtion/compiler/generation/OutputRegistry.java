@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation;
@@ -56,7 +56,7 @@ public class OutputRegistry {
 
     public final void update() {
         String dir = System.getProperty("fluxtion.cacheDirectory");
-        log.log(Level.INFO, "upate fluxtion.cacheDirectory:'"+ dir + "'");
+        log.log(Level.INFO, "upate fluxtion.cacheDirectory:'" + dir + "'");
         genDir = OutputRegistry.JAVA_GEN_DIR;
         resDir = OutputRegistry.RESOURCE_DIR;
         classLoader = ClassLoader.getSystemClassLoader();
@@ -72,7 +72,7 @@ public class OutputRegistry {
                 final URL classesDir = getClassesDirFile().toURI().toURL();
                 final URL reosurcesDir = getResDirFile().toURI().toURL();
                 //TODO valiate if we need a parent class loder or not
-                classLoader = new URLClassLoader( new URL[]{classesDir, reosurcesDir});
+                classLoader = new URLClassLoader(new URL[]{classesDir, reosurcesDir});
 //                classLoader = new URLClassLoader("fluxtionCompilerClassloader", new URL[]{classesDir, reosurcesDir}, null);
             } catch (Exception e) {
                 log.log(Level.WARNING, "could not build classloader from cache directories", e);

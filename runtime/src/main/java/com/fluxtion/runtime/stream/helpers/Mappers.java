@@ -2,15 +2,16 @@ package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.stream.Stateful;
+import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.groupby.GroupByCollection;
+import com.fluxtion.runtime.stream.groupby.TopNByValue;
+import com.fluxtion.runtime.stream.groupby.Tuple;
 import lombok.ToString;
 
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableIntUnaryOperator;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
-import static com.fluxtion.runtime.partition.LambdaReflection.SerializableToIntFunction;
+import java.util.List;
+import java.util.Map.Entry;
+
+import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public interface Mappers {
 
@@ -30,76 +31,103 @@ public interface Mappers {
     SerializableBiLongFunction DIVIDE_LONGS = Mappers::divideLongs;
     SerializableBiDoubleFunction DIVIDE_DOUBLES = Mappers::divideDoubles;
 
+    static <T> T identity(T in) {
+        return in;
+    }
+
     static <T> SerializableToIntFunction<T> count() {
-        return Aggregates.counting().get()::aggregate;
+        return Aggregates.countFactory().get()::aggregate;
     }
 
     static SerializableIntUnaryOperator countInt() {
-        return Aggregates.counting().get()::increment;
+        return Aggregates.countFactory().get()::increment;
     }
 
     static SerializableLongUnaryOperator countLong() {
-        return Aggregates.counting().get()::increment;
+        return Aggregates.countFactory().get()::increment;
     }
 
     static SerializableDoubleUnaryOperator countDouble() {
-        return Aggregates.counting().get()::increment;
+        return Aggregates.countFactory().get()::increment;
     }
 
     static SerializableIntUnaryOperator cumSumInt() {
-        return Aggregates.intSum().get()::aggregateInt;
+        return Aggregates.intSumFactory().get()::aggregateInt;
     }
 
     static SerializableDoubleUnaryOperator cumSumDouble() {
-        return Aggregates.doubleSum().get()::aggregateDouble;
+        return Aggregates.doubleSumFactory().get()::aggregateDouble;
     }
 
     static SerializableLongUnaryOperator cumSumLong() {
-        return Aggregates.longSum().get()::aggregateLong;
+        return Aggregates.longSumFactory().get()::aggregateLong;
     }
 
     static SerializableIntUnaryOperator minimumInt() {
-        return Aggregates.intMin().get()::aggregateInt;
+        return Aggregates.intMinFactory().get()::aggregateInt;
     }
 
     static SerializableDoubleUnaryOperator minimumDouble() {
-        return Aggregates.doubleMin().get()::aggregateDouble;
+        return Aggregates.doubleMinFactory().get()::aggregateDouble;
     }
 
     static SerializableLongUnaryOperator minimumLong() {
-        return Aggregates.longMin().get()::aggregateLong;
+        return Aggregates.longMinFactory().get()::aggregateLong;
     }
 
     static SerializableIntUnaryOperator maximumInt() {
-        return Aggregates.intMax().get()::aggregateInt;
+        return Aggregates.intMaxFactory().get()::aggregateInt;
     }
 
     static SerializableDoubleUnaryOperator maximumDouble() {
-        return Aggregates.doubleMax().get()::aggregateDouble;
+        return Aggregates.doubleMaxFactory().get()::aggregateDouble;
     }
 
     static SerializableLongUnaryOperator maximumLong() {
-        return Aggregates.longMax().get()::aggregateLong;
+        return Aggregates.longMaxFactory().get()::aggregateLong;
+    }
+
+    //AVERAGE
+    static SerializableIntUnaryOperator averageInt() {
+        return Aggregates.intAverageFactory().get()::aggregateInt;
+    }
+
+    static SerializableDoubleUnaryOperator averageDouble() {
+        return Aggregates.doubleAverageFactory().get()::aggregateDouble;
+    }
+
+    static SerializableLongUnaryOperator averageLong() {
+        return Aggregates.longAverageFactory().get()::aggregateLong;
     }
 
     static CountNode newCountNode() {
         return new CountNode();
     }
 
-    static int parseInt(String input){
+    static int parseInt(String input) {
         return Integer.parseInt(input);
     }
 
-    static double parseDouble(String input){
+    static double parseDouble(String input) {
         return Double.parseDouble(input);
     }
 
-    static long parseLong(String input){
+    static long parseLong(String input) {
         return Long.parseLong(input);
     }
 
+    static <K, V extends Comparable<V>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(int count) {
+        return new TopNByValue(count)::filter;
+    }
+
+    static <K, V, T extends Comparable<T>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(int count, SerializableFunction<V, T> propertyAccessor) {
+        TopNByValue topNByValue = new TopNByValue(count);
+        topNByValue.comparing = propertyAccessor;
+        return topNByValue::filter;
+    }
+
     @ToString
-    class CountNode implements Stateful<Integer>{
+    class CountNode implements Stateful<Integer> {
         int count;
 
         @OnTrigger
@@ -131,7 +159,7 @@ public interface Mappers {
     static long addLongs(long a, long b) {
         return a + b;
     }
-    
+
     //subtract
     static int subtractInts(int a, int b) {
         return a - b;
@@ -171,4 +199,102 @@ public interface Mappers {
         return a / b;
     }
 
+    //cast
+    static double int2Double(int in) {
+        return in;
+    }
+
+    static long int2Long(int in) {
+        return in;
+    }
+
+    static double long2Double(long in) {
+        return in;
+    }
+
+    static int long2Int(long in) {
+        return (int) in;
+    }
+
+    static int double2Int(double in) {
+        return (int) in;
+    }
+
+    static long double2Long(double in) {
+        return (long) in;
+    }
+
+    //GroupBy
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null && rightGroupBY != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY.map().get(e.getKey());
+                if (value2 != null) {
+                    joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+                }
+            });
+        }
+        return joinedGroup;
+    }
+
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> outerJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+            });
+        }
+        if (rightGroupBY != null) {
+            rightGroupBY.map().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            });
+        }
+        return joinedGroup;
+    }
+
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> leftJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (leftGroupBy != null) {
+            leftGroupBy.map().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+            });
+        }
+        return joinedGroup;
+    }
+
+    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> rightJoin(
+            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
+        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
+        if (rightGroupBY != null) {
+            rightGroupBY.map().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
+                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            });
+        }
+        return joinedGroup;
+    }
+
+    //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
+    static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy outerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.outerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy leftJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.leftJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
+
+    static GroupBy rightJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.rightJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    }
 }

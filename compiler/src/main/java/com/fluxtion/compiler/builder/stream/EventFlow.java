@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
-import com.fluxtion.runtime.event.DefaultFilteredEventHandler;
+import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
@@ -29,7 +29,7 @@ public interface EventFlow {
      */
     static <T> EventStreamBuilder<T> subscribe(Class<T> classSubscription) {
         return new EventStreamBuilder<>(
-                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(classSubscription))
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription))
         );
     }
 
@@ -45,7 +45,7 @@ public interface EventFlow {
      */
     static <T extends Event> EventStreamBuilder<T> subscribe(Class<T> classSubscription, String filter) {
         return new EventStreamBuilder<>(
-                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(filter, classSubscription))
         );
     }
 
@@ -61,28 +61,47 @@ public interface EventFlow {
      */
     static <T extends Event> EventStreamBuilder<T> subscribe(Class<T> classSubscription, int filter) {
         return new EventStreamBuilder<>(
-                EventProcessorConfigService.service().addOrReuse(new DefaultFilteredEventHandler<>(filter, classSubscription))
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(filter, classSubscription))
         );
     }
 
-    static EventStreamBuilder<Object> subscribeToSignal(String filterId){
+    static EventStreamBuilder<Object> subscribeToSignal(String filterId) {
         return subscribeToSignal(filterId, Object.class);
     }
 
-    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType){
+    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType) {
         return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
     }
 
-    static IntStreamBuilder subscribeToIntSignal(String filterId){
+    static <T> EventStreamBuilder<T> subscribeToSignal(String filterId, Class<T> signalType, T defaultValue) {
+        return subscribe(Signal.class, filterId).map(Signal<T>::getValue).defaultValue(defaultValue);
+    }
+
+    static IntStreamBuilder subscribeToIntSignal(String filterId) {
         return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
     }
 
-    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId){
+    static IntStreamBuilder subscribeToIntSignal(String filterId, int defaultValue) {
+        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
+    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId) {
         return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
     }
 
-    static LongStreamBuilder subscribeToLongSignal(String filterId){
+    static DoubleStreamBuilder subscribeToDoubleSignal(String filterId, double defaultValue) {
+        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
+    static LongStreamBuilder subscribeToLongSignal(String filterId) {
         return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
+    }
+
+    static LongStreamBuilder subscribeToLongSignal(String filterId, long defaultValue) {
+        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue)
+                .defaultValue(defaultValue);
     }
 
     /**
@@ -99,7 +118,7 @@ public interface EventFlow {
 
     static <T, R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableFunction<T, R> sourceProperty) {
         T source;
-        if(sourceProperty.captured().length == 0){
+        if (sourceProperty.captured().length == 0) {
             try {
                 source = (T) sourceProperty.getContainingClass().getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
@@ -108,14 +127,14 @@ public interface EventFlow {
                         + sourceProperty.getContainingClass()
                         + " either add default constructor or pass in a node instance");
             }
-        }else{
+        } else {
             source = (T) sourceProperty.captured()[0];
         }
         return subscribeToNode(source).map(sourceProperty);
     }
 
-    static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier){
-        EventProcessorConfigService.service().addOrReuse(propertySupplier.captured()[0]);
+    static <R> EventStreamBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier) {
+        EventProcessorBuilderService.service().addOrReuse(propertySupplier.captured()[0]);
         return new EventStreamBuilder<>(new NodePropertyStream<>(propertySupplier));
     }
 

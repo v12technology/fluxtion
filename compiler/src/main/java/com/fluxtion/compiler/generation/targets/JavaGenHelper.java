@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public interface JavaGenHelper {
 
-    StringBuilder builder = new StringBuilder(1 * 1000 * 1000);
+    StringBuilder builder = new StringBuilder(1000 * 1000);
 
     static String generateFilteredDispatchMethodName(FilterDescription filter) {
         String filterName = filter.variableName;

@@ -6,11 +6,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupByCollection <K, V> implements GroupBy<K, V>, Stateful<GroupBy<K, V>> {
+public class GroupByCollection<K, V> implements GroupBy<K, V>, Stateful<GroupBy<K, V>> {
     private final Map<K, V> map = new HashMap<>();
 
-    public GroupByCollection <K, V> add(KeyValue<K, V> keyValue){
+    public GroupByCollection<K, V> add(KeyValue<K, V> keyValue) {
         map.put(keyValue.getKey(), keyValue.getValue());
+        return this;
+    }
+
+    public GroupByCollection<K, V> fromMap(Map<K, V> fromMap) {
+        reset();
+        map.putAll(fromMap);
         return this;
     }
 
@@ -28,5 +34,12 @@ public class GroupByCollection <K, V> implements GroupBy<K, V>, Stateful<GroupBy
     @Override
     public Collection<V> values() {
         return map.values();
+    }
+
+    @Override
+    public String toString() {
+        return "GroupByCollection{" +
+                "map=" + map +
+                '}';
     }
 }

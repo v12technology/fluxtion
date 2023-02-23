@@ -11,19 +11,19 @@ public interface EventStream<R> extends Supplier<R> {
         return false;
     }
 
-    interface IntEventStream extends TriggeredEventStream<Integer>, IntSupplier {
+    interface IntEventStream extends EventStream<Integer>, IntSupplier {
         default Integer get() {
             return getAsInt();
         }
     }
 
-    interface DoubleEventStream extends TriggeredEventStream<Double>, DoubleSupplier {
+    interface DoubleEventStream extends EventStream<Double>, DoubleSupplier {
         default Double get() {
             return getAsDouble();
         }
     }
 
-    interface LongEventStream extends TriggeredEventStream<Long>, LongSupplier {
+    interface LongEventStream extends EventStream<Long>, LongSupplier {
         default Long get() {
             return getAsLong();
         }
@@ -49,5 +49,9 @@ public interface EventStream<R> extends Supplier<R> {
         default Long get() {
             return getAsLong();
         }
+    }
+
+    interface EventSupplierAccessor<T extends EventSupplier> {
+        T getEventSupplier();
     }
 }

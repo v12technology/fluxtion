@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,17 +12,17 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.test.event.EventHandlerCb;
+import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.NodeWithParentList;
 import com.fluxtion.test.event.TestEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 @Slf4j
@@ -47,17 +46,17 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testAudit() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor");
         });
 
-        MyNodeAudit auditNode = getField("myAuditor");
-        assertThat(auditNode.registeredNodes.size(), is(5));
+        MyNodeAudit auditNode = getAuditor("myAuditor");
+        assertThat(auditNode.registeredNodes.size(), is(7));
         onEvent(new TestEvent(1));
         if (compiledSep) {
             assertThat(auditNode.invokeCount, is(2));
@@ -69,16 +68,16 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testAuditInline() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor");
         });
-        MyNodeAudit auditNode = getField("myAuditor");
-        assertThat(auditNode.registeredNodes.size(), is(5));
+        MyNodeAudit auditNode = getAuditor("myAuditor");
+        assertThat(auditNode.registeredNodes.size(), is(7));
         onEvent(new TestEvent(1));
         if (compiledSep) {
             assertThat(auditNode.invokeCount, is(2));
@@ -90,16 +89,16 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testNoInvocationAuditInline() {
         sep(c -> {
-            EventHandlerCb e1 = c.addNode(new EventHandlerCb("1", 1));
-            EventHandlerCb e2 = c.addNode(new EventHandlerCb("2", 2));
-            EventHandlerCb e3 = c.addNode(new EventHandlerCb("3", 3));
+            EventHandlerCbNode e1 = c.addNode(new EventHandlerCbNode("1", 1));
+            EventHandlerCbNode e2 = c.addNode(new EventHandlerCbNode("2", 2));
+            EventHandlerCbNode e3 = c.addNode(new EventHandlerCbNode("3", 3));
             NodeWithParentList root = c.addPublicNode(new NodeWithParentList(e1, e2, e3), "root");
             root.parentsNoType.add(c.addNode(new SimpleNode()));
             //audit
             c.addAuditor(new MyNodeAudit(), "myAuditor").audit = false;
         });
-        MyNodeAudit auditNode = getField("myAuditor");
-        assertThat(auditNode.registeredNodes.size(), is(5));
+        MyNodeAudit auditNode = getAuditor("myAuditor");
+        assertThat(auditNode.registeredNodes.size(), is(7));
         onEvent(new TestEvent(1));
         assertThat(auditNode.invokeCount, is(0));
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,14 +12,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.test.event.AnnotatedEventHandlerDirtyNotifier;
 import com.fluxtion.test.event.DirtyNotifierNode;
-import com.fluxtion.test.event.EventHandlerCb;
+import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.InitCB;
 import com.fluxtion.test.event.RootCB;
 import org.junit.Test;
@@ -32,7 +32,6 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author Greg Higgins
  */
 public class DirtyFilteringModelTest {
@@ -43,8 +42,8 @@ public class DirtyFilteringModelTest {
     @Test
     public void testGetNodeGuardConditions() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
         InitCB i3 = new InitCB("i3");
@@ -111,8 +110,8 @@ public class DirtyFilteringModelTest {
     @Test
     public void testGuardConditionDiscontinuous() throws Exception {
         //set up modes
-        EventHandlerCb e1 = new EventHandlerCb("e1", 1);
-        EventHandlerCb e2 = new EventHandlerCb("e2", 2);
+        EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
+        EventHandlerCbNode e2 = new EventHandlerCbNode("e2", 2);
         InitCB i1 = new InitCB("i1");
         InitCB i2 = new InitCB("i2");
         InitCB i3 = new InitCB("i3");
@@ -154,12 +153,12 @@ public class DirtyFilteringModelTest {
     public void testEventHandlerWithDirtySupport() throws Exception {
         AnnotatedEventHandlerDirtyNotifier eh = new AnnotatedEventHandlerDirtyNotifier();
         DirtyNotifierNode dirty_1 = new DirtyNotifierNode("dirty_1", eh);
-        
+
         //generate model
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(Arrays.asList(eh, dirty_1));
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel(true);
-        
+
         assertThat(sep.getNodeGuardConditions(dirty_1), containsInAnyOrder(
                 sep.getDirtyFlagForNode(eh)
         ));

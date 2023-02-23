@@ -18,11 +18,12 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.FluxtionCompilerConfig;
+import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
-import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
+import com.google.googlejavaformat.java.Formatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -92,11 +93,11 @@ public class EventProcessorCompilation {
         LOG.debug("generateSep");
         Class<?> returnClass = null;
         Writer writer;
-        if(compilerConfig.isWriteSourceToFile()){
+        if (compilerConfig.isWriteSourceToFile()) {
             File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
             outFile.getParentFile().mkdirs();
             writer = new FileWriter(outFile);
-        }else{
+        } else {
             writer = new StringWriter();
         }
 
@@ -105,10 +106,26 @@ public class EventProcessorCompilation {
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
-        if(compilerConfig.isWriteSourceToFile()){
+        if (compilerConfig.isWriteSourceToFile()) {
             LOG.info("generated EventProcessor file: " + file.getCanonicalPath());
-        }else{
+        } else {
             LOG.info("generated EventProcessor in memory");
+            try {
+                if (compilerConfig.isFormatSource()) {
+                    String formatSource = new Formatter().formatSource(writer.toString());
+                    writer = new StringWriter();
+                    writer.write(formatSource);
+                }
+                if (compilerConfig.getSourceWriter() != null) {
+                    compilerConfig.getSourceWriter().write(writer.toString());
+                    writer = compilerConfig.getSourceWriter();
+                }
+            } catch (Throwable t) {
+                if (compilerConfig.getSourceWriter() != null) {
+                    compilerConfig.getSourceWriter().write(writer.toString());
+                    writer = compilerConfig.getSourceWriter();
+                }
+            }
         }
         if (compilerConfig.isWriteSourceToFile() && compilerConfig.isFormatSource()) {
             LOG.debug("start formatting source");
@@ -117,9 +134,9 @@ public class EventProcessorCompilation {
         }
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
-            if(compilerConfig.isWriteSourceToFile()){
+            if (compilerConfig.isWriteSourceToFile()) {
                 returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
-            }else{
+            } else {
                 returnClass = StringCompilation.compile(fqn, writer.toString());
             }
             LOG.debug("completed compiling source");

@@ -116,12 +116,13 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler(propagate = false)
         public void stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
-                callback.fireCallback(in.chars().mapToObj(i -> "" + (char)i).iterator());
+                callback.fireCallback(in.chars().mapToObj(i -> "" + (char) i).iterator());
             }
         }
 
         @OnTrigger
-        public void triggered() {}
+        public void triggered() {
+        }
     }
 
     public static class SplitCsvString {
@@ -149,9 +150,9 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         private int value;
 
         @OnParentUpdate
-        public void stringSplit(SplitCsvString parent){
+        public void stringSplit(SplitCsvString parent) {
             callback.fireCallback(
-                parent.element.chars().mapToObj(i -> "" + (char)i).map(Integer::parseInt).collect(Collectors.toList()).iterator()
+                    parent.element.chars().mapToObj(i -> "" + (char) i).map(Integer::parseInt).collect(Collectors.toList()).iterator()
             );
         }
 

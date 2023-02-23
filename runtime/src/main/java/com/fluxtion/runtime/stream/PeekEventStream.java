@@ -1,11 +1,13 @@
 package com.fluxtion.runtime.stream;
 
+import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import lombok.ToString;
 
 public class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
 
+    @NoTriggerReference
     final SerializableConsumer<? super T> eventStreamConsumer;
     transient final String auditInfo;
 
@@ -17,7 +19,7 @@ public class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventS
     }
 
     @OnTrigger
-    public void peek(){
+    public void peek() {
         auditLog.info("peekConsumer", auditInfo);
         eventStreamConsumer.accept(get());
     }
@@ -41,7 +43,6 @@ public class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventS
     }
 
 
-
     @ToString
     public static class DoublePeekEventStream extends PeekEventStream<Double, DoubleEventStream> implements DoubleEventStream {
 
@@ -54,7 +55,6 @@ public class PeekEventStream<T, S extends EventStream<T>> extends AbstractEventS
             return getInputEventStream().getAsDouble();
         }
     }
-
 
 
     @ToString

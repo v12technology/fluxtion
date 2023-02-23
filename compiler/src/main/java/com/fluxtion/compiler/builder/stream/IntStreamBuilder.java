@@ -1,7 +1,8 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
 import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
 import com.fluxtion.runtime.stream.FilterDynamicEventStream;
@@ -12,42 +13,65 @@ import com.fluxtion.runtime.stream.NotifyEventStream;
 import com.fluxtion.runtime.stream.PeekEventStream;
 import com.fluxtion.runtime.stream.PushEventStream;
 import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingIntEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateIntStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
+import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
-public class IntStreamBuilder {
+public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier> {
 
     final IntEventStream eventStream;
 
     IntStreamBuilder(IntEventStream eventStream) {
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
 
-    public IntEventSupplier intStream(){
-        return EventProcessorConfigService.service().add(new WrappingIntEventSupplier(eventStream));
+    @Override
+    public IntEventSupplier getEventSupplier() {
+        return EventProcessorBuilderService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 
     //TRIGGERS - START
     public IntStreamBuilder updateTrigger(Object updateTrigger) {
-        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        Object source = StreamHelper.getSource(updateTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setUpdateTriggerNode(source);
+        }
         return this;
     }
 
     public IntStreamBuilder publishTrigger(Object publishTrigger) {
-        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerNode(source);
+        }
+        return this;
+    }
+
+    public IntStreamBuilder publishTriggerOverride(Object publishTrigger) {
+        Object source = StreamHelper.getSource(publishTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setPublishTriggerOverrideNode(source);
+        }
         return this;
     }
 
     public IntStreamBuilder resetTrigger(Object resetTrigger) {
-        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        Object source = StreamHelper.getSource(resetTrigger);
+        if (eventStream instanceof TriggeredEventStream) {
+            TriggeredEventStream triggeredEventStream = (TriggeredEventStream) eventStream;
+            triggeredEventStream.setResetTriggerNode(source);
+        }
         return this;
     }
 
@@ -57,7 +81,7 @@ public class IntStreamBuilder {
 
     public <S> IntStreamBuilder filter(
             SerializableBiIntPredicate predicate,
-            IntStreamBuilder secondArgument){
+            IntStreamBuilder secondArgument) {
         return new IntStreamBuilder(
                 new FilterDynamicEventStream.IntFilterDynamicEventStream(eventStream, secondArgument.eventStream, predicate));
     }
@@ -71,7 +95,7 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new MapEventStream.MapInt2ToIntEventStream(eventStream, int2IntFunction));
     }
 
-    public IntStreamBuilder map(SerializableBiIntFunction int2IntFunction, IntStreamBuilder stream2Builder) {
+    public IntStreamBuilder mapBiFunction(SerializableBiIntFunction int2IntFunction, IntStreamBuilder stream2Builder) {
         return new IntStreamBuilder(
                 new BinaryMapEventStream.BinaryMapToIntEventStream<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
@@ -79,18 +103,18 @@ public class IntStreamBuilder {
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder aggregate(
-            SerializableSupplier<F> aggregateFunction){
-        return new IntStreamBuilder( new AggregateIntStream<>(eventStream, aggregateFunction));
+            SerializableSupplier<F> aggregateFunction) {
+        return new IntStreamBuilder(new AggregateIntStream<>(eventStream, aggregateFunction));
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder tumblingAggregate(
-            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis){
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new IntStreamBuilder(
                 new TumblingIntWindowStream<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
     public <F extends IntAggregateFunction<F>> IntStreamBuilder slidingAggregate(
-            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets){
+            SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int numberOfBuckets) {
         return new IntStreamBuilder(
                 new TimedSlidingWindowStream.TimedSlidingWindowIntStream<>(
                         eventStream,
@@ -99,11 +123,11 @@ public class IntStreamBuilder {
                         numberOfBuckets));
     }
 
-    public <T> EventStreamBuilder<T> mapOnNotify(T target){
+    public <T> EventStreamBuilder<T> mapOnNotify(T target) {
         return new EventStreamBuilder<>(new MapOnNotifyEventStream<>(eventStream, target));
     }
 
-    public EventStreamBuilder<Integer> box(){
+    public EventStreamBuilder<Integer> box() {
         return mapToObj(Integer::valueOf);
     }
 
@@ -121,17 +145,17 @@ public class IntStreamBuilder {
 
     //OUTPUTS - START
     public IntStreamBuilder notify(Object target) {
-        EventProcessorConfigService.service().add(target);
+        EventProcessorBuilderService.service().add(target);
         return new IntStreamBuilder(new NotifyEventStream.IntNotifyEventStream(eventStream, target));
     }
 
-    public IntStreamBuilder sink(String sinkId){
+    public IntStreamBuilder sink(String sinkId) {
         return push(new SinkPublisher<>(sinkId)::publishInt);
     }
 
     public IntStreamBuilder push(SerializableIntConsumer pushFunction) {
         if (pushFunction.captured().length > 0) {
-            EventProcessorConfigService.service().add(pushFunction.captured()[0]);
+            EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
         }
         return new IntStreamBuilder(new PushEventStream.IntPushEventStream(eventStream, pushFunction));
     }
@@ -140,8 +164,9 @@ public class IntStreamBuilder {
         return new IntStreamBuilder(new PeekEventStream.IntPeekEventStream(eventStream, peekFunction));
     }
 
-    public IntStreamBuilder console(String in){
-        return peek(Peekers.console(in));
+    public IntStreamBuilder console(String in) {
+        peek(Peekers.console(in));
+        return this;
     }
 
     public IntStreamBuilder console() {
@@ -149,9 +174,9 @@ public class IntStreamBuilder {
     }
 
     //META-DATA
-    public IntStreamBuilder id(String nodeId){
-        EventProcessorConfigService.service().add(eventStream, nodeId);
-         return this;
+    public IntStreamBuilder id(String nodeId) {
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
+        return this;
     }
 
 }

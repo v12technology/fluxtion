@@ -1,59 +1,82 @@
 ## Velocity Template.
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Server Side Public License, version 1,
- * as published by MongoDB, Inc.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side License for more details.
- *
- * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
- * <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+* Copyright (C) 2018 V12 Technology Ltd.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the Server Side Public License, version 1,
+* as published by MongoDB, Inc.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* Server Side License for more details.
+*
+* You should have received a copy of the Server Side Public License
+* along with this program.  If not, see
+*
+<http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package ${package};
 
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.callback.InternalEventProcessor;
 #if(${MODEL.imports})
-${MODEL.imports}
+    ${MODEL.imports}
 #end
+import java.util.IdentityHashMap;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /*
+*
 * <pre>
-* generation time   : ${build_time}
+* generation time                 : ${build_time}
 * eventProcessorGenerator version : ${generator_version_information}
-* api version       : ${api_version_information}
+* api version                     : ${api_version_information}
 * </pre>
-* @author Greg Higgins 
+* @author Greg Higgins
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements EventProcessor, StaticEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+public class ${className} implements EventProcessor, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
-    private boolean processing = false;
-${MODEL.dirtyFlagDeclarations}
-//Filter constants
-${MODEL.filterConstantDeclarations}
+private boolean processing = false;
+private boolean buffering = false;
+private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
+private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
 
+    ${MODEL.dirtyFlagDeclarations}
+    //Filter constants
+    ${MODEL.filterConstantDeclarations}
+
+    public  ${className} (Map<Object, Object> contextMap) {
+        context.replaceMappings(contextMap);
+        ${MODEL.nodeMemberAssignments}
+        //initialise dirty lookup map
+        isDirty("test");
+        context.setEventProcessorCallback(this);
+    }
     public ${className} () {
-${MODEL.nodeMemberAssignments}
-        //callback wiring
-        callbackDispatcher.processor = this::onEventInternal;
+        this(null);
+    }
+
+    @Override
+    public void setContextParameterMap(Map<Object, Object> newContextMapping){
+        context.replaceMappings(newContextMapping);
     }
 
     @Override
     public void onEvent(Object event) {
+        if(buffering){
+            triggerCalculation();
+        }
         if(processing){
-            callbackDispatcher.processEvent(event);
+          callbackDispatcher.processReentrantEvent(event);
         }else{
             processing = true;
             onEventInternal(event);
@@ -62,35 +85,54 @@ ${MODEL.nodeMemberAssignments}
         }
     }
 
-    private void onEventInternal(Object event) {
-    ${MODEL.eventDispatch}
+    public void onEventInternal(Object event) {
+       ${MODEL.eventDispatch}
     }
 
-${MODEL.eventHandlers}
+    ${MODEL.eventHandlers}
 
     private void afterEvent() {
-${MODEL.eventEndMethods}
-${MODEL.resetDirtyFlags}
+        ${MODEL.eventEndMethods}
+        ${MODEL.resetDirtyFlags}
     }
 
     @Override
     public void init() {
-${MODEL.initialiseMethods}
+       ${MODEL.initialiseMethods}
     }
 
     @Override
     public void tearDown() {
-${MODEL.tearDownMethods}
+       ${MODEL.tearDownMethods}
     }
 
     @Override
     public void batchPause() {
-${MODEL.batchPauseMethods}
+       ${MODEL.batchPauseMethods}
     }
 
     @Override
     public void batchEnd() {
-${MODEL.batchEndMethods}
+       ${MODEL.batchEndMethods}
     }
 
+    public boolean isDirty(Object node) {
+        if(dirtyFlagSupplierMap.isEmpty()){
+            ${MODEL.dirtyFlagLookup}
+        }
+        return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE).getAsBoolean();
+    }
+
+    public void setDirty(Object node, boolean dirtyFlag) {
+        if(dirtyFlagUpdateMap.isEmpty()){
+         ${MODEL.dirtyFlagUpdate}
+        }
+        dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
+    }
+
+    ${MODEL.guardCheckMethods}
+
+    public<T> T getNodeById(String id) throws NoSuchFieldException {
+        return nodeNameLookup.getInstanceById(id);
+    }
 }

@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.util;
 
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-@Ignore
+//@Ignore
 public class CompiledAndInterpretedSepTest extends MultipleSepTargetInProcessTest {
 
     public CompiledAndInterpretedSepTest(SepTestConfig sepTestConfig) {
@@ -36,5 +36,9 @@ public class CompiledAndInterpretedSepTest extends MultipleSepTargetInProcessTes
         SepTestConfig(boolean compiled) {
             this.compiled = compiled;
         }
+    }
+
+    @Test
+    public void doNothingTest() {
     }
 }
