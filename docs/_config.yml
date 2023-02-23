@@ -23,8 +23,8 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 5.0.8":
-    - "//github.com/v12technology/fluxtion/tree/5.0.8"
+  "release 7.0.14":
+    - "//github.com/v12technology/fluxtion/tree/7.0.14"
 heading_anchors: true
 
 compress_html:
@@ -36,7 +36,12 @@ kramdown:
     block:
       line_numbers: true
 
-fluxtion_version: 5.0.8
+fluxtion_version: 7.0.14
+fluxtion_src: https://github.com/v12technology/fluxtion/blob/7.0.14
+fluxtion_src_runtime: https://github.com/v12technology/fluxtion/blob/7.0.14/runtime/src/main/java//com/fluxtion/runtime
+fluxtion_src_compiler: https://github.com/v12technology/fluxtion/tree/master/compiler/src/main/java/com/fluxtion/compiler
+
+
 
 ga_tracking: G-NGDV621P1P
 ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)
