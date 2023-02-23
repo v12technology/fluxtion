@@ -17,7 +17,12 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.builder.callback.CallBackDispatcherFactory;
-import com.fluxtion.compiler.builder.context.EvenProcessorContextFactory;
+import com.fluxtion.compiler.builder.callback.CallbackNodeFactory;
+import com.fluxtion.compiler.builder.callback.DirtyStateMonitorFactory;
+import com.fluxtion.compiler.builder.callback.EventDispatcherFactory;
+import com.fluxtion.compiler.builder.callback.EventProcessorCallbackInternalFactory;
+import com.fluxtion.compiler.builder.context.EventProcessorContextFactory;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
@@ -47,6 +52,7 @@ public class EventProcessorConfig {
 
     private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;
+    private final Map<String, String> class2replace = new HashMap<>();
     private String templateFile;
     private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
@@ -57,11 +63,23 @@ public class EventProcessorConfig {
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
-    private final Map<String, String> class2replace = new HashMap<>();
 
     public EventProcessorConfig() {
-        addNode(EvenProcessorContextFactory.SINGLETON);
+        //required nodes
         addNode(CallBackDispatcherFactory.SINGLETON);
+        addNode(EventProcessorContextFactory.SINGLETON);
+        //required factories
+        HashSet<Class<? extends NodeFactory<?>>> set = new HashSet<>();
+        set.add(CallBackDispatcherFactory.class);
+        set.add(CallbackNodeFactory.class);
+        set.add(ClockFactory.class);
+        set.add(DirtyStateMonitorFactory.class);
+        set.add(EventDispatcherFactory.class);
+        set.add(EventProcessorCallbackInternalFactory.class);
+        set.add(EventProcessorContextFactory.class);
+        set.add(NodeNameLookupFactory.class);
+        setNodeFactoryRegistration(new NodeFactoryRegistration(set));
+        //required auditors
         addAuditor(NodeNameLookupFactory.SINGLETON, NodeNameLookup.DEFAULT_NODE_NAME);
     }
 

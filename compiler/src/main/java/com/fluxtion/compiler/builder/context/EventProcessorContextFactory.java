@@ -14,25 +14,25 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.time;
+package com.fluxtion.compiler.builder.context;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.node.MutableEventProcessorContext;
 
 import java.util.Map;
 
 /**
  * @author V12 Technology Ltd.
  */
-public class ClockFactory implements NodeFactory<Clock> {
+public class EventProcessorContextFactory implements NodeFactory<EventProcessorContext> {
 
-    public static final Clock SINGLETON = new Clock();
+    public static final MutableEventProcessorContext SINGLETON = new MutableEventProcessorContext();
 
     @Override
-    public Clock createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        registry.registerAuditor(SINGLETON, "clock");
-        return SINGLETON;
+    public EventProcessorContext createNode(Map<String, ? super Object> config, NodeRegistry registry) {
+        return registry.registerNode(SINGLETON, EventProcessorContext.DEFAULT_NODE_NAME);
     }
 
 }
