@@ -48,6 +48,14 @@ public static class MyStringHandler {
 {% endhighlight %}
 
 
+Running the sample produces this output:
+
+{% highlight console %}
+started: '2023-02-23 09:02:48.759'
+mapping key1 -> 'value1'
+{% endhighlight %}
+
+
 
 
 
