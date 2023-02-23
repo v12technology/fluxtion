@@ -67,7 +67,11 @@ public class EventProcessorGenerator {
     public InMemoryEventProcessor inMemoryProcessor(EventProcessorConfig config, boolean generateDescription) throws Exception {
         config.buildConfig();
         LOG.debug("locateFactories");
-        config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
+        if (config.getNodeFactoryRegistration() == null) {
+            config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
+        } else {
+            config.getNodeFactoryRegistration().factoryClassSet.addAll(NodeFactoryLocator.nodeFactorySet());
+        }
         this.config = config;
         if (GenerationContext.SINGLETON == null) {
             GenerationContext.setupStaticContext("", "", null, null);

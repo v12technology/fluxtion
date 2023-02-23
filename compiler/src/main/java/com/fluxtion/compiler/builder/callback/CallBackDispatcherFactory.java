@@ -4,11 +4,9 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
-import com.google.auto.service.AutoService;
 
 import java.util.Map;
 
-@AutoService(NodeFactory.class)
 public class CallBackDispatcherFactory implements NodeFactory<CallbackDispatcher> {
     public static final CallbackDispatcherImpl SINGLETON = new CallbackDispatcherImpl();
 
