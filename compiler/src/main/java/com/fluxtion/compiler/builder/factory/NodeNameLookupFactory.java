@@ -2,11 +2,9 @@ package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.runtime.audit.NodeNameAuditor;
 import com.fluxtion.runtime.node.NodeNameLookup;
-import com.google.auto.service.AutoService;
 
 import java.util.Map;
 
-@AutoService(NodeFactory.class)
 public class NodeNameLookupFactory implements NodeFactory<NodeNameLookup> {
 
     public static NodeNameAuditor SINGLETON = new NodeNameAuditor();

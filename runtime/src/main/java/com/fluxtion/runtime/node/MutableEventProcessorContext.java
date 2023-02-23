@@ -3,7 +3,6 @@ package com.fluxtion.runtime.node;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.NodeNameAuditor;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.callback.EventDispatcher;
@@ -17,14 +16,14 @@ public final class MutableEventProcessorContext implements EventProcessorContext
 
     private final transient Map<Object, Object> map = new HashMap<>();
     @Inject
-    private final NodeNameAuditor nodeNameLookup;
+    private final NodeNameLookup nodeNameLookup;
     @Inject
     private final EventProcessorCallbackInternal eventDispatcher;
     @Inject
     private final DirtyStateMonitor dirtyStateMonitor;
 
     public MutableEventProcessorContext(
-            NodeNameAuditor nodeNameLookup,
+            NodeNameLookup nodeNameLookup,
             @AssignToField("eventDispatcher") EventProcessorCallbackInternal eventDispatcher,
             @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor
     ) {
@@ -49,7 +48,7 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     }
 
     @Override
-    public NodeNameAuditor getNodeNameLookup() {
+    public NodeNameLookup getNodeNameLookup() {
         return nodeNameLookup;
     }
 

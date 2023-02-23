@@ -19,14 +19,12 @@ package com.fluxtion.compiler.builder.time;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.time.Clock;
-import com.google.auto.service.AutoService;
 
 import java.util.Map;
 
 /**
  * @author V12 Technology Ltd.
  */
-@AutoService(NodeFactory.class)
 public class ClockFactory implements NodeFactory<Clock> {
 
     public static final Clock SINGLETON = new Clock();

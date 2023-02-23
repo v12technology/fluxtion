@@ -20,15 +20,13 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
-import com.google.auto.service.AutoService;
 
 import java.util.Map;
 
 /**
  * @author V12 Technology Ltd.
  */
-@AutoService(NodeFactory.class)
-public class EvenProcessorContextFactory implements NodeFactory<EventProcessorContext> {
+public class EventProcessorContextFactory implements NodeFactory<EventProcessorContext> {
 
     public static final MutableEventProcessorContext SINGLETON = new MutableEventProcessorContext();
 
