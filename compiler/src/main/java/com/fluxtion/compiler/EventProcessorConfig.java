@@ -31,7 +31,6 @@ import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
-import com.fluxtion.runtime.node.NodeNameLookup;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
@@ -67,10 +66,6 @@ public class EventProcessorConfig {
     private boolean assignPrivateMembers = false;
 
     public EventProcessorConfig() {
-        //required nodes
-        addNode(CallBackDispatcherFactory.SINGLETON);
-        addNode(EventProcessorContextFactory.SINGLETON);
-        addNode(SubscriptionManagerFactory.SINGLETON);
         //required factories
         HashSet<Class<? extends NodeFactory<?>>> set = new HashSet<>();
         set.add(CallBackDispatcherFactory.class);
@@ -83,8 +78,6 @@ public class EventProcessorConfig {
         set.add(NodeNameLookupFactory.class);
         set.add(SubscriptionManagerFactory.class);
         setNodeFactoryRegistration(new NodeFactoryRegistration(set));
-        //required auditors
-        addAuditor(NodeNameLookupFactory.SINGLETON, NodeNameLookup.DEFAULT_NODE_NAME);
     }
 
     /**

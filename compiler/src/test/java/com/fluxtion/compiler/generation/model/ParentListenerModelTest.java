@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,12 +12,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.compiler.generation.model.EventListeners.ChildConfigEventListener;
 import com.fluxtion.compiler.generation.model.EventListeners.ConfigEventListener;
 import com.fluxtion.compiler.generation.model.EventListeners.Node1Parent1ObjectListener;
@@ -29,6 +31,7 @@ import com.fluxtion.compiler.generation.model.EventListeners.UnknownTestEventLis
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +41,6 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Greg Higgins
  */
 public class ParentListenerModelTest {
@@ -54,7 +56,6 @@ public class ParentListenerModelTest {
 
     @Test
     public void testParent_1() throws Exception {
-        //System.out.println("testParent_1");
         //set up modes
         EventProcessorConfig config = new EventProcessorConfig();
         TestEventListener test1Listener = config.addNode(new TestEventListener());
@@ -288,6 +289,11 @@ public class ParentListenerModelTest {
     }
 
     private Map<Object, List<CbMethodHandle>> generateListnerMap(EventProcessorConfig config) throws Exception {
+        GenerationContext.setupStaticContext(
+                "",
+                "Processor",
+                new File(OutputRegistry.JAVA_GEN_DIR),
+                new File(OutputRegistry.RESOURCE_DIR));
         graph = new TopologicallySortedDependencyGraph(config);
         sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
