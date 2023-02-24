@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public final class SubscriptionManagerNode implements SubscriptionManager, NamedNode {
 
@@ -64,16 +63,4 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
         return SubscriptionManager.DEFAULT_NODE_NAME;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SubscriptionManagerNode that = (SubscriptionManagerNode) o;
-        return getName().equals(that.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName());
-    }
 }
