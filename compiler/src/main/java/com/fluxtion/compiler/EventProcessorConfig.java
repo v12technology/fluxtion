@@ -36,6 +36,7 @@ import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -107,6 +108,10 @@ public class EventProcessorConfig {
             return node;
         }
         return (T) getNodeList().get(getNodeList().indexOf(node));
+    }
+
+    public void addNode(Object... nodeList) {
+        Arrays.asList(nodeList).forEach(this::addNode);
     }
 
 //    public void addNode(MethodReferenceReflection methodReference){

@@ -62,7 +62,6 @@ public final class MutableEventProcessorContext implements EventProcessorContext
         return eventDispatcher;
     }
 
-    @Override
     public CallbackDispatcher getCallBackDispatcher() {
         return eventDispatcher;
     }
@@ -70,6 +69,11 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     @Override
     public DirtyStateMonitor getDirtyStateMonitor() {
         return dirtyStateMonitor;
+    }
+
+    @Override
+    public SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
     }
 
     public Map<Object, Object> getMap() {
