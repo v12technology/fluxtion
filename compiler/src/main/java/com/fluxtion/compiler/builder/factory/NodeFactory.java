@@ -19,6 +19,7 @@ package com.fluxtion.compiler.builder.factory;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.Auditor;
 
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -91,9 +92,10 @@ public interface NodeFactory<T> {
      * If the node generates a class for this SEP, this callback gives the node
      * access to the GenerationContext before generation.
      *
-     * @param context The context the Fluxtion SEC compiler uses
+     * @param context    The context the Fluxtion SEC compiler uses
+     * @param auditorMap auditors map for client to populate, these will be added to the generated EventProcessor
      */
-    default void preSepGeneration(GenerationContext context) {
+    default void preSepGeneration(GenerationContext context, Map<String, Auditor> auditorMap) {
     }
 
     default String factoryName() {
