@@ -13,11 +13,13 @@ import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.input.EventProcessorFeed;
+import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.input.SubscriptionManagerNode;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
@@ -34,11 +36,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
 public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, InternalEventProcessor, Lifecycle, BatchHandler {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
+    private final MutableEventProcessorContext context;
+    private final EventProcessorCallbackInternal callbackDispatcher;
+    private final SubscriptionManagerNode subscriptionManager;
     private final BitSet dirtyBitset = new BitSet();
     private final BitSet eventOnlyBitset = new BitSet();
     private final BitSet postProcessBufferingBitset = new BitSet();
@@ -50,8 +54,19 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private Object currentEvent;
     private boolean processing = false;
     private boolean isDefaultHandling;
-    private MutableEventProcessorContext context;
-    private EventProcessorCallbackInternal callbackDispatcher;
+
+    public InMemoryEventProcessor(SimpleEventProcessorModel simpleEventProcessorModel) {
+        this.simpleEventProcessorModel = simpleEventProcessorModel;
+        try {
+            context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
+            callbackDispatcher = getNodeById(CallbackDispatcher.DEFAULT_NODE_NAME);
+            subscriptionManager = getNodeById(SubscriptionManager.DEFAULT_NODE_NAME);
+            subscriptionManager.setSubscribingEventProcessor(this);
+            context.setEventProcessorCallback(this);
+        } catch (Exception e) {
+            throw new RuntimeException("cannot build InMemoryEventProcessor", e);
+        }
+    }
 
     @Override
     @SneakyThrows
@@ -212,12 +227,17 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void setContextParameterMap(Map<Object, Object> newContextMapping) {
-        try {
-            context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
         context.replaceMappings(newContextMapping);
+    }
+
+    @Override
+    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
     }
 
     @Override
@@ -339,10 +359,6 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
-        //build dispatch stuff here
-        context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
-        callbackDispatcher = getNodeById(CallbackDispatcher.DEFAULT_NODE_NAME);
-        context.setEventProcessorCallback(this);
     }
 
     private void registerAuditors() {

@@ -8,6 +8,7 @@ import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.callback.EventDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
+import com.fluxtion.runtime.input.SubscriptionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,20 +21,24 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     @Inject
     private final EventProcessorCallbackInternal eventDispatcher;
     @Inject
+    private final SubscriptionManager subscriptionManager;
+    @Inject
     private final DirtyStateMonitor dirtyStateMonitor;
 
     public MutableEventProcessorContext(
-            NodeNameLookup nodeNameLookup,
+            @AssignToField("nodeNameLookup") NodeNameLookup nodeNameLookup,
             @AssignToField("eventDispatcher") EventProcessorCallbackInternal eventDispatcher,
+            @AssignToField("subscriptionManager") SubscriptionManager subscriptionManager,
             @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor
     ) {
         this.nodeNameLookup = nodeNameLookup;
         this.eventDispatcher = eventDispatcher;
+        this.subscriptionManager = subscriptionManager;
         this.dirtyStateMonitor = dirtyStateMonitor;
     }
 
     public MutableEventProcessorContext() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     public void replaceMappings(Map<Object, Object> newMap) {
@@ -57,7 +62,6 @@ public final class MutableEventProcessorContext implements EventProcessorContext
         return eventDispatcher;
     }
 
-    @Override
     public CallbackDispatcher getCallBackDispatcher() {
         return eventDispatcher;
     }
@@ -65,6 +69,11 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     @Override
     public DirtyStateMonitor getDirtyStateMonitor() {
         return dirtyStateMonitor;
+    }
+
+    @Override
+    public SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
     }
 
     public Map<Object, Object> getMap() {
