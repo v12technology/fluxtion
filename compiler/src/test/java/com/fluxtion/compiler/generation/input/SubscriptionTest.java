@@ -31,28 +31,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
                     new MySubscriberNode("subscriber_3")
             );
         });
-        sep.addEventProcessorFeed(new EventProcessorFeed() {
-            @Override
-            public void subscribe(StaticEventProcessor target, Object subscriptionId) {
-                if (subscriptions.contains(subscriptionId)) {
-                    throw new IllegalStateException("multiple subscriptions for same symbol:" + subscriptionId);
-                }
-                subscriptions.add(subscriptionId);
-            }
-
-            @Override
-            public void unSubscribe(StaticEventProcessor target, Object subscriptionId) {
-                if (!subscriptions.contains(subscriptionId)) {
-                    throw new IllegalStateException("No subscription to remove for symbol:" + subscriptionId);
-                }
-                subscriptions.remove(subscriptionId);
-            }
-
-            @Override
-            public void removeAllSubscriptions(StaticEventProcessor eventProcessor) {
-                subscriptions.clear();
-            }
-        });
+        sep.addEventProcessorFeed(new MyEventFeed(subscriptions));
 
         Assert.assertTrue(subscriptions.isEmpty());
         sep.publishIntSignal("subscriber_1", 10);
@@ -72,6 +51,26 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
 
         tearDown();
         Assert.assertTrue(subscriptions.isEmpty());
+    }
+
+    @Test
+    public void subscriberTearDownThenInit() {
+        Set<Object> subscriptions = new HashSet<>();
+        sep(c -> c.addNode(new MySubscriberNode("subscriber_1")));
+        sep.addEventProcessorFeed(new MyEventFeed(subscriptions));
+
+        Assert.assertTrue(subscriptions.isEmpty());
+        sep.publishIntSignal("subscriber_1", 10);
+        assertThat(subscriptions, Matchers.containsInAnyOrder(10));
+
+        //
+        tearDown();
+        Assert.assertTrue(subscriptions.isEmpty());
+
+        //
+        init();
+        sep.publishIntSignal("subscriber_1", 10);
+        assertThat(subscriptions, Matchers.containsInAnyOrder(10));
     }
 
 
@@ -97,5 +96,34 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
             }
         }
 
+    }
+
+    public static class MyEventFeed implements EventProcessorFeed {
+        private final Set<Object> subscriptions;
+
+        public MyEventFeed(Set<Object> subscriptions) {
+            this.subscriptions = subscriptions;
+        }
+
+        @Override
+        public void subscribe(StaticEventProcessor target, Object subscriptionId) {
+            if (subscriptions.contains(subscriptionId)) {
+                throw new IllegalStateException("multiple subscriptions for same symbol:" + subscriptionId);
+            }
+            subscriptions.add(subscriptionId);
+        }
+
+        @Override
+        public void unSubscribe(StaticEventProcessor target, Object subscriptionId) {
+            if (!subscriptions.contains(subscriptionId)) {
+                throw new IllegalStateException("No subscription to remove for symbol:" + subscriptionId);
+            }
+            subscriptions.remove(subscriptionId);
+        }
+
+        @Override
+        public void removeAllSubscriptions(StaticEventProcessor eventProcessor) {
+            subscriptions.clear();
+        }
     }
 }

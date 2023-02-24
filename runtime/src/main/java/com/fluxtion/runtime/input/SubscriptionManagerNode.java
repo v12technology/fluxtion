@@ -56,6 +56,7 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
     @TearDown
     public void tearDown() {
         registeredFeeds.forEach(e -> e.removeAllSubscriptions(eventProcessor));
+        subscriptionMap.clear();
     }
 
     @Override
