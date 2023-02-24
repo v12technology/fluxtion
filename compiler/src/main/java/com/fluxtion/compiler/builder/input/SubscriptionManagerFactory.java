@@ -14,25 +14,25 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.context;
+package com.fluxtion.compiler.builder.input;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.runtime.EventProcessorContext;
-import com.fluxtion.runtime.node.MutableEventProcessorContext;
+import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.input.SubscriptionManagerNode;
 
 import java.util.Map;
 
 /**
  * @author V12 Technology Ltd.
  */
-public class EvenProcessorContextFactory implements NodeFactory<EventProcessorContext> {
+public class SubscriptionManagerFactory implements NodeFactory<SubscriptionManager> {
 
-    public static final MutableEventProcessorContext SINGLETON = new MutableEventProcessorContext();
+    public static final SubscriptionManagerNode SINGLETON = new SubscriptionManagerNode();
 
     @Override
-    public EventProcessorContext createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        return registry.registerNode(SINGLETON, EventProcessorContext.DEFAULT_NODE_NAME);
+    public SubscriptionManager createNode(Map<String, ? super Object> config, NodeRegistry registry) {
+        return registry.registerNode(SINGLETON, SubscriptionManagerNode.DEFAULT_NODE_NAME);
     }
 
 }

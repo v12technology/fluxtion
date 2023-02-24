@@ -59,6 +59,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         ${MODEL.nodeMemberAssignments}
         //initialise dirty lookup map
         isDirty("test");
+        subscriptionManager.setSubscribingEventProcessor(this);
         context.setEventProcessorCallback(this);
     }
     public ${className} () {
@@ -134,5 +135,13 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     public<T> T getNodeById(String id) throws NoSuchFieldException {
         return nodeNameLookup.getInstanceById(id);
+    }
+
+    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+    }
+
+    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
     }
 }
