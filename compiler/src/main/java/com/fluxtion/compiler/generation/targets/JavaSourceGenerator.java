@@ -30,6 +30,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.input.EventProcessorFeed;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
@@ -1127,6 +1128,7 @@ public class JavaSourceGenerator {
         importList.add(EventProcessorContext.class.getCanonicalName());
         importList.add(MutableEventProcessorContext.class.getCanonicalName());
         importList.add(Map.class.getCanonicalName());
+        importList.add(EventProcessorFeed.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);

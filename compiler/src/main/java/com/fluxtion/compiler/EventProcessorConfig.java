@@ -26,6 +26,7 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
+import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -35,6 +36,7 @@ import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,6 +70,7 @@ public class EventProcessorConfig {
         //required nodes
         addNode(CallBackDispatcherFactory.SINGLETON);
         addNode(EventProcessorContextFactory.SINGLETON);
+        addNode(SubscriptionManagerFactory.SINGLETON);
         //required factories
         HashSet<Class<? extends NodeFactory<?>>> set = new HashSet<>();
         set.add(CallBackDispatcherFactory.class);
@@ -78,6 +81,7 @@ public class EventProcessorConfig {
         set.add(EventProcessorCallbackInternalFactory.class);
         set.add(EventProcessorContextFactory.class);
         set.add(NodeNameLookupFactory.class);
+        set.add(SubscriptionManagerFactory.class);
         setNodeFactoryRegistration(new NodeFactoryRegistration(set));
         //required auditors
         addAuditor(NodeNameLookupFactory.SINGLETON, NodeNameLookup.DEFAULT_NODE_NAME);
@@ -104,6 +108,10 @@ public class EventProcessorConfig {
             return node;
         }
         return (T) getNodeList().get(getNodeList().indexOf(node));
+    }
+
+    public void addNode(Object... nodeList) {
+        Arrays.asList(nodeList).forEach(this::addNode);
     }
 
 //    public void addNode(MethodReferenceReflection methodReference){
