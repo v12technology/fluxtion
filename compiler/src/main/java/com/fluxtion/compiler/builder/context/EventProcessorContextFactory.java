@@ -18,7 +18,9 @@ package com.fluxtion.compiler.builder.context;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 
 import java.util.Map;
@@ -28,11 +30,16 @@ import java.util.Map;
  */
 public class EventProcessorContextFactory implements NodeFactory<EventProcessorContext> {
 
-    public static final MutableEventProcessorContext SINGLETON = new MutableEventProcessorContext();
+    private static MutableEventProcessorContext SINGLETON;
 
     @Override
     public EventProcessorContext createNode(Map<String, ? super Object> config, NodeRegistry registry) {
         return registry.registerNode(SINGLETON, EventProcessorContext.DEFAULT_NODE_NAME);
     }
 
+    @Override
+    public void preSepGeneration(GenerationContext context, Map<String, Auditor> auditorMap) {
+        SINGLETON = new MutableEventProcessorContext();
+        context.addOrUseExistingNode(SINGLETON);
+    }
 }

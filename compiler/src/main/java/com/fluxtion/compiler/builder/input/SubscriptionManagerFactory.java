@@ -18,6 +18,8 @@ package com.fluxtion.compiler.builder.input;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.input.SubscriptionManagerNode;
 
@@ -28,11 +30,17 @@ import java.util.Map;
  */
 public class SubscriptionManagerFactory implements NodeFactory<SubscriptionManager> {
 
-    public static final SubscriptionManagerNode SINGLETON = new SubscriptionManagerNode();
+    private static SubscriptionManagerNode SINGLETON;
 
     @Override
     public SubscriptionManager createNode(Map<String, ? super Object> config, NodeRegistry registry) {
         return registry.registerNode(SINGLETON, SubscriptionManagerNode.DEFAULT_NODE_NAME);
+    }
+
+    @Override
+    public void preSepGeneration(GenerationContext context, Map<String, Auditor> auditorMap) {
+        SINGLETON = new SubscriptionManagerNode();
+        context.addOrUseExistingNode(SINGLETON);
     }
 
 }

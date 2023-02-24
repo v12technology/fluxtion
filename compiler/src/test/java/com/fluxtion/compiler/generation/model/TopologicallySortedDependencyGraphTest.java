@@ -18,6 +18,8 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.test.event.AnnotatedTimeHandler;
 import com.fluxtion.test.event.AnnotatedTimeHandlerNoFilter;
 import com.fluxtion.test.event.DependencyChild;
@@ -28,6 +30,7 @@ import com.fluxtion.test.event.RootCB;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -261,7 +264,6 @@ public class TopologicallySortedDependencyGraphTest {
 
     @Test
     public void testDirectParentsShared() throws Exception {
-        //System.out.println("directParents");
         //set up modes
         EventHandlerCbNode e1 = new EventHandlerCbNode("e1", 1);
         EventHandlerCbNode eshared = new EventHandlerCbNode("eshared", 2);
@@ -288,8 +290,11 @@ public class TopologicallySortedDependencyGraphTest {
 
     @Test
     public void testDirectParentsSharedFluentApi() throws Exception {
-        //System.out.println("testDirectParentsSharedFluentApi");
-        //
+        GenerationContext.setupStaticContext(
+                "",
+                "Processor",
+                new File(OutputRegistry.JAVA_GEN_DIR),
+                new File(OutputRegistry.RESOURCE_DIR));
         EventProcessorConfig config = new EventProcessorConfig();
 
         //set up modes
@@ -320,8 +325,11 @@ public class TopologicallySortedDependencyGraphTest {
 
     @Test
     public void testArrayListParents() throws Exception {
-        //System.out.println("testArrayListParents");
-        //
+        GenerationContext.setupStaticContext(
+                "",
+                "Processor",
+                new File(OutputRegistry.JAVA_GEN_DIR),
+                new File(OutputRegistry.RESOURCE_DIR));
         EventProcessorConfig config = new EventProcessorConfig();
         //set up modes
         EventHandlerCbNode e1 = config.addNode(new EventHandlerCbNode("e1", 1));
