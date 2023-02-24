@@ -40,7 +40,8 @@ import java.util.function.Consumer;
 * @author Greg Higgins
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements EventProcessor, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+public class ${className} implements
+EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
 //Node declarations
 ${MODEL.nodeDeclarations}
@@ -148,5 +149,14 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     @Override
     public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
         subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public ${className} newInstance(){
+        return new ${className}();
+    }
+
+    public ${className} newInstance(Map<Object, Object> contextMap){
+        return new ${className}();
     }
 }
