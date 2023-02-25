@@ -1,5 +1,5 @@
 ---
-title: Subscribing to external event feeds
+title: EventFeed subscription 
 parent: Cookbook
 has_children: false
 nav_order: 2
