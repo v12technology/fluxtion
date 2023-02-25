@@ -19,7 +19,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Signal;
-import com.fluxtion.runtime.input.EventProcessorFeed;
+import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.stream.EventStream;
@@ -254,11 +254,11 @@ public interface StaticEventProcessor {
         return stream.get();
     }
 
-    default void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    default void addEventFeed(EventFeed eventProcessorFeed) {
         throw new UnsupportedOperationException("addEventProcessorFeed not implemented");
     }
 
-    default void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    default void removeEventFeed(EventFeed eventProcessorFeed) {
         throw new UnsupportedOperationException("removeEventProcessorFeed not implemented");
     }
 

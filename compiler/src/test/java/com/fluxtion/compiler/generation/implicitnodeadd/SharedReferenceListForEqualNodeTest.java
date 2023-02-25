@@ -30,7 +30,6 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
 
     @Test
     public void equalNodeAddedMultipleTimesInMultipleListTest() {
-        writeSourceFile = true;
         sep(c -> {
                     c.addNode(
                             new MyListHolder(Arrays.asList(new KeyedStringHandler("A"), new KeyedStringHandler("A"))),
