@@ -20,29 +20,32 @@ for consumption wihtin a node.
 
 
 {% highlight java %}
-public static void main(String[] args) {
-    var eventProcessor = Fluxtion.compile(c -> c.addNode(new MyStringHandler()));
-    eventProcessor.setContextParameterMap(Map.of(
-        "started", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")),
-        "key1", "value1"
-    ));
-    eventProcessor.init();
-    eventProcessor.onEvent("key1");
-}
-
-public static class MyStringHandler {
-    @Inject
-    public EventProcessorContext context;
-    public String in;
-
-    @OnEventHandler
-    public void stringKeyUpdated(String in) {
-        System.out.println("mapping " + in + " -> '" + context.getContextProperty(in) + "'");
+public static class Sample {
+    public static void main(String[] args) {
+        var eventProcessor = Fluxtion.compile(c -> c.addNode(new MyStringHandler()));
+        var now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
+        eventProcessor.setContextParameterMap(Map.of(
+            "started", now,
+            "key1", "value1"
+        ));
+        eventProcessor.init();
+        eventProcessor.onEvent("key1");
     }
-
-    @Initialise
-    public void init() {
-        System.out.println("started: '" + context.getContextProperty("started") + "'");
+    
+    public static class MyStringHandler {
+        @Inject
+        public EventProcessorContext context;
+        public String in;
+    
+        @OnEventHandler
+        public void stringKeyUpdated(String in) {
+            System.out.println("mapping " + in + " -> '" + context.getContextProperty(in) + "'");
+        }
+    
+        @Initialise
+        public void init() {
+            System.out.println("started: '" + context.getContextProperty("started") + "'");
+        }
     }
 }
 {% endhighlight %}
@@ -51,7 +54,7 @@ public static class MyStringHandler {
 Running the sample produces this output:
 
 {% highlight console %}
-started: '2023-02-23 09:02:48.759'
+started: '09:02:48.759'
 mapping key1 -> 'value1'
 {% endhighlight %}
 
