@@ -23,8 +23,8 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 7.0.14":
-    - "//github.com/v12technology/fluxtion/tree/7.0.14"
+  "release 7.0.18":
+    - "//github.com/v12technology/fluxtion/tree/7.0.18"
 heading_anchors: true
 
 compress_html:
@@ -36,10 +36,10 @@ kramdown:
     block:
       line_numbers: true
 
-fluxtion_version: 7.0.14
-fluxtion_src: https://github.com/v12technology/fluxtion/blob/7.0.14
-fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/7.0.14/runtime/src/main/java//com/fluxtion/runtime
-fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/7.0.14/compiler/src/main/java/com/fluxtion/compiler
+fluxtion_version: 7.0.18
+fluxtion_src: https://github.com/v12technology/fluxtion/blob/7.0.18
+fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/7.0.18/runtime/src/main/java/com/fluxtion/runtime
+fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/7.0.18/compiler/src/main/java/com/fluxtion/compiler
 
 
 

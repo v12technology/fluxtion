@@ -35,12 +35,12 @@ A full set of tools for debugging, tracing, auditing and visualisation are provi
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>runtime</artifactId>
-            <version>5.0.8</version>
+            <version>{{site.fluxtion_version}}</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>compiler</artifactId>
-            <version>5.0.8</version>
+            <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
 {% endhighlight %}
@@ -87,17 +87,17 @@ There are three main steps to building and running a stream processor applicatio
 ## Step 1: Describe processing logic
 Describe the values that are calculated and actions invoked in response to an incoming event. Fluxtion provides two
 api's to describe the processing logic:
-1. [A set of annotations](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/annotations) 
+1. [A set of annotations]({{site.fluxtion_src_runtime}}/annotations) 
 that mark members of user written classes as being managed by the event processor
-2. [A java 8 stream like api](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/compiler/src/main/java/com/fluxtion/compiler/builder/stream)
+2. [A java 8 stream like api]({{site.fluxtion_src_compiler}}/builder/stream)
 , that can describe processing with a fluent functional style
 
 ## Step 2: Build an EventProcessor
 Fluxtion provides a eventProcessorGenerator that converts the description into an executable
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
+[EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
 instance. The eventProcessorGenerator
 is invoked from 
-[Fluxtion](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java)
+[Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java)
 with one of two utility methods:
 1. **compile**: this generates a java source code version of the EventProcessor. The file is compiled in process and used
 to handle events. Total nodes are limited to the number of elements a source file can handle
@@ -105,7 +105,7 @@ to handle events. Total nodes are limited to the number of elements a source fil
 
 ## Step 3: Process events
 Once the
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
+[EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
 has been generated the instance is ready to consume events. The EventProcessor has a lifecycle so **init must be called
 before sending any events for processing**. 
 

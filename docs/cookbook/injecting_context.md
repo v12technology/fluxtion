@@ -1,8 +1,8 @@
 ---
-title: Injecting context
+title: Injecting user context
 parent: Cookbook
 has_children: false
-nav_order: 102
+nav_order: 1
 published: true
 ---
 
