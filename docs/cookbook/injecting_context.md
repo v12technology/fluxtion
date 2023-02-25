@@ -8,8 +8,6 @@ published: true
 
 ## Introduction
 
-Sample [link]({{site.fluxtion_src_runtime}})
-
 Inject user context into the generated event processor. The context is available in 
 [EventProcessorContext]({{site.fluxtion_src_runtime}}/EventProcessorContext.java)
 for consumption wihtin a node. 
