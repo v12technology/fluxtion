@@ -15,7 +15,6 @@ public class SinlgletonNamedNodeTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testDifferentNames() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new MyNamedStringHandler("AAA"));
             c.addNode(new MyNamedStringHandler("BBB"));
