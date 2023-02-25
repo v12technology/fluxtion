@@ -14,7 +14,7 @@ for consumption wihtin a node.
 
 1. Inject the EventProcessorContext into the user node using the [@Inject]({{site.fluxtion_src_runtime}}/annotations/builder/Inject.java) annotation
 2. Build the event processor using one of the [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) build methods
-3. Provide a Map with user properties to the newly created EventProcessor, calling [EventProcessor#setContextParameterMap]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java#L80)
+3. Provide a Map with user properties to the newly created EventProcessor, calling [EventProcessor.setContextParameterMap]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java#L80)
 4. Call init on the EventProcessor
 5. The node's initialise method is called and the context will be guaranteed to be populated with the user map
 

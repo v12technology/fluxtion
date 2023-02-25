@@ -40,6 +40,7 @@ fluxtion_version: 7.0.18
 fluxtion_src: https://github.com/v12technology/fluxtion/blob/7.0.18
 fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/7.0.18/runtime/src/main/java/com/fluxtion/runtime
 fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/7.0.18/compiler/src/main/java/com/fluxtion/compiler
+EventProcessor_link: https://github.com/v12technology/fluxtion/blob/7.0.18/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
 
 
 
