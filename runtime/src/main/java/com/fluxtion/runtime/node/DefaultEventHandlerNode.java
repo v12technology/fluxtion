@@ -16,8 +16,13 @@
  */
 package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 
 import java.util.Objects;
@@ -27,33 +32,27 @@ import java.util.Objects;
  */
 public final class DefaultEventHandlerNode<T>
         extends EventLogNode
-        implements EventHandlerNode<T>, TriggeredEventStream<T>, NamedNode {
+        implements EventHandlerNode<T>, TriggeredEventStream<T>, NamedNode, Lifecycle {
 
     private final int filterId;
     private final String filterString;
     private final Class<T> eventClass;
     private final transient String name;
+    private final DefaultEventSubscription subscription;
+    @Inject
+    public SubscriptionManager subscriptionManager;
     public T event;
 
     public DefaultEventHandlerNode(Class<T> eventClass) {
-        this.eventClass = eventClass;
-        this.filterId = Event.NO_INT_FILTER;
-        this.filterString = Event.NO_STRING_FILTER;
-        name = "handler" + eventClass.getSimpleName();
+        this(Event.NO_INT_FILTER, Event.NO_STRING_FILTER, eventClass);
     }
 
     public DefaultEventHandlerNode(int filterId, Class<T> eventClass) {
-        this.filterId = filterId;
-        this.filterString = Event.NO_STRING_FILTER;
-        this.eventClass = eventClass;
-        name = "handler" + eventClass.getSimpleName() + "_" + filterId;
+        this(filterId, Event.NO_STRING_FILTER, eventClass);
     }
 
     public DefaultEventHandlerNode(String filterString, Class<T> eventClass) {
-        this.filterId = Event.NO_INT_FILTER;
-        this.filterString = filterString;
-        this.eventClass = eventClass;
-        name = "handler" + eventClass.getSimpleName() + "_" + filterString;
+        this(Event.NO_INT_FILTER, filterString, eventClass);
     }
 
     public DefaultEventHandlerNode(int filterId, String filterString, Class<T> eventClass) {
@@ -67,6 +66,7 @@ public final class DefaultEventHandlerNode<T>
         } else {
             name = "handler" + eventClass.getSimpleName();
         }
+        subscription = new DefaultEventSubscription(filterId, filterString, eventClass);
     }
 
     @Override
@@ -121,6 +121,18 @@ public final class DefaultEventHandlerNode<T>
             return false;
         }
         return true;
+    }
+
+    @Initialise
+    @Override
+    public void init() {
+        subscriptionManager.subscribe(subscription);
+    }
+
+    @Override
+    @TearDown
+    public void tearDown() {
+        subscriptionManager.unSubscribe(subscription);
     }
 
     @Override

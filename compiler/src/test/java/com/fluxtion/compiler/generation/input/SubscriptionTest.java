@@ -1,12 +1,15 @@
 package com.fluxtion.compiler.generation.input;
 
+import com.fluxtion.compiler.builder.stream.EventFlow;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.event.Signal.IntSignal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.node.DefaultEventSubscription;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +17,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SubscriptionTest extends MultipleSepTargetInProcessTest {
@@ -25,11 +29,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
     public void subscriptionTest() {
         Set<Object> subscriptions = new HashSet<>();
         sep(c -> {
-            c.addNode(
-                    new MySubscriberNode("subscriber_1"),
-                    new MySubscriberNode("subscriber_2"),
-                    new MySubscriberNode("subscriber_3")
-            );
+            c.addNode(new MySubscriberNode("subscriber_1"), new MySubscriberNode("subscriber_2"), new MySubscriberNode("subscriber_3"));
         });
         sep.addEventFeed(new MyEventFeed(subscriptions));
 
@@ -51,6 +51,25 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
 
         tearDown();
         Assert.assertTrue(subscriptions.isEmpty());
+    }
+
+    @Test
+    public void subscriptionTestFunctional() {
+        Set<Object> subscriptions = new HashSet<>();
+        sep(c -> {
+            EventFlow.subscribeToIntSignal("subscriber_1").id("subscriber_1");
+        });
+        sep.addEventFeed(new MyEventFeed(subscriptions));
+        assertThat(subscriptions,
+                Matchers.containsInAnyOrder(
+                        new DefaultEventSubscription<>(
+                                Integer.MAX_VALUE,
+                                "subscriber_1",
+                                Signal.IntSignal.class)
+                )
+        );
+        sep.publishIntSignal("subscriber_1", 200);
+        assertThat(getStreamed("subscriber_1"), is(200));
     }
 
     @Test
