@@ -3,12 +3,12 @@ package com.fluxtion.runtime.node;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.NodeNameAuditor;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.callback.EventDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
+import com.fluxtion.runtime.input.SubscriptionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,24 +17,28 @@ public final class MutableEventProcessorContext implements EventProcessorContext
 
     private final transient Map<Object, Object> map = new HashMap<>();
     @Inject
-    private final NodeNameAuditor nodeNameLookup;
+    private final NodeNameLookup nodeNameLookup;
     @Inject
     private final EventProcessorCallbackInternal eventDispatcher;
+    @Inject
+    private final SubscriptionManager subscriptionManager;
     @Inject
     private final DirtyStateMonitor dirtyStateMonitor;
 
     public MutableEventProcessorContext(
-            NodeNameAuditor nodeNameLookup,
+            @AssignToField("nodeNameLookup") NodeNameLookup nodeNameLookup,
             @AssignToField("eventDispatcher") EventProcessorCallbackInternal eventDispatcher,
+            @AssignToField("subscriptionManager") SubscriptionManager subscriptionManager,
             @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor
     ) {
         this.nodeNameLookup = nodeNameLookup;
         this.eventDispatcher = eventDispatcher;
+        this.subscriptionManager = subscriptionManager;
         this.dirtyStateMonitor = dirtyStateMonitor;
     }
 
     public MutableEventProcessorContext() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     public void replaceMappings(Map<Object, Object> newMap) {
@@ -49,7 +53,7 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     }
 
     @Override
-    public NodeNameAuditor getNodeNameLookup() {
+    public NodeNameLookup getNodeNameLookup() {
         return nodeNameLookup;
     }
 
@@ -58,7 +62,6 @@ public final class MutableEventProcessorContext implements EventProcessorContext
         return eventDispatcher;
     }
 
-    @Override
     public CallbackDispatcher getCallBackDispatcher() {
         return eventDispatcher;
     }
@@ -66,6 +69,11 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     @Override
     public DirtyStateMonitor getDirtyStateMonitor() {
         return dirtyStateMonitor;
+    }
+
+    @Override
+    public SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
     }
 
     public Map<Object, Object> getMap() {

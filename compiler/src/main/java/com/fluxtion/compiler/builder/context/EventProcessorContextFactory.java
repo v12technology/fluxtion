@@ -14,25 +14,32 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.fluxtion.compiler.builder.time;
+package com.fluxtion.compiler.builder.context;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.node.MutableEventProcessorContext;
 
 import java.util.Map;
 
 /**
  * @author V12 Technology Ltd.
  */
-public class ClockFactory implements NodeFactory<Clock> {
+public class EventProcessorContextFactory implements NodeFactory<EventProcessorContext> {
 
-    public static final Clock SINGLETON = new Clock();
+    private static MutableEventProcessorContext SINGLETON;
 
     @Override
-    public Clock createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        registry.registerAuditor(SINGLETON, "clock");
-        return SINGLETON;
+    public EventProcessorContext createNode(Map<String, ? super Object> config, NodeRegistry registry) {
+        return registry.registerNode(SINGLETON, EventProcessorContext.DEFAULT_NODE_NAME);
     }
 
+    @Override
+    public void preSepGeneration(GenerationContext context, Map<String, Auditor> auditorMap) {
+        SINGLETON = new MutableEventProcessorContext();
+        context.addOrUseExistingNode(SINGLETON);
+    }
 }

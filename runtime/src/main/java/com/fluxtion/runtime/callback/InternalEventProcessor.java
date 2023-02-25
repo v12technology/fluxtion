@@ -6,7 +6,10 @@ public interface InternalEventProcessor {
 
     void onEventInternal(Object event);
 
-    void triggerCalculation();
+    default void triggerCalculation() {
+    }
+
+    ;
 
     void bufferEvent(Object event);
 

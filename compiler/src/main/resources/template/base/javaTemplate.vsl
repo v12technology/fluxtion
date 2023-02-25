@@ -40,7 +40,8 @@ import java.util.function.Consumer;
 * @author Greg Higgins
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
-public class ${className} implements EventProcessor, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+public class ${className} implements
+EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
 //Node declarations
 ${MODEL.nodeDeclarations}
@@ -57,8 +58,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     public  ${className} (Map<Object, Object> contextMap) {
         context.replaceMappings(contextMap);
         ${MODEL.nodeMemberAssignments}
-        //initialise dirty lookup map
-        isDirty("test");
+        subscriptionManager.setSubscribingEventProcessor(this);
         context.setEventProcessorCallback(this);
     }
     public ${className} () {
@@ -98,6 +98,8 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     @Override
     public void init() {
+       //initialise dirty lookup map
+       isDirty("test");
        ${MODEL.initialiseMethods}
     }
 
@@ -116,6 +118,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
        ${MODEL.batchEndMethods}
     }
 
+    @Override
     public boolean isDirty(Object node) {
         if(dirtyFlagSupplierMap.isEmpty()){
             ${MODEL.dirtyFlagLookup}
@@ -123,6 +126,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE).getAsBoolean();
     }
 
+    @Override
     public void setDirty(Object node, boolean dirtyFlag) {
         if(dirtyFlagUpdateMap.isEmpty()){
          ${MODEL.dirtyFlagUpdate}
@@ -132,7 +136,27 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     ${MODEL.guardCheckMethods}
 
+    @Override
     public<T> T getNodeById(String id) throws NoSuchFieldException {
         return nodeNameLookup.getInstanceById(id);
+    }
+
+    @Override
+    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+        subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public ${className} newInstance(){
+        return new ${className}();
+    }
+
+    public ${className} newInstance(Map<Object, Object> contextMap){
+        return new ${className}();
     }
 }

@@ -651,7 +651,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             name2FactoryMethod.put(obj.factoryName(),
                     new CbMethodHandle(createMethod, obj, "node_factory_" + targetClass.getName()));
         }
-        obj.preSepGeneration(generationContext);
+        Map<String, Auditor> auditorMap = new HashMap<>();
+        obj.preSepGeneration(generationContext, auditorMap);
+        auditorMap.forEach((key, value) -> registerAuditor(value, key));
         //set target language
     }
 
