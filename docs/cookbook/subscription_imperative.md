@@ -121,7 +121,9 @@ public class SharePriceSubscriber {
 Running the example prints this to console:
 
 {% highlight console %}
+MarketDataFeed subscription request symbolId:MSFT
 MarketDataFeed adding EventProcessor as a sink, count:1
+MarketDataFeed subscription request symbolId:AMZN
 
 publishing prices from MarketDataFeed:
 subscriber:MSFT -> SharePrice[symbolId=MSFT, price=21.36]
@@ -132,8 +134,11 @@ tear down marketPriceProcessor:
 MarketDataFeed removing EventProcessor as sink, count:0
 
 restart marketPriceProcessor:
+MarketDataFeed subscription request symbolId:MSFT
 MarketDataFeed adding EventProcessor as a sink, count:1
+MarketDataFeed subscription request symbolId:AMZN
 
+publishing prices from MarketDataFeed:
 subscriber:MSFT -> SharePrice[symbolId=MSFT, price=22.51]
 {% endhighlight %}
 
