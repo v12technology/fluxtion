@@ -2,7 +2,9 @@ package com.fluxtion.runtime.input;
 
 import com.fluxtion.runtime.StaticEventProcessor;
 
-public interface EventProcessorFeed {
+public interface EventFeed {
+
+    void registerFeedTarget(StaticEventProcessor staticEventProcessor);
 
     void subscribe(StaticEventProcessor target, Object subscriptionId);
 
