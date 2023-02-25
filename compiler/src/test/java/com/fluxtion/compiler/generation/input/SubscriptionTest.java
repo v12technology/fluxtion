@@ -5,7 +5,7 @@ import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.event.Signal.IntSignal;
-import com.fluxtion.runtime.input.EventProcessorFeed;
+import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -31,7 +31,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
                     new MySubscriberNode("subscriber_3")
             );
         });
-        sep.addEventProcessorFeed(new MyEventFeed(subscriptions));
+        sep.addEventFeed(new MyEventFeed(subscriptions));
 
         Assert.assertTrue(subscriptions.isEmpty());
         sep.publishIntSignal("subscriber_1", 10);
@@ -57,7 +57,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
     public void subscriberTearDownThenInit() {
         Set<Object> subscriptions = new HashSet<>();
         sep(c -> c.addNode(new MySubscriberNode("subscriber_1")));
-        sep.addEventProcessorFeed(new MyEventFeed(subscriptions));
+        sep.addEventFeed(new MyEventFeed(subscriptions));
 
         Assert.assertTrue(subscriptions.isEmpty());
         sep.publishIntSignal("subscriber_1", 10);
@@ -98,11 +98,16 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static class MyEventFeed implements EventProcessorFeed {
+    public static class MyEventFeed implements EventFeed {
         private final Set<Object> subscriptions;
 
         public MyEventFeed(Set<Object> subscriptions) {
             this.subscriptions = subscriptions;
+        }
+
+        @Override
+        public void registerFeedTarget(StaticEventProcessor staticEventProcessor) {
+
         }
 
         @Override

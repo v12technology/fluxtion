@@ -13,7 +13,7 @@ import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.input.EventProcessorFeed;
+import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.input.SubscriptionManagerNode;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
@@ -231,12 +231,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     }
 
     @Override
-    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    public void addEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
     }
 
     @Override
-    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    public void removeEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
     }
 
