@@ -11,7 +11,7 @@ import java.util.Map;
 
 public final class SubscriptionManagerNode implements SubscriptionManager, NamedNode {
 
-    private final List<EventProcessorFeed> registeredFeeds = new ArrayList<>();
+    private final List<EventFeed> registeredFeeds = new ArrayList<>();
     private final Map<Object, Integer> subscriptionMap = new HashMap<>();
     private StaticEventProcessor eventProcessor = StaticEventProcessor.NULL_EVENTHANDLER;
 
@@ -19,14 +19,15 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
         this.eventProcessor = eventProcessor;
     }
 
-    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
-        if (!registeredFeeds.contains(eventProcessorFeed)) {
-            registeredFeeds.add(eventProcessorFeed);
-            subscriptionMap.keySet().forEach(e -> eventProcessorFeed.subscribe(eventProcessor, e));
+    public void addEventProcessorFeed(EventFeed eventFeed) {
+        eventFeed.registerSubscriber(eventProcessor);
+        if (!registeredFeeds.contains(eventFeed)) {
+            registeredFeeds.add(eventFeed);
+            subscriptionMap.keySet().forEach(e -> eventFeed.subscribe(eventProcessor, e));
         }
     }
 
-    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    public void removeEventProcessorFeed(EventFeed eventProcessorFeed) {
         registeredFeeds.remove(eventProcessorFeed);
     }
 

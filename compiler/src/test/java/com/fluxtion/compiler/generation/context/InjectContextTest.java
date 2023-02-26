@@ -20,7 +20,6 @@ public class InjectContextTest extends MultipleSepTargetInProcessTest {
         Map<Object, Object> ctxMap = new HashMap<>();
         ctxMap.put("test_1", "AAA");
         ctxMap.put("test_2", "BBB");
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new NeedContext(), "A");
             c.addNode(new NeedContextConstructor(null), "B");

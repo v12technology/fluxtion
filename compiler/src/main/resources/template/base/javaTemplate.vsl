@@ -142,12 +142,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
-    public void addEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    public void addEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
     }
 
     @Override
-    public void removeEventProcessorFeed(EventProcessorFeed eventProcessorFeed) {
+    public void removeEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
     }
 
