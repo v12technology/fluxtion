@@ -7,24 +7,42 @@ published: true
 ---
 
 ## Introduction
-This example demonstrates the pattern to follow to integrate client event feeds into an [EventProcessor]({{site.EventProcessor_link}}). 
+This example demonstrates the pattern for integrating legacy data feeds into an [EventProcessor]({{site.EventProcessor_link}}). 
 
 1. Create a client feed that implement the [EventFeed]() interface
 2. The implementation of an EventFeed converts external data into events and publishes to registered EventProcessors 
-2. A graph node injects a [SubscriptionManager]() and issue subscription requests to the SubscriptionManager
-3. Create the EventProcessor with the subscribing nodes and call init
-4. Add client event feeds calling [EventProcessor.addEventFeed]()
-5. The  client feed will receive subscription requests and publish as appropriate
+3. Build an EventProcessor where a subscription node injects a [SubscriptionManager]() 
+4. The subscription node issues subscription requests to the SubscriptionManager
+5. Add client event feeds to the EventProcessor [EventProcessor.addEventFeed]()
+6. The SubscriptionManager collects and sends subscription requests to the client feed 
+7. The client feed converts legacy data streams into events and publishes events, [EventProcessor.onEvent]()
+
+## Subscription and publishing calls
+### Register an EventFeed with EventProcessor
+<br/> 
+
+![](../images/subscription/subscription_register.png)
+
+
+### SharePriceNode subscribes to symbols
+<br/> 
+
+![](../images/subscription/subscibe_to_symbol.png)
+
+### Publics data from legacy app
+<br/> 
+
+![](../images/subscription/publish_data.png)
 
 ## Example
 
 [Share price events]() are published from a [MarketDataFeed]() to an EventProcessor. There are several [SharePriceSubscriber]()
 in the EventProcessor, each one listening to a different symbolId. The SharePriceSubscriber subscribes to a symbol using
-the SubscriptionManager. The SubscriptionManager sends a subscription request to any registered EventFeed's with the 
+the SubscriptionManager. The SubscriptionManager sends a subscription request to any registered EventFeed's with the
 EventProcessor instance that has requested that symbol. The MarketDataFeed then converts a market price update into a
 SharePrice and publishes to an interested EventProcessor.
 
-All the subscription requests are automatically handled by the SubscriptionManager, it is the responsibility of the 
+All the subscription requests are automatically handled by the SubscriptionManager, it is the responsibility of the
 MarketDataFeed to decide how it handles the subscription request.
 
 ### SharePriceSubscriber node
@@ -51,6 +69,8 @@ public class SharePriceSubscriber {
     }
 }
 {% endhighlight %}
+
+
 
 ### External MarketDataFeed
 
