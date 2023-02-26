@@ -19,10 +19,11 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
         this.eventProcessor = eventProcessor;
     }
 
-    public void addEventProcessorFeed(EventFeed eventProcessorFeed) {
-        if (!registeredFeeds.contains(eventProcessorFeed)) {
-            registeredFeeds.add(eventProcessorFeed);
-            subscriptionMap.keySet().forEach(e -> eventProcessorFeed.subscribe(eventProcessor, e));
+    public void addEventProcessorFeed(EventFeed eventFeed) {
+        eventFeed.registerSubscriber(eventProcessor);
+        if (!registeredFeeds.contains(eventFeed)) {
+            registeredFeeds.add(eventFeed);
+            subscriptionMap.keySet().forEach(e -> eventFeed.subscribe(eventProcessor, e));
         }
     }
 

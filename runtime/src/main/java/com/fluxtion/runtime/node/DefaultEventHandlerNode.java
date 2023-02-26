@@ -38,7 +38,7 @@ public final class DefaultEventHandlerNode<T>
     private final String filterString;
     private final Class<T> eventClass;
     private final transient String name;
-    private final DefaultEventSubscription subscription;
+    private final EventSubscription subscription;
     @Inject
     public SubscriptionManager subscriptionManager;
     public T event;
@@ -66,7 +66,7 @@ public final class DefaultEventHandlerNode<T>
         } else {
             name = "handler" + eventClass.getSimpleName();
         }
-        subscription = new DefaultEventSubscription(filterId, filterString, eventClass);
+        subscription = new EventSubscription(filterId, filterString, eventClass);
     }
 
     @Override
