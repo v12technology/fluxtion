@@ -4,11 +4,11 @@ import com.fluxtion.runtime.StaticEventProcessor;
 
 public interface EventFeed {
 
-    void registerFeedTarget(StaticEventProcessor staticEventProcessor);
+    void registerSubscriber(StaticEventProcessor subscriber);
 
-    void subscribe(StaticEventProcessor target, Object subscriptionId);
+    void subscribe(StaticEventProcessor subscriber, Object subscriptionId);
 
-    void unSubscribe(StaticEventProcessor target, Object subscriptionId);
+    void unSubscribe(StaticEventProcessor subscriber, Object subscriptionId);
 
-    void removeAllSubscriptions(StaticEventProcessor eventProcessor);
+    void removeAllSubscriptions(StaticEventProcessor subscriber);
 }
