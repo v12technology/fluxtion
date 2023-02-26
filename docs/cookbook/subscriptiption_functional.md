@@ -32,6 +32,7 @@ This call has the following side effects:
 - A [SubscriptionManager]({{site.fluxtion_src_runtime}}/input/SubscriptionManager.java)  instance is injected into the node, 
 - The node creates An [EventSubscription]({{site.fluxtion_src_runtime}}/node/EventSubscription.java) with classtype: SharePriceEvent and filterString: MSFT 
 - Subscribe is called on the injected SubscriptionManager with the EventSubscription created above
+- Adds a teardown method that calls SubscriptionManager.unsubscribe() 
 - The SubscriptionManager forwards the EventSubscription to any registered EventHandler
 
 Full code:
