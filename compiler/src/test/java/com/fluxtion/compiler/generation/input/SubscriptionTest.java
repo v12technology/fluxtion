@@ -9,7 +9,7 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.event.Signal.IntSignal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
-import com.fluxtion.runtime.node.DefaultEventSubscription;
+import com.fluxtion.runtime.node.EventSubscription;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         sep.addEventFeed(new MyEventFeed(subscriptions));
         assertThat(subscriptions,
                 Matchers.containsInAnyOrder(
-                        new DefaultEventSubscription<>(
+                        new EventSubscription<>(
                                 Integer.MAX_VALUE,
                                 "subscriber_1",
                                 Signal.IntSignal.class)
@@ -125,12 +125,12 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         }
 
         @Override
-        public void registerFeedTarget(StaticEventProcessor staticEventProcessor) {
+        public void registerSubscriber(StaticEventProcessor subscriber) {
 
         }
 
         @Override
-        public void subscribe(StaticEventProcessor target, Object subscriptionId) {
+        public void subscribe(StaticEventProcessor subscriber, Object subscriptionId) {
             if (subscriptions.contains(subscriptionId)) {
                 throw new IllegalStateException("multiple subscriptions for same symbol:" + subscriptionId);
             }
@@ -138,7 +138,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         }
 
         @Override
-        public void unSubscribe(StaticEventProcessor target, Object subscriptionId) {
+        public void unSubscribe(StaticEventProcessor subscriber, Object subscriptionId) {
             if (!subscriptions.contains(subscriptionId)) {
                 throw new IllegalStateException("No subscription to remove for symbol:" + subscriptionId);
             }
@@ -146,7 +146,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         }
 
         @Override
-        public void removeAllSubscriptions(StaticEventProcessor eventProcessor) {
+        public void removeAllSubscriptions(StaticEventProcessor subscriber) {
             subscriptions.clear();
         }
     }
