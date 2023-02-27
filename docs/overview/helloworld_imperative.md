@@ -10,10 +10,10 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 # Example
 
 Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
-The sum is the addition of the value member variable from each event stream. 
+The sum is the addition of the current value from each event stream. 
 
 This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs 
-the warning will be logged to console.
+a warning will be logged to console.
 
 Code is available as a [maven project]({{page.example_src}})
 
@@ -24,7 +24,7 @@ All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}
 - [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling callback
 - Create a collection of instances of the pojo's that will act as nodes in the EvenProcessor
 - Set references between the pojos as per normal java. Constructor, getter/setter, public access etc.
-- Use one of the [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) compile/interpret methods passing in a 
+- Use one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in a 
 builder method that accepts [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java)
 - Add your the root node/s of your object instance graph using EventProcessorConfig.addNode in your builder method
 - An EventProcessor instance is returned ready to be used
@@ -85,25 +85,94 @@ to the processor for processing
 | BreachNotifier    | no            | References the DataSumCalculator and logs a warning if sum > 100 |
 
 ####  [Data1Handler]({{page.example_src}}/Data1handler.java)
+An entry point for processing events of type InputDataEvent_1 and stores the latest value as a member variable. 
+Annotate the event handler method as follows:
+
+{% highlight java %}
+@OnEventHandler
+    public boolean data1Update(InputDataEvent_1 data1) {
+    value = data1.value();
+    return true;
+}
+{% endhighlight %}
 
 ####  [Data2Handler]({{page.example_src}}/Data2handler.java)
+An entry point for processing events of type InputDataEvent_2 and stores the latest value as a member variable. 
+Annotate the event handler method as follows:
+
+{% highlight java %}
+@OnEventHandler
+    public boolean data1Update(InputDataEvent_1 data1) {
+    value = data1.value();
+    return true;
+}
+{% endhighlight %}
 
 ####  [DataSumCalculator]({{page.example_src}}/DataSumCalculator.java)
+Calculates the current sum adding the values of Data1Handler and Data2Handler. Will be triggered when either handler 
+has its updated method invoked. Annotate the trigger method as follows:
+
+{% highlight java %}
+@OnTrigger
+public boolean calculate() {
+    sum = data1handler.getValue() + data2handler.getValue();
+    System.out.println("sum:" + sum);
+    return sum > 100;
+}
+{% endhighlight %}
+
+The return flag indicates that the event notification should be propagated and any child nodes trigger methods 
+should be invoked.
 
 ####  [BreachNotifier]({{page.example_src}}/BreachNotifier.java)
+Logs to console when the sum breaches a value, BreachNotifier holds a reference to the DataSumCalculator instance. 
+The trigger method is only invoked if the DataSumCalculator propagates the notification, by returning true from its trigger
+method. Annotate the trigger method as follows:
+
+{% highlight java %}
+@OnTrigger
+public void printWarning() {
+    System.out.println("WARNING DataSumCalculator value is greater than 100 sum = " + dataAddition.getSum());
+}
+{% endhighlight %}
 
 ### Event classes
+Java records as used to implement events, pojos are suitable to use as events in the Fluxtion.
 
-####  [InputDataEvent_1]({{page.example_src}}/InputDataEvent_1.java)
-
-####  [InputDataEvent_2]({{page.example_src}}/InputDataEvent_2.java)
+- [InputDataEvent_1]({{page.example_src}}/InputDataEvent_1.java)
+- [InputDataEvent_2]({{page.example_src}}/InputDataEvent_2.java)
 
 ### Building the EventProcessor
 
 See [Main]({{page.example_src}}/Main.java)
 
-### Publishing events
+Building the EventProcessor is simply giving the root node instance, BreachNotifier to a [Fluxtion]({{site.Fluxtion_link}}) builder method. The Fluxtion.interpret()
+method provides a [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) that the client adds
+root nodes to as follows: 
 
+{% highlight java %}
+var eventProcessor = Fluxtion.interpret(cfg -> cfg.addNode(new BreachNotifier()));
+{% endhighlight %}
+
+Fluxtion inspects all the references from the root node(s) and constructs the EventProcessor with instances of Data1Handler,
+Data2Handler and DataSumCalculator all included.
+
+### Publishing events
+Publishing events is simply a case of calling init on the EventProcessor and then call onEvent() with instances of InputDataEvent_1
+or InputDataEvent_2. The code for building and sending events follows:
+
+{% highlight java %}
+public class Main {
+  public static void main(String[] args) {
+    var eventProcessor = Fluxtion.interpret(cfg -> cfg.addNode(new BreachNotifier()));
+    eventProcessor.init();
+    eventProcessor.onEvent(new InputDataEvent_1(34.4));
+    eventProcessor.onEvent(new InputDataEvent_2(52.1));
+    eventProcessor.onEvent(new InputDataEvent_1(105));//should create a breach warning
+    eventProcessor.onEvent(new InputDataEvent_1(12.4));
+  }
+}
+{% endhighlight %}
 
 ## Example execution output
 

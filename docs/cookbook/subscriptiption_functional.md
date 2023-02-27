@@ -12,7 +12,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/cook_subscr
 This example demonstrates subscribing to data events with a functional approach using the Fluxtion streaming api. The
 advantage of the streaming api is the reduction of user code written and the increased code re-use. 
 
-***Please read the [EventFeed subscription](subscription_imperative.html) cookbook article***
+***Please read the [EventFeed integration]({% link cookbook/subscription_imperative.md %}) cookbook article firste***
 
 The goal of this example is to subscribe to [SharePriceEvent's]({{page.example_src}}/SharePriceEvent.java) without 
 having to write [SharePriceNode's]({{page.example_src}}/imperative/SharePriceNode.java)
