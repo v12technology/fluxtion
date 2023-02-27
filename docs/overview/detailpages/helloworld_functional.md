@@ -12,7 +12,8 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functi
 Simple Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the value member variable from each event stream.
 
-All the elements are joined together using a functional api provided by Fluxtion. 
+All the elements are joined together using a functional api provided by Fluxtion. The [EventFlow]({{site.fluxtion_src_compiler}}/builder/stream/EventFlow.java)
+gives access to functions to create a stream functionally.
 
 See the [imperative example](helloworld_imperative.html) for a comparison of using an imperative style.
 
@@ -65,11 +66,11 @@ public class Main {
     public static void main(String[] args) {
         //builds the EventProcessor
         EventProcessor eventProcessor = Fluxtion.interpret(cfg -> {
-            var data1Stream = subscribe(Data1.class)
+            var data1Stream = EventFlow.subscribe(Data1.class)
                     .console("rcvd -> {}")
                     .mapToDouble(Data1::value);
 
-            subscribe(Data2.class)
+            EventFlow.subscribe(Data2.class)
                     .console("rcvd -> {}")
                     .mapToDouble(Data2::value)
                     .mapBiFunction(Double::sum, data1Stream)
