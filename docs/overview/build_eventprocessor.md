@@ -1,5 +1,6 @@
 ---
 title: Build an EventProcessor
+parent: Overview
 has_children: false
 nav_order: 3
 published: true
