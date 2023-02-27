@@ -7,7 +7,7 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
 ---
 
-# Example
+# 5 minute hello world - imperative
 
 Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. 

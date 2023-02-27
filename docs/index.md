@@ -23,6 +23,8 @@ fully supported.
 
 A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
 
+### Cant wait? [Dive into our 5 minute Fluxtion hello world](overview/detailpages/helloworld_imperative.html)
+
 ## Fluxtion dependencies
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>

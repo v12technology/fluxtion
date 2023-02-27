@@ -6,7 +6,7 @@ nav_order: 2
 published: true
 ---
 
-# Example
+# 5 minute hello world - functional
 
 Simple Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the value member variable from each event stream.
