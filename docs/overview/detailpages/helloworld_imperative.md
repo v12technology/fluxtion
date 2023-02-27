@@ -37,7 +37,7 @@ builder method that accepts [EventProcessorConfig]({{site.fluxtion_src_compiler}
 
 Graphical representation of the processing graph that Fluxtion will generate.
 
-![](../images/helloworld/helloworld_imperative.png)
+![](../../images/helloworld/helloworld_imperative.png)
 
 ## Dependencies
 

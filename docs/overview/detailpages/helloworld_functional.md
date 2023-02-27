@@ -15,7 +15,7 @@ The sum is the addition of the value member variable from each event stream.
 
 Graphical representation of the processing graph that Fluxtion will generate.
 
-![](../images/helloworld_eventstream.png)
+![](../../images/helloworld_eventstream.png)
 
 ## Maven pom file
 
