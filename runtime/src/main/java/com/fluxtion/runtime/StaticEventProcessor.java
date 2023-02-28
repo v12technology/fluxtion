@@ -18,6 +18,7 @@ package com.fluxtion.runtime;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
@@ -268,5 +269,9 @@ public interface StaticEventProcessor {
 
     default void setAuditLogLevel(LogLevel logLevel, String nodeName) {
         onEvent(new EventLogControlEvent(nodeName, null, logLevel));
+    }
+
+    default void setAuditLogProcessor(LogRecordListener logProcessor) {
+        onEvent(new EventLogControlEvent(logProcessor));
     }
 }
