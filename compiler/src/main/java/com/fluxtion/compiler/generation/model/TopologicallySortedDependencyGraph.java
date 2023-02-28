@@ -73,6 +73,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -799,7 +800,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         Field[] fields = new Field[s.size()];
         fields = s.toArray(fields);
         for (Field field : fields) {
-            if (!trySetAccessible(field)) {
+            if (!trySetAccessible(field) || Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
             Object refField = field.get(object);
