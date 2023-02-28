@@ -20,6 +20,7 @@ package com.fluxtion.compiler.generation.model;
 import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
+import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.AfterEvent;
@@ -435,7 +436,13 @@ public class SimpleEventProcessorModel {
             } else {
                 LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
                 if (getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
-                    getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
+                    Set<Constructor> constructors = getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
+                    if (constructors.isEmpty()) {
+                        throw new RuntimeException("cannot find matching constructor for:" + f
+                                + " failed to match for these fields:" + privateFields.stream()
+                                .map(MappedField::getMappedName)
+                                .collect(Collectors.joining(", ", "[", "]")));
+                    }
                 }
                 List<Field.MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
                 constructorArgumentMap.put(field, collect);
