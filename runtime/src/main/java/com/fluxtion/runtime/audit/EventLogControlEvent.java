@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
@@ -27,7 +27,6 @@ import com.fluxtion.runtime.event.Event;
  * <li> Log level of all EventLogSource instances.
  * <li> The LogRecordListener to process LogRecords.
  * </ul>
- *
  *
  * @author Greg Higgins (greg.higgins@v12technology.com)
  */
@@ -89,11 +88,12 @@ public class EventLogControlEvent implements Event {
     }
 
     public enum LogLevel {
-        NONE(Integer.MAX_VALUE), ERROR(1), WARN(2), INFO(3), DEBUG(4), TRACE(5);
+        NONE(0), ERROR(1), WARN(2), INFO(3), DEBUG(4), TRACE(5);
 
         private LogLevel(int level) {
             this.level = level;
         }
+
         public final int level;
     }
 
