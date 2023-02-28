@@ -18,6 +18,7 @@ package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.event.Event;
@@ -37,8 +38,8 @@ public final class DefaultEventHandlerNode<T>
     private final int filterId;
     private final String filterString;
     private final Class<T> eventClass;
-    private final transient String name;
-    private final EventSubscription subscription;
+    private final String name;
+    private final transient EventSubscription subscription;
     @Inject
     public SubscriptionManager subscriptionManager;
     public T event;
@@ -66,6 +67,18 @@ public final class DefaultEventHandlerNode<T>
         } else {
             name = "handler" + eventClass.getSimpleName();
         }
+        subscription = new EventSubscription(filterId, filterString, eventClass);
+    }
+
+    public DefaultEventHandlerNode(
+            int filterId,
+            @AssignToField("filterString") String filterString,
+            Class<T> eventClass,
+            @AssignToField("name") String name) {
+        this.filterId = filterId;
+        this.filterString = filterString;
+        this.eventClass = eventClass;
+        this.name = name;
         subscription = new EventSubscription(filterId, filterString, eventClass);
     }
 
