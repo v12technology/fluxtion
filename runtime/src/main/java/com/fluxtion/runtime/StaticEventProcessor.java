@@ -265,4 +265,8 @@ public interface StaticEventProcessor {
     default void setAuditLogLevel(LogLevel logLevel) {
         onEvent(new EventLogControlEvent(logLevel));
     }
+
+    default void setAuditLogLevel(LogLevel logLevel, String nodeName) {
+        onEvent(new EventLogControlEvent(nodeName, null, logLevel));
+    }
 }
