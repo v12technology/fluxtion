@@ -58,6 +58,7 @@ public class EventLogManager implements Auditor {
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
     public Clock clock;
+    private boolean canTrace = false;
 
 
     public EventLogManager() {
@@ -98,6 +99,7 @@ public class EventLogManager implements Auditor {
             calcSource.setLogger(logger);
         }
         node2Logger.put(nodeName, logger);
+        canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
     }
 
     @Override
@@ -129,6 +131,7 @@ public class EventLogManager implements Auditor {
                 node2Logger.values().forEach((t) -> t.setLevel(newConfig.getLevel()));
             }
         }
+        canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
     }
 
     public void setLogSink(LogRecordListener sink) {
@@ -145,7 +148,7 @@ public class EventLogManager implements Auditor {
 
     @Override
     public void processingComplete() {
-        if (trace | logRecord.terminateRecord()) {
+        if (canTrace | logRecord.terminateRecord()) {
             sink.processLogRecord(logRecord);
         }
         if (clearAfterPublish) {
