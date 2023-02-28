@@ -142,6 +142,10 @@ public class Field {
             }
         }
 
+        public String getMappedName() {
+            return mappedName;
+        }
+
         public boolean isEmpty() {
             return elements.isEmpty();
         }

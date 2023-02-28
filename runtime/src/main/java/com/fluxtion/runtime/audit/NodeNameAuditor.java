@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class NodeNameAuditor implements Auditor, NodeNameLookup, NamedNode {
 
-    private final Map<Object, String> node2NameMap = new HashMap<>();
-    private final Map<String, Object> name2NodeMap = new HashMap<>();
+    private final transient Map<Object, String> node2NameMap = new HashMap<>();
+    private final transient Map<String, Object> name2NodeMap = new HashMap<>();
 
     @Override
     public void nodeRegistered(Object node, String nodeName) {

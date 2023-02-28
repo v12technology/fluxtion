@@ -252,4 +252,8 @@ public class EventLogger {
             logrecord.addRecord(logSourceId, key, value);
         }
     }
+
+    public boolean canLog(LogLevel logLevel) {
+        return this.logLevel != null && this.logLevel.level >= logLevel.level;
+    }
 }
