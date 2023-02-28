@@ -18,7 +18,7 @@ in the EventProcessor.
 
 Once added the audit log level is set to INFO by default.
 
-## Configuring audit logging
+## Adding audit logging at build time
 
 The audit log facility is added to the EventProcessor with this call
 
@@ -34,6 +34,46 @@ even if a node does not record a map entry. The trace is working if the runtime 
 trace level set at build time.
 
 Setting the audit logging level to NONE at build time removes the tracing from the event processor.
+
+## Configure runtime audit log level
+The audit log level can be configured at runtime, setting the log level for the whole EventProcessor or for an individual
+node in the graph
+
+### Configure audit log level for EventProcessor
+{% highlight java %}
+eventProcessor.setAuditLogLevel(LogLevel.DEBUG);
+{% endhighlight %}
+
+### Configure audit log level for a single node
+{% highlight java %}
+eventProcessor.setAuditLogLevel(LogLevel.DEBUG, "publisher");
+{% endhighlight %}
+
+For this to work the name of the node must be well known at runtime, this can be achieved in a node by implementing the
+interface [NamedNode]({{site.fluxtion_src_runtime}}/node/NamedNode.java). The NamedNode.getName() value is assigned
+to the node in the EventProcessor, this value is the variable name in the generated code and the node log identifier.
+The [Publisher]({{page.example_src}}/AudiLogExample.java#L128) in the example demonstrates this:
+
+{% highlight java %}
+public static class PublishCalcHandler extends EventLogNode implements NamedNode {
+  //code omitted for clarity
+  @Override
+  public String getName() {
+    return "publisher";
+  }
+}
+{% endhighlight %}
+
+
+
+## Setting the LogRecord processor at runtime
+Audit logging produces a [LogRecord]({{site.fluxtion_src_runtime}}/audit/LogRecord.java) for each event processed. The
+records by default will go to the console using the standard java.util.logging ConsoleHandler. Most apps will want to
+change this in production, and add their own LogRecord processor integrating any logging mechanism that is appropriate:
+
+{% highlight java %}
+eventProcessor.setAuditLogProcessor(AudiLogExample::printLogRecord);
+{% endhighlight %}
 
 ## Sample log file
 
@@ -233,6 +273,9 @@ Process finished with exit code 0
 
 {% endhighlight %}
 
+### EventProcessor graph for the example
+
+![](../images/audit/Processor.png)
 
 
 
