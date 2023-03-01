@@ -92,6 +92,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
+import static org.reflections.util.ReflectionUtilsPredicates.withName;
 
 /**
  * Creates a sorted set of dependencies from a supplied set of instances.
@@ -641,8 +642,13 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         @SuppressWarnings("unchecked") Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) obj.getClass();
         Method createMethod = clazz.getMethod("createNode", Map.class, NodeRegistry.class);
 //        Type genericReturnType = createMethod.getGenericReturnType();
-        ParameterizedType paramType = (ParameterizedType) GenericTypeReflector.getExactSuperType(clazz, NodeFactory.class);
-        Class<?> targetClass = (Class<?>) paramType.getActualTypeArguments()[0];
+        final Class<?> targetClass;
+        if (obj.injectionType() != null) {
+            targetClass = obj.injectionType();
+        } else {
+            ParameterizedType paramType = (ParameterizedType) GenericTypeReflector.getExactSuperType(clazz, NodeFactory.class);
+            targetClass = (Class<?>) paramType.getActualTypeArguments()[0];
+        }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Registered factory:" + clazz.getCanonicalName() + " building:" + targetClass);
         }
@@ -907,7 +913,21 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
             if (injecting != null & refName == null & field.get(object) == null) {
+                String factoryVariableName = injecting.factoryVariableName();
                 String factoryName = injecting.factoryName();
+                Set<java.lang.reflect.Field> fieldNames = ReflectionUtils.getAllFields(object.getClass(), withName(factoryVariableName));
+                if (factoryVariableName.length() > 0 && fieldNames.size() > 0) {
+                    java.lang.reflect.Field f = fieldNames.iterator().next();
+                    f.setAccessible(true);
+                    if (f.get(object) != null) {
+                        if (f.getType().equals(String.class)) {
+                            factoryName = (String) f.get(object);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "Inject.factoryVariableName() should be the variable name of a String field: " + f);
+                        }
+                    }
+                }
                 HashMap<String, Object> map = new HashMap<>();
                 HashMap<String, Object> overrideMap = new HashMap<>();
 
