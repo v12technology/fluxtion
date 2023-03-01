@@ -18,6 +18,7 @@ package com.fluxtion.compiler.builder.factory;
 
 import lombok.EqualsAndHashCode;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +45,10 @@ public final class NodeFactoryRegistration {
 
     public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList) {
         this(factoryList, null);
+    }
+
+    public NodeFactoryRegistration(NodeFactory<?>... factorySet) {
+        this(null, new HashSet<>(Arrays.asList(factorySet)));
     }
 
     public NodeFactoryRegistration(Set<Class<? extends NodeFactory<?>>> factoryList, Set<NodeFactory<?>> factorySet) {
