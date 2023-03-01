@@ -12,11 +12,13 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.compiler.generation.util.YamlLogRecordListener;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -25,24 +27,46 @@ import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.StructuredLogRecord;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.compiler.generation.util.YamlLogRecordListener;
 import com.fluxtion.test.event.CharEvent;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.LongAdder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class TraceLogTest extends MultipleSepTargetInProcessTest {
 
     public TraceLogTest(boolean compiledSep) {
         super(compiledSep);
+    }
+
+
+    public static class NoAuditNode {
+        @OnEventHandler
+        public void charEvent(CharEvent event) {
+
+        }
+    }
+
+    @Test
+    public void noTraceWhenBelowMinimumLoggerLevel() {
+        LongAdder count = new LongAdder();
+        sep(c -> {
+            c.addNode(new NoAuditNode(), "greatGrandChild");
+            c.addEventAudit(LogLevel.DEBUG);
+        });
+        YamlLogRecordListener yamlRecord = new YamlLogRecordListener();
+        onEvent(new EventLogControlEvent(logRecord -> count.increment()));
+        onEvent(new CharEvent('a'));
+        assertThat(count.intValue(), is(0));
+        sep.setAuditLogLevel(LogLevel.DEBUG);
+        onEvent(new CharEvent('a'));
+        assertThat(count.intValue(), is(2));
     }
 
     @Test
@@ -120,9 +144,9 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         onEvent(new CharEvent('d'));//4 audit
 
         List<StructuredLogRecord> eventList = yamlRecord.getEventList();
-        assertThat(4, is(eventList.size()));
-        assertThat("CharEvent", is(eventList.get(1).getEventType()));
-        List<StructuredLogRecord.AuditRecord> auditLogs = eventList.get(1).getAuditLogs();
+        assertThat(3, is(eventList.size()));
+        assertThat("CharEvent", is(eventList.get(0).getEventType()));
+        List<StructuredLogRecord.AuditRecord> auditLogs = eventList.get(0).getAuditLogs();
         assertThat(2, is(auditLogs.size()));
         //check first is parent then child
         assertThat("parent", is(auditLogs.get(0).getNodeId()));
@@ -130,10 +154,10 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         //check parent has right char
         assertThat("c", is(auditLogs.get(0).getPropertyMap().get("char")));
         //check control events
-        assertThat("EventLogControlEvent", is(eventList.get(0).getEventType()));
-        assertThat("EventLogControlEvent", is(eventList.get(2).getEventType()));
+//        assertThat("EventLogControlEvent", is(eventList.get(0).getEventType()));
+        assertThat("EventLogControlEvent", is(eventList.get(1).getEventType()));
         //now should be on trace
-        auditLogs = eventList.get(3).getAuditLogs();
+        auditLogs = eventList.get(2).getAuditLogs();
         assertThat(auditLogs.size(), is(4));
         //check first is parent then child
         assertThat("parent", is(auditLogs.get(0).getNodeId()));

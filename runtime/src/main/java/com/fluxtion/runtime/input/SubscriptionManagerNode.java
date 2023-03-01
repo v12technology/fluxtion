@@ -11,8 +11,8 @@ import java.util.Map;
 
 public final class SubscriptionManagerNode implements SubscriptionManager, NamedNode {
 
-    private final List<EventFeed> registeredFeeds = new ArrayList<>();
-    private final Map<Object, Integer> subscriptionMap = new HashMap<>();
+    private final transient List<EventFeed> registeredFeeds = new ArrayList<>();
+    private final transient Map<Object, Integer> subscriptionMap = new HashMap<>();
     private StaticEventProcessor eventProcessor = StaticEventProcessor.NULL_EVENTHANDLER;
 
     public void setSubscribingEventProcessor(StaticEventProcessor eventProcessor) {

@@ -26,6 +26,7 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
+import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
@@ -65,19 +66,32 @@ public class EventProcessorConfig {
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
 
+    enum NodeFactoryConfig {
+        required(
+                CallBackDispatcherFactory.class,
+                CallbackNodeFactory.class,
+                ClockFactory.class,
+                DirtyStateMonitorFactory.class,
+                EventDispatcherFactory.class,
+                EventProcessorCallbackInternalFactory.class,
+                EventProcessorContextFactory.class,
+                NodeNameLookupFactory.class,
+                SubscriptionManagerFactory.class
+        );
+
+        private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
+
+        NodeFactoryConfig(Class<? extends NodeFactory<?>>... factoryClasses) {
+            Arrays.asList(factoryClasses).forEach(defaultFactories::add);
+        }
+
+        public Set<Class<? extends NodeFactory<?>>> getFactoryClasses() {
+            return new HashSet<>(defaultFactories);
+        }
+    }
+
     public EventProcessorConfig() {
-        //required factories
-        HashSet<Class<? extends NodeFactory<?>>> set = new HashSet<>();
-        set.add(CallBackDispatcherFactory.class);
-        set.add(CallbackNodeFactory.class);
-        set.add(ClockFactory.class);
-        set.add(DirtyStateMonitorFactory.class);
-        set.add(EventDispatcherFactory.class);
-        set.add(EventProcessorCallbackInternalFactory.class);
-        set.add(EventProcessorContextFactory.class);
-        set.add(NodeNameLookupFactory.class);
-        set.add(SubscriptionManagerFactory.class);
-        setNodeFactoryRegistration(new NodeFactoryRegistration(set));
+        this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
     }
 
     /**
@@ -267,7 +281,51 @@ public class EventProcessorConfig {
     }
 
     public void setNodeFactoryRegistration(NodeFactoryRegistration nodeFactoryRegistration) {
+        //add defaults
+        nodeFactoryRegistration.factoryClassSet.addAll(NodeFactoryConfig.required.getFactoryClasses());
         this.nodeFactoryRegistration = nodeFactoryRegistration;
+    }
+
+    /**
+     * Makes available in the graph an injectable instance that other nodes can inject see {@link com.fluxtion.runtime.annotations.builder.Inject}.
+     * The factoryName parameter must match the factoryName attribute in the inject annotation
+     * <pre>
+     * {@literal }@Inject(factoryName = "someUniqueName")
+     *  public RoomSensor roomSensor2;
+     *
+     * </pre>
+     * If no inject annotations reference the instance it will not be added to the graph
+     *
+     * @param factoryName        The unique name for this instance
+     * @param injectionType      The type of injection
+     * @param injectableInstance The instance to inject
+     * @param <T>                The concrete type of the injected instance
+     * @param <S>                The type of the injected instance
+     * @return
+     */
+    public <T, S extends T> EventProcessorConfig registerInjectable(String factoryName, Class<T> injectionType, S injectableInstance) {
+        nodeFactoryRegistration.factorySet.add(new SingletonNodeFactory<>(injectableInstance, injectionType, factoryName));
+        return this;
+    }
+
+    /**
+     * Makes available in the graph an injectable instance that other nodes can inject see {@link com.fluxtion.runtime.annotations.builder.Inject}.
+     * The factoryName parameter must match the factoryName attribute in the inject annotation
+     * <pre>
+     * {@literal }@Inject(factoryName = "someUniqueName")
+     *  public RoomSensor roomSensor2;
+     *
+     * </pre>
+     * If no inject annotations reference the instance it will not be added to the graph
+     *
+     * @param factoryName        The unique name for this instance
+     * @param injectableInstance The instance to inject
+     * @param <T>                The concrete type of the injected instance and the type of the injected instance
+     * @return
+     */
+    public <T> EventProcessorConfig registerInjectable(String factoryName, T injectableInstance) {
+        registerInjectable(factoryName, (Class<T>) injectableInstance.getClass(), injectableInstance);
+        return this;
     }
 
     public RootNodeConfig getRootNodeConfig() {
