@@ -102,4 +102,13 @@ public interface NodeFactory<T> {
         return "";
     }
 
+    /**
+     * Override the injection type inferred by the type variable
+     *
+     * @return
+     */
+    default Class<T> injectionType() {
+        return null;
+    }
+
 }
