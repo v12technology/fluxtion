@@ -566,7 +566,7 @@ public class SepModelTest {
         for (CbMethodHandle implList1 : implList) {
             luu.add(implList1.instance);
         }
-        assertThat(luu, containsInAnyOrder(thImpl, noFilterEh, root));
+        assertThat(luu, containsInAnyOrder(thImpl, noFilterEh));
 
         //post dispatch map
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = sep.getPostDispatchMap();

@@ -54,6 +54,7 @@ public interface Fluxtion {
         return EventProcessorFactory.compile(sepConfig, c -> {
             c.setSourceWriter(sourceWriter);
             c.setWriteSourceToFile(false);
+            c.setGenerateDescription(false);
             c.setFormatSource(true);
         });
     }

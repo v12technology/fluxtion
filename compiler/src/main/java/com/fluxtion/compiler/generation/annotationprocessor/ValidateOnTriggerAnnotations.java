@@ -36,7 +36,10 @@ public class ValidateOnTriggerAnnotations extends AbstractProcessor {
             typeElements.forEach(element ->
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                             "should be public method and a boolean return type"
-                                    + "with no arguments failing method:" + element.getSimpleName(), element));
+                                    + "with no arguments failing method:" + element.getSimpleName(), element
+                    )
+
+            );
 
         }
 

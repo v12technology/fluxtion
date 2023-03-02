@@ -40,7 +40,9 @@ public class FluxtionBuilderTest {
     @SneakyThrows
     public void generateToStringWriterTest() {
         StringWriter writer = new StringWriter();
-        Fluxtion.compile(c -> c.addNode(new MyStringHandler()), writer);
+        Fluxtion.compile(c -> {
+            c.addNode(new MyStringHandler());
+        }, writer);
         Assert.assertFalse(writer.toString().isEmpty());
     }
 
@@ -106,9 +108,10 @@ public class FluxtionBuilderTest {
             c.setSourceWriter(writer);
             c.setPackageName("com.whatever");
             c.setClassName("MYProcessor");
+            c.setGenerateDescription(false);
         });
-        Class<EventProcessor> sepClass = StringCompilation.compile("com.whatever.MYProcessor", writer.toString());
-        EventProcessor processor = sepClass.getDeclaredConstructor().newInstance();
+        Class<EventProcessor<?>> sepClass = StringCompilation.compile("com.whatever.MYProcessor", writer.toString());
+        EventProcessor<?> processor = sepClass.getDeclaredConstructor().newInstance();
         processor.init();
         processor.onEvent("HELLO");
         assertThat(processor.<MyStringHandler>getNodeById("handler").in, is("HELLO"));

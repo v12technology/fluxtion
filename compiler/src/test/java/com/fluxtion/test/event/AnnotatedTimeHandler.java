@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
  * @author Greg Higgins
@@ -43,5 +43,12 @@ public class AnnotatedTimeHandler {
     @OnEventHandler
     public boolean onTest(TestEvent e) {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "AnnotatedTimeHandler{" +
+                "stateId=" + stateId +
+                '}';
     }
 }

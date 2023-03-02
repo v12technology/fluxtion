@@ -60,6 +60,7 @@ public class CbMethodHandle {
     private final boolean isGuardedParent;
 
     private final boolean isNoPropagateEventHandler;
+    private final boolean failBuildOnUnguardedTrigger;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
@@ -73,6 +74,7 @@ public class CbMethodHandle {
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(AfterTrigger.class) != null;
         this.isInvertedDirtyHandler = method.getAnnotation(OnTrigger.class) != null && !method.getAnnotation(OnTrigger.class).dirty();
+        this.failBuildOnUnguardedTrigger = method.getAnnotation(OnTrigger.class) != null && method.getAnnotation(OnTrigger.class).failBuildIfNotGuarded();
         this.isGuardedParent = method.getAnnotation(OnParentUpdate.class) != null && method.getAnnotation(OnParentUpdate.class).guarded();
         this.isNoPropagateEventHandler = method.getAnnotation(OnEventHandler.class) != null && !method.getAnnotation(OnEventHandler.class).propagate();
     }
@@ -115,7 +117,18 @@ public class CbMethodHandle {
 
     @Override
     public String toString() {
-        return "CbMethodHandle{" + "method=" + method + ", instance=" + instance + ", variableName=" + variableName + ", parameterClass=" + parameterClass + '}';
+        return "CbMethodHandle{" +
+                "method=" + method +
+                ", instance=" + instance +
+                ", variableName='" + variableName + '\'' +
+                ", parameterClass=" + parameterClass +
+                ", isEventHandler=" + isEventHandler +
+                ", isPostEventHandler=" + isPostEventHandler +
+                ", isInvertedDirtyHandler=" + isInvertedDirtyHandler +
+                ", isGuardedParent=" + isGuardedParent +
+                ", isNoPropagateEventHandler=" + isNoPropagateEventHandler +
+                ", failBuildOnUnguardedTrigger=" + failBuildOnUnguardedTrigger +
+                '}';
     }
 
     @Override
@@ -141,4 +154,7 @@ public class CbMethodHandle {
         return Objects.equals(this.instance, other.instance);
     }
 
+    public boolean failBuildOnUnguardedTrigger() {
+        return failBuildOnUnguardedTrigger;
+    }
 }
