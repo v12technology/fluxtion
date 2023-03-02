@@ -42,7 +42,8 @@ public class EnumTest extends MultipleSepTargetInProcessTest {
         public DayOfWeek firsDayOfWeek;
 
         @OnEventHandler
-        public void endOfDay(EndOfDayEvent eod) {
+        public boolean endOfDay(EndOfDayEvent eod) {
+            return true;
         }
 
     }

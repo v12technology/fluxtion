@@ -79,15 +79,17 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         int count;
 
         @OnEventHandler
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback();
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             count++;
+            return true;
         }
     }
 
@@ -97,15 +99,17 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public String data;
 
         @OnEventHandler
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback("call back data");
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             data = callback.get();
+            return true;
         }
     }
 
@@ -114,14 +118,16 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public Callback<String> callback;
 
         @OnEventHandler(propagate = false)
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback(in.chars().mapToObj(i -> "" + (char) i).iterator());
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
+            return true;
         }
     }
 
@@ -131,13 +137,15 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public String element;
 
         @OnEventHandler(propagate = false)
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             callback.fireCallback(Arrays.asList(in.split(",")).iterator());
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             element = callback.get();
+            return true;
         }
     }
 
@@ -157,8 +165,9 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             value = callback.get();
+            return true;
         }
 
         public int getValue() {

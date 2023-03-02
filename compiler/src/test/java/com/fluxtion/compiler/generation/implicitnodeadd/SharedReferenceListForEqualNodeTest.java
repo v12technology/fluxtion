@@ -65,8 +65,8 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
         List<KeyedStringHandler> handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
 
     }
@@ -77,8 +77,8 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
         List<KeyedStringHandler> handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
 
     }
@@ -89,8 +89,8 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
         KeyedStringHandler[] handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
 
     }
@@ -101,8 +101,8 @@ public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
         String key;
 
         @OnEventHandler
-        public void update(String in) {
-
+        public boolean update(String in) {
+            return true;
         }
     }
 }

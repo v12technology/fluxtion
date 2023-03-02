@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes({
-        "com.fluxtion.runtime.annotations.OnEventHandler"
+        "com.fluxtion.runtime.annotations.OnTrigger"
 })
 @AutoService(Processor.class)
-public class ValidateEventhandlerAnnotations extends AbstractProcessor {
+public class ValidateOnTriggerAnnotations extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (TypeElement annotation : annotations) {
@@ -28,7 +28,7 @@ public class ValidateEventhandlerAnnotations extends AbstractProcessor {
             Set<? extends Element> typeElements = annotatedElements.stream()
                     .filter(element ->
                             ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN
-                                    || ((ExecutableType) element.asType()).getParameterTypes().size() != 1
+                                    || ((ExecutableType) element.asType()).getParameterTypes().size() != 0
                                     || !element.getModifiers().contains(Modifier.PUBLIC)
                     )
                     .collect(Collectors.toSet());
@@ -36,7 +36,7 @@ public class ValidateEventhandlerAnnotations extends AbstractProcessor {
             typeElements.forEach(element ->
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                             "should be public method and a boolean return type"
-                                    + "with a single argument failing method:" + element.getSimpleName(), element));
+                                    + "with no arguments failing method:" + element.getSimpleName(), element));
 
         }
 

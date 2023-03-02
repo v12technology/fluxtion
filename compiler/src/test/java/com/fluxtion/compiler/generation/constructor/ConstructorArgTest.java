@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.constructor;
@@ -28,7 +28,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ConstructorArgTest extends MultipleSepTargetInProcessTest {
@@ -38,35 +37,36 @@ public class ConstructorArgTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testArgs(){
-    
+    public void testArgs() {
+
         sep((c) -> {
             final Handler handler = new Handler();
             handler.setName("myhandler");
             c.addPublicNode(handler, "handler");
         });
-        
+
         Handler handler = getField("handler");
         assertThat(handler.getName(), is("myhandler"));
     }
-    
-    
+
+
     @Data
     @NoArgsConstructor
-    public static class Handler{
+    public static class Handler {
 
         private String in;
-    
+
         @ConstructorArg
         String name;
 
         public Handler(String name) {
             this.name = name;
         }
-    
+
         @OnEventHandler
-        public void stringUpdate(String in){
+        public boolean stringUpdate(String in) {
             this.in = in;
+            return true;
         }
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -21,14 +21,13 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
- *
  * @author Greg Higgins
  */
 public class ParentUpdateListener {
-   public Object[] parents;
-   public String id;
-   public Object parentUpdated;
-    
+    public Object[] parents;
+    public String id;
+    public Object parentUpdated;
+
 
     public ParentUpdateListener(String id) {
         this.id = id;
@@ -36,10 +35,11 @@ public class ParentUpdateListener {
 
     public ParentUpdateListener() {
     }
-    
+
     @OnTrigger
-    public void onEvent() {
+    public boolean onEvent() {
         parentUpdated = null;
+        return true;
     }
 
     @OnParentUpdate
@@ -47,7 +47,7 @@ public class ParentUpdateListener {
         this.parentUpdated = parent;
         //System.out.println("parent changed:" + parent);
     }
-    
+
     @Override
     public String toString() {
         return "ParentUpdateListener{" + "id=" + id + '}';

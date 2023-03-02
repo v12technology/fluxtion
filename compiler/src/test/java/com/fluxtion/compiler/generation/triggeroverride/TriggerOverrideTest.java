@@ -96,8 +96,9 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
         private int count;
 
         @OnTrigger
-        public void update() {
+        public boolean update() {
             count++;
+            return true;
         }
 
     }
@@ -111,8 +112,9 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
         private int count;
 
         @OnTrigger
-        public void update() {
+        public boolean update() {
             count++;
+            return true;
         }
 
     }

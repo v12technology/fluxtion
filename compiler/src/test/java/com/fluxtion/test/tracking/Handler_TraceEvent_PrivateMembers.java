@@ -61,7 +61,8 @@ public class Handler_TraceEvent_PrivateMembers {
     }
 
     @OnEventHandler
-    public void handleEvent(TraceEvent_0 event) {
+    public boolean handleEvent(TraceEvent_0 event) {
+        return true;
     }
 
     public String getPrivate_str() {

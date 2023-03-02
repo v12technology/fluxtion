@@ -132,8 +132,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void handleString(String in) {
+        public boolean handleString(String in) {
             out = (String) f.apply(in);
+            return true;
         }
 
     }
@@ -148,8 +149,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void handleString(String in) {
+        public boolean handleString(String in) {
             out = (String) f.apply(in);
+            return true;
         }
 
     }
@@ -164,8 +166,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void handleString(String in) {
+        public boolean handleString(String in) {
             instance = factory.get();
+            return true;
         }
 
         public R getInstance() {
@@ -186,8 +189,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void handleString(String in) {
+        public boolean handleString(String in) {
             f.accept(in);
+            return true;
         }
 
     }
@@ -224,7 +228,8 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEven() {
+        public boolean onEven() {
+            return true;
         }
 
     }
@@ -234,8 +239,9 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
         LambdaReflection.SerializableRunnable runnable;
 
         @OnEventHandler
-        public void executeTask(String in) {
+        public boolean executeTask(String in) {
             runnable.run();
+            return true;
         }
 
     }

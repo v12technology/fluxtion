@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.propagation;
@@ -26,7 +26,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class PropagationTest extends MultipleSepTargetInProcessTest {
@@ -67,24 +66,25 @@ public class PropagationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public boolean handleInt(int input){
+        public boolean handleInt(int input) {
             return input > 0;
         }
 
         @OnEventHandler
-        public void handleDouble(double input){
-
+        public boolean handleDouble(double input) {
+            return true;
         }
     }
 
     @Data
-    public static class Child{
+    public static class Child {
         final MyHandler myHandler;
         boolean notified;
 
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             notified = true;
+            return true;
         }
     }
 

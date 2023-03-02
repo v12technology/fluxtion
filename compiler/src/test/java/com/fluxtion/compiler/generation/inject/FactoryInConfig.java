@@ -114,7 +114,6 @@ public class FactoryInConfig extends MultipleSepTargetInProcessTest {
 
         @OnTrigger
         public boolean triggerRadiator() {
-            System.out.println(radiatorName + ":" + roomSensor.on);
             return false;
         }
 

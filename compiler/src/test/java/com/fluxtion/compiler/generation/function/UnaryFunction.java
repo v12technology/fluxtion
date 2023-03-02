@@ -27,13 +27,14 @@ public class UnaryFunction<T, R> {
     }
 
     @OnTrigger
-    public void calculate(){
+    public boolean calculate() {
         T t = supplier.get();
-        if(intFunction!=null){
+        if (intFunction != null) {
             intResult = intFunction.applyAsInt(supplier.get());
-        }else{
+        } else {
             objectResult = function.apply(supplier.get());
         }
+        return true;
     }
 
     public int getIntResult() {

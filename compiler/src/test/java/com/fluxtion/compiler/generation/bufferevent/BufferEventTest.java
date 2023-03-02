@@ -61,7 +61,8 @@ public class BufferEventTest extends InMemoryOnlySepTest {
         }
 
         @OnEventHandler
-        public void onDate(Date date) {
+        public boolean onDate(Date date) {
+            return true;
         }
 
         @OnParentUpdate

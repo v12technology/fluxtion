@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -23,11 +23,10 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.TearDown;
 
 /**
- *
  * @author Greg Higgins
  */
 public class RootCB {
-    
+
     public Object[] parents;
     public String id;
     public boolean onEventCalled = false;
@@ -43,31 +42,32 @@ public class RootCB {
 
     public RootCB() {
     }
-        
+
     @TearDown
-    public void tearDown(){
-        
+    public void tearDown() {
+
     }
-    
+
     @OnTrigger
-    public void onEvent(){
+    public boolean onEvent() {
         onEventCalled = true;
+        return true;
     }
 
     @OnBatchEnd
-    public void onRootBatchEnd(){
-        
+    public void onRootBatchEnd() {
+
     }
-    
+
     @OnBatchPause
-    public void onRootBatchPause(){
-        
+    public void onRootBatchPause() {
+
     }
-    
+
     @Override
     public String toString() {
         return "EventCB{" + "id=" + id + '}';
     }
 
-    
+
 }

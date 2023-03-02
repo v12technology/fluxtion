@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -20,13 +20,12 @@ package com.fluxtion.test.event;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
- *
  * @author Greg Higgins
  */
 public class AnnotatedTestEventHandlerNoFilter {
 
     @OnEventHandler
-    public void onAllTestEvents(TestEvent e){
-        
+    public boolean onAllTestEvents(TestEvent e) {
+        return true;
     }
 }

@@ -17,15 +17,14 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import org.junit.Test;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
@@ -111,8 +110,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void configEvent(ConfigEvent configEvent) {
-
+        public boolean configEvent(ConfigEvent configEvent) {
+            return true;
         }
     }
 
@@ -129,8 +128,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void configEvent(ConfigEvent configEvent) {
-
+        public boolean configEvent(ConfigEvent configEvent) {
+            return true;
         }
     }
 
@@ -178,8 +177,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void processEvent() {
-
+        public boolean processEvent() {
+            return true;
         }
 
         public String[] getMatchingRegex() {
@@ -220,8 +219,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void newOrderEvent(NewOrderEvent configEvent) {
-
+        public boolean newOrderEvent(NewOrderEvent configEvent) {
+            return true;
         }
 
         public String getName() {
@@ -326,7 +325,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void publishConfig() {
+        public boolean publishConfig() {
+            return true;
         }
 
         public int getTotalOrders() {
@@ -351,8 +351,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void newOrderEvent(NewOrderEvent configEvent) {
-
+        public boolean newOrderEvent(NewOrderEvent configEvent) {
+            return true;
         }
     }
 
