@@ -434,7 +434,6 @@ public class SimpleEventProcessorModel {
             } else {
                 LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
                 if (ReflectionUtils.getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
-                    ReflectionUtils.getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields));
                     Set<Constructor> constructors = ReflectionUtils.getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                     if (constructors.isEmpty()) {
                         throw new RuntimeException("cannot find matching constructor for:" + f
@@ -442,7 +441,7 @@ public class SimpleEventProcessorModel {
                                 .map(MappedField::getMappedName)
                                 .collect(Collectors.joining(", ", "[", "]")));
                     }
-                    List<String> fieldsThatClash = validateNoTypeClash(f, privateFields);
+                    List<String> fieldsThatClash = validateNoTypeClash(privateFields, constructors.iterator().next());
                     if (!fieldsThatClash.isEmpty()) {
                         throw new RuntimeException(
                                 "cannot find matching constructor for:" + f
