@@ -705,7 +705,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    if (inst2Name.containsKey(refField)) {
+                    if (inst2Name.containsKey(refField) && handlesEvents(refField)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(refField);
                         eventGraph.addEdge(refField, object);
@@ -720,7 +720,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    if (inst2Name.containsKey(parent)) {
+                    if (inst2Name.containsKey(parent) && handlesEvents(parent)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(parent);
                         if (pushCollection) {

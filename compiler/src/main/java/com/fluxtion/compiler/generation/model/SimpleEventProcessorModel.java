@@ -503,20 +503,6 @@ public class SimpleEventProcessorModel {
             String name = inst2Name.get(object);
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
-//                if (annotationInHierarchy(method, Initialise.class)) {
-//                    initialiseMethods.add(new CbMethodHandle(method, object, name));
-//                    if (LOGGER.isDebugEnabled()) {
-//                        final String validCb = name + "." + method.getName() + "()";
-//                        LOGGER.debug("initialise call back : " + validCb);
-//                    }
-//                }
-//                if (annotationInHierarchy(method, TearDown.class)) {
-//                    tearDownMethods.add(0, new CbMethodHandle(method, object, name));
-//                    if (LOGGER.isDebugEnabled()) {
-//                        final String validCb = name + "." + method.getName() + "()";
-//                        LOGGER.debug("tear down call back : " + validCb);
-//                    }
-//                }
                 if (annotationInHierarchy(method, OnBatchEnd.class)) {
                     //revered for the batch callbacks
                     batchEndMethods.add(0, new CbMethodHandle(method, object, name));
@@ -922,11 +908,8 @@ public class SimpleEventProcessorModel {
                     dirtyFieldMap.put(node, flag);
                 }
             }
-            //build the guard conditions for nodes
-            //loop in topological order
+            //build the guard conditions for nodes. loop in topological order
             for (Object node : dependencyGraph.getSortedDependents()) {
-                //if no parents then continue
-//                List<?> directParents = dependencyGraph.getDirectParents(node);
                 List<?> directParents = dependencyGraph.getDirectParentsListeningForEvent(node);
                 if (directParents.isEmpty()) {
                     continue;
