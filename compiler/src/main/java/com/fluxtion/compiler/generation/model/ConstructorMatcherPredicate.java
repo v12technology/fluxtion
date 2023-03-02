@@ -112,7 +112,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     }
                 }
                 if (!matchOnName && !nameAndType) {
-                    LOGGER.debug("no match, matching contructor by type only");
+                    LOGGER.debug("no match, matching constructor by type only");
                     for (int i = 0; i < parameters.length; i++) {
                         if (parameters[i] == null) {
                             continue;
@@ -146,11 +146,21 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
         return match;
     }
 
-    public static List<String> validateNoTypeClash(Field fieldToValidate, Set<MappedField> privateFields) {
-        List<String> output = privateFields.stream()
+    public static List<String> validateNoTypeClash(Set<MappedField> privateFields, Constructor constructor) {
+        Set<String> mappedNames = Arrays.stream(constructor.getParameters())
+                .filter(p -> p.getAnnotation(AssignToField.class) != null)
+                .map(p -> p.getAnnotation(AssignToField.class))
+                .map(AssignToField::value)
+                .collect(Collectors.toSet());
+
+        Set<MappedField> filteredFields = privateFields.stream()
+                .filter(m -> !mappedNames.contains(m.mappedName))
+                .collect(Collectors.toSet());
+
+        List<String> output = filteredFields.stream()
                 .filter(m -> {
                     Class<?> classToTest = m.parentClass();
-                    HashSet<MappedField> setToTest = new HashSet<>(privateFields);
+                    HashSet<MappedField> setToTest = new HashSet<>(filteredFields);
                     setToTest.remove(m);
                     return setToTest.stream()
                             .map(MappedField::parentClass)

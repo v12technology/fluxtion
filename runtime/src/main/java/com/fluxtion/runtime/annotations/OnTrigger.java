@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.annotations;
@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * Marks a handler method as a member of an execution path on the event in phase.
  * This method will be invoked invoked in topological order during the event in phase, i.e. after all its
  * dependencies on the execution path have processed the event.<p>
- *
+ * <p>
  * A SEP processes event handling methods in two phases:
  * <ul>
  * <li>Event in phase - processes handler methods in topological order
@@ -53,11 +53,10 @@ import java.lang.annotation.Target;
  * event handling method
  * </ul>
  * <p>
- *
+ * <p>
  * A node must be in the execution graph to be included in the invocation chain.
  * The Fluxtion builder api provides methods to register an instance in the
  * event processor.
- *
  *
  * @author Greg Higgins
  */
@@ -80,4 +79,14 @@ public @interface OnTrigger {
      * @return dirty monitoring strategy of dependencies
      */
     boolean dirty() default true;
+
+    /**
+     * Validates at generation time the method has guards applied. If the check fails a {@link RuntimeException} will
+     * be thrown.
+     * <p>
+     * This is a generation time only
+     *
+     * @return
+     */
+    boolean failBuildIfNotGuarded() default true;
 }
