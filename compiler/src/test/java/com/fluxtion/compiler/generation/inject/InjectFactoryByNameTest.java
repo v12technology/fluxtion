@@ -40,6 +40,11 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(holder.dateService.className, Date.class.getCanonicalName());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldFailOnMissingFactoryName() {
+        sep(c -> c.addNode(new MissingFactory()));
+    }
+
     public static class GenericHolder {
         @Inject
         public ServiceInjected<Date> dateService;
@@ -60,6 +65,16 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler
         public boolean onEvent(String in) {
             matched = greenData.key.equals("green") && blueData.key.equals("blue");
+            return true;
+        }
+    }
+
+    public static class MissingFactory {
+        @Inject(factoryName = "im_not_here_fatory")
+        public MyUniqueData missingFactory;
+
+        @OnEventHandler
+        public boolean onEvent(String in) {
             return true;
         }
     }

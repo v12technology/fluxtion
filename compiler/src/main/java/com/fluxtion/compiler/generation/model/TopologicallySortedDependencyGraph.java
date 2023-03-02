@@ -421,6 +421,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 handle = class2FactoryMethod.get(clazz);
             } else {
                 handle = name2FactoryMethod.get(factoryName);
+                if (handle == null) {
+                    throw new RuntimeException("No registered NodeFactory with name:'"
+                            + factoryName + "' type:'"
+                            + clazz.getCanonicalName() + "'");
+                }
             }
             Object newNode;
             if (handle != null) {
