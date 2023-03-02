@@ -31,8 +31,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void tracePipelineTest(){
-        sep(c ->{
+    public void tracePipelineTest() {
+        sep(c -> {
             Handler_TraceEvent_0 handler = (new Handler_TraceEvent_0("A0"));
             Node_TraceEvent_0 node_1 = (new Node_TraceEvent_0("A1", handler));
             c.addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1), "aggregator");
@@ -49,7 +49,7 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void simpleEventNoFilterTest(){
+    public void simpleEventNoFilterTest() {
         sep(c -> c.addNode(new TestEventNoIdHandler(), "handler"));
         TestEventNoId event = new TestEventNoId();
         assertEquals(0, event.value);
@@ -63,14 +63,14 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void simpleEventWithFilterTest(){
+    public void simpleEventWithFilterTest() {
         sep(c -> c.addNode(new TestEventNoIdFilteredHandler(25), "handler"));
         TestEventNoId event = new TestEventNoId();
     }
 
     @Test
-    public void pipelineWithFilterTest(){
-        sep(c ->{
+    public void pipelineWithFilterTest() {
+        sep(c -> {
             Handler_TraceEvent_InFilter_0 handler = new Handler_TraceEvent_InFilter_0("A0", 10);
             Node_TraceEvent_IntFilter_0 node_1 = new Node_TraceEvent_IntFilter_0("A1", handler);
             c.addPublicNode(new Node_TraceEvent_Aggregator("aggregator", node_1), "aggregator");
@@ -91,8 +91,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void graphWithFilterTest(){
-        sep(c ->{
+    public void graphWithFilterTest() {
+        sep(c -> {
             Handler_TraceEvent_InFilter_0 handler_1 = new Handler_TraceEvent_InFilter_0("A0", 10);
             Node_TraceEvent_IntFilter_0 node_1 = new Node_TraceEvent_IntFilter_0("A1", handler_1);
             //
@@ -127,8 +127,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void graphWithFilterAndNoFilterTest(){
-        sep(c ->{
+    public void graphWithFilterAndNoFilterTest() {
+        sep(c -> {
             Handler_TraceEvent_InFilter_0 handler_1 = (new Handler_TraceEvent_InFilter_0("A0", 10));
             Node_TraceEvent_IntFilter_0 node_1 = (new Node_TraceEvent_IntFilter_0("A1", handler_1));
             //
@@ -170,8 +170,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void graphWithFilterAndNoFilterAndInheritanceTest(){
-        sep(c ->{
+    public void graphWithFilterAndNoFilterAndInheritanceTest() {
+        sep(c -> {
             Extends_Handler_TraceEvent_InFilter_0 handler_1 = (new Extends_Handler_TraceEvent_InFilter_0("A0", 10));
             Node_TraceEvent_IntFilter_0 node_1 = (new Node_TraceEvent_IntFilter_0("A1", handler_1));
             //
@@ -213,8 +213,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void graphWithFilterAndNoFilterMatchingTest(){
-        sep(c ->{
+    public void graphWithFilterAndNoFilterMatchingTest() {
+        sep(c -> {
             Handler_TraceEvent_InFilter_0 handler_1 = (new Handler_TraceEvent_InFilter_0("A0", 10));
             TraceEventHolderChild node_1 = (new TraceEventHolderChild("A1", handler_1));
             //
@@ -239,8 +239,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void subclassEventTest(){
-        sep(c ->{
+    public void subclassEventTest() {
+        sep(c -> {
             TraceEventHolder subHandler1 = (new TraceEventHolder.TraceEventHandler_sub1("sub1", 12));
             TraceEventHolder subNode_1 = c.addNode(new TraceEventHolderChild("sub1.1", subHandler1));
             //
@@ -304,8 +304,8 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
     }
 
     @Test
-    public void diamondTest(){
-        sep(c ->{
+    public void diamondTest() {
+        sep(c -> {
             TraceEventHolder handler_A = (new TraceEventHolder.TraceEventHandler_sub1("A0", 222));
             TraceEventHolder node_A1 = (new Node_TraceEventHolder_Aggregator("A1", handler_A));
             //
@@ -316,7 +316,7 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
         });
         Event te = new TraceEvent.TraceEvent_sub1(222);
         onEvent(te);
-        JavaTestGeneratorHelper.testTraceIdContains(((TraceEvent.TraceEvent_sub1)te).getTraceIdList(), "A0", "A1", "AB1", "A2", "AB3");
+        JavaTestGeneratorHelper.testTraceIdContains(((TraceEvent.TraceEvent_sub1) te).getTraceIdList(), "A0", "A1", "AB1", "A2", "AB3");
         te = new TraceEvent.TraceEvent_sub2(50);
         onEvent(te);
         JavaTestGeneratorHelper.testTraceIdOrder(((TraceEvent.TraceEvent_sub2) te).getTraceIdList(), "B0", "AB1", "AB3");
@@ -329,7 +329,7 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
      * aggregator.
      */
     public void trace_dirty_test1() throws Exception {
-        sep(c ->{
+        sep(c -> {
             TraceEventHolder handler_A = (new TraceEventHolder.TraceEventHandler_sub1("A0", 1));
             TraceEventHolder node_A1 = (new Node_DirtyFilter_TraceEvent("A1", handler_A));
             TraceEventHolder node_A2 = (new Node_TraceEventHolder_Aggregator("A2", node_A1));
@@ -353,7 +353,7 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
         te.strValue = "no match";
         onEvent(te);
         JavaTestGeneratorHelper.testTraceIdContains(te.getTraceIdList(),
-                "A0", "A1", "A2", "A3", "AB1", "AB3","AB4", "AB5");
+                "A0", "A1", "A2", "A3", "AB1", "AB3", "AB4", "AB5");
         //
         TraceEvent.TraceEvent_sub2 te_2 = new TraceEvent.TraceEvent_sub2(2);
         te_2.strValue = "B1";
@@ -364,12 +364,12 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
         te_2.strValue = "no match";
         onEvent(te_2);
         JavaTestGeneratorHelper.testTraceIdContains(te_2.getTraceIdList(),
-                "B0", "B1", "AB1", "AB3","AB4", "AB5");
+                "B0", "B1", "AB1", "AB3", "AB4", "AB5");
     }
 
     @Test
-    public void eventLifeCycleTest(){
-        sep(c ->{
+    public void eventLifeCycleTest() {
+        sep(c -> {
             TraceEventHolder handler_A = (new TraceEventHolder.TraceEventHandler_sub1("A0", 1));
             TraceEventHolder node_A1 = (new Node_TraceEventHolder_Aggregator.EventCompleteTrace("A1", handler_A));
             TraceEventHolder node_A2 = (new Node_TraceEventHolder_Aggregator.AfterEventTrace("A2", node_A1));

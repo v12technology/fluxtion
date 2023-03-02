@@ -28,7 +28,7 @@ public class InMemoryTest {
     @Test
     public void test1() {
         InMemoryEventProcessor inMemoryEventProcessor = EventProcessorFactory.interpretedTest(
-                cfg ->  cfg.addNode(new ChildNode(new StringHandler()))
+                cfg -> cfg.addNode(new ChildNode(new StringHandler()))
         );
         assertTrue(recorder.allFalse());
 
@@ -103,8 +103,9 @@ public class InMemoryTest {
         }
 
         @OnEventHandler
-        public void inString(String in) {
+        public boolean inString(String in) {
             recorder.setParentUpdated(true);
+            return true;
         }
     }
 
@@ -123,8 +124,9 @@ public class InMemoryTest {
         }
 
         @OnTrigger
-        public void updated() {
+        public boolean updated() {
             recorder.setChildUpdated(true);
+            return true;
         }
 
     }

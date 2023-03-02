@@ -47,7 +47,8 @@ public class EventHandlerCbNode extends AbstractEventHandlerNode<TestEvent> {
     }
 
     @OnTrigger
-    public void onParentChange() {
+    public boolean onParentChange() {
+        return true;
     }
 
     @Override

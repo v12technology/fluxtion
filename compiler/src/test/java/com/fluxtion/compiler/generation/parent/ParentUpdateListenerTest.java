@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,16 +12,19 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.parent;
 
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.annotations.builder.SepNode;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.ToString;
 import lombok.Value;
 import org.junit.Test;
@@ -35,7 +38,6 @@ import static org.junit.Assert.assertTrue;
 
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
@@ -132,7 +134,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         assertThat(priceFormer.parentCount, is(0));
 
     }
-    
+
     @Test
     public void noEventGuardedParent() {
         String matchKey = "match_me";
@@ -178,9 +180,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             return filter.equalsIgnoreCase(s);
         }
     }
-    
-    
-    public static class NoEventHandler{
+
+
+    public static class NoEventHandler {
         @NoTriggerReference
         @SepNode
         final FilterHandler handler;
@@ -193,7 +195,7 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public NoEventHandler(FilterHandler handler) {
             this(handler, null);
         }
-        
+
         public NoEventHandler(FilterHandler handler, FilterHandler handler2) {
             this.handler = handler;
             this.handler2 = handler2;
@@ -201,26 +203,27 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnParentUpdate(value = "handler", guarded = true)
-        public void handlerUpdated(FilterHandler handler){
+        public void handlerUpdated(FilterHandler handler) {
             parentUpdated = true;
         }
 
         @OnParentUpdate(value = "handler2", guarded = true)
-        public void handler2Updated(FilterHandler handler){
+        public void handler2Updated(FilterHandler handler) {
             parent2Updated = true;
         }
-        
+
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             onEvent = true;
+            return true;
         }
-        
-        public void reset(){
+
+        public void reset() {
             parentUpdated = false;
             parent2Updated = false;
             onEvent = false;
         }
-        
+
     }
 
     public static class NoUpdateEvent implements Event {
@@ -231,13 +234,15 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public int count = 0;
 
         @OnEventHandler(filterStringFromClass = String.class)
-        public void handleEvent(ClassFilterEvent event) {
+        public boolean handleEvent(ClassFilterEvent event) {
             count++;
+            return true;
         }
 
         @OnEventHandler(propagate = false)
-        public void noParentPropagation(NoUpdateEvent event) {
+        public boolean noParentPropagation(NoUpdateEvent event) {
             count++;
+            return true;
         }
 
     }
@@ -250,8 +255,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         public TestHandler parent;
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             eventCount++;
+            return true;
         }
 
         @OnParentUpdate
@@ -272,8 +278,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             eventCount++;
+            return true;
         }
 
         @OnParentUpdate
@@ -363,8 +370,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void validationFailed() {
+        public boolean validationFailed() {
             validationFailedCount++;
+            return true;
         }
 
     }
@@ -398,8 +406,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void formPrice() {
+        public boolean formPrice() {
             eventCount++;
+            return true;
         }
 
     }
@@ -416,8 +425,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void formPrice() {
+        public boolean formPrice() {
             eventCount++;
+            return true;
         }
     }
 
@@ -442,13 +452,14 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
         int eventCount;
 
         @OnTrigger
-        public void publish() {
+        public boolean publish() {
             eventCount++;
+            return true;
         }
 
         @OnEventHandler
-        public void newOrder(NewOrderEvent orderEvent) {
-
+        public boolean newOrder(NewOrderEvent orderEvent) {
+            return true;
         }
 
         @OnParentUpdate

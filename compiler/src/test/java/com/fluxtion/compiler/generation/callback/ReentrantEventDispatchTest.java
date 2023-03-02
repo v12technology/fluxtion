@@ -96,12 +96,13 @@ public class ReentrantEventDispatchTest extends MultipleSepTargetInProcessTest {
         public EventDispatcher eventDispatcher;
 
         @OnEventHandler
-        public void handleString(String s) {
+        public boolean handleString(String s) {
             if (s.startsWith("test")) {
                 eventDispatcher.processReentrantEvent(new MyEvent());
             } else if (s.startsWith("repeat")) {
                 eventDispatcher.processReentrantEvents(Arrays.asList(new MyEvent(), new MyEvent(), new MyEvent()));
             }
+            return true;
         }
     }
 

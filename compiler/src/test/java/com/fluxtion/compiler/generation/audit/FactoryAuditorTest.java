@@ -45,8 +45,8 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         public MyNode myNode;
 
         @OnEventHandler
-        public void charEvent(CharEvent event) {
-
+        public boolean charEvent(CharEvent event) {
+            return true;
         }
     }
 

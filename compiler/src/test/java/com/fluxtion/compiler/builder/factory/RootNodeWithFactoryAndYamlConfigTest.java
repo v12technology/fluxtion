@@ -90,8 +90,9 @@ public class RootNodeWithFactoryAndYamlConfigTest {
         public SinkPublisher<String> publisher = new SinkPublisher<>("sinkA");
 
         @OnEventHandler
-        public void updated(String in) {
+        public boolean updated(String in) {
             publisher.publish(in);
+            return true;
         }
     }
 }

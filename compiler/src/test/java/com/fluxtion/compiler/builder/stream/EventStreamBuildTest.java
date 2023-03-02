@@ -891,8 +891,9 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void notified() {
+        public boolean notified() {
             onEventCount++;
+            return true;
         }
 
         @Override
@@ -920,11 +921,12 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         private int parsedNumber;
 
         @OnEventHandler
-        public void newString(String in) {
+        public boolean newString(String in) {
             inputString = in;
             if (NumberUtils.isCreatable(in)) {
                 parsedNumber = Integer.parseInt(in);
             }
+            return true;
         }
     }
 
@@ -1044,15 +1046,17 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void signal(Signal signal) {
+        public boolean signal(Signal signal) {
             triggered = true;
             hasChanged = stringStream.hasChanged();
+            return true;
         }
 
         @OnTrigger
-        public void trigger() {
+        public boolean trigger() {
             triggered = true;
             hasChanged = stringStream.hasChanged();
+            return true;
         }
 
         public String stringValue() {

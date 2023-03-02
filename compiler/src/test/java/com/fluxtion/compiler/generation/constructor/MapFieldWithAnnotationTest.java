@@ -46,7 +46,8 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void StringUpdate(String in) {
+        public boolean StringUpdate(String in) {
+            return true;
         }
 
         @Override
@@ -76,7 +77,8 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void StringUpdate(String in) {
+        public boolean StringUpdate(String in) {
+            return true;
         }
 
         @Override

@@ -133,8 +133,9 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void publishPass() {
+        public boolean publishPass() {
             count++;
+            return true;
         }
 
     }
@@ -149,8 +150,9 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger(dirty = false)
-        public void publishFail() {
+        public boolean publishFail() {
             count++;
+            return true;
         }
 
     }

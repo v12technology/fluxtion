@@ -151,13 +151,15 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(String in) {
+        public boolean processString(String in) {
             output = instanceFunction.apply(in);
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             triggered = true;
+            return true;
         }
     }
 
@@ -173,13 +175,15 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(String in) {
+        public boolean processString(String in) {
             output = instanceFunction.apply(in);
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             triggered = true;
+            return true;
         }
     }
 
@@ -194,8 +198,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(Integer in) {
+        public boolean processString(Integer in) {
             output = instanceFunction.apply("" + in);
+            return true;
         }
     }
 
@@ -215,8 +220,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String myArg = "";
 
         @OnEventHandler
-        public void stringUpdate(String in) {
+        public boolean stringUpdate(String in) {
             myArg = in;
+            return true;
         }
 
         public String toCaps(String in) {
@@ -229,8 +235,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String myArg = "";
 
         @OnEventHandler
-        public void stringUpdate(Integer in) {
+        public boolean stringUpdate(Integer in) {
             myArg = in.toString();
+            return true;
         }
 
         public String toCaps(String in) {
@@ -246,14 +253,16 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String triggerResult;
 
         @OnEventHandler
-        public void stringUpdate(ArrayList<String> in) {
+        public boolean stringUpdate(ArrayList<String> in) {
             reultList = in;
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             reultList.add(asCaps);
             asCaps = "";
+            return true;
         }
 
         public String toCaps(String in) {

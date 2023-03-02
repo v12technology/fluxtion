@@ -147,8 +147,9 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         private int wordACount;
 
         @OnEventHandler(filterString = "A")
-        public void processWordA(WordEvent wordA) {
+        public boolean processWordA(WordEvent wordA) {
             wordACount++;
+            return true;
         }
     }
 
@@ -161,28 +162,33 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         public transient String filterB = "B";
 
         @OnEventHandler(filterStringFromClass = String.class)
-        public void handleEvent(ClassFilterEvent event) {
+        public boolean handleEvent(ClassFilterEvent event) {
             count++;
+            return true;
         }
 
         @OnEventHandler(filterVariable = "filterA")
-        public void processWordA(WordEvent wordA) {
+        public boolean processWordA(WordEvent wordA) {
             wordACount++;
+            return true;
         }
 
         @OnEventHandler(filterVariable = "filterB")
-        public void processWordB(WordEvent wordB) {
+        public boolean processWordB(WordEvent wordB) {
             wordBCount++;
+            return true;
         }
 
         @OnEventHandler(filterStringFromClass = Date.class)
-        public void handleEvent(Signal<Date> date) {
+        public boolean handleEvent(Signal<Date> date) {
             count++;
+            return true;
         }
 
         @OnEventHandler(filterStringFromClass = String.class)
-        public void handleEventNonDate(Signal<Integer> date) {
+        public boolean handleEventNonDate(Signal<Integer> date) {
             count++;
+            return true;
         }
     }
 
@@ -193,18 +199,21 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         public transient String filterA = "A";
 
         @OnEventHandler(filterVariable = "filterA")
-        public void processWordA(WordEvent wordA) {
+        public boolean processWordA(WordEvent wordA) {
             wordACount++;
+            return true;
         }
 
         @OnEventHandler
-        public void processAnyWord(WordEvent anyWordEvent) {
+        public boolean processAnyWord(WordEvent anyWordEvent) {
             anyWord++;
+            return true;
         }
 
         @OnEventHandler(FilterType.defaultCase)
-        public void processWordUnmatched(WordEvent wordB) {
+        public boolean processWordUnmatched(WordEvent wordB) {
             wordUnmatched++;
+            return true;
         }
     }
 
