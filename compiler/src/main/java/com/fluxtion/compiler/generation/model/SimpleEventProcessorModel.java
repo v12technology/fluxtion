@@ -74,7 +74,6 @@ import java.util.stream.Collectors;
 import static com.fluxtion.compiler.generation.model.ConstructorMatcherPredicate.*;
 import static com.fluxtion.compiler.generation.util.SuperMethodAnnotationScanner.annotationInHierarchy;
 import static java.util.Arrays.stream;
-import static org.reflections.ReflectionUtils.*;
 
 /**
  * A class defining the meta-data for the SEP.This class can be introspected
@@ -362,7 +361,7 @@ public class SimpleEventProcessorModel {
             Field.MappedField[] cstrArgList = new Field.MappedField[(directParents.size()) + 200];
             Class<?> fieldClass = field.getClass();
             boolean[] hasCstrAnnotations = new boolean[]{false};
-            Set<String> assignedFieldNames = getConstructors(fieldClass).stream()
+            Set<String> assignedFieldNames = ReflectionUtils.getConstructors(fieldClass).stream()
                     .map(Constructor::getParameters)
                     .flatMap(Arrays::stream)
                     .filter(p -> p.getAnnotation(AssignToField.class) != null)
@@ -434,9 +433,9 @@ public class SimpleEventProcessorModel {
 //                continue;
             } else {
                 LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
-                if (getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
-                    getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields));
-                    Set<Constructor> constructors = getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
+                if (ReflectionUtils.getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
+                    ReflectionUtils.getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields));
+                    Set<Constructor> constructors = ReflectionUtils.getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                     if (constructors.isEmpty()) {
                         throw new RuntimeException("cannot find matching constructor for:" + f
                                 + " failed to match for these fields:" + privateFields.stream()
@@ -932,6 +931,7 @@ public class SimpleEventProcessorModel {
                 }
                 CbMethodHandle cb = node2UpdateMethodMap.get(node);
                 final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
+                final boolean failIfNotGuarded = cb != null && cb.failBuildOnUnguardedTrigger();
                 //get parents of node and loop through
                 Set<DirtyFlag> guardSet = new HashSet<>();
                 for (Object parent : directParents) {
@@ -956,6 +956,10 @@ public class SimpleEventProcessorModel {
                         guardSet.clear();
                         break;
                     }
+                }
+                if (failIfNotGuarded && guardSet.isEmpty()) {
+                    String failMessage = "Failed guard check for trigger method:" + cb;
+                    throw new RuntimeException(failMessage);
                 }
                 nodeGuardMap.putAll(node, guardSet);
             }
@@ -1224,9 +1228,9 @@ public class SimpleEventProcessorModel {
                 eventTypeClass = eh.eventClass();
             }
             @SuppressWarnings("unchecked") Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
-                    withModifier(Modifier.PUBLIC)
-                            .and(withName("onEvent"))
-                            .and(withParametersCount(1))
+                    ReflectionUtils.withModifier(Modifier.PUBLIC)
+                            .and(ReflectionUtils.withName("onEvent"))
+                            .and(ReflectionUtils.withParametersCount(1))
             );
             Method onEventMethod = ehMethodList.iterator().next();
             String name = dependencyGraph.variableName(eh);
@@ -1263,7 +1267,7 @@ public class SimpleEventProcessorModel {
             boolean tmpIsIntFilter = true;
             boolean tmpIsFiltered = true;
             boolean tmpIsInverseFiltered = false;
-            Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), withAnnotation(FilterId.class));
+            Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), ReflectionUtils.withAnnotation(FilterId.class));
             OnEventHandler annotation = onEventMethod.getAnnotation(OnEventHandler.class);
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
@@ -1276,7 +1280,7 @@ public class SimpleEventProcessorModel {
 //            }
             String filterStringOverride = annotation.filterStringFromClass() != void.class ? annotation.filterStringFromClass().getCanonicalName() : annotation.filterString();
 //            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
-            Set<java.lang.reflect.Field> s = ReflectionUtils.getAllFields(instance.getClass(), withName(annotation.filterVariable()));
+            Set<java.lang.reflect.Field> s = ReflectionUtils.getAllFields(instance.getClass(), ReflectionUtils.withName(annotation.filterVariable()));
             if (annotation.filterVariable().length() > 0 && s.size() > 0) {
                 java.lang.reflect.Field f = s.iterator().next();
                 f.setAccessible(true);
