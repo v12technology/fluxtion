@@ -1,9 +1,9 @@
 package com.fluxtion.compiler.generation.constructor;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +23,16 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
     public void namedParamsOfSameTypeMixedFinalAndNonFInalFields() {
         sep(c -> c.addNode(new MyHandlerMixedFinalAndNonFinal("NY", "greg", "USA", "Smith", "YES")));
         Assert.assertNotNull(getField("gregSmithNYUSAYES"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void namedParamsInParentClass_FailNoAssignToMember() {
+        sep(c -> c.addNode(new FailingChild("bill", "smith")));
+    }
+
+    @Test
+    public void namedParamsInParentClass_ValidAssignToMember() {
+        sep(c -> c.addNode(new ValidChild("bill", "smith")));
     }
 
     public static class MyHandler implements NamedNode {
@@ -84,6 +94,44 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         @Override
         public String getName() {
             return firstName + name2 + city + country + person;
+        }
+    }
+
+    public static class Parent {
+        private final String firstName;
+        private final String lastName;
+
+        public Parent(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+    }
+
+    public static class FailingChild extends Parent {
+
+        public FailingChild(
+                String xxxName,
+                String anotherName) {
+            super(xxxName, anotherName);
+        }
+
+        @OnEventHandler
+        public boolean stringUpdated(String text) {
+            return true;
+        }
+    }
+
+    public static class ValidChild extends Parent {
+
+        public ValidChild(
+                @AssignToField("firstName") String xxxName,
+                @AssignToField("lastName") String anotherName) {
+            super(xxxName, anotherName);
+        }
+
+        @OnEventHandler
+        public boolean stringUpdated(String text) {
+            return true;
         }
     }
 }
