@@ -444,9 +444,11 @@ public class SimpleEventProcessorModel {
                     }
                     List<String> fieldsThatClash = validateNoTypeClash(f, privateFields);
                     if (!fieldsThatClash.isEmpty()) {
-                        throw new RuntimeException("cannot find matching constructor for:" + f
-                                + " use @AssignToMember to resolve clashing types these fields:" + fieldsThatClash.stream()
-                                .collect(Collectors.joining(", ", "[", "]")));
+                        throw new RuntimeException(
+                                "cannot find matching constructor for:" + f
+                                        + " use @" + AssignToField.class.getSimpleName()
+                                        + " to resolve clashing types these fields:"
+                                        + fieldsThatClash.stream().collect(Collectors.joining(", ", "[", "]")));
                     }
                 }
                 List<Field.MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
