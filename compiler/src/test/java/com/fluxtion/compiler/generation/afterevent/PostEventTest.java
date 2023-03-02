@@ -63,8 +63,9 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class Parent {
         @OnEventHandler
-        public void newEvent(String in) {
+        public boolean newEvent(String in) {
             postInvocationTrace.add("Parent::newEvent");
+            return true;
         }
 
         @AfterTrigger
@@ -83,8 +84,9 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
         final Parent parent;
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             postInvocationTrace.add("Child::onEvent");
+            return true;
         }
 
         @AfterTrigger
@@ -104,12 +106,14 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
         final Parent parent;
 
         @OnEventHandler
-        public void newEvent(String in) {
+        public boolean newEvent(String in) {
+            return true;
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             postInvocationTrace.add("Child::onEvent");
+            return true;
         }
 
         @AfterTrigger

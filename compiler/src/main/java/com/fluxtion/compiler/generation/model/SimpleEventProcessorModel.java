@@ -71,8 +71,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import static com.fluxtion.compiler.generation.model.ConstructorMatcherPredicate.matchConstructorNameAndType;
-import static com.fluxtion.compiler.generation.model.ConstructorMatcherPredicate.matchConstructorType;
+import static com.fluxtion.compiler.generation.model.ConstructorMatcherPredicate.*;
 import static com.fluxtion.compiler.generation.util.SuperMethodAnnotationScanner.annotationInHierarchy;
 import static java.util.Arrays.stream;
 import static org.reflections.ReflectionUtils.*;
@@ -436,11 +435,18 @@ public class SimpleEventProcessorModel {
             } else {
                 LOGGER.debug("{}:match complex constructor private fields:{}", f.name, privateFields);
                 if (getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields)).isEmpty()) {
+                    getConstructors(fieldClass, matchConstructorNameAndType(cstrArgList, privateFields));
                     Set<Constructor> constructors = getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                     if (constructors.isEmpty()) {
                         throw new RuntimeException("cannot find matching constructor for:" + f
                                 + " failed to match for these fields:" + privateFields.stream()
                                 .map(MappedField::getMappedName)
+                                .collect(Collectors.joining(", ", "[", "]")));
+                    }
+                    List<String> fieldsThatClash = validateNoTypeClash(f, privateFields);
+                    if (!fieldsThatClash.isEmpty()) {
+                        throw new RuntimeException("cannot find matching constructor for:" + f
+                                + " use @AssignToMember to resolve clashing types these fields:" + fieldsThatClash.stream()
                                 .collect(Collectors.joining(", ", "[", "]")));
                     }
                 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
@@ -21,11 +21,10 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 
 /**
- *
  * @author Greg Higgins
  */
-public class Handler_TraceEvent_InFilter_0 implements TraceEventHolder{
-    
+public class Handler_TraceEvent_InFilter_0 implements TraceEventHolder {
+
     @FilterId
     private int filter;
     public TraceEvent_InFilter_0 event;
@@ -38,12 +37,13 @@ public class Handler_TraceEvent_InFilter_0 implements TraceEventHolder{
 
     public Handler_TraceEvent_InFilter_0() {
     }
-    
+
     @OnEventHandler
-    public void handleEvent(TraceEvent_InFilter_0 event){
+    public boolean handleEvent(TraceEvent_InFilter_0 event) {
         event.traceList.add(this);
         event.traceIdList.add(this.traceId);
         this.event = event;
+        return true;
     }
 
     @Override

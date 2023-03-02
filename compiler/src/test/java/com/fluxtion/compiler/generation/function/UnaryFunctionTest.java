@@ -25,19 +25,19 @@ public class UnaryFunctionTest extends MultipleSepTargetInProcessTest {
     }
 
 
-    public static class StringHandler{
+    public static class StringHandler {
 
         @OnEventHandler
-        public void onString(String in){
-
+        public boolean onString(String in) {
+            return true;
         }
 
-        public Integer getNumber(){
+        public Integer getNumber() {
             return 100;
         }
     }
 
-    public static int multiply_10(int in){
+    public static int multiply_10(int in) {
         return 10 * in;
     }
 }

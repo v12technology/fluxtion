@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.subclass;
@@ -26,7 +26,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class EventSubclassTest extends MultipleSepTargetInProcessTest {
@@ -76,8 +75,8 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
             c.addPublicNode(new UpdateListener(implEventHandler), "implListener");
         });
         TimeHandler timeHandler = getField("timeHandler");
-        AnyEventHandler anyEventHandler = getField( "anyEventHandler");
-        ImplEventHandler implEventHandler = getField( "implEventHandler");
+        AnyEventHandler anyEventHandler = getField("anyEventHandler");
+        ImplEventHandler implEventHandler = getField("implEventHandler");
         UpdateListener timeListener = getField("timeListener");
         UpdateListener anyListener = getField("anyListener");
         UpdateListener implListener = getField("implListener");
@@ -89,7 +88,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         assertThat(timeListener.eventCount, is(1));
         assertThat(anyListener.eventCount, is(0));
         assertThat(implListener.eventCount, is(1));
-        
+
         onEvent(new TimeEvent());
         assertThat(timeHandler.eventCount, is(2));
         assertThat(anyEventHandler.eventCount, is(2));
@@ -122,23 +121,27 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         int timeEvent;
 
         @OnEventHandler
-        public void anyEvent(Event e) {
+        public boolean anyEvent(Event e) {
             anyEvent++;
+            return true;
         }
 
         @OnEventHandler
-        public void anyTimeEvent(TimeEvent e) {
+        public boolean anyTimeEvent(TimeEvent e) {
             timeEvent++;
+            return true;
         }
 
         @OnEventHandler
-        public void baseEvent(BaseEvent e) {
+        public boolean baseEvent(BaseEvent e) {
             baseEvent++;
+            return true;
         }
 
         @OnEventHandler
-        public void implEvent(ImplEvent e) {
+        public boolean implEvent(ImplEvent e) {
             implEvent++;
+            return true;
         }
 
     }
@@ -148,8 +151,9 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         int eventCount;
 
         @OnEventHandler
-        public void anyTimeEvent(TimeEvent e) {
+        public boolean anyTimeEvent(TimeEvent e) {
             eventCount++;
+            return true;
         }
     }
 
@@ -169,8 +173,9 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         int eventCount;
 
         @OnEventHandler
-        public void implEvent(ImplEvent e) {
+        public boolean implEvent(ImplEvent e) {
             eventCount++;
+            return true;
         }
     }
 

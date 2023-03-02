@@ -4,6 +4,7 @@ import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import lombok.ToString;
@@ -36,7 +37,9 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
     private Object publishTriggerOverrideNode;
     private Object resetTriggerNode;
 
-    public AbstractEventStream(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
+    public AbstractEventStream(
+            @AssignToField("inputEventStream") S inputEventStream,
+            MethodReferenceReflection methodReferenceReflection) {
         this.inputEventStream = inputEventStream;
         streamFunction = methodReferenceReflection;
         if (methodReferenceReflection != null && methodReferenceReflection.captured().length > 0 && !methodReferenceReflection.isDefaultConstructor()) {
@@ -204,7 +207,10 @@ public abstract class AbstractEventStream<T, R, S extends EventStream<T>> extend
         private final U inputEventStream_2;
         protected boolean inputStreamTriggered_2;
 
-        public AbstractBinaryEventStream(S inputEventStream, U inputEventStream_2, MethodReferenceReflection methodReferenceReflection) {
+        public AbstractBinaryEventStream(
+                S inputEventStream,
+                @AssignToField("inputEventStream_2") U inputEventStream_2,
+                MethodReferenceReflection methodReferenceReflection) {
             super(inputEventStream, methodReferenceReflection);
             this.inputEventStream_2 = inputEventStream_2;
         }

@@ -32,8 +32,9 @@ public class EventDispatchTest extends MultipleSepTargetInProcessTest {
         String in;
 
         @OnEventHandler
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             this.in = in;
+            return true;
         }
 
         public void postEvent(String newInput) {

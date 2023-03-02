@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,69 +12,70 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.complexgraph;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
 import com.fluxtion.runtime.annotations.FilterType;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
- * 
  * @author Greg Higgins
  */
 public class CharHandler {
 
-	@OnEventHandler
-	public void onCharEvent(CharEvent event) {
-	}
+    @OnEventHandler
+    public boolean onCharEvent(CharEvent event) {
+        return true;
+    }
 
-	public static class EolCharEventHandler extends CharHandler {
+    public static class EolCharEventHandler extends CharHandler {
 
-		@FilterId
-		private int charId;
+        @FilterId
+        private int charId;
 
-		public EolCharEventHandler(char character) {
-			charId = character;
-		}
+        public EolCharEventHandler(char character) {
+            charId = character;
+        }
 
-		public EolCharEventHandler() {
-		}
-	}
+        public EolCharEventHandler() {
+        }
+    }
 
-	public static class DelimiterCharEventHandler extends CharHandler {
+    public static class DelimiterCharEventHandler extends CharHandler {
 
-		@FilterId
-		private int charId;
+        @FilterId
+        private int charId;
 
-		public DelimiterCharEventHandler(char character) {
-			charId = character;
-		}
+        public DelimiterCharEventHandler(char character) {
+            charId = character;
+        }
 
-		public DelimiterCharEventHandler() {
-		}
-	}
-    
-	public static class FilteredCharEventHandler extends CharHandler {
+        public DelimiterCharEventHandler() {
+        }
+    }
 
-		@FilterId
-		private int charId;
+    public static class FilteredCharEventHandler extends CharHandler {
 
-		public FilteredCharEventHandler(char character) {
-			charId = character;
-		}
+        @FilterId
+        private int charId;
 
-		public FilteredCharEventHandler() {
-		}
-	}
+        public FilteredCharEventHandler(char character) {
+            charId = character;
+        }
 
-	public static class UnMatchedCharEventHandler {
+        public FilteredCharEventHandler() {
+        }
+    }
 
-		@OnEventHandler(FilterType.defaultCase)
-		public void onCharEvent(CharEvent event) {
-		}
-	}
+    public static class UnMatchedCharEventHandler {
+
+        @OnEventHandler(FilterType.defaultCase)
+        public boolean onCharEvent(CharEvent event) {
+            return true;
+        }
+    }
 
 }

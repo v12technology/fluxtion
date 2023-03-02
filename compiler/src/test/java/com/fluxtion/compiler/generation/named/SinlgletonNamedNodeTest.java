@@ -32,8 +32,9 @@ public class SinlgletonNamedNodeTest extends MultipleSepTargetInProcessTest {
         public String value;
 
         @OnEventHandler
-        public void onString(String in) {
+        public boolean onString(String in) {
             this.value = in;
+            return true;
         }
 
         public MyNamedStringHandler(String name) {

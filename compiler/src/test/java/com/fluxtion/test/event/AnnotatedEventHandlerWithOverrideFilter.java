@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -20,26 +20,25 @@ package com.fluxtion.test.event;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 
 /**
- *
  * @author Greg Higgins
  */
 public class AnnotatedEventHandlerWithOverrideFilter {
-    
+
     public static final int FILTER_ID_TIME = 100;
     public static final String FILTER_STRING_TEST = "testMatch";
-        
+
     @OnEventHandler(filterId = FILTER_ID_TIME)
-    public void onFilteredTime(TimeEvent e){
-        
+    public boolean onFilteredTime(TimeEvent e) {
+        return true;
     }
-    
+
     @OnEventHandler(filterString = FILTER_STRING_TEST)
-    public void onFilteredTest(TestEvent e){
-        
+    public boolean onFilteredTest(TestEvent e) {
+        return true;
     }
-    
+
     @OnEventHandler
-    public void onAllTImeEvents(TimeEvent e){
-        
+    public boolean onAllTImeEvents(TimeEvent e) {
+        return true;
     }
 }

@@ -80,8 +80,8 @@ public class AddSepNodeTest extends MultipleSepTargetInProcessTest {
         public List<MyOtherThing> managedMyOtherThingList = new ArrayList<>();
 
         @OnEventHandler
-        public void stringUpdate(String s) {
-
+        public boolean stringUpdate(String s) {
+            return true;
         }
     }
 
@@ -110,8 +110,9 @@ public class AddSepNodeTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void increment() {
+        public boolean increment() {
             count++;
+            return true;
         }
 
     }

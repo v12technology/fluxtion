@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.nodes;
@@ -24,7 +24,6 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
- *
  * @author Greg Higgins
  */
 public class KeyTrackerWithVariableConfig {
@@ -37,28 +36,28 @@ public class KeyTrackerWithVariableConfig {
 
     //This is global config element
     private char cahr_1 = 'x';
-    
+
     private boolean notifyAccum = false;
-    
+
     //global + override by config annotation
     @Inject
     @Config(key = KeyProcessorFactory.KEY_CHAR, value = "1")
-    @ConfigVariable(key = KeyProcessorFactory.KEY_NOTIFY_ACCUM, field="notifyAccum")
+    @ConfigVariable(key = KeyProcessorFactory.KEY_NOTIFY_ACCUM, field = "notifyAccum")
     public KeyProcessor keyProcessor_1;
 
     //This is config element for a specific injected field 'keyProcessor_a'
     private char a = 'a';
-    
+
     //global + override by field specific config
     @Inject
     @ConfigVariable(field = "a", key = KeyProcessorFactory.KEY_CHAR)
     public KeyProcessor keyProcessor_a;
-    
+
     //picks up all global config
     @Inject
-    @ConfigVariable( key = KeyProcessorFactory.KEY_CHAR, field = "cahr_1")
+    @ConfigVariable(key = KeyProcessorFactory.KEY_CHAR, field = "cahr_1")
     public KeyProcessor keyProcessor_x;
-    
+
     @OnParentUpdate("keyProcessor_1")
     public void onKeyPress_1(KeyProcessor processor) {
         key_1 = true;
@@ -75,8 +74,9 @@ public class KeyTrackerWithVariableConfig {
     }
 
     @OnTrigger
-    public void onEvent() {
+    public boolean onEvent() {
         onEvent = true;
+        return true;
     }
 
     public void resetTestFlags() {

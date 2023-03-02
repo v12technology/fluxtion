@@ -36,7 +36,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author Greg Higgins
  */
 public class NoPropagationTest extends MultipleSepTargetInProcessTest {
@@ -46,7 +45,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void noPropagationTest(){
+    public void noPropagationTest() {
         sep(c -> c.addPublicNode(new RootCB("root", new AnnotatedHandlerNoPropogate()), "root"));
         RootCB root = getField("root");
         assertFalse(root.onEventCalled);
@@ -57,7 +56,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testComplexNoPropagate(){
+    public void testComplexNoPropagate() {
         sep(NoPropagationTest::buildFilteringLog);
         ConsolePrinter root = getField("root");
         MsgBuilder msgBuilder = getField("msgBuilder");
@@ -75,7 +74,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testComplexNoPropagateWithParentUpdate(){
+    public void testComplexNoPropagateWithParentUpdate() {
         sep(NoPropagationTest::buildFilteringLog);
         ConsolePrinter root = getField("root");
         MsgBuilder msgBuilder = getField("msgBuilder");
@@ -96,7 +95,7 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static void buildFilteringLog(EventProcessorConfig cfg){
+    public static void buildFilteringLog(EventProcessorConfig cfg) {
         TimeProcessor timeNode = new TimeProcessor();
         LogNotifier logNotifier = new LogNotifier();
         MsgBuilder msgBuilder = cfg.addPublicNode(new MsgBuilder(timeNode, logNotifier), "msgBuilder");
@@ -138,8 +137,8 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
     public static class LogNotifier {
 
         @OnEventHandler
-        public void updateLog(LogToConsole notify) {
-//            return true;
+        public boolean updateLog(LogToConsole notify) {
+            return true;
         }
     }
 
@@ -173,9 +172,9 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
         public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
-        
+
         @OnParentUpdate
-        public void timeUpdated(TimeProcessor processor){
+        public void timeUpdated(TimeProcessor processor) {
             this.timeprocessorUpdated = true;
         }
 
@@ -185,8 +184,8 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
         }
 
     }
-    
-    public static class NoEventFilterMsg{
+
+    public static class NoEventFilterMsg {
 
         private boolean timeProcessorUpdated;
 
@@ -202,9 +201,9 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
         public TimeProcessor timeProcessor;
 
         public LogNotifier notifier;
-        
+
         @OnParentUpdate("timeProcessor")
-        public void timeUpdated(TimeProcessor processor){
+        public void timeUpdated(TimeProcessor processor) {
             this.timeProcessorUpdated = true;
         }
 
@@ -224,12 +223,14 @@ public class NoPropagationTest extends MultipleSepTargetInProcessTest {
         private ConsolePrinter(MsgBuilder msgBuilder) {
             this.msgBuilder = msgBuilder;
         }
-//        
+
+        //
 //        @OnParentUpdate
 //        public void publishLog(MsgBuilder builder) {
         @OnTrigger
-        public void publishLog() {
+        public boolean publishLog() {
             invoked = true;
+            return true;
         }
     }
 

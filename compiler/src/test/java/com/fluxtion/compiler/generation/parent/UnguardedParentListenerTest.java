@@ -54,8 +54,9 @@ public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest 
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             eventCount++;
+            return true;
         }
     }
 }

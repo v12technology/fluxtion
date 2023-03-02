@@ -130,9 +130,10 @@ public class PushTest extends MultipleSepTargetInProcessTest {
         String ccyPair;
 
         @OnEventHandler
-        public void newTick(MarketTickEvent tick) {
+        public boolean newTick(MarketTickEvent tick) {
             eventCount++;
             ccyPair = tick.ccyPair;
+            return true;
         }
     }
 
@@ -141,8 +142,9 @@ public class PushTest extends MultipleSepTargetInProcessTest {
         int eventCount;
 
         @OnTrigger
-        public void formPrice() {
+        public boolean formPrice() {
             eventCount++;
+            return true;
         }
 
     }
