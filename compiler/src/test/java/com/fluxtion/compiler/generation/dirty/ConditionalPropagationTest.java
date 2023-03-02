@@ -96,8 +96,9 @@ public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
         int count;
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             count++;
+            return true;
         }
     }
 

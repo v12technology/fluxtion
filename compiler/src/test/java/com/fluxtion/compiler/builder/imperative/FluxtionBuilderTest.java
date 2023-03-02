@@ -166,8 +166,9 @@ public class FluxtionBuilderTest {
         String in;
 
         @OnEventHandler
-        public void stringUpdated(String in) {
+        public boolean stringUpdated(String in) {
             this.in = in;
+            return true;
         }
 
         public Object getValue() {

@@ -1,7 +1,12 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.hamcrest.CoreMatchers;
@@ -164,13 +169,15 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void onDate(Date date) {
+        public boolean onDate(Date date) {
             eventCount++;
+            return true;
         }
 
         @OnParentUpdate
-        public void onParent(EventHolder parent) {
+        public boolean onParent(EventHolder parent) {
             parentCount++;
+            return true;
         }
 
         @AfterEvent
@@ -189,20 +196,23 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
     public static class DateHandler {
         @OnEventHandler
-        public void onDate(Date date) {
+        public boolean onDate(Date date) {
+            return true;
         }
     }
 
     public static class IntegerHandler {
         @OnEventHandler
-        public void onInteger(Integer date) {
+        public boolean onInteger(Integer date) {
+            return true;
         }
     }
 
 
     public static class StringHandler {
         @OnEventHandler
-        public void onInteger(String date) {
+        public boolean onInteger(String date) {
+            return true;
         }
     }
 

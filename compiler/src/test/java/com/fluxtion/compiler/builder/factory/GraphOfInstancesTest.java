@@ -174,8 +174,9 @@ public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void myStringHandler(String s) {
+        public boolean myStringHandler(String s) {
             value += Objects.equals(s, id) ? 1 : 0;
+            return true;
         }
 
         @Override

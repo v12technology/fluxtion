@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.google.common.base.Predicate;
 import org.slf4j.Logger;
@@ -25,6 +26,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author V12 Technology Ltd.
@@ -140,6 +144,24 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
             }
         }
         return match;
+    }
+
+    public static List<String> validateNoTypeClash(Field fieldToValidate, Set<MappedField> privateFields) {
+        List<String> output = privateFields.stream()
+                .filter(m -> {
+                    Class<?> classToTest = m.parentClass();
+                    HashSet<MappedField> setToTest = new HashSet<>(privateFields);
+                    setToTest.remove(m);
+                    return setToTest.stream()
+                            .map(MappedField::parentClass)
+                            .anyMatch(c -> {
+                                boolean val = c.isAssignableFrom(classToTest) || classToTest.isAssignableFrom(c);
+                                return val;
+                            });
+                })
+                .map(MappedField::getMappedName)
+                .collect(Collectors.toList());
+        return output;
     }
 
 }

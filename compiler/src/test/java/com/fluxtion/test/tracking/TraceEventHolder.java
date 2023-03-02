@@ -20,6 +20,8 @@ package com.fluxtion.test.tracking;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.test.tracking.TraceEvent.TraceEvent_sub1;
+import com.fluxtion.test.tracking.TraceEvent.TraceEvent_sub2;
 
 /**
  * @author Greg Higgins
@@ -71,8 +73,9 @@ public interface TraceEventHolder {
         }
 
         @OnEventHandler
-        public void handleEvent(TraceEvent.TraceEvent_sub1 event) {
-            super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
+        public boolean handleEvent(TraceEvent_sub1 event) {
+            super.handleEvent(event);
+            return true;
         }
 
     }
@@ -87,8 +90,9 @@ public interface TraceEventHolder {
         }
 
         @OnEventHandler
-        public void handleEvent(TraceEvent.TraceEvent_sub2 event) {
-            super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
+        public boolean handleEvent(TraceEvent_sub2 event) {
+            super.handleEvent(event);
+            return true;
         }
 
     }

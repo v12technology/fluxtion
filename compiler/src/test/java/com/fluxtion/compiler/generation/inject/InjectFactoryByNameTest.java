@@ -58,8 +58,9 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         public MyUniqueData blueData;
 
         @OnEventHandler
-        public void onEvent(String in) {
+        public boolean onEvent(String in) {
             matched = greenData.key.equals("green") && blueData.key.equals("blue");
+            return true;
         }
     }
 

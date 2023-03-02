@@ -130,8 +130,8 @@ public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
     public static class SimpleNode {
 
         @OnTrigger
-        public void event() {
-
+        public boolean event() {
+            return true;
         }
 
         @Initialise

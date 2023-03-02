@@ -32,8 +32,8 @@ public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessT
         KeyedStringHandler handler2;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
     }
 
@@ -43,8 +43,8 @@ public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessT
         List<KeyedStringHandler> handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
 
     }
@@ -55,8 +55,8 @@ public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessT
         String key;
 
         @OnEventHandler
-        public void update(String in) {
-
+        public boolean update(String in) {
+            return true;
         }
     }
 }

@@ -105,7 +105,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler(filterVariable = "subscriberId")
-        public void subscriptionId(IntSignal newSubscriptionSymbol) {
+        public boolean subscriptionId(IntSignal newSubscriptionSymbol) {
             if (this.currentSubscriptionSymbol != Integer.MAX_VALUE) {
                 subscriptionManager.unSubscribe(currentSubscriptionSymbol);
             }
@@ -113,6 +113,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
             if (currentSubscriptionSymbol != Integer.MAX_VALUE) {
                 subscriptionManager.subscribe(currentSubscriptionSymbol);
             }
+            return true;
         }
 
     }

@@ -12,11 +12,12 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.time;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -24,7 +25,6 @@ import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
 import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
 import com.fluxtion.runtime.time.Tick;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +32,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ClockTest extends MultipleSepTargetInProcessTest {
@@ -76,7 +75,7 @@ public class ClockTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    public static class TestTimeEvent implements Event  {
+    public static class TestTimeEvent implements Event {
 
         @Override
         public long getEventTime() {
@@ -84,8 +83,9 @@ public class ClockTest extends MultipleSepTargetInProcessTest {
         }
 
     }
-    
-    public static class NoTimeEvent implements Event{}
+
+    public static class NoTimeEvent implements Event {
+    }
 
     public static class MyClockProxy {
 
@@ -96,22 +96,24 @@ public class ClockTest extends MultipleSepTargetInProcessTest {
         public int tickCount;
 
         @OnTrigger
-        public void update() {
+        public boolean update() {
+            return true;
         }
-        
+
         @OnEventHandler
-        public void tickHandler(Tick e){
+        public boolean tickHandler(Tick e) {
             tickCount++;
+            return true;
         }
-        
+
         @OnEventHandler
-        public void noTimeEvent(NoTimeEvent e){
-            
+        public boolean noTimeEvent(NoTimeEvent e) {
+            return true;
         }
-        
+
         @OnEventHandler
-        public void testTimedEvent(TestTimeEvent e){
-            
+        public boolean testTimedEvent(TestTimeEvent e) {
+            return true;
         }
 
     }
