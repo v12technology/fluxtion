@@ -83,11 +83,11 @@ public interface StaticEventProcessor {
         throw new UnsupportedOperationException("this StaticEventProcessor does not accept updated context map");
     }
 
-    default void registerContextInstance(Object instance) {
-        registerContextInstance(instance, instance.getClass());
+    default void injectInstance(Object instance) {
+        injectInstance(instance, instance.getClass());
     }
 
-    default void registerContextInstance(Object instance, Class<?> exposedType) {
+    default void injectInstance(Object instance, Class<?> exposedType) {
         addContextParameter(exposedType, instance);
     }
 

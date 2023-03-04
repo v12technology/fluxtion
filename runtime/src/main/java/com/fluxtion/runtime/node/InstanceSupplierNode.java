@@ -8,7 +8,7 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 
 @SepNode
-public class ContextValueSupplierNode<T> implements NamedNode, ContextValueSupplier<T> {
+public class InstanceSupplierNode<T> implements NamedNode, InstanceSupplier<T> {
 
     @Inject
     private final EventProcessorContext context;
@@ -17,24 +17,24 @@ public class ContextValueSupplierNode<T> implements NamedNode, ContextValueSuppl
     private final String name;
     private T contextProperty;
 
-    public ContextValueSupplierNode(Object contextKey) {
+    public InstanceSupplierNode(Object contextKey) {
         this(contextKey, false, null);
     }
 
-    public ContextValueSupplierNode(
+    public InstanceSupplierNode(
             Object contextKey,
             boolean failFast) {
         this(contextKey, failFast, null);
     }
 
-    public ContextValueSupplierNode(
+    public InstanceSupplierNode(
             Object contextKey,
             boolean failFast,
             EventProcessorContext context) {
         this(contextKey, failFast, context, "contextLookup_" + contextKey);
     }
 
-    public ContextValueSupplierNode(
+    public InstanceSupplierNode(
             @AssignToField("contextKey") Object contextKey,
             @AssignToField("failFast") boolean failFast,
             @AssignToField("context") EventProcessorContext context,

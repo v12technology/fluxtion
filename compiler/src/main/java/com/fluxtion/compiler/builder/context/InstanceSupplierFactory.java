@@ -4,20 +4,20 @@ import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.node.ContextValueSupplier;
-import com.fluxtion.runtime.node.ContextValueSupplierNode;
+import com.fluxtion.runtime.node.InstanceSupplier;
+import com.fluxtion.runtime.node.InstanceSupplierNode;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public class ContextValueSupplierFactory implements NodeFactory<ContextValueSupplier> {
+public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
 
     private static int count;
 
     @Override
-    public ContextValueSupplier<?> createNode(Map<String, Object> config, NodeRegistry registry) {
+    public InstanceSupplier<?> createNode(Map<String, Object> config, NodeRegistry registry) {
         final Field field = (Field) config.get(NodeFactory.FIELD_KEY);
         final Type genericFieldType = field.getGenericType();
         final Class<?> rawType;
@@ -29,7 +29,7 @@ public class ContextValueSupplierFactory implements NodeFactory<ContextValueSupp
             rawType = Object.class;
         }
         final String typeName = "contextService_" + rawType.getSimpleName() + "_" + count++;
-        return new ContextValueSupplierNode<>(rawType, true, null, typeName.replace(".", "_"));
+        return new InstanceSupplierNode<>(rawType, true, null, typeName.replace(".", "_"));
     }
 
     @Override

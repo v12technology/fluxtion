@@ -3,7 +3,7 @@ package com.fluxtion.compiler.generation.inject;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.node.ContextValueSupplier;
+import com.fluxtion.runtime.node.InstanceSupplier;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,8 +53,8 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep(c -> {
             c.addNode(new InjectContextByType(), "injectionHolder");
         });
-        sep.registerContextInstance(new MyService("injectedService"));
-        sep.registerContextInstance(new MyService("injectedInterface"), MyInterface.class);
+        sep.injectInstance(new MyService("injectedService"));
+        sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
         callInit(true);
         init();
@@ -67,13 +67,13 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     public static class InjectDataFromContext {
 
-        private final ContextValueSupplier<String> dateSupplier;
+        private final InstanceSupplier<String> dateSupplier;
 
         public InjectDataFromContext(String key) {
-            this(ContextValueSupplier.build(key));
+            this(InstanceSupplier.build(key));
         }
 
-        public InjectDataFromContext(ContextValueSupplier<String> dateSupplier) {
+        public InjectDataFromContext(InstanceSupplier<String> dateSupplier) {
             this.dateSupplier = dateSupplier;
         }
 
@@ -89,13 +89,13 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     public static class FailFastInjectDataFromContext {
 
-        private final ContextValueSupplier<String> dateSupplier;
+        private final InstanceSupplier<String> dateSupplier;
 
         public FailFastInjectDataFromContext(String key) {
-            this(ContextValueSupplier.buildFailFast(key));
+            this(InstanceSupplier.buildFailFast(key));
         }
 
-        public FailFastInjectDataFromContext(ContextValueSupplier<String> dateSupplier) {
+        public FailFastInjectDataFromContext(InstanceSupplier<String> dateSupplier) {
             this.dateSupplier = dateSupplier;
         }
 
@@ -111,9 +111,9 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     public static class InjectContextByType {
         @Inject
-        public ContextValueSupplier<MyService> myService;
+        public InstanceSupplier<MyService> myService;
         @Inject
-        public ContextValueSupplier<MyInterface> myInterface;
+        public InstanceSupplier<MyInterface> myInterface;
 
         @OnEventHandler
         public boolean updated(String in) {
