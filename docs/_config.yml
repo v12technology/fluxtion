@@ -23,8 +23,8 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 8.0.0":
-    - "//github.com/v12technology/fluxtion/tree/8.0.0"
+  "release 8.0.1":
+    - "//github.com/v12technology/fluxtion/tree/8.0.1"
 heading_anchors: true
 
 compress_html:
@@ -36,12 +36,12 @@ kramdown:
     block:
       line_numbers: true
 
-fluxtion_version: 8.0.0
-fluxtion_src: https://github.com/v12technology/fluxtion/blob/8.0.0
-fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/8.0.0/runtime/src/main/java/com/fluxtion/runtime
-fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/8.0.0/compiler/src/main/java/com/fluxtion/compiler
-EventProcessor_link: https://github.com/v12technology/fluxtion/blob/8.0.0/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
-Fluxtion_link: https://github.com/v12technology/fluxtion/blob/8.0.0/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
+fluxtion_version: 8.0.1
+fluxtion_src: https://github.com/v12technology/fluxtion/blob/8.0.1
+fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/8.0.1/runtime/src/main/java/com/fluxtion/runtime
+fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/8.0.1/compiler/src/main/java/com/fluxtion/compiler
+EventProcessor_link: https://github.com/v12technology/fluxtion/blob/8.0.1/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
+Fluxtion_link: https://github.com/v12technology/fluxtion/blob/8.0.1/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
 cookbook_src: https://github.com/v12technology/fluxtion-examples/tree/cook_subscription_example/cookbook/src/main/java/com/fluxtion/example/cookbook/
 
 ga_tracking: G-NGDV621P1P
