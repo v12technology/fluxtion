@@ -28,6 +28,7 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
 
     @Before
     public void beforeTest() {
+        super.beforeTest();
         postInvocationTrace.clear();
         counter.set(0);
     }

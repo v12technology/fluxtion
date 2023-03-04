@@ -83,6 +83,18 @@ public interface StaticEventProcessor {
         throw new UnsupportedOperationException("this StaticEventProcessor does not accept updated context map");
     }
 
+    default void registerContextInstance(Object instance) {
+        registerContextInstance(instance, instance.getClass());
+    }
+
+    default void registerContextInstance(Object instance, Class<?> exposedType) {
+        addContextParameter(exposedType, instance);
+    }
+
+    default void addContextParameter(Object key, Object value) {
+        throw new UnsupportedOperationException("this StaticEventProcessor does not accept updates to context map");
+    }
+
     /**
      * Called when a new event e is ready to be processed. Calls a {@link #triggerCalculation()} first if any events
      * have been buffered.

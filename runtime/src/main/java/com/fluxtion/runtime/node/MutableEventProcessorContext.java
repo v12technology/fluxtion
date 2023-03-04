@@ -48,6 +48,10 @@ public final class MutableEventProcessorContext implements EventProcessorContext
         }
     }
 
+    public <K, V> void addMapping(K key, V value) {
+        map.put(key, value);
+    }
+
     public void setEventProcessorCallback(InternalEventProcessor eventProcessorCallback) {
         eventDispatcher.setEventProcessor(eventProcessorCallback);
     }
