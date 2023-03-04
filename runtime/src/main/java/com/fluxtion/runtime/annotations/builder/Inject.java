@@ -77,4 +77,12 @@ public @interface Inject {
      * @return the NodeFactory name that will inject the instance into the graph
      */
     String factoryVariableName() default "";
+
+    /**
+     * Specify the qualifier of the instance to inject if using runtime instance injection with:
+     * {@link com.fluxtion.runtime.StaticEventProcessor#injectNamedInstance(Object, String)}
+     *
+     * @return the runtime instance qualifer
+     */
+    String instanceName() default "";
 }

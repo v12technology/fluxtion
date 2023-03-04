@@ -232,7 +232,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     }
 
     @Override
-    public void registerContextInstance(Object instance, Class<?> exposedType) {
+    public void injectInstance(Object instance, Class<?> exposedType) {
         context.addMapping(exposedType, instance);
     }
 
