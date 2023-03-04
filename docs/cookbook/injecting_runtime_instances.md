@@ -25,8 +25,9 @@ any node initialisation methods are invoked.
 
 ## Example
 
-See the [example here]({{example_src}}), this example uses two injected instances differentiated by am instance name
-qualifier in the Inject annotation.
+See the [example here]({{page.example_src}}), this example uses two injected instances differentiated by am instance name
+qualifier in the Inject annotation. [GlobalSalesTaxCalculator]({{page.example_src}}/GlobalSalesTaxCalculator.java) injects
+the runtime instances with a pair of InstanceSupplier:
 
 {% highlight java %}
 public class GlobalSalesTaxCalculator {
@@ -51,7 +52,7 @@ private void dumpTax() {
 }
 {% endhighlight %}
 
-The example [main method]({{example_src}}/GlobalSalesTaxCalculatorMain.java) sets the instances before init is called
+The example [main method]({{page.example_src}}/GlobalSalesTaxCalculatorMain.java) sets the instances before init is called
 and chanhes the instance the node refers to dynamically:
 {% highlight java %}
 public static void main(String[] args) {
