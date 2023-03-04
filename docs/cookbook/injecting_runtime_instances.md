@@ -52,8 +52,8 @@ private void dumpTax() {
 }
 {% endhighlight %}
 
-The example [main method]({{page.example_src}}/GlobalSalesTaxCalculatorMain.java) sets the instances before init is called
-and chanhes the instance the node refers to dynamically:
+The example [main method]({{page.example_src}}/GlobalSalesTaxCalculatorMain.java) sets the instances before init is called.
+Later one the instances the node refers to is updated dynamically to produce a new result:
 {% highlight java %}
 public static void main(String[] args) {
     var globalTaxProcessor = Fluxtion.interpret(c -> c.addNode(new GlobalSalesTaxCalculator()));
