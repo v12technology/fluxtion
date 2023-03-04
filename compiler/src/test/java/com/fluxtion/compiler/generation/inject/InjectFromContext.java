@@ -64,6 +64,26 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         onEvent("test");
     }
 
+    @Test
+    public void injectContextServiceByName() {
+        writeSourceFile = true;
+        callInit(false);
+        sep(c -> {
+            c.addNode(new InjectContextByNameAndType(), "injectionHolder");
+        });
+        sep.injectNamedInstance(new MyService("injectedService_1"), "svc_1");
+        sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
+        sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
+        //
+        callInit(true);
+        init();
+        InjectContextByNameAndType injectionHolder = getField("injectionHolder");
+        Assert.assertEquals("injectedService_1", injectionHolder.svc_1.get().getName());
+        Assert.assertEquals("injectedService_2", injectionHolder.svc_2.get().getName());
+        Assert.assertEquals("injectedInterface", injectionHolder.myInterface.get().getName());
+        onEvent("test");
+    }
+
 
     public static class InjectDataFromContext {
 
@@ -112,6 +132,20 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     public static class InjectContextByType {
         @Inject
         public InstanceSupplier<MyService> myService;
+        @Inject
+        public InstanceSupplier<MyInterface> myInterface;
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
+        }
+    }
+
+    public static class InjectContextByNameAndType {
+        @Inject(instanceName = "svc_1")
+        public InstanceSupplier<MyService> svc_1;
+        @Inject(instanceName = "svc_2")
+        public InstanceSupplier<MyService> svc_2;
         @Inject
         public InstanceSupplier<MyInterface> myInterface;
 

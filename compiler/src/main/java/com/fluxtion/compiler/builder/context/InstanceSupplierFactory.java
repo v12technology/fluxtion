@@ -19,6 +19,8 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
     @Override
     public InstanceSupplier<?> createNode(Map<String, Object> config, NodeRegistry registry) {
         final Field field = (Field) config.get(NodeFactory.FIELD_KEY);
+        final String instanceName = (String) config.get(NodeFactory.INSTANCE_KEY);
+        final boolean hasInstanceQualifier = !instanceName.isEmpty() && instanceName.length() > 0;
         final Type genericFieldType = field.getGenericType();
         final Class<?> rawType;
         if (genericFieldType instanceof ParameterizedType) {
@@ -28,8 +30,11 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
         } else {
             rawType = Object.class;
         }
-        final String typeName = "contextService_" + rawType.getSimpleName() + "_" + count++;
-        return new InstanceSupplierNode<>(rawType, true, null, typeName.replace(".", "_"));
+        final String typeName = "contextService_" + rawType.getSimpleName() + "_" + instanceName + count++;
+        return new InstanceSupplierNode<>(
+                hasInstanceQualifier ? rawType + "_" + instanceName : rawType,
+                true,
+                null, typeName.replace(".", "_"));
     }
 
     @Override

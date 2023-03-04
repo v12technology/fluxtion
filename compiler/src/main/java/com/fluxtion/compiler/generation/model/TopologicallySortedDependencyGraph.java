@@ -963,6 +963,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 Set<Map.Entry<String, Object>> entrySet = overrideMap.entrySet();
                 entrySet.forEach((overrideEntry) -> map.put(overrideEntry.getKey(), overrideEntry.getValue()));
                 map.put(NodeFactory.FIELD_KEY, field);
+                map.put(NodeFactory.INSTANCE_KEY, injecting.instanceName());
                 //merge configs to single map
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;
