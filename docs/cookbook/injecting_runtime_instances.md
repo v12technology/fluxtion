@@ -18,7 +18,7 @@ instances in the graph from an outside source before the init method is executed
 
 1. Add an [InstanceSupplier]({{site.fluxtion_src_runtime}}/node/InstanceSupplier.java) to a user class. 
 2. Mark the InstanceSupplier with an  [@Inject]({{site.fluxtion_src_runtime}}/annotations/builder/Inject.java) annotation
-3. Build the EventProcessor
+3. Build the EventProcessor with the user class included in the graph
 4. Inject an instance to the EventProcessor calling [StaticEventProcessor.injectInstance]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java#L106)
 5. Call EventProcessor.init(), the user instance will be bound into the InstanceSupplier in the user node before any
 any node initialisation methods are invoked. 
