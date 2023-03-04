@@ -52,11 +52,9 @@ public class InstanceSupplierNode<T> implements NamedNode, InstanceSupplier<T> {
 
     @Override
     public T get() {
-        if (contextProperty == null) {
-            contextProperty = context.getContextProperty(contextKey);
-            if (contextProperty == null && failFast) {
-                throw new RuntimeException("missing context property for key:'" + contextKey + "'");
-            }
+        contextProperty = context.getContextProperty(contextKey);
+        if (contextProperty == null && failFast) {
+            throw new RuntimeException("missing context property for key:'" + contextKey + "'");
         }
         return contextProperty;
     }

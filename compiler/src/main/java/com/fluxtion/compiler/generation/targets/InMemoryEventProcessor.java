@@ -231,11 +231,6 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         context.replaceMappings(newContextMapping);
     }
 
-    @Override
-    public void injectInstance(Object instance, Class<?> exposedType) {
-        context.addMapping(exposedType, instance);
-    }
-
     public void addContextParameter(Object key, Object value) {
         context.addMapping(key, value);
     }
