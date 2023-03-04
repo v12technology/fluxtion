@@ -90,9 +90,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.reflections.ReflectionUtils.getAllFields;
-import static org.reflections.ReflectionUtils.withAnnotation;
-import static org.reflections.util.ReflectionUtilsPredicates.withName;
 
 /**
  * Creates a sorted set of dependencies from a supplied set of instances.
@@ -421,6 +418,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 handle = class2FactoryMethod.get(clazz);
             } else {
                 handle = name2FactoryMethod.get(factoryName);
+                if (handle == null) {
+                    throw new RuntimeException("No registered NodeFactory with name:'"
+                            + factoryName + "' type:'"
+                            + clazz.getCanonicalName() + "'");
+                }
             }
             Object newNode;
             if (handle != null) {
@@ -666,9 +668,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private void walkDependenciesForEventHandling(Object object) throws IllegalArgumentException, IllegalAccessException {
         final Class<?> clazz = object.getClass();
-        @SuppressWarnings("unchecked") Set<Field> s = getAllFields(clazz);
+        @SuppressWarnings("unchecked") Set<Field> s = ReflectionUtils.getAllFields(clazz);
         Field[] fields = new Field[s.size()];
-        @SuppressWarnings("unchecked") boolean overrideEventTrigger = getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).stream()
+        @SuppressWarnings("unchecked") boolean overrideEventTrigger = ReflectionUtils.getAllFields(clazz, ReflectionUtils.withAnnotation(TriggerEventOverride.class)).stream()
                 .anyMatch(f -> {
                     try {
                         f.setAccessible(true);
@@ -703,7 +705,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    if (inst2Name.containsKey(refField)) {
+                    if (inst2Name.containsKey(refField) && handlesEvents(refField)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(refField);
                         eventGraph.addEdge(refField, object);
@@ -718,7 +720,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    if (inst2Name.containsKey(parent)) {
+                    if (inst2Name.containsKey(parent) && handlesEvents(parent)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(parent);
                         if (pushCollection) {
@@ -730,13 +732,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                 }
             } else if (refName != null) {
-                eventGraph.addVertex(object);
-                eventGraph.addVertex(refField);
-                if (field.getAnnotation(PushReference.class) != null) {
-                    eventGraph.addEdge(object, refField);
-                } else {
-                    eventGraph.addEdge(refField, object);
-                    walkDependenciesForEventHandling(refField);
+                if (handlesEvents(refField)) {
+                    eventGraph.addVertex(object);
+                    eventGraph.addVertex(refField);
+                    if (field.getAnnotation(PushReference.class) != null) {
+                        eventGraph.addEdge(object, refField);
+                    } else {
+                        eventGraph.addEdge(refField, object);
+                        walkDependenciesForEventHandling(refField);
+                    }
                 }
             }
         }
@@ -786,18 +790,30 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     private Predicate<AnnotatedElement> annotationPredicate() {
-        return withAnnotation(AfterEvent.class)
-                .or(withAnnotation(OnEventHandler.class))
-                .or(withAnnotation(Inject.class))
-                .or(withAnnotation(OnBatchEnd.class))
-                .or(withAnnotation(OnBatchPause.class))
-                .or(withAnnotation(OnTrigger.class))
-                .or(withAnnotation(AfterTrigger.class))
-                .or(withAnnotation(OnParentUpdate.class))
-                .or(withAnnotation(TearDown.class))
-                .or(withAnnotation(Initialise.class))
+        return ReflectionUtils.withAnnotation(AfterEvent.class)
+                .or(ReflectionUtils.withAnnotation(OnEventHandler.class))
+                .or(ReflectionUtils.withAnnotation(Inject.class))
+                .or(ReflectionUtils.withAnnotation(OnBatchEnd.class))
+                .or(ReflectionUtils.withAnnotation(OnBatchPause.class))
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(AfterTrigger.class))
+                .or(ReflectionUtils.withAnnotation(OnParentUpdate.class))
+                .or(ReflectionUtils.withAnnotation(TearDown.class))
+                .or(ReflectionUtils.withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
                 ;
+    }
+
+    private Predicate<AnnotatedElement> eventHandlingAnnotationPredicate() {
+        return ReflectionUtils.withAnnotation(OnEventHandler.class)
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                ;
+    }
+
+    private boolean handlesEvents(Object obj) {
+        return EventHandlerNode.class.isAssignableFrom(obj.getClass())
+                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty();
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -902,7 +918,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                 } else {
                     graph.addEdge(methodInstanceHolder, object);
-                    if (field.getAnnotation(NoTriggerReference.class) == null) {
+                    if (field.getAnnotation(NoTriggerReference.class) == null && handlesEvents(methodInstanceHolder)) {
                         eventGraph.addVertex(methodInstanceHolder);
                         eventGraph.addVertex(object);
                         eventGraph.addEdge(methodInstanceHolder, object);
@@ -915,7 +931,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             if (injecting != null & refName == null & field.get(object) == null) {
                 String factoryVariableName = injecting.factoryVariableName();
                 String factoryName = injecting.factoryName();
-                Set<java.lang.reflect.Field> fieldNames = ReflectionUtils.getAllFields(object.getClass(), withName(factoryVariableName));
+                Set<java.lang.reflect.Field> fieldNames = ReflectionUtils.getAllFields(object.getClass(), ReflectionUtils.withName(factoryVariableName));
                 if (factoryVariableName.length() > 0 && fieldNames.size() > 0) {
                     java.lang.reflect.Field f = fieldNames.iterator().next();
                     f.setAccessible(true);
@@ -947,6 +963,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 Set<Map.Entry<String, Object>> entrySet = overrideMap.entrySet();
                 entrySet.forEach((overrideEntry) -> map.put(overrideEntry.getKey(), overrideEntry.getValue()));
                 map.put(NodeFactory.FIELD_KEY, field);
+                map.put(NodeFactory.INSTANCE_KEY, injecting.instanceName());
                 //merge configs to single map
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;

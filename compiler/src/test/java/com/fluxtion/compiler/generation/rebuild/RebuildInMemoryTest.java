@@ -92,8 +92,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int sum;
 
         @OnEventHandler(filterVariable = "bookName")
-        public void addPosition(Signal<Integer> delta) {
+        public boolean addPosition(Signal<Integer> delta) {
             sum += delta.getValue();
+            return true;
         }
     }
 
@@ -104,10 +105,11 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int reconcileDifference;
 
         @OnTrigger
-        public void reconcile() {
+        public boolean reconcile() {
             int live = liveHandler == null ? 0 : liveHandler.getSum();
             int dropCopy = dropCopyFeed == null ? 0 : dropCopyFeed.getSum();
             reconcileDifference = Math.abs(live - dropCopy);
+            return true;
         }
     }
 
@@ -117,8 +119,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int bookSum;
 
         @OnTrigger
-        public void reconcile() {
+        public boolean reconcile() {
             bookSum = monitoredBooks.stream().mapToInt(BookHandler::getSum).sum();
+            return true;
         }
     }
 
@@ -128,8 +131,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int maxDelta;
 
         @OnTrigger
-        public void calcMaxDelta() {
+        public boolean calcMaxDelta() {
             maxDelta = Math.max(maxDelta, reconciler.getReconcileDifference());
+            return true;
         }
     }
 }

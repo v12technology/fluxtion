@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.noeventref;
@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class NoEventRefTest extends MultipleSepTargetInProcessTest {
@@ -37,7 +36,7 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void dirtyNoReferenceTest() {
-        sep((c)->{
+        sep((c) -> {
             ConfigCache cfgCache = c.addNode(new ConfigCache());
             PriceFormer priceFormer = c.addPublicNode(new PriceFormer(cfgCache), "priceFormer");
             RulesProcessor rulesProcessor = c.addPublicNode(new RulesProcessor(cfgCache), "rulesProcessor");
@@ -120,8 +119,9 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             invokeCount++;
+            return true;
         }
     }
 

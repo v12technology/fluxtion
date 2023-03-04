@@ -54,6 +54,7 @@ public interface Fluxtion {
         return EventProcessorFactory.compile(sepConfig, c -> {
             c.setSourceWriter(sourceWriter);
             c.setWriteSourceToFile(false);
+            c.setGenerateDescription(false);
             c.setFormatSource(true);
         });
     }
@@ -224,6 +225,7 @@ public interface Fluxtion {
 
             builderList.forEach(c -> {
                 generationCount.increment();
+                System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
                 try {
                     final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) c.loadClass().getDeclaredConstructor().newInstance();
                     compile(newInstance::buildGraph, newInstance::configureGeneration);

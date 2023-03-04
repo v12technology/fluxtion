@@ -58,7 +58,8 @@ public class NodeWithPrivateParentList {
     }
 
     @OnTrigger
-    public void onEvent() {
+    public boolean onEvent() {
         onEventCount++;
+        return true;
     }
 }

@@ -35,13 +35,15 @@ public class OverrideEventTypeTest extends MultipleSepTargetInProcessTest {
         public int interfaceCount = 0;
 
         @OnEventHandler(ofType = MyEventSubclass.class)
-        public void subclassOverride(MyEvent myEventSubclass) {
+        public boolean subclassOverride(MyEvent myEventSubclass) {
             interfaceCount++;
+            return true;
         }
 
         @OnEventHandler
-        public void subClass(MyEventSubclass myEventSubclass) {
+        public boolean subClass(MyEventSubclass myEventSubclass) {
             interfaceCount++;
+            return true;
         }
     }
 }

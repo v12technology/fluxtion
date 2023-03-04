@@ -79,8 +79,9 @@ public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
         int intValue;
 
         @OnEventHandler
-        public void newInteger(Integer s) {
+        public boolean newInteger(Integer s) {
             intValue = s;
+            return true;
         }
 
         @OnTrigger

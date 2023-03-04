@@ -39,10 +39,11 @@ public class Node_TraceEventHolder_Aggregator_NoFiltering implements TraceEventH
     }
 
     @OnTrigger
-    public void onEvent() {
+    public boolean onEvent() {
         //no-op - boolean return for dirty filtering test
         getTraceEvent().getTraceList().add(this);
         getTraceEvent().getTraceIdList().add(traceId);
+        return true;
     }
 
     @OnParentUpdate

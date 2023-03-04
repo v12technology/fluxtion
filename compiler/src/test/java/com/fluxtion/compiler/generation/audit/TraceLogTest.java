@@ -48,8 +48,8 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
 
     public static class NoAuditNode {
         @OnEventHandler
-        public void charEvent(CharEvent event) {
-
+        public boolean charEvent(CharEvent event) {
+            return true;
         }
     }
 
@@ -174,8 +174,9 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         public MyNode myNode;
 
         @OnEventHandler
-        public void charEvent(CharEvent event) {
+        public boolean charEvent(CharEvent event) {
             auditLog.info("char", event.getChar());
+            return true;
         }
 
     }
@@ -189,8 +190,9 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             auditLog.info("child", true);
+            return true;
         }
     }
 
@@ -203,7 +205,8 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
+            return true;
         }
     }
 
@@ -216,7 +219,8 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
+            return true;
         }
     }
 

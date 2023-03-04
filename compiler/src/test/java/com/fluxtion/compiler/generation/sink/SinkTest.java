@@ -18,7 +18,7 @@ public class SinkTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void addSinkNode(){
+    public void addSinkNode() {
         List<String> myList = new ArrayList<>();
         sep(c -> c.addNode(new MyNode("sinkA")));
         addSink("sinkA", (Consumer<String>) myList::add);
@@ -26,21 +26,22 @@ public class SinkTest extends MultipleSepTargetInProcessTest {
         assertThat(myList, Matchers.is(Matchers.contains("hello world")));
     }
 
-    public static class MyNode{
+    public static class MyNode {
 
         private final SinkPublisher<String> publisher;// = new SinkPublisher("sinkA");
 
-        public MyNode(String sinkFilter){
+        public MyNode(String sinkFilter) {
             this(new SinkPublisher<>(sinkFilter));
         }
 
-        public MyNode(SinkPublisher<String> publisher){
+        public MyNode(SinkPublisher<String> publisher) {
             this.publisher = publisher;
         }
 
         @OnEventHandler
-        public void newString(String in){
+        public boolean newString(String in) {
             publisher.publish(in);
+            return true;
         }
 
     }

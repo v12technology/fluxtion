@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.inject;
@@ -37,7 +37,6 @@ import java.util.Map;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class InjectionTest extends MultipleSepTargetInProcessTest {
@@ -116,7 +115,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public MySingleton singleton;
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
+            return true;
         }
     }
 
@@ -128,8 +128,9 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public int intVal;
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
+            return true;
         }
     }
 
@@ -144,8 +145,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public NoFactoryCharHandler handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
     }
 
@@ -157,8 +158,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public NoFactoryCharHandler handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
     }
 
@@ -191,8 +192,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
-            //System.out.println("finished processing\n");
+        public boolean onEvent() {
+            return true;
         }
 
         public boolean testAndClear(Integer i, Character c) {
@@ -247,8 +248,9 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
+            return true;
 //            //System.out.println("received char:"+ charEvent.filterId());
         }
     }

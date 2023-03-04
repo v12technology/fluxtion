@@ -16,6 +16,7 @@
 package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.LogRecordListener;
@@ -23,6 +24,7 @@ import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
+import com.fluxtion.runtime.node.InstanceSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
@@ -81,6 +83,57 @@ public interface StaticEventProcessor {
      */
     default void setContextParameterMap(Map<Object, Object> newContextMapping) {
         throw new UnsupportedOperationException("this StaticEventProcessor does not accept updated context map");
+    }
+
+    /**
+     * inject an instance into the running instance, is available via:
+     * {@link InstanceSupplier}
+     *
+     * @param instance the instance to inject
+     */
+    default void injectInstance(Object instance) {
+        injectInstance(instance, instance.getClass());
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}. Set the qualifier of the injected with {@link Inject#instanceName()}
+     *
+     * @param instance the instance to inject
+     * @param name     the qualifying name of the instance to inject
+     */
+    default void injectNamedInstance(Object instance, String name) {
+        addContextParameter(instance.getClass() + "_" + name, instance);
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}.
+     * Set the injected type supplied to the EventProcessor
+     *
+     * @param instance    the instance to inject
+     * @param exposedType The type to make available at the injection site
+     */
+    default void injectInstance(Object instance, Class<?> exposedType) {
+        addContextParameter(exposedType, instance);
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}.
+     * Set the name with {@link Inject#instanceName()}
+     * Set the injected type supplied to the EventProcessor
+     *
+     * @param instance    the instance to inject
+     * @param exposedType The type to make available at the injection sit
+     * @param name        the qualifying name of the instance to inject
+     */
+    default void injectNamedInstance(Object instance, Class<?> exposedType, String name) {
+        addContextParameter(exposedType + "_" + name, instance);
+    }
+
+    default void addContextParameter(Object key, Object value) {
+        throw new UnsupportedOperationException("this StaticEventProcessor does not accept updates to context map");
     }
 
     /**

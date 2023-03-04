@@ -16,8 +16,8 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
     }
 
     @Test
-    public void noPropagateFromEventHandler(){
-        sep(c ->{
+    public void noPropagateFromEventHandler() {
+        sep(c -> {
             c.addPublicNode(new CountingNode(new StringHandler()), "countingNode");
         });
         CountingNode countingNode = getField("countingNode");
@@ -26,8 +26,8 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
     }
 
     @Test
-    public void partialPropagationFromEventHandler(){
-        sep(c ->{
+    public void partialPropagationFromEventHandler() {
+        sep(c -> {
             c.addPublicNode(new CountingNode(new MultiHandler()), "countingNode");
         });
         CountingNode countingNode = getField("countingNode");
@@ -49,6 +49,7 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
             return true;
         }
     }
+
     public static class MultiHandler {
 
         boolean notified = false;
@@ -73,8 +74,9 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
         int count;
 
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             count++;
+            return true;
         }
     }
 }

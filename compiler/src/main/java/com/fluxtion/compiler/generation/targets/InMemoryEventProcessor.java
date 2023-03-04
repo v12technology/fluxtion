@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -231,6 +232,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     }
 
     @Override
+    public void injectInstance(Object instance, Class<?> exposedType) {
+        context.addMapping(exposedType, instance);
+    }
+
+    public void addContextParameter(Object key, Object value) {
+        context.addMapping(key, value);
+    }
+
+    @Override
     public void addEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
     }
@@ -251,7 +261,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getTearDownMethods().forEach(this::invokeRunnable);
     }
 
-    @SneakyThrows
+
     private void invokeRunnable(CbMethodHandle callBackHandle) {
         callBackHandle.method.setAccessible(true);
         if (currentEvent != null) {
@@ -262,7 +272,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     ));
         }
 
-        callBackHandle.method.invoke(callBackHandle.instance);
+        try {
+            callBackHandle.method.invoke(callBackHandle.instance);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Field getFieldByName(String name) {

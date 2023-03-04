@@ -11,13 +11,13 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.constructor;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Data;
 import lombok.Value;
@@ -25,10 +25,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.function.Supplier;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
@@ -38,49 +36,53 @@ public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testArgs(){
-    
+    public void testArgs() {
+
         fixedPkg = true;
         sep((c) -> {
 //            final MyThing thing = c.addNode(new MyThing());
             c.addPublicNode(new Handler(new MyThing()), "handler");
         });
-        
+
         Handler handler = getField("handler");
         Assert.assertNotNull(handler.getName());
     }
 
     @Test
-    public void constructorMethodRefTest(){
-        sep(c ->{
+    public void constructorMethodRefTest() {
+        sep(c -> {
             c.addNode(new ConstructorMethodRef(Date::new));
         });
     }
 
     @Value
-    public static class ConstructorMethodRef{
+    public static class ConstructorMethodRef {
         LambdaReflection.SerializableSupplier<Date> dateSupplier;
 
         @OnEventHandler
-        public void stringIn(String in){}
+        public boolean stringIn(String in) {
+            return true;
+        }
     }
-    
-    
+
+
     @Data
-    public static class Handler{
+    public static class Handler {
 
         private final MyThing name;
 
         public Handler(MyThing name) {
             this.name = name;
         }
-        
-    
+
+
         @OnEventHandler
-        public void stringUpdate(String in){
+        public boolean stringUpdate(String in) {
+            return true;
         }
     }
-    
-    public static class MyThing{}
+
+    public static class MyThing {
+    }
 }
 

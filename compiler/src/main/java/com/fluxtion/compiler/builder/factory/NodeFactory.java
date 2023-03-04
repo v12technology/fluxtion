@@ -55,6 +55,11 @@ public interface NodeFactory<T> {
      * information for the target field.
      */
     String FIELD_KEY = "NodeFactory.InjectField.TypeInfo";
+    /**
+     * The key in the map passed to the NodeFactory instance that holds the name of the instance to be injected when
+     * using information for the target field.
+     */
+    String INSTANCE_KEY = "NodeFactory.InjectField.InstanceName";
 
     /**
      * NodeFactory writer must implement this method to generate instances of

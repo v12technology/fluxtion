@@ -4,7 +4,7 @@ import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.event.Signal.IntSignal;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
 import lombok.Data;
@@ -52,8 +52,9 @@ public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
         private transient int value;
 
         @OnEventHandler(filterVariable = "filter")
-        public void signalUpdate(Signal.IntSignal intSignal) {
+        public boolean signalUpdate(IntSignal intSignal) {
             value = intSignal.getValue();
+            return true;
         }
     }
 
@@ -63,11 +64,12 @@ public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
         private int sum;
 
         @OnTrigger
-        public void calculate() {
+        public boolean calculate() {
             sum = 0;
             for (SignalHandler handler : handlers) {
                 sum += handler.getValue();
             }
+            return true;
         }
     }
 

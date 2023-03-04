@@ -12,15 +12,15 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.ExcludeNode;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Value;
 import org.junit.Test;
 
@@ -32,7 +32,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
@@ -66,8 +65,8 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testCollectionImplicitAdd(){
-        sep(cfg ->{
+    public void testCollectionImplicitAdd() {
+        sep(cfg -> {
             VectorCounter vectorCounter = new VectorCounter();
             vectorCounter.parents.add(new StringHandler());
             vectorCounter.parents.add(new DoubleHandler());
@@ -83,30 +82,31 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
     }
 
     public static class StringHandler {
-    
+
         @OnEventHandler
-        public void stringUpdate(String s){
-        
-        }
-    }
-    
-      public static class DoubleHandler{
-    
-        @OnEventHandler
-        public void doubleUpdate(Double s) {
+        public boolean stringUpdate(String s) {
+            return true;
         }
     }
 
-    public static class DateHandler{
+    public static class DoubleHandler {
 
         @OnEventHandler
-        public void doubleUpdate(Date s){
+        public boolean doubleUpdate(Double s) {
+            return true;
+        }
+    }
 
+    public static class DateHandler {
+
+        @OnEventHandler
+        public boolean doubleUpdate(Date s) {
+            return true;
         }
 
     }
-      
-    public static class Counter{
+
+    public static class Counter {
 
         private int count;
         private final StringHandler myHandler;
@@ -117,31 +117,34 @@ public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
         public Counter(StringHandler myHandler) {
             this.myHandler = myHandler;
         }
-        
+
         @OnTrigger
-        public void increment(){
+        public boolean increment() {
             count++;
+            return true;
         }
-    
+
     }
 
-    public static class VectorCounter{
+    public static class VectorCounter {
         List<Object> parents = new ArrayList<>();
         int counter;
 
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             counter++;
+            return true;
         }
     }
-    
+
     @Value
-    public static class IntermediateNode{
+    public static class IntermediateNode {
         Object parent;
-        
+
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
+            return true;
         }
     }
-    
+
 }

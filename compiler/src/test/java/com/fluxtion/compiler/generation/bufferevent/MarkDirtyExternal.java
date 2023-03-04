@@ -66,8 +66,9 @@ public class MarkDirtyExternal extends MultipleSepTargetInProcessTest {
         public DirtyStateMonitor dirtyStateMonitor;
 
         @OnEventHandler
-        public void onInteger(Integer value) {
+        public boolean onInteger(Integer value) {
             this.value = value;
+            return true;
         }
 
         @Override
@@ -83,8 +84,9 @@ public class MarkDirtyExternal extends MultipleSepTargetInProcessTest {
         public DirtyStateMonitor dirtyStateMonitor;
 
         @OnEventHandler
-        public void onString(String value) {
+        public boolean onString(String value) {
             this.value = value;
+            return true;
         }
 
         @Override

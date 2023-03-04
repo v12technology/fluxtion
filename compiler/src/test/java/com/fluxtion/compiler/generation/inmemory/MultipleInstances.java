@@ -38,8 +38,9 @@ public class MultipleInstances {
         }
 
         @OnEventHandler
-        public void stringReceived(String in) {
+        public boolean stringReceived(String in) {
             System.out.println(getName() + " -> " + in);
+            return true;
         }
     }
 
