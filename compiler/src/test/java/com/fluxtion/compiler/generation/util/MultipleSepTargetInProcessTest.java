@@ -146,8 +146,8 @@ public abstract class MultipleSepTargetInProcessTest {
                 EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
                 inMemorySep = eventProcessorGenerator.inMemoryProcessor(cfg, generateMetaInformation);
                 inMemorySep.setContextParameterMap(contextMap);
-                inMemorySep.init();
                 sep = inMemorySep;
+                init();
                 simpleEventProcessorModel = eventProcessorGenerator.getSimpleEventProcessorModel();
             } else {
                 if (reuseSep) {

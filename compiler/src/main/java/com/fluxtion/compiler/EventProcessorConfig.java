@@ -21,6 +21,7 @@ import com.fluxtion.compiler.builder.callback.CallbackNodeFactory;
 import com.fluxtion.compiler.builder.callback.DirtyStateMonitorFactory;
 import com.fluxtion.compiler.builder.callback.EventDispatcherFactory;
 import com.fluxtion.compiler.builder.callback.EventProcessorCallbackInternalFactory;
+import com.fluxtion.compiler.builder.context.ContextValueSupplierFactory;
 import com.fluxtion.compiler.builder.context.EventProcessorContextFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
@@ -71,6 +72,7 @@ public class EventProcessorConfig {
                 CallBackDispatcherFactory.class,
                 CallbackNodeFactory.class,
                 ClockFactory.class,
+                ContextValueSupplierFactory.class,
                 DirtyStateMonitorFactory.class,
                 EventDispatcherFactory.class,
                 EventProcessorCallbackInternalFactory.class,
