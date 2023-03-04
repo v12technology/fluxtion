@@ -87,7 +87,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep(c -> {
             c.addNode(new InjectNamedInterfaceType(), "injectionHolder");
         });
-        sep.injectNamedInstance((MyInterface) () -> "myLambdaInterface", MyInterface.class, "svc_A");
+        sep.injectNamedInstance(() -> "myLambdaInterface", MyInterface.class, "svc_A");
         //
         callInit(true);
         init();

@@ -91,8 +91,9 @@ public interface StaticEventProcessor {
      *
      * @param instance the instance to inject
      */
-    default void injectInstance(Object instance) {
-        injectInstance(instance, instance.getClass());
+    @SuppressWarnings("unckecked")
+    default <T> void injectInstance(T instance) {
+        injectInstance(instance, ((Class<T>) instance.getClass()));
     }
 
     /**
@@ -114,7 +115,7 @@ public interface StaticEventProcessor {
      * @param instance    the instance to inject
      * @param exposedType The type to make available at the injection site
      */
-    default void injectInstance(Object instance, Class<?> exposedType) {
+    default <T, S extends T> void injectInstance(S instance, Class<T> exposedType) {
         addContextParameter(exposedType.getCanonicalName(), instance);
     }
 
@@ -128,7 +129,7 @@ public interface StaticEventProcessor {
      * @param exposedType The type to make available at the injection sit
      * @param name        the qualifying name of the instance to inject
      */
-    default void injectNamedInstance(Object instance, Class<?> exposedType, String name) {
+    default <T, S extends T> void injectNamedInstance(S instance, Class<T> exposedType, String name) {
         addContextParameter(exposedType.getCanonicalName() + "_" + name, instance);
     }
 
