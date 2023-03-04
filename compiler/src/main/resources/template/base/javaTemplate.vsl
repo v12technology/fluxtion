@@ -70,6 +70,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         context.replaceMappings(newContextMapping);
     }
 
+
+    @Override
+    public void addContextParameter(Object key, Object value) {
+        context.addMapping(key, value);
+    }
+
     @Override
     public void onEvent(Object event) {
         if(buffering){
