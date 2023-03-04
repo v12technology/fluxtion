@@ -32,7 +32,7 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
         }
         final String typeName = "contextService_" + rawType.getSimpleName() + "_" + instanceName + count++;
         return new InstanceSupplierNode<>(
-                hasInstanceQualifier ? rawType + "_" + instanceName : rawType,
+                hasInstanceQualifier ? rawType.getCanonicalName() + "_" + instanceName : rawType.getCanonicalName(),
                 true,
                 null, typeName.replace(".", "_"));
     }

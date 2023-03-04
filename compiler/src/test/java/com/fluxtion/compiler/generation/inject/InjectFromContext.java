@@ -65,6 +65,38 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void addLambdaAsInjectedService() {
+        callInit(false);
+        sep(c -> {
+            c.addNode(new InjectContextByType(), "injectionHolder");
+        });
+        sep.injectInstance(new MyService("injectedService"));
+        sep.injectInstance((MyInterface) () -> "myLambdaInterface", MyInterface.class);
+        //
+        callInit(true);
+        init();
+        InjectContextByType injectionHolder = getField("injectionHolder");
+        Assert.assertEquals("injectedService", injectionHolder.myService.get().getName());
+        Assert.assertEquals("myLambdaInterface", injectionHolder.myInterface.get().getName());
+        onEvent("test");
+    }
+
+    @Test
+    public void addNamedLambda() {
+        callInit(false);
+        sep(c -> {
+            c.addNode(new InjectNamedInterfaceType(), "injectionHolder");
+        });
+        sep.injectNamedInstance((MyInterface) () -> "myLambdaInterface", MyInterface.class, "svc_A");
+        //
+        callInit(true);
+        init();
+        InjectNamedInterfaceType injectionHolder = getField("injectionHolder");
+        Assert.assertEquals("myLambdaInterface", injectionHolder.myInterface.get().getName());
+        onEvent("test");
+    }
+
+    @Test
     public void injectContextServiceByName() {
         writeSourceFile = true;
         callInit(false);
@@ -84,6 +116,10 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         onEvent("test");
     }
 
+
+    public interface MyInterface {
+        String getName();
+    }
 
     public static class InjectDataFromContext {
 
@@ -141,6 +177,16 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         }
     }
 
+    public static class InjectNamedInterfaceType {
+        @Inject(instanceName = "svc_A")
+        public InstanceSupplier<MyInterface> myInterface;
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
+        }
+    }
+
     public static class InjectContextByNameAndType {
         @Inject(instanceName = "svc_1")
         public InstanceSupplier<MyService> svc_1;
@@ -165,9 +211,5 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         public String getName() {
             return name;
         }
-    }
-
-    public interface MyInterface {
-        String getName();
     }
 }

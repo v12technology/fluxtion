@@ -103,7 +103,7 @@ public interface StaticEventProcessor {
      * @param name     the qualifying name of the instance to inject
      */
     default void injectNamedInstance(Object instance, String name) {
-        addContextParameter(instance.getClass() + "_" + name, instance);
+        addContextParameter(instance.getClass().getCanonicalName() + "_" + name, instance);
     }
 
     /**
@@ -115,7 +115,7 @@ public interface StaticEventProcessor {
      * @param exposedType The type to make available at the injection site
      */
     default void injectInstance(Object instance, Class<?> exposedType) {
-        addContextParameter(exposedType, instance);
+        addContextParameter(exposedType.getCanonicalName(), instance);
     }
 
     /**
@@ -129,7 +129,7 @@ public interface StaticEventProcessor {
      * @param name        the qualifying name of the instance to inject
      */
     default void injectNamedInstance(Object instance, Class<?> exposedType, String name) {
-        addContextParameter(exposedType + "_" + name, instance);
+        addContextParameter(exposedType.getCanonicalName() + "_" + name, instance);
     }
 
     default void addContextParameter(Object key, Object value) {
