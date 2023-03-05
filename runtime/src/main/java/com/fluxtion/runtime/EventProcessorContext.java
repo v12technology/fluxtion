@@ -16,5 +16,9 @@ public interface EventProcessorContext {
 
     SubscriptionManager getSubscriptionManager();
 
+    <T> T getInjectedInstance(Class<T> instanceClass);
+
+    <T> T getInjectedInstance(Class<T> instanceClass, String name);
+
     <K, V> V getContextProperty(K key);
 }
