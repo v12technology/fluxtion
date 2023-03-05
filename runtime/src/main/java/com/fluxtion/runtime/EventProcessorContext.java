@@ -20,5 +20,9 @@ public interface EventProcessorContext {
 
     <T> T getInjectedInstance(Class<T> instanceClass, String name);
 
+    <T> T getInjectedInstanceAllowNull(Class<T> instanceClass);
+
+    <T> T getInjectedInstanceAllowNull(Class<T> instanceClass, String name);
+
     <K, V> V getContextProperty(K key);
 }
