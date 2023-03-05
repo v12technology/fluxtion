@@ -88,6 +88,9 @@ public interface StaticEventProcessor {
     /**
      * inject an instance into the running instance, is available via:
      * {@link InstanceSupplier}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance the instance to inject
      */
@@ -99,6 +102,9 @@ public interface StaticEventProcessor {
     /**
      * inject an instance into the running instance with a name qualifier, is available via:
      * {@link InstanceSupplier}. Set the qualifier of the injected with {@link Inject#instanceName()}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance the instance to inject
      * @param name     the qualifying name of the instance to inject
@@ -111,6 +117,9 @@ public interface StaticEventProcessor {
      * inject an instance into the running instance with a name qualifier, is available via:
      * {@link InstanceSupplier}.
      * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance    the instance to inject
      * @param exposedType The type to make available at the injection site
@@ -124,6 +133,9 @@ public interface StaticEventProcessor {
      * {@link InstanceSupplier}.
      * Set the name with {@link Inject#instanceName()}
      * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class, String)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class, String)}
      *
      * @param instance    the instance to inject
      * @param exposedType The type to make available at the injection sit
