@@ -1,6 +1,8 @@
 package com.fluxtion.compiler.generation.inject;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.node.InstanceSupplier;
@@ -98,7 +100,6 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void injectContextServiceByName() {
-        writeSourceFile = true;
         callInit(false);
         sep(c -> {
             c.addNode(new InjectContextByNameAndType(), "injectionHolder");
@@ -113,6 +114,25 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("injectedService_1", injectionHolder.svc_1.get().getName());
         Assert.assertEquals("injectedService_2", injectionHolder.svc_2.get().getName());
         Assert.assertEquals("injectedInterface", injectionHolder.myInterface.get().getName());
+        onEvent("test");
+    }
+
+    @Test
+    public void lookupFromConetxtBYNameAndType() {
+        callInit(false);
+        sep(c -> {
+            c.addNode(new LookupInjectedServices(), "injectionHolder");
+        });
+        sep.injectNamedInstance(new MyService("injectedService_1"), "svc_1");
+        sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
+        sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
+        //
+        callInit(true);
+        init();
+        LookupInjectedServices injectionHolder = getField("injectionHolder");
+        Assert.assertEquals("injectedService_1", injectionHolder.svc_1.getName());
+        Assert.assertEquals("injectedService_2", injectionHolder.svc_2.getName());
+        Assert.assertEquals("injectedInterface", injectionHolder.myInterface.getName());
         onEvent("test");
     }
 
@@ -162,6 +182,27 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
         public String getContextValue() {
             return dateSupplier.get();
+        }
+    }
+
+    public static class LookupInjectedServices {
+
+        public MyService svc_1;
+        public MyService svc_2;
+        public MyInterface myInterface;
+        @Inject
+        public EventProcessorContext context;
+
+        @Initialise
+        public void init() {
+            svc_1 = context.getInjectedInstance(MyService.class, "svc_1");
+            svc_2 = context.getInjectedInstance(MyService.class, "svc_2");
+            myInterface = context.getInjectedInstance(MyInterface.class);
+        }
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
         }
     }
 

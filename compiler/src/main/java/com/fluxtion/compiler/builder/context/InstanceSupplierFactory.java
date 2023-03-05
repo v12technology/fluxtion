@@ -34,7 +34,8 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
         return new InstanceSupplierNode<>(
                 hasInstanceQualifier ? rawType.getCanonicalName() + "_" + instanceName : rawType.getCanonicalName(),
                 true,
-                null, typeName.replace(".", "_"));
+                null,
+                typeName.replace(".", "_"));
     }
 
     @Override

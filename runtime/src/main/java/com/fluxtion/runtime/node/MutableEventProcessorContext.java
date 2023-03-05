@@ -89,6 +89,16 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     }
 
     @Override
+    public <T> T getInjectedInstance(Class<T> instanceClass) {
+        return getContextProperty(instanceClass.getCanonicalName());
+    }
+
+    @Override
+    public <T> T getInjectedInstance(Class<T> instanceClass, String name) {
+        return getContextProperty(instanceClass.getCanonicalName() + "_" + name);
+    }
+
+    @Override
     public <K, V> V getContextProperty(K key) {
         return (V) map.get(key);
     }
