@@ -118,7 +118,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void lookupFromConetxtBYNameAndType() {
+    public void lookupFromContextByNameAndType() {
         callInit(false);
         sep(c -> {
             c.addNode(new LookupInjectedServices(), "injectionHolder");
@@ -134,6 +134,27 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("injectedService_2", injectionHolder.svc_2.getName());
         Assert.assertEquals("injectedInterface", injectionHolder.myInterface.getName());
         onEvent("test");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void failFastOnLookup() {
+        sep(c -> {
+            c.addNode(new LookupInjectedServices(), "injectionHolder");
+        });
+        callInit(true);
+        init();
+    }
+
+    @Test
+    public void allowNullOnLookup() {
+        sep(c -> {
+            c.addNode(new AllowNullLookup(), "injectionHolder");
+        });
+        callInit(true);
+        init();
+
+        AllowNullLookup injectionHolder = getField("injectionHolder");
+        Assert.assertNull("should be null service", injectionHolder.svc_1);
     }
 
 
@@ -198,6 +219,22 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
             svc_1 = context.getInjectedInstance(MyService.class, "svc_1");
             svc_2 = context.getInjectedInstance(MyService.class, "svc_2");
             myInterface = context.getInjectedInstance(MyInterface.class);
+        }
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
+        }
+    }
+
+    public static class AllowNullLookup {
+        public MyService svc_1;
+        @Inject
+        public EventProcessorContext context;
+
+        @Initialise
+        public void init() {
+            svc_1 = context.getInjectedInstanceAllowNull(MyService.class, "svc_1");
         }
 
         @OnEventHandler
