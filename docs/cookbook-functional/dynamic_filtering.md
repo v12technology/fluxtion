@@ -21,14 +21,14 @@ Apply a BiPredicate predicate to two streams:
 MarketUpdate's that match the subscription id are logged to console. The subscription is dynamically updated
 
 1. Build the event processor
-   1. Define two events, MarketUpdate and the Subscription
-   2. Create a stateless BiPredicate function that tests MarketUpdate and Subscription for a match on Id
-   3. Use the [EventFlow]({{site.fluxtion_src_compiler}}/builder/stream/EventFlow.java) builder to create an event stream
-   4. Construct a filter on the MarketUpdate stream using the BiPredicate and the Subscription stream 
+   - Define two events, MarketUpdate and the Subscription
+   - Create a stateless BiPredicate function that tests MarketUpdate and Subscription for a match on Id
+   - Use the [EventFlow]({{site.fluxtion_src_compiler}}/builder/stream/EventFlow.java) builder to create an event stream
+   - Construct a filter on the MarketUpdate stream using the BiPredicate and the Subscription stream 
 5. Running the example
-   5. Build and initialise the event processor
-   6. Fire a set of MarketUpdate events at the event processor
-   7. Update the subscription in realtime and fire the same set of events
+   - Build and initialise the event processor
+   - Fire a set of MarketUpdate events at the event processor
+   - Update the subscription in realtime and fire the same set of events
 
 **Code for dynamic filtering:**
 
