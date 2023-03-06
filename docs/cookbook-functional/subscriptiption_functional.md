@@ -2,7 +2,7 @@
 title: EventFeed integration
 parent: Cookbook functional
 has_children: false
-nav_order: 3
+nav_order: 1
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/cook_subscription_example/cookbook/src/main/java/com/fluxtion/example/cookbook/subscription
 ---

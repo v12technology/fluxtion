@@ -2,7 +2,7 @@
 title: Dynamic filtering
 parent: Cookbook functional
 has_children: false
-nav_order: 3
+nav_order: 2
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook-functional/src/main/java/com/fluxtion/example/cookbook_functional/dynamicfilter
 ---
