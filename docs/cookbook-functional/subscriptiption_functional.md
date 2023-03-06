@@ -1,5 +1,5 @@
 ---
-title: Functional subscription 
+title: EventFeed integration
 parent: Cookbook functional
 has_children: false
 nav_order: 3
