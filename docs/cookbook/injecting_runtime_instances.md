@@ -1,8 +1,8 @@
 ---
-title: Injecting runtime instance
+title: Injecting at runtime - InstanceSupplier
 parent: Cookbook
 has_children: false
-nav_order: 5
+nav_order: 6
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/inject/suppliedinstance
 ---
