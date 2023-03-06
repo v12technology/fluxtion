@@ -1,5 +1,5 @@
 ---
-title: Dynamic filtering subscription
+title: Dynamic filtering
 parent: Cookbook functional
 has_children: false
 nav_order: 3
