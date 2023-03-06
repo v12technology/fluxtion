@@ -1,7 +1,7 @@
 ---
 title: Sections proposal
 has_children: false
-nav_order: 102
+nav_order: 2000
 published: true
 ---
 

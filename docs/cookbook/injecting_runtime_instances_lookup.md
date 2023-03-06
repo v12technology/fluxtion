@@ -63,6 +63,7 @@ private Supplier<String> titleSupplier;
     }
 
     @Initialise
+    @SuppressWarnings("unchecked")
     public void init() {
         titleSupplier = context.getInjectedInstance(Supplier.class);
         upperCaseStrings = context.getInjectedInstance(List.class, "upper");
