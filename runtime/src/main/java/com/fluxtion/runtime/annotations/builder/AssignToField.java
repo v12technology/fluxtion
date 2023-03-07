@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
 public @interface AssignToField {
 
     String value();
