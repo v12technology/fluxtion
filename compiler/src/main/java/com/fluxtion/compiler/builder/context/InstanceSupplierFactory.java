@@ -26,7 +26,11 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
         if (genericFieldType instanceof ParameterizedType) {
             ParameterizedType aType = (ParameterizedType) genericFieldType;
             Type[] fieldArgTypes = aType.getActualTypeArguments();
-            rawType = ((Class) fieldArgTypes[0]);
+            if (fieldArgTypes[0] instanceof ParameterizedType) {
+                rawType = (Class) ((ParameterizedType) fieldArgTypes[0]).getRawType();
+            } else {
+                rawType = ((Class) fieldArgTypes[0]);
+            }
         } else {
             rawType = Object.class;
         }

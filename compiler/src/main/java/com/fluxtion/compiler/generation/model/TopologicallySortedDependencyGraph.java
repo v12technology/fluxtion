@@ -963,7 +963,22 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 Set<Map.Entry<String, Object>> entrySet = overrideMap.entrySet();
                 entrySet.forEach((overrideEntry) -> map.put(overrideEntry.getKey(), overrideEntry.getValue()));
                 map.put(NodeFactory.FIELD_KEY, field);
-                map.put(NodeFactory.INSTANCE_KEY, injecting.instanceName());
+                String instanceName = injecting.instanceName();
+                String instanceVariableName = injecting.instanceVariableName();
+                fieldNames = ReflectionUtils.getAllFields(object.getClass(), ReflectionUtils.withName(instanceVariableName));
+                if (instanceVariableName.length() > 0 && fieldNames.size() > 0) {
+                    java.lang.reflect.Field f = fieldNames.iterator().next();
+                    f.setAccessible(true);
+                    if (f.get(object) != null) {
+                        if (f.getType().equals(String.class)) {
+                            instanceName = (String) f.get(object);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "Inject.instanceVariableName() should be the variable name of a String field: " + f);
+                        }
+                    }
+                }
+                map.put(NodeFactory.INSTANCE_KEY, instanceName);
                 //merge configs to single map
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;
