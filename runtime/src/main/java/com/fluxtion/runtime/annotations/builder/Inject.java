@@ -72,7 +72,7 @@ public @interface Inject {
     String factoryName() default "";
 
     /**
-     * The name of the NodeFactory read from a variable in the receiver class.
+     * The name of the NodeFactory read from a variable in the annotated class.
      *
      * @return the NodeFactory name that will inject the instance into the graph
      */
@@ -85,4 +85,14 @@ public @interface Inject {
      * @return the runtime instance qualifer
      */
     String instanceName() default "";
+
+    /**
+     * Specify the qualifier of the instance to inject if using runtime instance injection with,
+     * read from a variable in the annotated class.
+     * <p>
+     * {@link com.fluxtion.runtime.StaticEventProcessor#injectNamedInstance(Object, String)}
+     *
+     * @return the runtime instance qualifer
+     */
+    String instanceVariableName() default "";
 }

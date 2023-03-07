@@ -47,7 +47,7 @@ public class InstanceSupplierNode<T> implements NamedNode, InstanceSupplier<T> {
 
     @Override
     public String getName() {
-        return name;
+        return name.replace(".", "_");
     }
 
     @Override
