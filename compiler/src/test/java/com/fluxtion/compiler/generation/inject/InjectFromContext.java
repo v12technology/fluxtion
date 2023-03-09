@@ -119,7 +119,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void lookupFromContextByNameAndType() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new LookupInjectedServices(), "injectionHolder");
         });
@@ -127,7 +127,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
         sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         LookupInjectedServices injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService_1", injectionHolder.svc_1.getName());
@@ -141,7 +141,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep(c -> {
             c.addNode(new LookupInjectedServices(), "injectionHolder");
         });
-        callInit(true);
+        enableInitCheck(true);
         init();
     }
 
@@ -150,7 +150,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep(c -> {
             c.addNode(new AllowNullLookup(), "injectionHolder");
         });
-        callInit(true);
+        enableInitCheck(true);
         init();
 
         AllowNullLookup injectionHolder = getField("injectionHolder");
