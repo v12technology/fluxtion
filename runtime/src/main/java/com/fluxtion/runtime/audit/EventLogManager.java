@@ -48,6 +48,7 @@ import java.util.logging.Logger;
  */
 public class EventLogManager implements Auditor {
 
+    public static final String NODE_NAME = "eventLogger";
     private LogRecordListener sink;
     private LogRecord logRecord;
     private Map<String, EventLogger> node2Logger;
@@ -144,6 +145,26 @@ public class EventLogManager implements Auditor {
 
     public void setClearAfterPublish(boolean clearAfterPublish) {
         this.clearAfterPublish = clearAfterPublish;
+    }
+
+    /**
+     * makes best efforts to dump the current {@link LogRecord} to the registered sink. Useful when error handling
+     * if an exception is thrown
+     */
+    public void publishLastRecord() {
+        logRecord.terminateRecord();
+        sink.processLogRecord(logRecord);
+        logRecord.clear();
+    }
+
+    /**
+     * makes best efforts to dump the current {@link LogRecord} to as a String. Useful when error handling
+     * if an exception is thrown
+     *
+     * @return The lates {@link LogRecord} as a String
+     */
+    public String lastRecordAsString() {
+        return logRecord.toString();
     }
 
     @Override

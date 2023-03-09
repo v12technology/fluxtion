@@ -20,7 +20,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     @Test
     public void injectIntoContext() {
 //        writeSourceFile = true;
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup");
         });
@@ -30,19 +30,19 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         ctxtMap.put("newKey", "newValue");
         sep.setContextParameterMap(ctxtMap);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         Assert.assertEquals("newValue", ctxtLookup.getContextValue());
     }
 
     @Test(expected = RuntimeException.class)
     public void injectIntoContextFailFast() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new FailFastInjectDataFromContext("newKey"), "ctxtLookup");
         });
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         FailFastInjectDataFromContext ctxtLookup = getField("ctxtLookup");
         ctxtLookup.getContextValue();
@@ -51,14 +51,14 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     @Test
     public void injectContextService() {
 //        writeSourceFile = true;
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByType(), "injectionHolder");
         });
         sep.injectInstance(new MyService("injectedService"));
         sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService", injectionHolder.myService.get().getName());
@@ -68,14 +68,14 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addLambdaAsInjectedService() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByType(), "injectionHolder");
         });
         sep.injectInstance(new MyService("injectedService"));
         sep.injectInstance((MyInterface) () -> "myLambdaInterface", MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService", injectionHolder.myService.get().getName());
@@ -85,13 +85,13 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addNamedLambda() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectNamedInterfaceType(), "injectionHolder");
         });
         sep.injectNamedInstance(() -> "myLambdaInterface", MyInterface.class, "svc_A");
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectNamedInterfaceType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("myLambdaInterface", injectionHolder.myInterface.get().getName());
@@ -100,7 +100,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void injectContextServiceByName() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByNameAndType(), "injectionHolder");
         });
@@ -108,7 +108,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
         sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByNameAndType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService_1", injectionHolder.svc_1.get().getName());
