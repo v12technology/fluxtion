@@ -208,11 +208,11 @@ public class EventProcessorConfig {
      * the level at which method tracing will take place.
      */
     public void addEventAudit(LogLevel tracingLogLevel) {
-        addAuditor(new EventLogManager().tracingOn(tracingLogLevel), "eventLogger");
+        addAuditor(new EventLogManager().tracingOn(tracingLogLevel), EventLogManager.NODE_NAME);
     }
 
     public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
-        addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), "eventLogger");
+        addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), EventLogManager.NODE_NAME);
     }
 
 

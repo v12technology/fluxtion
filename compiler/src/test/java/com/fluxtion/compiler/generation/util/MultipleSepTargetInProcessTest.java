@@ -173,7 +173,7 @@ public abstract class MultipleSepTargetInProcessTest {
         }
     }
 
-    public void callInit(boolean callInit) {
+    public void enableInitCheck(boolean callInit) {
         this.callInit = callInit;
     }
 

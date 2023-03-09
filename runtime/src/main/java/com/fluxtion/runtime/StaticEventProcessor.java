@@ -19,6 +19,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
@@ -88,6 +89,9 @@ public interface StaticEventProcessor {
     /**
      * inject an instance into the running instance, is available via:
      * {@link InstanceSupplier}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance the instance to inject
      */
@@ -99,6 +103,9 @@ public interface StaticEventProcessor {
     /**
      * inject an instance into the running instance with a name qualifier, is available via:
      * {@link InstanceSupplier}. Set the qualifier of the injected with {@link Inject#instanceName()}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance the instance to inject
      * @param name     the qualifying name of the instance to inject
@@ -111,6 +118,9 @@ public interface StaticEventProcessor {
      * inject an instance into the running instance with a name qualifier, is available via:
      * {@link InstanceSupplier}.
      * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
      *
      * @param instance    the instance to inject
      * @param exposedType The type to make available at the injection site
@@ -124,6 +134,9 @@ public interface StaticEventProcessor {
      * {@link InstanceSupplier}.
      * Set the name with {@link Inject#instanceName()}
      * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class, String)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class, String)}
      *
      * @param instance    the instance to inject
      * @param exposedType The type to make available at the injection sit
@@ -327,5 +340,19 @@ public interface StaticEventProcessor {
 
     default void setAuditLogProcessor(LogRecordListener logProcessor) {
         onEvent(new EventLogControlEvent(logProcessor));
+    }
+
+    /**
+     * Attempts to get the last {@link com.fluxtion.runtime.audit.LogRecord} as a String if one is available. Useful
+     * for error handling if there is a filure in the graph;
+     *
+     * @return The last logRecord as a String if it is available
+     */
+    default String getLastAuditLogRecord() {
+        try {
+            return this.<EventLogManager>getNodeById(EventLogManager.NODE_NAME).lastRecordAsString();
+        } catch (Throwable e) {
+            return "";
+        }
     }
 }

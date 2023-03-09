@@ -1,6 +1,8 @@
 package com.fluxtion.compiler.generation.inject;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.node.InstanceSupplier;
@@ -18,7 +20,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     @Test
     public void injectIntoContext() {
 //        writeSourceFile = true;
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup");
         });
@@ -28,19 +30,19 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         ctxtMap.put("newKey", "newValue");
         sep.setContextParameterMap(ctxtMap);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         Assert.assertEquals("newValue", ctxtLookup.getContextValue());
     }
 
     @Test(expected = RuntimeException.class)
     public void injectIntoContextFailFast() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new FailFastInjectDataFromContext("newKey"), "ctxtLookup");
         });
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         FailFastInjectDataFromContext ctxtLookup = getField("ctxtLookup");
         ctxtLookup.getContextValue();
@@ -49,14 +51,14 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
     @Test
     public void injectContextService() {
 //        writeSourceFile = true;
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByType(), "injectionHolder");
         });
         sep.injectInstance(new MyService("injectedService"));
         sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService", injectionHolder.myService.get().getName());
@@ -66,14 +68,14 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addLambdaAsInjectedService() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByType(), "injectionHolder");
         });
         sep.injectInstance(new MyService("injectedService"));
         sep.injectInstance((MyInterface) () -> "myLambdaInterface", MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService", injectionHolder.myService.get().getName());
@@ -83,13 +85,13 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addNamedLambda() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectNamedInterfaceType(), "injectionHolder");
         });
         sep.injectNamedInstance(() -> "myLambdaInterface", MyInterface.class, "svc_A");
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectNamedInterfaceType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("myLambdaInterface", injectionHolder.myInterface.get().getName());
@@ -98,8 +100,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void injectContextServiceByName() {
-        writeSourceFile = true;
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectContextByNameAndType(), "injectionHolder");
         });
@@ -107,13 +108,53 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
         sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
         //
-        callInit(true);
+        enableInitCheck(true);
         init();
         InjectContextByNameAndType injectionHolder = getField("injectionHolder");
         Assert.assertEquals("injectedService_1", injectionHolder.svc_1.get().getName());
         Assert.assertEquals("injectedService_2", injectionHolder.svc_2.get().getName());
         Assert.assertEquals("injectedInterface", injectionHolder.myInterface.get().getName());
         onEvent("test");
+    }
+
+    @Test
+    public void lookupFromContextByNameAndType() {
+        enableInitCheck(false);
+        sep(c -> {
+            c.addNode(new LookupInjectedServices(), "injectionHolder");
+        });
+        sep.injectNamedInstance(new MyService("injectedService_1"), "svc_1");
+        sep.injectNamedInstance(new MyService("injectedService_2"), "svc_2");
+        sep.injectInstance(new MyService("injectedInterface"), MyInterface.class);
+        //
+        enableInitCheck(true);
+        init();
+        LookupInjectedServices injectionHolder = getField("injectionHolder");
+        Assert.assertEquals("injectedService_1", injectionHolder.svc_1.getName());
+        Assert.assertEquals("injectedService_2", injectionHolder.svc_2.getName());
+        Assert.assertEquals("injectedInterface", injectionHolder.myInterface.getName());
+        onEvent("test");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void failFastOnLookup() {
+        sep(c -> {
+            c.addNode(new LookupInjectedServices(), "injectionHolder");
+        });
+        enableInitCheck(true);
+        init();
+    }
+
+    @Test
+    public void allowNullOnLookup() {
+        sep(c -> {
+            c.addNode(new AllowNullLookup(), "injectionHolder");
+        });
+        enableInitCheck(true);
+        init();
+
+        AllowNullLookup injectionHolder = getField("injectionHolder");
+        Assert.assertNull("should be null service", injectionHolder.svc_1);
     }
 
 
@@ -162,6 +203,43 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
         public String getContextValue() {
             return dateSupplier.get();
+        }
+    }
+
+    public static class LookupInjectedServices {
+
+        public MyService svc_1;
+        public MyService svc_2;
+        public MyInterface myInterface;
+        @Inject
+        public EventProcessorContext context;
+
+        @Initialise
+        public void init() {
+            svc_1 = context.getInjectedInstance(MyService.class, "svc_1");
+            svc_2 = context.getInjectedInstance(MyService.class, "svc_2");
+            myInterface = context.getInjectedInstance(MyInterface.class);
+        }
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
+        }
+    }
+
+    public static class AllowNullLookup {
+        public MyService svc_1;
+        @Inject
+        public EventProcessorContext context;
+
+        @Initialise
+        public void init() {
+            svc_1 = context.getInjectedInstanceAllowNull(MyService.class, "svc_1");
+        }
+
+        @OnEventHandler
+        public boolean updated(String in) {
+            return true;
         }
     }
 

@@ -12,6 +12,7 @@ import com.fluxtion.runtime.input.SubscriptionManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class MutableEventProcessorContext implements EventProcessorContext, NamedNode {
 
@@ -86,6 +87,30 @@ public final class MutableEventProcessorContext implements EventProcessorContext
 
     public <K, V> V put(K key, V value) {
         return (V) map.put(key, value);
+    }
+
+    @Override
+    public <T> T getInjectedInstance(Class<T> instanceClass) {
+        return Objects.requireNonNull(
+                getContextProperty(instanceClass.getCanonicalName()),
+                "no instance injected into context of type:" + instanceClass);
+    }
+
+    @Override
+    public <T> T getInjectedInstance(Class<T> instanceClass, String name) {
+        return Objects.requireNonNull(
+                getContextProperty(instanceClass.getCanonicalName() + "_" + name),
+                "no instance injected into context of type:" + instanceClass + " named:" + name);
+    }
+
+    @Override
+    public <T> T getInjectedInstanceAllowNull(Class<T> instanceClass) {
+        return getContextProperty(instanceClass.getCanonicalName());
+    }
+
+    @Override
+    public <T> T getInjectedInstanceAllowNull(Class<T> instanceClass, String name) {
+        return getContextProperty(instanceClass.getCanonicalName() + "_" + name);
     }
 
     @Override
