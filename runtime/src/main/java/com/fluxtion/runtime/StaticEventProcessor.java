@@ -19,6 +19,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
@@ -339,5 +340,19 @@ public interface StaticEventProcessor {
 
     default void setAuditLogProcessor(LogRecordListener logProcessor) {
         onEvent(new EventLogControlEvent(logProcessor));
+    }
+
+    /**
+     * Attempts to get the last {@link com.fluxtion.runtime.audit.LogRecord} as a String if one is available. Useful
+     * for error handling if there is a filure in the graph;
+     *
+     * @return The last logRecord as a String if it is available
+     */
+    default String getLastAuditLogRecord() {
+        try {
+            return this.<EventLogManager>getNodeById(EventLogManager.NODE_NAME).lastRecordAsString();
+        } catch (Throwable e) {
+            return "";
+        }
     }
 }

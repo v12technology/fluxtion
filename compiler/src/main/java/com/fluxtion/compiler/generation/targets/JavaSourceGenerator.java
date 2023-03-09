@@ -29,6 +29,7 @@ import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
@@ -1129,6 +1130,7 @@ public class JavaSourceGenerator {
         importList.add(MutableEventProcessorContext.class.getCanonicalName());
         importList.add(Map.class.getCanonicalName());
         importList.add(EventFeed.class.getCanonicalName());
+        importList.add(EventLogManager.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);

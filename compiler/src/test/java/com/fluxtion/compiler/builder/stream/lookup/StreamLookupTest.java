@@ -31,7 +31,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testLongLookup() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             EventFlow.subscribe(MarketUpdate.class)
                     .filterByProperty(
@@ -43,7 +43,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
         });
         sep.injectNamedInstance((ToLongFunction<String>) new MarketReferenceData()::toIdLong, ToLongFunction.class, "marketRefData");
-        callInit(true);
+        enableInitCheck(true);
         init();
         sendMarketEvents();
         Assert.assertEquals(2, (int) getStreamed("count"));
@@ -51,7 +51,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testIntLookup() {
-        callInit(false);
+        enableInitCheck(false);
         sep(c -> {
             EventFlow.subscribe(MarketUpdate.class)
                     .filterByProperty(
@@ -63,7 +63,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
         });
         sep.injectNamedInstance((ToIntFunction<String>) new MarketReferenceData()::toId, ToIntFunction.class, "marketRefData");
-        callInit(true);
+        enableInitCheck(true);
         init();
         sendMarketEvents();
         Assert.assertEquals(2, (int) getStreamed("count"));

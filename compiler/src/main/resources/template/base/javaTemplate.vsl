@@ -165,4 +165,13 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     public ${className} newInstance(Map<Object, Object> contextMap){
         return new ${className}();
     }
+
+    public String getLastAuditLogRecord() {
+        try {
+            EventLogManager eventLogManager = (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
+            return eventLogManager.lastRecordAsString();
+        } catch (Throwable e) {
+            return "";
+        }
+    }
 }
