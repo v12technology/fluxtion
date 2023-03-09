@@ -32,36 +32,44 @@ public final class NullEventLogger extends EventLogger {
     }
 
     @Override
-    public void log(String key, boolean value, EventLogControlEvent.LogLevel logLevel) {
+    public EventLogger log(String key, boolean value, LogLevel logLevel) {
+        return null;
     }
 
     @Override
-    public void log(String key, CharSequence value, EventLogControlEvent.LogLevel logLevel) {
+    public EventLogger log(String key, CharSequence value, LogLevel logLevel) {
+        return null;
     }
 
     @Override
-    public void log(String key, int value, LogLevel logLevel) {
+    public EventLogger log(String key, int value, LogLevel logLevel) {
+        return this;
     }
 
     @Override
-    public void log(String key, long value, LogLevel logLevel) {
+    public EventLogger log(String key, long value, LogLevel logLevel) {
+        return null;
     }
 
 
     @Override
-    public void log(String key, double value, EventLogControlEvent.LogLevel logLevel) {
+    public EventLogger log(String key, double value, EventLogControlEvent.LogLevel logLevel) {
+        return this;
     }
 
     @Override
-    public void log(String key, char value, EventLogControlEvent.LogLevel logLevel) {
+    public EventLogger log(String key, char value, LogLevel logLevel) {
+        return null;
     }
 
     @Override
-    public void log(String key, Object value, LogLevel logLevel) {
+    public EventLogger log(String key, Object value, LogLevel logLevel) {
+        return this;
     }
 
     @Override
-    public void logNodeInvocation(EventLogControlEvent.LogLevel logLevel) {
+    public EventLogger logNodeInvocation(EventLogControlEvent.LogLevel logLevel) {
+        return this;
     }
 
 }
