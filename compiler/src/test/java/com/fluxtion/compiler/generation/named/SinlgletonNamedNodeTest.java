@@ -2,7 +2,7 @@ package com.fluxtion.compiler.generation.named;
 
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.node.SingletonNode;
+import com.fluxtion.runtime.node.SingleNamedNode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public class SinlgletonNamedNodeTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("test", bbb.value);
     }
 
-    public static class MyNamedStringHandler extends SingletonNode {
+    public static class MyNamedStringHandler extends SingleNamedNode {
 
         public String value;
 

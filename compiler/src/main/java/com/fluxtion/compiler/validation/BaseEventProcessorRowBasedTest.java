@@ -2,10 +2,15 @@ package com.fluxtion.compiler.validation;
 
 import com.fluxtion.extension.csvcompiler.RowMarshaller;
 import com.fluxtion.runtime.EventProcessor;
+import lombok.SneakyThrows;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor;
 
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A base class users can extend to drive validation tests against an {@link EventProcessor} from a stream of
@@ -152,4 +157,39 @@ public class BaseEventProcessorRowBasedTest {
                 .useSyntheticTime(useSyntheticTime)
                 .validate();
     }
+
+    /**
+     * Converts a set of yaml docs to a stream of type T. Supply a package prefix to reduce the yaml size:
+     * <pre>
+     *  String data = """
+     *         MyData(in=in_1, out=out_1)
+     *         ---
+     *         MyData(in=in_2, out=out_2)
+     *         """;
+     *  yamlToStream(data, "com.somecompany.somedepartment.someteam.withareallylongname")
+     *      .forEach(System.out::println);
+     * </pre>
+     */
+    @SneakyThrows
+    public static <T> Stream<T> yamlToStream(String doc, String packagePrefix) {
+        Yaml yaml = new Yaml(new Constructor(packagePrefix));
+        Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
+        @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
+        return castStream;
+    }
+
+    public static <T> Stream<T> yamlToStream(String doc, Class<T> targetClass) {
+        Yaml yaml = new Yaml(new Constructor(targetClass));
+        Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
+        @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
+        return castStream;
+    }
+
+    public static <T> Stream<T> yamlToStream(String doc) {
+        Yaml yaml = new Yaml(new CompactConstructor());
+        Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
+        @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
+        return castStream;
+    }
+
 }

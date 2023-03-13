@@ -5,7 +5,7 @@ import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.node.SingletonNode;
+import com.fluxtion.runtime.node.SingleNamedNode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class MultipleInstances {
         Assert.assertNotEquals(h1.context.getSubscriptionManager(), h2.context.getSubscriptionManager());
     }
 
-    public static class Handler extends SingletonNode {
+    public static class Handler extends SingleNamedNode {
 
         @Inject
         public EventProcessorContext context;
