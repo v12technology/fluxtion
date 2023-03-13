@@ -35,6 +35,8 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.Start;
+import com.fluxtion.runtime.annotations.Stop;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
@@ -106,6 +108,14 @@ public class SimpleEventProcessorModel {
      * life-cycle callback methods for initialise, sorted in call order.
      */
     private final ArrayList<CbMethodHandle> initialiseMethods;
+    /**
+     * life-cycle callback methods for initialise, sorted in call order.
+     */
+    private final ArrayList<CbMethodHandle> startMethods;
+    /**
+     * life-cycle callback methods for initialise, sorted in call order.
+     */
+    private final ArrayList<CbMethodHandle> stopMethods;
 
     /**
      * life-cycle callback methods for end of batch, sorted in call order.
@@ -246,6 +256,8 @@ public class SimpleEventProcessorModel {
         constructorArgumentMap = new HashMap<>();
         beanPropertyMap = new HashMap<>();
         initialiseMethods = new ArrayList<>();
+        startMethods = new ArrayList<>();
+        stopMethods = new ArrayList<>();
         tearDownMethods = new ArrayList<>();
         batchEndMethods = new ArrayList<>();
         batchPauseMethods = new ArrayList<>();
@@ -487,11 +499,25 @@ public class SimpleEventProcessorModel {
                         LOGGER.debug("initialise call back : " + validCb);
                     }
                 }
+                if (annotationInHierarchy(method, Start.class)) {
+                    startMethods.add(new CbMethodHandle(method, object, name));
+                    if (LOGGER.isDebugEnabled()) {
+                        final String validCb = name + "." + method.getName() + "()";
+                        LOGGER.debug("start call back : " + validCb);
+                    }
+                }
                 if (annotationInHierarchy(method, TearDown.class)) {
                     tearDownMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
                         LOGGER.debug("tear down call back : " + validCb);
+                    }
+                }
+                if (annotationInHierarchy(method, Stop.class)) {
+                    stopMethods.add(0, new CbMethodHandle(method, object, name));
+                    if (LOGGER.isDebugEnabled()) {
+                        final String validCb = name + "." + method.getName() + "()";
+                        LOGGER.debug("stop call back : " + validCb);
                     }
                 }
             }
@@ -1079,6 +1105,14 @@ public class SimpleEventProcessorModel {
 
     public List<CbMethodHandle> getInitialiseMethods() {
         return Collections.unmodifiableList(initialiseMethods);
+    }
+
+    public List<CbMethodHandle> getStartMethods() {
+        return Collections.unmodifiableList(startMethods);
+    }
+
+    public List<CbMethodHandle> getStopMethods() {
+        return Collections.unmodifiableList(stopMethods);
     }
 
     public List<CbMethodHandle> getTearDownMethods() {

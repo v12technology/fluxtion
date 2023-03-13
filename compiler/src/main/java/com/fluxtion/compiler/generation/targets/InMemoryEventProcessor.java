@@ -55,6 +55,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private Object currentEvent;
     private boolean processing = false;
     private boolean isDefaultHandling;
+    private boolean initCalled = false;
 
     public InMemoryEventProcessor(SimpleEventProcessorModel simpleEventProcessorModel) {
         this.simpleEventProcessorModel = simpleEventProcessorModel;
@@ -247,12 +248,30 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void init() {
+        initCalled = true;
         buildDispatch();
         simpleEventProcessorModel.getInitialiseMethods().forEach(this::invokeRunnable);
     }
 
     @Override
+    public void start() {
+        if (!initCalled) {
+            throw new RuntimeException("init() must be called before start()");
+        }
+        simpleEventProcessorModel.getStartMethods().forEach(this::invokeRunnable);
+    }
+
+    @Override
+    public void stop() {
+        if (!initCalled) {
+            throw new RuntimeException("init() must be called before start()");
+        }
+        simpleEventProcessorModel.getStopMethods().forEach(this::invokeRunnable);
+    }
+
+    @Override
     public void tearDown() {
+        initCalled = false;
         simpleEventProcessorModel.getTearDownMethods().forEach(this::invokeRunnable);
     }
 

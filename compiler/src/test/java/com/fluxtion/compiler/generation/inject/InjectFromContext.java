@@ -35,6 +35,25 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("newValue", ctxtLookup.getContextValue());
     }
 
+    @Test
+    public void injectIntoContextTwice() {
+//        writeSourceFile = true;
+        enableInitCheck(false);
+        sep(c -> {
+            c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup");
+            c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup_2");
+        });
+        InjectDataFromContext ctxtLookup = getField("ctxtLookup");
+        Assert.assertNull(ctxtLookup.getContextValue());
+        Map<Object, Object> ctxtMap = new HashMap<>();
+        ctxtMap.put("newKey", "newValue");
+        sep.setContextParameterMap(ctxtMap);
+        //
+        enableInitCheck(true);
+        init();
+        Assert.assertEquals("newValue", ctxtLookup.getContextValue());
+    }
+
     @Test(expected = RuntimeException.class)
     public void injectIntoContextFailFast() {
         enableInitCheck(false);

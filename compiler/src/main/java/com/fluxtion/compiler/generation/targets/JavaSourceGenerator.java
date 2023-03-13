@@ -74,6 +74,16 @@ public class JavaSourceGenerator {
      */
     private final ArrayList<String> initialiseMethodList;
     /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order, in a list.
+     */
+    private final ArrayList<String> startMethodList;
+    /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order, in a list.
+     */
+    private final ArrayList<String> stopMethodList;
+    /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
@@ -120,6 +130,16 @@ public class JavaSourceGenerator {
      * sorted in call order.
      */
     private String initialiseMethods;
+    /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order.
+     */
+    private String startMethods;
+    /**
+     * String representation of life-cycle callback methods for initialise,
+     * sorted in call order.
+     */
+    private String stopMethods;
     /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
@@ -212,6 +232,8 @@ public class JavaSourceGenerator {
         this.isInlineEventHandling = inlineEventHandling;
         this.assignPrivateMembers = assignPrivateMembers;
         initialiseMethodList = new ArrayList<>();
+        startMethodList = new ArrayList<>();
+        stopMethodList = new ArrayList<>();
         batchEndMethodList = new ArrayList<>();
         batchPauseMethodList = new ArrayList<>();
         eventEndMethodList = new ArrayList<>();
@@ -228,6 +250,8 @@ public class JavaSourceGenerator {
 
     public void buildSourceModel() throws Exception {
         buildMethodSource(model.getInitialiseMethods(), initialiseMethodList);
+        buildMethodSource(model.getStartMethods(), startMethodList);
+        buildMethodSource(model.getStopMethods(), stopMethodList);
         buildMethodSource(model.getBatchPauseMethods(), batchPauseMethodList);
         buildMethodSource(model.getEventEndMethods(), eventEndMethodList);
         buildMethodSource(model.getBatchEndMethods(), batchEndMethodList);
@@ -246,6 +270,9 @@ public class JavaSourceGenerator {
             initialiseMethods += (firstLine ? "" : "\n") + initialiseMethod;
             firstLine = false;
         }
+
+        startMethods = startMethodList.stream().collect(Collectors.joining("\n"));
+        stopMethods = stopMethodList.stream().collect(Collectors.joining("\n"));
 
         batchPauseMethods = "";
         firstLine = true;
@@ -967,6 +994,14 @@ public class JavaSourceGenerator {
 
     public String getInitialiseMethods() {
         return initialiseMethods;
+    }
+
+    public String getStartMethods() {
+        return startMethods;
+    }
+
+    public String getStopMethods() {
+        return stopMethods;
     }
 
     public ArrayList<String> getBatchEndMethodList() {

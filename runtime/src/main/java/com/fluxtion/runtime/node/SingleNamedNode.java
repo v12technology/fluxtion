@@ -7,11 +7,11 @@ import java.util.Objects;
 /**
  * Implements {@link NamedNode} overriding hashcode and equals using the name as the equality test and hash code seed
  */
-public abstract class SingletonNode extends EventLogNode implements NamedNode {
+public abstract class SingleNamedNode extends EventLogNode implements NamedNode {
 
     private final String name;
 
-    public SingletonNode(String name) {
+    public SingleNamedNode(String name) {
         this.name = name;
     }
 
@@ -24,12 +24,12 @@ public abstract class SingletonNode extends EventLogNode implements NamedNode {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SingletonNode that = (SingletonNode) o;
+        SingleNamedNode that = (SingleNamedNode) o;
         return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return name.hashCode();
     }
 }
