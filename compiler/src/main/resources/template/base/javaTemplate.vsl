@@ -46,6 +46,7 @@ EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, Batc
 //Node declarations
 ${MODEL.nodeDeclarations}
 //Dirty flags
+private boolean initCalled = false;
 private boolean processing = false;
 private boolean buffering = false;
 private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
@@ -104,13 +105,31 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     @Override
     public void init() {
+        initCalled = true;
        //initialise dirty lookup map
        isDirty("test");
        ${MODEL.initialiseMethods}
     }
 
     @Override
+    public void start() {
+        if(!initCalled){
+            throw new RuntimeException("init() must be called before start()");
+        }
+        ${MODEL.startMethods}
+    }
+
+    @Override
+    public void stop() {
+        if(!initCalled){
+            throw new RuntimeException("init() must be called before stop()");
+        }
+        ${MODEL.stopMethods}
+    }
+
+    @Override
     public void tearDown() {
+        initCalled = false;
        ${MODEL.tearDownMethods}
     }
 

@@ -189,6 +189,20 @@ public abstract class MultipleSepTargetInProcessTest {
         return sep;
     }
 
+    protected StaticEventProcessor start() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).start();
+        }
+        return sep;
+    }
+
+    protected StaticEventProcessor stop() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).stop();
+        }
+        return sep;
+    }
+
     protected String pckName() {
         String pckg = this.getClass().getCanonicalName() + "_" + testName.getMethodName().replaceAll("\\[([0-9]*?)]", "");
         pckg = pckg.toLowerCase();
