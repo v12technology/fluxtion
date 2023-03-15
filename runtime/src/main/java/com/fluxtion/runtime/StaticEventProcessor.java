@@ -29,6 +29,7 @@ import com.fluxtion.runtime.node.InstanceSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
+import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -354,5 +355,9 @@ public interface StaticEventProcessor {
         } catch (Throwable e) {
             return "";
         }
+    }
+
+    default void setClockStrategy(ClockStrategy clockStrategy) {
+        onEvent(ClockStrategy.registerClockEvent(clockStrategy));
     }
 }
