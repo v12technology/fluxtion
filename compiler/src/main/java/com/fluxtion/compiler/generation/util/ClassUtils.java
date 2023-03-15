@@ -36,6 +36,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -96,6 +97,7 @@ public interface ClassUtils {
                 || type == Class.class
                 || type.isEnum()
                 || List.class.isAssignableFrom(type)
+                || Set.class.isAssignableFrom(type)
                 || type.isArray()
                 || MethodReferenceReflection.class.isAssignableFrom(type)
                 || zeroArg;
@@ -125,6 +127,29 @@ public interface ClassUtils {
 
             });
             primitiveVal = newList.stream().map(f -> mapToJavaSource(f, nodeFields, importList)).collect(Collectors.joining(", ", "Arrays.asList(", ")"));
+        }
+        if (Set.class.isAssignableFrom(clazz)) {
+            importList.add(Arrays.class);
+            importList.add(HashSet.class);
+            Set values = (Set) primitiveVal;
+            Set newList = new HashSet();
+            values.stream().forEach(item -> {
+                boolean foundMatch = false;
+                for (Field nodeField : nodeFields) {
+                    if (nodeField.instance.equals(item)) {
+                        newList.add(nodeField.instance);
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if (!foundMatch) {
+                    newList.add(item);
+                }
+
+            });
+            primitiveVal = newList.stream()
+                    .map(f -> mapToJavaSource(f, nodeFields, importList)).
+                    collect(Collectors.joining(", ", "new HashSet<>(Arrays.asList(", "))"));
         }
         if (clazz.isArray()) {
             Class arrayType = clazz.getComponentType();
