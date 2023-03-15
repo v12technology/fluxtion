@@ -271,8 +271,8 @@ public class JavaSourceGenerator {
             firstLine = false;
         }
 
-        startMethods = startMethodList.stream().collect(Collectors.joining("\n"));
-        stopMethods = stopMethodList.stream().collect(Collectors.joining("\n"));
+        startMethods = String.join("\n", startMethodList);
+        stopMethods = String.join("\n", stopMethodList);
 
         batchPauseMethods = "";
         firstLine = true;
