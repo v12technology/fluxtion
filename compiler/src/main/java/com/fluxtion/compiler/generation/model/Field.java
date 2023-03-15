@@ -64,6 +64,7 @@ public class Field {
         public Object primitiveVal;
         public ArrayList<Field> elements;
         public String derivedVal;
+        private Class<?> collectionClass;
 
         public MappedField(String mappedName, Field f) {
             super(f.fqn, f.name, f.instance, f.publicAccess);
@@ -73,8 +74,9 @@ public class Field {
             elements = new ArrayList<>();
         }
 
-        public MappedField(String mappedName) {
-            super(List.class.getName(), null, null, false);
+        public MappedField(String mappedName, Class<?> collectionClass) {
+            super(collectionClass.getName(), null, null, false);
+            this.collectionClass = collectionClass;
             this.mappedName = mappedName;
             collection = true;
             elements = new ArrayList<>();
@@ -90,7 +92,7 @@ public class Field {
 
         public Class<?> parentClass() {
             if (collection) {
-                return List.class;
+                return collectionClass;
             } else if (primitive) {
                 if (primitiveVal.getClass() == Integer.class) {
                     return int.class;
@@ -124,7 +126,7 @@ public class Field {
 
         public Class<?> realClass() {
             if (collection) {
-                return List.class;
+                return collectionClass;
             } else if (primitive) {
                 return primitiveVal.getClass();
             } else {
