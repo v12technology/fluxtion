@@ -20,11 +20,16 @@ package com.fluxtion.compiler.generation.constructor;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.event.Event;
+import lombok.Data;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
@@ -37,7 +42,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructorSimple() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(
                     new ConfigPublisher(
@@ -51,7 +55,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructorWithCollection() {
-        fixedPkg = true;
         sep(c -> {
             List<OrderHandler> orderhandlerList = Arrays.asList(
                     c.addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.2f)),
@@ -77,7 +80,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructorForClass() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(new MyClassHolder(String.class));
         });
@@ -85,7 +87,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testPrimitiveCollection() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(new PrimitiveCollections(
                     new boolean[]{true, true, false},
@@ -93,6 +94,38 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
                     new String[]{"one", "two"}
             ));
         });
+    }
+
+    @Test
+    public void setConstructorTest() {
+        sep(c -> {
+            Set<String> stringSet = new HashSet<>();
+            stringSet.add("TEST");
+            stringSet.add("bill");
+            stringSet.add("TEST");
+            stringSet.add("greedy");
+            c.addNode(new StringSet(stringSet), "stringSetHolder");
+        });
+        Assert.assertEquals(
+                getField("stringSetHolder", StringSet.class).getMySet(),
+                new HashSet<>(Arrays.asList("TEST", "bill", "greedy")));
+    }
+
+    @Test
+    public void setPropertyTest() {
+        sep(c -> {
+            Set<String> stringSet = new HashSet<>();
+            stringSet.add("TEST");
+            stringSet.add("bill");
+            stringSet.add("TEST");
+            stringSet.add("greedy");
+            StringSetProperty stringSetProperty = new StringSetProperty();
+            stringSetProperty.setMySet(stringSet);
+            c.addNode(stringSetProperty, "stringSetHolder");
+        });
+        Assert.assertEquals(
+                getField("stringSetHolder", StringSetProperty.class).getMySet(),
+                new HashSet<>(Arrays.asList("TEST", "bill", "greedy")));
     }
 
     public static final class ConfigEvent implements Event {
@@ -133,11 +166,27 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static final class NameHolder {
+    public static class StringSet {
 
-        public enum NAMES {
-            TEST, WAY
+        private final Set<String> mySet;
+
+        public StringSet(@AssignToField("mySet") Set<String> mySet) {
+            this.mySet = mySet;
         }
+
+        public Set<String> getMySet() {
+            return mySet;
+        }
+    }
+
+    @Data
+    public static class StringSetProperty {
+
+        private Set<String> mySet;
+
+    }
+
+    public static final class NameHolder {
 
         public final String name;
         private final ConfigPublisher publisher;
@@ -147,17 +196,17 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         private String[] matchingRegex;
         private String[] matchingRegex2;
 
+        public NameHolder(String name, ConfigPublisher publisher) {
+            this.name = name;
+            this.publisher = publisher;
+        }
+
         public List<OrderHandler> getHandlerList() {
             return handlerList;
         }
 
         public void setHandlerList(List<OrderHandler> handlerList) {
             this.handlerList = handlerList;
-        }
-
-        public NameHolder(String name, ConfigPublisher publisher) {
-            this.name = name;
-            this.publisher = publisher;
         }
 
         public OrderHandler getOrderHandler() {
@@ -195,6 +244,10 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
         public void setMatchingRegex2(String[] matchingRegex2) {
             this.matchingRegex2 = matchingRegex2;
+        }
+
+        public enum NAMES {
+            TEST, WAY
         }
 
     }

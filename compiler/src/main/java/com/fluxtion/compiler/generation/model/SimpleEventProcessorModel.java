@@ -411,10 +411,11 @@ public class SimpleEventProcessorModel {
                         final Field.MappedField mappedField = new Field.MappedField(fieldName, getFieldForInstance(parent));
                         mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(mappedField);
-                    } else if (List.class.isAssignableFrom(parent.getClass())) {
+                    } else if (List.class.isAssignableFrom(parent.getClass()) || Set.class.isAssignableFrom(parent.getClass())) {
                         //
-                        Field.MappedField collectionField = new Field.MappedField(fieldName);
-                        List<?> collection = (List<?>) parent;
+                        Class collectionClass = List.class.isAssignableFrom(parent.getClass()) ? List.class : Set.class;
+                        Field.MappedField collectionField = new Field.MappedField(fieldName, collectionClass);
+                        Collection<?> collection = (Collection<?>) parent;
                         for (Object element : collection) {
                             collectionField.addField(getFieldForInstance(element));
                         }

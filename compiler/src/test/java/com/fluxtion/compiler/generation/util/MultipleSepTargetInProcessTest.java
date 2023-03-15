@@ -24,6 +24,7 @@ import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
+import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.JULLogRecordListener;
@@ -61,21 +62,23 @@ import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
 @RunWith(Parameterized.class)
 public abstract class MultipleSepTargetInProcessTest {
 
+    //parametrized test config
+    protected final boolean compiledSep;
+    @Rule
+    public TestName testName = new TestName();
     protected StaticEventProcessor sep;
     protected boolean generateMetaInformation = false;
     protected boolean writeSourceFile = false;
     protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
-    private boolean addAuditor = false;
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
-    //parametrized test config
-    protected final boolean compiledSep;
     protected boolean callInit;
     protected boolean inlineCompiled = false;
-    private InMemoryEventProcessor inMemorySep;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
+    private boolean addAuditor = false;
+    private InMemoryEventProcessor inMemorySep;
 
     public MultipleSepTargetInProcessTest(boolean compiledSep) {
         this.compiledSep = compiledSep;
@@ -85,9 +88,6 @@ public abstract class MultipleSepTargetInProcessTest {
     public static Collection<?> compiledSepStrategy() {
         return Arrays.asList(false, true);
     }
-
-    @Rule
-    public TestName testName = new TestName();
 
     @Before
     public void beforeTest() {
@@ -100,6 +100,10 @@ public abstract class MultipleSepTargetInProcessTest {
     @After
     public void afterTest() {
         tearDown();
+    }
+
+    protected EventProcessor<?> eventProcessor() {
+        return (EventProcessor<?>) sep;
     }
 
     protected StaticEventProcessor sep(RootNodeConfig rootNode) {
