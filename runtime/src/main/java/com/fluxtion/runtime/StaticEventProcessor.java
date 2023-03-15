@@ -326,7 +326,7 @@ public interface StaticEventProcessor {
 
     @SuppressWarnings("unchecked")
     default <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
-        return (A) this.getClass().getField(id).get(this);
+        return getNodeById(id);
     }
 
     default void addEventFeed(EventFeed eventProcessorFeed) {
