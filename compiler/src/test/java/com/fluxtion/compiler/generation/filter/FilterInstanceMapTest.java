@@ -8,14 +8,15 @@ import lombok.Value;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class FilterDescriptionTest extends MultipleSepTargetInProcessTest {
+public class FilterInstanceMapTest extends MultipleSepTargetInProcessTest {
 
-    public FilterDescriptionTest(boolean compiledSep) {
+    public FilterInstanceMapTest(boolean compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testFilterDynamic() {
+        writeSourceFile = true;
         sep(c -> {
             FilteredByInt hiltonById = c.addNode(
                     new FilteredByInt("HILTON"), "hiltonNode");
@@ -41,12 +42,14 @@ public class FilterDescriptionTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
+    @SuppressWarnings("unused")
     public static class FilteredByInt {
 
         private final String humanReadableName;
         private String updatedValue;
 
         @OnEventHandler
+        @SuppressWarnings("unused")
         public boolean filterMe(MyFilterEvent event) {
             updatedValue = event.getData();
             return true;

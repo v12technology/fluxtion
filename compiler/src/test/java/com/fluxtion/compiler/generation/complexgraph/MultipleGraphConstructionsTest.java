@@ -11,18 +11,17 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Greg Higgins
  */
-public class MultipleGraphConstructions extends MultipleSepTargetInProcessTest {
+public class MultipleGraphConstructionsTest extends MultipleSepTargetInProcessTest {
 
-    public MultipleGraphConstructions(boolean compiledSep) {
+    public MultipleGraphConstructionsTest(boolean compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void test_wc() {
-        sep(c ->{
+        sep(c -> {
             WordCounter root = c.addPublicNode(new WordCounter(), "result");
             root.anyCharHandler = (new CharHandler());
             root.eolHandler = (new CharHandler.EolCharEventHandler('\n'));
@@ -44,7 +43,7 @@ public class MultipleGraphConstructions extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test_wc_generic() {
-        sep(c ->{
+        sep(c -> {
             WordCounterGeneric root = c.addPublicNode(new WordCounterGeneric(), "result");
             root.anyCharHandler = c.addNode(new CharHandler());
             root.eolHandler = c.addNode(new CharHandler.FilteredCharEventHandler('\n'));
@@ -65,7 +64,7 @@ public class MultipleGraphConstructions extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test_wc_generic_arrays() throws Exception {
-        sep(c ->{
+        sep(c -> {
             WordCounterGenericArrays root = c.addPublicNode(new WordCounterGenericArrays(), "result");
             root.anyCharHandler = c.addNode(new CharHandler());
             root.eolHandler = c.addNode(new CharHandler.FilteredCharEventHandler('\n'));
@@ -87,7 +86,7 @@ public class MultipleGraphConstructions extends MultipleSepTargetInProcessTest {
 
     @Test
     public void test_wc_inline_event_handling() throws Exception {
-        sep(c ->{
+        sep(c -> {
             c.addPublicNode(new WordCounterInlineEventHandler(), "result");
         });
 

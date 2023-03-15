@@ -10,10 +10,10 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
-public class MarkDirtyExternal extends MultipleSepTargetInProcessTest {
+public class MarkDirtyExternalTest extends MultipleSepTargetInProcessTest {
 
 
-    public MarkDirtyExternal(boolean compiledSep) {
+    public MarkDirtyExternalTest(boolean compiledSep) {
         super(compiledSep);
     }
 
