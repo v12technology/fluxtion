@@ -17,6 +17,7 @@ package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
@@ -321,6 +322,11 @@ public interface StaticEventProcessor {
     default <T> T getStreamed(String name) throws NoSuchFieldException {
         EventStream<T> stream = getNodeById(name);
         return stream.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    default <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
+        return getNodeById(id);
     }
 
     default void addEventFeed(EventFeed eventProcessorFeed) {

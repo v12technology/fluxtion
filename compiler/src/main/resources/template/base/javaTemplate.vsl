@@ -166,6 +166,10 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return nodeNameLookup.getInstanceById(id);
     }
 
+    public <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
+        return (A) this.getClass().getField(id).get(this);
+    }
+
     @Override
     public void addEventFeed(EventFeed eventProcessorFeed) {
         subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
