@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.time;
@@ -19,19 +19,18 @@ package com.fluxtion.runtime.time;
 import lombok.Data;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public interface ClockStrategy {
 
     long getWallClockTime();
-    
-    static ClockStrategyEvent registerClockEvent(ClockStrategy clock){
+
+    static ClockStrategyEvent registerClockEvent(ClockStrategy clock) {
         return new ClockStrategyEvent(clock);
     }
 
     @Data
-    public static class ClockStrategyEvent {
+    class ClockStrategyEvent {
 
         private final ClockStrategy strategy;
     }

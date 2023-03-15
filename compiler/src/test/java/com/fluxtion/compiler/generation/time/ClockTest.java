@@ -43,12 +43,43 @@ public class ClockTest extends MultipleSepTargetInProcessTest {
     @Test
     public void testClock() {
         sep(c -> c.addPublicNode(new MyClockProxy(), "proxy"));
-//        sep(com.fluxtion.ext.declarative.builder.time.clocktest_testclock_1559501154128.TestSep_testClock.class);
         MyClockProxy proxy = getField("proxy");
         Assert.assertEquals(proxy.clock, proxy.clock2);
         MutableNumber n = new MutableNumber();
-//        onEvent(new GenericEvent(ClockStrategy.class, (ClockStrategy) n::longValue));
         onEvent(new ClockStrategyEvent(n::longValue));
+        //
+        n.set(1);
+        Tick tick = new Tick();
+        tick.setEventTime(50);
+        onEvent(tick);
+        onEvent(tick);
+        onEvent(tick);
+        assertThat(proxy.tickCount, is(3));
+        assertThat(proxy.clock.getWallClockTime(), is(1L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
+        //
+        n.set(100);
+        assertThat(proxy.clock.getWallClockTime(), is(100L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
+        //tick
+        onEvent(tick);
+        assertThat(proxy.clock.getWallClockTime(), is(100L));
+        assertThat(proxy.clock.getEventTime(), is(50L));
+        //send an event
+        n.set(1900);
+        onEvent(new TestTimeEvent());
+        assertThat(proxy.clock.getWallClockTime(), is(1900L));
+        assertThat(proxy.clock.getEventTime(), is(200L));
+
+    }
+
+    @Test
+    public void testClockViaApiCall() {
+        sep(c -> c.addPublicNode(new MyClockProxy(), "proxy"));
+        MyClockProxy proxy = getField("proxy");
+        Assert.assertEquals(proxy.clock, proxy.clock2);
+        MutableNumber n = new MutableNumber();
+        sep.setClockStrategy(n::longValue);
         //
         n.set(1);
         Tick tick = new Tick();
