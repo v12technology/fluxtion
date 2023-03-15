@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor;
 
+import java.io.Reader;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -181,6 +182,13 @@ public class BaseEventProcessorRowBasedTest {
     public static <T> Stream<T> yamlToStream(String doc, Class<T> targetClass) {
         Yaml yaml = new Yaml(new Constructor(targetClass));
         Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
+        @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
+        return castStream;
+    }
+
+    public static <T> Stream<T> yamlToStream(Reader reader, Class<T> targetClass) {
+        Yaml yaml = new Yaml(new Constructor(targetClass));
+        Stream<Object> stream = StreamSupport.stream(yaml.loadAll(reader).spliterator(), false);
         @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
         return castStream;
     }
