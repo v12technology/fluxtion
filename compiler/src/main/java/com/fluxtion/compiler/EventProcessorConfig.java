@@ -62,7 +62,7 @@ public class EventProcessorConfig {
     private HashMap<String, Auditor> auditorMap;
     private NodeFactoryRegistration nodeFactoryRegistration;
     private RootNodeConfig rootNodeConfig;
-    private Map<Object, Integer> filterMap;
+    private final Map<Object, Integer> filterMap = new HashMap<>();
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
@@ -346,7 +346,8 @@ public class EventProcessorConfig {
     }
 
     public void setFilterMap(Map<Object, Integer> filterMap) {
-        this.filterMap = filterMap;
+        this.filterMap.clear();
+        this.filterMap.putAll(filterMap);
     }
 
     /**
