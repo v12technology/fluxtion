@@ -22,8 +22,10 @@ public class FilterDescriptionTest extends MultipleSepTargetInProcessTest {
             c.getFilterMap().put(hiltonById, 20);
 
         });
+
         onEvent(new MyFilterEvent("not hilton", 10));
         Assert.assertNull(getField("hiltonNode", FilteredByInt.class).getUpdatedValue());
+
         onEvent(new MyFilterEvent("success", 20));
         Assert.assertEquals("success", getField("hiltonNode", FilteredByInt.class).getUpdatedValue());
     }
@@ -41,7 +43,7 @@ public class FilterDescriptionTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class FilteredByInt {
 
-        private final String filterName;
+        private final String humanReadableName;
         private String updatedValue;
 
         @OnEventHandler
