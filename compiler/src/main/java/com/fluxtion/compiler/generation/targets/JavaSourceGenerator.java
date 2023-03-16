@@ -24,6 +24,7 @@ import com.fluxtion.compiler.generation.model.DirtyFlag;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.util.ClassHierarchyComparator;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -503,6 +504,14 @@ public class JavaSourceGenerator {
         }
     }
 
+    //sorting by class type most specific first
+    private static List<Class<?>> sortClassHierarchy(Set<Class<?>> classSet) {
+        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
+        //sorting by event class type most specific first
+        clazzList.sort(new ClassHierarchyComparator(new NaturalOrderComparator<>()));
+        return clazzList;
+    }
+
     private void generateEventBufferedDispatcher() {
         StringBuilder noTriggerDispatch = new StringBuilder();
         //build buffer event method
@@ -514,7 +523,10 @@ public class JavaSourceGenerator {
         //sort class so repeatable
         boolean prev = isInlineEventHandling;
         isInlineEventHandling = true;
-        handlerOnlyDispatchMap.forEach((c, m) -> {
+        //sort the classes and then loop through the sorted list
+        List<Class<?>> sortedClasses = sortClassHierarchy(handlerOnlyDispatchMap.keySet());
+        sortedClasses.forEach(c -> {
+            Map<FilterDescription, List<CbMethodHandle>> m = handlerOnlyDispatchMap.get(c);
             String className = getClassName(c.getCanonicalName());
             noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
             noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
@@ -564,8 +576,7 @@ public class JavaSourceGenerator {
         Set<Class<?>> keySet = dispatchMap.keySet();
         HashSet<Class<?>> classSet = new HashSet<>(keySet);
         classSet.addAll(postDispatchMap.keySet());
-        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
-        clazzList.sort(Comparator.comparing(Class::getName));
+        List<Class<?>> clazzList = sortClassHierarchy(classSet);
 
         for (Class<?> eventId : clazzList) {
             String className = getClassName(eventId.getCanonicalName());
