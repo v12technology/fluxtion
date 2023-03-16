@@ -28,6 +28,7 @@ import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
+import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.runtime.audit.Auditor;
@@ -348,6 +349,32 @@ public class EventProcessorConfig {
     public void setFilterMap(Map<Object, Integer> filterMap) {
         this.filterMap.clear();
         this.filterMap.putAll(filterMap);
+    }
+
+    /**
+     * Overrides the filterId for any methods annotated with {@link com.fluxtion.runtime.annotations.OnEventHandler} in
+     * an instance or for an {@link com.fluxtion.runtime.node.EventHandlerNode}.
+     * <p>
+     * If a single {@link com.fluxtion.runtime.annotations.OnEventHandler} annotated method needs to be overridden then
+     * use {@link this#overrideOnEventHandlerFilterId(Object, Class, int)}
+     *
+     * @param eventHandler the event handler instance to override filterId
+     * @param newFilterId  the new filterId
+     */
+    public void overrideOnEventHandlerFilterId(Object eventHandler, int newFilterId) {
+        getFilterMap().put(eventHandler, newFilterId);
+    }
+
+    /**
+     * Overrides the filterId for a method annotated with {@link com.fluxtion.runtime.annotations.OnEventHandler} in
+     * an instance handling a particular event type.
+     *
+     * @param eventHandler the event handler instance to override filterId
+     * @param eventClass   The event handler methods of this type to override filterId
+     * @param newFilterId  the new filterId
+     */
+    public void overrideOnEventHandlerFilterId(Object eventHandler, Class<?> eventClass, int newFilterId) {
+        getFilterMap().put(new EventHandlerFilterOverride(eventHandler, eventClass, newFilterId), newFilterId);
     }
 
     /**

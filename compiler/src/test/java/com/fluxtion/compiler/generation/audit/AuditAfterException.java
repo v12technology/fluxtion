@@ -13,7 +13,6 @@ public class AuditAfterException extends MultipleSepTargetInProcessTest {
 
     @Test
     public void captureRecord_with_Exception_in_OnEvent() {
-        writeSourceFile = true;
         addAuditor();
         sep(c -> {
             c.addNode(new FailingHandler());
@@ -35,7 +34,6 @@ public class AuditAfterException extends MultipleSepTargetInProcessTest {
 
     @Test
     public void captureRecordAndAuditValue_with_Exception_in_OnEvent() {
-        writeSourceFile = true;
         addAuditor();
         sep(c -> {
             c.addNode(new FailingHandlerWithAuditValues());
