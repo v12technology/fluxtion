@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.hamcrest.MatcherAssert;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
-    public TestAnyObjectAsEvent(boolean compiledSep) {
+    public TestAnyObjectAsEvent(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -57,6 +58,22 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
         onEvent(111);
         assertFalse(strHandler.notified);
     }
+
+    @Test
+    public void defaultHandlerStatic() {
+        StaticEventHandler.count = 0;
+        sep(c -> {
+            c.addNode(new StringHandler(), "strHandler");
+            c.addNode(new StaticEventHandler(), "defaultHandler");
+        });
+
+        MatcherAssert.assertThat(StaticEventHandler.count, is(0));
+        onEvent("test");
+        onEvent(new Object());
+        onEvent(new Date());
+        MatcherAssert.assertThat(StaticEventHandler.count, is(3));
+    }
+
 
     @Test
     public void defaultHandler() {
@@ -89,6 +106,16 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler
         public boolean defaultHandler(Object object) {
+            count++;
+            return true;
+        }
+    }
+
+    public static class StaticEventHandler {
+        static int count;
+
+        @OnEventHandler
+        public static boolean defaultHandler(Object object) {
             count++;
             return true;
         }

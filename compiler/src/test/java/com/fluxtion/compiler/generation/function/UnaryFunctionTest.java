@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.function;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnaryFunctionTest extends MultipleSepTargetInProcessTest {
 
-    public UnaryFunctionTest(boolean compiledSep) {
+    public UnaryFunctionTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

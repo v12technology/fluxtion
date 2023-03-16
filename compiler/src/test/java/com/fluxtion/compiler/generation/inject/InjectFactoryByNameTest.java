@@ -2,6 +2,7 @@ package com.fluxtion.compiler.generation.inject;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
 
 
-    public InjectFactoryByNameTest(boolean compiledSep) {
+    public InjectFactoryByNameTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

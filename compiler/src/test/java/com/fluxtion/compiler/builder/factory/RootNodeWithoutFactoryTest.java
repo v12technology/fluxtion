@@ -1,14 +1,15 @@
 package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.RootNodeConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.ExcludeNode;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.node.NamedNode;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ import static org.junit.Assert.assertNull;
 
 public class RootNodeWithoutFactoryTest extends MultipleSepTargetInProcessTest {
 
-    public RootNodeWithoutFactoryTest(boolean compiledSep) {
+    public RootNodeWithoutFactoryTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

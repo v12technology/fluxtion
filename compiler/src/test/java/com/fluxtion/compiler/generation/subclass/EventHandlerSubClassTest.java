@@ -17,8 +17,14 @@
  */
 package com.fluxtion.compiler.generation.subclass;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.test.event.DefaultEventHandlerNode;
 import org.junit.Test;
@@ -31,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
 
-    public EventHandlerSubClassTest(boolean compiledSep) {
+    public EventHandlerSubClassTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

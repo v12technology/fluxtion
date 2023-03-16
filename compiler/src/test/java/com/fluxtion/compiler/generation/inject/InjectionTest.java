@@ -17,16 +17,20 @@
  */
 package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.runtime.annotations.*;
-import com.fluxtion.runtime.event.DefaultEvent;
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.ConfigVariable;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
@@ -41,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class InjectionTest extends MultipleSepTargetInProcessTest {
 
-    public InjectionTest(boolean compiledSep) {
+    public InjectionTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

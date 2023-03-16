@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.groupby.FilterGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
@@ -17,7 +18,7 @@ import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 
 public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
-    public TradingMonitorArticleTest(boolean compiledSep) {
+    public TradingMonitorArticleTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

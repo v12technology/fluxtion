@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
@@ -17,8 +18,8 @@ import java.util.List;
 
 public class BufferEventTest extends InMemoryOnlySepTest {
 
-    public BufferEventTest(boolean compiledSep) {
-        super(compiledSep);
+    public BufferEventTest(SepTestConfig compiledSep) {
+        super(SepTestConfig.INTERPRETED);
     }
 
     @Test

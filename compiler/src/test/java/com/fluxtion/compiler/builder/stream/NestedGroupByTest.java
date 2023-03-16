@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.Person;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
@@ -13,7 +14,7 @@ import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 
 public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
 
-    public NestedGroupByTest(boolean compiledSep) {
+    public NestedGroupByTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -18,6 +18,7 @@
 package com.fluxtion.compiler.generation.parent;
 
 import com.fluxtion.compiler.generation.model.CallbackMethodModelTest.StringHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.test.event.EventHandlerCbNode;
@@ -36,7 +37,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ParentCollectionTest extends MultipleSepTargetInProcessTest {
 
-    public ParentCollectionTest(boolean compiledSep) {
+    public ParentCollectionTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

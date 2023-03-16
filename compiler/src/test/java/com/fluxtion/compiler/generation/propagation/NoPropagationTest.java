@@ -19,6 +19,7 @@
 package com.fluxtion.compiler.generation.propagation;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -40,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class NoPropagationTest extends MultipleSepTargetInProcessTest {
 
-    public NoPropagationTest(boolean compiledSep) {
+    public NoPropagationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

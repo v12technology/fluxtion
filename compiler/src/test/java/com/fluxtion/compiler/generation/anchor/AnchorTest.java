@@ -5,7 +5,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableIntFunction;
 
 public class AnchorTest {//extends MultipleSepTargetInProcessTest {
 
-//    public AnchorTest(boolean compiledSep) {
+//    public AnchorTest(SepTestConfig compiledSep) {
 //        super(compiledSep);
 //    }
 

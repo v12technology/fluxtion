@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.util;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
@@ -39,7 +40,7 @@ public class MethodRefSerialisationTest extends MultipleSepTargetInProcessTest {
 
     public static final String SUCCESS = "success";
 
-    public MethodRefSerialisationTest(boolean compiledSep) {
+    public MethodRefSerialisationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

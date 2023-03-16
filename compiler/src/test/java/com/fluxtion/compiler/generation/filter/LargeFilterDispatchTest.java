@@ -6,6 +6,7 @@
 package com.fluxtion.compiler.generation.filter;
 
 import com.fluxtion.compiler.generation.targets.JavaTestGeneratorHelper;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator;
 import com.fluxtion.test.tracking.TraceEvent;
@@ -18,7 +19,7 @@ import org.junit.Test;
 public class LargeFilterDispatchTest extends MultipleSepTargetInProcessTest {
 
 
-    public LargeFilterDispatchTest(boolean compiledSep) {
+    public LargeFilterDispatchTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

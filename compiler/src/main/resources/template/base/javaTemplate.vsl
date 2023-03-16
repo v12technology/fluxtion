@@ -166,6 +166,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return nodeNameLookup.getInstanceById(id);
     }
 
+    @Override
     public <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
         return (A) this.getClass().getField(id).get(this);
     }
@@ -185,10 +186,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return new ${className}();
     }
 
+    @Override
     public ${className} newInstance(Map<Object, Object> contextMap){
         return new ${className}();
     }
 
+    @Override
     public String getLastAuditLogRecord() {
         try {
             EventLogManager eventLogManager = (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);

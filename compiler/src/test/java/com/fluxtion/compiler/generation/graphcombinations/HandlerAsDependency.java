@@ -16,20 +16,22 @@
  */
 package com.fluxtion.compiler.generation.graphcombinations;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import lombok.Data;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.getMethod;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
 
-    public HandlerAsDependency(boolean compiledSep) {
+    public HandlerAsDependency(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -64,7 +66,7 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
     @Test
     public void noHandlerAsDependency() {
         sep((c) -> c.addNode(new ChildNoEventHandler(new StringHandler()), "intHandler"));
-        if(simpleEventProcessorModel==null){
+        if (simpleEventProcessorModel == null) {
             return;
         }
         assertThat(
@@ -82,7 +84,7 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
                 simpleEventProcessorModel.getDispatchMapForGraph().stream()
                         .map(CbMethodHandle::getMethod)
                         .collect(Collectors.toList()),
-               hasItems(
+                hasItems(
                         getMethod(StringHandler::newString),
                         getMethod(ChildNoEventHandler::updated)
                 )

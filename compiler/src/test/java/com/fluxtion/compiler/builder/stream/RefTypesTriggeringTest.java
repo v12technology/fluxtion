@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.KeyedData;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
@@ -20,7 +21,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
-    public RefTypesTriggeringTest(boolean compiledSep) {
+    public RefTypesTriggeringTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

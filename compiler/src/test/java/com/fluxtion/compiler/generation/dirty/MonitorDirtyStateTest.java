@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.dirty;
 
 import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -10,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class MonitorDirtyStateTest extends MultipleSepTargetInProcessTest {
-    public MonitorDirtyStateTest(boolean compiledSep) {
+    public MonitorDirtyStateTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

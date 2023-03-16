@@ -1,9 +1,10 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
 import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
 import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
@@ -27,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 
 public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
-    public PrimitiveStreamBuilderTest(boolean compiledSep) {
+    public PrimitiveStreamBuilderTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

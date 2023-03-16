@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.lifecycle;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LifecycleTest extends MultipleSepTargetInProcessTest {
-    public LifecycleTest(boolean compiledSep) {
+    public LifecycleTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

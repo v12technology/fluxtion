@@ -17,12 +17,13 @@
  */
 package com.fluxtion.compiler.generation.nopropagate;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.event.Event;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ import org.junit.Test;
  */
 public class NoPropagateTest extends MultipleSepTargetInProcessTest {
 
-    public NoPropagateTest(boolean compiledSep) {
+    public NoPropagateTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

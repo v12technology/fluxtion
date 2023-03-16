@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,43 +12,57 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import java.util.Arrays;
-import java.util.List;
-import static org.junit.Assert.*;
-
-import com.fluxtion.compiler.generation.util.ClassUtils;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 /**
- *
  * @author Greg Higgins
  */
 public class ClassUtilsTest {
-    
-    
-    public static class A{}
-    
-    public static class B{}
-    public static class B1 extends B{}
-    public static class B2 extends B1{}
-    
-    
-    public static class Handler1{
-        public void handleA(A a){}
-        public void handleB(B a){}
-        public void handleB1(B1 a){}
-        public void handleB2(B2 a){}
-        public void handleObject(Object o){}
+
+
+    public static class A {
+    }
+
+    public static class B {
+    }
+
+    public static class B1 extends B {
+    }
+
+    public static class B2 extends B1 {
+    }
+
+
+    public static class Handler1 {
+        public void handleA(A a) {
+        }
+
+        public void handleB(B a) {
+        }
+
+        public void handleB1(B1 a) {
+        }
+
+        public void handleB2(B2 a) {
+        }
+
+        public void handleObject(Object o) {
+        }
     }
 
     @Test
-    public void testCbLocate() throws NoSuchMethodException{
+    public void testCbLocate() throws NoSuchMethodException {
         Handler1 h = new Handler1();
         CbMethodHandle cbA = new CbMethodHandle(h.getClass().getMethod("handleA", A.class), h, null);
         CbMethodHandle cbB = new CbMethodHandle(h.getClass().getMethod("handleB", B.class), h, null);
@@ -80,5 +94,5 @@ public class ClassUtilsTest {
         findBestParentCB = ClassUtils.findBestParentCB("", cbList);
         assertEquals(cbObj, findBestParentCB);
     }
-    
+
 }

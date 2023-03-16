@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.newinstance;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -9,7 +10,7 @@ import org.junit.Test;
 import java.util.concurrent.atomic.LongAdder;
 
 public class NewInstanceTest extends CompiledOnlySepTest {
-    public NewInstanceTest(boolean compile) {
+    public NewInstanceTest(SepTestConfig compile) {
         super(compile);
     }
 

@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -32,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
 
 
-    public ConditionalPropagationTest(boolean compiledSep) {
+    public ConditionalPropagationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

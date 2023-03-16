@@ -4,6 +4,7 @@ import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.FilterConfig;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MyData;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.time.MutableNumber;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Predicates;
@@ -16,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class FilterTest extends MultipleSepTargetInProcessTest {
 
-    public FilterTest(boolean compiledSep) {
+    public FilterTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
