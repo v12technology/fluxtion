@@ -59,6 +59,22 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void defaultHandlerStatic() {
+        StaticEventHandler.count = 0;
+        sep(c -> {
+            c.addNode(new StringHandler(), "strHandler");
+            c.addNode(new StaticEventHandler(), "defaultHandler");
+        });
+
+        MatcherAssert.assertThat(StaticEventHandler.count, is(0));
+        onEvent("test");
+        onEvent(new Object());
+        onEvent(new Date());
+        MatcherAssert.assertThat(StaticEventHandler.count, is(3));
+    }
+
+
+    @Test
     public void defaultHandler() {
         sep(c -> {
             c.addNode(new StringHandler(), "strHandler");
@@ -89,6 +105,16 @@ public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler
         public boolean defaultHandler(Object object) {
+            count++;
+            return true;
+        }
+    }
+
+    public static class StaticEventHandler {
+        static int count;
+
+        @OnEventHandler
+        public static boolean defaultHandler(Object object) {
             count++;
             return true;
         }
