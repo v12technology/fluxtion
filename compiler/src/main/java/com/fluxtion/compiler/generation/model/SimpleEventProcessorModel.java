@@ -18,6 +18,7 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
+import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.model.Field.MappedField;
@@ -68,7 +69,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -1326,7 +1329,18 @@ public class SimpleEventProcessorModel {
             }
             boolean overrideFilter = filterIdOverride != Integer.MAX_VALUE;
             boolean overideStringFilter = filterStringOverride != null && !filterStringOverride.isEmpty();
-            if (filterMap.containsKey(instance)) {
+            OptionalInt overrideMethodFilter = filterMap.entrySet().stream()
+                    .filter(e -> e.getKey() instanceof EventHandlerFilterOverride)
+                    .filter(e -> {
+                        EventHandlerFilterOverride override = (EventHandlerFilterOverride) e.getKey();
+                        return override.getEventHandlerInstance() == instance
+                                && override.getEventType() == onEventMethod.getParameterTypes()[0];
+                    })
+                    .mapToInt(Entry::getValue)
+                    .findFirst();
+            if (overrideMethodFilter.isPresent()) {
+                tmpFilterId = overrideMethodFilter.getAsInt();
+            } else if (filterMap.containsKey(instance)) {
                 tmpFilterId = filterMap.get(instance);
             } else if (fields.isEmpty() && overrideFilter) {
                 tmpFilterId = filterIdOverride;
