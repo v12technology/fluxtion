@@ -30,6 +30,11 @@ public class NodeNameAuditor implements Auditor, NodeNameLookup, NamedNode {
     }
 
     @Override
+    public boolean auditInvocations() {
+        return false;
+    }
+
+    @Override
     public void init() {
         node2NameMap.clear();
     }

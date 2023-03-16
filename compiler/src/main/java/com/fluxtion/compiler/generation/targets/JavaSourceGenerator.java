@@ -678,9 +678,9 @@ public class JavaSourceGenerator {
                     }
                     //assign return if appropriate
                     if (method.parameterClass == null) {
-                        ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
+                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
                         ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
@@ -755,7 +755,7 @@ public class JavaSourceGenerator {
                     if (method.parameterClass == null) {
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+                        ct.append(s24).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     //close guarded clause
                     if (nodeGuardConditions.size() > 0) {
