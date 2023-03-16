@@ -50,8 +50,6 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subclass1() {
-        writeSourceFile = true;
-//        Class<TimeEvent> timeEventClass = TimeEvent.class;
         sep(d -> d.addPublicNode(new MyHandler(), "handler"));
         MyHandler handler = getField("handler");
         onEvent(new ImplEvent());
