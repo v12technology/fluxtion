@@ -67,6 +67,7 @@ public class EventProcessorConfig {
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
+    private boolean instanceOfDispatch = true;
 
     enum NodeFactoryConfig {
         required(
@@ -418,5 +419,13 @@ public class EventProcessorConfig {
      */
     public Map<String, String> getClass2replace() {
         return class2replace;
+    }
+
+    public boolean isInstanceOfDispatch() {
+        return instanceOfDispatch;
+    }
+
+    public void setInstanceOfDispatch(boolean instanceOfDispatch) {
+        this.instanceOfDispatch = instanceOfDispatch;
     }
 }

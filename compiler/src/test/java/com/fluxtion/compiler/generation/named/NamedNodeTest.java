@@ -1,7 +1,8 @@
 package com.fluxtion.compiler.generation.named;
 
-import com.fluxtion.runtime.node.NamedNode;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Value;
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ public class NamedNodeTest extends MultipleSepTargetInProcessTest {
 
     public static final String UNIQUE_NAME = "UniqueName";
 
-    public NamedNodeTest(boolean compiledSep) {
+    public NamedNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

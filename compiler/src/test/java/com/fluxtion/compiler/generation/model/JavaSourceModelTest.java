@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
 import com.fluxtion.test.event.EventHandlerCbNode;
 import com.fluxtion.test.event.InitCB;
@@ -52,7 +53,9 @@ public class JavaSourceModelTest {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(nodeList);
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
-        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep);
+        EventProcessorConfig cfg = new EventProcessorConfig();
+        cfg.setInlineEventHandling(false);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, cfg);
         srcModel.buildSourceModel();
 
     }

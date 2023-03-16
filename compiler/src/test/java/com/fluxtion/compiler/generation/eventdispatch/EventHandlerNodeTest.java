@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.eventdispatch;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.node.TriggeredNode;
@@ -11,7 +12,7 @@ import java.util.function.Supplier;
 
 public class EventHandlerNodeTest extends MultipleSepTargetInProcessTest {
 
-    public EventHandlerNodeTest(boolean compiledSep) {
+    public EventHandlerNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

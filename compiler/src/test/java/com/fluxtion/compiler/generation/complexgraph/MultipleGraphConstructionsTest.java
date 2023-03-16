@@ -5,6 +5,7 @@
  */
 package com.fluxtion.compiler.generation.complexgraph;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class MultipleGraphConstructionsTest extends MultipleSepTargetInProcessTest {
 
-    public MultipleGraphConstructionsTest(boolean compiledSep) {
+    public MultipleGraphConstructionsTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.inject;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.Initialise;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectFromContext extends MultipleSepTargetInProcessTest {
-    public InjectFromContext(boolean compiledSep) {
+    public InjectFromContext(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

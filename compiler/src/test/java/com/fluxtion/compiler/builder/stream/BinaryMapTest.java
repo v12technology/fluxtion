@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import lombok.Value;
@@ -20,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 
 public class BinaryMapTest extends MultipleSepTargetInProcessTest {
-    public BinaryMapTest(boolean compiledSep) {
+    public BinaryMapTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

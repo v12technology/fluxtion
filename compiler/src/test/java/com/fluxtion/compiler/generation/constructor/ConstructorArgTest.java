@@ -17,9 +17,10 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
-import com.fluxtion.runtime.annotations.builder.ConstructorArg;
-import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class ConstructorArgTest extends MultipleSepTargetInProcessTest {
 
-    public ConstructorArgTest(boolean compiledSep) {
+    public ConstructorArgTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

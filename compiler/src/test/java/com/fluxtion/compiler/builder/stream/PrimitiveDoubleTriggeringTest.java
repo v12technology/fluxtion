@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
@@ -15,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTest {
 
-    public PrimitiveDoubleTriggeringTest(boolean compiledSep) {
+    public PrimitiveDoubleTriggeringTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

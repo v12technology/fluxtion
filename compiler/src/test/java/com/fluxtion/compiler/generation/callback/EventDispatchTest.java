@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.callback;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -11,7 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EventDispatchTest extends MultipleSepTargetInProcessTest {
-    public EventDispatchTest(boolean compiledSep) {
+    public EventDispatchTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

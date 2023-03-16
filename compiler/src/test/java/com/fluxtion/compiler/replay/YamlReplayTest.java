@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.replay;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class YamlReplayTest extends MultipleSepTargetInProcessTest {
             "650,25\n" +
             "700,3525\n";
 
-    public YamlReplayTest(boolean compiledSep) {
+    public YamlReplayTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

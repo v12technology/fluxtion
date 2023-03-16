@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
@@ -9,7 +10,7 @@ import org.junit.Test;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 
 public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
-    public MergeMapStreamTest(boolean compiledSep) {
+    public MergeMapStreamTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

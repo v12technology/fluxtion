@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
@@ -17,7 +18,7 @@ import java.util.Date;
 
 public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
 
-    public BufferEventGeneratedTest(boolean compiledSep) {
+    public BufferEventGeneratedTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

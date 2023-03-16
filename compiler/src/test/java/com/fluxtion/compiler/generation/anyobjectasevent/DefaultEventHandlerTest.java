@@ -5,6 +5,7 @@
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.DefaultEventHandlerNode;
 import com.fluxtion.test.event.TestEvent;
@@ -16,7 +17,7 @@ import org.junit.Test;
  */
 public class DefaultEventHandlerTest extends MultipleSepTargetInProcessTest {
 
-    public DefaultEventHandlerTest(boolean compiledSep) {
+    public DefaultEventHandlerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

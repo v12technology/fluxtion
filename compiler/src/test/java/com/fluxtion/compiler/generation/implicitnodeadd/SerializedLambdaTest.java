@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
-    public SerializedLambdaTest(boolean compiledSep) {
+    public SerializedLambdaTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

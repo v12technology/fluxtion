@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.factory;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
@@ -21,7 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GraphOfInstancesTest extends MultipleSepTargetInProcessTest {
-    public GraphOfInstancesTest(boolean compiledSep) {
+    public GraphOfInstancesTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

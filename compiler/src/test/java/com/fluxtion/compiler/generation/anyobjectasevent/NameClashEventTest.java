@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.hamcrest.MatcherAssert;
@@ -9,7 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 public class NameClashEventTest extends MultipleSepTargetInProcessTest {
 
-    public NameClashEventTest(boolean compiledSep) {
+    public NameClashEventTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

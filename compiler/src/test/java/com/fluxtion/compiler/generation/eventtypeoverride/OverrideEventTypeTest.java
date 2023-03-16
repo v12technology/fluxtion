@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.eventtypeoverride;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.hamcrest.MatcherAssert;
@@ -10,7 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 public class OverrideEventTypeTest extends MultipleSepTargetInProcessTest {
 
 
-    public OverrideEventTypeTest(boolean compiledSep) {
+    public OverrideEventTypeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

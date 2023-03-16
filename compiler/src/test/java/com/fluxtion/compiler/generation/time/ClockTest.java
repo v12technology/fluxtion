@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.time;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -36,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class ClockTest extends MultipleSepTargetInProcessTest {
 
-    public ClockTest(boolean compiledSep) {
+    public ClockTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

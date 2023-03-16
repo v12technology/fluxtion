@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.dirty;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -33,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public class DirtyElseTest extends MultipleSepTargetInProcessTest {
 
-    public DirtyElseTest(boolean compiledSep) {
+    public DirtyElseTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

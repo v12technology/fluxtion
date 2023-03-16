@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.filter;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.compiler.generation.util.Slf4jAuditLogger;
 import com.fluxtion.runtime.annotations.FilterType;
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertNull;
  */
 public class FilteringTest extends MultipleSepTargetInProcessTest {
 
-    public FilteringTest(boolean compiledSep) {
+    public FilteringTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

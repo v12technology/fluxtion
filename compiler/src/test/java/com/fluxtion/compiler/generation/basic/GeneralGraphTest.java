@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.basic;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -7,7 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GeneralGraphTest extends MultipleSepTargetInProcessTest {
-    public GeneralGraphTest(boolean compiledSep) {
+    public GeneralGraphTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

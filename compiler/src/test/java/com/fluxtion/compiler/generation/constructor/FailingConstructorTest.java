@@ -1,11 +1,12 @@
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Test;
 
 public class FailingConstructorTest extends MultipleSepTargetInProcessTest {
-    public FailingConstructorTest(boolean compiledSep) {
+    public FailingConstructorTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

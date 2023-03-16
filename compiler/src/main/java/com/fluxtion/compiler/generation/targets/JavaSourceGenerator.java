@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
@@ -24,6 +25,7 @@ import com.fluxtion.compiler.generation.model.DirtyFlag;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -54,6 +56,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapPrimitiveToWrapper;
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapWrapperToPrimitive;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
@@ -206,6 +209,10 @@ public class JavaSourceGenerator {
      */
     private boolean isInlineEventHandling;
     /**
+     * Create an if based dispatch using instanceof operator
+     */
+    private final boolean instanceOfDispatch;
+    /**
      * String representing event audit dispatch
      */
     private String eventAuditDispatch;
@@ -217,20 +224,13 @@ public class JavaSourceGenerator {
     private String auditMethodString;
     private String additionalInterfaces;
 
-    public JavaSourceGenerator(SimpleEventProcessorModel model) {
-        this(model, false);
-    }
-
-    public JavaSourceGenerator(SimpleEventProcessorModel model, boolean inlineEventHandling) {
-        this(model, inlineEventHandling, false);
-    }
-
     public JavaSourceGenerator(
-            SimpleEventProcessorModel model, boolean inlineEventHandling, boolean assignPrivateMembers) {
+            SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
+        this.isInlineEventHandling = eventProcessorConfig.isInlineEventHandling();
+        this.assignPrivateMembers = eventProcessorConfig.isAssignPrivateMembers();
+        this.instanceOfDispatch = eventProcessorConfig.isInstanceOfDispatch();
         this.model = model;
         this.eventHandlers = "";
-        this.isInlineEventHandling = inlineEventHandling;
-        this.assignPrivateMembers = assignPrivateMembers;
         initialiseMethodList = new ArrayList<>();
         startMethodList = new ArrayList<>();
         stopMethodList = new ArrayList<>();
@@ -507,23 +507,41 @@ public class JavaSourceGenerator {
         StringBuilder noTriggerDispatch = new StringBuilder();
         //build buffer event method
         String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
-                "        buffering = true;\n" +
-                "        switch (event.getClass().getName()) {\n";
-
+                "        buffering = true;\n";
+        if (!instanceOfDispatch) {
+            bufferEvents += "        switch (event.getClass().getName()) {\n";
+        }
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
         //sort class so repeatable
         boolean prev = isInlineEventHandling;
         isInlineEventHandling = true;
-        handlerOnlyDispatchMap.forEach((c, m) -> {
-            String className = getClassName(c.getCanonicalName());
-            noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
+        //sort the classes and then loop through the sorted list
+        List<Class<?>> sortedClasses = ClassUtils.sortClassHierarchy(handlerOnlyDispatchMap.keySet());
+        String elsePrefix = "if";
+        for (Class<?> eventId : sortedClasses) {
+            Map<FilterDescription, List<CbMethodHandle>> m = handlerOnlyDispatchMap.get(eventId);
+            String className = getClassName(eventId.getCanonicalName());
+            if (instanceOfDispatch) {
+                String eventClassName = mapPrimitiveToWrapper(eventId).getName().replace("$", ".");
+                noTriggerDispatch.append(String.format("%12s (event instanceof %s) {%n", elsePrefix, eventClassName));
+                elsePrefix = "else if";
+            } else {
+                noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", eventId.getName()));
+            }
             noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
-            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), c));
-            noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
-            noTriggerDispatch.append(String.format("%12s}%n", ""));
-        });
-        noTriggerDispatch.append(String.format("%8s}%n", ""));
+            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), eventId));
+            if (!instanceOfDispatch) {
+                noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+                noTriggerDispatch.append(String.format("%12s}%n", ""));
+            } else {
+                noTriggerDispatch.append(String.format("%12s}%n", ""));
+            }
+        }
+        if (!instanceOfDispatch) {
+            noTriggerDispatch.append(String.format("%8s}%n", ""));
+        }
         noTriggerDispatch.append(String.format("%4s}%n", ""));
+
         bufferEvents += noTriggerDispatch.toString();
         //build buffered dispatch trigger
         Map<FilterDescription, List<CbMethodHandle>> cbMap = new HashMap<>();
@@ -558,32 +576,46 @@ public class JavaSourceGenerator {
      */
     private void generateClassBasedDispatcher() {
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
+        if (instanceOfDispatch) {
+            dispatchStringNoId = "";
+        }
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
         Set<Class<?>> keySet = dispatchMap.keySet();
         HashSet<Class<?>> classSet = new HashSet<>(keySet);
         classSet.addAll(postDispatchMap.keySet());
-        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
-        clazzList.sort(Comparator.comparing(Class::getName));
-
+        List<Class<?>> clazzList = ClassUtils.sortClassHierarchy(classSet);
+        String elsePrefix = "if";
         for (Class<?> eventId : clazzList) {
             String className = getClassName(eventId.getCanonicalName());
-            dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
+            if (instanceOfDispatch) {
+                String eventClassName = mapPrimitiveToWrapper(eventId).getName().replace("$", ".");
+                dispatchStringNoId += String.format("%12s (event instanceof %s) {%n", elsePrefix, eventClassName);
+                elsePrefix = "else if";
+            } else {
+                dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
+            }
             dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
             dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, eventId);
-            dispatchStringNoId += String.format("%16sbreak;%n", "");
-            dispatchStringNoId += String.format("%12s}%n", "");
+            if (instanceOfDispatch) {
+                dispatchStringNoId += String.format("%12s}%n", "");
+            } else {
+                dispatchStringNoId += String.format("%16sbreak;%n", "");
+                dispatchStringNoId += String.format("%12s}%n", "");
+            }
         }
         //default handling
-        if (keySet.contains(Object.class)) {
-            dispatchStringNoId += String.format("%12sdefault :{%n", "");
-            dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
-            dispatchStringNoId += String.format("%12s}%n", "");
+        if (!instanceOfDispatch) {
+            if (keySet.contains(Object.class)) {
+                dispatchStringNoId += String.format("%12sdefault :{%n", "");
+                dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
+                dispatchStringNoId += String.format("%12s}%n", "");
+            }
+            dispatchStringNoId += String.format("%8s}%n", "");
         }
-        dispatchStringNoId += String.format("%8s}%n", "");
         if (isInlineEventHandling) {
             dispatchStringNoId += String.format("%8safterEvent();%n", "");
         }
@@ -678,9 +710,9 @@ public class JavaSourceGenerator {
                     }
                     //assign return if appropriate
                     if (method.parameterClass == null) {
-                        ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
+                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        ct.append(s24).append(dirtyAssignment).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
                         ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
@@ -755,7 +787,7 @@ public class JavaSourceGenerator {
                     if (method.parameterClass == null) {
                         ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
                     } else {
-                        ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("(typedEvent);\n");
+                        ct.append(s24).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
                     //close guarded clause
                     if (nodeGuardConditions.size() > 0) {

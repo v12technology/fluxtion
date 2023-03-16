@@ -17,11 +17,12 @@
  */
 package com.fluxtion.compiler.generation.push;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class PushTest extends MultipleSepTargetInProcessTest {
 
-    public PushTest(boolean compiledSep) {
+    public PushTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

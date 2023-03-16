@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class SharedReferenceListForEqualNodeTest extends CompiledOnlySepTest {
 
-    public SharedReferenceListForEqualNodeTest(boolean compiledSep) {
+    public SharedReferenceListForEqualNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
