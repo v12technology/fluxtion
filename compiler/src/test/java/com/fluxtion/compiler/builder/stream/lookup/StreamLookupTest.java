@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream.lookup;
 
 import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.lookup.IntLookupPredicate;
@@ -13,7 +14,7 @@ import java.util.function.ToLongFunction;
 
 public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
-    public StreamLookupTest(boolean compiledSep) {
+    public StreamLookupTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.buildchecks;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
@@ -17,7 +18,7 @@ import java.util.List;
 public class FailBuildValidationTest extends MultipleSepTargetInProcessTest {
 
 
-    public FailBuildValidationTest(boolean compiledSep) {
+    public FailBuildValidationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

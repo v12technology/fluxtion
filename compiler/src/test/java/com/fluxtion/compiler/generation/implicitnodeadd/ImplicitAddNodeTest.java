@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -36,12 +37,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class ImplicitAddNodeTest extends MultipleSepTargetInProcessTest {
 
-    public ImplicitAddNodeTest(boolean compiledSep) {
+    public ImplicitAddNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testScalarImplicitAdd() {
+//        writeSourceFile = true;
         sep(cfg -> {
             Counter counter = new Counter(new StringHandler());
             counter.intermediateNode = new IntermediateNode(new DoubleHandler());

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.named;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.node.SingleNamedNode;
@@ -9,7 +10,7 @@ import org.junit.Test;
 public class SinlgletonNamedNodeTest extends MultipleSepTargetInProcessTest {
 
 
-    public SinlgletonNamedNodeTest(boolean compiledSep) {
+    public SinlgletonNamedNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

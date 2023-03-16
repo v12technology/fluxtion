@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.parent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
 
-    public ParentUpdateListenerTest(boolean compiledSep) {
+    public ParentUpdateListenerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

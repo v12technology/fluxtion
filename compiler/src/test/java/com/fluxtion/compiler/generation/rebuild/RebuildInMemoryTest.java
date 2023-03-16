@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.rebuild;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -14,8 +15,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RebuildInMemoryTest extends InMemoryOnlySepTest {
-    public RebuildInMemoryTest(boolean compiledSep) {
-        super(compiledSep);
+    public RebuildInMemoryTest(SepTestConfig compiledSep) {
+        super(SepTestConfig.INTERPRETED);
     }
 
     final static String liveFeed = "liveFeed";

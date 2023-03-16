@@ -16,6 +16,7 @@
  */
 package com.fluxtion.test.enums;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Assert;
@@ -26,7 +27,7 @@ import org.junit.Test;
  */
 public class EnumTest extends MultipleSepTargetInProcessTest {
 
-    public EnumTest(boolean compiledSep) {
+    public EnumTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

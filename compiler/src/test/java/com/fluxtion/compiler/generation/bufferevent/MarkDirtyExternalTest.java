@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.bufferevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -13,7 +14,7 @@ import org.junit.Test;
 public class MarkDirtyExternalTest extends MultipleSepTargetInProcessTest {
 
 
-    public MarkDirtyExternalTest(boolean compiledSep) {
+    public MarkDirtyExternalTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

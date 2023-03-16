@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogNode;
@@ -7,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class AuditAfterException extends MultipleSepTargetInProcessTest {
-    public AuditAfterException(boolean compiledSep) {
+    public AuditAfterException(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

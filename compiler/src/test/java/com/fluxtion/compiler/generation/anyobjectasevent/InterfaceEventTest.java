@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Assert;
@@ -7,7 +8,7 @@ import org.junit.Test;
 
 public class InterfaceEventTest extends MultipleSepTargetInProcessTest {
 
-    public InterfaceEventTest(boolean compiledSep) {
+    public InterfaceEventTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

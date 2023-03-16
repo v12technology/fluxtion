@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessTest {
 
-    public SharedReferenceForEqualNodeTest(boolean compiledSep) {
+    public SharedReferenceForEqualNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

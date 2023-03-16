@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.afterevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
@@ -19,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PostEventTest extends MultipleSepTargetInProcessTest {
 
-    public PostEventTest(boolean compiledSep) {
+    public PostEventTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

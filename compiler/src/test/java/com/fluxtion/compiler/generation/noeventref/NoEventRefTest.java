@@ -17,11 +17,12 @@
  */
 package com.fluxtion.compiler.generation.noeventref;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ import org.junit.Test;
  */
 public class NoEventRefTest extends MultipleSepTargetInProcessTest {
 
-    public NoEventRefTest(boolean compiledSep) {
+    public NoEventRefTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

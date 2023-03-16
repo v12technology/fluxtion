@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Mappers.CountNode;
@@ -16,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PredicatesTest extends MultipleSepTargetInProcessTest {
 
-    public PredicatesTest(boolean compiledSep) {
+    public PredicatesTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.filter;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
@@ -10,7 +11,7 @@ import org.junit.Test;
 
 public class OverrideFilterInEventProcessorConfigTest extends MultipleSepTargetInProcessTest {
 
-    public OverrideFilterInEventProcessorConfigTest(boolean compiledSep) {
+    public OverrideFilterInEventProcessorConfigTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

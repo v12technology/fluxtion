@@ -24,6 +24,7 @@ import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
@@ -64,6 +65,7 @@ public abstract class MultipleSepTargetInProcessTest {
 
     //parametrized test config
     protected final boolean compiledSep;
+    protected boolean instanceOfDispatch = true;
     @Rule
     public TestName testName = new TestName();
     protected StaticEventProcessor sep;
@@ -80,13 +82,19 @@ public abstract class MultipleSepTargetInProcessTest {
     private boolean addAuditor = false;
     private InMemoryEventProcessor inMemorySep;
 
-    public MultipleSepTargetInProcessTest(boolean compiledSep) {
-        this.compiledSep = compiledSep;
+    public MultipleSepTargetInProcessTest(SepTestConfig testConfig) {
+        this.compiledSep = testConfig.isCompiled();
+        inlineCompiled = testConfig == SepTestConfig.COMPILED_INLINE;
+        instanceOfDispatch = !(testConfig == SepTestConfig.COMPILED_SWITCH_DISPATCH);
     }
 
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(false, true);
+        return Arrays.asList(
+                SepTestConfig.COMPILED_SWITCH_DISPATCH,
+                SepTestConfig.COMPILED_METHOD_PER_EVENT,
+                SepTestConfig.INTERPRETED
+        );
     }
 
     @Before
@@ -130,12 +138,13 @@ public abstract class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
         Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
-        if (addAuditor || inlineCompiled) {
+        if (addAuditor || inlineCompiled || !instanceOfDispatch) {
             wrappedBuilder = cfg -> {
                 cfgBuilder.accept(cfg);
                 if (addAuditor)
                     cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
                 cfg.setInlineEventHandling(inlineCompiled);
+                cfg.setInstanceOfDispatch(instanceOfDispatch);
             };
         }
 
@@ -166,6 +175,7 @@ public abstract class MultipleSepTargetInProcessTest {
                     }
                 }
                 if (sep == null) {
+
                     sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
                     sep.setContextParameterMap(contextMap);
                     init();

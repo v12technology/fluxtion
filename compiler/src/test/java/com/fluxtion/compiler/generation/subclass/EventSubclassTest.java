@@ -16,11 +16,16 @@
  */
 package com.fluxtion.compiler.generation.subclass;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,8 +35,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
-    public EventSubclassTest(boolean compiledSep) {
+    public EventSubclassTest(SepTestConfig compiledSep) {
         super(compiledSep);
+    }
+
+
+    @Parameterized.Parameters
+    public static Collection<?> compiledSepStrategy() {
+        return Arrays.asList(
+                SepTestConfig.COMPILED_METHOD_PER_EVENT,
+                SepTestConfig.INTERPRETED
+        );
     }
 
     @Test

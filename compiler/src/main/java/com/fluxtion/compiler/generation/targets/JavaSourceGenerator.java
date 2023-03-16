@@ -533,10 +533,12 @@ public class JavaSourceGenerator {
             if (!instanceOfDispatch) {
                 noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
                 noTriggerDispatch.append(String.format("%12s}%n", ""));
-                noTriggerDispatch.append(String.format("%8s}%n", ""));
             } else {
                 noTriggerDispatch.append(String.format("%12s}%n", ""));
             }
+        }
+        if (!instanceOfDispatch) {
+            noTriggerDispatch.append(String.format("%8s}%n", ""));
         }
         noTriggerDispatch.append(String.format("%4s}%n", ""));
 

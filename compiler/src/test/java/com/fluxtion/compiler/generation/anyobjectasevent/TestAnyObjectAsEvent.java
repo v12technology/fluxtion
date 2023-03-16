@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.anyobjectasevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.hamcrest.MatcherAssert;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestAnyObjectAsEvent extends MultipleSepTargetInProcessTest {
 
-    public TestAnyObjectAsEvent(boolean compiledSep) {
+    public TestAnyObjectAsEvent(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

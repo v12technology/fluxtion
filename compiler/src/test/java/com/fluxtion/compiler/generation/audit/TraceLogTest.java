@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.compiler.generation.util.YamlLogRecordListener;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -41,7 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class TraceLogTest extends MultipleSepTargetInProcessTest {
 
-    public TraceLogTest(boolean compiledSep) {
+    public TraceLogTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
