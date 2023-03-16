@@ -23,6 +23,7 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 /**
@@ -113,6 +114,13 @@ public class CbMethodHandle {
 
     public boolean isGuardedParent() {
         return isGuardedParent;
+    }
+
+    public String getMethodTarget() {
+        if (Modifier.isStatic(getMethod().getModifiers())) {
+            return instance.getClass().getSimpleName();
+        }
+        return variableName;
     }
 
     @Override
