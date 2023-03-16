@@ -36,6 +36,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subclass1() {
+        writeSourceFile = true;
 //        Class<TimeEvent> timeEventClass = TimeEvent.class;
         sep(d -> d.addPublicNode(new MyHandler(), "handler"));
         MyHandler handler = getField("handler");
@@ -46,22 +47,22 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         assertThat(handler.timeEvent, is(1));
 
         onEvent(new ExtendTimeEvent());
-        assertThat(handler.anyEvent, is(1));
-        assertThat(handler.baseEvent, is(0));
-        assertThat(handler.implEvent, is(1));
-        assertThat(handler.timeEvent, is(1));
-
-        onEvent(new TimeEvent());
         assertThat(handler.anyEvent, is(2));
         assertThat(handler.baseEvent, is(0));
         assertThat(handler.implEvent, is(1));
         assertThat(handler.timeEvent, is(2));
 
-        onEvent(new BaseEvent());
+        onEvent(new TimeEvent());
         assertThat(handler.anyEvent, is(3));
+        assertThat(handler.baseEvent, is(0));
+        assertThat(handler.implEvent, is(1));
+        assertThat(handler.timeEvent, is(3));
+
+        onEvent(new BaseEvent());
+        assertThat(handler.anyEvent, is(4));
         assertThat(handler.baseEvent, is(1));
         assertThat(handler.implEvent, is(1));
-        assertThat(handler.timeEvent, is(2));
+        assertThat(handler.timeEvent, is(3));
     }
 
     @Test

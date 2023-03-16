@@ -352,4 +352,11 @@ public interface ClassUtils {
             }
         }
     }
+
+    //sorting by class type most specific first
+    static List<Class<?>> sortClassHierarchy(Set<Class<?>> classSet) {
+        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
+        clazzList.sort(new ClassHierarchyComparator(new NaturalOrderComparator<>()));
+        return clazzList;
+    }
 }

@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.targets.JavaSourceGenerator;
@@ -113,7 +114,9 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
-        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, true);
+        EventProcessorConfig cfg = new EventProcessorConfig();
+        cfg.setInlineEventHandling(true);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, cfg);
         srcModel.buildSourceModel();
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();
@@ -157,7 +160,9 @@ public class SepModelTest {
         DefaultFilterDescriptionProducer filterProducer = new DefaultFilterDescriptionProducer();
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph, filterMap);
         sep.generateMetaModel();
-        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, true);
+        EventProcessorConfig cfg = new EventProcessorConfig();
+        cfg.setInlineEventHandling(true);
+        JavaSourceGenerator srcModel = new JavaSourceGenerator(sep, cfg);
         srcModel.buildSourceModel();
 
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = sep.getDispatchMap();

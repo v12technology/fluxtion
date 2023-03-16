@@ -4,6 +4,7 @@ import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.StaticEventProcessor;
@@ -138,6 +139,28 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = null;
     }
 
+    private void subclassDispatchSearch(BitSet updateBitset) {
+        if (updateBitset.isEmpty()) {
+            Set<Class<?>> eventClassSet = new HashSet<>();
+            filteredEventHandlerToBitsetMap.keySet().stream().map(FilterDescription::getEventClass).forEach(eventClassSet::add);
+            eventClassSet.addAll(noFilterEventHandlerToBitsetMap.keySet());
+            List<Class<?>> sortedClasses = ClassUtils.sortClassHierarchy(eventClassSet);
+            sortedClasses.stream()
+                    .filter(c -> c.isInstance(currentEvent))
+                    .findFirst()
+                    .ifPresent(c -> {
+                        if (c.isAssignableFrom(Event.class)) {
+                            FilterDescription filterDescription = FilterDescription.build(currentEvent);
+                            filterDescription.setEventClass((Class<? extends Event>) c);
+                            filteredEventHandlerToBitsetMap.getOrDefault(filterDescription, Collections.emptyList()).forEach(updateBitset::set);
+                        }
+                        if (updateBitset.isEmpty()) {
+                            noFilterEventHandlerToBitsetMap.getOrDefault(c, Collections.emptyList()).forEach(updateBitset::set);
+                        }
+                    });
+        }
+    }
+
     private void processEvent(Object event, boolean buffer) {
         currentEvent = event;
         Object defaultEvent = checkForDefaultEventHandling(event);
@@ -148,6 +171,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (updateBitset.isEmpty()) {
             noFilterEventHandlerToBitsetMap.getOrDefault(defaultEvent.getClass(), Collections.emptyList()).forEach(updateBitset::set);
         }
+        //find a potential sub class if empty
+        subclassDispatchSearch(updateBitset);
         postProcessBufferingBitset.or(updateBitset);
         //now actually dispatch
         log.debug("dirtyBitset, after:{}", updateBitset);

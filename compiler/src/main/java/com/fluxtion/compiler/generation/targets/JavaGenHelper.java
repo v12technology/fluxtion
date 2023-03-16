@@ -94,7 +94,7 @@ public interface JavaGenHelper {
     }
 
     static Class<?> mapPrimitiveToWrapper(Class<?> clazz) {
-        Class<?> retClass = void.class;
+        Class<?> retClass = clazz;
         switch (clazz.getSimpleName()) {
             case "int":
                 retClass = Integer.class;
