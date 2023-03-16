@@ -507,26 +507,39 @@ public class JavaSourceGenerator {
         StringBuilder noTriggerDispatch = new StringBuilder();
         //build buffer event method
         String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
-                "        buffering = true;\n" +
-                "        switch (event.getClass().getName()) {\n";
-
+                "        buffering = true;\n";
+        if (!instanceOfDispatch) {
+            bufferEvents += "        switch (event.getClass().getName()) {\n";
+        }
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
         //sort class so repeatable
         boolean prev = isInlineEventHandling;
         isInlineEventHandling = true;
         //sort the classes and then loop through the sorted list
         List<Class<?>> sortedClasses = ClassUtils.sortClassHierarchy(handlerOnlyDispatchMap.keySet());
-        sortedClasses.forEach(c -> {
-            Map<FilterDescription, List<CbMethodHandle>> m = handlerOnlyDispatchMap.get(c);
-            String className = getClassName(c.getCanonicalName());
-            noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", c.getName()));
+        String elsePrefix = "if";
+        for (Class<?> eventId : sortedClasses) {
+            Map<FilterDescription, List<CbMethodHandle>> m = handlerOnlyDispatchMap.get(eventId);
+            String className = getClassName(eventId.getCanonicalName());
+            if (instanceOfDispatch) {
+                String eventClassName = mapPrimitiveToWrapper(eventId).getName().replace("$", ".");
+                noTriggerDispatch.append(String.format("%12s (event instanceof %s) {%n", elsePrefix, eventClassName));
+                elsePrefix = "else if";
+            } else {
+                noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", eventId.getName()));
+            }
             noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
-            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), c));
-            noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
-            noTriggerDispatch.append(String.format("%12s}%n", ""));
-        });
-        noTriggerDispatch.append(String.format("%8s}%n", ""));
+            noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), eventId));
+            if (!instanceOfDispatch) {
+                noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+                noTriggerDispatch.append(String.format("%12s}%n", ""));
+                noTriggerDispatch.append(String.format("%8s}%n", ""));
+            } else {
+                noTriggerDispatch.append(String.format("%12s}%n", ""));
+            }
+        }
         noTriggerDispatch.append(String.format("%4s}%n", ""));
+
         bufferEvents += noTriggerDispatch.toString();
         //build buffered dispatch trigger
         Map<FilterDescription, List<CbMethodHandle>> cbMap = new HashMap<>();
