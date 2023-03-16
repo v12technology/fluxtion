@@ -65,8 +65,7 @@ public class OverrideFilterInEventProcessorConfigTest extends MultipleSepTargetI
     }
 
     @Test
-    public void filterOverrideMultipleeMethod_multipleHandlersInClass() {
-        writeSourceFile = true;
+    public void filterOverrideMultipleMethod_multipleHandlersInClass() {
         sep(c -> {
             MultipleHandlers country = c.addNode(
                     new MultipleHandlers("united kingdom"), "uk");
