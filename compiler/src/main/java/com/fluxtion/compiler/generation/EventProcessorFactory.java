@@ -68,7 +68,7 @@ public class EventProcessorFactory {
         cfgBuilder.accept(cfg);
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
-        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_TESTGEN_DIR), new File(OutputRegistry.RESOURCE_TEST_DIR));
+        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_TESTGEN_DIR), new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
         return eventProcessorGenerator.inMemoryProcessor(cfg, false);
     }
 
@@ -102,7 +102,7 @@ public class EventProcessorFactory {
                 pckg,
                 sepName,
                 OutputRegistry.JAVA_TESTGEN_DIR,
-                OutputRegistry.RESOURCE_TEST_DIR,
+                OutputRegistry.RESOURCE_GENERATED_TEST_DIR,
                 false,
                 writeSourceFile,
                 generateMetaInformation);
