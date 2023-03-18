@@ -77,8 +77,8 @@ public interface Fluxtion {
                                      String packageName,
                                      String className) {
         return compile(cfgBuilder, compilerCfg -> {
-            compilerCfg.setPackageName(packageName);
-            compilerCfg.setClassName(className);
+            compilerCfg.setPackageName(packageName.trim());
+            compilerCfg.setClassName(className.trim());
         });
     }
 

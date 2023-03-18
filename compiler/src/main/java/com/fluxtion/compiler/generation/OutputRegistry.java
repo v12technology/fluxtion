@@ -41,7 +41,8 @@ public class OutputRegistry {
     public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/fluxtion/";
     public static final String JAVA_TEST_SRC_DIR = "src/test/java/";
     public static final String RESOURCE_DIR = "src/main/resources/";
-    public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
+    public static final String RESOURCE_TEST_DIR = "src/test/resources/";
+    public static final String RESOURCE_GENERATED_TEST_DIR = "target/generated-test-sources/resources/";
     private ClassLoader classLoader;
 
     private DirOptions dirOptions;
@@ -88,7 +89,7 @@ public class OutputRegistry {
                     break;
                 case TEST_DIR_OUTPUT:
                     genDir = OutputRegistry.JAVA_TESTGEN_DIR;
-                    resDir = OutputRegistry.RESOURCE_TEST_DIR;
+                    resDir = OutputRegistry.RESOURCE_GENERATED_TEST_DIR;
             }
         }
 
