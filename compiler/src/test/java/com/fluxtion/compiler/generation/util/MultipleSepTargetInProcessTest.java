@@ -122,7 +122,7 @@ public abstract class MultipleSepTargetInProcessTest {
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
         GenerationContext.setupStaticContext(pckName(), sepClassName(),
                 new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                new File(OutputRegistry.RESOURCE_TEST_DIR));
+                new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
         try {
             sep = handlerClass.getDeclaredConstructor().newInstance();
             init();
@@ -152,7 +152,7 @@ public abstract class MultipleSepTargetInProcessTest {
             if (!compiledSep) {
                 GenerationContext.setupStaticContext(pckName(), sepClassName(),
                         new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                        new File(OutputRegistry.RESOURCE_TEST_DIR));
+                        new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
                 EventProcessorConfig cfg = new EventProcessorConfig();
                 cfg.setSupportDirtyFiltering(true);
                 wrappedBuilder.accept(cfg);
@@ -167,7 +167,7 @@ public abstract class MultipleSepTargetInProcessTest {
                     try {
                         GenerationContext.setupStaticContext("", "",
                                 new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                                new File(OutputRegistry.RESOURCE_TEST_DIR));
+                                new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
                         sep = (StaticEventProcessor) Class.forName(fqn()).getDeclaredConstructor().newInstance();
                         sep.setContextParameterMap(contextMap);
                         init();
