@@ -59,7 +59,7 @@ public class FluxtionBuilderTest {
 
 
     @Test
-    public void generateToStringWriterTestFailingoAotCompile() throws IOException {
+    public void writeBackupFileForFailedTest() throws IOException {
         final File sampleFile = new File(OutputRegistry.RESOURCE_TEST_DIR + "generator-sample/MyProcessor.sample");
         final String pckg = "xxx.badgen";
         final String className = "MyProcessor";
