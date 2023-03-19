@@ -42,6 +42,8 @@ public interface EventProcessorBuilderService {
 
     <T> T addPublicOrReuse(T node, String publicId);
 
+    <T> T getNodeById(String id);
+
     default boolean buildTime() {
         return false;
     }
@@ -85,6 +87,11 @@ public interface EventProcessorBuilderService {
         @Override
         public <T> T addPublicOrReuse(T node, String publicId) {
             return node;
+        }
+
+        @Override
+        public <T> T getNodeById(String id) {
+            return null;
         }
 
     };
