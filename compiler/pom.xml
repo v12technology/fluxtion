@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>8.1.7</version>
+        <version>8.1.8</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
@@ -92,9 +92,13 @@ Copyright (C) 2018 V12 Technology Ltd.
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-nop</artifactId>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
