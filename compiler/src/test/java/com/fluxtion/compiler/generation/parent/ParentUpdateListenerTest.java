@@ -23,6 +23,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Event;
@@ -197,7 +198,9 @@ public class ParentUpdateListenerTest extends MultipleSepTargetInProcessTest {
             this(handler, null);
         }
 
-        public NoEventHandler(FilterHandler handler, FilterHandler handler2) {
+        public NoEventHandler(
+                @AssignToField("handler") FilterHandler handler,
+                @AssignToField("handler2") FilterHandler handler2) {
             this.handler = handler;
             this.handler2 = handler2;
             reset();

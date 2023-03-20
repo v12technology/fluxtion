@@ -2,6 +2,7 @@ package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntPredicate;
@@ -14,8 +15,8 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
     final SerializableBiFunction<T, A, Boolean> filterFunction;
     transient final String auditInfo;
 
-    public FilterDynamicEventStream(S inputEventStream,
-                                    B inputEventStream_2,
+    public FilterDynamicEventStream(@AssignToField("inputEventStream")S inputEventStream,
+                                    @AssignToField("inputEventStream_2") B inputEventStream_2,
                                     SerializableBiFunction<T, A, Boolean> filterFunction) {
         super(inputEventStream, inputEventStream_2, filterFunction);
         this.filterFunction = filterFunction;
@@ -50,8 +51,8 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         transient final String auditInfo;
         private final SerializableBiIntPredicate filterFunction;
 
-        public IntFilterDynamicEventStream(IntEventStream inputEventStream,
-                                           IntEventStream inputEventStream_2,
+        public IntFilterDynamicEventStream(@AssignToField("inputEventStream") IntEventStream inputEventStream,
+                                           @AssignToField("inputEventStream_2") IntEventStream inputEventStream_2,
                                            SerializableBiIntPredicate filterFunction) {
             super(inputEventStream, inputEventStream_2, filterFunction);
             this.filterFunction = filterFunction;
@@ -90,8 +91,8 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         @NoTriggerReference
         private final SerializableBiDoublePredicate filterFunction;
 
-        public DoubleFilterDynamicEventStream(DoubleEventStream inputEventStream,
-                                              DoubleEventStream inputEventStream_2,
+        public DoubleFilterDynamicEventStream(@AssignToField("inputEventStream") DoubleEventStream inputEventStream,
+                                              @AssignToField("inputEventStream_2") DoubleEventStream inputEventStream_2,
                                               SerializableBiDoublePredicate filterFunction) {
             super(inputEventStream, inputEventStream_2, filterFunction);
             this.filterFunction = filterFunction;
@@ -127,8 +128,8 @@ public class FilterDynamicEventStream<T, A, S extends EventStream<T>, B extends 
         transient final String auditInfo;
         private final SerializableBiLongPredicate filterFunction;
 
-        public LongFilterDynamicEventStream(LongEventStream inputEventStream,
-                                            LongEventStream inputEventStream_2,
+        public LongFilterDynamicEventStream(@AssignToField("inputEventStream") LongEventStream inputEventStream,
+                                            @AssignToField("inputEventStream_2") LongEventStream inputEventStream_2,
                                             SerializableBiLongPredicate filterFunction) {
             super(inputEventStream, inputEventStream_2, filterFunction);
             this.filterFunction = filterFunction;

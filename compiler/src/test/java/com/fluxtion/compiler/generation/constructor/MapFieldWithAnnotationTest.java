@@ -78,7 +78,9 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         @Inject
         private final EventDispatcher eventDispatcher;
 
-        public PartialAssignField(EventDispatcher eventDispatcher, DirtyStateMonitor dirtyStateMonitor) {
+        public PartialAssignField(
+                @AssignToField("eventDispatcher") EventDispatcher eventDispatcher,
+                @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor) {
             this.eventDispatcher = eventDispatcher;
             this.dirtyStateMonitor = dirtyStateMonitor;
         }
@@ -91,7 +93,9 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
 
     public static class PartialAssignFieldSubClass extends PartialAssignField {
 
-        public PartialAssignFieldSubClass(EventDispatcher eventDispatcher, DirtyStateMonitor dirtyStateMonitor) {
+        public PartialAssignFieldSubClass(
+                @AssignToField("eventDispatcher") EventDispatcher eventDispatcher,
+                @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor) {
             super(eventDispatcher, dirtyStateMonitor);
         }
     }

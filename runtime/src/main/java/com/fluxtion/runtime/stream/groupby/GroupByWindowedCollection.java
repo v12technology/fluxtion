@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.stream.groupby;
 
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.Stateful;
@@ -18,8 +19,8 @@ import java.util.concurrent.atomic.LongAdder;
  * @param <F> The aggregate function converts a V into an A
  */
 public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V, A, F>>
-        implements AggregateFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F >>,
-         GroupByStreamed<K, A>, Stateful<GroupByStreamed<K, A>> {
+        implements AggregateFunction<T, GroupByStreamed<K, A>, GroupByWindowedCollection<T, K, V, A, F>>,
+        GroupByStreamed<K, A>, Stateful<GroupByStreamed<K, A>> {
 
     private final SerializableFunction<T, K> keyFunction;
     private final SerializableFunction<T, V> valueFunction;
@@ -30,9 +31,13 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     private F latestAggregateValue;
     private KeyValue<K, A> keyValue;
 
-    public GroupByWindowedCollection(SerializableFunction<T, K> keyFunction,
-                                     SerializableFunction<T, V> valueFunction,
-                                     SerializableSupplier<F> aggregateFunctionSupplier) {
+    public GroupByWindowedCollection(
+            @AssignToField("keyFunction")
+            SerializableFunction<T, K> keyFunction,
+            @AssignToField("valueFunction")
+            SerializableFunction<T, V> valueFunction,
+            @AssignToField("aggregateFunctionSupplier")
+            SerializableSupplier<F> aggregateFunctionSupplier) {
         this.keyFunction = keyFunction;
         this.valueFunction = valueFunction;
         this.aggregateFunctionSupplier = aggregateFunctionSupplier;
@@ -49,7 +54,7 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     @Override
     public void combine(GroupByWindowedCollection<T, K, V, A, F> add) {
         //merge each if existing
-        add.mapOfFunctions.forEach((k, f) ->{
+        add.mapOfFunctions.forEach((k, f) -> {
             F targetFunction = mapOfFunctions.computeIfAbsent(k, key -> aggregateFunctionSupplier.get());
             keyCount.computeIfAbsent(k, key -> new LongAdder()).increment();
             targetFunction.combine(f);
@@ -60,15 +65,15 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     @Override
     public void deduct(GroupByWindowedCollection<T, K, V, A, F> add) {
         //ignore if
-        add.mapOfFunctions.forEach((k, f) ->{
+        add.mapOfFunctions.forEach((k, f) -> {
             LongAdder currentCount = keyCount.computeIfAbsent(k, key -> new LongAdder());
             currentCount.decrement();
-            if(currentCount.intValue() < 1){
+            if (currentCount.intValue() < 1) {
                 currentCount.reset();
                 //remove completely
                 mapOfFunctions.remove(k);
                 mapOfValues.remove(k);
-            }else{
+            } else {
                 //perform deduct
                 F targetFunction = mapOfFunctions.get(k);
                 targetFunction.deduct(f);
@@ -94,7 +99,7 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     }
 
     @Override
-    public KeyValue<K, A> keyValue(){
+    public KeyValue<K, A> keyValue() {
         return keyValue;
     }
 

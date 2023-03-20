@@ -27,10 +27,7 @@ import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
@@ -347,35 +344,27 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         private final List<OrderHandler> handlers;
         private final int totalOrders;
         private final String name;
-        public ConfigHandler publicHandler;
 
-        public ConfigPublisher(OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, 0, null, orderHandler, configHandler, configHandler_2);
+        public ConfigPublisher(
+                @AssignToField("orderHandler") OrderHandler orderHandler,
+                @AssignToField("configHandler") ConfigHandler configHandler,
+                @AssignToField("configHandler_2") ConfigHandler configHandler_2) {
+            this("no name", 0, Collections.emptyList(), orderHandler, configHandler, configHandler_2);
         }
 
-        public ConfigPublisher(int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, totalOrders, null, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(String name, int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(name, totalOrders, null, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, 0, handlers, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(int totalOrders) {
-            this(null, totalOrders, null, null, null, null);
-        }
-
-        public ConfigPublisher(String name, int totalOrders, List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
+        public ConfigPublisher(
+                @AssignToField("name") String name,
+                @AssignToField("totalOrders") int totalOrders,
+                @AssignToField("handlers") List<OrderHandler> handlers,
+                @AssignToField("orderHandler") OrderHandler orderHandler,
+                @AssignToField("configHandler") ConfigHandler configHandler,
+                @AssignToField("configHandler_2") ConfigHandler configHandler_2) {
             this.handlers = handlers;
             this.orderHandler = orderHandler;
             this.configHandler = configHandler;
             this.configHandler_2 = configHandler_2;
             this.totalOrders = totalOrders;
-            this.name = name == null ? "no name" : name;
+            this.name = name;
         }
 
         @OnTrigger
