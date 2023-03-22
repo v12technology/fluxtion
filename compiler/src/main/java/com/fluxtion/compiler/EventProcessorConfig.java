@@ -32,6 +32,8 @@ import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.compiler.generation.serialiser.FieldContext;
+import com.fluxtion.compiler.generation.serialiser.FormatSerializer;
+import com.fluxtion.compiler.generation.serialiser.IoSerializer;
 import com.fluxtion.compiler.generation.serialiser.TimeSerializer;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -39,9 +41,25 @@ import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,6 +95,22 @@ public class EventProcessorConfig {
     public EventProcessorConfig() {
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
         classSerializerMap.put(Duration.class, TimeSerializer::durationToSource);
+        classSerializerMap.put(Instant.class, TimeSerializer::instantToSource);
+        classSerializerMap.put(LocalDate.class, TimeSerializer::localDateToSource);
+        classSerializerMap.put(LocalTime.class, TimeSerializer::localTimeToSource);
+        classSerializerMap.put(LocalDateTime.class, TimeSerializer::localDateTimeToSource);
+        classSerializerMap.put(Period.class, TimeSerializer::periodToSource);
+        classSerializerMap.put(ZoneId.class, TimeSerializer::zoneIdToSource);
+        classSerializerMap.put(ZonedDateTime.class, TimeSerializer::zoneDateTimeToSource);
+        classSerializerMap.put(Date.class, TimeSerializer::dateToSource);
+        classSerializerMap.put(File.class, IoSerializer::fileToSource);
+        classSerializerMap.put(URI.class, IoSerializer::uriToSource);
+        classSerializerMap.put(URL.class, IoSerializer::urlToSource);
+        classSerializerMap.put(InetSocketAddress.class, IoSerializer::inetSocketAddressToSource);
+        classSerializerMap.put(SimpleDateFormat.class, FormatSerializer::simpleDataFormatToSource);
+        classSerializerMap.put(DateFormat.class, FormatSerializer::simpleDataFormatToSource);
+        classSerializerMap.put(DecimalFormat.class, FormatSerializer::decimalFormatToSource);
+        classSerializerMap.put(NumberFormat.class, FormatSerializer::decimalFormatToSource);
     }
 
     /**
@@ -364,9 +398,10 @@ public class EventProcessorConfig {
      * @param serializationFunction The instance to source function
      * @return current {@link EventProcessorConfig}
      */
-    public EventProcessorConfig addClassSerializer(
-            Class<?> classToSerialize, Function<FieldContext, String> serializationFunction) {
-        classSerializerMap.put(classToSerialize, serializationFunction);
+    @SuppressWarnings("unchecked")
+    public <T> EventProcessorConfig addClassSerializer(
+            Class<T> classToSerialize, Function<FieldContext<T>, String> serializationFunction) {
+        classSerializerMap.put(classToSerialize, (Function<FieldContext, String>) (Object) serializationFunction);
         return this;
     }
 

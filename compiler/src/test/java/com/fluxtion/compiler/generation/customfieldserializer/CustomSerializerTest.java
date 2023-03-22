@@ -49,9 +49,9 @@ public class CustomSerializerTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("ID_1", custom.getId());
     }
 
-    private String genWithBuilder(FieldContext fieldContext) {
+    private String genWithBuilder(FieldContext<WithBuilder> fieldContext) {
         fieldContext.getImportList().add(WithBuilder.class);
-        WithBuilder withBuilder = (WithBuilder) fieldContext.getInstanceToMap();
+        WithBuilder withBuilder = fieldContext.getInstanceToMap();
         return "WithBuilder.createWithBuilder(\"" + withBuilder.getId() + "\")";
     }
 
