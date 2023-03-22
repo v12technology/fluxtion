@@ -21,6 +21,8 @@ import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.google.auto.service.AutoService;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * @author V12 Technology Ltd.
@@ -85,6 +87,15 @@ public class EventProcessorBuilderServiceImpl implements EventProcessorBuilderSe
         node = GenerationContext.SINGLETON.addOrUseExistingNode(node);
         GenerationContext.SINGLETON.getPublicNodes().put(node, publicId);
         return node;
+    }
+
+    @Override
+    public <T> T getNodeById(String id) {
+        Optional<Object> optional = GenerationContext.SINGLETON.getPublicNodes().entrySet().stream()
+                .filter(e -> e.getValue().equals(id))
+                .findFirst()
+                .map(Entry::getKey);
+        return (T) optional.orElse(null);
     }
 
     @Override

@@ -148,6 +148,10 @@ public class EventProcessorCompilation {
                 returnClass = StringCompilation.compile(fqn, writer.toString());
             }
             LOG.debug("completed compiling source");
+            if (backupFile != null) {
+                FileUtils.delete(backupFile);
+                backupFile = null;
+            }
         }
         if (backupFile != null && !formatSuccess) {
             FileUtils.delete(backupFile);

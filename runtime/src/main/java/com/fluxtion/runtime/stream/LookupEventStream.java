@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection;
 
 /**
@@ -17,8 +18,11 @@ public class LookupEventStream <R, T, S extends EventStream<R>, I, L> extends Ab
     private T streamOutputValue;
 
     public LookupEventStream(S inputEventStream,
+                             @AssignToField("lookupKeyFunction")
                              LambdaReflection.SerializableFunction<R, I> lookupKeyFunction,
+                             @AssignToField("lookupFunction")
                              LambdaReflection.SerializableFunction<I, L> lookupFunction,
+                             @AssignToField("mapFunction")
                              LambdaReflection.SerializableBiFunction<R, L, T> methodReferenceReflection
                              ) {
         super(inputEventStream, methodReferenceReflection);

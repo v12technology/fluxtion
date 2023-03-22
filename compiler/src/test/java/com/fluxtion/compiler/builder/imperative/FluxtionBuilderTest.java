@@ -162,9 +162,10 @@ public class FluxtionBuilderTest {
         int generationCount = Fluxtion.scanAndCompileFluxtionBuilders(
                 new File("target/test-classes"), new File("target/test-classes"));
         assertThat(generationCount, is(1));
-
+        File generatedFile = new File(PACKAGE_DIR + "/" + PROCESSOR + ".java");
+        generatedFile.deleteOnExit();
         String code = FileUtils.readFileToString(
-                new File(PACKAGE_DIR + "/" + PROCESSOR + ".java"), Charset.defaultCharset());
+                generatedFile, Charset.defaultCharset());
         Class<EventProcessor> processorClass = StringCompilation.compile(PACKAGE_NAME + "." + PROCESSOR, code);
         EventProcessor processor = processorClass.getDeclaredConstructor().newInstance();
         processor.init();
