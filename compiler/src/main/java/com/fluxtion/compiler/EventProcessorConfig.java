@@ -31,12 +31,15 @@ import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
 import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
+import com.fluxtion.compiler.generation.serialiser.FieldContext;
+import com.fluxtion.compiler.generation.serialiser.TimeSerializer;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
@@ -57,45 +61,22 @@ public class EventProcessorConfig {
     private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;
     private final Map<String, String> class2replace = new HashMap<>();
+    private final Map<Object, Integer> filterMap = new HashMap<>();
+    private final Map<Class<?>, Function<FieldContext, String>> classSerializerMap = new HashMap<>();
     private String templateFile;
     private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
     private NodeFactoryRegistration nodeFactoryRegistration;
     private RootNodeConfig rootNodeConfig;
-    private final Map<Object, Integer> filterMap = new HashMap<>();
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
     private boolean instanceOfDispatch = true;
 
-    enum NodeFactoryConfig {
-        required(
-                CallBackDispatcherFactory.class,
-                CallbackNodeFactory.class,
-                ClockFactory.class,
-                InstanceSupplierFactory.class,
-                DirtyStateMonitorFactory.class,
-                EventDispatcherFactory.class,
-                EventProcessorCallbackInternalFactory.class,
-                EventProcessorContextFactory.class,
-                NodeNameLookupFactory.class,
-                SubscriptionManagerFactory.class
-        );
-
-        private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
-
-        NodeFactoryConfig(Class<? extends NodeFactory<?>>... factoryClasses) {
-            Arrays.asList(factoryClasses).forEach(defaultFactories::add);
-        }
-
-        public Set<Class<? extends NodeFactory<?>>> getFactoryClasses() {
-            return new HashSet<>(defaultFactories);
-        }
-    }
-
     public EventProcessorConfig() {
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
+        classSerializerMap.put(Duration.class, TimeSerializer::durationToSource);
     }
 
     /**
@@ -125,10 +106,6 @@ public class EventProcessorConfig {
         Arrays.asList(nodeList).forEach(this::addNode);
     }
 
-//    public void addNode(MethodReferenceReflection methodReference){
-//
-//    }
-
     /**
      * Add a node to the SEP. The node will have public final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -147,6 +124,10 @@ public class EventProcessorConfig {
         addPublicNode(node, name);
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
+
+//    public void addNode(MethodReferenceReflection methodReference){
+//
+//    }
 
     /**
      * Add a node to the SEP. The node will have public final scope, the
@@ -217,7 +198,6 @@ public class EventProcessorConfig {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), EventLogManager.NODE_NAME);
     }
 
-
     public void addInterfaceImplementation(Class<?> clazz) {
         interfaces.add(clazz);
     }
@@ -233,7 +213,6 @@ public class EventProcessorConfig {
      */
     public void buildConfig() {
     }
-
 
     /**
      * the name of the template file to use as an input
@@ -379,6 +358,23 @@ public class EventProcessorConfig {
     }
 
     /**
+     * Register a custom serialiser that maps a field to source at generation time
+     *
+     * @param classToSerialize      the class type to support custom serialisation
+     * @param serializationFunction The instance to source function
+     * @return current {@link EventProcessorConfig}
+     */
+    public EventProcessorConfig addClassSerializer(
+            Class<?> classToSerialize, Function<FieldContext, String> serializationFunction) {
+        classSerializerMap.put(classToSerialize, serializationFunction);
+        return this;
+    }
+
+    public Map<Class<?>, Function<FieldContext, String>> getClassSerializerMap() {
+        return classSerializerMap;
+    }
+
+    /**
      * configures generated code to inline the event handling methods or not.
      */
     public boolean isInlineEventHandling() {
@@ -427,5 +423,30 @@ public class EventProcessorConfig {
 
     public void setInstanceOfDispatch(boolean instanceOfDispatch) {
         this.instanceOfDispatch = instanceOfDispatch;
+    }
+
+    enum NodeFactoryConfig {
+        required(
+                CallBackDispatcherFactory.class,
+                CallbackNodeFactory.class,
+                ClockFactory.class,
+                InstanceSupplierFactory.class,
+                DirtyStateMonitorFactory.class,
+                EventDispatcherFactory.class,
+                EventProcessorCallbackInternalFactory.class,
+                EventProcessorContextFactory.class,
+                NodeNameLookupFactory.class,
+                SubscriptionManagerFactory.class
+        );
+
+        private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
+
+        NodeFactoryConfig(Class<? extends NodeFactory<?>>... factoryClasses) {
+            Arrays.asList(factoryClasses).forEach(defaultFactories::add);
+        }
+
+        public Set<Class<? extends NodeFactory<?>>> getFactoryClasses() {
+            return new HashSet<>(defaultFactories);
+        }
     }
 }
