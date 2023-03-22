@@ -7,13 +7,13 @@ import java.util.ServiceLoader;
  * by Java platform. New factories can be added to Fluxtion using the extension
  * mechanism described in {@link ServiceLoader} documentation.
  */
-public interface FieldToSourceSerializer {
+public interface FieldToSourceSerializer<T> {
 
     int DEFAULT_PRIORITY = 500;
 
     boolean typeSupported(Class<?> type);
 
-    String mapToSource(FieldContext fieldContext);
+    String mapToSource(FieldContext<T> fieldContext);
 
     default String language() {
         return "java";
