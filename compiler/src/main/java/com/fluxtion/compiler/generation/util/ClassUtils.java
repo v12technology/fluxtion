@@ -112,8 +112,23 @@ public interface ClassUtils {
 
     //sorting by class type most specific first
     static List<Class<?>> sortClassHierarchy(Set<Class<?>> classSet) {
-        ArrayList<Class<?>> clazzList = new ArrayList<>(classSet);
-        clazzList.sort(new ClassHierarchyComparator(new NaturalOrderComparator<>()));
-        return clazzList;
+        ArrayList<Class<?>> clazzListAlpha = new ArrayList<>(classSet);
+        ArrayList<Class<?>> clazzSorted = new ArrayList<>();
+        clazzListAlpha.sort(new NaturalOrderComparator<>());
+        clazzListAlpha.forEach(clazz -> {
+            boolean added = false;
+            for (int i = 0; i < clazzSorted.size(); i++) {
+                Class<?> sortedClazz = clazzSorted.get(i);
+                if (sortedClazz.isAssignableFrom(clazz)) {
+                    clazzSorted.add(i, clazz);
+                    added = true;
+                    break;
+                }
+            }
+            if (!added) {
+                clazzSorted.add(clazz);
+            }
+        });
+        return clazzSorted;
     }
 }
