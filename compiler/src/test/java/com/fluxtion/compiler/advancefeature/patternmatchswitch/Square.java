@@ -1,4 +1,4 @@
 package com.fluxtion.compiler.advancefeature.patternmatchswitch;
 
-public record Square() {
+public class Square {
 }
