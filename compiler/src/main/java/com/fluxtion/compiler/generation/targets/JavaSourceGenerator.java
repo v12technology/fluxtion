@@ -18,6 +18,7 @@
 package com.fluxtion.compiler.generation.targets;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.EventProcessorConfig.DISPATCH_STRATEGY;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
@@ -120,6 +121,7 @@ public class JavaSourceGenerator {
      */
     private final ArrayList<String> publicNodeIdentifierList;
     private final SimpleEventProcessorModel model;
+    private EventProcessorConfig eventProcessorConfig;
     /**
      * use reflection to assign private members
      */
@@ -228,8 +230,9 @@ public class JavaSourceGenerator {
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
         this.isInlineEventHandling = eventProcessorConfig.isInlineEventHandling();
         this.assignPrivateMembers = eventProcessorConfig.isAssignPrivateMembers();
-        this.instanceOfDispatch = eventProcessorConfig.isInstanceOfDispatch();
+        this.instanceOfDispatch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.INSTANCE_OF;
         this.model = model;
+        this.eventProcessorConfig = eventProcessorConfig;
         this.eventHandlers = "";
         initialiseMethodList = new ArrayList<>();
         startMethodList = new ArrayList<>();
@@ -504,12 +507,17 @@ public class JavaSourceGenerator {
     }
 
     private void generateEventBufferedDispatcher() {
-        StringBuilder noTriggerDispatch = new StringBuilder();
+        boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
+        StringBuilder noTriggerDispatch = new StringBuilder("\n    public void bufferEvent(Object event){\n" +
+                "        buffering = true;\n");
         //build buffer event method
-        String bufferEvents = "\n    public void bufferEvent(Object event){\n" +
-                "        buffering = true;\n";
-        if (!instanceOfDispatch) {
-            bufferEvents += "        switch (event.getClass().getName()) {\n";
+        String bufferEvents = "";
+        if (instanceOfDispatch) {
+            bufferEvents = "";
+        } else if (!patternSwitch) {
+            noTriggerDispatch.append("        switch (event.getClass().getName()) {\n");
+        } else if (patternSwitch) {
+            noTriggerDispatch.append("        switch (event) {\n");
         }
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> handlerOnlyDispatchMap = model.getHandlerOnlyDispatchMap();
         //sort class so repeatable
@@ -525,19 +533,27 @@ public class JavaSourceGenerator {
                 String eventClassName = mapPrimitiveToWrapper(eventId).getName().replace("$", ".");
                 noTriggerDispatch.append(String.format("%12s (event instanceof %s) {%n", elsePrefix, eventClassName));
                 elsePrefix = "else if";
+                noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
+            } else if (patternSwitch) {
+                noTriggerDispatch.append(String.format("%12scase %s typedEvent -> {", "", className));
             } else {
                 noTriggerDispatch.append(String.format("%12scase (\"%s\"):{%n", "", eventId.getName()));
+                noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
             }
-            noTriggerDispatch.append(String.format("%16s%s typedEvent = (%s)event;%n", "", className, className));
             noTriggerDispatch.append(buildFilteredDispatch(m, Collections.emptyMap(), eventId));
-            if (!instanceOfDispatch) {
-                noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
+            if (instanceOfDispatch) {
+                noTriggerDispatch.append(String.format("%12s}%n", ""));
+            } else if (patternSwitch) {
                 noTriggerDispatch.append(String.format("%12s}%n", ""));
             } else {
+                noTriggerDispatch.append(String.format("%16sbreak;%n", ""));
                 noTriggerDispatch.append(String.format("%12s}%n", ""));
             }
         }
         if (!instanceOfDispatch) {
+            if (!handlerOnlyDispatchMap.keySet().contains(Object.class) && patternSwitch) {
+                noTriggerDispatch.append("default -> {}");
+            }
             noTriggerDispatch.append(String.format("%8s}%n", ""));
         }
         noTriggerDispatch.append(String.format("%4s}%n", ""));
@@ -575,11 +591,13 @@ public class JavaSourceGenerator {
      * event handling for that type.
      */
     private void generateClassBasedDispatcher() {
+        boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
         String dispatchStringNoId = "        switch (event.getClass().getName()) {\n";
         if (instanceOfDispatch) {
             dispatchStringNoId = "";
+        } else if (patternSwitch) {
+            dispatchStringNoId = "        switch (event) {\n";
         }
-
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> dispatchMap = model.getDispatchMap();
         Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> postDispatchMap = model.getPostDispatchMap();
         Set<Class<?>> keySet = dispatchMap.keySet();
@@ -593,15 +611,20 @@ public class JavaSourceGenerator {
                 String eventClassName = mapPrimitiveToWrapper(eventId).getName().replace("$", ".");
                 dispatchStringNoId += String.format("%12s (event instanceof %s) {%n", elsePrefix, eventClassName);
                 elsePrefix = "else if";
+                dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
+            } else if (patternSwitch) {
+                dispatchStringNoId += String.format("%12scase %s typedEvent -> ", "", className);
             } else {
                 dispatchStringNoId += String.format("%12scase (\"%s\"):{%n", "", eventId.getName());
+                dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
             }
-            dispatchStringNoId += String.format("%16s%s typedEvent = (%s)event;%n", "", className, className);
             Map<FilterDescription, List<CbMethodHandle>> cbMap = dispatchMap.get(eventId);
             Map<FilterDescription, List<CbMethodHandle>> cbMapPostEvent = postDispatchMap.get(eventId);
             dispatchStringNoId += buildFilteredDispatch(cbMap, cbMapPostEvent, eventId);
             if (instanceOfDispatch) {
                 dispatchStringNoId += String.format("%12s}%n", "");
+            } else if (patternSwitch) {
+//                dispatchStringNoId += String.format("%n");
             } else {
                 dispatchStringNoId += String.format("%16sbreak;%n", "");
                 dispatchStringNoId += String.format("%12s}%n", "");
@@ -609,10 +632,12 @@ public class JavaSourceGenerator {
         }
         //default handling
         if (!instanceOfDispatch) {
-            if (keySet.contains(Object.class)) {
+            if (keySet.contains(Object.class) && !patternSwitch) {
                 dispatchStringNoId += String.format("%12sdefault :{%n", "");
                 dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
                 dispatchStringNoId += String.format("%12s}%n", "");
+            } else if (!keySet.contains(Object.class) && patternSwitch) {
+                dispatchStringNoId += "default -> {}";
             }
             dispatchStringNoId += String.format("%8s}%n", "");
         }
