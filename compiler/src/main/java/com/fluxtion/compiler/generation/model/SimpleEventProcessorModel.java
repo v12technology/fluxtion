@@ -22,6 +22,7 @@ import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.model.Field.MappedField;
+import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.AfterEvent;
@@ -239,6 +240,7 @@ public class SimpleEventProcessorModel {
      * subsequent event filtering.
      */
     private boolean supportDirtyFiltering;
+    private final FieldSerializer fieldSerializer;
 
     public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph) throws Exception {
         this(dependencyGraph, new HashMap<>());
@@ -274,6 +276,7 @@ public class SimpleEventProcessorModel {
         nodeGuardMap = HashMultimap.create();
         node2UpdateMethodMap = new HashMap<>();
         importClasses = new HashSet<>();
+        fieldSerializer = new FieldSerializer(dependencyGraph.getConfig());
     }
 
     /**
@@ -344,7 +347,7 @@ public class SimpleEventProcessorModel {
                 LOGGER.debug("mapping property mutators for var:{}", f.name);
                 List<String> properties = stream(Introspector.getBeanInfo(f.instance.getClass()).getPropertyDescriptors())
                         .filter((PropertyDescriptor p) -> p.getWriteMethod() != null)
-                        .filter((PropertyDescriptor p) -> ClassUtils.propertySupported(p, f, nodeFields))
+                        .filter((PropertyDescriptor p) -> fieldSerializer.propertySupported(p, f, nodeFields))
                         .filter(p -> {
                             boolean isConstructorArg = false;
                             try {
@@ -354,7 +357,7 @@ public class SimpleEventProcessorModel {
                             }
                             return !isConstructorArg;
                         })
-                        .map(p -> ClassUtils.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
+                        .map(p -> fieldSerializer.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
@@ -412,7 +415,7 @@ public class SimpleEventProcessorModel {
                     }
                     if (directParents.contains(parent)) {
                         final Field.MappedField mappedField = new Field.MappedField(fieldName, getFieldForInstance(parent));
-                        mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        mappedField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(mappedField);
                     } else if (List.class.isAssignableFrom(parent.getClass()) || Set.class.isAssignableFrom(parent.getClass())) {
                         //
@@ -422,20 +425,20 @@ public class SimpleEventProcessorModel {
                         for (Object element : collection) {
                             collectionField.addField(getFieldForInstance(element));
                         }
-                        collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
+                        collectionField.derivedVal = fieldSerializer.mapToJavaSource(parent, nodeFields, importClasses);
                         if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
                             privateFields.add(collectionField);
                             LOGGER.debug("collection field:{}, val:{}", fieldName, input.get(field));
                         }
-                    } else if (ClassUtils.typeSupported(input.getType())) {
+                    } else if (fieldSerializer.typeSupported(input.getType())) {
                         LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
                         Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        primitiveField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
-                    } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
+                    } else if (fieldSerializer.typeSupported(input.get(field).getClass())) {
                         LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
                         Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        primitiveField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     }
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
