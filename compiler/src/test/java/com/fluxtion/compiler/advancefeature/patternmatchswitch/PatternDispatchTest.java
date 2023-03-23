@@ -7,6 +7,8 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static org.junit.Assume.assumeTrue;
 
 public class PatternDispatchTest {
@@ -14,8 +16,13 @@ public class PatternDispatchTest {
     public static final boolean WRITE_SOURCE_FILE = true;
 
     public boolean patternSwitchSupported() {
-        Runtime.Version version = Runtime.version();
-        return version.feature() >= 19;
+        try {
+            Object version = Runtime.class.getMethod("version").invoke(Runtime.class);
+            Integer featureId = (Integer) version.getClass().getMethod("feature").invoke(version);
+            return featureId >= 19;
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            return false;
+        }
     }
 
     @Test
