@@ -18,9 +18,13 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -95,4 +99,19 @@ public class ClassUtilsTest {
         assertEquals(cbObj, findBestParentCB);
     }
 
+    @Test
+    public void testClassHierarchySort() {
+        HashSet<Class<?>> classSet = new HashSet<>(Arrays.asList(
+                Object.class, NumberFormat.class, A.class, B.class, B1.class, B2.class, DecimalFormat.class,
+                String.class, CharSequence.class));
+        List<Class<?>> sortClassHierarchy = ClassUtils.sortClassHierarchy(classSet);
+        Assert.assertEquals(sortClassHierarchy.size(), sortClassHierarchy.indexOf(Object.class) + 1);
+        Assert.assertTrue(sortClassHierarchy.indexOf(B.class) > sortClassHierarchy.indexOf(B1.class));
+        Assert.assertTrue(sortClassHierarchy.indexOf(B.class) > sortClassHierarchy.indexOf(B2.class));
+
+        Assert.assertTrue(sortClassHierarchy.indexOf(NumberFormat.class) > sortClassHierarchy.indexOf(DecimalFormat.class));
+        Assert.assertTrue(sortClassHierarchy.indexOf(CharSequence.class) > sortClassHierarchy.indexOf(String.class));
+
+        Assert.assertTrue(sortClassHierarchy.indexOf(Object.class) > sortClassHierarchy.indexOf(A.class));
+    }
 }

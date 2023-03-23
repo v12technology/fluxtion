@@ -64,6 +64,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -91,6 +92,8 @@ public class EventProcessorConfig {
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
     private boolean instanceOfDispatch = true;
+    private DISPATCH_STRATEGY dispatchStrategy = DISPATCH_STRATEGY.INSTANCE_OF;
+    private List<String> compilerOptions = new ArrayList<>();
 
     public EventProcessorConfig() {
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
@@ -159,10 +162,6 @@ public class EventProcessorConfig {
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
-//    public void addNode(MethodReferenceReflection methodReference){
-//
-//    }
-
     /**
      * Add a node to the SEP. The node will have public final scope, the
      * variable name of the node will be generated from {@link NodeNameProducer}
@@ -182,6 +181,10 @@ public class EventProcessorConfig {
         getPublicNodes().put(node, name);
         return node;
     }
+
+//    public void addNode(MethodReferenceReflection methodReference){
+//
+//    }
 
     /**
      * Adds an {@link Auditor} to this SEP. The Auditor will have public final
@@ -458,6 +461,46 @@ public class EventProcessorConfig {
 
     public void setInstanceOfDispatch(boolean instanceOfDispatch) {
         this.instanceOfDispatch = instanceOfDispatch;
+    }
+
+    public DISPATCH_STRATEGY getDispatchStrategy() {
+        return dispatchStrategy;
+    }
+
+    public void setDispatchStrategy(DISPATCH_STRATEGY dispatchStrategy) {
+        Objects.requireNonNull(dispatchStrategy, "Dispatch strategy must be non null");
+        if (dispatchStrategy == DISPATCH_STRATEGY.PATTERN_MATCH) {
+            enablePreviewFeatures();
+            javaTargetRelease("19");
+        }
+        this.dispatchStrategy = dispatchStrategy;
+    }
+
+    public List<String> getCompilerOptions() {
+        return compilerOptions;
+    }
+
+    public void setCompilerOptions(List<String> compilerOptions) {
+        Objects.requireNonNull(compilerOptions);
+        this.compilerOptions = compilerOptions;
+    }
+
+    public EventProcessorConfig enablePreviewFeatures() {
+        compilerOptions.add("--enable-preview");
+        return this;
+    }
+
+    public EventProcessorConfig javaTargetRelease(String release) {
+        Objects.requireNonNull(release);
+        compilerOptions.add("--release");
+        compilerOptions.add(release);
+        return this;
+    }
+
+    public enum DISPATCH_STRATEGY {
+        CLASS_NAME,
+        INSTANCE_OF,
+        PATTERN_MATCH
     }
 
     enum NodeFactoryConfig {

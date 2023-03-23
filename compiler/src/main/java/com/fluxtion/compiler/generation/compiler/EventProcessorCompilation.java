@@ -143,9 +143,12 @@ public class EventProcessorCompilation {
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
             if (compilerConfig.isWriteSourceToFile()) {
-                returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
+                builderConfig.getCompilerOptions();
+                returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()),
+                        builderConfig.getCompilerOptions());
             } else {
-                returnClass = StringCompilation.compile(fqn, writer.toString());
+                returnClass = StringCompilation.compile(fqn, writer.toString(),
+                        builderConfig.getCompilerOptions());
             }
             LOG.debug("completed compiling source");
             if (backupFile != null) {
