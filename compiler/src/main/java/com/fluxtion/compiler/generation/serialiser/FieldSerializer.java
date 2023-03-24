@@ -52,13 +52,17 @@ public class FieldSerializer {
         loadServices.forEach(namingStrategies::add);
     }
 
-    private static boolean _typeSupported(Class<?> type) {
+    private static boolean _nativeSerializerSupport(Class<?> type) {
         boolean zeroArg = false;
         try {
             type.getDeclaredConstructor();
             zeroArg = true;
         } catch (NoSuchMethodException | SecurityException ex) {
         }
+        return _nativeTypeSupported(type) || zeroArg;
+    }
+
+    private static boolean _nativeTypeSupported(Class<?> type) {
         return type.isPrimitive()
                 || type == String.class
                 || type == Class.class
@@ -67,12 +71,12 @@ public class FieldSerializer {
                 || Set.class.isAssignableFrom(type)
                 || type.isArray()
                 || MethodReferenceReflection.class.isAssignableFrom(type)
-                || zeroArg;
+                ;
     }
 
     public boolean typeSupported(Class<?> type) {
         return classSerializerMap.containsKey(type)
-                || _typeSupported(type)
+                || _nativeSerializerSupport(type)
                 || namingStrategies.stream().anyMatch(s -> s.typeSupported(type));
     }
 
@@ -83,7 +87,7 @@ public class FieldSerializer {
         if (serializeFunction != null) {
             return serializeFunction.apply(f);
         }
-        if (_typeSupported(primitiveValClass)) {
+        if (_nativeTypeSupported(primitiveValClass)) {
             return _mapToJavaSource(primitiveVal, nodeFields, importList);
         }
         Optional<String> optionalSerialise = namingStrategies.stream()
