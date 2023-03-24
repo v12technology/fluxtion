@@ -13,7 +13,7 @@ import static org.junit.Assume.assumeTrue;
 
 public class PatternDispatchTest {
 
-    public static final boolean WRITE_SOURCE_FILE = true;
+    public static final boolean WRITE_SOURCE_FILE = false;
 
     public boolean patternSwitchSupported() {
         try {
