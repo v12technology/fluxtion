@@ -97,6 +97,10 @@ public interface Fluxtion {
         return EventProcessorFactory.interpreted(sepConfig);
     }
 
+    static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig, boolean generateDescription) {
+        return EventProcessorFactory.interpreted(sepConfig, generateDescription);
+    }
+
     /**
      * Generates and compiles Java source code for a {@link StaticEventProcessor}. The compiled version only requires
      * the Fluxtion runtime dependencies to operate and process events.
@@ -200,6 +204,11 @@ public interface Fluxtion {
     @SneakyThrows
     static EventProcessor interpret(RootNodeConfig rootNode) {
         return EventProcessorFactory.interpreted(rootNode);
+    }
+
+    @SneakyThrows
+    static EventProcessor interpret(RootNodeConfig rootNode, boolean generateDescription) {
+        return EventProcessorFactory.interpreted(rootNode, generateDescription);
     }
 
     /**
