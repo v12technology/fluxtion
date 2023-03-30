@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
@@ -23,9 +23,9 @@ import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
  * keys using one of the convenience methods. The {@link EventLogManager} will aggregate
  * all data into a {@link LogRecord} and publish to {@link LogRecordListener}.
  * <br>
- * 
+ * <p>
  * The generated {@code LogRecord} is a structure that can be read by machines
- * and humans. 
+ * and humans.
  *
  * @author Greg Higgins (greg.higgins@v12technology.com)
  */
@@ -41,161 +41,268 @@ public class EventLogger {
         logLevel = LogLevel.INFO;
     }
 
-    public void setLevel(LogLevel level) {
+    public EventLogger setLevel(LogLevel level) {
         logLevel = level;
+        return this;
     }
 
-    public void error() {
+    public EventLogger error() {
         logNodeInvocation(LogLevel.ERROR);
+        return this;
     }
 
-    public void warn() {
+    public EventLogger warn() {
         logNodeInvocation(LogLevel.WARN);
+        return this;
     }
 
-    public void info() {
+    public EventLogger info() {
         logNodeInvocation(LogLevel.INFO);
+        return this;
     }
 
-    public void debug() {
+    public EventLogger debug() {
         logNodeInvocation(LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace() {
+    public EventLogger trace() {
         logNodeInvocation(LogLevel.TRACE);
+        return this;
     }
 
-    public void error(String key, String value) {
+    public EventLogger error(String key, String value) {
         log(key, value, LogLevel.ERROR);
+        return this;
     }
 
-    public void warn(String key, String value) {
+    public EventLogger warn(String key, String value) {
         log(key, value, LogLevel.WARN);
+        return this;
     }
 
-    public void info(String key, String value) {
+    public EventLogger info(String key, String value) {
         log(key, value, LogLevel.INFO);
+        return this;
     }
 
-    public void debug(String key, String value) {
+    public EventLogger debug(String key, String value) {
         log(key, value, LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace(String key, String value) {
+    public EventLogger trace(String key, String value) {
         log(key, value, LogLevel.TRACE);
+        return this;
     }
 
-    public void error(String key, boolean value) {
+    public EventLogger error(String key, boolean value) {
         log(key, value, LogLevel.ERROR);
+        return this;
     }
 
-    public void warn(String key, boolean value) {
+    public EventLogger warn(String key, boolean value) {
         log(key, value, LogLevel.WARN);
+        return this;
     }
-    
-    public void error(String key, Object value) {
+
+    public EventLogger error(String key, Object value) {
         log(key, value, LogLevel.ERROR);
+        return this;
     }
 
-    public void warn(String key, Object value) {
+    public EventLogger warn(String key, Object value) {
         log(key, value, LogLevel.WARN);
+        return this;
     }
 
-    public void info(String key, Object value) {
+    public EventLogger info(String key, Object value) {
         log(key, value, LogLevel.INFO);
+        return this;
     }
 
-    public void debug(String key, Object value) {
+    public EventLogger debug(String key, Object value) {
         log(key, value, LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace(String key, Object value) {
+    public EventLogger trace(String key, Object value) {
         log(key, value, LogLevel.TRACE);
+        return this;
     }
 
-    public void info(String key, boolean value) {
+    public EventLogger info(String key, boolean value) {
         log(key, value, LogLevel.INFO);
+        return this;
     }
 
-    public void debug(String key, boolean value) {
+    public EventLogger debug(String key, boolean value) {
         log(key, value, LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace(String key, boolean value) {
+    public EventLogger trace(String key, boolean value) {
         log(key, value, LogLevel.TRACE);
+        return this;
     }
 
-    public void error(String key, double value) {
+    public EventLogger error(String key, double value) {
         log(key, value, LogLevel.ERROR);
+        return this;
     }
 
-    public void warn(String key, double value) {
+    public EventLogger warn(String key, double value) {
         log(key, value, LogLevel.WARN);
+        return this;
     }
 
-    public void info(String key, double value) {
+    public EventLogger info(String key, double value) {
         log(key, value, LogLevel.INFO);
+        return this;
     }
 
-    public void debug(String key, double value) {
+    public EventLogger debug(String key, double value) {
         log(key, value, LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace(String key, double value) {
+    public EventLogger trace(String key, double value) {
         log(key, value, LogLevel.TRACE);
+        return this;
     }
 
-    public void error(String key, char value) {
+    public EventLogger error(String key, int value) {
         log(key, value, LogLevel.ERROR);
+        return this;
     }
 
-    public void warn(String key, char value) {
+    public EventLogger warn(String key, int value) {
         log(key, value, LogLevel.WARN);
+        return this;
     }
 
-    public void info(String key, char value) {
+    public EventLogger info(String key, int value) {
         log(key, value, LogLevel.INFO);
+        return this;
     }
 
-    public void debug(String key, char value) {
+    public EventLogger debug(String key, long value) {
         log(key, value, LogLevel.DEBUG);
+        return this;
     }
 
-    public void trace(String key, char value) {
+    public EventLogger trace(String key, long value) {
         log(key, value, LogLevel.TRACE);
+        return this;
     }
 
-    public void logNodeInvocation(LogLevel logLevel) {
+    public EventLogger error(String key, long value) {
+        log(key, value, LogLevel.ERROR);
+        return this;
+    }
+
+    public EventLogger warn(String key, long value) {
+        log(key, value, LogLevel.WARN);
+        return this;
+    }
+
+    public EventLogger info(String key, long value) {
+        log(key, value, LogLevel.INFO);
+        return this;
+    }
+
+    public EventLogger debug(String key, int value) {
+        log(key, value, LogLevel.DEBUG);
+        return this;
+    }
+
+    public EventLogger trace(String key, int value) {
+        log(key, value, LogLevel.TRACE);
+        return this;
+    }
+
+    public EventLogger error(String key, char value) {
+        log(key, value, LogLevel.ERROR);
+        return this;
+    }
+
+    public EventLogger warn(String key, char value) {
+        log(key, value, LogLevel.WARN);
+        return this;
+    }
+
+    public EventLogger info(String key, char value) {
+        log(key, value, LogLevel.INFO);
+        return this;
+    }
+
+    public EventLogger debug(String key, char value) {
+        log(key, value, LogLevel.DEBUG);
+        return this;
+    }
+
+    public EventLogger trace(String key, char value) {
+        log(key, value, LogLevel.TRACE);
+        return this;
+    }
+
+    public EventLogger logNodeInvocation(LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addTrace(logSourceId);
         }
+        return this;
     }
 
-    public void log(String key, Object value, LogLevel logLevel){
-        log(key, value==null?"NULL":value.toString(), logLevel);
+    public EventLogger log(String key, Object value, LogLevel logLevel) {
+        if (this.logLevel.level >= logLevel.level) {
+            log(key, value == null ? "NULL" : value.toString(), logLevel);
+        }
+        return this;
     }
-    
-    public void log(String key, double value, LogLevel logLevel) {
+
+    public EventLogger log(String key, double value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);
         }
+        return this;
     }
 
-    public void log(String key, char value, LogLevel logLevel) {
+    public EventLogger log(String key, int value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);
         }
+        return this;
     }
 
-    public void log(String key, CharSequence value, LogLevel logLevel) {
+    public EventLogger log(String key, long value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);
         }
+        return this;
     }
 
-    public void log(String key, boolean value, LogLevel logLevel) {
+    public EventLogger log(String key, char value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
             logrecord.addRecord(logSourceId, key, value);
         }
+        return this;
+    }
+
+    public EventLogger log(String key, CharSequence value, LogLevel logLevel) {
+        if (this.logLevel.level >= logLevel.level) {
+            logrecord.addRecord(logSourceId, key, value);
+        }
+        return this;
+    }
+
+    public EventLogger log(String key, boolean value, LogLevel logLevel) {
+        if (this.logLevel.level >= logLevel.level) {
+            logrecord.addRecord(logSourceId, key, value);
+        }
+        return this;
+    }
+
+    public boolean canLog(LogLevel logLevel) {
+        return this.logLevel != null && this.logLevel.level >= logLevel.level;
     }
 }

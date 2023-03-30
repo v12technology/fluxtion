@@ -2,8 +2,8 @@ package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.ToString;
 
@@ -23,7 +23,7 @@ public class MergeMapEventStream<T> implements TriggeredEventStream<T> {
     private T result;
     private final List<MergeProperty<T, ?>> mergeProperties;
     @SuppressWarnings("rawtypes")
-    private final transient List<EventStream> triggerList = new ArrayList<>();
+    private List<EventStream> triggerList = new ArrayList<>();
     @NoTriggerReference
     @SuppressWarnings("rawtypes")
     private final transient List<EventStream> nonTriggeringSources = new ArrayList<>();
@@ -70,7 +70,7 @@ public class MergeMapEventStream<T> implements TriggeredEventStream<T> {
     public <R> void registerTrigger(MergeProperty<T, R> mergeProperty) {
         if (mergeProperty.isTriggering()) {
             triggerList.add(mergeProperty.getTrigger());
-        }else{
+        } else {
             nonTriggeringSources.add(mergeProperty.getTrigger());
         }
         mergeProperties.add(mergeProperty);

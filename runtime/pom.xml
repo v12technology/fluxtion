@@ -20,12 +20,12 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>6.3.2-SNAPSHOT</version>
+        <version>8.1.13-SNAPSHOT</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
     <artifactId>runtime</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>fluxtion :: runtime</name>
     
     <build>

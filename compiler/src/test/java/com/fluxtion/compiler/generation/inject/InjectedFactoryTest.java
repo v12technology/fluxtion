@@ -19,6 +19,7 @@
 package com.fluxtion.compiler.generation.inject;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.test.event.CharEvent;
 import com.fluxtion.test.nodes.KeyTracker;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class InjectedFactoryTest extends MultipleSepTargetInProcessTest {
 
-    public InjectedFactoryTest(boolean compiledSep) {
+    public InjectedFactoryTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -27,13 +27,27 @@ import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.Anchor;
-import com.fluxtion.runtime.FilteredEventHandler;
-import com.fluxtion.runtime.annotations.*;
-import com.fluxtion.runtime.annotations.builder.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.TriggerEventOverride;
+import com.fluxtion.runtime.annotations.builder.Config;
+import com.fluxtion.runtime.annotations.builder.ConfigVariable;
+import com.fluxtion.runtime.annotations.builder.ExcludeNode;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.callback.CallbackDispatcherImpl;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.Anchor;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -54,15 +68,28 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.reflections.ReflectionUtils.getAllFields;
-import static org.reflections.ReflectionUtils.withAnnotation;
 
 /**
  * Creates a sorted set of dependencies from a supplied set of instances.
@@ -71,20 +98,14 @@ import static org.reflections.ReflectionUtils.withAnnotation;
  */
 public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
-    public static final CallbackDispatcherImpl CALLBACK_DISPATCHER = new CallbackDispatcherImpl();
-    //TODO move this to constructor
-    private Map<String, Auditor> registrationListenerMap;
-
     //TODO check there are no variable name clashes
     private final Logger LOGGER = LoggerFactory.getLogger(TopologicallySortedDependencyGraph.class);
-    private BiMap<Object, String> inst2Name;
     private final BiMap<Object, String> inst2NameTemp;
     private final SimpleDirectedGraph<Object, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final SimpleDirectedGraph<Object, DefaultEdge> eventGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
-    private boolean processed = false;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final HashMap<String, CbMethodHandle> name2FactoryMethod;
@@ -92,6 +113,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final GenerationContext generationContext;
     private final NodeNameProducer nameStrategy;
     private final EventProcessorConfig config;
+    //TODO move this to constructor
+    private Map<String, Auditor> registrationListenerMap;
+    private BiMap<Object, String> inst2Name;
+    private boolean processed = false;
 
     public TopologicallySortedDependencyGraph(Object... obj) {
         this(Arrays.asList(obj));
@@ -150,6 +175,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             nodes = context.getNodeList();
         }
         addNodeList(nodes);
+        if (config != null && config.getRootNodeConfig() != null) {
+            addNodeList(config.getRootNodeConfig().getNodes());
+        }
 
         //override node names
         publicNodeList = new ArrayList<>();
@@ -164,7 +192,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         if (auditorMap == null) {
             auditorMap = new HashMap<>();
         }
-        auditorMap.put("callbackDispatcher", CALLBACK_DISPATCHER);
         this.registrationListenerMap = auditorMap;
         registrationListenerMap.forEach((key, value) -> {
             inst2Name.put(value, key);
@@ -173,6 +200,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         //declarative nodes - add arguments to method and make defensive copy
         this.nodeFactoryRegistration = nodeFactoryRegistration;
         this.generationContext = context;
+    }
+
+    public static boolean trySetAccessible(Field field) {
+        try {
+            field.setAccessible(true);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     private void addNodeList(List<?> nodes) {
@@ -382,6 +418,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 handle = class2FactoryMethod.get(clazz);
             } else {
                 handle = name2FactoryMethod.get(factoryName);
+                if (handle == null) {
+                    throw new RuntimeException("No registered NodeFactory with name:'"
+                            + factoryName + "' type:'"
+                            + clazz.getCanonicalName() + "'");
+                }
             }
             Object newNode;
             if (handle != null) {
@@ -401,7 +442,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 }
                 AccessorsController mirror = new Mirror().on(newNode);
                 ReflectionHandler<T> reflect = new Mirror().on(clazz).reflect();
-                Set<Map.Entry<String, Object>> entrySet = config.entrySet().stream()
+                Set<Map.Entry<String, Object>> entrySet = config == null ? Collections.EMPTY_SET : config.entrySet().stream()
                         .filter(keyValue -> reflect.field(keyValue.getKey()) != null)
                         .collect(Collectors.toSet());
                 //set all fields accessible
@@ -499,7 +540,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             }
             //loop through root instance and
             RootNodeConfig rootNodeConfig = config.getRootNodeConfig();
-            if (rootNodeConfig != null) {
+            if (rootNodeConfig != null && rootNodeConfig.getRootClass() != null) {
                 Object newNode = findOrCreateNode(
                         rootNodeConfig.getRootClass(), rootNodeConfig.getConfig(), rootNodeConfig.getName());
                 publicNodeList.add(newNode);
@@ -520,6 +561,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
         inst2Name.putAll(inst2NameTemp);
         inst2Name.entrySet().removeIf(o -> Anchor.class.isAssignableFrom(o.getKey().getClass()));
+        inst2Name.entrySet().removeIf(o -> o.getKey().getClass().isAnnotationPresent(ExcludeNode.class));
 
         //all instances are in inst2Name, can now generate final graph
         for (Map.Entry<Object, String> entry : inst2Name.entrySet()) {
@@ -533,7 +575,12 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //        for (Iterator topologicalIter = new TopologicalOrderIterator<>(graph);
              topologicalIter.hasNext(); ) {
             Object value = topologicalIter.next();
-            topologicalHandlers.add(value);
+            if (value.getClass().isAnnotationPresent(ExcludeNode.class)) {
+                graph.removeVertex(value);
+                eventGraph.removeVertex(value);
+            } else {
+                topologicalHandlers.add(value);
+            }
         }
 
         //if topologicalHandlers is missing nodes then add in a random order
@@ -545,8 +592,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
 
         buildNonPushSortedHandlers();
-//        topologicalHandlers.removeIf(o -> o.getClass().getAnnotation(ExcludeNode.class) != null);
-
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("GRAPH:" + graph);
         }
@@ -599,8 +644,13 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         @SuppressWarnings("unchecked") Class<? extends NodeFactory<?>> clazz = (Class<? extends NodeFactory<?>>) obj.getClass();
         Method createMethod = clazz.getMethod("createNode", Map.class, NodeRegistry.class);
 //        Type genericReturnType = createMethod.getGenericReturnType();
-        ParameterizedType paramType = (ParameterizedType) GenericTypeReflector.getExactSuperType(clazz, NodeFactory.class);
-        Class<?> targetClass = (Class<?>) paramType.getActualTypeArguments()[0];
+        final Class<?> targetClass;
+        if (obj.injectionType() != null) {
+            targetClass = obj.injectionType();
+        } else {
+            ParameterizedType paramType = (ParameterizedType) GenericTypeReflector.getExactSuperType(clazz, NodeFactory.class);
+            targetClass = (Class<?>) paramType.getActualTypeArguments()[0];
+        }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Registered factory:" + clazz.getCanonicalName() + " building:" + targetClass);
         }
@@ -610,15 +660,17 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             name2FactoryMethod.put(obj.factoryName(),
                     new CbMethodHandle(createMethod, obj, "node_factory_" + targetClass.getName()));
         }
-        obj.preSepGeneration(generationContext);
+        Map<String, Auditor> auditorMap = new HashMap<>();
+        obj.preSepGeneration(generationContext, auditorMap);
+        auditorMap.forEach((key, value) -> registerAuditor(value, key));
         //set target language
     }
 
     private void walkDependenciesForEventHandling(Object object) throws IllegalArgumentException, IllegalAccessException {
         final Class<?> clazz = object.getClass();
-        @SuppressWarnings("unchecked") Set<Field> s = getAllFields(clazz);
+        @SuppressWarnings("unchecked") Set<Field> s = ReflectionUtils.getAllFields(clazz);
         Field[] fields = new Field[s.size()];
-        @SuppressWarnings("unchecked") boolean overrideEventTrigger = getAllFields(clazz, withAnnotation(TriggerEventOverride.class)).stream()
+        @SuppressWarnings("unchecked") boolean overrideEventTrigger = ReflectionUtils.getAllFields(clazz, ReflectionUtils.withAnnotation(TriggerEventOverride.class)).stream()
                 .anyMatch(f -> {
                     try {
                         f.setAccessible(true);
@@ -653,22 +705,21 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    if (inst2Name.containsKey(refField)) {
+                    if (inst2Name.containsKey(refField) && handlesEvents(refField)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(refField);
                         eventGraph.addEdge(refField, object);
                         walkDependenciesForEventHandling(refField);
                     }
                 }
-            } else if (List.class
-                    .isAssignableFrom(field.getType())) {
+            } else if (List.class.isAssignableFrom(field.getType()) || Set.class.isAssignableFrom(field.getType())) {
                 Collection<?> list = (Collection<?>) field.get(object);
                 if (list == null) {
                     continue;
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    if (inst2Name.containsKey(parent)) {
+                    if (inst2Name.containsKey(parent) && handlesEvents(parent)) {
                         eventGraph.addVertex(object);
                         eventGraph.addVertex(parent);
                         if (pushCollection) {
@@ -680,13 +731,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                 }
             } else if (refName != null) {
-                eventGraph.addVertex(object);
-                eventGraph.addVertex(refField);
-                if (field.getAnnotation(PushReference.class) != null) {
-                    eventGraph.addEdge(object, refField);
-                } else {
-                    eventGraph.addEdge(refField, object);
-                    walkDependenciesForEventHandling(refField);
+                if (handlesEvents(refField)) {
+                    eventGraph.addVertex(object);
+                    eventGraph.addVertex(refField);
+                    if (field.getAnnotation(PushReference.class) != null) {
+                        eventGraph.addEdge(object, refField);
+                    } else {
+                        eventGraph.addEdge(refField, object);
+                        walkDependenciesForEventHandling(refField);
+                    }
                 }
             }
         }
@@ -696,13 +749,16 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
         Object refField = field.get(node);
         String refName = inst2Name.get(refField);
-        boolean addNode = field.getAnnotation(SepNode.class) != null;
+        boolean addNode = field.getAnnotation(SepNode.class) != null
+                && !field.getType().isArray()
+                && !Collection.class.isAssignableFrom(field.getType());
         if (refField != null && field.getAnnotation(ExcludeNode.class) == null) {
             addNode |= !ReflectionUtils.getAllMethods(
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
+            addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
+                    | refField.getClass().getAnnotation(SepNode.class) != null;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
@@ -717,15 +773,16 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private void implicitAddVectorMember(Object refField) {
+    private void implicitAddVectorMember(Object refField, Field collection) {
         boolean addNode;
         if (refField != null && !inst2Name.containsKey(refField) && !inst2NameTemp.containsKey(refField)) {
             addNode = !ReflectionUtils.getAllMethods(
                     refField.getClass(),
                     annotationPredicate()
             ).isEmpty();
-            addNode |= FilteredEventHandler.class.isAssignableFrom(refField.getClass());
-            if (addNode) {
+            addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
+                    | refField.getClass().getAnnotation(SepNode.class) != null;
+            if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
             }
         }
@@ -741,8 +798,21 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 .or(ReflectionUtils.withAnnotation(AfterTrigger.class))
                 .or(ReflectionUtils.withAnnotation(OnParentUpdate.class))
                 .or(ReflectionUtils.withAnnotation(TearDown.class))
+                .or(ReflectionUtils.withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
                 ;
+    }
+
+    private Predicate<AnnotatedElement> eventHandlingAnnotationPredicate() {
+        return ReflectionUtils.withAnnotation(OnEventHandler.class)
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                ;
+    }
+
+    private boolean handlesEvents(Object obj) {
+        return EventHandlerNode.class.isAssignableFrom(obj.getClass())
+                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty();
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -751,10 +821,19 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         Field[] fields = new Field[s.size()];
         fields = s.toArray(fields);
         for (Field field : fields) {
-            if (!trySetAccessible(field)) {
+            if (!trySetAccessible(field) || Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
             Object refField = field.get(object);
+            if (inst2Name.containsKey(refField) && refField != object) {
+                refField = inst2Name.inverse().get(inst2Name.get(refField));
+                try {
+                    field.set(object, refField);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    //throw new RuntimeException(e);
+                }
+            }
+
             String refName = getInstanceName(field, object);
             if (refField != null && refField.equals(object)) {
                 //no self reference loops
@@ -768,7 +847,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 int length = Array.getLength(array);
                 for (int i = 0; i < length; i++) {
                     refField = Array.get(array, i);
-                    implicitAddVectorMember(refField);
+                    implicitAddVectorMember(refField, field);
                     if (inst2Name.containsKey(refField) || inst2NameTemp.containsKey(refField)) {
                         graph.addVertex(object);
                         graph.addVertex(refField);
@@ -786,15 +865,14 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         }
                     }
                 }
-            } else if (Collection.class
-                    .isAssignableFrom(field.getType())) {
+            } else if (Collection.class.isAssignableFrom(field.getType())) {
                 Collection<?> list = (Collection<?>) field.get(object);
                 if (list == null) {
                     continue;
                 }
                 boolean pushCollection = field.getAnnotation(PushReference.class) != null;
                 for (Object parent : list) {
-                    implicitAddVectorMember(parent);
+                    implicitAddVectorMember(parent, field);
                     if (inst2Name.containsKey(parent) || inst2NameTemp.containsKey(parent)) {
                         graph.addVertex(object);
                         graph.addVertex(parent);
@@ -826,7 +904,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     && ((MethodReferenceReflection) refField).captured().length > 0
             ) {
                 Object methodInstanceHolder = ((MethodReferenceReflection) refField).captured()[0];
-                String instanceName = nameNode(methodInstanceHolder);
+                String instanceName = inst2Name.getOrDefault(methodInstanceHolder, nameNode(methodInstanceHolder));
                 inst2NameTemp.put(methodInstanceHolder, instanceName);
                 graph.addVertex(methodInstanceHolder);
                 graph.addVertex(object);
@@ -839,7 +917,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                 } else {
                     graph.addEdge(methodInstanceHolder, object);
-                    if (field.getAnnotation(NoTriggerReference.class) == null) {
+                    if (field.getAnnotation(NoTriggerReference.class) == null && handlesEvents(methodInstanceHolder)) {
                         eventGraph.addVertex(methodInstanceHolder);
                         eventGraph.addVertex(object);
                         eventGraph.addEdge(methodInstanceHolder, object);
@@ -850,7 +928,21 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             //check inject annotation for field
             Inject injecting = field.getAnnotation(Inject.class);
             if (injecting != null & refName == null & field.get(object) == null) {
+                String factoryVariableName = injecting.factoryVariableName();
                 String factoryName = injecting.factoryName();
+                Set<java.lang.reflect.Field> fieldNames = ReflectionUtils.getAllFields(object.getClass(), ReflectionUtils.withName(factoryVariableName));
+                if (factoryVariableName.length() > 0 && fieldNames.size() > 0) {
+                    java.lang.reflect.Field f = fieldNames.iterator().next();
+                    f.setAccessible(true);
+                    if (f.get(object) != null) {
+                        if (f.getType().equals(String.class)) {
+                            factoryName = (String) f.get(object);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "Inject.factoryVariableName() should be the variable name of a String field: " + f);
+                        }
+                    }
+                }
                 HashMap<String, Object> map = new HashMap<>();
                 HashMap<String, Object> overrideMap = new HashMap<>();
 
@@ -869,6 +961,23 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 //inject config from variables over global + annotation
                 Set<Map.Entry<String, Object>> entrySet = overrideMap.entrySet();
                 entrySet.forEach((overrideEntry) -> map.put(overrideEntry.getKey(), overrideEntry.getValue()));
+                map.put(NodeFactory.FIELD_KEY, field);
+                String instanceName = injecting.instanceName();
+                String instanceVariableName = injecting.instanceVariableName();
+                fieldNames = ReflectionUtils.getAllFields(object.getClass(), ReflectionUtils.withName(instanceVariableName));
+                if (instanceVariableName.length() > 0 && fieldNames.size() > 0) {
+                    java.lang.reflect.Field f = fieldNames.iterator().next();
+                    f.setAccessible(true);
+                    if (f.get(object) != null) {
+                        if (f.getType().equals(String.class)) {
+                            instanceName = (String) f.get(object);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "Inject.instanceVariableName() should be the variable name of a String field: " + f);
+                        }
+                    }
+                }
+                map.put(NodeFactory.INSTANCE_KEY, instanceName);
                 //merge configs to single map
                 //a hack to get inject working - this needs to be re-factored!!
                 BiMap<Object, String> oldMap = inst2Name;
@@ -948,8 +1057,8 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventTypeClass, t);
                     }
                 }
-                if (t instanceof FilteredEventHandler) {
-                    FilteredEventHandler<?> eh = (FilteredEventHandler<?>) t;
+                if (t instanceof EventHandlerNode) {
+                    EventHandlerNode<?> eh = (EventHandlerNode<?>) t;
                     Class<?> eventClass = eh.eventClass();
                     if (eventClass != null) {
                         exportGraph.addVertex(eventClass);
@@ -973,15 +1082,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private String nameNode(Object node) {
         return nameStrategy.mappedNodeName(node);
-    }
-
-    public static boolean trySetAccessible(Field field) {
-        try {
-            field.setAccessible(true);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
     }
 
 }

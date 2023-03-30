@@ -1,6 +1,8 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -57,7 +59,7 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
     }
 
     public EventSupplier<T> getEventSupplier() {
-        return EventProcessorConfigService.service().add(new WrappingEventSupplier<>(eventStream));
+        return EventProcessorBuilderService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
     public EventStreamBuilder<T> defaultValue(T defaultValue) {
@@ -218,6 +220,41 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
 
 
 
+//    public EventStreamBuilder<T> sink(String sinkId) {
+//        return push(new SinkPublisher<>(sinkId)::publish);
+//    }
+//
+//    public EventStreamBuilder<T> notify(Object target) {
+//        EventProcessorBuilderService.service().add(target);
+//        return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
+//    }
+//
+//    public EventStreamBuilder<T> processAsNewGraphEvent() {
+//        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, new InternalEventDispatcher()::dispatchToGraph));
+//    }
+//
+//    public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {
+//        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
+//    }
+//
+//    public <R> EventStreamBuilder<T> console(String in, SerializableFunction<T, R> transformFunction) {
+//        peek(Peekers.console(in, transformFunction));
+//        return this;
+//    }
+//
+//    public EventStreamBuilder<T> console(String in) {
+//        return console(in, null);
+//    }
+//
+//    public EventStreamBuilder<T> console() {
+//        return console("{}");
+//    }
+//
+//    //META-DATA
+//    public EventStreamBuilder<T> id(String nodeId) {
+//        EventProcessorBuilderService.service().add(eventStream, nodeId);
+//        return this;
+//    }
 
     /*
     TODO:

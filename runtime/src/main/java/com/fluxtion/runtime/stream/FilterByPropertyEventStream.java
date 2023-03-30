@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 
 public class FilterByPropertyEventStream<T, P, S extends EventStream<T>> extends AbstractEventStream<T, T, S> {
@@ -13,8 +14,8 @@ public class FilterByPropertyEventStream<T, P, S extends EventStream<T>> extends
 
     public FilterByPropertyEventStream(
             S inputEventStream,
-            SerializableFunction <T, P> propertyAccessor,
-            SerializableFunction<P, Boolean> filterFunction) {
+            @AssignToField("propertyAccessor") SerializableFunction <T, P> propertyAccessor,
+            @AssignToField("filterFunction") SerializableFunction<P, Boolean> filterFunction) {
         super(inputEventStream, filterFunction);
         this.propertyAccessor = propertyAccessor;
         this.filterFunction = filterFunction;

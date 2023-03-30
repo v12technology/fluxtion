@@ -24,6 +24,8 @@ import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.JULLogRecordListener;
@@ -35,9 +37,7 @@ import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +45,8 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -59,40 +61,48 @@ import static com.fluxtion.runtime.time.ClockStrategy.registerClockEvent;
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 @RunWith(Parameterized.class)
-public class MultipleSepTargetInProcessTest {
+public abstract class MultipleSepTargetInProcessTest {
 
+    //parametrized test config
+    protected final boolean compiledSep;
+    protected boolean instanceOfDispatch = true;
+    @Rule
+    public TestName testName = new TestName();
     protected StaticEventProcessor sep;
     protected boolean generateMetaInformation = false;
     protected boolean writeSourceFile = false;
     protected boolean fixedPkg = true;
     protected boolean reuseSep = false;
     protected boolean generateLogging = false;
-    private boolean addAuditor = false;
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
-    //parametrized test config
-    protected final boolean compiledSep;
-
+    protected boolean callInit;
     protected boolean inlineCompiled = false;
-    private InMemoryEventProcessor inMemorySep;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
+    private boolean addAuditor = false;
+    private InMemoryEventProcessor inMemorySep;
 
-    public MultipleSepTargetInProcessTest(boolean compiledSep) {
-        this.compiledSep = compiledSep;
+    public MultipleSepTargetInProcessTest(SepTestConfig testConfig) {
+        this.compiledSep = testConfig.isCompiled();
+        inlineCompiled = testConfig == SepTestConfig.COMPILED_INLINE;
+        instanceOfDispatch = !(testConfig == SepTestConfig.COMPILED_SWITCH_DISPATCH);
     }
 
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(false, true);
+        return Arrays.asList(
+                SepTestConfig.COMPILED_SWITCH_DISPATCH,
+                SepTestConfig.COMPILED_METHOD_PER_EVENT,
+                SepTestConfig.INTERPRETED
+        );
     }
-
-    @Rule
-    public TestName testName = new TestName();
 
     @Before
     public void beforeTest() {
         fixedPkg = true;
         addAuditor = false;
+        reuseSep = false;
+        callInit = true;
     }
 
     @After
@@ -100,9 +110,8 @@ public class MultipleSepTargetInProcessTest {
         tearDown();
     }
 
-    @Test
-    @Ignore
-    public void doNothingTest() {
+    protected EventProcessor<?> eventProcessor() {
+        return (EventProcessor<?>) sep;
     }
 
     protected StaticEventProcessor sep(RootNodeConfig rootNode) {
@@ -113,12 +122,10 @@ public class MultipleSepTargetInProcessTest {
     protected <T extends StaticEventProcessor> T sep(Class<T> handlerClass) {
         GenerationContext.setupStaticContext(pckName(), sepClassName(),
                 new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                new File(OutputRegistry.RESOURCE_TEST_DIR));
+                new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
         try {
             sep = handlerClass.getDeclaredConstructor().newInstance();
-            if (sep instanceof Lifecycle) {
-                ((Lifecycle) sep).init();
-            }
+            init();
             return (T) sep;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -126,13 +133,18 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder) {
+        return sep(cfgBuilder, new HashMap<>());
+    }
+
+    protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
         Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
-        if (addAuditor || inlineCompiled) {
+        if (addAuditor || inlineCompiled || !instanceOfDispatch) {
             wrappedBuilder = cfg -> {
                 cfgBuilder.accept(cfg);
                 if (addAuditor)
                     cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
                 cfg.setInlineEventHandling(inlineCompiled);
+                cfg.setInstanceOfDispatch(instanceOfDispatch);
             };
         }
 
@@ -140,31 +152,33 @@ public class MultipleSepTargetInProcessTest {
             if (!compiledSep) {
                 GenerationContext.setupStaticContext(pckName(), sepClassName(),
                         new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                        new File(OutputRegistry.RESOURCE_TEST_DIR));
+                        new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
                 EventProcessorConfig cfg = new EventProcessorConfig();
                 cfg.setSupportDirtyFiltering(true);
                 wrappedBuilder.accept(cfg);
                 EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
                 inMemorySep = eventProcessorGenerator.inMemoryProcessor(cfg, generateMetaInformation);
-                inMemorySep.init();
+                inMemorySep.setContextParameterMap(contextMap);
                 sep = inMemorySep;
+                init();
                 simpleEventProcessorModel = eventProcessorGenerator.getSimpleEventProcessorModel();
             } else {
                 if (reuseSep) {
-//                    sep(wrappedBuilder, fqn());
                     try {
                         GenerationContext.setupStaticContext("", "",
                                 new File(OutputRegistry.JAVA_TESTGEN_DIR),
-                                new File(OutputRegistry.RESOURCE_TEST_DIR));
+                                new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
                         sep = (StaticEventProcessor) Class.forName(fqn()).getDeclaredConstructor().newInstance();
-                        if (sep instanceof Lifecycle) {
-                            ((Lifecycle) sep).init();
-                        }
+                        sep.setContextParameterMap(contextMap);
+                        init();
                     } catch (Exception e) {
                     }
                 }
                 if (sep == null) {
+
                     sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
+                    sep.setContextParameterMap(contextMap);
+                    init();
                 }
             }
             return sep;
@@ -173,14 +187,32 @@ public class MultipleSepTargetInProcessTest {
         }
     }
 
+    public void enableInitCheck(boolean callInit) {
+        this.callInit = callInit;
+    }
+
     protected void writeOutputsToFile(boolean write) {
         generateMetaInformation = write;
         writeSourceFile = write;
     }
 
     protected StaticEventProcessor init() {
-        if (sep instanceof Lifecycle) {
+        if (callInit && sep instanceof Lifecycle) {
             ((Lifecycle) sep).init();
+        }
+        return sep;
+    }
+
+    protected StaticEventProcessor start() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).start();
+        }
+        return sep;
+    }
+
+    protected StaticEventProcessor stop() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).stop();
         }
         return sep;
     }
@@ -211,6 +243,10 @@ public class MultipleSepTargetInProcessTest {
         return inMemorySep.getNodeById(name);
     }
 
+    protected <T> T getField(String name, Class<T> clazz) {
+        return getField(name);
+    }
+
     @SneakyThrows
     protected <T> T getAuditor(String name) {
         if (compiledSep) {
@@ -226,6 +262,14 @@ public class MultipleSepTargetInProcessTest {
 
     protected void onEvent(Object e) {
         sep.onEvent(e);
+    }
+
+    protected void bufferEvent(Object e) {
+        sep.bufferEvent(e);
+    }
+
+    protected void triggerCalculation() {
+        sep.triggerCalculation();
     }
 
     protected void onEvent(byte value) {
@@ -265,15 +309,15 @@ public class MultipleSepTargetInProcessTest {
     }
 
     protected void addIntSink(String id, IntConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addIntSink(id, sink);
     }
 
     protected void addDoubleSink(String id, DoubleConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addDoubleSink(id, sink);
     }
 
     protected void addLongSink(String id, LongConsumer sink) {
-        sep.addSink(id, sink);
+        sep.addLongSink(id, sink);
     }
 
     protected void removeSink(String id) {
@@ -286,6 +330,14 @@ public class MultipleSepTargetInProcessTest {
 
     protected <T> void publishSignal(String filter, T value) {
         sep.publishSignal(filter, value);
+    }
+
+    protected <T> void publishInstance(T value) {
+        sep.publishObjectSignal(value);
+    }
+
+    protected <S, T> void publishInstance(Class<S> classFilter, T value) {
+        sep.publishObjectSignal(classFilter, value);
     }
 
     protected void publishIntSignal(String filter, int value) {

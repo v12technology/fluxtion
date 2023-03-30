@@ -12,34 +12,39 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.subclass;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.SepNode;
-import com.fluxtion.test.event.DefaultFilteredEventHandler;
+import com.fluxtion.test.event.DefaultEventHandlerNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
 
-    public EventHandlerSubClassTest(boolean compiledSep) {
+    public EventHandlerSubClassTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testSubClassOnEvent() {
 
-        sep((c) -> c.addPublicNode(new SubclassHandler(new DefaultFilteredEventHandler<>(String.class)), "node"));
+        sep((c) -> c.addPublicNode(new SubclassHandler(new DefaultEventHandlerNode<>(String.class)), "node"));
         SubclassHandler node = getField("node");
         //init
         assertThat(node.eventCount, is(0));
@@ -81,9 +86,9 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
     public abstract static class ParentHandler {
 
         @SepNode
-        final DefaultFilteredEventHandler<?> source;
+        final DefaultEventHandlerNode<?> source;
 
-        public ParentHandler(DefaultFilteredEventHandler<?> source) {
+        public ParentHandler(DefaultEventHandlerNode<?> source) {
             this.source = source;
         }
 
@@ -91,22 +96,27 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         public boolean onEvent() {
             return true;
         }
-        
+
         @AfterEvent
-        public void afterEvent(){}
+        public void afterEvent() {
+        }
 
         @Initialise
-        public void init() {}
+        public void init() {
+        }
 
         @TearDown
-        public void tearDown() {}
-        
+        public void tearDown() {
+        }
+
         @OnBatchEnd
-        public void batchEnd(){}
-        
+        public void batchEnd() {
+        }
+
         @OnBatchPause
-        public void batchPause(){}
-        
+        public void batchPause() {
+        }
+
     }
 
     public static class SubclassHandler extends ParentHandler {
@@ -118,7 +128,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         int initCount = 0;
         int tearDownCount = 0;
 
-        public SubclassHandler(DefaultFilteredEventHandler<?> source) {
+        public SubclassHandler(DefaultEventHandlerNode<?> source) {
             super(source);
         }
 
@@ -134,7 +144,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
             afterEvent = 0;
             batchEnd = 0;
             batchPause = 0;
-            tearDownCount = 0; 
+            tearDownCount = 0;
         }
 
         @Override
@@ -161,6 +171,6 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         public void afterEvent() {
             afterEvent++;
         }
-        
+
     }
 }

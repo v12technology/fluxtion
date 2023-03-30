@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public interface JavaGenHelper {
 
-    StringBuilder builder = new StringBuilder(1 * 1000 * 1000);
+    StringBuilder builder = new StringBuilder(1000 * 1000);
 
     static String generateFilteredDispatchMethodName(FilterDescription filter) {
         String filterName = filter.variableName;
@@ -94,7 +94,7 @@ public interface JavaGenHelper {
     }
 
     static Class<?> mapPrimitiveToWrapper(Class<?> clazz) {
-        Class<?> retClass = void.class;
+        Class<?> retClass = clazz;
         switch (clazz.getSimpleName()) {
             case "int":
                 retClass = Integer.class;

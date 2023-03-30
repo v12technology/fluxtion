@@ -1,9 +1,10 @@
 package com.fluxtion.compiler.generation.rebuild;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Signal;
-import com.fluxtion.compiler.generation.util.InMemoryOnlySepTest;
 import lombok.Data;
 import org.junit.Test;
 
@@ -14,8 +15,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RebuildInMemoryTest extends InMemoryOnlySepTest {
-    public RebuildInMemoryTest(boolean compiledSep) {
-        super(compiledSep);
+    public RebuildInMemoryTest(SepTestConfig compiledSep) {
+        super(SepTestConfig.INTERPRETED);
     }
 
     final static String liveFeed = "liveFeed";
@@ -29,21 +30,21 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
             c.addNode(reconciler, "reconciler");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        publishSignal(liveFeed, (Integer)100);
+        publishSignal(liveFeed, (Integer) 100);
         assertThat(reconciler.getReconcileDifference(), is(100));
-        publishSignal(dropCopyFeed, (Integer)100);
+        publishSignal(dropCopyFeed, (Integer) 100);
         assertThat(reconciler.getReconcileDifference(), is(100));
         //add new reference, nothing should happen until a rebuild
         reconciler.dropCopyFeed = new BookHandler(dropCopyFeed);
-        publishSignal(dropCopyFeed, (Integer)100);
+        publishSignal(dropCopyFeed, (Integer) 100);
         assertThat(reconciler.getReconcileDifference(), is(100));
         //rebuild
         sep(c -> {
             c.addNode(reconciler, "reconciler");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        publishSignal(liveFeed, (Integer)100);
-        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(liveFeed, (Integer) 100);
+        publishSignal(dropCopyFeed, (Integer) 200);
 
         assertThat(reconciler.getReconcileDifference(), is(0));
 
@@ -53,14 +54,14 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
             c.addNode(maxDelta, "maxDelta");
 //            c.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         });
-        publishSignal(dropCopyFeed, (Integer)200);
-        publishSignal(dropCopyFeed, (Integer)200);
-        publishSignal(dropCopyFeed, (Integer)200);
-        publishSignal(dropCopyFeed, (Integer)200);
+        publishSignal(dropCopyFeed, (Integer) 200);
+        publishSignal(dropCopyFeed, (Integer) 200);
+        publishSignal(dropCopyFeed, (Integer) 200);
+        publishSignal(dropCopyFeed, (Integer) 200);
 
-        publishSignal(liveFeed, (Integer)100);
-        publishSignal(liveFeed, (Integer)100);
-        publishSignal(liveFeed, (Integer)20100_0000);
+        publishSignal(liveFeed, (Integer) 100);
+        publishSignal(liveFeed, (Integer) 100);
+        publishSignal(liveFeed, (Integer) 20100_0000);
     }
 
     @Test
@@ -72,9 +73,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         sep(c -> {
             c.addNode(bookSum);
         });
-        publishSignal(dropCopyFeed, (Integer)200);
-        publishSignal(liveFeed, (Integer)100);
-        publishSignal(liveFeed, (Integer)100);
+        publishSignal(dropCopyFeed, (Integer) 200);
+        publishSignal(liveFeed, (Integer) 100);
+        publishSignal(liveFeed, (Integer) 100);
         //add a new source and rebuild
         bookSum.getMonitoredBooks().add(dropCopyHandler);
         sep(c -> {
@@ -92,8 +93,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int sum;
 
         @OnEventHandler(filterVariable = "bookName")
-        public void addPosition(Signal<Integer> delta) {
+        public boolean addPosition(Signal<Integer> delta) {
             sum += delta.getValue();
+            return true;
         }
     }
 
@@ -104,21 +106,23 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int reconcileDifference;
 
         @OnTrigger
-        public void reconcile() {
+        public boolean reconcile() {
             int live = liveHandler == null ? 0 : liveHandler.getSum();
             int dropCopy = dropCopyFeed == null ? 0 : dropCopyFeed.getSum();
             reconcileDifference = Math.abs(live - dropCopy);
+            return true;
         }
     }
 
     @Data
     public static class SummingVector {
-        final List<BookHandler> monitoredBooks = new ArrayList<>();
+        transient final List<BookHandler> monitoredBooks = new ArrayList<>();
         int bookSum;
 
         @OnTrigger
-        public void reconcile() {
+        public boolean reconcile() {
             bookSum = monitoredBooks.stream().mapToInt(BookHandler::getSum).sum();
+            return true;
         }
     }
 
@@ -128,8 +132,9 @@ public class RebuildInMemoryTest extends InMemoryOnlySepTest {
         int maxDelta;
 
         @OnTrigger
-        public void calcMaxDelta() {
+        public boolean calcMaxDelta() {
             maxDelta = Math.max(maxDelta, reconciler.getReconcileDifference());
+            return true;
         }
     }
 }

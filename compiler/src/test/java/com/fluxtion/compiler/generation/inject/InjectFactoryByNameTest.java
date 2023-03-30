@@ -2,6 +2,7 @@ package com.fluxtion.compiler.generation.inject;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -9,12 +10,16 @@ import com.google.auto.service.AutoService;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Map;
 
 public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
 
 
-    public InjectFactoryByNameTest(boolean compiledSep) {
+    public InjectFactoryByNameTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -28,6 +33,27 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         Assert.assertTrue(((ChildClass) getField("child")).matched);
     }
 
+    @Test
+    public void accessClassOfInjectedFieldTest() {
+        sep(c -> c.addNode(new GenericHolder(), "holder"));
+        GenericHolder holder = getField("holder");
+        Assert.assertEquals(holder.stringService.className, String.class.getCanonicalName());
+        Assert.assertEquals(holder.dateService.className, Date.class.getCanonicalName());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailOnMissingFactoryName() {
+        sep(c -> c.addNode(new MissingFactory()));
+    }
+
+    public static class GenericHolder {
+        @Inject
+        public ServiceInjected<Date> dateService;
+
+        @Inject
+        public ServiceInjected<String> stringService;
+    }
+
     public static class ChildClass {
         public boolean matched = false;
 
@@ -38,8 +64,19 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
         public MyUniqueData blueData;
 
         @OnEventHandler
-        public void onEvent(String in) {
+        public boolean onEvent(String in) {
             matched = greenData.key.equals("green") && blueData.key.equals("blue");
+            return true;
+        }
+    }
+
+    public static class MissingFactory {
+        @Inject(factoryName = "im_not_here_fatory")
+        public MyUniqueData missingFactory;
+
+        @OnEventHandler
+        public boolean onEvent(String in) {
+            return true;
         }
     }
 
@@ -53,6 +90,33 @@ public class InjectFactoryByNameTest extends MultipleSepTargetInProcessTest {
 
         public MyUniqueData() {
         }
+    }
+
+    public static class ServiceInjected<T> {
+        private final String className;
+
+        public ServiceInjected(String className) {
+            this.className = className;
+        }
+    }
+
+    @AutoService(NodeFactory.class)
+    public static class MyGenericServiceFactory implements NodeFactory<ServiceInjected> {
+        @Override
+        public ServiceInjected<?> createNode(Map<String, Object> config, NodeRegistry registry) {
+            Field field = (Field) config.get(NodeFactory.FIELD_KEY);
+            Type genericFieldType = field.getGenericType();
+            final String typeName;
+            if (genericFieldType instanceof ParameterizedType) {
+                ParameterizedType aType = (ParameterizedType) genericFieldType;
+                Type[] fieldArgTypes = aType.getActualTypeArguments();
+                typeName = ((Class) fieldArgTypes[0]).getCanonicalName();
+            } else {
+                typeName = "";
+            }
+            return new ServiceInjected<>(typeName);
+        }
+
     }
 
     @AutoService(NodeFactory.class)

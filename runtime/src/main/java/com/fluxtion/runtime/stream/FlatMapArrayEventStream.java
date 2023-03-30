@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -32,22 +32,22 @@ public class FlatMapArrayEventStream<T, R, S extends EventStream<T>> extends Eve
     public FlatMapArrayEventStream(S inputEventStream, SerializableFunction<T, R[]> iterableFunction) {
         this.inputEventStream = inputEventStream;
         this.iterableFunction = iterableFunction;
-        if (iterableFunction.captured().length > 0){
-            streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(iterableFunction.captured()[0]);
-        }else{
+        if (iterableFunction.captured().length > 0) {
+            streamFunctionInstance = EventProcessorBuilderService.service().addOrReuse(iterableFunction.captured()[0]);
+        } else {
             streamFunctionInstance = null;
         }
     }
 
     @OnParentUpdate("inputEventStream")
-    public void inputUpdatedAndFlatMap(S inputEventStream){
+    public void inputUpdatedAndFlatMap(S inputEventStream) {
         T input = inputEventStream.get();
         Iterable<R> iterable = Arrays.asList(iterableFunction.apply(input));
         callback.fireCallback(iterable.iterator());
     }
 
     @OnTrigger
-    public void callbackReceived(){
+    public void callbackReceived() {
         value = callback.get();
     }
 

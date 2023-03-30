@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,22 +12,21 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.nodes;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.event.AbstractFilteredEventHandler;
+import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 import com.fluxtion.test.event.CharEvent;
 
 /**
- *
  * @author Greg Higgins
  */
-public class KeyProcessor extends AbstractFilteredEventHandler<CharEvent>{
-    
+public class KeyProcessor extends AbstractEventHandlerNode<CharEvent> {
+
     private int count = 0;
     public char myChar;
     public Accumulator accumulator;
@@ -37,25 +36,26 @@ public class KeyProcessor extends AbstractFilteredEventHandler<CharEvent>{
     public Class<CharEvent> eventClass() {
         return CharEvent.class;
     }
-    
+
     @Override
-    public void onEvent(CharEvent e) {
+    public boolean onEvent(CharEvent e) {
         //System.out.println("received " + e);
         count++;
-        if(notifyAccumulator && accumulator!=null)
+        if (notifyAccumulator && accumulator != null)
             accumulator.add(myChar);
+        return true;
     }
-    
+
     @OnBatchEnd
-    public void batchEnd(){
+    public void batchEnd() {
         count = 0;
     }
 
     @Initialise
-    public void init(){
+    public void init() {
         count = 0;
     }
-    
+
     public int getCount() {
         return count;
     }
@@ -81,6 +81,6 @@ public class KeyProcessor extends AbstractFilteredEventHandler<CharEvent>{
         }
         return true;
     }
-    
+
 
 }

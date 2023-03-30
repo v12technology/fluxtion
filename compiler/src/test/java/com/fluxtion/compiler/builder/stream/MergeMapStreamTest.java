@@ -1,7 +1,8 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,15 +10,15 @@ import org.junit.Test;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 
 public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
-    public MergeMapStreamTest(boolean compiledSep) {
+    public MergeMapStreamTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void mergeTestBasic() {
         sep(c -> EventFlow.mergeMap(
-                MergeMapStreamBuilder.of(MyData::new)
-                        .required(subscribe(String.class), MyData::setValue)
+                        MergeMapStreamBuilder.of(MyData::new)
+                                .required(subscribe(String.class), MyData::setValue)
                 )
                 .push(new ResultsHolder()::setMyData));
         ResultsHolder resultsHolder = getField(ResultsHolder.NAME);
@@ -70,7 +71,7 @@ public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class ResultsHolder implements Named {
+    public static class ResultsHolder implements NamedNode {
 
         public static final String NAME = "resultsHolderNode";
 

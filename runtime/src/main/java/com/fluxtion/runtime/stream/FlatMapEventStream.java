@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -30,9 +30,9 @@ public class FlatMapEventStream<T, R, S extends EventStream<T>> extends EventLog
     public FlatMapEventStream(S inputEventStream, SerializableFunction<T, Iterable<R>> iterableFunction) {
         this.inputEventStream = inputEventStream;
         this.iterableFunction = iterableFunction;
-        if (iterableFunction.captured().length > 0){
-            streamFunctionInstance = EventProcessorConfigService.service().addOrReuse(iterableFunction.captured()[0]);
-        }else{
+        if (iterableFunction.captured().length > 0) {
+            streamFunctionInstance = EventProcessorBuilderService.service().addOrReuse(iterableFunction.captured()[0]);
+        } else {
             streamFunctionInstance = null;
         }
     }

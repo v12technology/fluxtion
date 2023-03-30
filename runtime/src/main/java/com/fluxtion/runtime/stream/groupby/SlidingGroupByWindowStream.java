@@ -2,6 +2,7 @@ package com.fluxtion.runtime.stream.groupby;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.AbstractEventStream;
@@ -44,9 +45,13 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     public SlidingGroupByWindowStream(
             S inputEventStream,
             SerializableSupplier<F> windowFunctionSupplier,
+            @AssignToField("keyFunction")
             SerializableFunction<T, K> keyFunction,
+            @AssignToField("valueFunction")
             SerializableFunction<T, V> valueFunction,
+            @AssignToField("bucketSizeMillis")
             int bucketSizeMillis,
+            @AssignToField("bucketCount")
             int bucketCount) {
         super(inputEventStream, null);
         this.windowFunctionSupplier = windowFunctionSupplier;

@@ -7,6 +7,7 @@ package com.fluxtion.compiler.generation.audit;
 
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
@@ -26,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
 
-    public FactoryAuditorTest(boolean compiledSep) {
+    public FactoryAuditorTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -45,8 +46,8 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         public MyNode myNode;
 
         @OnEventHandler
-        public void charEvent(CharEvent event) {
-
+        public boolean charEvent(CharEvent event) {
+            return true;
         }
     }
 

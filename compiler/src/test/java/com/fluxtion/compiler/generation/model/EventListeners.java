@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
@@ -22,7 +22,6 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.event.Event;
 
 /**
- *
  * @author Greg Higgins
  */
 class EventListeners {
@@ -30,28 +29,32 @@ class EventListeners {
     public static class TestEventListener {
 
         @OnEventHandler
-        public void onTestEvent(TestEvent event) {
+        public boolean onTestEvent(TestEvent event) {
+            return true;
         }
     }
 
     public static class ConfigEventListener {
 
         @OnEventHandler
-        public void onConfigEvent(ConfigEvent event) {
+        public boolean onConfigEvent(ConfigEvent event) {
+            return true;
         }
     }
 
-    public static class ChildConfigEventListener extends ConfigEventListener{
+    public static class ChildConfigEventListener extends ConfigEventListener {
 
         @OnEventHandler
-        public void onChildConfigEvent(ChildConfigEvent event) {
+        public boolean onChildConfigEvent(ChildConfigEvent event) {
+            return true;
         }
     }
 
     public static class UnknownTestEventListener {
 
         @OnEventHandler
-        public void onTestEvent(TestEvent event) {
+        public boolean onTestEvent(TestEvent event) {
+            return true;
         }
     }
 
@@ -63,10 +66,10 @@ class EventListeners {
 
     public static class ChildConfigEvent extends ConfigEvent {
     }
-    
-    
-    public static class NodeChild{
-        
+
+
+    public static class NodeChild {
+
         public TestEventListener testEventSource;
         public ConfigEventListener configEventSource;
         public ConfigEventListener configEventSource2;
@@ -84,7 +87,7 @@ class EventListeners {
             this.testEventSource = testEventSource;
             this.objectEventSource = objectEventSource;
         }
-        
+
         public NodeChild(TestEventListener testEventSource, ConfigEventListener configEventSource, ConfigEventListener configEventSource2, ChildConfigEventListener childConfigEventSource, Object objectEventSource) {
             this.testEventSource = testEventSource;
             this.configEventSource = configEventSource;
@@ -92,14 +95,14 @@ class EventListeners {
             this.childConfigEventSource = childConfigEventSource;
             this.objectEventSource = objectEventSource;
         }
-        
+
     }
-    
-    public static class Node1ParentListener extends NodeChild{
-        
+
+    public static class Node1ParentListener extends NodeChild {
+
         @OnParentUpdate
-        public void onTestEventParent(TestEventListener parent){
-            
+        public void onTestEventParent(TestEventListener parent) {
+
         }
 
         public Node1ParentListener() {
@@ -116,55 +119,54 @@ class EventListeners {
         public Node1ParentListener(TestEventListener testEventSource, ConfigEventListener configEventSource, ConfigEventListener configEventSource2, ChildConfigEventListener childConfigEventSource, Object objectEventSource) {
             super(testEventSource, configEventSource, configEventSource2, childConfigEventSource, objectEventSource);
         }
-        
-        
-    }
-    
-    public static class Node1Parent1ObjectListener extends NodeChild{
-        @OnParentUpdate
-        public void onTestEvent_2(TestEventListener parent){
-            
-        }
-        
-        @OnParentUpdate
-        public void onAnyUpdate(Object anyParent){
-            
-        }
-    }
-    
-    
-    
-    public static class Node2ArrayParentListener extends NodeChild{
-        public ConfigEventListener[] configEventSources;
-        
-        @OnParentUpdate
-        public void onTestEventParent(TestEventListener parent){
-            
-        }
-        
-        @OnParentUpdate
-        public void onConfigEvent(ConfigEventListener parent){
-            
-        }
-        
-        
-    }
-    
-    public static class NodeNameFilterListener extends NodeChild{
 
-       
+
+    }
+
+    public static class Node1Parent1ObjectListener extends NodeChild {
+        @OnParentUpdate
+        public void onTestEvent_2(TestEventListener parent) {
+
+        }
+
+        @OnParentUpdate
+        public void onAnyUpdate(Object anyParent) {
+
+        }
+    }
+
+
+    public static class Node2ArrayParentListener extends NodeChild {
+        public ConfigEventListener[] configEventSources;
+
+        @OnParentUpdate
+        public void onTestEventParent(TestEventListener parent) {
+
+        }
+
+        @OnParentUpdate
+        public void onConfigEvent(ConfigEventListener parent) {
+
+        }
+
+
+    }
+
+    public static class NodeNameFilterListener extends NodeChild {
+
+
         @OnParentUpdate("configEventSource")
-        public void onConfigEvent(ConfigEventListener parent){
-            
+        public void onConfigEvent(ConfigEventListener parent) {
+
         }
-        
-       
+
+
         @OnParentUpdate("configEventSource2")
-        public void onConfigEvent2(ConfigEventListener parent){
-            
+        public void onConfigEvent2(ConfigEventListener parent) {
+
         }
-        
-        
+
+
     }
 
 }

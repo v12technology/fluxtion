@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,33 +12,33 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.nopropagate;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.event.Event;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.event.Event;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author gregp
  */
 public class NoPropagateTest extends MultipleSepTargetInProcessTest {
 
-    public NoPropagateTest(boolean compiledSep) {
+    public NoPropagateTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testPush() {
-        sep((c) ->{
+        sep((c) -> {
             MarketHandler tickHandler = c.addPublicNode(new MarketHandler(), "marketHandler");
             PricerFormer pricerFormer = c.addPublicNode(new PricerFormer(tickHandler), "priceFormer");
             PricePublisher pricerPublisher = c.addPublicNode(new PricePublisher(pricerFormer), "pricerPublisher");
@@ -75,9 +75,10 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
         String ccyPair;
 
         @OnEventHandler
-        public void newTick(MarketTickEvent tick) {
+        public boolean newTick(MarketTickEvent tick) {
             eventCount++;
             ccyPair = tick.ccyPair;
+            return true;
         }
     }
 
@@ -90,28 +91,29 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
         public PricerFormer(MarketHandler marketHanlder) {
             this.marketHanlder = marketHanlder;
         }
-        
+
         @OnParentUpdate
-        public void MarketUpdate(MarketHandler update){
+        public void MarketUpdate(MarketHandler update) {
             eventCount++;
         }
 
     }
-    
-    public static class PricePublisher{
+
+    public static class PricePublisher {
         public final PricerFormer former;
         int eventCount;
 
         public PricePublisher(PricerFormer former) {
             this.former = former;
         }
-        
+
         @OnTrigger
-        public void formPrice() {
+        public boolean formPrice() {
             eventCount++;
+            return true;
         }
-        
-        
+
+
     }
 
 }

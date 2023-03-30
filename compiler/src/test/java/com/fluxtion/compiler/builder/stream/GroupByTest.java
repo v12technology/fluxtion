@@ -3,6 +3,7 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.KeyedData;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MergedType;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MyIntFilter;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
@@ -36,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 
 public class GroupByTest extends MultipleSepTargetInProcessTest {
 
-    public GroupByTest(boolean compiledSep) {
+    public GroupByTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

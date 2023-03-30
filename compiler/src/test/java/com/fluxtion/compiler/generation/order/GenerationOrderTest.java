@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,12 +12,13 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.order;
 
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Event;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class GenerationOrderTest extends MultipleSepTargetInProcessTest {
 
-    public GenerationOrderTest(boolean compiledSep) {
+    public GenerationOrderTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -74,8 +75,9 @@ public class GenerationOrderTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void update(OrderEvent e) {
+        public boolean update(OrderEvent e) {
             e.list.add(name);
+            return true;
         }
 
     }

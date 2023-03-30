@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,15 +12,16 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.dirty;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -28,18 +29,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 @Slf4j
 public class DirtyElseTest extends MultipleSepTargetInProcessTest {
 
-    public DirtyElseTest(boolean compiledSep) {
+    public DirtyElseTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
-    public void simpleDirtyInvert(){
+    public void simpleDirtyInvert() {
         sep((c) -> {
             GreaterThan gt_10 = new GreaterThan(10);
             c.addPublicNode(new PassTest(gt_10), "passCount");
@@ -58,7 +58,7 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void testAudit() {
+    public void intermediateDirtyDoesNotFireUnlessParentHasTriggerTest() {
         sep((c) -> {
             GreaterThan gt_10 = new GreaterThan(10);
             IntermediateNode intermediate = new IntermediateNode(gt_10);
@@ -73,14 +73,13 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
         FailsTest fail = getField("failCount");
         PassTest passInt = getField("intermedaitePassCount");
         FailsTest failInt = getField("intermedaiteFailCount");
-        
+
         sep.onEvent(new NumberEvent(12));
         assertThat(pass.count, is(1));
         assertThat(fail.count, is(0));
         assertThat(passInt.count, is(1));
         assertThat(failInt.count, is(0));
-        
-        
+
         sep.onEvent(new NumberEvent(3));
         assertThat(pass.count, is(1));
         assertThat(fail.count, is(1));
@@ -111,16 +110,16 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
             return number.value > barrier;
         }
     }
-    
-    public static class IntermediateNode{
+
+    public static class IntermediateNode {
         public final Object tracked;
 
         public IntermediateNode(Object tracked) {
             this.tracked = tracked;
         }
-        
+
         @OnTrigger
-        public boolean notifyChildren(){
+        public boolean notifyChildren() {
             return true;
         }
     }
@@ -135,8 +134,9 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void publishPass() {
+        public boolean publishPass() {
             count++;
+            return true;
         }
 
     }
@@ -151,8 +151,9 @@ public class DirtyElseTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger(dirty = false)
-        public void publishFail() {
+        public boolean publishFail() {
             count++;
+            return true;
         }
 
     }

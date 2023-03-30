@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.callback;
 
 import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -19,7 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CallbackTest extends MultipleSepTargetInProcessTest {
-    public CallbackTest(boolean compiledSep) {
+    public CallbackTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -79,15 +80,17 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         int count;
 
         @OnEventHandler
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback();
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             count++;
+            return true;
         }
     }
 
@@ -97,15 +100,17 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public String data;
 
         @OnEventHandler
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback("call back data");
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             data = callback.get();
+            return true;
         }
     }
 
@@ -114,14 +119,16 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public Callback<String> callback;
 
         @OnEventHandler(propagate = false)
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             if (in.equalsIgnoreCase("callback")) {
                 callback.fireCallback(in.chars().mapToObj(i -> "" + (char) i).iterator());
             }
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
+            return true;
         }
     }
 
@@ -131,13 +138,15 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         public String element;
 
         @OnEventHandler(propagate = false)
-        public void stringEvent(String in) {
+        public boolean stringEvent(String in) {
             callback.fireCallback(Arrays.asList(in.split(",")).iterator());
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             element = callback.get();
+            return true;
         }
     }
 
@@ -157,8 +166,9 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             value = callback.get();
+            return true;
         }
 
         public int getValue() {

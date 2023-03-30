@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>6.3.2-SNAPSHOT</version>
+        <version>8.1.13-SNAPSHOT</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
@@ -42,15 +42,23 @@ Copyright (C) 2018 V12 Technology Ltd.
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <source>19</source>-->
+<!--                    <target>19</target>-->
+<!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-surefire-plugin</artifactId>-->
+<!--                <version>3.0.0-M7</version>-->
+<!--                <configuration>-->
+<!--                    <argLine>&#45;&#45;enable-preview</argLine>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-surefire-plugin</artifactId>-->
@@ -75,6 +83,17 @@ Copyright (C) 2018 V12 Technology Ltd.
     
     <dependencies>
         <dependency>
+            <groupId>com.fluxtion.csv-compiler</groupId>
+            <artifactId>csv-compiler</artifactId>
+            <version>0.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion.csv-compiler</groupId>
+            <artifactId>csv-compiler-processor</artifactId>
+            <version>0.1.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>runtime</artifactId>
             <version>${project.version}</version>
@@ -83,9 +102,13 @@ Copyright (C) 2018 V12 Technology Ltd.
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-nop</artifactId>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -105,6 +128,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
+            <version>8.5.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -114,6 +138,7 @@ Copyright (C) 2018 V12 Technology Ltd.
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
+            <version>4.8.157</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>

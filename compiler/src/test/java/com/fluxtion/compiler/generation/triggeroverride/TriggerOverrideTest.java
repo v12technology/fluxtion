@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.triggeroverride;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -31,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
 
-    public TriggerOverrideTest(boolean compiledSep) {
+    public TriggerOverrideTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -96,8 +97,9 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
         private int count;
 
         @OnTrigger
-        public void update() {
+        public boolean update() {
             count++;
+            return true;
         }
 
     }
@@ -111,8 +113,9 @@ public class TriggerOverrideTest extends MultipleSepTargetInProcessTest {
         private int count;
 
         @OnTrigger
-        public void update() {
+        public boolean update() {
             count++;
+            return true;
         }
 
     }

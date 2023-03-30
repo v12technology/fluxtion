@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
@@ -68,7 +69,10 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
 
         private final SerializableBiFunction<R, Q, T> mapFunction;
 
-        public BinaryMapToRefEventStream(S inputEventStream_1, U inputEventStream_2, SerializableBiFunction<R, Q, T> methodReferenceReflection) {
+        public BinaryMapToRefEventStream(
+                @AssignToField("inputEventStream") S inputEventStream_1,
+                @AssignToField("inputEventStream_2") U inputEventStream_2,
+                @AssignToField("mapFunction") SerializableBiFunction<R, Q, T> methodReferenceReflection) {
             super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
             mapFunction = methodReferenceReflection;
         }
@@ -86,7 +90,10 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         protected transient int result;
         private final SerializableBiIntFunction mapFunction;
 
-        public BinaryMapToIntEventStream(S inputEventStream_1, U inputEventStream_2, SerializableBiIntFunction methodReferenceReflection) {
+        public BinaryMapToIntEventStream(
+                @AssignToField("inputEventStream") S inputEventStream_1,
+                @AssignToField("inputEventStream_2") U inputEventStream_2,
+                @AssignToField("mapFunction") SerializableBiIntFunction methodReferenceReflection) {
             super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
             mapFunction = methodReferenceReflection;
         }
@@ -115,7 +122,10 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         protected transient double result;
         private final SerializableBiDoubleFunction mapFunction;
 
-        public BinaryMapToDoubleEventStream(S inputEventStream_1, U inputEventStream_2, SerializableBiDoubleFunction methodReferenceReflection) {
+        public BinaryMapToDoubleEventStream(
+                @AssignToField("inputEventStream") S inputEventStream_1,
+                @AssignToField("inputEventStream_2") U inputEventStream_2,
+                @AssignToField("mapFunction") SerializableBiDoubleFunction methodReferenceReflection) {
             super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
             mapFunction = methodReferenceReflection;
         }
@@ -144,7 +154,10 @@ public abstract class BinaryMapEventStream<R, Q, T, S extends EventStream<R>, U 
         protected transient long result;
         private final SerializableBiLongFunction mapFunction;
 
-        public BinaryMapToLongEventStream(S inputEventStream_1, U inputEventStream_2, SerializableBiLongFunction methodReferenceReflection) {
+        public BinaryMapToLongEventStream(
+                @AssignToField("inputEventStream") S inputEventStream_1,
+                @AssignToField("inputEventStream_2") U inputEventStream_2,
+                @AssignToField("mapFunction") SerializableBiLongFunction methodReferenceReflection) {
             super(inputEventStream_1, inputEventStream_2, methodReferenceReflection);
             mapFunction = methodReferenceReflection;
         }

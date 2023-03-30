@@ -16,18 +16,31 @@
 package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.input.EventFeed;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.node.EventHandlerNode;
+import com.fluxtion.runtime.node.InstanceSupplier;
 import com.fluxtion.runtime.stream.EventStream;
 import com.fluxtion.runtime.stream.SinkDeregister;
 import com.fluxtion.runtime.stream.SinkRegistration;
+import com.fluxtion.runtime.time.ClockStrategy;
 
+import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 /**
- * Processes events of any type and dispatches to registered {@link FilteredEventHandler}
+ * Processes events of any type and dispatches to registered {@link EventHandlerNode}
  * and methods annotated with {@link OnEventHandler}. An subclass of a StaticEventProcessor is
  * the product of running the event stream compiler on user input. On receipt of an event
  * the processor selects an execution path that comprises a set of application nodes that
@@ -56,8 +69,92 @@ public interface StaticEventProcessor {
     StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };
 
+    BooleanSupplier ALWAYS_FALSE = () -> false;
+
     /**
-     * Called when a new event e is ready to be processed.
+     * The user can pass in a map of values to this instance. The map will be available in the graph by injecting
+     * an {@link EventProcessorContext}.
+     *
+     * <pre>
+     * {@literal @}Inject
+     *  public EventProcessorContext context;
+     *
+     * </pre>
+     * <p>
+     * Calling this method before {@link Lifecycle#init()} will ensure all the nodes
+     * see the context when their {@link com.fluxtion.runtime.annotations.Initialise} annotated methods are invoked
+     */
+    default void setContextParameterMap(Map<Object, Object> newContextMapping) {
+        throw new UnsupportedOperationException("this StaticEventProcessor does not accept updated context map");
+    }
+
+    /**
+     * inject an instance into the running instance, is available via:
+     * {@link InstanceSupplier}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
+     *
+     * @param instance the instance to inject
+     */
+    @SuppressWarnings("unckecked")
+    default <T> void injectInstance(T instance) {
+        injectInstance(instance, ((Class<T>) instance.getClass()));
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}. Set the qualifier of the injected with {@link Inject#instanceName()}
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
+     *
+     * @param instance the instance to inject
+     * @param name     the qualifying name of the instance to inject
+     */
+    default void injectNamedInstance(Object instance, String name) {
+        addContextParameter(instance.getClass().getCanonicalName() + "_" + name, instance);
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}.
+     * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class)}
+     *
+     * @param instance    the instance to inject
+     * @param exposedType The type to make available at the injection site
+     */
+    default <T, S extends T> void injectInstance(S instance, Class<T> exposedType) {
+        addContextParameter(exposedType.getCanonicalName(), instance);
+    }
+
+    /**
+     * inject an instance into the running instance with a name qualifier, is available via:
+     * {@link InstanceSupplier}.
+     * Set the name with {@link Inject#instanceName()}
+     * Set the injected type supplied to the EventProcessor
+     * <p>
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstance(Class, String)}
+     * Can also be accessed via {@link EventProcessorContext#getInjectedInstanceAllowNull(Class, String)}
+     *
+     * @param instance    the instance to inject
+     * @param exposedType The type to make available at the injection sit
+     * @param name        the qualifying name of the instance to inject
+     */
+    default <T, S extends T> void injectNamedInstance(S instance, Class<T> exposedType, String name) {
+        addContextParameter(exposedType.getCanonicalName() + "_" + name, instance);
+    }
+
+    default void addContextParameter(Object key, Object value) {
+        throw new UnsupportedOperationException("this StaticEventProcessor does not accept updates to context map");
+    }
+
+    /**
+     * Called when a new event e is ready to be processed. Calls a {@link #triggerCalculation()} first if any events
+     * have been buffered.
      *
      * @param e the {@link com.fluxtion.runtime.event.Event Event} to process.
      */
@@ -91,24 +188,99 @@ public interface StaticEventProcessor {
         onEvent((Long) value);
     }
 
+    /**
+     * Buffers an event as part of a transaction only EventHandler methods are invoked, no OnTrigger methods are
+     * processed. EventHandlers are marked as dirty ready for {@link #triggerCalculation()} to invoke a full event cycle
+     *
+     * @param event
+     */
+    default void bufferEvent(Object event) {
+        throw new UnsupportedOperationException("buffering of events not supported");
+    }
+
+    default void bufferEvent(byte value) {
+        bufferEvent((Byte) value);
+    }
+
+    default void bufferEvent(char value) {
+        bufferEvent((Character) value);
+    }
+
+    default void bufferEvent(short value) {
+        bufferEvent((Short) value);
+    }
+
+    default void bufferEvent(int value) {
+        bufferEvent((Integer) value);
+    }
+
+    default void bufferEvent(float value) {
+        bufferEvent((Float) value);
+    }
+
+    default void bufferEvent(double value) {
+        bufferEvent((Double) value);
+    }
+
+    default void bufferEvent(long value) {
+        bufferEvent((Long) value);
+    }
+
+    /**
+     * Runs a graph calculation cycle invoking any {@link com.fluxtion.runtime.annotations.OnTrigger} methods whose
+     * parents are marked dirty. Used in conjunction with {@link #bufferEvent(Object)}, this method marks event handlers
+     * as dirty.
+     */
+    default void triggerCalculation() {
+        throw new UnsupportedOperationException("buffering of events not supported");
+    }
+
     default <T> void addSink(String id, Consumer<T> sink) {
         onEvent(SinkRegistration.sink(id, sink));
     }
 
-    default void addSink(String id, IntConsumer sink) {
+    default void addIntSink(String id, IntConsumer sink) {
         onEvent(SinkRegistration.intSink(id, sink));
     }
 
-    default void addSink(String id, DoubleConsumer sink) {
+    default void addDoubleSink(String id, DoubleConsumer sink) {
         onEvent(SinkRegistration.doubleSink(id, sink));
     }
 
-    default void addSink(String id, LongConsumer sink) {
+    default void addLongSink(String id, LongConsumer sink) {
         onEvent(SinkRegistration.longSink(id, sink));
     }
 
     default void removeSink(String id) {
         onEvent(SinkDeregister.sink(id));
+    }
+
+    /**
+     * Publishes an instance wrapped in a Signal and applies a class filter to the published signal
+     * <p>
+     * receiving an event callback in a node
+     * <pre>
+     * {@literal @}OnEventHandler(filterStringFromClass = Date.class)
+     *  public void handleEvent(Signal<Date> date) {
+     *      count++;
+     *  }
+     *
+     * </pre>
+     * <p>
+     * publishing:
+     * <pre>
+     *     eventProcessorInstance.publishObjectSignal(new Date());
+     * </pre>
+     *
+     * @param instance
+     * @param <T>
+     */
+    default <T> void publishObjectSignal(T instance) {
+        onEvent(new Signal<>(instance));
+    }
+
+    default <S, T> void publishObjectSignal(Class<S> filterClass, T instance) {
+        onEvent(new Signal<>(filterClass, instance));
     }
 
     default void publishSignal(String filter) {
@@ -150,5 +322,48 @@ public interface StaticEventProcessor {
     default <T> T getStreamed(String name) throws NoSuchFieldException {
         EventStream<T> stream = getNodeById(name);
         return stream.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    default <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
+        return getNodeById(id);
+    }
+
+    default void addEventFeed(EventFeed eventProcessorFeed) {
+        throw new UnsupportedOperationException("addEventProcessorFeed not implemented");
+    }
+
+    default void removeEventFeed(EventFeed eventProcessorFeed) {
+        throw new UnsupportedOperationException("removeEventProcessorFeed not implemented");
+    }
+
+    default void setAuditLogLevel(LogLevel logLevel) {
+        onEvent(new EventLogControlEvent(logLevel));
+    }
+
+    default void setAuditLogLevel(LogLevel logLevel, String nodeName) {
+        onEvent(new EventLogControlEvent(nodeName, null, logLevel));
+    }
+
+    default void setAuditLogProcessor(LogRecordListener logProcessor) {
+        onEvent(new EventLogControlEvent(logProcessor));
+    }
+
+    /**
+     * Attempts to get the last {@link com.fluxtion.runtime.audit.LogRecord} as a String if one is available. Useful
+     * for error handling if there is a filure in the graph;
+     *
+     * @return The last logRecord as a String if it is available
+     */
+    default String getLastAuditLogRecord() {
+        try {
+            return this.<EventLogManager>getNodeById(EventLogManager.NODE_NAME).lastRecordAsString();
+        } catch (Throwable e) {
+            return "";
+        }
+    }
+
+    default void setClockStrategy(ClockStrategy clockStrategy) {
+        onEvent(ClockStrategy.registerClockEvent(clockStrategy));
     }
 }

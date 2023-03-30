@@ -17,11 +17,12 @@
  */
 package com.fluxtion.compiler.generation.push;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class PushTest extends MultipleSepTargetInProcessTest {
 
-    public PushTest(boolean compiledSep) {
+    public PushTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -130,9 +131,10 @@ public class PushTest extends MultipleSepTargetInProcessTest {
         String ccyPair;
 
         @OnEventHandler
-        public void newTick(MarketTickEvent tick) {
+        public boolean newTick(MarketTickEvent tick) {
             eventCount++;
             ccyPair = tick.ccyPair;
+            return true;
         }
     }
 
@@ -141,8 +143,9 @@ public class PushTest extends MultipleSepTargetInProcessTest {
         int eventCount;
 
         @OnTrigger
-        public void formPrice() {
+        public boolean formPrice() {
             eventCount++;
+            return true;
         }
 
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,24 +12,25 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.test.tracking.TraceEvent.TraceEvent_sub1;
+import com.fluxtion.test.tracking.TraceEvent.TraceEvent_sub2;
 
 /**
- *
  * @author Greg Higgins
  */
 public interface TraceEventHolder {
 
     TraceEvent getTraceEvent();
 
-    class TraceEventHandler_generic  implements TraceEventHolder, Named {
+    class TraceEventHandler_generic implements TraceEventHolder, NamedNode {
 
         @FilterId
         private int filter;
@@ -44,7 +45,7 @@ public interface TraceEventHolder {
         public TraceEventHandler_generic() {
         }
 
-//        @EventHandler
+        //        @EventHandler
         public void handleEvent(TraceEvent event) {
             event.getTraceList().add(this);
             event.getTraceIdList().add(this.traceId);
@@ -61,8 +62,8 @@ public interface TraceEventHolder {
             return traceId;
         }
     }
-    
-    class TraceEventHandler_sub1 extends TraceEventHandler_generic{
+
+    class TraceEventHandler_sub1 extends TraceEventHandler_generic {
 
         public TraceEventHandler_sub1(String traceId, int filter) {
             super(traceId, filter);
@@ -70,15 +71,16 @@ public interface TraceEventHolder {
 
         public TraceEventHandler_sub1() {
         }
-        
+
         @OnEventHandler
-        public void handleEvent(TraceEvent.TraceEvent_sub1 event) {
-            super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
+        public boolean handleEvent(TraceEvent_sub1 event) {
+            super.handleEvent(event);
+            return true;
         }
-        
+
     }
-    
-    class TraceEventHandler_sub2 extends TraceEventHandler_generic{
+
+    class TraceEventHandler_sub2 extends TraceEventHandler_generic {
 
         public TraceEventHandler_sub2(String traceId, int filter) {
             super(traceId, filter);
@@ -88,10 +90,11 @@ public interface TraceEventHolder {
         }
 
         @OnEventHandler
-        public void handleEvent(TraceEvent.TraceEvent_sub2 event) {
-            super.handleEvent(event); //To change body of generated methods, choose Tools | Templates.
+        public boolean handleEvent(TraceEvent_sub2 event) {
+            super.handleEvent(event);
+            return true;
         }
-        
+
     }
 
 }

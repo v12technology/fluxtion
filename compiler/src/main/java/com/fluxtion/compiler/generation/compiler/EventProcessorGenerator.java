@@ -18,10 +18,10 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.PngGenerator;
-import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.model.TopologicallySortedDependencyGraph;
 import com.fluxtion.compiler.generation.targets.InMemoryEventProcessor;
@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
 
@@ -66,7 +67,11 @@ public class EventProcessorGenerator {
     public InMemoryEventProcessor inMemoryProcessor(EventProcessorConfig config, boolean generateDescription) throws Exception {
         config.buildConfig();
         LOG.debug("locateFactories");
-        config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
+        if (config.getNodeFactoryRegistration() == null) {
+            config.setNodeFactoryRegistration(new NodeFactoryRegistration(NodeFactoryLocator.nodeFactorySet()));
+        } else {
+            config.getNodeFactoryRegistration().factoryClassSet.addAll(NodeFactoryLocator.nodeFactorySet());
+        }
         this.config = config;
         if (GenerationContext.SINGLETON == null) {
             GenerationContext.setupStaticContext("", "", null, null);
@@ -124,6 +129,7 @@ public class EventProcessorGenerator {
         templateJavaOutput(writer);
         LOG.debug("completed template output");
         execSvc.shutdown();
+        execSvc.awaitTermination(2, TimeUnit.SECONDS);
     }
 
     public SimpleEventProcessorModel getSimpleEventProcessorModel() {
@@ -142,11 +148,7 @@ public class EventProcessorGenerator {
 
     private void templateJavaOutput(Writer templateWriter) throws Exception {
         try {
-            JavaSourceGenerator srcModel = new JavaSourceGenerator(
-                    simpleEventProcessorModel,
-                    config.isInlineEventHandling(),
-                    config.isAssignPrivateMembers()
-            );
+            JavaSourceGenerator srcModel = new JavaSourceGenerator(simpleEventProcessorModel, config);
             srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
             LOG.debug("building source model");
             srcModel.buildSourceModel();

@@ -1,10 +1,11 @@
 package com.fluxtion.compiler.generation.afterevent;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.AfterTrigger;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PostEventTest extends MultipleSepTargetInProcessTest {
 
-    public PostEventTest(boolean compiledSep) {
+    public PostEventTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -28,6 +29,7 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
 
     @Before
     public void beforeTest() {
+        super.beforeTest();
         postInvocationTrace.clear();
         counter.set(0);
     }
@@ -51,7 +53,7 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void singleOnEventComplete(){
+    public void singleOnEventComplete() {
         sep(c -> {
             c.addNode(new ChildWithEventHandler(new Parent()));
         });
@@ -63,8 +65,9 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class Parent {
         @OnEventHandler
-        public void newEvent(String in) {
+        public boolean newEvent(String in) {
             postInvocationTrace.add("Parent::newEvent");
+            return true;
         }
 
         @AfterTrigger
@@ -79,12 +82,13 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-   public static class Child {
+    public static class Child {
         final Parent parent;
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             postInvocationTrace.add("Child::onEvent");
+            return true;
         }
 
         @AfterTrigger
@@ -104,12 +108,14 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
         final Parent parent;
 
         @OnEventHandler
-        public void newEvent(String in) {
+        public boolean newEvent(String in) {
+            return true;
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             postInvocationTrace.add("Child::onEvent");
+            return true;
         }
 
         @AfterTrigger

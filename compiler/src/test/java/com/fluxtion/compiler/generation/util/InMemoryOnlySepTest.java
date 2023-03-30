@@ -1,24 +1,20 @@
 package com.fluxtion.compiler.generation.util;
 
-import org.junit.Test;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class InMemoryOnlySepTest extends MultipleSepTargetInProcessTest {
+public abstract class InMemoryOnlySepTest extends MultipleSepTargetInProcessTest {
 
 
-    public InMemoryOnlySepTest(boolean compiledSep) {
+    public InMemoryOnlySepTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(false);
-    }
-
-    @Test
-    public void doNothingTest() {
+        return Arrays.asList(SepTestConfig.INTERPRETED);
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,21 +12,25 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.runtime.annotations.*;
-import com.fluxtion.runtime.event.DefaultEvent;
-import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.compiler.builder.factory.NodeFactory;
+import com.fluxtion.compiler.builder.factory.NodeRegistry;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Config;
 import com.fluxtion.runtime.annotations.builder.ConfigVariable;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeRegistry;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.DefaultEvent;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
@@ -37,12 +41,11 @@ import java.util.Map;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class InjectionTest extends MultipleSepTargetInProcessTest {
 
-    public InjectionTest(boolean compiledSep) {
+    public InjectionTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -116,7 +119,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public MySingleton singleton;
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
+            return true;
         }
     }
 
@@ -128,8 +132,9 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public int intVal;
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
+            return true;
         }
     }
 
@@ -144,8 +149,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public NoFactoryCharHandler handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
     }
 
@@ -157,8 +162,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         public NoFactoryCharHandler handler;
 
         @OnTrigger
-        public void update() {
-
+        public boolean update() {
+            return true;
         }
     }
 
@@ -191,8 +196,8 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
-            //System.out.println("finished processing\n");
+        public boolean onEvent() {
+            return true;
         }
 
         public boolean testAndClear(Integer i, Character c) {
@@ -247,8 +252,9 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void onChar(CharEvent charEvent) {
+        public boolean onChar(CharEvent charEvent) {
             receivedChar = (char) charEvent.filterId();
+            return true;
 //            //System.out.println("received char:"+ charEvent.filterId());
         }
     }

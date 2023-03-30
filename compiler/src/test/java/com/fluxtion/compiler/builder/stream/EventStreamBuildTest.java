@@ -1,11 +1,12 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.stream.EventStream.EventSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
@@ -45,7 +46,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
-    public EventStreamBuildTest(boolean compiledSep) {
+    public EventStreamBuildTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -57,6 +58,23 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("test");
         assertThat(1, is(notifyTarget.getOnEventCount()));
+    }
+
+    @Data
+    public static class MyPushTarget {
+        String data;
+    }
+
+    @Test
+    public void pushToNodeAddedWithId() {
+        sep(c -> {
+            MyPushTarget target = c.addNode(new MyPushTarget(), "target");
+            EventFlow.subscribe(String.class)
+                    .push(target::setData);
+        });
+
+        MyPushTarget target = getField("target");
+        assertNotNull(target);
     }
 
     @Test
@@ -850,7 +868,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class NotifyAndPushTarget implements Named {
+    public static class NotifyAndPushTarget implements NamedNode {
         public static final String DEFAULT_NAME = "notifyTarget";
         private final String name;
         private transient int onEventCount;
@@ -873,8 +891,9 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void notified() {
+        public boolean notified() {
             onEventCount++;
+            return true;
         }
 
         @Override
@@ -902,11 +921,12 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         private int parsedNumber;
 
         @OnEventHandler
-        public void newString(String in) {
+        public boolean newString(String in) {
             inputString = in;
             if (NumberUtils.isCreatable(in)) {
                 parsedNumber = Integer.parseInt(in);
             }
+            return true;
         }
     }
 
@@ -1014,7 +1034,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Data
-    public static class StreamAsMemberClass implements Named {
+    public static class StreamAsMemberClass implements NamedNode {
         private final EventSupplier<String> stringStream;
         private final String name;
         private boolean triggered;
@@ -1026,15 +1046,17 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void signal(Signal signal) {
+        public boolean signal(Signal signal) {
             triggered = true;
             hasChanged = stringStream.hasChanged();
+            return true;
         }
 
         @OnTrigger
-        public void trigger() {
+        public boolean trigger() {
             triggered = true;
             hasChanged = stringStream.hasChanged();
+            return true;
         }
 
         public String stringValue() {

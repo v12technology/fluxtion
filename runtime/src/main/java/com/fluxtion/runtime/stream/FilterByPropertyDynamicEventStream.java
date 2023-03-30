@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.stream.AbstractEventStream.AbstractBinaryEventStream;
@@ -12,9 +13,9 @@ public class FilterByPropertyDynamicEventStream<T, P, A, S extends EventStream<T
     private final SerializableBiFunction<P, A, Boolean> filterFunction;
     private transient final String auditInfo;
 
-    public FilterByPropertyDynamicEventStream(S inputEventStream,
+    public FilterByPropertyDynamicEventStream(@AssignToField("inputEventStream") S inputEventStream,
                                               SerializableFunction<T, P> propertyAccessor,
-                                              B inputEventStream_2,
+                                              @AssignToField("inputEventStream_2") B inputEventStream_2,
                                               SerializableBiFunction<P, A, Boolean> filterFunction) {
         super(inputEventStream, inputEventStream_2, filterFunction);
         this.propertyAccessor = propertyAccessor;

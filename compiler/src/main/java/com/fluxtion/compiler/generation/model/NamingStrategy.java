@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,14 +12,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,20 +28,19 @@ import java.util.Collections;
 import java.util.ServiceLoader;
 
 /**
- *
  * @author gregp
  */
 class NamingStrategy implements NodeNameProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NamingStrategy.class);
-    private ArrayList<NodeNameProducer> namingStrategies ;
+    private ArrayList<NodeNameProducer> namingStrategies;
     private int count;
-    
+
     public NamingStrategy() {
         loadServices();
     }
-    
-    public final void loadServices(){
+
+    public final void loadServices() {
         LOGGER.debug("NamingStrategy (re)loading naming strategies");
         ServiceLoader<NodeNameProducer> loadServices;
         namingStrategies = new ArrayList<>();
@@ -61,13 +60,13 @@ class NamingStrategy implements NodeNameProducer {
         String mappedName = null;
         for (NodeNameProducer namingStrategy : namingStrategies) {
             mappedName = namingStrategy.mappedNodeName(nodeToMap);
-            if(mappedName!=null)
+            if (mappedName != null)
                 break;
         }
-        if(mappedName==null && nodeToMap instanceof Named){
-            mappedName = ((Named)nodeToMap).getName();
+        if (mappedName == null && nodeToMap instanceof NamedNode) {
+            mappedName = ((NamedNode) nodeToMap).getName();
         }
-        if(mappedName==null){
+        if (mappedName == null) {
             mappedName = nodeToMap.getClass().getSimpleName() + "_" + count++;
             mappedName = Character.toLowerCase(mappedName.charAt(0)) + (mappedName.length() > 1 ? mappedName.substring(1) : "");
         }

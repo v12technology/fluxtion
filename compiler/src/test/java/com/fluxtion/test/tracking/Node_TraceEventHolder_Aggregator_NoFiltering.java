@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,20 +12,19 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
 
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
- *
  * @author Greg Higgins
  */
-public class Node_TraceEventHolder_Aggregator_NoFiltering implements TraceEventHolder, Named {
+public class Node_TraceEventHolder_Aggregator_NoFiltering implements TraceEventHolder, NamedNode {
 
     public String traceId;
     public TraceEventHolder[] nodeIntFilter_0;
@@ -40,10 +39,11 @@ public class Node_TraceEventHolder_Aggregator_NoFiltering implements TraceEventH
     }
 
     @OnTrigger
-    public void onEvent() {
+    public boolean onEvent() {
         //no-op - boolean return for dirty filtering test
         getTraceEvent().getTraceList().add(this);
         getTraceEvent().getTraceIdList().add(traceId);
+        return true;
     }
 
     @OnParentUpdate

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,14 +12,15 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.dirty;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
 
@@ -27,19 +28,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
 
 
-    public ConditionalPropagationTest(boolean compiledSep) {
+    public ConditionalPropagationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
-    public void testCombined(){
-        sep((c) ->{
+    public void testCombined() {
+        sep((c) -> {
             c.addPublicNode(new CountingNode(new StringHandler("matchme")), "stringCounter");
             c.addPublicNode(new CountingNode(new IntHandler(100)), "intCounter");
         });
@@ -86,19 +86,20 @@ public class ConditionalPropagationTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler
         public boolean newInt(Integer s) {
             notified = true;
-            return s==(getMatch());
+            return s == (getMatch());
         }
     }
 
     @Data
     public static class CountingNode {
-        
+
         final Object parent;
         int count;
-        
+
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             count++;
+            return true;
         }
     }
 

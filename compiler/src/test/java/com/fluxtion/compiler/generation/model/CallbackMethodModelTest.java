@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.generation.util.BaseModelTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.compiler.generation.util.BaseModelTest;
 import lombok.Data;
 import org.junit.Test;
 
@@ -73,8 +73,9 @@ public class CallbackMethodModelTest extends BaseModelTest {
         }
 
         @OnTrigger
-        public void parentUpdated(){
+        public boolean parentUpdated() {
             parentUpdated = true;
+            return true;
         }
     }
 

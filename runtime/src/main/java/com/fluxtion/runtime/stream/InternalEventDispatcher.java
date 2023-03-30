@@ -17,6 +17,6 @@ public class InternalEventDispatcher {
     }
 
     public void dispatchToGraph(Object event) {
-        eventDispatcher.processEvent(event);
+        eventDispatcher.processReentrantEvent(event);
     }
 }

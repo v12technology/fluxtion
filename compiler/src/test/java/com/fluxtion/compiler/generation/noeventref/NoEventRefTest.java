@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,32 +12,32 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.noeventref;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class NoEventRefTest extends MultipleSepTargetInProcessTest {
 
-    public NoEventRefTest(boolean compiledSep) {
+    public NoEventRefTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void dirtyNoReferenceTest() {
-        sep((c)->{
+        sep((c) -> {
             ConfigCache cfgCache = c.addNode(new ConfigCache());
             PriceFormer priceFormer = c.addPublicNode(new PriceFormer(cfgCache), "priceFormer");
             RulesProcessor rulesProcessor = c.addPublicNode(new RulesProcessor(cfgCache), "rulesProcessor");
@@ -120,8 +120,9 @@ public class NoEventRefTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             invokeCount++;
+            return true;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.Signal;
@@ -11,7 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SignalTest extends MultipleSepTargetInProcessTest {
-    public SignalTest(boolean compiledSep) {
+    public SignalTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -82,19 +83,22 @@ public class SignalTest extends MultipleSepTargetInProcessTest {
         public int intValue;
 
         @OnEventHandler(filterString = "route")
-        public void setConfig(Signal<String> cfg) {
+        public boolean setConfig(Signal<String> cfg) {
             this.stringValue = cfg.getValue();
             this.stringValue = cfg.getValue();
+            return true;
         }
 
         @OnEventHandler(filterString = "integerRoute")
-        public void setIntegerConfig(Signal<Integer> cfg) {
+        public boolean setIntegerConfig(Signal<Integer> cfg) {
             this.integerValue = cfg.getValue();
+            return true;
         }
 
         @OnEventHandler(filterString = "intRoute")
-        public void setIntConfig(Signal.IntSignal cfg) {
+        public boolean setIntConfig(Signal.IntSignal cfg) {
             this.intValue = cfg.getValue();
+            return true;
         }
     }
 }

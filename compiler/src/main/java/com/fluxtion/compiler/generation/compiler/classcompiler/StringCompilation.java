@@ -1,33 +1,50 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
-import javax.tools.*;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventhandlerAnnotations;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public interface StringCompilation {
 
+    static <T> Class<T> compile(String className, String source, String... options) throws URISyntaxException, IOException, ClassNotFoundException {
+        List<String> optionList = new ArrayList<>();
+        Collections.addAll(optionList, options);
+        return compile(className, source, optionList);
+    }
 
     /**
-     *
      * @param source java source to compile
-     * @param <T> The compiled class type
+     * @param <T>    The compiled class type
      * @return Compiled class
-     * @throws URISyntaxException if fails to compile
-     * @throws IOException if fails to compile
+     * @throws URISyntaxException     if fails to compile
+     * @throws IOException            if fails to compile
      * @throws ClassNotFoundException if fails to compile
      */
     @SuppressWarnings({"unchecked"})
-    static<T>  Class<T> compile(String className, String source) throws URISyntaxException, IOException, ClassNotFoundException {
+    static <T> Class<T> compile(String className, String source, List<String> optionList) throws URISyntaxException, IOException, ClassNotFoundException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         final JavaByteObject byteObject = new JavaByteObject(className);
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaFileManager fileManager = createFileManager(standardFileManager, byteObject);
         JavaCompiler.CompilationTask task = compiler.getTask(
-                null, fileManager, diagnostics, null, null, Arrays.asList(new JavaStringObject(className, source))
+                null, fileManager, diagnostics, optionList, null, Collections.singletonList(new JavaStringObject(className, source))
         );
-
+        task.setProcessors(Arrays.asList(new ValidateEventhandlerAnnotations(), new ValidateLifecycleAnnotations()));
         if (!task.call()) {
             diagnostics.getDiagnostics().forEach(System.out::println);
             throw new RuntimeException("unable to compile source file to class:'" + className + "'");

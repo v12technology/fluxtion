@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,24 +12,24 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- *
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class NodeWithPrivateParentList {
 
-    private ArrayList<EventHandlerCb> parents;
+    private ArrayList<EventHandlerCbNode> parents;
     public int parentUpdateCount = 0;
     public int onEventCount = 0;
     public List<String> stringList;
@@ -38,8 +38,8 @@ public class NodeWithPrivateParentList {
     public NodeWithPrivateParentList() {
         this(null);
     }
-    
-    public NodeWithPrivateParentList(EventHandlerCb... cbs) {
+
+    public NodeWithPrivateParentList(EventHandlerCbNode... cbs) {
         parents = new ArrayList<>();
         if (cbs != null) {
             parents.addAll(Arrays.asList(cbs));
@@ -48,17 +48,18 @@ public class NodeWithPrivateParentList {
         intList = new ArrayList<>();
     }
 
-    public ArrayList<EventHandlerCb> getParents() {
+    public ArrayList<EventHandlerCbNode> getParents() {
         return parents;
     }
 
     @OnParentUpdate
-    public void parentChanged(EventHandlerCb updated) {
+    public void parentChanged(EventHandlerCbNode updated) {
         parentUpdateCount++;
     }
-    
+
     @OnTrigger
-    public void onEvent(){
+    public boolean onEvent() {
         onEventCount++;
+        return true;
     }
 }

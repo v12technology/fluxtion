@@ -11,11 +11,13 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.model;
 
+import com.fluxtion.compiler.generation.model.Field.MappedField;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +26,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 @SuppressWarnings("rawtypes")
@@ -37,21 +41,21 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
     private final HashSet<Field.MappedField> privateFields;
     private final boolean nameAndType;
 
-    public static Predicate<Constructor> matchConstructorNameAndType(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields){
+    public static Predicate<Constructor> matchConstructorNameAndType(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields) {
         return new ConstructorMatcherPredicate(cstrArgList, privateFields);
     }
 
-    public static Predicate<Constructor> matchConstructorType(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields){
+    public static Predicate<Constructor> matchConstructorType(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields) {
         return new ConstructorMatcherPredicate(cstrArgList, privateFields, false);
     }
-    
-    public ConstructorMatcherPredicate( Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields) {
+
+    public ConstructorMatcherPredicate(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields) {
         this.cstrArgList = cstrArgList;
         this.privateFields = privateFields;
         this.nameAndType = true;
     }
-    
-    public ConstructorMatcherPredicate( Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields, boolean nameAndType) {
+
+    public ConstructorMatcherPredicate(Field.MappedField[] cstrArgList, HashSet<Field.MappedField> privateFields, boolean nameAndType) {
         this.cstrArgList = cstrArgList;
         this.privateFields = privateFields;
         this.nameAndType = nameAndType;
@@ -59,7 +63,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
 
     @Override
     public boolean apply(Constructor input) {
-        boolean match = cstrArgList[0]!=null;
+        boolean match = cstrArgList[0] != null;
         if (match) {
             LOGGER.debug("already matched constructor, ignoring");
             return false;
@@ -87,10 +91,18 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     if (parameters[i] == null) {
                         continue;
                     }
-                    String paramName = parameters[i].getName();
+                    Parameter parameter = parameters[i];
+                    String paramName = parameter.getName();
+                    if (parameter.getAnnotation(AssignToField.class) != null) {
+                        paramName = parameter.getAnnotation(AssignToField.class).value();
+                        LOGGER.debug("assigning parameter name from annotation AssignToField " +
+                                "fieldName:'{}' overriding:'{}'", paramName, parameter.getName());
+                    }
                     Class<?> parameterType = parameters[i].getType();
                     LOGGER.debug("constructor parameter type:{}, paramName:{}, varName:{}", parameterType, paramName, varName);
-                    if (parameterType != null && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass)) && paramName.equals(varName)) {
+                    if (parameterType != null
+                            && (parameterType.isAssignableFrom(parentClass) || parameterType.isAssignableFrom(realClass))
+                            && paramName.equals(varName)) {
                         matchCount++;
                         parameters[i] = null;
                         cstrArgList[i] = mappedInstance;
@@ -100,7 +112,7 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
                     }
                 }
                 if (!matchOnName && !nameAndType) {
-                    LOGGER.debug("no match, matching contructor by type only");
+                    LOGGER.debug("no match, matching constructor by type only");
                     for (int i = 0; i < parameters.length; i++) {
                         if (parameters[i] == null) {
                             continue;
@@ -133,5 +145,33 @@ class ConstructorMatcherPredicate implements Predicate<Constructor> {
         }
         return match;
     }
-    
+
+    public static List<String> validateNoTypeClash(Set<MappedField> privateFields, Constructor constructor) {
+        Set<String> mappedNames = Arrays.stream(constructor.getParameters())
+                .filter(p -> p.getAnnotation(AssignToField.class) != null)
+                .map(p -> p.getAnnotation(AssignToField.class))
+                .map(AssignToField::value)
+                .collect(Collectors.toSet());
+
+        Set<MappedField> filteredFields = privateFields.stream()
+                .filter(m -> !mappedNames.contains(m.mappedName))
+                .collect(Collectors.toSet());
+
+        List<String> output = filteredFields.stream()
+                .filter(m -> {
+                    Class<?> classToTest = m.parentClass();
+                    HashSet<MappedField> setToTest = new HashSet<>(filteredFields);
+                    setToTest.remove(m);
+                    return setToTest.stream()
+                            .map(MappedField::parentClass)
+                            .anyMatch(c -> {
+                                boolean val = c.isAssignableFrom(classToTest) || classToTest.isAssignableFrom(c);
+                                return val;
+                            });
+                })
+                .map(MappedField::getMappedName)
+                .collect(Collectors.toList());
+        return output;
+    }
+
 }

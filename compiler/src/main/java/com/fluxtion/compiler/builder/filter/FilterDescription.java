@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.builder.filter;
@@ -26,7 +26,7 @@ import java.util.Objects;
  * {@link FilterDescription}'s. A user can provide logic to control comment and
  * variable names for filters in the generated code. The intention is to make
  * the generated SEP easier to understand reducing cost to rectify errors.<p>
- * 
+ * <p>
  * {@link FilterDescriptionProducer} are registered as producers of descriptions.
  *
  * @author Greg Higgins
@@ -81,15 +81,15 @@ public class FilterDescription {
      */
     public String variableName;
 
-    public static FilterDescription build(Object input){
+    public static FilterDescription build(Object input) {
         FilterDescription result = DEFAULT_FILTER;
-        if(input instanceof Event){
+        if (input instanceof Event) {
             Event event = (Event) input;
-            if(event.filterId() != Integer.MAX_VALUE){
+            if (event.filterId() != Integer.MAX_VALUE) {
                 result = new FilterDescription(event.getClass(), event.filterId());
-            }else if(event.filterString()!=null && !event.filterString().isEmpty()){
+            } else if (event.filterString() != null && !event.filterString().isEmpty()) {
                 result = new FilterDescription(event.getClass(), event.filterString());
-            }else{
+            } else {
                 result = new FilterDescription(event.getClass());
             }
         }
@@ -122,18 +122,18 @@ public class FilterDescription {
         this.value = 0;
         nullId = "";
     }
-    
-    public FilterDescription changeClass(Class<? extends Event> newClass){
+
+    public FilterDescription changeClass(Class<? extends Event> newClass) {
         FilterDescription fd = new FilterDescription(newClass, stringValue);
-        if(!isFiltered){
+        if (!isFiltered) {
             fd = new FilterDescription(newClass);
-        }else if(isIntFilter){
+        } else if (isIntFilter) {
             fd = new FilterDescription(newClass, value);
-        }else if(this==NO_FILTER){
+        } else if (this == NO_FILTER) {
             return NO_FILTER;
-        }else if(this==INVERSE_FILTER){
+        } else if (this == INVERSE_FILTER) {
             return INVERSE_FILTER;
-        }else if(this==DEFAULT_FILTER){
+        } else if (this == DEFAULT_FILTER) {
             return DEFAULT_FILTER;
         }
         return fd;
@@ -146,6 +146,42 @@ public class FilterDescription {
         this.isFiltered = true;
         this.value = 0;
         nullId = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public String getNullId() {
+        return nullId;
+    }
+
+    public boolean isIntFilter() {
+        return isIntFilter;
+    }
+
+    public boolean isFiltered() {
+        return isFiltered;
+    }
+
+    public Class<? extends Event> getEventClass() {
+        return eventClass;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public void setEventClass(Class<? extends Event> eventClass) {
+        this.eventClass = eventClass;
     }
 
     @Override
@@ -182,10 +218,7 @@ public class FilterDescription {
         if (!Objects.equals(this.nullId, other.nullId)) {
             return false;
         }
-        if (!Objects.equals(this.eventClass, other.eventClass)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.eventClass, other.eventClass);
     }
 
 

@@ -1,9 +1,10 @@
 package com.fluxtion.compiler.generation.parent;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import lombok.Data;
 import lombok.Value;
 import org.junit.Test;
@@ -12,7 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest {
-    public UnguardedParentListenerTest(boolean compiledSep) {
+    public UnguardedParentListenerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -54,8 +55,9 @@ public class UnguardedParentListenerTest extends MultipleSepTargetInProcessTest 
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             eventCount++;
+            return true;
         }
     }
 }

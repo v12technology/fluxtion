@@ -17,11 +17,12 @@
  */
 package com.fluxtion.compiler.generation.classmapping;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,9 +31,10 @@ import org.junit.Test;
  */
 public class ClassMappingTest extends MultipleSepTargetInProcessTest {
 
-    public ClassMappingTest(boolean compiledSep) {
+    public ClassMappingTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
+
     @Test
     public void noSubstituteTest() {
         sep((c) -> {
@@ -63,7 +65,7 @@ public class ClassMappingTest extends MultipleSepTargetInProcessTest {
             c.getClass2replace().put(RulesProcessor.class.getCanonicalName(), RulesProcessorSubstitute.class.getCanonicalName());
         });
         //cannot work with InMemoryEventProcessor, replacement map is too late to process
-        if(simpleEventProcessorModel!=null){
+        if (simpleEventProcessorModel != null) {
             return;
         }
         PricePublisher testHandler = getField("pricePublisher");
@@ -156,8 +158,9 @@ public class ClassMappingTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void onEvent() {
+        public boolean onEvent() {
             invokeCount++;
+            return true;
         }
     }
 

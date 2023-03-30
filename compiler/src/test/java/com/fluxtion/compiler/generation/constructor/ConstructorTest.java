@@ -17,28 +17,29 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.event.Event;
-
-import java.util.Arrays;
-import java.util.List;
-
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import lombok.Data;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.*;
 
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
 public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
-    public ConstructorTest(boolean compiledSep) {
+    public ConstructorTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testConstructorSimple() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(
                     new ConfigPublisher(
@@ -52,7 +53,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructorWithCollection() {
-        fixedPkg = true;
         sep(c -> {
             List<OrderHandler> orderhandlerList = Arrays.asList(
                     c.addNode(new OrderHandler("orderHandler_1", 200_000_000, 1.2f)),
@@ -78,7 +78,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructorForClass() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(new MyClassHolder(String.class));
         });
@@ -86,7 +85,6 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testPrimitiveCollection() {
-        fixedPkg = true;
         sep(c -> {
             c.addNode(new PrimitiveCollections(
                     new boolean[]{true, true, false},
@@ -94,6 +92,38 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
                     new String[]{"one", "two"}
             ));
         });
+    }
+
+    @Test
+    public void setConstructorTest() {
+        sep(c -> {
+            Set<String> stringSet = new HashSet<>();
+            stringSet.add("TEST");
+            stringSet.add("bill");
+            stringSet.add("TEST");
+            stringSet.add("greedy");
+            c.addNode(new StringSet(stringSet), "stringSetHolder");
+        });
+        Assert.assertEquals(
+                getField("stringSetHolder", StringSet.class).getMySet(),
+                new HashSet<>(Arrays.asList("TEST", "bill", "greedy")));
+    }
+
+    @Test
+    public void setPropertyTest() {
+        sep(c -> {
+            Set<String> stringSet = new HashSet<>();
+            stringSet.add("TEST");
+            stringSet.add("bill");
+            stringSet.add("TEST");
+            stringSet.add("greedy");
+            StringSetProperty stringSetProperty = new StringSetProperty();
+            stringSetProperty.setMySet(stringSet);
+            c.addNode(stringSetProperty, "stringSetHolder");
+        });
+        Assert.assertEquals(
+                getField("stringSetHolder", StringSetProperty.class).getMySet(),
+                new HashSet<>(Arrays.asList("TEST", "bill", "greedy")));
     }
 
     public static final class ConfigEvent implements Event {
@@ -111,8 +141,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void configEvent(ConfigEvent configEvent) {
-
+        public boolean configEvent(ConfigEvent configEvent) {
+            return true;
         }
     }
 
@@ -129,16 +159,32 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void configEvent(ConfigEvent configEvent) {
-
+        public boolean configEvent(ConfigEvent configEvent) {
+            return true;
         }
     }
 
-    public static final class NameHolder {
+    public static class StringSet {
 
-        public enum NAMES {
-            TEST, WAY
+        private final Set<String> mySet;
+
+        public StringSet(@AssignToField("mySet") Set<String> mySet) {
+            this.mySet = mySet;
         }
+
+        public Set<String> getMySet() {
+            return mySet;
+        }
+    }
+
+    @Data
+    public static class StringSetProperty {
+
+        private Set<String> mySet;
+
+    }
+
+    public static final class NameHolder {
 
         public final String name;
         private final ConfigPublisher publisher;
@@ -148,17 +194,17 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         private String[] matchingRegex;
         private String[] matchingRegex2;
 
+        public NameHolder(String name, ConfigPublisher publisher) {
+            this.name = name;
+            this.publisher = publisher;
+        }
+
         public List<OrderHandler> getHandlerList() {
             return handlerList;
         }
 
         public void setHandlerList(List<OrderHandler> handlerList) {
             this.handlerList = handlerList;
-        }
-
-        public NameHolder(String name, ConfigPublisher publisher) {
-            this.name = name;
-            this.publisher = publisher;
         }
 
         public OrderHandler getOrderHandler() {
@@ -178,8 +224,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnTrigger
-        public void processEvent() {
-
+        public boolean processEvent() {
+            return true;
         }
 
         public String[] getMatchingRegex() {
@@ -196,6 +242,10 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
 
         public void setMatchingRegex2(String[] matchingRegex2) {
             this.matchingRegex2 = matchingRegex2;
+        }
+
+        public enum NAMES {
+            TEST, WAY
         }
 
     }
@@ -220,8 +270,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void newOrderEvent(NewOrderEvent configEvent) {
-
+        public boolean newOrderEvent(NewOrderEvent configEvent) {
+            return true;
         }
 
         public String getName() {
@@ -294,39 +344,32 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         private final List<OrderHandler> handlers;
         private final int totalOrders;
         private final String name;
-        public ConfigHandler publicHandler;
 
-        public ConfigPublisher(OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, 0, null, orderHandler, configHandler, configHandler_2);
+        public ConfigPublisher(
+                @AssignToField("orderHandler") OrderHandler orderHandler,
+                @AssignToField("configHandler") ConfigHandler configHandler,
+                @AssignToField("configHandler_2") ConfigHandler configHandler_2) {
+            this("no name", 0, Collections.emptyList(), orderHandler, configHandler, configHandler_2);
         }
 
-        public ConfigPublisher(int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, totalOrders, null, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(String name, int totalOrders, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(name, totalOrders, null, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
-            this(null, 0, handlers, orderHandler, configHandler, configHandler_2);
-        }
-
-        public ConfigPublisher(int totalOrders) {
-            this(null, totalOrders, null, null, null, null);
-        }
-
-        public ConfigPublisher(String name, int totalOrders, List<OrderHandler> handlers, OrderHandler orderHandler, ConfigHandler configHandler, ConfigHandler configHandler_2) {
+        public ConfigPublisher(
+                @AssignToField("name") String name,
+                @AssignToField("totalOrders") int totalOrders,
+                @AssignToField("handlers") List<OrderHandler> handlers,
+                @AssignToField("orderHandler") OrderHandler orderHandler,
+                @AssignToField("configHandler") ConfigHandler configHandler,
+                @AssignToField("configHandler_2") ConfigHandler configHandler_2) {
             this.handlers = handlers;
             this.orderHandler = orderHandler;
             this.configHandler = configHandler;
             this.configHandler_2 = configHandler_2;
             this.totalOrders = totalOrders;
-            this.name = name == null ? "no name" : name;
+            this.name = name;
         }
 
         @OnTrigger
-        public void publishConfig() {
+        public boolean publishConfig() {
+            return true;
         }
 
         public int getTotalOrders() {
@@ -351,8 +394,8 @@ public class ConstructorTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void newOrderEvent(NewOrderEvent configEvent) {
-
+        public boolean newOrderEvent(NewOrderEvent configEvent) {
+            return true;
         }
     }
 

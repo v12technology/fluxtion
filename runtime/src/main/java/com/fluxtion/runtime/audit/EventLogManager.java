@@ -11,15 +11,17 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -34,11 +36,11 @@ import java.util.logging.Logger;
  * The output from each EventLogSource is aggregated into the LogRecord and
  * published.
  * <br>
- *
+ * <p>
  * By default all data in the LogRecord is cleared after a publish. Clearing
  * behaviour is controlled with clearAfterPublish flag.
  * <br>
- *
+ * <p>
  * EventLogControlEvent events set the logging level for each registered
  * EventLogSource.
  *
@@ -46,6 +48,7 @@ import java.util.logging.Logger;
  */
 public class EventLogManager implements Auditor {
 
+    public static final String NODE_NAME = "eventLogger";
     private LogRecordListener sink;
     private LogRecord logRecord;
     private Map<String, EventLogger> node2Logger;
@@ -56,7 +59,8 @@ public class EventLogManager implements Auditor {
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
     public Clock clock;
-    
+    private boolean canTrace = false;
+
 
     public EventLogManager() {
         this(new JULLogRecordListener());
@@ -64,7 +68,8 @@ public class EventLogManager implements Auditor {
 
     public EventLogManager(LogRecordListener sink) {
         if (sink == null) {
-            this.sink = l -> {};
+            this.sink = l -> {
+            };
         } else {
             this.sink = sink;
         }
@@ -77,12 +82,12 @@ public class EventLogManager implements Auditor {
     }
 
     public EventLogManager tracingOn(EventLogControlEvent.LogLevel level) {
-        trace = true;
+        trace = level != LogLevel.NONE;
         this.traceLevel = level;
         return this;
     }
-    
-    public EventLogManager printEventToString(boolean printEventToString){
+
+    public EventLogManager printEventToString(boolean printEventToString) {
         this.printEventToString = printEventToString;
         return this;
     }
@@ -95,6 +100,7 @@ public class EventLogManager implements Auditor {
             calcSource.setLogger(logger);
         }
         node2Logger.put(nodeName, logger);
+        canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
     }
 
     @Override
@@ -126,6 +132,7 @@ public class EventLogManager implements Auditor {
                 node2Logger.values().forEach((t) -> t.setLevel(newConfig.getLevel()));
             }
         }
+        canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
     }
 
     public void setLogSink(LogRecordListener sink) {
@@ -140,9 +147,29 @@ public class EventLogManager implements Auditor {
         this.clearAfterPublish = clearAfterPublish;
     }
 
+    /**
+     * makes best efforts to dump the current {@link LogRecord} to the registered sink. Useful when error handling
+     * if an exception is thrown
+     */
+    public void publishLastRecord() {
+        logRecord.terminateRecord();
+        sink.processLogRecord(logRecord);
+        logRecord.clear();
+    }
+
+    /**
+     * makes best efforts to dump the current {@link LogRecord} to as a String. Useful when error handling
+     * if an exception is thrown
+     *
+     * @return The lates {@link LogRecord} as a String
+     */
+    public String lastRecordAsString() {
+        return logRecord.toString();
+    }
+
     @Override
     public void processingComplete() {
-        if (trace | logRecord.terminateRecord()) {
+        if (canTrace | logRecord.terminateRecord()) {
             sink.processLogRecord(logRecord);
         }
         if (clearAfterPublish) {

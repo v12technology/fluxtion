@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation;
@@ -41,7 +41,8 @@ public class OutputRegistry {
     public static final String JAVA_TESTGEN_DIR = "target/generated-test-sources/fluxtion/";
     public static final String JAVA_TEST_SRC_DIR = "src/test/java/";
     public static final String RESOURCE_DIR = "src/main/resources/";
-    public static final String RESOURCE_TEST_DIR = "target/generated-test-sources/resources/";
+    public static final String RESOURCE_TEST_DIR = "src/test/resources/";
+    public static final String RESOURCE_GENERATED_TEST_DIR = "target/generated-test-sources/resources/";
     private ClassLoader classLoader;
 
     private DirOptions dirOptions;
@@ -56,7 +57,7 @@ public class OutputRegistry {
 
     public final void update() {
         String dir = System.getProperty("fluxtion.cacheDirectory");
-        log.log(Level.INFO, "upate fluxtion.cacheDirectory:'"+ dir + "'");
+        log.log(Level.INFO, "upate fluxtion.cacheDirectory:'" + dir + "'");
         genDir = OutputRegistry.JAVA_GEN_DIR;
         resDir = OutputRegistry.RESOURCE_DIR;
         classLoader = ClassLoader.getSystemClassLoader();
@@ -72,7 +73,7 @@ public class OutputRegistry {
                 final URL classesDir = getClassesDirFile().toURI().toURL();
                 final URL reosurcesDir = getResDirFile().toURI().toURL();
                 //TODO valiate if we need a parent class loder or not
-                classLoader = new URLClassLoader( new URL[]{classesDir, reosurcesDir});
+                classLoader = new URLClassLoader(new URL[]{classesDir, reosurcesDir});
 //                classLoader = new URLClassLoader("fluxtionCompilerClassloader", new URL[]{classesDir, reosurcesDir}, null);
             } catch (Exception e) {
                 log.log(Level.WARNING, "could not build classloader from cache directories", e);
@@ -88,7 +89,7 @@ public class OutputRegistry {
                     break;
                 case TEST_DIR_OUTPUT:
                     genDir = OutputRegistry.JAVA_TESTGEN_DIR;
-                    resDir = OutputRegistry.RESOURCE_TEST_DIR;
+                    resDir = OutputRegistry.RESOURCE_GENERATED_TEST_DIR;
             }
         }
 

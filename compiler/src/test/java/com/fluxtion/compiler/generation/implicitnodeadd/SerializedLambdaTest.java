@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -19,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
-    public SerializedLambdaTest(boolean compiledSep) {
+    public SerializedLambdaTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -31,6 +33,22 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         sep(c -> c.addNode(
                 new MyFunctionHolder(new MyInstanceFunction("test")::toCaps), "result"));
 
+        onEvent("test");
+        MyFunctionHolder result = getField("result");
+        Assert.assertEquals("TEST", result.output);
+        Assert.assertFalse(result.triggered);
+    }
+
+    @Test
+    public void addEnclosingMethodNamedInstanceTest() {
+        sep(c -> {
+            MyInstanceFunction myInstanceFunction = c.addNode(
+                    new MyInstanceFunction("test"), "myInstanceFunction");
+            c.addNode(new MyFunctionHolder(myInstanceFunction::toCaps), "result");
+        });
+
+        MyInstanceFunction myInstanceFunction = getField("myInstanceFunction");
+        assertNotNull(myInstanceFunction);
         onEvent("test");
         MyFunctionHolder result = getField("result");
         Assert.assertEquals("TEST", result.output);
@@ -150,13 +168,15 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(String in) {
+        public boolean processString(String in) {
             output = instanceFunction.apply(in);
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             triggered = true;
+            return true;
         }
     }
 
@@ -172,13 +192,15 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(String in) {
+        public boolean processString(String in) {
             output = instanceFunction.apply(in);
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             triggered = true;
+            return true;
         }
     }
 
@@ -193,8 +215,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         }
 
         @OnEventHandler
-        public void processString(Integer in) {
+        public boolean processString(Integer in) {
             output = instanceFunction.apply("" + in);
+            return true;
         }
     }
 
@@ -214,8 +237,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String myArg = "";
 
         @OnEventHandler
-        public void stringUpdate(String in) {
+        public boolean stringUpdate(String in) {
             myArg = in;
+            return true;
         }
 
         public String toCaps(String in) {
@@ -228,8 +252,9 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String myArg = "";
 
         @OnEventHandler
-        public void stringUpdate(Integer in) {
+        public boolean stringUpdate(Integer in) {
             myArg = in.toString();
+            return true;
         }
 
         public String toCaps(String in) {
@@ -245,14 +270,16 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
         public String triggerResult;
 
         @OnEventHandler
-        public void stringUpdate(ArrayList<String> in) {
+        public boolean stringUpdate(ArrayList<String> in) {
             reultList = in;
+            return true;
         }
 
         @OnTrigger
-        public void triggered() {
+        public boolean triggered() {
             reultList.add(asCaps);
             asCaps = "";
+            return true;
         }
 
         public String toCaps(String in) {

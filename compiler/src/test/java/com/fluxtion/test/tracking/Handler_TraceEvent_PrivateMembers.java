@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,40 +12,43 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
 
+import com.fluxtion.compiler.generation.refelctionassignment.JavaReflectionAssignmentTest.Parent;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 
 /**
- *
  * @author Greg Higgins
  */
 public class Handler_TraceEvent_PrivateMembers {
-        
+
     //scalar types
     private final String private_str;
     private final int private_int;
     private final char private_char;
-    private final Handler_TraceEvent_PrivateMembers parent;
+    private final Parent parent;
     private final Currency currencyEnum;
     //some transients
     private final transient String transient_str;
     private final transient int transient_int;
     //arrays
     private final int[] private_int_array;
-    private final Handler_TraceEvent_PrivateMembers[] arrayRef;
-    
+    private final Parent[] arrayRef;
+
     public Handler_TraceEvent_PrivateMembers(
-            String private_str, String transient_str, 
-            int private_int, int transient_int,
-            char private_char,
-            Handler_TraceEvent_PrivateMembers parent,
+            @AssignToField("private_str") String private_str,
+            @AssignToField("transient_str") String transient_str,
+            @AssignToField("private_int") int private_int,
+            @AssignToField("transient_int") int transient_int,
+            @AssignToField("private_char") char private_char,
+            Parent parent,
             Currency currencyEnum,
             int[] private_int_array,
-            Handler_TraceEvent_PrivateMembers[] arrayRef) {
+            Parent[] arrayRef) {
         this.private_str = private_str;
         this.transient_str = transient_str;
         this.private_int = private_int;
@@ -58,7 +61,8 @@ public class Handler_TraceEvent_PrivateMembers {
     }
 
     @OnEventHandler
-    public void handleEvent(TraceEvent_0 event){
+    public boolean handleEvent(TraceEvent_0 event) {
+        return true;
     }
 
     public String getPrivate_str() {
@@ -81,7 +85,7 @@ public class Handler_TraceEvent_PrivateMembers {
         return private_char;
     }
 
-    public Handler_TraceEvent_PrivateMembers getParent() {
+    public Parent getParent() {
         return parent;
     }
 
@@ -93,9 +97,9 @@ public class Handler_TraceEvent_PrivateMembers {
         return private_int_array;
     }
 
-    public Handler_TraceEvent_PrivateMembers[] getArrayRef() {
+    public Parent[] getArrayRef() {
         return arrayRef;
     }
-    
+
     public enum Currency {EUR, USD, JPY, GBP}
 }

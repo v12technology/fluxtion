@@ -11,23 +11,23 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.enums;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  * @author V12 Technology Ltd.
  */
 public class EnumTest extends MultipleSepTargetInProcessTest {
 
-    public EnumTest(boolean compiledSep) {
+    public EnumTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -43,7 +43,8 @@ public class EnumTest extends MultipleSepTargetInProcessTest {
         public DayOfWeek firsDayOfWeek;
 
         @OnEventHandler
-        public void endOfDay(EndOfDayEvent eod) {
+        public boolean endOfDay(EndOfDayEvent eod) {
+            return true;
         }
 
     }

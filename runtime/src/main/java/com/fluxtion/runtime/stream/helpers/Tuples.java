@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.stream.helpers;
 
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.stream.groupby.Tuple;
@@ -12,8 +13,8 @@ public class Tuples {
         return new ReplaceNull<>(first, second)::replaceNull;
     }
 
-    public static <F, S, R> SerializableFunction<Tuple<F, S>, R>
-    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction) {
+    public static <F, S, R> SerializableFunction<Tuple< F, S>, R>
+    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction){
         return new MapTuple<>(tupleMapFunction)::mapTuple;
     }
 
@@ -22,7 +23,11 @@ public class Tuples {
         private final F firstValue;
         private final S secondValue;
 
-        public ReplaceNull(F firstValue, S secondValue) {
+        public ReplaceNull(
+                @AssignToField("firstValue")
+                F firstValue,
+                @AssignToField("secondValue")
+                S secondValue) {
             this.firstValue = firstValue;
             this.secondValue = secondValue;
         }

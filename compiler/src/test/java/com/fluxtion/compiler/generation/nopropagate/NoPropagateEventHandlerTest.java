@@ -1,23 +1,24 @@
 package com.fluxtion.compiler.generation.nopropagate;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest {
 
-    public NoPropagateEventHandlerTest(boolean compiledSep) {
+    public NoPropagateEventHandlerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
-    public void noPropagateFromEventHandler(){
-        sep(c ->{
+    public void noPropagateFromEventHandler() {
+        sep(c -> {
             c.addPublicNode(new CountingNode(new StringHandler()), "countingNode");
         });
         CountingNode countingNode = getField("countingNode");
@@ -26,8 +27,8 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
     }
 
     @Test
-    public void partialPropagationFromEventHandler(){
-        sep(c ->{
+    public void partialPropagationFromEventHandler() {
+        sep(c -> {
             c.addPublicNode(new CountingNode(new MultiHandler()), "countingNode");
         });
         CountingNode countingNode = getField("countingNode");
@@ -49,6 +50,7 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
             return true;
         }
     }
+
     public static class MultiHandler {
 
         boolean notified = false;
@@ -73,8 +75,9 @@ public class NoPropagateEventHandlerTest extends MultipleSepTargetInProcessTest 
         int count;
 
         @OnTrigger
-        public void onEvent(){
+        public boolean onEvent() {
             count++;
+            return true;
         }
     }
 }

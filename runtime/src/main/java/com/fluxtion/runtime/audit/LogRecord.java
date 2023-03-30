@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
@@ -24,7 +24,7 @@ import com.fluxtion.runtime.time.Clock;
  * such as a rdbms for later analysis. The LogRecord creates a yaml
  * representation of the LogRecord for simplified marshaling.
  * <br>
- *
+ * <p>
  * A log record is triggered when an event is processed and written at the end
  * of the execution loop. A sample record:
  *
@@ -57,7 +57,6 @@ public class LogRecord {
     /**
      * The id of the instance producing the record. GroupingId can be used to
      * group LogRecord's together.
-     *
      */
     public String groupingId;
     public long eventId;
@@ -75,11 +74,17 @@ public class LogRecord {
 
     public void addRecord(String sourceId, String propertyKey, double value) {
         addSourceId(sourceId, propertyKey);
-        if (value % 1 == 0) {
-            sb.append((int) value);
-        } else {
-            sb.append(value);
-        }
+        sb.append(value);
+    }
+
+    public void addRecord(String sourceId, String propertyKey, long value) {
+        addSourceId(sourceId, propertyKey);
+        sb.append(value);
+    }
+
+    public void addRecord(String sourceId, String propertyKey, int value) {
+        addSourceId(sourceId, propertyKey);
+        sb.append(value);
     }
 
     public void addRecord(String sourceId, String propertyKey, char value) {
@@ -109,7 +114,7 @@ public class LogRecord {
     public void printEventToString(boolean printEventToString) {
         this.printEventToString = printEventToString;
     }
-    
+
     private void addSourceId(String sourceId, String propertyKey) {
         if (this.sourceId == null) {
             sb.append("\n        - ").append(sourceId).append(": {");
