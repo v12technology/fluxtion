@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.fluxtion.compiler.builder.stream.EventFlow.groupBySubscribe;
 import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -393,6 +394,32 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void joinGroupByTestSimple() {
+        Map<String, MergedType> results = new HashMap<>();
+        Map<String, MergedType> expected = new HashMap<>();
+        sep(c -> {
+            groupBySubscribe(KeyedData.class, KeyedData::getId, KeyedData::getAmount)
+                    .innerJoin(groupBySubscribe(String.class, String::toString))
+                    .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
+                    .map(GroupBy::map)
+                    .sink("merged");
+        });
+
+        addSink("merged", (Map<String, MergedType> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent("A");
+
+        expected.put("A", new MergedType(400, "A"));
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+    @Test
     public void biMapKeyedItemFromAnotherStreamTest() {
         sep(c -> {
             val mapped = subscribe(KeyedData.class)
@@ -427,6 +454,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                             subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupByStreamed.emptyCollection()),
                             new Data("default", 3)
                     )
+                    .map(GroupBy::map)
                     .id("results");
         });
 

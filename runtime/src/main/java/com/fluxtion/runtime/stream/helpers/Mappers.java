@@ -226,6 +226,7 @@ public interface Mappers {
     }
 
     //GroupBy
+    //TODO convert to instance
     static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
             GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
         GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();

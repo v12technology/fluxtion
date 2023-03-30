@@ -47,7 +47,11 @@ public interface Peekers {
 
         public void templateAndLogToConsole(T input) {
             String output = transformFunction == null ? input.toString() : transformFunction.apply(input).toString();
-            System.out.println(message.replace("{}", output).replace("%t", "" + clock.getEventTime()));
+            System.out.println(
+                    message.replace("{}", output).replace("%e", "" + clock.getEventTime())
+                            .replace("{}", output).replace("%t", "" + clock.getWallClockTime())
+                            .replace("{}", output).replace("%p", "" + clock.getProcessTime())
+            );
         }
     }
 

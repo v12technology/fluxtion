@@ -65,6 +65,19 @@ public interface EventFlow {
         );
     }
 
+    static <T, K> GroupByStreamBuilder<K, T> groupBySubscribe(Class<T> classSubscription, SerializableFunction<T, K> keyFunction) {
+        return subscribe(classSubscription).groupBy(keyFunction);
+    }
+
+    static <T, K, V> GroupByStreamBuilder<K, V> groupBySubscribe(
+            Class<T> classSubscription,
+            SerializableFunction<T, K> keyFunction,
+            SerializableFunction<T, V> valueFunction) {
+        return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
+    }
+
+    //SerializableFunction<T, V> valueFunction
+
     static EventStreamBuilder<Object> subscribeToSignal(String filterId) {
         return subscribeToSignal(filterId, Object.class);
     }

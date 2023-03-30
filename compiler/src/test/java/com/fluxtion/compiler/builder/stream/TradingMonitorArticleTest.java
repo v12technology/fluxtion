@@ -64,8 +64,8 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
                     .groupBySliding(
                             Trade::getTickerId, Trade::getVolume, Aggregates.intSumFactory(), 5_000, 4)
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
-                    .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(25000)));
-//                    .console("max volume in window:{}");
+                    .map(GroupByFunction.filterValues(Predicates.greaterThanBoxed(15000)))
+                    .console("max volume time:%t in 20 second window:{}");
 
             GroupByStreamBuilder.innerJoinStreams(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
                     .resetTrigger(EventFlow.subscribeToSignal("startOfDay"))
@@ -73,16 +73,16 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
             ;
 
         });
-
-
         setTime(0);
-//
+
 //        for (int i = 0; i < 30_000; i += 500) {
-//            setTime(i);
+//            tick(i);
 //            onEvent(new Trade("IBM", 1.03, 200));
 //            onEvent(new Trade("MSFT", 1.03, 3000));
 //            onEvent(new Trade("ORCL", 1.03, 1000));
 //        }
+//
+//        System.out.println("\n\nstarting day");
 //        publishSignal("startOfDay");
 //        for (int i = 30_500; i < 50_000; i += 500) {
 //            tick(i);
