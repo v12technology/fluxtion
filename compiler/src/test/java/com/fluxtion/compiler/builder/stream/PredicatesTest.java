@@ -123,20 +123,18 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             EventFlow.subscribe(Integer.class)
                     .map(Objects::toString)
                     .filter(Predicates.hasChangedFilter())
-                    .mapOnNotify(Mappers.newCountNode()).id("count")
-                    .mapToInt(CountNode::getCount)
-            ;
+                    .mapToInt(Mappers.count())
+                    .id("count");
         });
-        CountNode countNode = getStreamed("count");
 
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
         onEvent((Integer) 20);
-        assertThat(countNode.getCount(), CoreMatchers.is(1));
+        assertThat(getStreamed("count"), CoreMatchers.is(1));
 
         onEvent((Integer) 255);
-        assertThat(countNode.getCount(), CoreMatchers.is(2));
+        assertThat(getStreamed("count"), CoreMatchers.is(2));
     }
 
     @Test
@@ -155,24 +153,63 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void allUpdatedWithBuilder() {
+        sep(c -> {
+            LongStreamBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue).box().mapToLong(Integer::longValue);
+            LongStreamBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue).box().mapToLong(Integer::longValue);
+            int1.mapBiFunction(Mappers::divideLongs, int2).id("divide")
+                    .updateTrigger(PredicateBuilder.allChanged(int1, int2));
+        });
+        onEvent(new BinaryMapTest.Data_1(100));
+        assertThat(getStreamed("divide"), is(0L));
+        onEvent(new BinaryMapTest.Data_2(25));
+        assertThat(getStreamed("divide"), is(4L));
+    }
+
+    @Test
     public void allUpdatedWithReset() {
-//        addAuditor();
+        writeSourceFile = true;
         sep(c -> {
             //inputs
             IntStreamBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue);
             IntStreamBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue);
-            //filter - trigger if all inputs have updated
-            AllUpdatedPredicate allUpdatedPredicate = new AllUpdatedPredicate(
-                    StreamHelper.getSourcesAsList(int1, int2)
-            );
-            int1.mapBiFunction(Mappers.DIVIDE_INTS, int2).id("divide")
-                    .updateTrigger(allUpdatedPredicate)
-                    .resetTrigger(subscribe(String.class));
+            int1.mapBiFunction(Mappers::divideInts, int2).id("divide")
+                    .updateTrigger(
+                            new AllUpdatedPredicate(
+                                    StreamHelper.getSourcesAsList(int1, int2),
+                                    StreamHelper.getSource(subscribe(String.class))));
         });
         onEvent(new BinaryMapTest.Data_1(100));
         assertThat(getStreamed("divide"), is(0));
         onEvent(new BinaryMapTest.Data_2(25));
         assertThat(getStreamed("divide"), is(4));
+        //reset the notify flag will need both inouts to update
+        onEvent("reset");
+        onEvent(new BinaryMapTest.Data_1(500));
+        assertThat(getStreamed("divide"), is(4));
+        onEvent(new BinaryMapTest.Data_2(25));
+        assertThat(getStreamed("divide"), is(20));
+    }
+
+    @Test
+    public void allUpdatedWithResetBuilder() {
+        sep(c -> {
+            //inputs
+            IntStreamBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue);
+            IntStreamBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue);
+            int1.mapBiFunction(Mappers::divideInts, int2).id("divide")
+                    .updateTrigger(PredicateBuilder.allChangedWithReset(subscribe(String.class), int1, int2));
+        });
+        onEvent(new BinaryMapTest.Data_1(100));
+        assertThat(getStreamed("divide"), is(0));
+        onEvent(new BinaryMapTest.Data_2(25));
+        assertThat(getStreamed("divide"), is(4));
+        //reset the update flag will need both inputs to update before starting a new calculation
+        onEvent("reset");
+        onEvent(new BinaryMapTest.Data_1(500));
+        assertThat(getStreamed("divide"), is(4));
+        onEvent(new BinaryMapTest.Data_2(25));
+        assertThat(getStreamed("divide"), is(20));
     }
 
 }
