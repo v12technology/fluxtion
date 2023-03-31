@@ -121,7 +121,6 @@ public class JavaSourceGenerator {
      */
     private final ArrayList<String> publicNodeIdentifierList;
     private final SimpleEventProcessorModel model;
-    private EventProcessorConfig eventProcessorConfig;
     /**
      * use reflection to assign private members
      */
@@ -130,6 +129,11 @@ public class JavaSourceGenerator {
     private final HashMap<String, String> importMap = new HashMap<>();
     private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
     private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
+    /**
+     * Create an if based dispatch using instanceof operator
+     */
+    private final boolean instanceOfDispatch;
+    private EventProcessorConfig eventProcessorConfig;
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order.
@@ -211,10 +215,6 @@ public class JavaSourceGenerator {
      */
     private boolean isInlineEventHandling;
     /**
-     * Create an if based dispatch using instanceof operator
-     */
-    private final boolean instanceOfDispatch;
-    /**
      * String representing event audit dispatch
      */
     private String eventAuditDispatch;
@@ -225,6 +225,7 @@ public class JavaSourceGenerator {
     private boolean auditingInvocations;
     private String auditMethodString;
     private String additionalInterfaces;
+    private String javaDocEventClassList;
 
     public JavaSourceGenerator(
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
@@ -506,9 +507,20 @@ public class JavaSourceGenerator {
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
         generateEventBufferedDispatcher();
+        addEventAsJavaDoc();
         if (auditingEvent) {
             eventHandlers += auditMethodString;
         }
+    }
+
+    private void addEventAsJavaDoc() {
+        javaDocEventClassList = ClassUtils.sortClassHierarchy(model.getHandlerOnlyDispatchMap().keySet()).stream()
+                .map(Class::getCanonicalName)
+                .collect(Collectors.joining(
+                        "</li>\n*   <li>",
+                        "*   <li>",
+                        "</li>"
+                ));
     }
 
     private void generateEventBufferedDispatcher() {
@@ -1184,6 +1196,10 @@ public class JavaSourceGenerator {
 
     public String getTearDownMethods() {
         return tearDownMethods;
+    }
+
+    public String getJavaDocEventClassList() {
+        return javaDocEventClassList;
     }
 
     public String getImports() {

@@ -3,6 +3,7 @@ package com.fluxtion.runtime.dataflow.helpers;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.dataflow.Stateful;
 import lombok.Value;
@@ -204,7 +205,9 @@ public interface Predicates {
         private final transient Map<Object, Boolean> updateMap = new HashMap<>();
         private boolean allUpdated;
 
-        public AllUpdatedPredicate(List<?> monitored, Object resetKey) {
+        public AllUpdatedPredicate(
+                @AssignToField("monitored") List<?> monitored,
+                @AssignToField("resetTrigger") Object resetKey) {
             super(resetKey);
             this.monitored.addAll(monitored);
         }

@@ -30,13 +30,16 @@ import java.util.IdentityHashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-/*
-*
-* <pre>
+/**
+*<pre>
 * generation time                 : ${build_time}
 * eventProcessorGenerator version : ${generator_version_information}
 * api version                     : ${api_version_information}
-* </pre>
+*</pre>
+* Event classes supported:
+* <ul>
+${MODEL.javaDocEventClassList}
+* </ul>
 * @author Greg Higgins
 */
 @SuppressWarnings({"deprecation","unchecked", "rawtypes"})
