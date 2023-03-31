@@ -1,6 +1,10 @@
 package com.fluxtion.runtime.stream.aggregate;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.DoubleAggregateFunction;
+import com.fluxtion.runtime.stream.IntAggregateFunction;
+import com.fluxtion.runtime.stream.LongAggregateFunction;
 
 import java.util.ArrayList;
 import java.util.List;

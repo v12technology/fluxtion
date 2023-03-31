@@ -2,7 +2,8 @@ package com.fluxtion.runtime.stream.aggregate;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.LongAggregateFunction;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
 
 public class AggregateLongStream<F extends LongAggregateFunction<F>>
         extends MapEventStream<Long, Long, LongEventStream> implements LongEventStream {

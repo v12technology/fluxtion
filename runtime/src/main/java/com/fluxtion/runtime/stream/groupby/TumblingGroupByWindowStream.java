@@ -6,10 +6,11 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.AbstractEventStream;
+import com.fluxtion.runtime.stream.AggregateFunction;
 import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.impl.AbstractEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 import java.util.Collection;
@@ -59,7 +60,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
 
     protected void cacheWindowValue() {
         mapOfValues.clear();
-        mapOfValues.putAll(groupByWindowedCollection.map());
+        mapOfValues.putAll(groupByWindowedCollection.toMap());
     }
 
     protected void aggregateInputValue(S inputEventStream) {
@@ -107,7 +108,7 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
     private class MyGroupBy implements GroupByStreamed<K, R> {
 
         @Override
-        public Map<K, R> map() {
+        public Map<K, R> toMap() {
             return mapOfValues;
         }
 
@@ -117,13 +118,13 @@ public class TumblingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F
         }
 
         @Override
-        public R value() {
-            return groupByWindowedCollection.value();
+        public R lastValue() {
+            return groupByWindowedCollection.lastValue();
         }
 
         @Override
-        public KeyValue<K, R> keyValue() {
-            return groupByWindowedCollection.keyValue();
+        public KeyValue<K, R> lastKeyValue() {
+            return groupByWindowedCollection.lastKeyValue();
         }
     }
 }

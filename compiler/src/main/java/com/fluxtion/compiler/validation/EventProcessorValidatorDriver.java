@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.validation;
 
 import com.fluxtion.runtime.EventProcessor;
-import com.fluxtion.runtime.stream.aggregate.MutableNumber;
+import com.fluxtion.runtime.stream.MutableNumber;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.concurrent.atomic.LongAdder;

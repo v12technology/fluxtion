@@ -1,12 +1,13 @@
 package com.fluxtion.runtime.stream.groupby;
 
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.Stateful;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupByCollection<K, V> implements GroupByStreamed<K, V>, Stateful<GroupBy<K, V>> {
+public class GroupByCollection<K, V> implements GroupByStreamed<K, V>, Stateful<GroupByStreamed<K, V>> {
     private final Map<K, V> map = new HashMap<>();
 
     public GroupByCollection<K, V> add(KeyValue<K, V> keyValue) {
@@ -21,13 +22,13 @@ public class GroupByCollection<K, V> implements GroupByStreamed<K, V>, Stateful<
     }
 
     @Override
-    public GroupBy<K, V> reset() {
+    public GroupByStreamed<K, V> reset() {
         map.clear();
         return this;
     }
 
     @Override
-    public Map<K, V> map() {
+    public Map<K, V> toMap() {
         return map;
     }
 

@@ -5,11 +5,12 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.AbstractEventStream;
+import com.fluxtion.runtime.stream.AggregateFunction;
 import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction;
+import com.fluxtion.runtime.stream.impl.AbstractEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 import java.util.Collection;
@@ -73,7 +74,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     protected void cacheWindowValue() {
         GroupByStreamed<K, R> value = slidingCalculator.get();
         mapOfValues.clear();
-        mapOfValues.putAll(value.map());
+        mapOfValues.putAll(value.toMap());
     }
 
     protected void aggregateInputValue(S inputEventStream) {
@@ -124,7 +125,7 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
     private class MyGroupBy implements GroupByStreamed<K, R> {
 
         @Override
-        public Map<K, R> map() {
+        public Map<K, R> toMap() {
             return mapOfValues;
         }
 
@@ -134,13 +135,13 @@ public class SlidingGroupByWindowStream<T, K, V, R, S extends EventStream<T>, F 
         }
 
         @Override
-        public R value() {
-            return slidingCalculator.get().value();
+        public R lastValue() {
+            return slidingCalculator.get().lastValue();
         }
 
         @Override
-        public KeyValue<K, R> keyValue() {
-            return slidingCalculator.get().keyValue();
+        public KeyValue<K, R> lastKeyValue() {
+            return slidingCalculator.get().lastKeyValue();
         }
     }
 }

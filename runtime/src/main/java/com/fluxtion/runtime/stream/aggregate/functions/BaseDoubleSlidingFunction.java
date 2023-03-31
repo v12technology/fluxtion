@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
+import com.fluxtion.runtime.stream.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
-import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 
 public abstract class BaseDoubleSlidingFunction<T extends BaseDoubleSlidingFunction<T>>
         implements DoubleEventStream, DoubleAggregateFunction<T> {

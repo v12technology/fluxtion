@@ -3,7 +3,7 @@ package com.fluxtion.runtime.stream.helpers;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.groupby.Tuple;
+import com.fluxtion.runtime.stream.Tuple;
 import lombok.Value;
 
 public class Tuples {
@@ -13,8 +13,8 @@ public class Tuples {
         return new ReplaceNull<>(first, second)::replaceNull;
     }
 
-    public static <F, S, R> SerializableFunction<Tuple< F, S>, R>
-    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction){
+    public static <F, S, R> SerializableFunction<Tuple<F, S>, R>
+    mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction) {
         return new MapTuple<>(tupleMapFunction)::mapTuple;
     }
 

@@ -1,12 +1,11 @@
 package com.fluxtion.runtime.stream.helpers;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.Stateful;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
+import com.fluxtion.runtime.stream.Tuple;
 import com.fluxtion.runtime.stream.groupby.GroupByCollection;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.TopNByValue;
-import com.fluxtion.runtime.stream.groupby.Tuple;
 import lombok.ToString;
 
 import java.util.List;
@@ -121,7 +120,7 @@ public interface Mappers {
         return new TopNByValue(count)::filter;
     }
 
-    static <K, V, T extends Comparable<T>> SerializableFunction<GroupBy<K, V>, List<Entry<K, V>>> topNByValue(int count, SerializableFunction<V, T> propertyAccessor) {
+    static <K, V, T extends Comparable<T>> SerializableFunction<GroupByStreamed<K, V>, List<Entry<K, V>>> topNByValue(int count, SerializableFunction<V, T> propertyAccessor) {
         TopNByValue topNByValue = new TopNByValue(count);
         topNByValue.comparing = propertyAccessor;
         return topNByValue::filter;
@@ -227,47 +226,15 @@ public interface Mappers {
 
     //GroupBy
     //TODO convert to instance
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
-        if (leftGroupBy != null && rightGroupBY != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY.map().get(e.getKey());
-                if (value2 != null) {
-                    joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-                }
-            });
-        }
-        return joinedGroup;
-    }
-
     static <K1, V1, K2 extends K1, V2> GroupByStreamed<K1, Tuple<V1, V2>> innerJoin(
             GroupByStreamed<K1, V1> leftGroupBy, GroupByStreamed<K2, V2> rightGroupBY) {
         GroupByStreamed<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
         if (leftGroupBy != null && rightGroupBY != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY.map().get(e.getKey());
+            leftGroupBy.toMap().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY.toMap().get(e.getKey());
                 if (value2 != null) {
-                    joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+                    joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
                 }
-            });
-        }
-        return joinedGroup;
-    }
-
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> outerJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
-        if (leftGroupBy != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-            });
-        }
-        if (rightGroupBY != null) {
-            rightGroupBY.map().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
             });
         }
         return joinedGroup;
@@ -277,51 +244,28 @@ public interface Mappers {
             GroupByStreamed<K1, V1> leftGroupBy, GroupByStreamed<K2, V2> rightGroupBY) {
         GroupByStreamed<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
         if (leftGroupBy != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
+            leftGroupBy.toMap().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.toMap().get(e.getKey());
+                joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
             });
         }
         if (rightGroupBY != null) {
-            rightGroupBY.map().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            rightGroupBY.toMap().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
+                joinedGroup.toMap().put(e.getKey(), new Tuple<>(value1, e.getValue()));
             });
         }
         return joinedGroup;
     }
 
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> leftJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
-        if (leftGroupBy != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-            });
-        }
-        return joinedGroup;
-    }
 
     static <K1, V1, K2 extends K1, V2> GroupByStreamed<K1, Tuple<V1, V2>> leftJoin(
             GroupByStreamed<K1, V1> leftGroupBy, GroupByStreamed<K2, V2> rightGroupBY) {
         GroupByStreamed<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
         if (leftGroupBy != null) {
-            leftGroupBy.map().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-            });
-        }
-        return joinedGroup;
-    }
-
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> rightJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
-        if (rightGroupBY != null) {
-            rightGroupBY.map().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            leftGroupBy.toMap().entrySet().forEach(e -> {
+                V2 value2 = rightGroupBY == null ? null : rightGroupBY.toMap().get(e.getKey());
+                joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
             });
         }
         return joinedGroup;
@@ -331,28 +275,29 @@ public interface Mappers {
             GroupByStreamed<K1, V1> leftGroupBy, GroupByStreamed<K2, V2> rightGroupBY) {
         GroupByStreamed<K1, Tuple<V1, V2>> joinedGroup = new GroupByCollection<>();
         if (rightGroupBY != null) {
-            rightGroupBY.map().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.map().get(e.getKey());
-                joinedGroup.map().put(e.getKey(), new Tuple<>(value1, e.getValue()));
+            rightGroupBY.toMap().entrySet().forEach(e -> {
+                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
+                joinedGroup.toMap().put(e.getKey(), new Tuple<>(value1, e.getValue()));
             });
         }
         return joinedGroup;
     }
 
+
     //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
-    static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    static GroupByStreamed innerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.innerJoin((GroupByStreamed) leftGroup, (GroupByStreamed) rightGroup);
     }
 
-    static GroupBy outerJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.outerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    static GroupByStreamed outerJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.outerJoin((GroupByStreamed) leftGroup, (GroupByStreamed) rightGroup);
     }
 
-    static GroupBy leftJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.leftJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    static GroupByStreamed leftJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.leftJoin((GroupByStreamed) leftGroup, (GroupByStreamed) rightGroup);
     }
 
-    static GroupBy rightJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.rightJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
+    static GroupByStreamed rightJoin(Object leftGroup, Object rightGroup) {
+        return Mappers.rightJoin((GroupByStreamed) leftGroup, (GroupByStreamed) rightGroup);
     }
 }

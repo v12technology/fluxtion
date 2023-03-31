@@ -3,8 +3,9 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.Stateful;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,23 +100,23 @@ public class GroupByWindowedCollection<T, K, V, A, F extends AggregateFunction<V
     }
 
     @Override
-    public KeyValue<K, A> keyValue() {
+    public KeyValue<K, A> lastKeyValue() {
         return keyValue;
     }
 
     @Override
-    public Map<K, A> map() {
+    public Map<K, A> toMap() {
         return mapOfValues;
     }
 
     @Override
-    public A value() {
+    public A lastValue() {
         return latestAggregateValue.get();
     }
 
     @Override
     public Collection<A> values() {
-        return map().values();
+        return toMap().values();
     }
 
     @Override

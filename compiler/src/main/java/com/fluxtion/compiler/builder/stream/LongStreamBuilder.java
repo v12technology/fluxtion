@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
@@ -8,28 +9,26 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
-import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.LongAggregateFunction;
+import com.fluxtion.runtime.stream.LongFlowSupplier;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingLongEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateLongStream;
-import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingLongWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
+import com.fluxtion.runtime.stream.impl.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.impl.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.impl.FilterEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
+import com.fluxtion.runtime.stream.impl.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.impl.NotifyEventStream;
+import com.fluxtion.runtime.stream.impl.PeekEventStream;
+import com.fluxtion.runtime.stream.impl.PushEventStream;
+import com.fluxtion.runtime.stream.impl.WrappingEventSupplier.WrappingLongEventSupplier;
 
-public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplier> {
+public class LongStreamBuilder implements EventSupplierAccessor<LongFlowSupplier> {
 
     final LongEventStream eventStream;
 
@@ -38,7 +37,7 @@ public class LongStreamBuilder implements EventSupplierAccessor<LongEventSupplie
         this.eventStream = eventStream;
     }
 
-    public LongEventSupplier getEventSupplier() {
+    public LongFlowSupplier runtimeSupplier() {
         return EventProcessorBuilderService.service().add(new WrappingLongEventSupplier(eventStream));
     }
 

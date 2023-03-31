@@ -5,11 +5,10 @@ import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MergedType;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.MyIntFilter;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.GroupByStreamed;
+import com.fluxtion.runtime.stream.GroupByStreamed.KeyValue;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.stream.helpers.Tuples;
 import lombok.Value;
@@ -47,7 +46,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Data.class)
                     .groupBy(Data::getName)
-                    .map(GroupBy::map).id("results");
+                    .map(GroupByStreamed::toMap).id("results");
         });
 
         onEvent(new Data("A", 25));
@@ -71,7 +70,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Data.class)
                     .groupByAsList(Data::getName)
-                    .map(GroupBy::map).id("results");
+                    .map(GroupByStreamed::toMap).id("results");
         });
 
         onEvent(new Data("A", 25));
@@ -98,7 +97,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             EventFlow.subscribe(Data.class)
                     .groupByAsList(Data::getName, 3)
-                    .map(GroupBy::map).id("results");
+                    .map(GroupByStreamed::toMap).id("results");
         });
 
         onEvent(new Data("A", 25));
@@ -128,7 +127,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, Integer> expected = new HashMap<>();
         sep(c -> subscribe(KeyedData.class)
                 .groupBy(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new)
-                .map(GroupByStreamed::keyValue)
+                .map(GroupByStreamed::lastKeyValue)
                 .sink("keyValue"));
 
         addSink("keyValue", (KeyValue<String, Integer> kv) -> {
@@ -166,7 +165,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) -> {
@@ -237,7 +236,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
                     .mapValues(EventStreamBuildTest::doubleInt)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("keyValue");
         });
 
@@ -269,7 +268,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
                     .mapKeys(EventStreamBuildTest::toUpperCase)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("keyValue");
         });
 
@@ -302,7 +301,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId)
                     .mapEntries(GroupByTest::mapKeyData)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("keyValue");
         });
 
@@ -339,7 +338,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             EventStreamBuilder<Map<String, Integer>> obj = subscribe(KeyedData.class)
                     .groupBy(KeyedData::getId, KeyedData::getAmount)
                     .filterValues(new MyIntFilter(500)::gt)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("keyValue");
         });
 
@@ -376,7 +375,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
             keyedGroupBy.innerJoin(stringGroupBy)
                     .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("merged");
         });
 
@@ -402,7 +401,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             groupBySubscribe(KeyedData.class, KeyedData::getId, KeyedData::getAmount)
                     .innerJoin(groupBySubscribe(String.class, String::toString))
                     .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .sink("merged");
         });
 
@@ -427,8 +426,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(KeyedData::getId)
                     .mapBiFunction(GroupByFunction.mapValueByKey(GroupByTest::applyFactor, Data::getName), subscribe(Data.class));
 
-            mapped.map(GroupBy::map).id("rs");
-            mapped.map(GroupByStreamed::value).id("value");
+            mapped.map(GroupByStreamed::toMap).id("rs");
+            mapped.map(GroupByStreamed::lastValue).id("value");
         });
 
         Map<String, KeyedData> expected = new HashMap<>();
@@ -450,12 +449,12 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, KeyedData> expected = new HashMap<>();
         sep(c -> {
             subscribe(KeyedData.class).groupBy(KeyedData::getId)
-                    .biMapValues(
+                    .biMapValuesByKey(
                             GroupByTest::applyFactor,
                             subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupByStreamed.emptyCollection()),
                             new Data("default", 3)
                     )
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .id("results");
         });
 
@@ -523,7 +522,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .mapBiFunction(
                             GroupByFunction.mapValueByKey(GroupByTest::updateItemScalar, MyEvent::getSubSystem),
                             subscribe(MyEvent.class).filter(MyEvent::isCreate))
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .id("results");
 
         });
@@ -613,10 +612,11 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void complexGroupByJoinThenBiMapThenReduceTest() {
+        writeSourceFile = true;
         sep(c -> {
             val tradeStream = subscribe(Trade.class);
 
-            val positionMap = GroupByStreamBuilder.outerJoinStreams(
+            val positionMap = JoinStreamBuilder.outerJoin(
                             tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, AggregateDoubleSum::new),
                             tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, AggregateDoubleSum::new))
                     .mapValues(Tuples.replaceNull(0d, 0d))
@@ -627,7 +627,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
                     .defaultValue(GroupByStreamed.emptyCollection());
 
-            positionMap.biMapValues(Mappers::multiplyDoubles, rateMap, Double.NaN)
+            positionMap.biMapValuesByKey(Mappers::multiplyDoubles, rateMap, Double.NaN)
                     .reduceValues(AggregateDoubleSum::new)
                     .id("pnl")
             ;
@@ -653,7 +653,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             val tradeStream = subscribe(Trade.class);
 
-            val positionMap = GroupByStreamBuilder.outerJoinStreams(
+            val positionMap = JoinStreamBuilder.outerJoin(
                             tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, AggregateDoubleSum::new),
                             tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, AggregateDoubleSum::new))
                     .mapValues(Tuples.replaceNull(0d, 0d))
@@ -664,7 +664,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
                     .defaultValue(GroupByStreamed.emptyCollection());
 
-            GroupByStreamBuilder.leftJoinStreams(positionMap, rateMap)
+            JoinStreamBuilder.leftJoin(positionMap, rateMap)
                     .mapValues(Tuples.replaceNull(0d, Double.NaN))
                     .mapValues(Tuples.mapTuple(Mappers::multiplyDoubles))
                     .reduceValues(AggregateDoubleSum::new)

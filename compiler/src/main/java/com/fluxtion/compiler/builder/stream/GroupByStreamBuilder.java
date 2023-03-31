@@ -1,22 +1,22 @@
 package com.fluxtion.compiler.builder.stream;
 
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.Tuple;
 import com.fluxtion.runtime.stream.groupby.FilterGroupByFunctionInvoker;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.MapGroupByFunctionInvoker;
 import com.fluxtion.runtime.stream.groupby.ReduceGroupByFunctionInvoker;
-import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.helpers.Peekers;
+import com.fluxtion.runtime.stream.impl.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
 
 import java.util.Map;
 
@@ -36,6 +36,27 @@ public class GroupByStreamBuilder<K, V> extends AbstractGroupByBuilder<K, V, Gro
         return this;
     }
 
+    //
+    public GroupByStreamBuilder<K, V> updateTrigger(Object updateTrigger) {
+        eventStream.setUpdateTriggerNode(StreamHelper.getSource(updateTrigger));
+        return identity();
+    }
+
+    public GroupByStreamBuilder<K, V> publishTrigger(Object publishTrigger) {
+        eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        return identity();
+    }
+
+    public GroupByStreamBuilder<K, V> publishTriggerOverride(Object publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(StreamHelper.getSource(publishTrigger));
+        return identity();
+    }
+
+    public GroupByStreamBuilder<K, V> resetTrigger(Object resetTrigger) {
+        eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        return identity();
+    }
+
     public GroupByStreamBuilder<K, V> defaultValue(GroupByStreamed<K, V> defaultValue) {
         return new GroupByStreamBuilder<>(new MapEventStream.MapRef2RefEventStream<>(eventStream,
                 new DefaultValue<>(defaultValue)::getOrDefault));
@@ -51,26 +72,16 @@ public class GroupByStreamBuilder<K, V> extends AbstractGroupByBuilder<K, V, Gro
                 new MapGroupByFunctionInvoker(mappingFunction)::mapValues));
     }
 
-    public <K2 extends K, V2, O> GroupByStreamBuilder<K, O> mapValuesByKey(
-            SerializableBiFunction<V, V2, O> mappingBiFunction,
-            EventStreamBuilder<KeyValue<K2, V2>> argumentStream) {
-        MapGroupByFunctionInvoker invoker = new MapGroupByFunctionInvoker(mappingBiFunction);
-        return new GroupByStreamBuilder<>(
-                new BinaryMapEventStream.BinaryMapToRefEventStream<>(
-                        eventStream, argumentStream.eventStream, invoker::mapValueWithKeyValue)
-        );
-    }
-
     public <K2 extends K, V2, VOUT>
-    GroupByStreamBuilder<K, VOUT> biMapValues(
+    GroupByStreamBuilder<K, VOUT> biMapValuesByKey(
             SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
             GroupByStreamBuilder<K2, V2> secondArgumentStream) {
         MapGroupByFunctionInvoker invoker = new MapGroupByFunctionInvoker(null, mappingBiFunction, null);
-        return biMapValues(mappingBiFunction, secondArgumentStream, null);
+        return biMapValuesByKey(mappingBiFunction, secondArgumentStream, null);
     }
 
     public <K2 extends K, V2, VOUT>
-    GroupByStreamBuilder<K, VOUT> biMapValues(
+    GroupByStreamBuilder<K, VOUT> biMapValuesByKey(
             SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
             GroupByStreamBuilder<K2, V2> secondArgumentStream,
             V2 defaultSecondArgument) {
@@ -128,33 +139,19 @@ public class GroupByStreamBuilder<K, V> extends AbstractGroupByBuilder<K, V, Gro
     }
 
 
-    static <K1, V1, K2 extends K1, V2> EventStreamBuilder<GroupBy<K1, Tuple<V1, V2>>> innerJoinStreams(
-            EventStreamBuilder<? extends GroupBy<K1, V1>> leftGroupBy,
-            EventStreamBuilder<? extends GroupBy<K2, V2>> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(Mappers::innerJoin, rightGroupBy);
+    public GroupByStreamBuilder<K, V> console(String in) {
+        peek(Peekers.console(in, null));
+        return identity();
     }
 
-    static <K1, V1, K2 extends K1, V2> GroupByStreamBuilder<K1, Tuple<V1, V2>> innerJoinStreams(
-            GroupByStreamBuilder<K1, V1> leftGroupBy,
-            GroupByStreamBuilder<K2, V2> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(Mappers::innerJoin, rightGroupBy);
+    public GroupByStreamBuilder<K, V> console() {
+        return console("{}");
     }
 
-    static <K1, V1, K2 extends K1, V2> GroupByStreamBuilder<K1, Tuple<V1, V2>> outerJoinStreams(
-            GroupByStreamBuilder<K1, V1> leftGroupBy,
-            GroupByStreamBuilder<K2, V2> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(Mappers::outerJoin, rightGroupBy);
-    }
 
-    static <K1, V1, K2 extends K1, V2> GroupByStreamBuilder<K1, Tuple<V1, V2>> leftJoinStreams(
-            GroupByStreamBuilder<K1, V1> leftGroupBy,
-            GroupByStreamBuilder<K2, V2> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(Mappers::leftJoin, rightGroupBy);
-    }
-
-    static <K1, V1, K2 extends K1, V2> GroupByStreamBuilder<K1, Tuple<V1, V2>> rightJoinStreams(
-            GroupByStreamBuilder<K1, V1> leftGroupBy,
-            GroupByStreamBuilder<K2, V2> rightGroupBy) {
-        return leftGroupBy.mapBiFunction(Mappers::rightJoin, rightGroupBy);
+    //META-DATA
+    public GroupByStreamBuilder<K, V> id(String nodeId) {
+        EventProcessorBuilderService.service().add(eventStream, nodeId);
+        return identity();
     }
 }

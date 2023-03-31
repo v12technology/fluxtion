@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.LongEventStream;
-import com.fluxtion.runtime.stream.aggregate.LongAggregateFunction;
+import com.fluxtion.runtime.stream.LongAggregateFunction;
 
 public abstract class BaseLongSlidingFunction<T extends BaseLongSlidingFunction<T>>
         implements LongEventStream, LongAggregateFunction<T> {

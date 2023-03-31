@@ -1,8 +1,9 @@
 package com.fluxtion.runtime.stream.aggregate;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.stream.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
 
 public class AggregateDoubleStream<F extends DoubleAggregateFunction<F>>
         extends MapEventStream<Double, Double, DoubleEventStream> implements DoubleEventStream {

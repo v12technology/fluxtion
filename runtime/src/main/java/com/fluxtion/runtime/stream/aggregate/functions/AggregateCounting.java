@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
+import com.fluxtion.runtime.stream.AggregateFunction;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 
 public class AggregateCounting<T> implements AggregateFunction<T, Integer, AggregateCounting<T>>, IntEventStream {
     private int count;

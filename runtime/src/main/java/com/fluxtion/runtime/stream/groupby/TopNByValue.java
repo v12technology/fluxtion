@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream.groupby;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,12 +20,12 @@ public class TopNByValue {
 
     //required for serialised version
     public <K, V> List<Entry<K, V>> filter(Object obj) {
-        return filter((GroupBy) obj);
+        return filter((GroupByStreamed) obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <K, V> List<Map.Entry<K, V>> filter(GroupBy groupBy) {
-        return (List<Entry<K, V>>) new ArrayList<>(groupBy.map().entrySet()).stream()
+    public <K, V> List<Map.Entry<K, V>> filter(GroupByStreamed groupBy) {
+        return (List<Entry<K, V>>) new ArrayList<>(groupBy.toMap().entrySet()).stream()
                 .sorted((Comparator<Entry>) (c1, c2) -> {
                     if (comparing != null) {
                         return ((Comparable) comparing.apply(c2.getValue())).compareTo(

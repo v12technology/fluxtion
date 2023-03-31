@@ -6,7 +6,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
-import com.fluxtion.runtime.stream.EventStream.EventSupplier;
+import com.fluxtion.runtime.stream.FlowSupplier;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ public class MonitorDirtyStateTest extends MultipleSepTargetInProcessTest {
     public void validateDirtyMonitorTest() {
         sep(c -> {
             MyDirtChecker dirtChecker = new MyDirtChecker();
-            dirtChecker.stringEventStream = EventFlow.subscribe(String.class).getEventSupplier();
-            dirtChecker.intEventStream = EventFlow.subscribe(Integer.class).getEventSupplier();
+            dirtChecker.stringEventStream = EventFlow.subscribe(String.class).runtimeSupplier();
+            dirtChecker.intEventStream = EventFlow.subscribe(Integer.class).runtimeSupplier();
             c.addNode(dirtChecker, "dirtChecker");
         });
         MyDirtChecker dirtChecker = getField("dirtChecker");
@@ -36,8 +36,8 @@ public class MonitorDirtyStateTest extends MultipleSepTargetInProcessTest {
 
     public static class MyDirtChecker {
 
-        public EventSupplier<String> stringEventStream;
-        public EventSupplier<Integer> intEventStream;
+        public FlowSupplier<String> stringEventStream;
+        public FlowSupplier<Integer> intEventStream;
         @Inject
         public DirtyStateMonitor dirtyStateMonitor;
 

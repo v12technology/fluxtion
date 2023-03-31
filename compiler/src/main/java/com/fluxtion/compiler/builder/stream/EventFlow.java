@@ -1,14 +1,14 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
-import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.MergeMapEventStream;
-import com.fluxtion.runtime.stream.NodeEventStream;
-import com.fluxtion.runtime.stream.NodePropertyStream;
+import com.fluxtion.runtime.stream.impl.MergeMapEventStream;
+import com.fluxtion.runtime.stream.impl.NodeEventStream;
+import com.fluxtion.runtime.stream.impl.NodePropertyStream;
 
 import java.lang.reflect.InvocationTargetException;
 

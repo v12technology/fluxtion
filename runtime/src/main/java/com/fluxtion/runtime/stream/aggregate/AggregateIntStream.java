@@ -2,7 +2,8 @@ package com.fluxtion.runtime.stream.aggregate;
 
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
+import com.fluxtion.runtime.stream.IntAggregateFunction;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
 
 public class AggregateIntStream<F extends IntAggregateFunction<F>>
         extends MapEventStream<Integer, Integer, IntEventStream>

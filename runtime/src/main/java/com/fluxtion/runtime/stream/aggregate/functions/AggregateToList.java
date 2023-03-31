@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.AggregateFunction;
 
 import java.util.ArrayList;
 import java.util.List;

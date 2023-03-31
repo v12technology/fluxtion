@@ -1,7 +1,5 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.stream.EventStream;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +7,8 @@ import java.util.List;
 public class StreamHelper {
     static Object getSource(Object input) {
         Object returnValue = input;
-        if (input instanceof EventStream.EventSupplierAccessor) {
-            returnValue = ((EventStream.EventSupplierAccessor) input).getEventSupplier();
+        if (input instanceof EventSupplierAccessor) {
+            returnValue = ((EventSupplierAccessor) input).runtimeSupplier();
         }
         return returnValue;
     }

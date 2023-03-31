@@ -1,12 +1,11 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
-import com.fluxtion.runtime.stream.aggregate.MutableNumber;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.MutableNumber;
 
 public abstract class BaseMutableNumberFunction
-        implements AggregateFunction<Number, Number, BaseMutableNumberFunction>
-{
-    MutableNumber mutableNumber  = new MutableNumber();
+        implements AggregateFunction<Number, Number, BaseMutableNumberFunction> {
+    MutableNumber mutableNumber = new MutableNumber();
 
     @Override
     public Number reset() {

@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.stream.groupby;
 
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import lombok.Value;
 
 @Value
@@ -10,7 +11,7 @@ public class ReduceGroupByFunctionInvoker {
 
     public <R> R reduceValues(GroupByStreamed inputMap) {
         aggregateFunction.reset();
-        inputMap.map().values().forEach(aggregateFunction::aggregate);
+        inputMap.toMap().values().forEach(aggregateFunction::aggregate);
         return (R) aggregateFunction.get();
     }
 

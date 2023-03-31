@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
@@ -10,28 +11,26 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToIntFu
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToLongFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.DoubleAggregateFunction;
+import com.fluxtion.runtime.stream.DoubleFlowSupplier;
 import com.fluxtion.runtime.stream.EventStream.DoubleEventStream;
-import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
-import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingDoubleEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateDoubleStream;
-import com.fluxtion.runtime.stream.aggregate.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
+import com.fluxtion.runtime.stream.impl.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.impl.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.impl.FilterEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
+import com.fluxtion.runtime.stream.impl.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.impl.NotifyEventStream;
+import com.fluxtion.runtime.stream.impl.PeekEventStream;
+import com.fluxtion.runtime.stream.impl.PushEventStream;
+import com.fluxtion.runtime.stream.impl.WrappingEventSupplier.WrappingDoubleEventSupplier;
 
-public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSupplier> {
+public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleFlowSupplier> {
 
     final DoubleEventStream eventStream;
 
@@ -40,7 +39,7 @@ public class DoubleStreamBuilder implements EventSupplierAccessor<DoubleEventSup
         this.eventStream = eventStream;
     }
 
-    public DoubleEventSupplier getEventSupplier() {
+    public DoubleFlowSupplier runtimeSupplier() {
         return EventProcessorBuilderService.service().add(new WrappingDoubleEventSupplier(eventStream));
     }
 

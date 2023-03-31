@@ -29,7 +29,7 @@ public class GroupByWindowedCollectionTest {
         groupCount.aggregate(new Data("B", 10));
         groupCount.aggregate(new Data("A", 110));
 
-        assertThat(groupCount.map(), is(
+        assertThat(groupCount.toMap(), is(
                 map("A", 200, "B", 100)
         ));
     }
@@ -45,17 +45,17 @@ public class GroupByWindowedCollectionTest {
         group1.combine(group2);
         group1.combine(group2);
         group1.combine(group2);
-        assertThat(group1.map(), is(map("A", 90)));
+        assertThat(group1.toMap(), is(map("A", 90)));
 
         group3.aggregate(new Data("B", 44));
         group1.combine(group3);
-        assertThat(group1.map(), is(
+        assertThat(group1.toMap(), is(
                 map("A", 90, "B", 44)
         ));
     }
 
     @Test
-    public void testDeduct(){
+    public void testDeduct() {
         GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
         GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
 
@@ -64,20 +64,20 @@ public class GroupByWindowedCollectionTest {
         aggregate.combine(group1);
         aggregate.combine(group1);
         aggregate.combine(group1);
-        assertThat(aggregate.map(), is(map("A", 90)));
+        assertThat(aggregate.toMap(), is(map("A", 90)));
 
         aggregate.deduct(group1);
-        assertThat(aggregate.map(), is(map("A", 60)));
+        assertThat(aggregate.toMap(), is(map("A", 60)));
 
         aggregate.deduct(group1);
-        assertThat(aggregate.map(), is(map("A", 30)));
+        assertThat(aggregate.toMap(), is(map("A", 30)));
 
         aggregate.deduct(group1);
-        assertTrue(aggregate.map().isEmpty());
+        assertTrue(aggregate.toMap().isEmpty());
     }
 
     @Test
-    public void combineAndDeductTest(){
+    public void combineAndDeductTest() {
         GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> aggregate = supplier.get();
         GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group1 = supplier.get();
         GroupByWindowedCollection<Data, String, Integer, Integer, AggregateIntSum> group2 = supplier.get();
@@ -97,37 +97,37 @@ public class GroupByWindowedCollectionTest {
         aggregate.combine(group1);
         aggregate.combine(group2);
         aggregate.combine(group3);
-        assertThat(aggregate.map(), is(map(
+        assertThat(aggregate.toMap(), is(map(
                 "A", 60,
                 "B", 100,
                 "C", 450,
                 "D", 150)));
 
         aggregate.deduct(group1);
-        assertThat(aggregate.map(), is(map(
+        assertThat(aggregate.toMap(), is(map(
                 "B", 50,
                 "C", 300,
                 "D", 150)));
 
         aggregate.deduct(group3);
-        assertThat(aggregate.map(), is(map(
+        assertThat(aggregate.toMap(), is(map(
                 "B", 50,
                 "C", 150)));
 
         aggregate.combine(group1);
-        assertThat(aggregate.map(), is(map(
+        assertThat(aggregate.toMap(), is(map(
                 "A", 60,
                 "B", 100,
                 "C", 300)));
 
         aggregate.deduct(group2);
-        assertThat(aggregate.map(), is(map(
+        assertThat(aggregate.toMap(), is(map(
                 "A", 60,
                 "B", 50,
                 "C", 150)));
 
         aggregate.deduct(group1);
-        assertTrue(aggregate.map().isEmpty());
+        assertTrue(aggregate.toMap().isEmpty());
     }
 
     @Value

@@ -3,7 +3,8 @@ package com.fluxtion.runtime.stream.groupby;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
+import com.fluxtion.runtime.stream.GroupByStreamed;
+import com.fluxtion.runtime.stream.GroupByStreamed.KeyValue;
 
 import java.util.Collections;
 import java.util.Map;
@@ -40,15 +41,15 @@ public class MapGroupByFunctionInvoker {
 
     //required for serialised version
     public <K, V> GroupByStreamed<K, V> mapValues(Object inputMap) {
-        return mapValues((GroupBy) inputMap);
+        return mapValues((GroupByStreamed) inputMap);
     }
 
     public <K, V> GroupByStreamed<K, V> mapKeyedValue(Object inputMap, Object secondArgument) {
-        return mapKeyedValue((GroupBy) inputMap, secondArgument);
+        return mapKeyedValue((GroupByStreamed) inputMap, secondArgument);
     }
 
     public <K, R> GroupByStreamed<K, R> mapValueWithKeyValue(Object inputMap, KeyValue secondArgument) {
-        return mapValueWithKeyValue((GroupBy) inputMap, secondArgument);
+        return mapValueWithKeyValue((GroupByStreamed) inputMap, secondArgument);
     }
 
     public <K, V> GroupByStreamed<K, V> biMapValuesWithParamMap(Object firstArgGroupBy, Object secondArgGroupBY) {
@@ -56,47 +57,47 @@ public class MapGroupByFunctionInvoker {
     }
 
     public <K, V> GroupByStreamed<K, V> mapKeys(Object inputMap) {
-        return mapKeys((GroupBy) inputMap);
+        return mapKeys((GroupByStreamed) inputMap);
     }
 
     public <K, V> GroupByStreamed<K, V> mapEntry(Object inputMap) {
-        return mapEntry((GroupBy) inputMap);
+        return mapEntry((GroupByStreamed) inputMap);
     }
 
-    public <K, V> GroupByStreamed<K, V> mapValues(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapValues(GroupByStreamed inputMap) {
         outputCollection.reset();
-        inputMap.map().entrySet().forEach(e -> {
+        inputMap.toMap().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) e;
-            outputCollection.map().put(entry.getKey(), mapFunction.apply(entry.getValue()));
+            outputCollection.toMap().put(entry.getKey(), mapFunction.apply(entry.getValue()));
         });
         return outputCollection;
     }
 
-    public <K, V> GroupByStreamed<K, V> mapKeys(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapKeys(GroupByStreamed inputMap) {
         outputCollection.reset();
-        inputMap.map().entrySet().forEach(e -> {
+        inputMap.toMap().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) e;
-            outputCollection.map().put(mapFunction.apply(entry.getKey()), entry.getValue());
+            outputCollection.toMap().put(mapFunction.apply(entry.getKey()), entry.getValue());
         });
         return outputCollection;
     }
 
-    public <K, V> GroupByStreamed<K, V> mapEntry(GroupBy inputMap) {
+    public <K, V> GroupByStreamed<K, V> mapEntry(GroupByStreamed inputMap) {
         outputCollection.reset();
-        inputMap.map().entrySet().forEach(e -> {
+        inputMap.toMap().entrySet().forEach(e -> {
             Map.Entry entry = (Entry) mapFunction.apply(e);
-            outputCollection.map().put(entry.getKey(), entry.getValue());
+            outputCollection.toMap().put(entry.getKey(), entry.getValue());
         });
         return outputCollection;
     }
 
-    public <K, G extends GroupBy, R> GroupByStreamed<K, R> mapKeyedValue(G inputMap, Object argumentProvider) {
+    public <K, G extends GroupByStreamed, R> GroupByStreamed<K, R> mapKeyedValue(G inputMap, Object argumentProvider) {
         wrappedCollection.reset();
         Object key = mapFunction.apply(argumentProvider);
-        Object item = inputMap.map().get(key);
+        Object item = inputMap.toMap().get(key);
         if (item != null) {
             KeyValue kv = new KeyValue(key, mapFrom2MapsBiFunction.apply(item, argumentProvider));
-            outputCollection.fromMap(inputMap.map());
+            outputCollection.fromMap(inputMap.toMap());
             outputCollection.add(kv);
             wrappedCollection.setGroupBy(outputCollection);
             wrappedCollection.setKeyValue(kv);
@@ -104,13 +105,13 @@ public class MapGroupByFunctionInvoker {
         return wrappedCollection;
     }
 
-    public <K, G extends GroupBy, R> GroupByStreamed<K, R> mapValueWithKeyValue(G inputMap, KeyValue argumentProvider) {
+    public <K, G extends GroupByStreamed, R> GroupByStreamed<K, R> mapValueWithKeyValue(G inputMap, KeyValue argumentProvider) {
         wrappedCollection.reset();
         Object key = argumentProvider.getKey();
-        Object item = inputMap.map().get(key);
+        Object item = inputMap.toMap().get(key);
         if (item != null) {
             KeyValue kv = new KeyValue(key, mapFrom2MapsBiFunction.apply(item, argumentProvider.getValue()));
-            outputCollection.fromMap(inputMap.map());
+            outputCollection.fromMap(inputMap.toMap());
             outputCollection.add(kv);
             wrappedCollection.setGroupBy(outputCollection);
             wrappedCollection.setKeyValue(kv);
@@ -120,11 +121,11 @@ public class MapGroupByFunctionInvoker {
 
     public <K, G extends GroupByStreamed, H extends GroupByStreamed, R> GroupByStreamed<K, R> biMapValuesWithParamMap(G firstArgGroupBy, H secondArgGroupBY) {
         outputCollection.reset();
-        Map arg2Map = (secondArgGroupBY == null && defaultValue != null) ? Collections.emptyMap() : secondArgGroupBY.map();
-        firstArgGroupBy.map().forEach((key, arg1) -> {
+        Map arg2Map = (secondArgGroupBY == null && defaultValue != null) ? Collections.emptyMap() : secondArgGroupBY.toMap();
+        firstArgGroupBy.toMap().forEach((key, arg1) -> {
             Object arg2 = arg2Map.getOrDefault(key, defaultValue);
             if (arg2 != null) {
-                outputCollection.map().put(key, mapFrom2MapsBiFunction.apply(arg1, arg2));
+                outputCollection.toMap().put(key, mapFrom2MapsBiFunction.apply(arg1, arg2));
             }
         });
         return outputCollection;

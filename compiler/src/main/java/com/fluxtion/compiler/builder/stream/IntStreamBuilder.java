@@ -1,30 +1,29 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
+import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
-import com.fluxtion.runtime.stream.FilterDynamicEventStream;
-import com.fluxtion.runtime.stream.FilterEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapOnNotifyEventStream;
-import com.fluxtion.runtime.stream.NotifyEventStream;
-import com.fluxtion.runtime.stream.PeekEventStream;
-import com.fluxtion.runtime.stream.PushEventStream;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.stream.IntAggregateFunction;
+import com.fluxtion.runtime.stream.IntFlowSupplier;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier.WrappingIntEventSupplier;
 import com.fluxtion.runtime.stream.aggregate.AggregateIntStream;
-import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream.TumblingIntWindowStream;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.Peekers;
+import com.fluxtion.runtime.stream.impl.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.impl.FilterDynamicEventStream;
+import com.fluxtion.runtime.stream.impl.FilterEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
+import com.fluxtion.runtime.stream.impl.MapOnNotifyEventStream;
+import com.fluxtion.runtime.stream.impl.NotifyEventStream;
+import com.fluxtion.runtime.stream.impl.PeekEventStream;
+import com.fluxtion.runtime.stream.impl.PushEventStream;
+import com.fluxtion.runtime.stream.impl.WrappingEventSupplier.WrappingIntEventSupplier;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.*;
 
-public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier> {
+public class IntStreamBuilder implements EventSupplierAccessor<IntFlowSupplier> {
 
     final IntEventStream eventStream;
 
@@ -34,7 +33,7 @@ public class IntStreamBuilder implements EventSupplierAccessor<IntEventSupplier>
     }
 
     @Override
-    public IntEventSupplier getEventSupplier() {
+    public IntFlowSupplier runtimeSupplier() {
         return EventProcessorBuilderService.service().add(new WrappingIntEventSupplier(eventStream));
     }
 

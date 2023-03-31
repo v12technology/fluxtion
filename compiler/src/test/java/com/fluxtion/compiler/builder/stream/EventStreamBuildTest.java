@@ -8,13 +8,12 @@ import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.stream.EventStream.EventSupplier;
+import com.fluxtion.runtime.stream.FlowSupplier;
+import com.fluxtion.runtime.stream.GroupByStreamed;
+import com.fluxtion.runtime.stream.GroupByStreamed.KeyValue;
+import com.fluxtion.runtime.stream.Tuple;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
-import com.fluxtion.runtime.stream.groupby.GroupBy.KeyValue;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
-import com.fluxtion.runtime.stream.groupby.Tuple;
 import com.fluxtion.runtime.stream.helpers.Aggregates;
 import com.fluxtion.runtime.stream.helpers.Collectors;
 import com.fluxtion.runtime.stream.helpers.Mappers;
@@ -90,7 +89,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void streamAsMemberTest() {
-        sep(c -> c.addNode(new StreamAsMemberClass(subscribe(String.class).getEventSupplier(), "target")));
+        sep(c -> c.addNode(new StreamAsMemberClass(subscribe(String.class).runtimeSupplier(), "target")));
         StreamAsMemberClass target = getField("target");
         assertFalse(target.isHasChanged());
         assertFalse(target.isTriggered());
@@ -495,7 +494,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateToLIstTest() {
         sep(c -> subscribe(String.class)
-                .aggregate(Collectors.listFactory(4))
+                .aggregate(Collectors.toList(4))
                 .id("myList"));
 
         onEvent("A");
@@ -653,7 +652,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
         sep(c -> subscribe(KeyedData.class)
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map")
         );
 
@@ -740,22 +739,22 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
                     .flatMap(new ConvertToBasePrice("USD")::toCrossRate)
                     .groupBy(AssetPrice::getId, AssetPrice::getPrice, AggregateDoubleSum::new);
 
-            EventStreamBuilder<KeyValue<String, Double>> posDrivenMtmStream = assetPosition.map(GroupByStreamed::keyValue)
-                    .mapBiFunction(EventStreamBuildTest::markToMarket, assetPriceMap.map(GroupBy::map));
+            EventStreamBuilder<KeyValue<String, Double>> posDrivenMtmStream = assetPosition.map(GroupByStreamed::lastKeyValue)
+                    .mapBiFunction(EventStreamBuildTest::markToMarket, assetPriceMap.map(GroupByStreamed::toMap));
 
-            EventStreamBuilder<KeyValue<String, Double>> priceDrivenMtMStream = assetPriceMap.map(GroupByStreamed::keyValue)
-                    .mapBiFunction(EventStreamBuildTest::markToMarket, assetPosition.map(GroupBy::map)).updateTrigger(assetPriceMap);
+            EventStreamBuilder<KeyValue<String, Double>> priceDrivenMtMStream = assetPriceMap.map(GroupByStreamed::lastKeyValue)
+                    .mapBiFunction(EventStreamBuildTest::markToMarket, assetPosition.map(GroupByStreamed::toMap)).updateTrigger(assetPriceMap);
 
             //Mark to market
             posDrivenMtmStream.merge(priceDrivenMtMStream)
                     .groupBy(KeyValue::getKey, KeyValue::getValueAsDouble, Aggregates.doubleIdentityFactory())
-                    .map(GroupBy::map)
+                    .map(GroupByStreamed::toMap)
                     .defaultValue(Collections::emptyMap)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
                     .console("MtM:{}");
 
             //Positions
-            assetPosition.map(GroupBy::map)
+            assetPosition.map(GroupByStreamed::toMap)
                     .defaultValue(Collections::emptyMap)
                     .updateTrigger(subscribe(String.class).filter("publish"::equalsIgnoreCase))
                     .filter(Objects::nonNull)
@@ -1035,7 +1034,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
     @Data
     public static class StreamAsMemberClass implements NamedNode {
-        private final EventSupplier<String> stringStream;
+        private final FlowSupplier<String> stringStream;
         private final String name;
         private boolean triggered;
         private boolean hasChanged;

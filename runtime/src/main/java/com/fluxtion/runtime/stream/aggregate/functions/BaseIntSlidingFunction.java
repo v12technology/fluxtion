@@ -1,7 +1,7 @@
 package com.fluxtion.runtime.stream.aggregate.functions;
 
 import com.fluxtion.runtime.stream.EventStream.IntEventStream;
-import com.fluxtion.runtime.stream.aggregate.IntAggregateFunction;
+import com.fluxtion.runtime.stream.IntAggregateFunction;
 
 public abstract class BaseIntSlidingFunction<T extends BaseIntSlidingFunction<T>>
         implements IntEventStream, IntAggregateFunction<T> {

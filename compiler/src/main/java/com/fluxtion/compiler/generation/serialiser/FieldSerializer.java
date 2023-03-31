@@ -7,12 +7,14 @@ import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.MergeProperty;
+import com.fluxtion.runtime.stream.groupby.GroupByKeyFactory;
+import com.fluxtion.runtime.stream.impl.MergeProperty;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -324,5 +326,23 @@ public class FieldSerializer {
         }
         return false;
     }
+
+    //bit of a hack to get generic declarations working
+    public String buildTypeDeclaration(Field field, Function<Class<?>, String> classNameConverter) {
+        Object instance = field.instance;
+        if (instance instanceof GroupByKeyFactory) {
+            GroupByKeyFactory groupByKeyFactory = (GroupByKeyFactory) instance;
+            Method method = groupByKeyFactory.getKeyFunction().method();
+            String returnType = classNameConverter.apply(method.getReturnType());
+            String inputClass = classNameConverter.apply(method.getDeclaringClass());
+            if (method.getParameterTypes().length == 1) {
+                inputClass = classNameConverter.apply(method.getParameterTypes()[0]);
+            }
+            String genericDeclaration = "<" + inputClass + ", " + returnType + ">";
+            return genericDeclaration;
+        }
+        return "";
+    }
+
 
 }

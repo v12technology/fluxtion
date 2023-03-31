@@ -3,9 +3,9 @@ package com.fluxtion.compiler.builder.stream;
 import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.KeyedData;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntMax;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
-import com.fluxtion.runtime.stream.groupby.GroupBy;
 import com.fluxtion.runtime.stream.helpers.Mappers;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.hamcrest.Matchers;
@@ -260,7 +260,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
                 .resetTrigger(EventFlow.subscribeToSignal("reset"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) -> {
@@ -293,7 +293,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
                 .publishTrigger(EventFlow.subscribeToSignal("publish"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) -> {
@@ -334,7 +334,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
                 .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) -> {
@@ -366,7 +366,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupByTumbling(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100)
                 .updateTrigger(EventFlow.subscribeToSignal("update"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map"));
 
         addSink("map", (Map<String, Integer> in) -> {
@@ -409,7 +409,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .resetTrigger(EventFlow.subscribeToSignal("reset"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map")
         );
 
@@ -447,7 +447,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .publishTrigger(EventFlow.subscribeToSignal("publish"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map")
         );
 
@@ -489,7 +489,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .publishTriggerOverride(EventFlow.subscribeToSignal("publish"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map")
         );
 
@@ -529,7 +529,7 @@ public class RefTypesTriggeringTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupBySliding(KeyedData::getId, KeyedData::getAmount, AggregateIntSum::new, 100, 10)
                 .updateTrigger(EventFlow.subscribeToSignal("update"))
-                .map(GroupBy::map)
+                .map(GroupByStreamed::toMap)
                 .sink("map")
         );
 

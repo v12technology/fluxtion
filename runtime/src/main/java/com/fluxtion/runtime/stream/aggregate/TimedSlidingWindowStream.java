@@ -3,12 +3,16 @@ package com.fluxtion.runtime.stream.aggregate;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.AbstractEventStream;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.DoubleAggregateFunction;
 import com.fluxtion.runtime.stream.EventStream;
+import com.fluxtion.runtime.stream.IntAggregateFunction;
+import com.fluxtion.runtime.stream.LongAggregateFunction;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedDoubleFunction;
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedIntFunction;
 import com.fluxtion.runtime.stream.aggregate.BucketedSlidingWindowedFunction.BucketedSlidingWindowedLongFunction;
+import com.fluxtion.runtime.stream.impl.AbstractEventStream;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 
 public class TimedSlidingWindowStream

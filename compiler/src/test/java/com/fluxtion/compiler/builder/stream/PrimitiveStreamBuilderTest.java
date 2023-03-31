@@ -5,10 +5,10 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.NamedNode;
-import com.fluxtion.runtime.stream.EventStream.DoubleEventSupplier;
-import com.fluxtion.runtime.stream.EventStream.IntEventSupplier;
-import com.fluxtion.runtime.stream.EventStream.LongEventSupplier;
-import com.fluxtion.runtime.stream.SinkRegistration;
+import com.fluxtion.runtime.output.SinkRegistration;
+import com.fluxtion.runtime.stream.DoubleFlowSupplier;
+import com.fluxtion.runtime.stream.IntFlowSupplier;
+import com.fluxtion.runtime.stream.LongFlowSupplier;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateDoubleSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateIntSum;
 import com.fluxtion.runtime.stream.aggregate.functions.AggregateLongSum;
@@ -57,9 +57,9 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     @Test
     public void streamMembersTest() {
         sep(c -> c.addNode(new StreamMembers(
-                subscribe(Integer.class).mapToInt(Integer::intValue).getEventSupplier(),
-                subscribe(Double.class).mapToDouble(Double::doubleValue).getEventSupplier(),
-                subscribe(Long.class).mapToLong(Long::longValue).getEventSupplier()
+                subscribe(Integer.class).mapToInt(Integer::intValue).runtimeSupplier(),
+                subscribe(Double.class).mapToDouble(Double::doubleValue).runtimeSupplier(),
+                subscribe(Long.class).mapToLong(Long::longValue).runtimeSupplier()
         ), "root"));
         StreamMembers wrapper = getField("root");
         onEvent(10);
@@ -876,9 +876,9 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
 
     @Data
     public static class StreamMembers {
-        private final IntEventSupplier intEventSupplier;
-        private final DoubleEventSupplier doubleEventSupplier;
-        private final LongEventSupplier longEventSupplier;
+        private final IntFlowSupplier intEventSupplier;
+        private final DoubleFlowSupplier doubleEventSupplier;
+        private final LongFlowSupplier longEventSupplier;
     }
 
 }

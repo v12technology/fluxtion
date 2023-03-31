@@ -1,8 +1,8 @@
 package com.fluxtion.compiler.builder.stream;
 
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.stream.MergeMapEventStream;
-import com.fluxtion.runtime.stream.MergeProperty;
+import com.fluxtion.runtime.stream.impl.MergeMapEventStream;
+import com.fluxtion.runtime.stream.impl.MergeProperty;
 
 import java.util.ArrayList;
 import java.util.List;

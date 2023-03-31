@@ -1,27 +1,16 @@
 package com.fluxtion.compiler.builder.stream;
 
-import com.fluxtion.runtime.EventProcessorConfigService;
 import com.fluxtion.runtime.EventProcessorBuilderService;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
-import com.fluxtion.runtime.stream.BinaryMapEventStream;
-import com.fluxtion.runtime.stream.EventStream.EventSupplier;
-import com.fluxtion.runtime.stream.EventStream.EventSupplierAccessor;
-import com.fluxtion.runtime.stream.FlatMapArrayEventStream;
-import com.fluxtion.runtime.stream.FlatMapEventStream;
-import com.fluxtion.runtime.stream.LookupEventStream;
-import com.fluxtion.runtime.stream.MapEventStream;
-import com.fluxtion.runtime.stream.MapEventStream.MapRef2RefEventStream;
-import com.fluxtion.runtime.stream.MergeEventStream;
+import com.fluxtion.runtime.stream.AggregateFunction;
+import com.fluxtion.runtime.stream.FlowSupplier;
+import com.fluxtion.runtime.stream.GroupByStreamed;
 import com.fluxtion.runtime.stream.TriggeredEventStream;
-import com.fluxtion.runtime.stream.WrappingEventSupplier;
-import com.fluxtion.runtime.stream.aggregate.AggregateFunction;
 import com.fluxtion.runtime.stream.aggregate.AggregateStream;
 import com.fluxtion.runtime.stream.aggregate.TimedSlidingWindowStream;
 import com.fluxtion.runtime.stream.aggregate.TumblingWindowStream;
-import com.fluxtion.runtime.stream.groupby.GroupByStreamed;
 import com.fluxtion.runtime.stream.groupby.GroupByWindowedCollection;
 import com.fluxtion.runtime.stream.groupby.SlidingGroupByWindowStream;
 import com.fluxtion.runtime.stream.groupby.TumblingGroupByWindowStream;
@@ -30,15 +19,23 @@ import com.fluxtion.runtime.stream.helpers.Collectors;
 import com.fluxtion.runtime.stream.helpers.DefaultValue;
 import com.fluxtion.runtime.stream.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.stream.impl.BinaryMapEventStream;
+import com.fluxtion.runtime.stream.impl.FlatMapArrayEventStream;
+import com.fluxtion.runtime.stream.impl.FlatMapEventStream;
+import com.fluxtion.runtime.stream.impl.LookupEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream;
+import com.fluxtion.runtime.stream.impl.MapEventStream.MapRef2RefEventStream;
+import com.fluxtion.runtime.stream.impl.MergeEventStream;
+import com.fluxtion.runtime.stream.impl.WrappingEventSupplier;
 
 import java.util.List;
 
-public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventStreamBuilder<T>> implements EventSupplierAccessor<EventSupplier<T>> {
+public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventStreamBuilder<T>> implements EventSupplierAccessor<FlowSupplier<T>> {
 
 
     EventStreamBuilder(TriggeredEventStream<T> eventStream) {
         super(eventStream);
-        EventProcessorConfigService.service().add(eventStream);
+        EventProcessorBuilderService.service().add(eventStream);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
         return this;
     }
 
-    public EventSupplier<T> getEventSupplier() {
+    public FlowSupplier<T> runtimeSupplier() {
         return EventProcessorBuilderService.service().add(new WrappingEventSupplier<>(eventStream));
     }
 
@@ -124,12 +121,8 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
     groupBy(SerializableFunction<T, K1> keyFunction,
             SerializableFunction<T, V> valueFunction,
             SerializableSupplier<F> aggregateFunctionSupplier) {
-//        return map(new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
-
         MapEventStream<T, GroupByStreamed<K1, A>, TriggeredEventStream<T>> x = new MapRef2RefEventStream<>(eventStream,
                 new GroupByWindowedCollection<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
-
-
         return new GroupByStreamBuilder<>(x);
     }
 
@@ -146,12 +139,12 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
 
     public <V, K> GroupByStreamBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction) {
-        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory());
+        return groupBy(keyFunction, Mappers::identity, Collectors.toList());
     }
 
     public <V, K> GroupByStreamBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction, int maxElementsInList) {
-        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory(maxElementsInList));
+        return groupBy(keyFunction, Mappers::identity, Collectors.toList(maxElementsInList));
     }
 
     public <V, K, A, F extends AggregateFunction<V, A, F>> GroupByStreamBuilder<K, A>
@@ -219,51 +212,14 @@ public class EventStreamBuilder<T> extends AbstractEventStreamBuilder<T, EventSt
     }
 
 
-
-//    public EventStreamBuilder<T> sink(String sinkId) {
-//        return push(new SinkPublisher<>(sinkId)::publish);
-//    }
-//
-//    public EventStreamBuilder<T> notify(Object target) {
-//        EventProcessorBuilderService.service().add(target);
-//        return new EventStreamBuilder<>(new NotifyEventStream<>(eventStream, target));
-//    }
-//
-//    public EventStreamBuilder<T> processAsNewGraphEvent() {
-//        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, new InternalEventDispatcher()::dispatchToGraph));
-//    }
-//
-//    public EventStreamBuilder<T> peek(SerializableConsumer<T> peekFunction) {
-//        return new EventStreamBuilder<>(new PeekEventStream<>(eventStream, peekFunction));
-//    }
-//
-//    public <R> EventStreamBuilder<T> console(String in, SerializableFunction<T, R> transformFunction) {
-//        peek(Peekers.console(in, transformFunction));
-//        return this;
-//    }
-//
-//    public EventStreamBuilder<T> console(String in) {
-//        return console(in, null);
-//    }
-//
-//    public EventStreamBuilder<T> console() {
-//        return console("{}");
-//    }
-//
-//    //META-DATA
-//    public EventStreamBuilder<T> id(String nodeId) {
-//        EventProcessorBuilderService.service().add(eventStream, nodeId);
-//        return this;
-//    }
-
     /*
     TODO:
     ================
-    outer joins
     co-group joining multiple aggregates into a single row/object
 
     Done:
     ================
+    outer joins
     innerjoin
     groupBy - sliding window
     add peek to primitive streams
