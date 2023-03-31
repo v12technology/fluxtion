@@ -1,14 +1,14 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
-import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 import lombok.Value;
 import org.hamcrest.MatcherAssert;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
 import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {

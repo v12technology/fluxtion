@@ -21,10 +21,10 @@ import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.runtime.stream.TriggeredEventStream;
 
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 public final class DefaultEventHandlerNode<T>
         extends EventLogNode
-        implements EventHandlerNode<T>, TriggeredEventStream<T>, NamedNode, Lifecycle {
+        implements EventHandlerNode<T>, TriggeredFlowFunction<T>, NamedNode, Lifecycle {
 
     private final int filterId;
     private final String filterString;

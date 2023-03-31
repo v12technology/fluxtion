@@ -1,12 +1,12 @@
 package com.fluxtion.compiler.generation.dirty;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
-import com.fluxtion.runtime.stream.FlowSupplier;
+import com.fluxtion.runtime.dataflow.FlowSupplier;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ public class MonitorDirtyStateTest extends MultipleSepTargetInProcessTest {
     public void validateDirtyMonitorTest() {
         sep(c -> {
             MyDirtChecker dirtChecker = new MyDirtChecker();
-            dirtChecker.stringEventStream = EventFlow.subscribe(String.class).runtimeSupplier();
-            dirtChecker.intEventStream = EventFlow.subscribe(Integer.class).runtimeSupplier();
+            dirtChecker.stringEventStream = DataFlow.subscribe(String.class).flowSupplier();
+            dirtChecker.intEventStream = DataFlow.subscribe(Integer.class).flowSupplier();
             c.addNode(dirtChecker, "dirtChecker");
         });
         MyDirtChecker dirtChecker = getField("dirtChecker");

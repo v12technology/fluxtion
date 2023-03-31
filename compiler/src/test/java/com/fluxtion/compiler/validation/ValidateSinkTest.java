@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.validation;
 
 import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.extension.csvcompiler.annotations.CsvMarshaller;
 import com.fluxtion.runtime.EventProcessor;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class ValidateSinkTest extends BaseEventProcessorRowBasedTest {
     }
 
     private static EventProcessor generateSampleParser() {
-        return Fluxtion.interpret(c -> EventFlow.subscribe(String.class)
+        return Fluxtion.interpret(c -> DataFlow.subscribe(String.class)
                 .mapToInt(Integer::parseInt)
                 .map(i -> i * 2)
                 .mapToObj(i -> "doubled:" + i)

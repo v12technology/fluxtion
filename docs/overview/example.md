@@ -57,12 +57,11 @@ Console operations are applied to introspect the state of the stream. Eventually
 arguments to the binary function Double::sum. A filter checks the value is > 100 before pushing the sum value to 
 next operation in the chain.
 
-
 ```java
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.runtime.EventProcessor;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.EventFlow.subscribe;
 
 /**
  * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100

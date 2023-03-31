@@ -2,13 +2,13 @@ package com.fluxtion.compiler.generation.time;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
 
 public class RateTriggerTest extends MultipleSepTargetInProcessTest {
     public RateTriggerTest(SepTestConfig compiledSep) {
