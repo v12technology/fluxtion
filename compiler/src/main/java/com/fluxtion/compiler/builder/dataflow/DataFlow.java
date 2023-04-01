@@ -70,10 +70,24 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction);
     }
 
+    static <T, K> GroupByFlowBuilder<K, T> groupBySubscribe(SerializableFunction<T, K> keyFunction) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
+        return subscribe(classSubscription).groupBy(keyFunction);
+    }
+
     static <T, K, V> GroupByFlowBuilder<K, V> groupBySubscribe(
             Class<T> classSubscription,
             SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction) {
+        return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
+    }
+
+    static <T, K, V> GroupByFlowBuilder<K, V> groupBySubscribe(
+            SerializableFunction<T, K> keyFunction,
+            SerializableFunction<T, V> valueFunction) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
     }
 

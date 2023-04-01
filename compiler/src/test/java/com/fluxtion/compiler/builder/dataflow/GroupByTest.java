@@ -9,6 +9,7 @@ import com.fluxtion.runtime.dataflow.aggregate.function.primitive.DoubleSumFlowF
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.IntSumFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy.KeyValue;
+import com.fluxtion.runtime.dataflow.helpers.Aggregates;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.helpers.Tuples;
 import lombok.Value;
@@ -398,8 +399,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, MergedType> results = new HashMap<>();
         Map<String, MergedType> expected = new HashMap<>();
         sep(c -> {
-            groupBySubscribe(KeyedData.class, KeyedData::getId, KeyedData::getAmount)
-                    .innerJoin(groupBySubscribe(String.class, String::toString))
+            groupBySubscribe(KeyedData::getId, KeyedData::getAmount)
+                    .innerJoin(groupBySubscribe(String::toString))
                     .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
                     .map(GroupBy::toMap)
                     .sink("merged");
@@ -617,7 +618,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             val tradeStream = subscribe(Trade.class);
 
             val positionMap = JoinFlowBuilder.outerJoin(
-                            tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, DoubleSumFlowFunction::new),
+                            tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, Aggregates.doubleSumFactory()),
                             tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, DoubleSumFlowFunction::new))
                     .mapValues(Tuples.replaceNull(0d, 0d))
                     .mapValues(Tuples.mapTuple(Mappers::addDoubles));

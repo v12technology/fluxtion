@@ -1,9 +1,9 @@
 package com.fluxtion.runtime.dataflow.helpers;
 
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.dataflow.Tuple;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.dataflow.Tuple;
 import lombok.Value;
 
 public class Tuples {
@@ -35,7 +35,7 @@ public class Tuples {
         public Tuple<F, S> replaceNull(Tuple<? extends F, ? extends S> in) {
             F first = in.getFirst() == null ? firstValue : in.getFirst();
             S second = in.getSecond() == null ? secondValue : in.getSecond();
-            return new Tuple<>(first, second);
+            return Tuple.build(first, second);
         }
     }
 

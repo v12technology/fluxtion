@@ -1,9 +1,13 @@
 package com.fluxtion.runtime.dataflow;
 
-import lombok.Value;
+import com.fluxtion.runtime.dataflow.groupby.MutableTuple;
 
-@Value
-public class Tuple<F, S> {
-    F first;
-    S second;
+public interface Tuple<F, S> {
+    static <F, S> Tuple<F, S> build(F first, S second) {
+        return new MutableTuple<>(first, second);
+    }
+
+    F getFirst();
+
+    S getSecond();
 }

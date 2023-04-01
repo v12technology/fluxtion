@@ -11,9 +11,12 @@ import com.fluxtion.runtime.dataflow.groupby.GroupBy;
 import com.fluxtion.runtime.dataflow.groupby.GroupByFilterFlowFunctionWrapper;
 import com.fluxtion.runtime.dataflow.groupby.GroupByMapFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupByReduceFlowFunction;
+import com.fluxtion.runtime.dataflow.groupby.InnerJoin;
+import com.fluxtion.runtime.dataflow.groupby.LeftJoin;
+import com.fluxtion.runtime.dataflow.groupby.OuterJoin;
+import com.fluxtion.runtime.dataflow.groupby.RightJoin;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue.DefaultValueFromSupplier;
-import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
@@ -114,19 +117,19 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
     }
 
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> innerJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
-        return mapBiFunction(Mappers::innerJoin, rightGroupBy);
+        return mapBiFunction(new InnerJoin()::join, rightGroupBy);
     }
 
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> outerJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
-        return mapBiFunction(Mappers::outerJoin, rightGroupBy);
+        return mapBiFunction(new OuterJoin()::join, rightGroupBy);
     }
 
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> leftJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
-        return mapBiFunction(Mappers::leftJoin, rightGroupBy);
+        return mapBiFunction(new LeftJoin()::join, rightGroupBy);
     }
 
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> rightJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
-        return mapBiFunction(Mappers::rightJoin, rightGroupBy);
+        return mapBiFunction(new RightJoin()::join, rightGroupBy);
     }
 
     public <K2 extends K, V2, KOUT, VOUT>

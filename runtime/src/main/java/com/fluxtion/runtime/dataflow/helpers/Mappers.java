@@ -2,9 +2,7 @@ package com.fluxtion.runtime.dataflow.helpers;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.dataflow.Stateful;
-import com.fluxtion.runtime.dataflow.Tuple;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
-import com.fluxtion.runtime.dataflow.groupby.GroupByHashMap;
 import com.fluxtion.runtime.dataflow.groupby.TopNByValue;
 import lombok.ToString;
 
@@ -126,27 +124,6 @@ public interface Mappers {
         return topNByValue::filter;
     }
 
-    @ToString
-    class CountNode implements Stateful<Integer> {
-        int count;
-
-        @OnTrigger
-        public boolean increment() {
-            count++;
-            return true;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        @Override
-        public Integer reset() {
-            count = 0;
-            return count;
-        }
-    }
-
     //add
     static int addInts(int a, int b) {
         return a + b;
@@ -224,80 +201,24 @@ public interface Mappers {
         return (long) in;
     }
 
-    //GroupBy
-    //TODO convert to instance
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> innerJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByHashMap<>();
-        if (leftGroupBy != null && rightGroupBY != null) {
-            leftGroupBy.toMap().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY.toMap().get(e.getKey());
-                if (value2 != null) {
-                    joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-                }
-            });
+    @ToString
+    class CountNode implements Stateful<Integer> {
+        int count;
+
+        @OnTrigger
+        public boolean increment() {
+            count++;
+            return true;
         }
-        return joinedGroup;
-    }
 
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> outerJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByHashMap<>();
-        if (leftGroupBy != null) {
-            leftGroupBy.toMap().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.toMap().get(e.getKey());
-                joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-            });
+        public int getCount() {
+            return count;
         }
-        if (rightGroupBY != null) {
-            rightGroupBY.toMap().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
-                joinedGroup.toMap().put(e.getKey(), new Tuple<>(value1, e.getValue()));
-            });
+
+        @Override
+        public Integer reset() {
+            count = 0;
+            return count;
         }
-        return joinedGroup;
-    }
-
-
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> leftJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByHashMap<>();
-        if (leftGroupBy != null) {
-            leftGroupBy.toMap().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.toMap().get(e.getKey());
-                joinedGroup.toMap().put(e.getKey(), new Tuple<>(e.getValue(), value2));
-            });
-        }
-        return joinedGroup;
-    }
-
-    static <K1, V1, K2 extends K1, V2> GroupBy<K1, Tuple<V1, V2>> rightJoin(
-            GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
-        GroupBy<K1, Tuple<V1, V2>> joinedGroup = new GroupByHashMap<>();
-        if (rightGroupBY != null) {
-            rightGroupBY.toMap().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
-                joinedGroup.toMap().put(e.getKey(), new Tuple<>(value1, e.getValue()));
-            });
-        }
-        return joinedGroup;
-    }
-
-
-    //TODO hack for serialisation, generic types not supported in BinaryMapToRefEventStream
-    static GroupBy innerJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.innerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
-    }
-
-    static GroupBy outerJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.outerJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
-    }
-
-    static GroupBy leftJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.leftJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
-    }
-
-    static GroupBy rightJoin(Object leftGroup, Object rightGroup) {
-        return Mappers.rightJoin((GroupBy) leftGroup, (GroupBy) rightGroup);
     }
 }
