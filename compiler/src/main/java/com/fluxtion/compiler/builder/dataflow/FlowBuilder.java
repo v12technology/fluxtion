@@ -127,6 +127,11 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return new GroupByFlowBuilder<>(x);
     }
 
+    public <K1, A, F extends AggregateFlowFunction<T, A, F>> GroupByFlowBuilder<K1, A>
+    groupBy(SerializableFunction<T, K1> keyFunction, SerializableSupplier<F> aggregateFunctionSupplier) {
+        return groupBy(keyFunction, Mappers::identity, aggregateFunctionSupplier);
+    }
+
     public <V, K1> GroupByFlowBuilder<K1, V> groupBy(
             SerializableFunction<T, K1> keyFunction,
             SerializableFunction<T, V> valueFunction) {

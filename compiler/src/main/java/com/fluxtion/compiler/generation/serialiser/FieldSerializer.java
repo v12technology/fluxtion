@@ -338,7 +338,7 @@ public class FieldSerializer {
             if (method.getParameterTypes().length == 1) {
                 inputClass = classNameConverter.apply(method.getParameterTypes()[0]);
             }
-            String genericDeclaration = "<" + inputClass + ", " + returnType + ">";
+            String genericDeclaration = "<" + inputClass + ", " + returnType + ", ?, ?>";
             return genericDeclaration;
         }
         return "";

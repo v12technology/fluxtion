@@ -2,6 +2,7 @@ package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.FlowFunction;
+import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
@@ -78,6 +79,14 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction);
     }
 
+    static <T, K, O, F extends AggregateFlowFunction<T, O, F>> GroupByFlowBuilder<K, O> groupBy(
+            SerializableFunction<T, K> keyFunction, SerializableSupplier<F> aggregateFunctionSupplier) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
+        return subscribe(classSubscription).groupBy(keyFunction, aggregateFunctionSupplier);
+    }
+
+    //SerializableSupplier<F> aggregateFunctionSupplier
     static <T, K> GroupByFlowBuilder<K, List<T>> groupByToList(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();

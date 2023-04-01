@@ -57,7 +57,7 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
             subscribe(Person.class)
                     .groupBy(
                             Person::getCountry,
-                            Mappers::identity, Collectors.groupingBy(Person::getGender))
+                            Collectors.groupingBy(Person::getGender))
                     .sink("groupBy");
         });
 
@@ -88,6 +88,95 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(
                             Person::getCountry, Mappers::identity,
                             Collectors.groupingByCollectToList(Person::getGender))
+                    .sink("groupBy");
+        });
+        this.addSink("groupBy", this::convertToMapList);
+        onEvent(new Person("greg", "UK", "male"));
+        expectedList.put("UK", ukMapList);
+        ukMapList.put("male", ukMaleList);
+        ukMaleList.add(new Person("greg", "UK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("josie", "UK", "female"));
+        ukMapList.put("female", ukFemaleList);
+        ukFemaleList.add(new Person("josie", "UK", "female"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("Freddie", "UK", "male"));
+        ukMaleList.add(new Person("Freddie", "UK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("Soren", "DK", "male"));
+        expectedList.put("DK", dkMapList);
+        dkMapList.put("male", dkMaleList);
+        dkMaleList.add(new Person("Soren", "DK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+    }
+
+    @Test
+    public void nestedDataFlowGroupBy_toCollector() {
+        sep(c -> {
+            DataFlow.groupBy(Person::getCountry, Collectors.groupingBy(Person::getGender, Collectors.toList()))
+                    .sink("groupBy");
+        });
+        this.addSink("groupBy", this::convertToMapList);
+        onEvent(new Person("greg", "UK", "male"));
+        expectedList.put("UK", ukMapList);
+        ukMapList.put("male", ukMaleList);
+        ukMaleList.add(new Person("greg", "UK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("josie", "UK", "female"));
+        ukMapList.put("female", ukFemaleList);
+        ukFemaleList.add(new Person("josie", "UK", "female"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("Freddie", "UK", "male"));
+        ukMaleList.add(new Person("Freddie", "UK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+
+        onEvent(new Person("Soren", "DK", "male"));
+        expectedList.put("DK", dkMapList);
+        dkMapList.put("male", dkMaleList);
+        dkMaleList.add(new Person("Soren", "DK", "male"));
+        assertThat(resultsList, CoreMatchers.is(expectedList));
+    }
+
+    @Test
+    public void nestedDataFlowGroupByWithHelper() {
+        sep(c -> {
+            DataFlow.groupBy(Person::getCountry, Collectors.groupingBy(Person::getGender))
+                    .sink("groupBy");
+        });
+
+        this.addSink("groupBy", this::convertToMap);
+        onEvent(new Person("greg", "UK", "male"));
+        expected.put("UK", ukMap);
+        ukMap.put("male", new Person("greg", "UK", "male"));
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(new Person("josie", "UK", "female"));
+        ukMap.put("female", new Person("josie", "UK", "female"));
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(new Person("Freddie", "UK", "male"));
+        ukMap.put("male", new Person("Freddie", "UK", "male"));
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(new Person("Soren", "DK", "male"));
+        expected.put("DK", dkMap);
+        dkMap.put("male", new Person("Soren", "DK", "male"));
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+    @Test
+    public void nestedGroupByToCollector_List_WithHelper() {
+        writeSourceFile = true;
+        sep(c -> {
+            subscribe(Person.class)
+                    .groupBy(
+                            Person::getCountry,
+                            Collectors.groupingBy(Person::getGender, Collectors.toList()))
                     .sink("groupBy");
         });
         this.addSink("groupBy", this::convertToMapList);
