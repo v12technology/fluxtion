@@ -18,8 +18,8 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
         MutableNumber mutableNumber = new MutableNumber();
         sep(c -> {
             JoinFlowBuilder.innerJoin(
-                            DataFlow.groupBySubscribe(LeftData::getName),
-                            DataFlow.groupBySubscribe(RightData::getName)
+                            DataFlow.groupBy(LeftData::getName),
+                            DataFlow.groupBy(RightData::getName)
                     )
                     .resetTrigger(DataFlow.subscribeToSignal("reset"))
                     .sink("joined");

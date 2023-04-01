@@ -3,6 +3,7 @@ package com.fluxtion.runtime.dataflow.helpers;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateIdentityFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateToListFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateToListFlowFunction.AggregateToListFactory;
+import com.fluxtion.runtime.dataflow.aggregate.function.AggregateToSetFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupByFlowFunctionWrapper;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -17,6 +18,10 @@ public interface Collectors {
 
     static <T> SerializableSupplier<AggregateToListFlowFunction<T>> toList() {
         return toList(-1);
+    }
+
+    static <T> SerializableSupplier<AggregateToSetFlowFunction<T>> toSet() {
+        return AggregateToSetFlowFunction::new;
     }
 
     static <T, K> SerializableSupplier<GroupByFlowFunctionWrapper<T, K, T, List<T>, AggregateToListFlowFunction<T>>>

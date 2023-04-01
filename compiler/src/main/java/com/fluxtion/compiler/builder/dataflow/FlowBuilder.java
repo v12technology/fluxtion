@@ -29,6 +29,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.util.List;
+import java.util.Set;
 
 public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> implements FlowDataSupplier<FlowSupplier<T>> {
 
@@ -126,24 +127,27 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return new GroupByFlowBuilder<>(x);
     }
 
-    public <V, K1> GroupByFlowBuilder<K1, V>
-    groupBy(SerializableFunction<T, K1> keyFunction,
+    public <V, K1> GroupByFlowBuilder<K1, V> groupBy(
+            SerializableFunction<T, K1> keyFunction,
             SerializableFunction<T, V> valueFunction) {
         return groupBy(keyFunction, valueFunction, Aggregates.identityFactory());
     }
 
-    public <K> GroupByFlowBuilder<K, T>
-    groupBy(SerializableFunction<T, K> keyFunction) {
+    public <K> GroupByFlowBuilder<K, T> groupBy(SerializableFunction<T, K> keyFunction) {
         return groupBy(keyFunction, Mappers::identity);
     }
 
-    public <V, K> GroupByFlowBuilder<K, List<T>>
-    groupByAsList(SerializableFunction<T, K> keyFunction) {
+    public <K> GroupByFlowBuilder<K, List<T>> groupByToList(SerializableFunction<T, K> keyFunction) {
         return groupBy(keyFunction, Mappers::identity, Collectors.toList());
     }
 
-    public <V, K> GroupByFlowBuilder<K, List<T>>
-    groupByAsList(SerializableFunction<T, K> keyFunction, int maxElementsInList) {
+    public <K> GroupByFlowBuilder<K, Set<T>> groupByToSet(SerializableFunction<T, K> keyFunction) {
+        return groupBy(keyFunction, Mappers::identity, Collectors.toSet());
+    }
+
+    public <K> GroupByFlowBuilder<K, List<T>> groupByToList(
+            SerializableFunction<T, K> keyFunction,
+            int maxElementsInList) {
         return groupBy(keyFunction, Mappers::identity, Collectors.toList(maxElementsInList));
     }
 

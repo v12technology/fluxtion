@@ -12,6 +12,8 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Helper methods for subscribing and creating an {@link FlowBuilder} from external events or internal nodes
@@ -66,24 +68,36 @@ public interface DataFlow {
         );
     }
 
-    static <T, K> GroupByFlowBuilder<K, T> groupBySubscribe(Class<T> classSubscription, SerializableFunction<T, K> keyFunction) {
+    static <T, K> GroupByFlowBuilder<K, T> groupBy(Class<T> classSubscription, SerializableFunction<T, K> keyFunction) {
         return subscribe(classSubscription).groupBy(keyFunction);
     }
 
-    static <T, K> GroupByFlowBuilder<K, T> groupBySubscribe(SerializableFunction<T, K> keyFunction) {
+    static <T, K> GroupByFlowBuilder<K, T> groupBy(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupBy(keyFunction);
     }
 
-    static <T, K, V> GroupByFlowBuilder<K, V> groupBySubscribe(
+    static <T, K> GroupByFlowBuilder<K, List<T>> groupByToList(SerializableFunction<T, K> keyFunction) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
+        return subscribe(classSubscription).groupByToList(keyFunction);
+    }
+
+    static <T, K> GroupByFlowBuilder<K, Set<T>> groupByToSet(SerializableFunction<T, K> keyFunction) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
+        return subscribe(classSubscription).groupByToSet(keyFunction);
+    }
+
+    static <T, K, V> GroupByFlowBuilder<K, V> groupBy(
             Class<T> classSubscription,
             SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction) {
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
     }
 
-    static <T, K, V> GroupByFlowBuilder<K, V> groupBySubscribe(
+    static <T, K, V> GroupByFlowBuilder<K, V> groupBy(
             SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction) {
         @SuppressWarnings("unchecked")

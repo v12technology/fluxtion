@@ -24,10 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.fluxtion.compiler.builder.dataflow.DataFlow.groupBySubscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.groupBy;
 import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +71,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, List<Data>> expected = new HashMap<>();
         sep(c -> {
             DataFlow.subscribe(Data.class)
-                    .groupByAsList(Data::getName)
+                    .groupByToList(Data::getName)
                     .map(GroupBy::toMap).id("results");
         });
 
@@ -93,11 +94,66 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void dataFlowGroupByAsListIdentityTest() {
+        Map<String, List<Data>> expected = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupByToList(Data::getName)
+                    .map(GroupBy::toMap).id("results");
+        });
+
+        onEvent(new Data("A", 25));
+        onEvent(new Data("A", 50));
+
+        Stream.of(new Data("A", 50)).collect(Collectors.toList());
+        Map<String, Data> actual = getStreamed("results");
+        expected.put("A", Stream.of(
+                new Data("A", 25),
+                new Data("A", 50)
+        ).collect(Collectors.toList()));
+        MatcherAssert.assertThat(actual, is(expected));
+
+        onEvent(new Data("B", 11));
+        expected.put("B", Stream.of(
+                new Data("B", 11)
+        ).collect(Collectors.toList()));
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void dataFlowGroupBySet() {
+        Map<String, Set<Data>> expected = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupByToSet(Data::getName)
+                    .map(GroupBy::toMap).id("results");
+        });
+        onEvent(new Data("A", 25));
+        onEvent(new Data("A", 50));
+        onEvent(new Data("A", 32));
+        onEvent(new Data("A", 50));
+        //
+        Map<String, Data> actual = getStreamed("results");
+        expected.put("A", Stream.of(
+                new Data("A", 25),
+                new Data("A", 50),
+                new Data("A", 32)
+        ).collect(Collectors.toSet()));
+        MatcherAssert.assertThat(actual, is(expected));
+
+
+        onEvent(new Data("B", 15));
+        onEvent(new Data("B", 15));
+        expected.put("B", Stream.of(
+                new Data("B", 15)
+        ).collect(Collectors.toSet()));
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
+    @Test
     public void groupByAsListMaxSizeIdentityTest() {
         Map<String, List<Data>> expected = new HashMap<>();
         sep(c -> {
             DataFlow.subscribe(Data.class)
-                    .groupByAsList(Data::getName, 3)
+                    .groupByToList(Data::getName, 3)
                     .map(GroupBy::toMap).id("results");
         });
 
@@ -399,8 +455,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, MergedType> results = new HashMap<>();
         Map<String, MergedType> expected = new HashMap<>();
         sep(c -> {
-            groupBySubscribe(KeyedData::getId, KeyedData::getAmount)
-                    .innerJoin(groupBySubscribe(String::toString))
+            groupBy(KeyedData::getId, KeyedData::getAmount)
+                    .innerJoin(DataFlow.groupBy(String::toString))
                     .mapValues(EventStreamBuildTest::mergedTypeFromTuple)
                     .map(GroupBy::toMap)
                     .sink("merged");
