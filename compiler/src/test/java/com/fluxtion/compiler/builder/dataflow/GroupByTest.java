@@ -669,7 +669,6 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void complexGroupByJoinThenBiMapThenReduceTest() {
-        writeSourceFile = true;
         sep(c -> {
             val tradeStream = subscribe(Trade.class);
 

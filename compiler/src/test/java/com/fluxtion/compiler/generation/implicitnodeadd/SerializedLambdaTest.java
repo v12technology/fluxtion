@@ -57,7 +57,6 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addEnclosingMethodMultipleInstanceTest() {
-        writeSourceFile = true;
         sep(c -> {
 
             SerializableFunction<String, String> function = new MyInstanceFunction("test")::toCaps;

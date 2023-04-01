@@ -171,7 +171,6 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void nestedGroupByToCollector_List_WithHelper() {
-        writeSourceFile = true;
         sep(c -> {
             subscribe(Person.class)
                     .groupBy(

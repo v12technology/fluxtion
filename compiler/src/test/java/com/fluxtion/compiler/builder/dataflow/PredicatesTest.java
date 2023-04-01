@@ -168,7 +168,6 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void allUpdatedWithReset() {
-        writeSourceFile = true;
         sep(c -> {
             //inputs
             IntFlowBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue);

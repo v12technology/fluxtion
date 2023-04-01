@@ -13,9 +13,7 @@ public class CommonSuperTypeTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testConstructor() {
-        writeSourceFile = true;
         sep(c -> c.addNode(new Aggregator()));
-
     }
 
     public static class BaseClass {

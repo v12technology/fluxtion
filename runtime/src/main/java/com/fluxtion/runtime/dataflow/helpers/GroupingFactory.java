@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.dataflow.helpers;
 
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateIdentityFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateToListFlowFunction;
@@ -11,13 +12,16 @@ import java.util.List;
 
 public class GroupingFactory<T, K, O, F extends AggregateFlowFunction<T, O, F>> {
     private final SerializableFunction<T, K> keyFunction;
-    private SerializableSupplier<F> aggregateFunctionSupplier;
+    private final SerializableSupplier<F> aggregateFunctionSupplier;
 
     public GroupingFactory(SerializableFunction<T, K> keyFunction) {
         this.keyFunction = keyFunction;
+        this.aggregateFunctionSupplier = null;
     }
 
-    public GroupingFactory(SerializableFunction<T, K> keyFunction, SerializableSupplier<F> aggregateFunctionSupplier) {
+    public GroupingFactory(
+            @AssignToField("keyFunction") SerializableFunction<T, K> keyFunction,
+            @AssignToField("aggregateFunctionSupplier") SerializableSupplier<F> aggregateFunctionSupplier) {
         this.keyFunction = keyFunction;
         this.aggregateFunctionSupplier = aggregateFunctionSupplier;
     }
@@ -38,13 +42,5 @@ public class GroupingFactory<T, K, O, F extends AggregateFlowFunction<T, O, F>> 
 
     public GroupByFlowFunctionWrapper<T, K, T, O, F> groupingByXXX() {
         return new GroupByFlowFunctionWrapper<>(keyFunction, Mappers::identity, aggregateFunctionSupplier);
-    }
-
-    public SerializableSupplier getAggregateFunctionSupplier() {
-        return aggregateFunctionSupplier;
-    }
-
-    public void setAggregateFunctionSupplier(SerializableSupplier aggregateFunctionSupplier) {
-        this.aggregateFunctionSupplier = aggregateFunctionSupplier;
     }
 }
