@@ -128,7 +128,7 @@ public class GroupByFlowFunctionWrapper<T, K, V, A, F extends AggregateFlowFunct
 
     @Override
     public String toString() {
-        return "GroupByWindowedCollection{" +
+        return "GroupByFlowFunctionWrapper{" +
                 "mapOfValues=" + mapOfValues +
                 '}';
     }

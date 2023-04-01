@@ -38,7 +38,7 @@ public class GroupByHashMap<K, V> implements GroupBy<K, V>, Stateful<GroupBy<K, 
 
     @Override
     public String toString() {
-        return "GroupByCollection{" +
+        return "GroupByHashMap{" +
                 "map=" + map +
                 '}';
     }
