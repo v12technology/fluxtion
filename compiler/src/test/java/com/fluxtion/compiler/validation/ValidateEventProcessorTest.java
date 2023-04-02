@@ -1,11 +1,11 @@
 package com.fluxtion.compiler.validation;
 
 import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.extension.csvcompiler.RowMarshaller;
 import com.fluxtion.extension.csvcompiler.annotations.CsvMarshaller;
 import com.fluxtion.runtime.EventProcessor;
-import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Test;
@@ -55,14 +55,14 @@ public class ValidateEventProcessorTest extends BaseEventProcessorRowBasedTest {
     }
 
     private static EventProcessor generateSampleParser() {
-        return Fluxtion.interpret(c -> EventFlow.subscribe(String.class)
+        return Fluxtion.interpret(c -> DataFlow.subscribe(String.class)
                 .mapToInt(Integer::parseInt)
                 .map(i -> i * 2)
                 .mapToObj(i -> "doubled:" + i).id("results"));
     }
 
     private static EventProcessor generateSampleSumParser() {
-        return Fluxtion.interpret(c -> EventFlow.subscribe(String.class)
+        return Fluxtion.interpret(c -> DataFlow.subscribe(String.class)
                 .mapToInt(Integer::parseInt)
                 .map(Mappers.cumSumInt())
                 .mapToObj(i -> "cumSum:" + i).id("results"));
