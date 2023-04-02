@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.callback;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
@@ -9,7 +9,7 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.Callback;
-import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -54,7 +54,7 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
     public void callbackWithIteratorTest() {
         sep(c -> {
             c.addNode(new MyCallbackDependencyWithIterator(), "cb_1");
-            EventFlow.subscribeToNode(new MyCallbackDependencyWithIterator())
+            DataFlow.subscribeToNode(new MyCallbackDependencyWithIterator())
                     .mapToInt(Mappers.count()).id("count");
         });
         onEvent("no callback");
@@ -66,7 +66,7 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
     @Test
     public void callbackWithIteratorOfIteratorTest() {
         sep(c -> {
-            EventFlow.subscribeToNode(new SplitChars())
+            DataFlow.subscribeToNode(new SplitChars())
                     .mapToInt(SplitChars::getValue)
                     .map(Mappers.cumSumInt()).id("sum");
         });

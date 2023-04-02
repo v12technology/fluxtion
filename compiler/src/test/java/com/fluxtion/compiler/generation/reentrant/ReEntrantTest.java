@@ -1,6 +1,6 @@
 package com.fluxtion.compiler.generation.reentrant;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class ReEntrantTest extends MultipleSepTargetInProcessTest {
     @Test
     public void queueEventsInOrderTest() {
         List<String> results = new ArrayList<>();
-        sep(c -> EventFlow.subscribe(String.class)
+        sep(c -> DataFlow.subscribe(String.class)
                 .sink("queueEvent")
                 .sink("results"));
 

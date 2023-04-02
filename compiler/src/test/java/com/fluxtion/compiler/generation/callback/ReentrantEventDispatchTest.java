@@ -1,13 +1,13 @@
 package com.fluxtion.compiler.generation.callback;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.EventDispatcher;
-import com.fluxtion.runtime.stream.helpers.Mappers;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class ReentrantEventDispatchTest extends MultipleSepTargetInProcessTest {
     public void redispatchSingleEventTest() {
         sep(c -> {
             c.addNode(new Redispatcher());
-            EventFlow.subscribe(MyEvent.class)
+            DataFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
                     .id("count");
         });
@@ -40,7 +40,7 @@ public class ReentrantEventDispatchTest extends MultipleSepTargetInProcessTest {
     public void redispatchMultipleEventTest() {
         sep(c -> {
             c.addNode(new Redispatcher());
-            EventFlow.subscribe(MyEvent.class)
+            DataFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
                     .id("count");
         });
@@ -54,11 +54,11 @@ public class ReentrantEventDispatchTest extends MultipleSepTargetInProcessTest {
     @Test
     public void redispatchFromStreamTest() {
         sep(c -> {
-            EventFlow.subscribe(String.class)
+            DataFlow.subscribe(String.class)
                     .map(ReentrantEventDispatchTest::toMyEvent)
                     .processAsNewGraphEvent();
 
-            EventFlow.subscribe(MyEvent.class)
+            DataFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
                     .id("count");
         });
@@ -72,12 +72,12 @@ public class ReentrantEventDispatchTest extends MultipleSepTargetInProcessTest {
     @Test
     public void redispatchMultipleEventFromStreamTest() {
         sep(c -> {
-            EventFlow.subscribe(String.class)
+            DataFlow.subscribe(String.class)
                     .flatMap(ReentrantEventDispatchTest::csvToIterable)
                     .map(ReentrantEventDispatchTest::toMyEvent)
                     .processAsNewGraphEvent();
 
-            EventFlow.subscribe(MyEvent.class)
+            DataFlow.subscribe(MyEvent.class)
                     .mapToInt(Mappers.count())
                     .id("count");
         });

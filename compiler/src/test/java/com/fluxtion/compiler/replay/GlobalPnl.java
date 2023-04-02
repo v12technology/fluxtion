@@ -3,7 +3,7 @@ package com.fluxtion.compiler.replay;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.Start;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.time.Clock;
 
 import java.util.ArrayList;

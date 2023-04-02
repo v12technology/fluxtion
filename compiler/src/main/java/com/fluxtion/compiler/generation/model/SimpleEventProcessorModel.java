@@ -1176,6 +1176,10 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(filterDescriptionList);
     }
 
+    public FieldSerializer getFieldSerializer() {
+        return fieldSerializer;
+    }
+
     public Set<Class<?>> getImportClasses() {
         return Collections.unmodifiableSet(importClasses);
     }

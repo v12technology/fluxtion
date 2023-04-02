@@ -1,14 +1,14 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
-import com.fluxtion.compiler.builder.stream.EventStreamBuildTest.NotifyAndPushTarget;
+import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
-import com.fluxtion.runtime.stream.helpers.Mappers;
 import com.fluxtion.runtime.time.FixedRateTrigger;
 import lombok.Value;
 import org.hamcrest.MatcherAssert;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fluxtion.compiler.builder.stream.EventFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
 import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
@@ -49,6 +49,24 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
         MyInstanceFunction myInstanceFunction = getField("myInstanceFunction");
         assertNotNull(myInstanceFunction);
+        onEvent("test");
+        MyFunctionHolder result = getField("result");
+        Assert.assertEquals("TEST", result.output);
+        Assert.assertFalse(result.triggered);
+    }
+
+    @Test
+    public void addEnclosingMethodMultipleInstanceTest() {
+        sep(c -> {
+
+            SerializableFunction<String, String> function = new MyInstanceFunction("test")::toCaps;
+            c.addNode(
+                    new MyFunctionHolder(function), "result");
+
+            c.addNode(
+                    new MyFunctionHolder(function), "result2");
+        });
+
         onEvent("test");
         MyFunctionHolder result = getField("result");
         Assert.assertEquals("TEST", result.output);
@@ -133,11 +151,8 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void regressionTriggerPush() {
-        ;
-        sep(c -> {
-            subscribe(String.class)
-                    .push(new NotifyAndPushTarget()::setStringPushValue);
-        });
+        sep(c -> subscribe(String.class)
+                .push(new NotifyAndPushTarget()::setStringPushValue));
     }
 
 

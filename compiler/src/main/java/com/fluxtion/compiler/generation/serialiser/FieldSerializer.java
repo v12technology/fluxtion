@@ -4,15 +4,17 @@ import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.util.ClassUtils;
+import com.fluxtion.runtime.dataflow.FlowFunction;
+import com.fluxtion.runtime.dataflow.function.MergeProperty;
+import com.fluxtion.runtime.dataflow.helpers.GroupingFactory;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
-import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.MergeProperty;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -221,7 +223,7 @@ public class FieldSerializer {
             String lambda = containingClass + "::" + methodName;
             String triggerName = "null";
             //
-            EventStream<?> trigger = mergeProperty.getTrigger();
+            FlowFunction<?> trigger = mergeProperty.getTrigger();
             for (Field nodeField : nodeFields) {
                 if (nodeField.instance == trigger) {
                     triggerName = nodeField.name;
@@ -324,5 +326,23 @@ public class FieldSerializer {
         }
         return false;
     }
+
+    //bit of a hack to get generic declarations working
+    public String buildTypeDeclaration(Field field, Function<Class<?>, String> classNameConverter) {
+        Object instance = field.instance;
+        if (instance instanceof GroupingFactory) {
+            GroupingFactory groupByKeyFactory = (GroupingFactory) instance;
+            Method method = groupByKeyFactory.getKeyFunction().method();
+            String returnType = classNameConverter.apply(method.getReturnType());
+            String inputClass = classNameConverter.apply(method.getDeclaringClass());
+            if (method.getParameterTypes().length == 1) {
+                inputClass = classNameConverter.apply(method.getParameterTypes()[0]);
+            }
+            String genericDeclaration = "<" + inputClass + ", " + returnType + ", ?, ?>";
+            return genericDeclaration;
+        }
+        return "";
+    }
+
 
 }
