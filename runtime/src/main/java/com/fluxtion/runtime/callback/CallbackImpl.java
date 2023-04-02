@@ -1,16 +1,16 @@
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.node.AbstractEventHandlerNode;
 import com.fluxtion.runtime.node.NamedNode;
-import com.fluxtion.runtime.stream.TriggeredEventStream;
 import lombok.ToString;
 
 import java.util.Iterator;
 
 @ToString
 public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHandlerNode<CallbackEvent>
-        implements TriggeredEventStream<R>, NamedNode, Callback<R>, EventDispatcher {
+        implements TriggeredFlowFunction<R>, NamedNode, Callback<R>, EventDispatcher {
     private final int callbackId;
     @Inject
     private final CallbackDispatcher callBackDispatcher;

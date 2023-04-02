@@ -49,6 +49,8 @@ public class FluxtionBuilderTest {
 
     @Test
     public void generateToStringWriterTestFailingCOmpile() {
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
         StringWriter writer = new StringWriter();
         try {
             Fluxtion.compile(c -> c.addNode(new MyStringHandler(), "111_var"), writer);
@@ -137,6 +139,8 @@ public class FluxtionBuilderTest {
                 "    }\n" +
                 "}";
 
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
         StringCompilation.compile("MyStringHandler", source);
     }
 

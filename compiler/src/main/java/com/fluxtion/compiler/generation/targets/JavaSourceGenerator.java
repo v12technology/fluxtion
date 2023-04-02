@@ -371,7 +371,7 @@ public class JavaSourceGenerator {
         resetDirtyFlags = StringUtils.chomp(resetDirtyFlags);
     }
 
-    private String getClassName(Class<?> clazzName) {
+    private String getClassTypeName(Class<?> clazzName) {
         return getClassName(clazzName.getCanonicalName());
     }
 
@@ -418,7 +418,11 @@ public class JavaSourceGenerator {
             } catch (Exception e) {
                 syntheticConstructor = true;
             }
-            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" final ").append(fqnBuilder).append(" ").append(field.name);
+            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" final ")
+                    .append(fqnBuilder)
+                    .append(model.getFieldSerializer().buildTypeDeclaration(field, this::getClassTypeName))
+                    .append(" ")
+                    .append(field.name);
             if (assignPrivateMembers && syntheticConstructor) {
                 //new constructor.on(clazz).invoke().constructor().bypasser();
                 declarationRoot
@@ -467,6 +471,7 @@ public class JavaSourceGenerator {
         nodeDeclarations = nodeDecBuilder.toString();
         nodeDecBuilder.delete(0, nodeDecBuilder.length());
     }
+
 
     private void buildFilterConstantDeclarations() {
         filterConstantDeclarations = "";
@@ -1232,7 +1237,7 @@ public class JavaSourceGenerator {
         }
         this.auditingEvent = true;
         this.auditingInvocations = false;
-        String eventClassName = getClassName(Event.class);
+        String eventClassName = getClassTypeName(Event.class);
         importList.add(Event.class.getCanonicalName());
         importList.add(EventProcessorContext.class.getCanonicalName());
         importList.add(MutableEventProcessorContext.class.getCanonicalName());
@@ -1294,7 +1299,7 @@ public class JavaSourceGenerator {
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
         if (!interfacesToImplement.isEmpty()) {
             additionalInterfaces = interfacesToImplement.stream()
-                    .map(this::getClassName)
+                    .map(this::getClassTypeName)
                     .collect(Collectors.joining(", ", ", ", ""));
         }
     }

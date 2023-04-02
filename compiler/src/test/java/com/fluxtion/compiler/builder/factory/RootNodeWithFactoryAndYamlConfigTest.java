@@ -3,7 +3,7 @@ package com.fluxtion.compiler.builder.factory;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.output.SinkPublisher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 

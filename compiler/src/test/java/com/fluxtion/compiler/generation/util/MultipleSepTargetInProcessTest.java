@@ -29,9 +29,9 @@ import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.JULLogRecordListener;
+import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.runtime.stream.EventStream;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.apache.commons.io.FileUtils;
@@ -256,7 +256,7 @@ public abstract class MultipleSepTargetInProcessTest {
     }
 
     protected <T> T getStreamed(String name) {
-        EventStream<T> stream = getField(name);
+        FlowFunction<T> stream = getField(name);
         return stream.get();
     }
 

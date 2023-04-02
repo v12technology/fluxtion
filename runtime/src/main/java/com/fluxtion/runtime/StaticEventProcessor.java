@@ -22,14 +22,14 @@ import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.audit.LogRecordListener;
+import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.node.InstanceSupplier;
-import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.SinkDeregister;
-import com.fluxtion.runtime.stream.SinkRegistration;
+import com.fluxtion.runtime.output.SinkDeregister;
+import com.fluxtion.runtime.output.SinkRegistration;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
@@ -320,7 +320,7 @@ public interface StaticEventProcessor {
     }
 
     default <T> T getStreamed(String name) throws NoSuchFieldException {
-        EventStream<T> stream = getNodeById(name);
+        FlowFunction<T> stream = getNodeById(name);
         return stream.get();
     }
 
