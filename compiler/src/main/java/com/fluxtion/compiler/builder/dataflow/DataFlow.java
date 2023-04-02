@@ -69,10 +69,6 @@ public interface DataFlow {
         );
     }
 
-    static <T, K> GroupByFlowBuilder<K, T> groupBy(Class<T> classSubscription, SerializableFunction<T, K> keyFunction) {
-        return subscribe(classSubscription).groupBy(keyFunction);
-    }
-
     static <T, K> GroupByFlowBuilder<K, T> groupBy(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
@@ -100,13 +96,6 @@ public interface DataFlow {
     }
 
     static <T, K, V> GroupByFlowBuilder<K, V> groupBy(
-            Class<T> classSubscription,
-            SerializableFunction<T, K> keyFunction,
-            SerializableFunction<T, V> valueFunction) {
-        return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
-    }
-
-    static <T, K, V> GroupByFlowBuilder<K, V> groupBy(
             SerializableFunction<T, K> keyFunction,
             SerializableFunction<T, V> valueFunction) {
         @SuppressWarnings("unchecked")
@@ -114,7 +103,14 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction);
     }
 
-    //SerializableFunction<T, V> valueFunction
+    static <T, V, K1, A, F extends AggregateFlowFunction<V, A, F>> GroupByFlowBuilder<K1, A>
+    groupBy(SerializableFunction<T, K1> keyFunction,
+            SerializableFunction<T, V> valueFunction,
+            SerializableSupplier<F> aggregateFunctionSupplier) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
+        return subscribe(classSubscription).groupBy(keyFunction, valueFunction, aggregateFunctionSupplier);
+    }
 
     static FlowBuilder<Object> subscribeToSignal(String filterId) {
         return subscribeToSignal(filterId, Object.class);

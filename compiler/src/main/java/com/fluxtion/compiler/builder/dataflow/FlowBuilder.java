@@ -93,26 +93,26 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return new FlowBuilder<>(new MergeFlowFunction<>(eventStream, streamToMerge.eventStream));
     }
 
-    public <S, R> FlowBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction) {
+    public <R> FlowBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction) {
         return new FlowBuilder<>(new FlatMapFlowFunction<>(eventStream, iterableFunction));
     }
 
-    public <S, R> FlowBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction) {
+    public <R> FlowBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction) {
         return new FlowBuilder<>(new FlatMapArrayFlowFunction<>(eventStream, iterableFunction));
     }
 
-    public <S, R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
+    public <R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
     aggregate(SerializableSupplier<F> aggregateFunction) {
         return new FlowBuilder<>(new AggregateFlowFunctionWrapper<>(eventStream, aggregateFunction));
     }
 
-    public <S, R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
+    public <R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
     tumblingAggregate(SerializableSupplier<F> aggregateFunction, int bucketSizeMillis) {
         return new FlowBuilder<>(
                 new TumblingWindow<>(eventStream, aggregateFunction, bucketSizeMillis));
     }
 
-    public <S, R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
+    public <R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
     slidingAggregate(SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow) {
         return new FlowBuilder<>(
                 new TimedSlidingWindow<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
