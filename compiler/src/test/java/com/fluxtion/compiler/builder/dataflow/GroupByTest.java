@@ -670,11 +670,9 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     @Test
     public void complexGroupByJoinThenBiMapThenReduceTest() {
         sep(c -> {
-            val tradeStream = subscribe(Trade.class);
-
             val positionMap = JoinFlowBuilder.outerJoin(
-                            tradeStream.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, Aggregates.doubleSumFactory()),
-                            tradeStream.groupBy(Trade::getContraCcy, Trade::getContraVolume, DoubleSumFlowFunction::new))
+                            DataFlow.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, Aggregates.doubleSumFactory()),
+                            DataFlow.groupBy(Trade::getContraCcy, Trade::getContraVolume, DoubleSumFlowFunction::new))
                     .mapValues(Tuples.replaceNull(0d, 0d))
                     .mapValues(Tuples.mapTuple(Mappers::addDoubles));
 
@@ -685,8 +683,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
             positionMap.biMapValuesByKey(Mappers::multiplyDoubles, rateMap, Double.NaN)
                     .reduceValues(DoubleSumFlowFunction::new)
-                    .id("pnl")
-            ;
+                    .id("pnl");
         });
 
         onEvent(new Trade("EURUSD", 100, -200));

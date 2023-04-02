@@ -13,11 +13,10 @@ public class GroupByMapFlowFunction {
 
     private final SerializableFunction mapFunction;
     private final SerializableBiFunction mapFrom2MapsBiFunction;
-    @SepNode
-    public Object defaultValue;
-
     private final transient GroupByHashMap outputCollection = new GroupByHashMap();
     private final transient GroupByView wrappedCollection = new GroupByView();
+    @SepNode
+    public Object defaultValue;
 
     public <T, R> GroupByMapFlowFunction(SerializableFunction<T, R> mapFunction) {
         this(mapFunction, null);
@@ -43,6 +42,10 @@ public class GroupByMapFlowFunction {
         return mapValues((GroupBy) inputMap);
     }
 
+    public <K, V> GroupBy<K, V> mapForEachValues(Object inputMap) {
+        return mapForEachValues((GroupBy) inputMap);
+    }
+
     public <K, V> GroupBy<K, V> mapKeyedValue(Object inputMap, Object secondArgument) {
         return mapKeyedValue((GroupBy) inputMap, secondArgument);
     }
@@ -61,6 +64,13 @@ public class GroupByMapFlowFunction {
 
     public <K, V> GroupBy<K, V> mapEntry(Object inputMap) {
         return mapEntry((GroupBy) inputMap);
+    }
+
+    public <K, V> GroupBy<K, V> mapForEachValues(GroupBy inputMap) {
+        //make this recursive on value type == GroupBy?
+        //TODO FIX
+        throw new UnsupportedOperationException("not implemented");
+//        return mapValues(inputMap);
     }
 
     public <K, V> GroupBy<K, V> mapValues(GroupBy inputMap) {

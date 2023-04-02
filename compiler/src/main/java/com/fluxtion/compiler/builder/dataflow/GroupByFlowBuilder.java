@@ -76,6 +76,20 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new GroupByMapFlowFunction(mappingFunction)::mapValues));
     }
 
+    /**
+     * Maps values that are in a multi map of GroupBy, applies the mapping function to all values in the second map
+     *
+     * @param mappingFunction
+     * @param <R>
+     * @return the trransformed value
+     */
+    //TODO FIX
+    public <T, R> GroupByFlowBuilder<K, R> mapNestedValues(SerializableFunction<T, R> mappingFunction) {
+        throw new UnsupportedOperationException("not implemented");
+//        return new GroupByFlowBuilder<>(new MapRef2RefFlowFunction<>(eventStream,
+//                new GroupByMapFlowFunction(new GroupByMapFlowFunction(mappingFunction)::mapForEachValues)::mapValues));
+    }
+
     public <K2 extends K, V2, VOUT>
     GroupByFlowBuilder<K, VOUT> biMapValuesByKey(
             SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
