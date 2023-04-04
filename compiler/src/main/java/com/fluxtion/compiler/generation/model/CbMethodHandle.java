@@ -62,6 +62,7 @@ public class CbMethodHandle {
 
     private final boolean isNoPropagateEventHandler;
     private final boolean failBuildOnUnguardedTrigger;
+    private final boolean forkExecution;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
@@ -74,10 +75,14 @@ public class CbMethodHandle {
         this.parameterClass = parameterClass;
         this.isEventHandler = isEventHandler;
         this.isPostEventHandler = method.getAnnotation(AfterTrigger.class) != null;
-        this.isInvertedDirtyHandler = method.getAnnotation(OnTrigger.class) != null && !method.getAnnotation(OnTrigger.class).dirty();
-        this.failBuildOnUnguardedTrigger = method.getAnnotation(OnTrigger.class) != null && method.getAnnotation(OnTrigger.class).failBuildIfNotGuarded();
-        this.isGuardedParent = method.getAnnotation(OnParentUpdate.class) != null && method.getAnnotation(OnParentUpdate.class).guarded();
-        this.isNoPropagateEventHandler = method.getAnnotation(OnEventHandler.class) != null && !method.getAnnotation(OnEventHandler.class).propagate();
+        OnTrigger onTriggerAnnotation = method.getAnnotation(OnTrigger.class);
+        OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
+        OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
+        this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
+        this.forkExecution = onTriggerAnnotation != null && !onTriggerAnnotation.forkExecution();
+        this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
+        this.isGuardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
+        this.isNoPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
     }
 
     public Method getMethod() {
@@ -116,6 +121,10 @@ public class CbMethodHandle {
         return isGuardedParent;
     }
 
+    public boolean isForkExecution() {
+        return forkExecution;
+    }
+
     public String getMethodTarget() {
         if (Modifier.isStatic(getMethod().getModifiers())) {
             return instance.getClass().getSimpleName();
@@ -136,6 +145,7 @@ public class CbMethodHandle {
                 ", isGuardedParent=" + isGuardedParent +
                 ", isNoPropagateEventHandler=" + isNoPropagateEventHandler +
                 ", failBuildOnUnguardedTrigger=" + failBuildOnUnguardedTrigger +
+                ", forkExecution=" + forkExecution +
                 '}';
     }
 
