@@ -79,7 +79,7 @@ public class CbMethodHandle {
         OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
         OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
         this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
-        this.forkExecution = onTriggerAnnotation != null && !onTriggerAnnotation.forkExecution();
+        this.forkExecution = onTriggerAnnotation != null && onTriggerAnnotation.forkExecution();
         this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
         this.isGuardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
         this.isNoPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
@@ -130,6 +130,14 @@ public class CbMethodHandle {
             return instance.getClass().getSimpleName();
         }
         return variableName;
+    }
+
+    public String invokeLambdaString() {
+        return getMethodTarget() + "::" + getMethod().getName();
+    }
+
+    public String forkVariableName() {
+        return "fork_" + getVariableName();
     }
 
     @Override

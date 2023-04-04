@@ -56,6 +56,7 @@ private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = ne
 private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
 
     ${MODEL.dirtyFlagDeclarations}
+    ${MODEL.forkDeclarations}
     //Filter constants
     ${MODEL.filterConstantDeclarations}
 
@@ -104,6 +105,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     private void afterEvent() {
         ${MODEL.eventEndMethods}
         ${MODEL.resetDirtyFlags}
+        ${MODEL.resetForkTasks}
     }
 
     @Override

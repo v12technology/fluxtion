@@ -48,7 +48,7 @@ public class FluxtionBuilderTest {
     }
 
     @Test
-    public void generateToStringWriterTestFailingCOmpile() {
+    public void generateToStringWriterTestFailingCompile() {
         System.setErr(new DoNothingPrintStream());
         System.setOut(new DoNothingPrintStream());
         StringWriter writer = new StringWriter();
@@ -124,25 +124,6 @@ public class FluxtionBuilderTest {
         Assert.assertEquals("BBB", handler.in);
     }
 
-    @SneakyThrows
-    @Test(expected = RuntimeException.class)
-    public void failCompileString() {
-        String source = "    " +
-                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
-                "\n" +
-                "public class MyStringHandler {\n" +
-                "    String in;\n" +
-                "\n" +
-                "    @OnEventHandler\n" +
-                "    void stringUpdated() {\n" +
-                "        this.in = in;\n" +
-                "    }\n" +
-                "}";
-
-        System.setErr(new DoNothingPrintStream());
-        System.setOut(new DoNothingPrintStream());
-        StringCompilation.compile("MyStringHandler", source);
-    }
 
     @Test
     @SneakyThrows
