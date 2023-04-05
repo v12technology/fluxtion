@@ -1,16 +1,11 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
-import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventhandlerAnnotations;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventHandlerAnnotations;
 import com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnParentUpdateHandlerAnnotations;
+import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnTriggerAnnotations;
 
-import javax.tools.DiagnosticCollector;
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileManager;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -44,7 +39,11 @@ public interface StringCompilation {
         JavaCompiler.CompilationTask task = compiler.getTask(
                 null, fileManager, diagnostics, optionList, null, Collections.singletonList(new JavaStringObject(className, source))
         );
-        task.setProcessors(Arrays.asList(new ValidateEventhandlerAnnotations(), new ValidateLifecycleAnnotations()));
+        task.setProcessors(Arrays.asList(
+                new ValidateEventHandlerAnnotations(),
+                new ValidateLifecycleAnnotations(),
+                new ValidateOnTriggerAnnotations(),
+                new ValidateOnParentUpdateHandlerAnnotations()));
         if (!task.call()) {
             diagnostics.getDiagnostics().forEach(System.out::println);
             throw new RuntimeException("unable to compile source file to class:'" + className + "'");

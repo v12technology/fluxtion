@@ -57,6 +57,10 @@ public class DirtyFlag {
         return name;
     }
 
+    public String getForkedName() {
+        return "fork_" + node.getName();
+    }
+
     public boolean isAlwaysDirty() {
         return alwaysDirty;
     }

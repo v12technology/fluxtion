@@ -1,0 +1,151 @@
+package com.fluxtion.compiler.annotationprocessor;
+
+import com.fluxtion.compiler.builder.imperative.DoNothingPrintStream;
+import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
+import lombok.SneakyThrows;
+import org.junit.Test;
+
+public class ValidatingAnnotationProcessorTest {
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void eventHandler_failCompileString_notPubicMethod() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnEventHandler\n" +
+                "    boolean stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "        return true;\n" +
+                "    }\n" +
+                "}";
+
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void eventHandler_failCompileString_missingBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnEventHandler\n" +
+                "    public void stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "    }\n" +
+                "}";
+
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void eventHandler_failCompileString_badReturnType() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnEventHandler\n" +
+                "    public boolean stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "        return \"test\";\n" +
+                "    }\n" +
+                "}";
+
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void onTrigger_failCompileString_NotPublicMethod() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.OnTrigger;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnTrigger\n" +
+                "    boolean stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "        return true;\n" +
+                "    }\n" +
+                "}";
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void onTrigger_failCompileString_missingBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.OnTrigger;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnTrigger\n" +
+                "    public void stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "    }\n" +
+                "}";
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void onTrigger_failCompileString_nonBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.OnTrigger;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnTrigger\n" +
+                "    public String stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "        return \"fail\";\n" +
+                "    }\n" +
+                "}";
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void noFailCompileString_OverrideGuardBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.OnTrigger;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnTrigger(failBuildIfNotGuarded = false)\n" +
+                "    public void stringUpdated() {\n" +
+                "        this.in = in;\n" +
+                "    }\n" +
+                "}";
+        StringCompilation.compile("MyStringHandler", source);
+    }
+}
