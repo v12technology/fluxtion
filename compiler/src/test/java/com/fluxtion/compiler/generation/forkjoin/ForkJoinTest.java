@@ -4,13 +4,15 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
-import com.fluxtion.runtime.node.ForkedTriggerTask;
+import com.fluxtion.runtime.node.NamedNode;
+import lombok.Data;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 public class ForkJoinTest extends CompiledOnlySepTest {
@@ -23,59 +25,38 @@ public class ForkJoinTest extends CompiledOnlySepTest {
     public void forkGraph() {
         writeSourceFile = true;
         sep(c -> {
+            InputHandler inputHandler = new InputHandler();
             c.addNode(new CompletionTrigger(new LongRunningTrigger[]{
-                    new LongRunningTrigger("dopey"),
-                    new LongRunningTrigger("sleepy"),
+                    new LongRunningTrigger(inputHandler, "dopey"),
+                    new LongRunningTrigger(inputHandler, "sleepy"),
                     new LongRunningTrigger("doc")
             }
             ));
         });
         onEvent("hi");
+        getField("collector", CompletionTrigger.class).reset();
         onEvent("ho");
     }
 
-    @Test
-    public void fjTest() {
-        ForkedTriggerTask task = new ForkedTriggerTask(new MyTask("task_1")::executeTask);
-        ForkedTriggerTask task2 = new ForkedTriggerTask(new MyTask("task_2")::executeTask);
-        System.out.println("forking currentThread:" + Thread.currentThread().getName());
-        task.fork();
-        task2.fork();
-        System.out.println("waiting currentThread:" + Thread.currentThread().getName());
-        task.join();
-        task2.join();
-        System.out.println("completed currentThread:" + Thread.currentThread().getName());
-    }
-
-    @Value
-    public static class MyTask {
-        String name;
-
-        @SneakyThrows
-        private boolean executeTask() {
-            System.out.println(name + " forked task start currentThread:" + Thread.currentThread().getName());
-            Thread.sleep(1_000);
-            System.out.println(name + " forked task complete currentThread:" + Thread.currentThread().getName());
-            return true;
-        }
-    }
 
     @Slf4j
     public static class InputHandler {
 
         @OnEventHandler
         public boolean stringHandler(String in) {
-            log.info("event:{}", in);
+            log.debug("event:{}", in);
             return true;
         }
     }
 
     @Slf4j
     public static class LongRunningTrigger {
-
-        //        @SepNode
         private final InputHandler inputHandler;
         private final String name;
+        private String error;
+        private boolean taskComplete = false;
+        private boolean afterTriggerComplete = false;
+        private boolean afterEventComplete = false;
 
         public LongRunningTrigger(@AssignToField("inputHandler") InputHandler inputHandler, String name) {
             this.inputHandler = inputHandler;
@@ -89,44 +70,87 @@ public class ForkJoinTest extends CompiledOnlySepTest {
         @SneakyThrows
         @OnTrigger(forkExecution = true)
         public boolean startLongTask() {
+            if (afterTriggerComplete || afterEventComplete) {
+                throw new RuntimeException("afterTrigger and afterEvent should not have completed");
+            }
             long millis = (long) (new Random().nextDouble() * 1200);
-            log.info("{} start sleep:{}", name, millis);
+            log.debug("{} start sleep:{}", name, millis);
             Thread.sleep(millis);
-            log.info("{} completed", name);
+            log.debug("{} completed", name);
+            taskComplete = true;
             return true;
         }
 
         @AfterTrigger
         public void afterTrigger() {
-            log.info("{} afterTrigger", name);
+            if (!taskComplete || afterEventComplete) {
+                throw new RuntimeException("startLongTask should be complete and afterEvent should not have completed");
+            }
+            log.debug("{} afterTrigger", name);
+            afterTriggerComplete = true;
         }
 
         @AfterEvent
         public void afterEvent() {
-            log.info("{} afterEvent", name);
+            if (!taskComplete || !afterTriggerComplete) {
+                throw new RuntimeException("startLongTask and afterEvent should be completed");
+            }
+            log.debug("{} afterEvent", name);
+            afterTriggerComplete = true;
+            taskComplete = false;
+            afterTriggerComplete = false;
         }
     }
 
-    @Value
+    @Data
     @Slf4j
-    public static class CompletionTrigger {
+    public static class CompletionTrigger implements NamedNode {
+        private boolean taskComplete = false;
+        private boolean afterTriggerComplete = false;
+        private boolean parentUpdateComplete = false;
+        private Set<String> updateSetSet = new HashSet<>();
 
-        LongRunningTrigger[] tasks;
+        private final LongRunningTrigger[] tasks;
 
         @OnParentUpdate
         public void taskUpdated(LongRunningTrigger task) {
-            log.info("parentCallBack:{}", task.name);
+            if (afterTriggerComplete || taskComplete) {
+                throw new RuntimeException("afterTrigger and collectSlowResults should not have completed");
+            }
+            log.debug("parentCallBack:{}", task.name);
+            updateSetSet.add(task.name);
+            parentUpdateComplete = updateSetSet.size() == tasks.length;
         }
 
         @OnTrigger(forkExecution = true)
         public boolean collectSlowResults() {
-            log.info("Collecting results");
+            if (afterTriggerComplete || !parentUpdateComplete) {
+                throw new RuntimeException("afterTrigger and afterEvent should not have completed");
+            }
+            log.debug("Collecting results");
+            taskComplete = true;
             return true;
         }
 
         @AfterTrigger
         public void afterTrigger() {
-            log.info("afterTrigger");
+            if (!taskComplete || !parentUpdateComplete) {
+                throw new RuntimeException("collectSlowResults should be complete and afterEvent should not have completed");
+            }
+            log.debug("afterTrigger");
+            afterTriggerComplete = true;
+        }
+
+        @Override
+        public String getName() {
+            return "collector";
+        }
+
+        public void reset() {
+            taskComplete = false;
+            afterTriggerComplete = false;
+            parentUpdateComplete = false;
+            updateSetSet.clear();
         }
     }
 }
