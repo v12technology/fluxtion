@@ -21,11 +21,7 @@ import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.EventProcessorConfig.DISPATCH_STRATEGY;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import com.fluxtion.compiler.generation.model.DirtyFlag;
-import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
@@ -35,6 +31,7 @@ import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
+import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
@@ -44,17 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapPrimitiveToWrapper;
@@ -133,7 +121,7 @@ public class JavaSourceGenerator {
      * Create an if based dispatch using instanceof operator
      */
     private final boolean instanceOfDispatch;
-    private EventProcessorConfig eventProcessorConfig;
+    private final EventProcessorConfig eventProcessorConfig;
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order.
@@ -226,6 +214,8 @@ public class JavaSourceGenerator {
     private String auditMethodString;
     private String additionalInterfaces;
     private String javaDocEventClassList;
+    private String forkDeclarations;
+    private String resetForkTasks;
 
     public JavaSourceGenerator(
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
@@ -257,12 +247,13 @@ public class JavaSourceGenerator {
         buildMethodSource(model.getStartMethods(), startMethodList);
         buildMethodSource(model.getStopMethods(), stopMethodList);
         buildMethodSource(model.getBatchPauseMethods(), batchPauseMethodList);
-        buildMethodSource(model.getEventEndMethods(), eventEndMethodList);
+        buildForAwareMethodSource(model.getEventEndMethods(), eventEndMethodList);
         buildMethodSource(model.getBatchEndMethods(), batchEndMethodList);
         buildMethodSource(model.getTearDownMethods(), tearDownMethodList);
         addDefaultImports();
         buildNodeDeclarations();
         buildDirtyFlags();
+        buildForkDeclarations();
         buildFilterConstantDeclarations();
         buildMemberAssignments();
         buildNodeRegistrationListeners();
@@ -315,12 +306,39 @@ public class JavaSourceGenerator {
         nodeMemberAssignments = memberAssignments.toString();
     }
 
+    private void buildForkDeclarations() {
+        String forkWrapperClass = getClassTypeName(ForkedTriggerTask.class);
+        forkDeclarations = model.getTriggerOnlyCallBacks().stream()
+                .filter(CbMethodHandle::isForkExecution)
+                .map(c -> "private final " + forkWrapperClass + " " + c.forkVariableName()
+                        + " = new " + forkWrapperClass + "(" + c.invokeLambdaString() + ");")
+                .collect(Collectors.joining("\n", "//Forked declarations\n", "\n"));
+
+        resetForkTasks = model.getTriggerOnlyCallBacks().stream()
+                .filter(CbMethodHandle::isForkExecution)
+                .map(c -> c.forkVariableName() + ".reinitialize();")
+                .collect(Collectors.joining("\n"));
+    }
+
     private void buildMethodSource(List<CbMethodHandle> methodList, List<String> methodSourceList) {
         for (CbMethodHandle method : methodList) {
             final String methodString = String.format("%8s%s.%s();", "", method.variableName, method.method.getName());
             methodSourceList.add(methodString);
         }
     }
+
+    private void buildForAwareMethodSource(List<CbMethodHandle> methodList, List<String> methodSourceList) {
+        Set<Object> forkedTriggers = model.getForkedTriggerInstances();
+        for (CbMethodHandle method : methodList) {
+            String waitForJoin = "";
+            if (forkedTriggers.contains(method.getInstance())) {
+                waitForJoin = (method.forkVariableName() + ".join();\n");
+            }
+            final String methodString = String.format("%8s%s.%s();", "", method.variableName, method.method.getName());
+            methodSourceList.add(waitForJoin + methodString);
+        }
+    }
+
 
     private void buildDirtyFlags() {
         dirtyFlagDeclarations = "";
@@ -355,13 +373,42 @@ public class JavaSourceGenerator {
                             e.getKey().getName(), e.getValue().name);
                 });
         //build guard methods
+        Set<Object> forkedTriggers = model.getForkedTriggerInstances();
         model.getNodeFields().forEach(field -> {
                     String guardConditions = model.getNodeGuardConditions(field.instance).stream()
                             .map(d -> (d.isRequiresInvert() ? "not" : "") + d.getName())
                             .collect(Collectors.joining(" |\n"));
 
+                    String forkedReturn = model.getNodeGuardConditions(field.instance).stream()
+                            .filter(f -> {
+                                return forkedTriggers.contains(f.node.getInstance());
+                            })
+                            .map(d -> {
+                                List<CbMethodHandle> updateListenerCbList = model.getParentUpdateListenerMethodMap().get(d.getNode().getInstance());
+                                //child callbacks
+                                boolean unguarded = false;
+                                StringBuilder sbUnguarded = new StringBuilder();
+                                StringBuilder guarded = new StringBuilder();
+                                String parentVar = d.getNode().getName();
+                                for (CbMethodHandle cbMethod : updateListenerCbList) {
+                                    if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
+                                        sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                                    } else {
+                                        guarded.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                                    }
+                                }
+
+                                return d.getName() + " = " + d.getForkedName() + ".join();\n"
+                                        + "if(" + d.getName() + "){\n"
+                                        + guarded + "\n"
+                                        + "}"
+                                        + sbUnguarded;
+                            })
+                            .collect(Collectors.joining("\n"));
+
                     if (!model.getNodeGuardConditions(field.instance).isEmpty()) {
                         guardCheckMethods += String.format("%1$4sprivate boolean guardCheck_%2$s() {%n" +
+                                forkedReturn +
                                 "%1$8sreturn %3$s;" +
                                 "}%n", "", field.getName(), guardConditions);
                     }
@@ -751,8 +798,12 @@ public class JavaSourceGenerator {
                                 .append(");\n");
                     }
                     //assign return if appropriate
-                    if (method.parameterClass == null) {
-                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
+                    if (method.parameterClass == null) {//triggers
+                        if (method.isForkExecution()) {
+                            ct.append(method.forkVariableName() + ".fork();\n");
+                        } else {
+                            ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
+                        }
                     } else {
                         ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
                     }
@@ -773,6 +824,12 @@ public class JavaSourceGenerator {
                     List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
                     final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
                     if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
+                    } else if (model.getForkedTriggerInstances().contains(parent)) {
+                        //close guards clause
+                        if (nodeGuardConditions.size() > 0) {
+                            //callTree += String.format("%16s}\n", "");
+                            ct.append(s16 + "}\n");
+                        }
                     } else {
                         if (parentFlag != null && updateListenerCbList.size() > 0) {
                             //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
@@ -816,6 +873,10 @@ public class JavaSourceGenerator {
                     Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
                     String OR = "";
                     if (nodeGuardConditions.size() > 0) {
+                        Set<Object> forkedTriggers = model.getForkedTriggerInstances();
+                        if (forkedTriggers.contains(method.getInstance())) {
+                            ct.append(method.forkVariableName() + ".join();\n");
+                        }
                         ct.append(s24 + "if(");
                         for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
                             ct.append(OR).append(nodeGuardCondition.name);
@@ -1200,6 +1261,14 @@ public class JavaSourceGenerator {
 
     public String getJavaDocEventClassList() {
         return javaDocEventClassList;
+    }
+
+    public String getForkDeclarations() {
+        return forkDeclarations;
+    }
+
+    public String getResetForkTasks() {
+        return resetForkTasks;
     }
 
     public String getImports() {
