@@ -65,6 +65,7 @@ public class LogRecord {
     private boolean firstProp;
     private Clock clock;
     private boolean printEventToString = false;
+    private boolean printThreadName = false;
 
     public LogRecord(Clock clock) {
         sb = new StringBuilder();
@@ -115,6 +116,10 @@ public class LogRecord {
         this.printEventToString = printEventToString;
     }
 
+    public void setPrintThreadName(boolean printThreadName) {
+        this.printThreadName = printThreadName;
+    }
+
     private void addSourceId(String sourceId, String propertyKey) {
         if (this.sourceId == null) {
             sb.append("\n        - ").append(sourceId).append(": {");
@@ -152,6 +157,9 @@ public class LogRecord {
         sb.append("\n    event: ").append(aClass.getSimpleName());
         if (printEventToString) {
             sb.append("\n    eventToString: {").append(event.toString()).append('}');
+        }
+        if (printThreadName) {
+            sb.append("\n    thread: {").append(Thread.currentThread().getName()).append('}');
         }
         if (event.filterString() != null && !event.filterString().isEmpty()) {
             sb.append("\n    eventFilter: ").append(event.filterString());

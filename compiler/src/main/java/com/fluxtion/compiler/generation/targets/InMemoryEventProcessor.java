@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -193,18 +194,24 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         updateBitset.clear();
     }
 
-
+    @Override
     public void onEventInternal(Object event) {
         processEvent(event, false);
     }
 
+    @Override
     public boolean isDirty(Object node) {
+        return dirtySupplier(node).getAsBoolean();
+    }
+
+    @Override
+    public BooleanSupplier dirtySupplier(Object node) {
         //TODO replace with map
         return eventHandlers.stream()
                 .filter(n -> n.getCallbackHandle().getInstance() == node)
-                .map(Node::isDirty)
+                .map(n -> (BooleanSupplier) n::isDirty)
                 .findFirst()
-                .orElse(false);
+                .orElse(() -> false);
     }
 
     @Override
@@ -310,7 +317,6 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                             callBackHandle.instance, callBackHandle.getVariableName(), callBackHandle.getMethod().getName(), currentEvent
                     ));
         }
-
         try {
             callBackHandle.method.invoke(callBackHandle.instance);
         } catch (IllegalAccessException | InvocationTargetException e) {

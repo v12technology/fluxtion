@@ -33,6 +33,10 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
 
     protected abstract B connect(TriggeredFlowFunction<T> stream);
 
+    public B parallel() {
+        eventStream.parallel();
+        return identity();
+    }
 
     protected abstract <R> AbstractFlowBuilder<R, ?> connectMap(TriggeredFlowFunction<R> stream);
 

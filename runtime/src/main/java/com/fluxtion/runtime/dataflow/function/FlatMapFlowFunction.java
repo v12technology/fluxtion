@@ -7,6 +7,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.callback.Callback;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
@@ -28,6 +29,8 @@ public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends EventL
     private transient R value;
     @Inject
     public Callback<R> callback;
+    @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
 
     public FlatMapFlowFunction(S inputEventStream, SerializableFunction<T, Iterable<R>> iterableFunction) {
         this.inputEventStream = inputEventStream;
@@ -49,6 +52,21 @@ public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends EventL
     @OnTrigger
     public void callbackReceived() {
         value = callback.get();
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtyStateMonitor.isDirty(this);
     }
 
     @Override

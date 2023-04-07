@@ -112,11 +112,12 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction, aggregateFunctionSupplier);
     }
 
-    static FlowBuilder<Object> subscribeToSignal(String filterId) {
-        return subscribeToSignal(filterId, Object.class);
+    static FlowBuilder<Signal> subscribeToSignal(String filterId) {
+        return subscribe(Signal.class, filterId);
     }
 
     static <T> FlowBuilder<T> subscribeToSignal(String filterId, Class<T> signalType) {
+        //subscribe(Signal.class, filterId);
         return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
     }
 

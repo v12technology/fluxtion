@@ -2,7 +2,9 @@ package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 
@@ -12,6 +14,8 @@ public class MergeFlowFunction<T, S extends FlowFunction<T>, R extends FlowFunct
     private final S inputEventStream1;
     private final R inputEventStream2;
     private T update;
+    @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
 
     public MergeFlowFunction(S inputEventStream1, R inputEventStream2) {
         this.inputEventStream1 = inputEventStream1;
@@ -28,9 +32,24 @@ public class MergeFlowFunction<T, S extends FlowFunction<T>, R extends FlowFunct
         update = inputEventStream2.get();
     }
 
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
+    }
+
     @OnTrigger
     public boolean publishMerge() {
         return update != null;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtyStateMonitor.isDirty(this);
     }
 
     @Override

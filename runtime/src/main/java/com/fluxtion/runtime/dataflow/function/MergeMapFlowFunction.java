@@ -4,6 +4,8 @@ import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.partition.LambdaReflection;
@@ -32,6 +34,8 @@ public class MergeMapFlowFunction<T> implements TriggeredFlowFunction<T> {
     private final transient Set<FlowFunction<?>> requiredSet = new HashSet<>();
 
     private transient boolean allTriggersUpdated = false;
+    @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
 
     public MergeMapFlowFunction(LambdaReflection.SerializableSupplier<T> factory) {
         this(factory, new ArrayList<>());
@@ -67,6 +71,21 @@ public class MergeMapFlowFunction<T> implements TriggeredFlowFunction<T> {
             }
         }
         return allTriggersUpdated;
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtyStateMonitor.isDirty(this);
     }
 
     public <R> void registerTrigger(MergeProperty<T, R> mergeProperty) {

@@ -6,6 +6,7 @@ import lombok.ToString;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @ToString
@@ -88,6 +89,11 @@ public class CallbackDispatcherImpl implements EventProcessorCallbackInternal, N
     @Override
     public boolean isDirty(Object node) {
         return node != null && eventProcessor.isDirty(node);
+    }
+
+    @Override
+    public BooleanSupplier dirtySupplier(Object node) {
+        return eventProcessor.dirtySupplier(node);
     }
 
     @Override

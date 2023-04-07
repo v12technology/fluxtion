@@ -1,16 +1,21 @@
 package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.dataflow.FlowFunction;
+import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.dataflow.Stateful;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import lombok.ToString;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * @param <T> Type of input stream
@@ -19,11 +24,13 @@ import lombok.ToString;
  */
 @ToString
 public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> extends EventLogNode
-        implements TriggeredFlowFunction<R> {
+        implements TriggeredFlowFunction<R>, FlowSupplier<R> {
 
     private final S inputEventStream;
     @NoTriggerReference
     private final transient MethodReferenceReflection streamFunction;
+    @Inject
+    private EventProcessorContext eventProcessorContext;
     private transient final boolean statefulFunction;
     protected transient boolean overrideUpdateTrigger;
     protected transient boolean overridePublishTrigger;
@@ -39,6 +46,8 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
     private Object publishTriggerNode;
     private Object publishTriggerOverrideNode;
     private Object resetTriggerNode;
+    private BooleanSupplier dirtySupplier;
+    private transient boolean parallelCandidate = false;
 
     public AbstractFlowFunction(
             @AssignToField("inputEventStream") S inputEventStream,
@@ -52,7 +61,6 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
                 resetFunction = (Stateful<R>) methodReferenceReflection.captured()[0];
             }
         } else {
-//            streamFunctionInstance = null;
             statefulFunction = false;
         }
     }
@@ -101,6 +109,21 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
         return resetTriggered && statefulFunction;
     }
 
+    @Override
+    public void parallel() {
+        parallelCandidate = true;
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return parallelCandidate;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtySupplier.getAsBoolean();
+    }
+
     @OnParentUpdate("inputEventStream")
     public void inputUpdated(S inputEventStream) {
         inputStreamTriggered_1 = !resetTriggered;
@@ -134,6 +157,7 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
     public final void initialiseEventStream() {
         overrideUpdateTrigger = updateTriggerNode != null;
         overridePublishTrigger = publishTriggerOverrideNode != null;
+        dirtySupplier = eventProcessorContext.getDirtyStateMonitor().dirtySupplier(this);
         initialise();
     }
 
@@ -195,6 +219,14 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
 
     public boolean isStatefulFunction() {
         return statefulFunction;
+    }
+
+    public EventProcessorContext getEventProcessorContext() {
+        return eventProcessorContext;
+    }
+
+    public void setEventProcessorContext(EventProcessorContext eventProcessorContext) {
+        this.eventProcessorContext = eventProcessorContext;
     }
 
     /**

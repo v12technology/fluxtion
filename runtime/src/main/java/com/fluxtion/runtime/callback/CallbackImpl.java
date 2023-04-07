@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.callback;
 
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.node.AbstractEventHandlerNode;
@@ -7,14 +8,18 @@ import com.fluxtion.runtime.node.NamedNode;
 import lombok.ToString;
 
 import java.util.Iterator;
+import java.util.function.BooleanSupplier;
 
 @ToString
 public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHandlerNode<CallbackEvent>
         implements TriggeredFlowFunction<R>, NamedNode, Callback<R>, EventDispatcher {
     private final int callbackId;
     @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
+    @Inject
     private final CallbackDispatcher callBackDispatcher;
     private CallbackEvent<R> event;
+    private BooleanSupplier dirtyStateSupplier;
 
     public CallbackImpl(int callbackId, CallbackDispatcher callBackDispatcher) {
         super(callbackId);
@@ -35,6 +40,26 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHa
     public boolean onEvent(CallbackEvent e) {
         event = e;
         return true;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtyStateSupplier.getAsBoolean();
+    }
+
+    @Initialise
+    public void init() {
+        dirtyStateSupplier = dirtyStateMonitor.dirtySupplier(this);
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
     }
 
     @Override
