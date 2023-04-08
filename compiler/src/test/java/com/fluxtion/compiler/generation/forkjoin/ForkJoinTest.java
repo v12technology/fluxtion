@@ -58,7 +58,7 @@ public class ForkJoinTest extends CompiledOnlySepTest {
             c.addNode(SyncCollectorMulti.builder().name("multiCollector")
                     .parent(
                             DataFlow.subscribeToSignal("async_1")
-                                    .map(new MyConverter()::toUpper)
+                                    .map(MyConverter::toUpperStatic)
                                     .parallel()
                                     .flowSupplier()
                     )
@@ -108,8 +108,24 @@ public class ForkJoinTest extends CompiledOnlySepTest {
         }
     }
 
+    @SneakyThrows
+    public static String toUpper(Object in) {
+        Thread.sleep(1_000);
+        String upperCase = in.toString().toUpperCase();
+        return upperCase;
+    }
+
     @Slf4j
     public static class MyConverter {
+
+        @SneakyThrows
+        public static String toUpperStatic(Object in) {
+            Thread.sleep(1_000);
+            String upperCase = in.toString().toUpperCase();
+            return upperCase;
+        }
+
+
         @SneakyThrows
         public String toUpper(Object in) {
             log.info("converting to upper");
