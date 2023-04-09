@@ -2,9 +2,11 @@ package com.fluxtion.compiler.generation.forkjoin;
 
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
-import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.audit.LogRecord;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.AllArgsConstructor;
@@ -17,20 +19,36 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class ForkJoinTest extends CompiledOnlySepTest {
+@Slf4j
+public class ForkJoinTest extends MultipleSepTargetInProcessTest {
     public ForkJoinTest(SepTestConfig compile) {
         super(compile);
+    }
+
+    @SneakyThrows
+    public static String toUpper(Object in) {
+        Thread.sleep(1_000);
+        String upperCase = in.toString().toUpperCase();
+        return upperCase;
     }
 
     @Test
     public void testSimple() {
         writeSourceFile = true;
         sep(c -> {
-            c.addNode(new SyncCollector("collector", new AsyncProcess("asynch_1", 200)));
+            AsyncProcess asynch1 = new AsyncProcess("asynch_1", 200);
+            AsyncProcess asynch2 = new AsyncProcess("asynch_1", 100);
+            AsyncProcess asynch3 = new AsyncProcess("asynch_1", 85);
+//            c.addNode(new SyncCollector("collector", asynch1));
+            c.addNode(SyncCollectorMulti.builder().name("multiCollector")
+                    .parent(asynch1)
+                    .parent(asynch2)
+                    .parent(asynch3)
+                    .build());
         });
         publishSignal("asynch_1");
-        publishSignal("asynch_1");
-        publishSignal("asynch_1");
+//        publishSignal("asynch_1");
+//        publishSignal("asynch_1");
     }
 
     @Test
@@ -50,10 +68,15 @@ public class ForkJoinTest extends CompiledOnlySepTest {
 //        publishSignal("asynch_1");
     }
 
+    public void log(LogRecord logRecord) {
+        log.info(logRecord.toString());
+    }
+
     @Test
     public void parallelMap() {
         writeSourceFile = true;
         writeOutputsToFile(true);
+//        addAuditor();
         sep(c -> {
             c.addNode(SyncCollectorMulti.builder().name("multiCollector")
                     .parent(
@@ -69,8 +92,12 @@ public class ForkJoinTest extends CompiledOnlySepTest {
                                     .flowSupplier()
                     )
                     .build()
+
             );
+//            c.addEventAudit(LogLevel.INFO);
         });
+//        sep.setAuditLogProcessor(this::log);
+//        sep.setAuditLogLevel(LogLevel.DEBUG);
         publishSignal("async_1");
     }
 
@@ -106,13 +133,7 @@ public class ForkJoinTest extends CompiledOnlySepTest {
                     "name='" + name + '\'' +
                     '}';
         }
-    }
 
-    @SneakyThrows
-    public static String toUpper(Object in) {
-        Thread.sleep(1_000);
-        String upperCase = in.toString().toUpperCase();
-        return upperCase;
     }
 
     @Slf4j
@@ -120,8 +141,10 @@ public class ForkJoinTest extends CompiledOnlySepTest {
 
         @SneakyThrows
         public static String toUpperStatic(Object in) {
+            log.info("converting to upper");
             Thread.sleep(1_000);
             String upperCase = in.toString().toUpperCase();
+            log.info("converted:{}", upperCase);
             return upperCase;
         }
 
@@ -147,6 +170,11 @@ public class ForkJoinTest extends CompiledOnlySepTest {
             log.info("trigger");
             return true;
         }
+
+        @OnParentUpdate
+        public void parentUpdated(Object parent) {
+            log.info("parentUpdated");
+        }
     }
 
     @Data
@@ -160,13 +188,18 @@ public class ForkJoinTest extends CompiledOnlySepTest {
 
         @OnParentUpdate
         public void parentUpdated(Object parent) {
-            log.info("update:{}", parent instanceof FlowSupplier ? ((FlowSupplier) parent).get() : "--");
+            log.info("parentUpdated:{}", parent instanceof FlowSupplier ? ((FlowSupplier) parent).get() : "--");
         }
 
         @OnTrigger
         public boolean trigger() {
             log.info("trigger");
             return true;
+        }
+
+        @AfterEvent
+        public void postCollect() {
+            log.info("postCollect");
         }
     }
 }

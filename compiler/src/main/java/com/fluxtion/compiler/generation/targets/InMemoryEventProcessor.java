@@ -19,6 +19,7 @@ import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.input.SubscriptionManagerNode;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -49,11 +51,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private final BitSet dirtyBitset = new BitSet();
     private final BitSet eventOnlyBitset = new BitSet();
     private final BitSet postProcessBufferingBitset = new BitSet();
-    private boolean buffering = false;
+    private final BitSet forkedTaskBitset = new BitSet();
     private final List<Node> eventHandlers = new ArrayList<>();
+    private final List<ForkTriggerTaskNode> forkTriggerTaskNodes = new ArrayList<>();
     private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
     private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
     private final List<Auditor> auditors = new ArrayList<>();
+    private boolean buffering = false;
     private Object currentEvent;
     private boolean processing = false;
     private boolean isDefaultHandling;
@@ -100,9 +104,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         log.debug("======== GRAPH CYCLE START BUFFER EVENT ========");
         log.debug("======== process event ========");
         for (int i = dirtyBitset.nextSetBit(0); i >= 0; i = dirtyBitset.nextSetBit(i + 1)) {
-            log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+            log.debug("event dispatch bitset index[{}] handler[{}::{}]",
                     i,
-                    eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                    eventHandlers.get(i).callbackHandle.getVariableName(),
                     eventHandlers.get(i).callbackHandle.getMethod().getName()
             );
             eventHandlers.get(i).onEvent(null);
@@ -118,9 +122,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         log.debug("======== eventComplete ========");
         for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i - 1)) >= 0; ) {
             if (eventHandlers.get(i).willInvokeEventComplete()) {
-                log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+                log.debug("event dispatch bitset index[{}] handler[{}::{}]",
                         i,
-                        eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                        eventHandlers.get(i).callbackHandle.getVariableName(),
                         eventHandlers.get(i).onEventCompleteMethod.getName()
                 );
             }
@@ -131,12 +135,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
                 .forEach(Auditor::processingComplete);
         log.debug("After event");
+        //call reinitialise for each element
+        forkTriggerTaskNodes.forEach(ForkTriggerTaskNode::reinitialise);
         simpleEventProcessorModel.getEventEndMethods().forEach(this::invokeRunnable);
         auditors.stream()
                 .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
                 .forEach(Auditor::processingComplete);
         dirtyBitset.clear();
         log.debug("dirtyBitset, afterClear:{}", dirtyBitset);
+        forkedTaskBitset.clear();
+        log.debug("forkedTaskBitset, afterClear:{}", dirtyBitset);
         currentEvent = null;
     }
 
@@ -179,10 +187,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         log.debug("dirtyBitset, after:{}", updateBitset);
         log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
         log.debug("======== process event ========");
-        for (int i = updateBitset.nextSetBit(0); i >= 0; i = updateBitset.nextSetBit(i + 1)) {
-            log.debug("event dispatch bitset id[{}] handler[{}::{}]",
+        for (int i = checkForForkedTask(-1, updateBitset); i >= 0; i = checkForForkedTask(i, updateBitset)) {
+            log.debug("event dispatch bitset index[{}] handler[{}::{}]",
                     i,
-                    eventHandlers.get(i).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                    eventHandlers.get(i).callbackHandle.getVariableName(),
                     eventHandlers.get(i).callbackHandle.getMethod().getName()
             );
             eventHandlers.get(i).onEvent(event);
@@ -192,6 +200,24 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             postEventProcessing();
         }
         updateBitset.clear();
+    }
+
+    private int checkForForkedTask(int startIndex, BitSet updateBitset) {
+        log.debug("checkForForkedTask startIndex:{}, updateBitset:{} forkedBitset:{}", startIndex, updateBitset, forkedTaskBitset);
+        final int nextDirtyIndex = updateBitset.nextSetBit(startIndex + 1);
+        final int endIndex = Math.max(nextDirtyIndex, updateBitset.length());
+        final int nextForkIndex = forkedTaskBitset.nextSetBit(startIndex + 1);
+        log.debug("checkForForkedTask endIndex:{}, nextDirtyIndex:{} nextForkIndex:{}", endIndex, nextDirtyIndex, nextForkIndex);
+        if ((nextForkIndex > 0) & ((nextForkIndex <= nextDirtyIndex) | (nextDirtyIndex < 0))) {
+            log.debug("joining on parent forked task bitset index[{}] handler[{}::{}]",
+                    nextForkIndex,
+                    eventHandlers.get(nextForkIndex).callbackHandle.getMethod().getDeclaringClass().getSimpleName(),
+                    eventHandlers.get(nextForkIndex).callbackHandle.getMethod().getName()
+            );
+            eventHandlers.get(nextForkIndex).joinOnParentTask();
+            return nextForkIndex;
+        }
+        return nextDirtyIndex;
     }
 
     @Override
@@ -349,10 +375,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private void buildDispatch() {
         isDefaultHandling = simpleEventProcessorModel.getDispatchMap().containsKey(Object.class);
         List<CbMethodHandle> dispatchMapForGraph = new ArrayList<>(simpleEventProcessorModel.getDispatchMapForGraph());
+        AtomicInteger counter = new AtomicInteger();
         if (log.isDebugEnabled()) {
             log.debug("======== callbacks for graph =============");
-            dispatchMapForGraph.forEach(cb -> log.debug("{}::{}",
+            dispatchMapForGraph.forEach(cb -> log.debug("index:{} [type:{}] {}::{}",
+                    counter.getAndIncrement(),
                     cb.getMethod().getDeclaringClass().getSimpleName(),
+                    cb.getVariableName(),
                     cb.getMethod().getName())
             );
             log.debug("======== callbacks for graph =============");
@@ -361,28 +390,57 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         dirtyBitset.clear();
         eventOnlyBitset.clear(dispatchMapForGraph.size());
         eventOnlyBitset.or(dirtyBitset);
+        forkedTaskBitset.clear(dispatchMapForGraph.size());
+        forkedTaskBitset.clear();
 
         //set up array of all callback methods
         final Map<Object, List<CbMethodHandle>> parentUpdateListenerMethodMap = simpleEventProcessorModel.getParentUpdateListenerMethodMap();
         final Map<Object, Node> instance2NodeMap = new HashMap<>(dispatchMapForGraph.size());
         for (int i = 0; i < dispatchMapForGraph.size(); i++) {
             CbMethodHandle cbMethodHandle = dispatchMapForGraph.get(i);
-            Node node = new Node(
-                    i,
-                    cbMethodHandle,
-                    new ArrayList<>(parentUpdateListenerMethodMap.getOrDefault(cbMethodHandle.instance, Collections.emptyList()))
-            );
+            Node node;
+            if (cbMethodHandle.isForkExecution()) {
+                log.debug("Wrap with ForkJoinTask -> {}:{}",
+                        cbMethodHandle.getVariableName(),
+                        cbMethodHandle.getMethod().getName());
+                node = new ForkTriggerTaskNode(
+                        i,
+                        cbMethodHandle,
+                        new ArrayList<>(parentUpdateListenerMethodMap.getOrDefault(cbMethodHandle.instance, Collections.emptyList()))
+                );
+            } else {
+                node = new Node(
+                        i,
+                        cbMethodHandle,
+                        new ArrayList<>(parentUpdateListenerMethodMap.getOrDefault(cbMethodHandle.instance, Collections.emptyList()))
+                );
+            }
             eventHandlers.add(node);
             instance2NodeMap.put(node.callbackHandle.instance, node);
         }
         //allocate OnEvent dependents
         for (Node handler : eventHandlers) {
-            simpleEventProcessorModel.getOnEventDependenciesForNode(handler.getCallbackHandle())
+            simpleEventProcessorModel.getOnTriggerDependenciesForNode(handler.getCallbackHandle())
                     .stream()
                     .peek(o -> log.debug("child dependency:{}", o))
                     .map(instance2NodeMap::get)
                     .filter(Objects::nonNull)
                     .forEach(handler::addDependent);
+        }
+        //allocate ForkJoinNode dependencies
+        for (Node handler : eventHandlers) {
+            if (handler instanceof ForkTriggerTaskNode) {
+                ForkTriggerTaskNode forkedTriggerTask = (ForkTriggerTaskNode) handler;
+                forkTriggerTaskNodes.add(forkedTriggerTask);
+                simpleEventProcessorModel.getOnTriggerDependenciesForNode(handler.getCallbackHandle())
+                        .stream()
+                        .peek(o -> log.debug("child dependency:{}", o))
+                        .map(instance2NodeMap::get)
+                        .filter(Objects::nonNull)
+                        .forEach(node -> {
+                            node.forkJoinParents.add(forkedTriggerTask);
+                        });
+            }
         }
         //calculate event handler bitset id's for an event with filtering
         simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
@@ -402,7 +460,6 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                         }
                 )
         );
-
         //calculate event handler bitset id's for an event without filtering
         simpleEventProcessorModel.getDispatchMap().forEach((key, value) ->
                 noFilterEventHandlerToBitsetMap.put(
@@ -434,6 +491,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getNodeFields().stream()
                 .filter(f -> !auditorFields.contains(f.getInstance()))
                 .forEach(f -> auditors.forEach(a -> a.nodeRegistered(f.getInstance(), f.getName())));
+        forkTriggerTaskNodes.stream()
+                .forEach(f -> auditors.forEach(a -> a.nodeRegistered(f.forkedTriggerTask, f.callbackHandle.forkVariableName())));
     }
 
     private int nodeIndex(CbMethodHandle nodeInstance) {
@@ -443,6 +502,68 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .map(Node::getPosition).orElse(-1);
     }
 
+    public class ForkTriggerTaskNode extends Node {
+        private final ForkedTriggerTask forkedTriggerTask;
+        private Object triggerEvent;
+
+        public ForkTriggerTaskNode(int position, CbMethodHandle callbackHandle, List<CbMethodHandle> parentListeners) {
+            super(position, callbackHandle, parentListeners);
+            forkedTriggerTask = new ForkedTriggerTask(
+                    () -> {
+                        try {
+                            return (Boolean) callbackHandle.method.invoke(callbackHandle.instance);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    callbackHandle.variableName
+            );
+        }
+
+        @Override
+        @SneakyThrows
+        public void onEvent(Object e) {
+            dependents.forEach(Node::markJoinOnParentTask);
+            triggerEvent = e;
+            dirty = false;
+            auditors.stream()
+                    .filter(Auditor::auditInvocations)
+                    .forEachOrdered(a -> a.nodeInvoked(
+                            forkedTriggerTask, callbackHandle.getVariableName(), callbackHandle.getMethod().getName(), e
+                    ));
+            log.debug("forking task:{}", callbackHandle.getVariableName());
+            forkedTriggerTask.onTrigger();
+        }
+
+        @SneakyThrows
+        public void afterEvent() {
+            if (triggerEvent != null) {
+                log.debug("afterEvent processing:{}", callbackHandle.getVariableName());
+                boolean dirty = forkedTriggerTask.afterEvent();
+                dependents.forEach(n -> n.parentUpdated(dirty));
+                for (CbMethodHandle cb : parentListeners) {
+                    if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent()) {
+                        //audit
+                        auditors.stream()
+                                .filter(Auditor::auditInvocations)
+                                .forEachOrdered(a -> a.nodeInvoked(
+                                        cb.instance, cb.getVariableName(), cb.getMethod().getName(), triggerEvent
+                                ));
+                        cb.method.invoke(cb.instance, callbackHandle.instance);
+                    }
+                }
+            } else {
+                log.debug("afterEvent NOT processing:{}", callbackHandle.getVariableName());
+            }
+            triggerEvent = null;
+        }
+
+        public void reinitialise() {
+            log.debug("reinitialise:{}", callbackHandle.getVariableName());
+            forkedTriggerTask.reinitialize();
+        }
+    }
+
     @Data
     private class Node implements StaticEventProcessor, Lifecycle {
 
@@ -450,6 +571,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         final CbMethodHandle callbackHandle;
         final List<CbMethodHandle> parentListeners;
         final List<Node> dependents = new ArrayList<>();
+        final List<ForkTriggerTaskNode> forkJoinParents = new ArrayList<>();
         Method onEventCompleteMethod;
         boolean dirty;
 
@@ -523,6 +645,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             } else {
                 log.debug("mark clean:{}", callbackHandle.getVariableName());
             }
+        }
+
+        protected void markJoinOnParentTask() {
+            //mark this node in a bit set as join on a parent task
+            forkedTaskBitset.set(position);
+        }
+
+        protected void joinOnParentTask() {
+            forkJoinParents.forEach(ForkTriggerTaskNode::afterEvent);
         }
 
         @Override

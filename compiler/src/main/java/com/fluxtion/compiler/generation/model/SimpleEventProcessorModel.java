@@ -25,7 +25,21 @@ import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.FilterId;
+import com.fluxtion.runtime.annotations.FilterType;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.OnBatchEnd;
+import com.fluxtion.runtime.annotations.OnBatchPause;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.Start;
+import com.fluxtion.runtime.annotations.Stop;
+import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.runtime.event.Event;
@@ -42,9 +56,24 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.OptionalInt;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -1045,15 +1074,15 @@ public class SimpleEventProcessorModel {
      *
      * @return dependents that will be notified with methods @{@link OnTrigger}
      */
-    public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
+    public Set<Object> getOnTriggerDependenciesForNode(CbMethodHandle callSource) {
         if (callSource.isNoPropagateEventHandler()) {
             return Collections.emptySet();
         }
-        return getOnEventDependenciesForNode(callSource.getInstance());
+        return getOnTriggerDependenciesForNode(callSource.getInstance());
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Object> getOnEventDependenciesForNode(Object instance) {
+    public Set<Object> getOnTriggerDependenciesForNode(Object instance) {
         return getDirectChildrenListeningForEvent(instance).stream()
                 .peek(o -> log.debug("checking for OnEvent instance:{}", o))
                 .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnTrigger.class)).isEmpty())
