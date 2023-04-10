@@ -7,6 +7,7 @@
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
 
+## [User documentation](https://v12technology.github.io/fluxtion/)
 
 # Lightweight event stream processor
 - Pure java in memory complex event processing
