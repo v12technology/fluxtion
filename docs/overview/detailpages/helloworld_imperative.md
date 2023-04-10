@@ -90,7 +90,7 @@ Annotate the event handler method as follows:
 
 {% highlight java %}
 @OnEventHandler
-    public boolean data1Update(InputDataEvent_1 data1) {
+public boolean data1Update(InputDataEvent_1 data1) {
     value = data1.value();
     return true;
 }
@@ -102,7 +102,7 @@ Annotate the event handler method as follows:
 
 {% highlight java %}
 @OnEventHandler
-    public boolean data1Update(InputDataEvent_1 data1) {
+public boolean data1Update(InputDataEvent_1 data1) {
     value = data1.value();
     return true;
 }

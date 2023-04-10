@@ -30,8 +30,8 @@ both parallel and synchronously execution, displayed as an ascii bar graph.
 ### Marking parallel OnTrigger methods
 
 The OnTrigger annotation controls the parallel execution of the trigger task:
-1. Asynchronous {@link Asynchronous#executeTask()} OnTrigger(parallelExecution = true)
-2. Synchronous {@link Synchronous#executeTask()} OnTrigger()
+1. Asynchronous OnTrigger(parallelExecution = true)
+2. Synchronous OnTrigger()
 
 {% highlight java %}
 @Slf4j
