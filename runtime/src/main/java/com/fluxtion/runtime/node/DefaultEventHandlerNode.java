@@ -16,6 +16,7 @@
  */
 package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
@@ -23,10 +24,10 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.event.Event;
-import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /**
  * {@inheritDoc}
@@ -39,10 +40,11 @@ public final class DefaultEventHandlerNode<T>
     private final String filterString;
     private final Class<T> eventClass;
     private final String name;
-    private final transient EventSubscription subscription;
+    private final transient EventSubscription<?> subscription;
+    private T event;
+    private BooleanSupplier dirtySupplier;
     @Inject
-    public SubscriptionManager subscriptionManager;
-    public T event;
+    private final EventProcessorContext eventProcessorContext;
 
     public DefaultEventHandlerNode(Class<T> eventClass) {
         this(Event.NO_INT_FILTER, Event.NO_STRING_FILTER, eventClass);
@@ -56,7 +58,11 @@ public final class DefaultEventHandlerNode<T>
         this(Event.NO_INT_FILTER, filterString, eventClass);
     }
 
-    public DefaultEventHandlerNode(int filterId, String filterString, Class<T> eventClass) {
+    public DefaultEventHandlerNode(
+            int filterId,
+            String filterString,
+            Class<T> eventClass
+    ) {
         this.filterId = filterId;
         this.filterString = filterString;
         this.eventClass = eventClass;
@@ -68,18 +74,31 @@ public final class DefaultEventHandlerNode<T>
             name = "handler" + eventClass.getSimpleName();
         }
         subscription = new EventSubscription(filterId, filterString, eventClass);
+        eventProcessorContext = null;
     }
 
     public DefaultEventHandlerNode(
             int filterId,
             @AssignToField("filterString") String filterString,
             Class<T> eventClass,
-            @AssignToField("name") String name) {
+            @AssignToField("name") String name,
+            EventProcessorContext eventProcessorContext) {
+        this.eventProcessorContext = eventProcessorContext;
         this.filterId = filterId;
         this.filterString = filterString;
         this.eventClass = eventClass;
         this.name = name;
         subscription = new EventSubscription(filterId, filterString, eventClass);
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
     }
 
     @Override
@@ -102,6 +121,12 @@ public final class DefaultEventHandlerNode<T>
     @Override
     public Class<T> eventClass() {
         return eventClass;
+    }
+
+
+    @Override
+    public boolean hasChanged() {
+        return dirtySupplier.getAsBoolean();
     }
 
     @Override
@@ -139,13 +164,14 @@ public final class DefaultEventHandlerNode<T>
     @Initialise
     @Override
     public void init() {
-        subscriptionManager.subscribe(subscription);
+        dirtySupplier = eventProcessorContext.getDirtyStateMonitor().dirtySupplier(this);
+        eventProcessorContext.getSubscriptionManager().subscribe(subscription);
     }
 
     @Override
     @TearDown
     public void tearDown() {
-        subscriptionManager.unSubscribe(subscription);
+        eventProcessorContext.getSubscriptionManager().unSubscribe(subscription);
     }
 
     @Override

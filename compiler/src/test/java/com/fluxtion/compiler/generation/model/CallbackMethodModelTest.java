@@ -43,7 +43,7 @@ public class CallbackMethodModelTest extends BaseModelTest {
         );
 
         assertThat(
-                eventProcessorModel.getOnEventDependenciesForNode(stringHandler),
+                eventProcessorModel.getOnTriggerDependenciesForNode(stringHandler),
                 hasItems(intHandler)
         );
     }

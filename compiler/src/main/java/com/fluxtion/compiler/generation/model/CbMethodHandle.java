@@ -21,6 +21,7 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.dataflow.ParallelFunction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -79,7 +80,8 @@ public class CbMethodHandle {
         OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
         OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
         this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
-        this.forkExecution = onTriggerAnnotation != null && onTriggerAnnotation.forkExecution();
+        boolean parallel = (instance instanceof ParallelFunction) ? ((ParallelFunction) instance).parallelCandidate() : false;
+        this.forkExecution = parallel || onTriggerAnnotation != null && onTriggerAnnotation.parallelExecution();
         this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
         this.isGuardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
         this.isNoPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();

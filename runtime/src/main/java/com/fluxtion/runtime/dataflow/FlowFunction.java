@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  *
  * @param <R>
  */
-public interface FlowFunction<R> extends Supplier<R> {
+public interface FlowFunction<R> extends Supplier<R>, ParallelFunction {
 
     default boolean hasDefaultValue() {
         return false;

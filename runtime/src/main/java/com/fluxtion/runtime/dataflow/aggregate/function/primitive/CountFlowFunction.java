@@ -1,15 +1,46 @@
 package com.fluxtion.runtime.dataflow.aggregate.function.primitive;
 
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.IntFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 
+import java.util.function.BooleanSupplier;
+
 public class CountFlowFunction<T> implements AggregateFlowFunction<T, Integer, CountFlowFunction<T>>, IntFlowFunction {
     private int count;
+    @Inject
+    private final DirtyStateMonitor dirtyStateMonitor;
+    private BooleanSupplier dirtySupplier;
+
+    public CountFlowFunction(DirtyStateMonitor dirtyStateMonitor) {
+        this.dirtyStateMonitor = dirtyStateMonitor;
+    }
+
+    public CountFlowFunction() {
+        this(null);
+    }
+
+    @Initialise
+    public void init() {
+        dirtySupplier = dirtyStateMonitor.dirtySupplier(this);
+    }
 
     @Override
     public Integer reset() {
         count = 0;
         return get();
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
     }
 
     @Override
@@ -50,4 +81,8 @@ public class CountFlowFunction<T> implements AggregateFlowFunction<T, Integer, C
         return increment(1);
     }
 
+    @Override
+    public boolean hasChanged() {
+        return dirtySupplier.getAsBoolean();
+    }
 }

@@ -20,6 +20,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.time.Clock;
 
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class EventLogManager implements Auditor {
     private static final Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
     public boolean trace = false;
     public boolean printEventToString = true;
+    public boolean printThreadName = true;
     public EventLogControlEvent.LogLevel traceLevel;
     @Inject
     public Clock clock;
@@ -92,6 +94,11 @@ public class EventLogManager implements Auditor {
         return this;
     }
 
+    public EventLogManager printThreadName(boolean printThreadName) {
+        this.printThreadName = printThreadName;
+        return this;
+    }
+
     @Override
     public void nodeRegistered(Object node, String nodeName) {
         EventLogger logger = new EventLogger(logRecord, nodeName);
@@ -112,7 +119,15 @@ public class EventLogManager implements Auditor {
     public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
         EventLogger logger = node2Logger.getOrDefault(nodeName, NullEventLogger.INSTANCE);
         logger.logNodeInvocation(traceLevel);
-        logger.log("method", methodName, traceLevel);
+        if (printThreadName) {
+            logger.log("thread", Thread.currentThread().getName(), traceLevel);
+        }
+        if (node instanceof ForkedTriggerTask) {
+            logger.log("forkedExecution", "true", traceLevel);
+            logger.log("asyncMethod", methodName, traceLevel);
+        } else {
+            logger.log("method", methodName, traceLevel);
+        }
     }
 
     @OnEventHandler(propagate = false)
@@ -181,6 +196,7 @@ public class EventLogManager implements Auditor {
     public void init() {
         logRecord = new LogRecord(clock);
         logRecord.printEventToString(printEventToString);
+        logRecord.setPrintThreadName(printThreadName);
         node2Logger = new HashMap<>();
         clearAfterPublish = true;
     }

@@ -11,7 +11,6 @@ import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateDoubl
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterDynamicFlowFunction.DoubleFilterDynamicFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterFlowFunction.DoubleFilterFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FlowFunctionToFlowSupplier.DoubleFlowFunctionToFlowSupplier;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapDouble2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapDouble2ToDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapDouble2ToIntFlowFunction;
@@ -43,7 +42,12 @@ public class DoubleFlowBuilder implements FlowDataSupplier<DoubleFlowSupplier> {
     }
 
     public DoubleFlowSupplier flowSupplier() {
-        return EventProcessorBuilderService.service().add(new DoubleFlowFunctionToFlowSupplier(eventStream));
+        return eventStream;
+    }
+
+    public DoubleFlowBuilder parallel() {
+        eventStream.parallel();
+        return this;
     }
 
     //TRIGGERS - START
