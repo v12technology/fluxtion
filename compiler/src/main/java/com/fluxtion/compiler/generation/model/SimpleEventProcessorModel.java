@@ -1045,15 +1045,15 @@ public class SimpleEventProcessorModel {
      *
      * @return dependents that will be notified with methods @{@link OnTrigger}
      */
-    public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
+    public Set<Object> getOnTriggerDependenciesForNode(CbMethodHandle callSource) {
         if (callSource.isNoPropagateEventHandler()) {
             return Collections.emptySet();
         }
-        return getOnEventDependenciesForNode(callSource.getInstance());
+        return getOnTriggerDependenciesForNode(callSource.getInstance());
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Object> getOnEventDependenciesForNode(Object instance) {
+    public Set<Object> getOnTriggerDependenciesForNode(Object instance) {
         return getDirectChildrenListeningForEvent(instance).stream()
                 .peek(o -> log.debug("checking for OnEvent instance:{}", o))
                 .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnTrigger.class)).isEmpty())

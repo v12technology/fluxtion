@@ -5,6 +5,7 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.node.NodeNameLookup;
 
@@ -15,6 +16,8 @@ public class NodeToFlowFunction<T> extends EventLogNode implements TriggeredFlow
     @Inject
     @NoTriggerReference
     public NodeNameLookup nodeNameLookup;
+    @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
 
     public NodeToFlowFunction(T source) {
         this.source = source;
@@ -31,8 +34,23 @@ public class NodeToFlowFunction<T> extends EventLogNode implements TriggeredFlow
     }
 
     @Override
+    public boolean hasChanged() {
+        return dirtyStateMonitor.isDirty(this);
+    }
+
+    @Override
     public T get() {
         return source;
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
     }
 
     @Override

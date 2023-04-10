@@ -232,7 +232,16 @@ public class EventProcessorConfig {
     }
 
     public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
-        addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), EventLogManager.NODE_NAME);
+        addEventAudit(tracingLogLevel, printEventToString, true);
+    }
+
+    public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString, boolean printThreadName) {
+        addAuditor(
+                new EventLogManager()
+                        .tracingOn(tracingLogLevel)
+                        .printEventToString(printEventToString)
+                        .printThreadName(printThreadName),
+                EventLogManager.NODE_NAME);
     }
 
     public void addInterfaceImplementation(Class<?> clazz) {

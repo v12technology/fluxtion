@@ -8,7 +8,6 @@ import com.fluxtion.runtime.dataflow.aggregate.function.AggregateFlowFunctionWra
 import com.fluxtion.runtime.dataflow.aggregate.function.TimedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow;
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToRefFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FlowFunctionToFlowSupplier;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeFlowFunction;
@@ -53,7 +52,7 @@ public class FlowBuilderBase<T> extends AbstractFlowBuilder<T, FlowBuilderBase<T
     }
 
     public FlowSupplier<T> flowSupplier() {
-        return EventProcessorBuilderService.service().add(new FlowFunctionToFlowSupplier<>(eventStream));
+        return EventProcessorBuilderService.service().add(eventStream);
     }
 
     public FlowBuilderBase<T> defaultValue(T defaultValue) {

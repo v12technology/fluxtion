@@ -11,7 +11,6 @@ import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateIntFl
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToIntFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterDynamicFlowFunction.IntFilterDynamicFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterFlowFunction.IntFilterFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FlowFunctionToFlowSupplier.IntFlowFunctionToFlowSupplier;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapInt2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapInt2ToDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapInt2ToIntFlowFunction;
@@ -37,7 +36,12 @@ public class IntFlowBuilder implements FlowDataSupplier<IntFlowSupplier> {
 
     @Override
     public IntFlowSupplier flowSupplier() {
-        return EventProcessorBuilderService.service().add(new IntFlowFunctionToFlowSupplier(eventStream));
+        return eventStream;
+    }
+
+    public IntFlowBuilder parallel() {
+        eventStream.parallel();
+        return this;
     }
 
     //TRIGGERS - START

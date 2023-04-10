@@ -150,10 +150,14 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     @Override
     public boolean isDirty(Object node) {
+        return dirtySupplier(node).getAsBoolean();
+    }
+
+    public BooleanSupplier dirtySupplier(Object node) {
         if(dirtyFlagSupplierMap.isEmpty()){
             ${MODEL.dirtyFlagLookup}
         }
-        return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE).getAsBoolean();
+        return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
     }
 
     @Override

@@ -1036,8 +1036,8 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     public static class StreamAsMemberClass implements NamedNode {
         private final FlowSupplier<String> stringStream;
         private final String name;
-        private boolean triggered;
-        private boolean hasChanged;
+        private transient boolean triggered;
+        private transient boolean hasChanged;
 
         @Override
         public String getName() {

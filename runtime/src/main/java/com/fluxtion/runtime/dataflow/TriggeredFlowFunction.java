@@ -1,6 +1,6 @@
 package com.fluxtion.runtime.dataflow;
 
-public interface TriggeredFlowFunction<T> extends FlowFunction<T> {
+public interface TriggeredFlowFunction<T> extends FlowFunction<T>, FlowSupplier<T> {
     void setUpdateTriggerNode(Object updateTriggerNode);
 
     void setPublishTriggerNode(Object publishTriggerNode);

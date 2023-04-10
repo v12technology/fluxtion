@@ -1,7 +1,9 @@
 package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.partition.LambdaReflection;
 
@@ -10,6 +12,8 @@ public class NodePropertyToFlowFunction<T> extends EventLogNode implements Trigg
     private transient final Object source;
     private final LambdaReflection.SerializableSupplier<T> methodSupplier;
     private transient T value;
+    @Inject
+    public DirtyStateMonitor dirtyStateMonitor;
 
     public NodePropertyToFlowFunction(LambdaReflection.SerializableSupplier<T> methodSupplier) {
         this.methodSupplier = methodSupplier;
@@ -20,6 +24,21 @@ public class NodePropertyToFlowFunction<T> extends EventLogNode implements Trigg
     public boolean triggered() {
         value = methodSupplier.get();
         return true;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return dirtyStateMonitor.isDirty(this);
+    }
+
+    @Override
+    public void parallel() {
+
+    }
+
+    @Override
+    public boolean parallelCandidate() {
+        return false;
     }
 
     @Override
