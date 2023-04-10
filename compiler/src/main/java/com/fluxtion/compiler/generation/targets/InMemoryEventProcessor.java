@@ -121,6 +121,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     public void postEventProcessing() {
         log.debug("======== eventComplete ========");
         for (int i = dirtyBitset.length(); (i = dirtyBitset.previousSetBit(i - 1)) >= 0; ) {
+            log.debug("check for postprocessing index[{}]", i);
             if (eventHandlers.get(i).willInvokeEventComplete()) {
                 log.debug("event dispatch bitset index[{}] handler[{}::{}]",
                         i,
@@ -195,8 +196,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             );
             eventHandlers.get(i).onEvent(event);
         }
-
+        postProcessBufferingBitset.or(updateBitset);
         if (!buffer) {
+            dirtyBitset.or(updateBitset);
+            log.debug("dirtyBitset, postProcessing:{}", dirtyBitset);
             postEventProcessing();
         }
         updateBitset.clear();
@@ -215,6 +218,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     eventHandlers.get(nextForkIndex).callbackHandle.getMethod().getName()
             );
             eventHandlers.get(nextForkIndex).joinOnParentTask();
+            updateBitset.set(nextForkIndex);
             return nextForkIndex;
         }
         return nextDirtyIndex;
@@ -535,11 +539,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             forkedTriggerTask.onTrigger();
         }
 
+        public boolean willInvokeEventComplete() {
+            afterEvent();
+            return dirty && onEventCompleteMethod != null;
+        }
+
         @SneakyThrows
         public void afterEvent() {
             if (triggerEvent != null) {
                 log.debug("afterEvent processing:{}", callbackHandle.getVariableName());
-                boolean dirty = forkedTriggerTask.afterEvent();
+                dirty = forkedTriggerTask.afterEvent();
                 dependents.forEach(n -> n.parentUpdated(dirty));
                 for (CbMethodHandle cb : parentListeners) {
                     if ((cb.isGuardedParent() & dirty) || !cb.isGuardedParent()) {
@@ -697,6 +706,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
         public int getPosition() {
             return position;
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "callbackHandle=" + callbackHandle +
+                    '}';
         }
     }
 }

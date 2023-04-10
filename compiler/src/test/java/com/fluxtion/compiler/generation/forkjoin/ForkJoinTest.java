@@ -1,71 +1,31 @@
 package com.fluxtion.compiler.generation.forkjoin;
 
-import com.fluxtion.compiler.builder.dataflow.DataFlow;
-import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
+import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.LogRecord;
-import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.node.NamedNode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 @Slf4j
 public class ForkJoinTest extends MultipleSepTargetInProcessTest {
-    public ForkJoinTest(SepTestConfig compile) {
+
+    public ForkJoinTest(CompiledAndInterpretedSepTest.SepTestConfig compile) {
         super(compile);
-    }
-
-    @SneakyThrows
-    public static String toUpper(Object in) {
-        Thread.sleep(1_000);
-        String upperCase = in.toString().toUpperCase();
-        return upperCase;
-    }
-
-    @Test
-    public void testSimple() {
-        writeSourceFile = true;
-        sep(c -> {
-            AsyncProcess asynch1 = new AsyncProcess("asynch_1", 200);
-            AsyncProcess asynch2 = new AsyncProcess("asynch_1", 100);
-            AsyncProcess asynch3 = new AsyncProcess("asynch_1", 85);
-//            c.addNode(new SyncCollector("collector", asynch1));
-            c.addNode(SyncCollectorMulti.builder().name("multiCollector")
-                    .parent(asynch1)
-                    .parent(asynch2)
-                    .parent(asynch3)
-                    .build());
-        });
-        publishSignal("asynch_1");
-//        publishSignal("asynch_1");
-//        publishSignal("asynch_1");
-    }
-
-    @Test
-    public void testSimple2() {
-        writeSourceFile = true;
-        writeOutputsToFile(true);
-        sep(c -> {
-            c.addNode(SyncCollectorMulti.builder().name("multiCollector")
-                    .parent(new AsyncProcess("asynch_1", 45))
-                    .parent(new AsyncProcess("asynch_2", 110))
-                    .parent(new AsyncProcess("asynch_2", 25))
-                    .parent(new AsyncProcess("asynch_4", 60)).build());
-        });
-//        publishSignal("asynch_1");
-        publishSignal("asynch_2");
-//        publishSignal("asynch_4");
-//        publishSignal("asynch_1");
     }
 
     public void log(LogRecord logRecord) {
@@ -73,133 +33,191 @@ public class ForkJoinTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void parallelMap() {
-        writeSourceFile = true;
-        writeOutputsToFile(true);
-//        addAuditor();
+    public void forkGraph() {
         sep(c -> {
-            c.addNode(SyncCollectorMulti.builder().name("multiCollector")
-                    .parent(
-                            DataFlow.subscribeToSignal("async_1")
-                                    .map(MyConverter::toUpperStatic)
-                                    .parallel()
-                                    .flowSupplier()
-                    )
-                    .parent(
-                            DataFlow.subscribeToSignal("async_1")
-                                    .map(new MyConverter()::toUpper)
-                                    .parallel()
-                                    .flowSupplier()
-                    )
-                    .build()
 
-            );
-//            c.addEventAudit(LogLevel.INFO);
+            InputHandler inputHandler = new InputHandler("dopey_or_sleepy");
+            c.addNode(new CompletionTrigger(new LongRunningTrigger[]{
+                    new LongRunningTrigger(inputHandler, "dopey"),
+                    new LongRunningTrigger(inputHandler, "sleepy"),
+                    new LongRunningTrigger("doc")
+            }
+            ));
+            c.addEventAudit(LogLevel.INFO);
         });
 //        sep.setAuditLogProcessor(this::log);
 //        sep.setAuditLogLevel(LogLevel.DEBUG);
-        publishSignal("async_1");
+        onEvent("doc");
+        getField("collector", CompletionTrigger.class).reset();
+        onEvent("all");
+        getField("collector", CompletionTrigger.class).validateAllUpdated();
+        getField("collector", CompletionTrigger.class).reset();
+        onEvent("ignore");
+        getField("collector", CompletionTrigger.class).reset();
+        onEvent("dopey_or_sleepy");
+        getField("collector", CompletionTrigger.class).reset();
+        onEvent("all");
+        getField("collector", CompletionTrigger.class).validateAllUpdated();
     }
 
-    @Data
-    @Slf4j
-    @AllArgsConstructor
-    public static class AsyncProcess implements NamedNode {
-        private final String name;
-        private final int waitMillis;
-        private final Object parent;
 
-        public AsyncProcess(String name, int wait) {
-            this(
-                    name + "_" + wait,
-                    wait,
-                    DataFlow.subscribeToSignal(name)
-                            .map(new MyConverter()::toUpper)
-                            .flowSupplier());
+    @Slf4j
+    public static class InputHandler {
+
+        private final String ignoreString;
+        String in;
+
+        public InputHandler(@AssignToField("ignoreString") String ignoreString) {
+            this.ignoreString = ignoreString;
+        }
+
+        @OnEventHandler
+        public boolean stringHandler(String in) {
+            this.in = in;
+            log.debug("event:{}", in);
+            return !in.equals(ignoreString) && !in.equals("ignore");
+        }
+    }
+
+    @Slf4j
+    public static class LongRunningTrigger extends EventLogNode {
+        private final InputHandler inputHandler;
+        private final String name;
+        private String error;
+        private boolean taskComplete = false;
+        private boolean afterTriggerComplete = false;
+
+
+        public LongRunningTrigger(@AssignToField("inputHandler") InputHandler inputHandler, String name) {
+            this.inputHandler = inputHandler;
+            this.name = name;
+        }
+
+        public LongRunningTrigger(String name) {
+            this(new InputHandler(name), name);
         }
 
         @SneakyThrows
         @OnTrigger(parallelExecution = true)
-        public boolean trigger() {
-            log.info("trigger::start {}", toString());
-            Thread.sleep(waitMillis);
-            log.info("trigger::complete {}", toString());
+        public boolean startLongTask() {
+            log.debug("{} startLongTask", name);
+            if (inputHandler.in.equals(name)) {
+                auditLog.info("NoStart", name);
+                return false;
+            }
+            if (afterTriggerComplete) {
+                throw new RuntimeException("afterTrigger and afterEvent should not have completed");
+            }
+            long millis = (long) (new Random().nextDouble() * 50);
+            log.debug("{} start sleep:{}", name, millis);
+            auditLog.info("starting", name)
+                    .info("startTime", System.currentTimeMillis())
+                    .info("sleep", millis);
+            Thread.sleep(millis);
+            log.debug("{} completed", name);
+            auditLog.info("finish", name)
+                    .info("finishTime", System.currentTimeMillis());
+            taskComplete = true;
             return true;
         }
 
-        @Override
-        public String toString() {
-            return "AsyncProcess{" +
-                    "name='" + name + '\'' +
-                    '}';
-        }
-
-    }
-
-    @Slf4j
-    public static class MyConverter {
-
-        @SneakyThrows
-        public static String toUpperStatic(Object in) {
-            log.info("converting to upper");
-            Thread.sleep(1_000);
-            String upperCase = in.toString().toUpperCase();
-            log.info("converted:{}", upperCase);
-            return upperCase;
-        }
-
-
-        @SneakyThrows
-        public String toUpper(Object in) {
-            log.info("converting to upper");
-            Thread.sleep(1_000);
-            String upperCase = in.toString().toUpperCase();
-            log.info("converted:{}", upperCase);
-            return upperCase;
-        }
-    }
-
-    @Data
-    @Slf4j
-    public static class SyncCollector implements NamedNode {
-        private final String name;
-        private final Object parent;
-
-        @OnTrigger
-        public boolean trigger() {
-            log.info("trigger");
-            return true;
-        }
-
-        @OnParentUpdate
-        public void parentUpdated(Object parent) {
-            log.info("parentUpdated");
-        }
-    }
-
-    @Data
-    @Slf4j
-    @Builder
-    @AllArgsConstructor
-    public static class SyncCollectorMulti implements NamedNode {
-        private final String name;
-        @Singular("parent")
-        private final List<Object> parent;
-
-        @OnParentUpdate
-        public void parentUpdated(Object parent) {
-            log.info("parentUpdated:{}", parent instanceof FlowSupplier ? ((FlowSupplier) parent).get() : "--");
-        }
-
-        @OnTrigger
-        public boolean trigger() {
-            log.info("trigger");
-            return true;
+        @AfterTrigger
+        public void afterTrigger() {
+            log.debug("{} afterTrigger", name);
+            if (!taskComplete) {
+                throw new RuntimeException("startLongTask should be complete and afterEvent should not have completed");
+            }
+            afterTriggerComplete = true;
         }
 
         @AfterEvent
-        public void postCollect() {
-            log.info("postCollect");
+        public void afterEvent() {
+            log.debug("{} afterEvent", name);
+            if (taskComplete & !afterTriggerComplete) {
+                throw new RuntimeException("afterTrigger should be complete");
+            }
+            if (!taskComplete & afterTriggerComplete) {
+                throw new RuntimeException("startLongTask should be completed");
+            }
+            taskComplete = false;
+            afterTriggerComplete = false;
+        }
+    }
+
+    @Data
+    @Slf4j
+    public static class CompletionTrigger extends EventLogNode implements NamedNode {
+        private final LongRunningTrigger[] tasks;
+        private boolean taskComplete = false;
+        private boolean afterTriggerComplete = false;
+        private boolean parentUpdateComplete = false;
+        private Set<String> updateSetSet = new HashSet<>();
+
+        @OnParentUpdate
+        public void taskUpdated(LongRunningTrigger task) {
+            auditLog.info("finished", task.name);
+            if (afterTriggerComplete || taskComplete) {
+                throw new RuntimeException("afterTrigger and collectSlowResults should not have completed");
+            }
+            log.debug("parentCallBack:{}", task.name);
+            updateSetSet.add(task.name);
+            parentUpdateComplete = updateSetSet.size() == tasks.length;
+        }
+
+        @OnTrigger(parallelExecution = true)
+        public boolean collectResultsAsync() {
+            log.debug("collectResultsAsync");
+            if (afterTriggerComplete) {
+                throw new RuntimeException("afterTriggerComplete should be complete");
+            }
+            if (updateSetSet.isEmpty()) {
+                throw new RuntimeException("at least one update should be received");
+            }
+            taskComplete = true;
+            return true;
+        }
+
+        public void validateAllUpdated() {
+            if (!parentUpdateComplete) {
+                throw new RuntimeException("all should have updated");
+            }
+        }
+
+        @AfterTrigger
+        public void afterTrigger() {
+            log.debug("afterTrigger");
+            if (!taskComplete) {
+                throw new RuntimeException("collectSlowResults should be complete");
+            }
+            if (updateSetSet.isEmpty()) {
+                throw new RuntimeException("at least one update should be received");
+            }
+            afterTriggerComplete = true;
+        }
+
+        @AfterEvent
+        public void afterEvent() {
+            log.debug("afterEvent");
+            if (taskComplete & !afterTriggerComplete) {
+                throw new RuntimeException("afterTrigger should be complete");
+            }
+            if (!taskComplete & afterTriggerComplete) {
+                throw new RuntimeException("startLongTask should be completed");
+            }
+            taskComplete = false;
+            afterTriggerComplete = false;
+        }
+
+        @Override
+        public String getName() {
+            return "collector";
+        }
+
+        public void reset() {
+            taskComplete = false;
+            afterTriggerComplete = false;
+            parentUpdateComplete = false;
+            updateSetSet.clear();
         }
     }
 }
