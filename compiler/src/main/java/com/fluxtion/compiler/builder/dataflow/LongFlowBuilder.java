@@ -11,7 +11,6 @@ import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateLongF
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToLongFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterDynamicFlowFunction.LongFilterDynamicFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FilterFlowFunction.LongFilterFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FlowFunctionToFlowSupplier.LongFlowFunctionToFlowSupplier;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapLong2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapLong2ToDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapLong2ToIntFlowFunction;
@@ -41,7 +40,12 @@ public class LongFlowBuilder implements FlowDataSupplier<LongFlowSupplier> {
     }
 
     public LongFlowSupplier flowSupplier() {
-        return EventProcessorBuilderService.service().add(new LongFlowFunctionToFlowSupplier(eventStream));
+        return eventStream;
+    }
+
+    public LongFlowBuilder parallel() {
+        eventStream.parallel();
+        return this;
     }
 
     //TRIGGERS - START

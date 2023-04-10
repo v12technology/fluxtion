@@ -10,7 +10,6 @@ import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow;
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToRefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FlatMapArrayFlowFunction;
 import com.fluxtion.runtime.dataflow.function.FlatMapFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FlowFunctionToFlowSupplier;
 import com.fluxtion.runtime.dataflow.function.LookupFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
@@ -57,7 +56,7 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     }
 
     public FlowSupplier<T> flowSupplier() {
-        return EventProcessorBuilderService.service().add(new FlowFunctionToFlowSupplier<>(eventStream));
+        return eventStream;
     }
 
     public FlowBuilder<T> defaultValue(T defaultValue) {

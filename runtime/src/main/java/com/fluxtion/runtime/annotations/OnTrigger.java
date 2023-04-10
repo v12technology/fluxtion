@@ -97,5 +97,5 @@ public @interface OnTrigger {
      *
      * @return request parallel execution flag
      */
-    boolean forkExecution() default false;
+    boolean parallelExecution() default false;
 }

@@ -261,7 +261,13 @@ public abstract class MultipleSepTargetInProcessTest {
     }
 
     protected void onEvent(Object e) {
-        sep.onEvent(e);
+        try {
+            sep.onEvent(e);
+        } catch (Exception exception) {
+            System.out.println("Exception:" + exception + ", " + exception.getMessage());
+            System.out.println("Last log:\n" + sep.getLastAuditLogRecord());
+            throw new RuntimeException(exception);
+        }
     }
 
     protected void bufferEvent(Object e) {
