@@ -105,6 +105,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     private void afterEvent() {
         ${MODEL.eventEndMethods}
         ${MODEL.resetDirtyFlags}
+        ${MODEL.resetForkTasks}
     }
 
     @Override
