@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -39,7 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public class RegistrationListenerTest extends MultipleSepTargetInProcessTest {
 
-    public RegistrationListenerTest(boolean compiledSep) {
+    public RegistrationListenerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

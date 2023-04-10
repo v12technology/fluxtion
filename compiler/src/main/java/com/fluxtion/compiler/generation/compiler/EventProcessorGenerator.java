@@ -148,11 +148,7 @@ public class EventProcessorGenerator {
 
     private void templateJavaOutput(Writer templateWriter) throws Exception {
         try {
-            JavaSourceGenerator srcModel = new JavaSourceGenerator(
-                    simpleEventProcessorModel,
-                    config.isInlineEventHandling(),
-                    config.isAssignPrivateMembers()
-            );
+            JavaSourceGenerator srcModel = new JavaSourceGenerator(simpleEventProcessorModel, config);
             srcModel.additionalInterfacesToImplement(config.interfacesToImplement());
             LOG.debug("building source model");
             srcModel.buildSourceModel();

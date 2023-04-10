@@ -5,6 +5,7 @@
  */
 package com.fluxtion.compiler.generation.refelctionassignment;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
 import com.fluxtion.test.event.TimeEvent;
 import com.fluxtion.test.nodes.privatemembers.TimeHandler;
@@ -22,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class JavaReflectionAssignmentTest extends CompiledOnlySepTest {
 
-    public JavaReflectionAssignmentTest(boolean compiledSep) {
+    public JavaReflectionAssignmentTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

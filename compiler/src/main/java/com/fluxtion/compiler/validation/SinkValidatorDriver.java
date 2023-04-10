@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.validation;
 
 import com.fluxtion.runtime.EventProcessor;
-import com.fluxtion.runtime.stream.aggregate.MutableNumber;
+import com.fluxtion.runtime.dataflow.MutableNumber;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.concurrent.atomic.LongAdder;
@@ -20,11 +20,11 @@ public class SinkValidatorDriver<EXPECTED> {
     private final String sinkName;
     private final Stream<? extends Supplier<TestRowValidationRecord<EXPECTED>>> validationStream;
     private final BiPredicate<EXPECTED, EXPECTED> sinkValidator;
+    private final MutableNumber syntheticTime = new MutableNumber();
+    private final LongAdder rowCount = new LongAdder();
     private boolean useSyntheticTime;
     private boolean stopOnFirstFailure = true;
     private EXPECTED actualOutput;
-    private final MutableNumber syntheticTime = new MutableNumber();
-    private final LongAdder rowCount = new LongAdder();
 
     public SinkValidatorDriver(
             EventProcessor eventProcessor,
@@ -47,6 +47,13 @@ public class SinkValidatorDriver<EXPECTED> {
         this.useSyntheticTime = useSyntheticTime;
         syntheticTime.setLongValue(0);
         rowCount.reset();
+    }
+
+    static boolean objectsAreEqual(Object obj1, Object obj2) {
+        if (obj1 == null) {
+            return (obj2 == null);
+        }
+        return obj1.equals(obj2);
     }
 
     public boolean useSyntheticTime() {
@@ -91,22 +98,21 @@ public class SinkValidatorDriver<EXPECTED> {
                         + "]"
                 );
             }
-        } else if (expectedOutput != null && sinkValidator.test(expectedOutput, actualOutput)) {
+        } else if (expectedOutput != null && !sinkValidator.test(expectedOutput, actualOutput)) {
             throw new AssertionError("validation error on row:" + rowCount.longValue()
                     + " objects failed vaildation["
                     + expectedOutput
                     + "  ==> " + actualOutput
                     + "]"
             );
+        } else if (row.expectNull() && expectedOutput != null) {
+            throw new AssertionError("validation error on row:" + rowCount.longValue()
+                    + " objects failed vaildation[NULL"
+                    + "  ==> " + actualOutput
+                    + "]"
+            );
         }
         rowCount.increment();
         actualOutput = null;
-    }
-
-    static boolean objectsAreEqual(Object obj1, Object obj2) {
-        if (obj1 == null) {
-            return (obj2 == null);
-        }
-        return obj1.equals(obj2);
     }
 }

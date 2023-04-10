@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
@@ -14,7 +15,7 @@ import org.junit.Test;
 
 public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
 
-    public MapFieldWithAnnotationTest(boolean compiledSep) {
+    public MapFieldWithAnnotationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -77,7 +78,9 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         @Inject
         private final EventDispatcher eventDispatcher;
 
-        public PartialAssignField(EventDispatcher eventDispatcher, DirtyStateMonitor dirtyStateMonitor) {
+        public PartialAssignField(
+                @AssignToField("eventDispatcher") EventDispatcher eventDispatcher,
+                @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor) {
             this.eventDispatcher = eventDispatcher;
             this.dirtyStateMonitor = dirtyStateMonitor;
         }
@@ -90,7 +93,9 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
 
     public static class PartialAssignFieldSubClass extends PartialAssignField {
 
-        public PartialAssignFieldSubClass(EventDispatcher eventDispatcher, DirtyStateMonitor dirtyStateMonitor) {
+        public PartialAssignFieldSubClass(
+                @AssignToField("eventDispatcher") EventDispatcher eventDispatcher,
+                @AssignToField("dirtyStateMonitor") DirtyStateMonitor dirtyStateMonitor) {
             super(eventDispatcher, dirtyStateMonitor);
         }
     }

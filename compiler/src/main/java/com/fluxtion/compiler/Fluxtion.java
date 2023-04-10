@@ -77,8 +77,8 @@ public interface Fluxtion {
                                      String packageName,
                                      String className) {
         return compile(cfgBuilder, compilerCfg -> {
-            compilerCfg.setPackageName(packageName);
-            compilerCfg.setClassName(className);
+            compilerCfg.setPackageName(packageName.trim());
+            compilerCfg.setClassName(className.trim());
         });
     }
 
@@ -95,6 +95,10 @@ public interface Fluxtion {
      */
     static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig) {
         return EventProcessorFactory.interpreted(sepConfig);
+    }
+
+    static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig, boolean generateDescription) {
+        return EventProcessorFactory.interpreted(sepConfig, generateDescription);
     }
 
     /**
@@ -200,6 +204,11 @@ public interface Fluxtion {
     @SneakyThrows
     static EventProcessor interpret(RootNodeConfig rootNode) {
         return EventProcessorFactory.interpreted(rootNode);
+    }
+
+    @SneakyThrows
+    static EventProcessor interpret(RootNodeConfig rootNode, boolean generateDescription) {
+        return EventProcessorFactory.interpreted(rootNode, generateDescription);
     }
 
     /**

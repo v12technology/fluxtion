@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2019, V12 Technology Ltd.
  * All rights reserved.
  *
@@ -12,11 +12,12 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author gregp
  */
 public class EscapeStringTest extends MultipleSepTargetInProcessTest {
@@ -40,7 +40,7 @@ public class EscapeStringTest extends MultipleSepTargetInProcessTest {
     private static final List<String> stringListProp = Arrays.asList("\"\\", "\t%\n");
     private static final String[] arrVals = new String[]{"\"", "e", "'#g\\£"};
 
-    public EscapeStringTest(boolean compiledSep) {
+    public EscapeStringTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

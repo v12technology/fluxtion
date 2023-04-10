@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.audit;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.EventLogNode;
@@ -7,13 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class AuditAfterException extends MultipleSepTargetInProcessTest {
-    public AuditAfterException(boolean compiledSep) {
+    public AuditAfterException(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void captureRecord_with_Exception_in_OnEvent() {
-        writeSourceFile = true;
         addAuditor();
         sep(c -> {
             c.addNode(new FailingHandler());
@@ -35,7 +35,6 @@ public class AuditAfterException extends MultipleSepTargetInProcessTest {
 
     @Test
     public void captureRecordAndAuditValue_with_Exception_in_OnEvent() {
-        writeSourceFile = true;
         addAuditor();
         sep(c -> {
             c.addNode(new FailingHandlerWithAuditValues());

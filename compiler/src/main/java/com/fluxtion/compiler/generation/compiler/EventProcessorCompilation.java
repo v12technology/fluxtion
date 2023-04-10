@@ -24,6 +24,7 @@ import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.google.googlejavaformat.java.Formatter;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -93,9 +94,15 @@ public class EventProcessorCompilation {
         LOG.debug("generateSep");
         Class<?> returnClass = null;
         Writer writer;
+        File backupFile = null;
+        boolean formatSuccess = true;
         if (compilerConfig.isWriteSourceToFile()) {
             File outFile = new File(GenerationContext.SINGLETON.getPackageDirectory(), GenerationContext.SINGLETON.getSepClassName() + ".java");
             outFile.getParentFile().mkdirs();
+            if (outFile.exists()) {
+                backupFile = new File(outFile.getParentFile(), outFile.getName() + ".backup");
+                FileUtils.moveFile(outFile, backupFile);
+            }
             writer = new FileWriter(outFile);
         } else {
             writer = new StringWriter();
@@ -121,6 +128,7 @@ public class EventProcessorCompilation {
                     writer = compilerConfig.getSourceWriter();
                 }
             } catch (Throwable t) {
+                formatSuccess = false;
                 if (compilerConfig.getSourceWriter() != null) {
                     compilerConfig.getSourceWriter().write(writer.toString());
                     writer = compilerConfig.getSourceWriter();
@@ -135,11 +143,21 @@ public class EventProcessorCompilation {
         if (compilerConfig.isCompileSource()) {
             LOG.debug("start compiling source");
             if (compilerConfig.isWriteSourceToFile()) {
-                returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()));
+                builderConfig.getCompilerOptions();
+                returnClass = StringCompilation.compile(fqn, readText(file.getCanonicalPath()),
+                        builderConfig.getCompilerOptions());
             } else {
-                returnClass = StringCompilation.compile(fqn, writer.toString());
+                returnClass = StringCompilation.compile(fqn, writer.toString(),
+                        builderConfig.getCompilerOptions());
             }
             LOG.debug("completed compiling source");
+            if (backupFile != null) {
+                FileUtils.delete(backupFile);
+                backupFile = null;
+            }
+        }
+        if (backupFile != null && !formatSuccess) {
+            FileUtils.delete(backupFile);
         }
         return returnClass;
     }

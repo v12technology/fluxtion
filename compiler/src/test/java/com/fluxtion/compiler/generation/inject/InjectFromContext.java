@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.inject;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.Initialise;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectFromContext extends MultipleSepTargetInProcessTest {
-    public InjectFromContext(boolean compiledSep) {
+    public InjectFromContext(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -23,6 +24,25 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
         enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup");
+        });
+        InjectDataFromContext ctxtLookup = getField("ctxtLookup");
+        Assert.assertNull(ctxtLookup.getContextValue());
+        Map<Object, Object> ctxtMap = new HashMap<>();
+        ctxtMap.put("newKey", "newValue");
+        sep.setContextParameterMap(ctxtMap);
+        //
+        enableInitCheck(true);
+        init();
+        Assert.assertEquals("newValue", ctxtLookup.getContextValue());
+    }
+
+    @Test
+    public void injectIntoContextTwice() {
+//        writeSourceFile = true;
+        enableInitCheck(false);
+        sep(c -> {
+            c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup");
+            c.addNode(new InjectDataFromContext("newKey"), "ctxtLookup_2");
         });
         InjectDataFromContext ctxtLookup = getField("ctxtLookup");
         Assert.assertNull(ctxtLookup.getContextValue());

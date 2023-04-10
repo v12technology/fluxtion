@@ -8,14 +8,13 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 
 @SepNode
-public class InstanceSupplierNode<T> implements NamedNode, InstanceSupplier<T> {
+public class InstanceSupplierNode<T> extends SingleNamedNode implements NamedNode, InstanceSupplier<T> {
 
     @Inject
     private final EventProcessorContext context;
     private final boolean failFast;
     private final Object contextKey;
-    private final String name;
-    private T contextProperty;
+    private T instanceFromEventProcessorContext;
 
     public InstanceSupplierNode(Object contextKey) {
         this(contextKey, false, null);
@@ -39,34 +38,29 @@ public class InstanceSupplierNode<T> implements NamedNode, InstanceSupplier<T> {
             @AssignToField("failFast") boolean failFast,
             @AssignToField("context") EventProcessorContext context,
             @AssignToField("name") String name) {
+        super(name.replace(".", "_"));
         this.contextKey = contextKey;
         this.failFast = failFast;
         this.context = context;
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name.replace(".", "_");
     }
 
     @Override
     public T get() {
-        contextProperty = context.getContextProperty(contextKey);
-        if (contextProperty == null && failFast) {
+        instanceFromEventProcessorContext = context.getContextProperty(contextKey);
+        if (instanceFromEventProcessorContext == null && failFast) {
             throw new RuntimeException("missing context property for key:'" + contextKey + "'");
         }
-        return contextProperty;
+        return instanceFromEventProcessorContext;
     }
 
     @Initialise
     public void init() {
-        contextProperty = null;
+        instanceFromEventProcessorContext = null;
         get();
     }
 
     @TearDown
     public void tearDown() {
-        contextProperty = null;
+        instanceFromEventProcessorContext = null;
     }
 }

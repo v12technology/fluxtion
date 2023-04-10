@@ -712,8 +712,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         walkDependenciesForEventHandling(refField);
                     }
                 }
-            } else if (List.class
-                    .isAssignableFrom(field.getType())) {
+            } else if (List.class.isAssignableFrom(field.getType()) || Set.class.isAssignableFrom(field.getType())) {
                 Collection<?> list = (Collection<?>) field.get(object);
                 if (list == null) {
                     continue;

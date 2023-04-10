@@ -28,21 +28,45 @@ import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
 import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
+import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
+import com.fluxtion.compiler.generation.serialiser.FieldContext;
+import com.fluxtion.compiler.generation.serialiser.FormatSerializer;
+import com.fluxtion.compiler.generation.serialiser.IoSerializer;
+import com.fluxtion.compiler.generation.serialiser.TimeSerializer;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Configuration used by Fluxtion event stream compiler at generation time to
@@ -56,44 +80,40 @@ public class EventProcessorConfig {
     private final Set<Class<?>> interfaces = new HashSet<>();
     private final Clock clock = ClockFactory.SINGLETON;
     private final Map<String, String> class2replace = new HashMap<>();
+    private final Map<Object, Integer> filterMap = new HashMap<>();
+    private final Map<Class<?>, Function<FieldContext, String>> classSerializerMap = new HashMap<>();
     private String templateFile;
     private List<Object> nodeList;
     private HashMap<Object, String> publicNodes;
     private HashMap<String, Auditor> auditorMap;
     private NodeFactoryRegistration nodeFactoryRegistration;
     private RootNodeConfig rootNodeConfig;
-    private Map<Object, Integer> filterMap;
     private boolean inlineEventHandling = false;
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
-
-    enum NodeFactoryConfig {
-        required(
-                CallBackDispatcherFactory.class,
-                CallbackNodeFactory.class,
-                ClockFactory.class,
-                InstanceSupplierFactory.class,
-                DirtyStateMonitorFactory.class,
-                EventDispatcherFactory.class,
-                EventProcessorCallbackInternalFactory.class,
-                EventProcessorContextFactory.class,
-                NodeNameLookupFactory.class,
-                SubscriptionManagerFactory.class
-        );
-
-        private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
-
-        NodeFactoryConfig(Class<? extends NodeFactory<?>>... factoryClasses) {
-            Arrays.asList(factoryClasses).forEach(defaultFactories::add);
-        }
-
-        public Set<Class<? extends NodeFactory<?>>> getFactoryClasses() {
-            return new HashSet<>(defaultFactories);
-        }
-    }
+    private boolean instanceOfDispatch = true;
+    private DISPATCH_STRATEGY dispatchStrategy = DISPATCH_STRATEGY.INSTANCE_OF;
+    private List<String> compilerOptions = new ArrayList<>();
 
     public EventProcessorConfig() {
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
+        classSerializerMap.put(Duration.class, TimeSerializer::durationToSource);
+        classSerializerMap.put(Instant.class, TimeSerializer::instantToSource);
+        classSerializerMap.put(LocalDate.class, TimeSerializer::localDateToSource);
+        classSerializerMap.put(LocalTime.class, TimeSerializer::localTimeToSource);
+        classSerializerMap.put(LocalDateTime.class, TimeSerializer::localDateTimeToSource);
+        classSerializerMap.put(Period.class, TimeSerializer::periodToSource);
+        classSerializerMap.put(ZoneId.class, TimeSerializer::zoneIdToSource);
+        classSerializerMap.put(ZonedDateTime.class, TimeSerializer::zoneDateTimeToSource);
+        classSerializerMap.put(Date.class, TimeSerializer::dateToSource);
+        classSerializerMap.put(File.class, IoSerializer::fileToSource);
+        classSerializerMap.put(URI.class, IoSerializer::uriToSource);
+        classSerializerMap.put(URL.class, IoSerializer::urlToSource);
+        classSerializerMap.put(InetSocketAddress.class, IoSerializer::inetSocketAddressToSource);
+        classSerializerMap.put(SimpleDateFormat.class, FormatSerializer::simpleDataFormatToSource);
+        classSerializerMap.put(DateFormat.class, FormatSerializer::simpleDataFormatToSource);
+        classSerializerMap.put(DecimalFormat.class, FormatSerializer::decimalFormatToSource);
+        classSerializerMap.put(NumberFormat.class, FormatSerializer::decimalFormatToSource);
     }
 
     /**
@@ -122,10 +142,6 @@ public class EventProcessorConfig {
     public void addNode(Object... nodeList) {
         Arrays.asList(nodeList).forEach(this::addNode);
     }
-
-//    public void addNode(MethodReferenceReflection methodReference){
-//
-//    }
 
     /**
      * Add a node to the SEP. The node will have public final scope, the
@@ -165,6 +181,10 @@ public class EventProcessorConfig {
         getPublicNodes().put(node, name);
         return node;
     }
+
+//    public void addNode(MethodReferenceReflection methodReference){
+//
+//    }
 
     /**
      * Adds an {@link Auditor} to this SEP. The Auditor will have public final
@@ -212,9 +232,17 @@ public class EventProcessorConfig {
     }
 
     public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
-        addAuditor(new EventLogManager().tracingOn(tracingLogLevel).printEventToString(printEventToString), EventLogManager.NODE_NAME);
+        addEventAudit(tracingLogLevel, printEventToString, true);
     }
 
+    public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString, boolean printThreadName) {
+        addAuditor(
+                new EventLogManager()
+                        .tracingOn(tracingLogLevel)
+                        .printEventToString(printEventToString)
+                        .printThreadName(printThreadName),
+                EventLogManager.NODE_NAME);
+    }
 
     public void addInterfaceImplementation(Class<?> clazz) {
         interfaces.add(clazz);
@@ -231,7 +259,6 @@ public class EventProcessorConfig {
      */
     public void buildConfig() {
     }
-
 
     /**
      * the name of the template file to use as an input
@@ -346,7 +373,52 @@ public class EventProcessorConfig {
     }
 
     public void setFilterMap(Map<Object, Integer> filterMap) {
-        this.filterMap = filterMap;
+        this.filterMap.clear();
+        this.filterMap.putAll(filterMap);
+    }
+
+    /**
+     * Overrides the filterId for any methods annotated with {@link com.fluxtion.runtime.annotations.OnEventHandler} in
+     * an instance or for an {@link com.fluxtion.runtime.node.EventHandlerNode}.
+     * <p>
+     * If a single {@link com.fluxtion.runtime.annotations.OnEventHandler} annotated method needs to be overridden then
+     * use {@link this#overrideOnEventHandlerFilterId(Object, Class, int)}
+     *
+     * @param eventHandler the event handler instance to override filterId
+     * @param newFilterId  the new filterId
+     */
+    public void overrideOnEventHandlerFilterId(Object eventHandler, int newFilterId) {
+        getFilterMap().put(eventHandler, newFilterId);
+    }
+
+    /**
+     * Overrides the filterId for a method annotated with {@link com.fluxtion.runtime.annotations.OnEventHandler} in
+     * an instance handling a particular event type.
+     *
+     * @param eventHandler the event handler instance to override filterId
+     * @param eventClass   The event handler methods of this type to override filterId
+     * @param newFilterId  the new filterId
+     */
+    public void overrideOnEventHandlerFilterId(Object eventHandler, Class<?> eventClass, int newFilterId) {
+        getFilterMap().put(new EventHandlerFilterOverride(eventHandler, eventClass, newFilterId), newFilterId);
+    }
+
+    /**
+     * Register a custom serialiser that maps a field to source at generation time
+     *
+     * @param classToSerialize      the class type to support custom serialisation
+     * @param serializationFunction The instance to source function
+     * @return current {@link EventProcessorConfig}
+     */
+    @SuppressWarnings("unchecked")
+    public <T> EventProcessorConfig addClassSerializer(
+            Class<T> classToSerialize, Function<FieldContext<T>, String> serializationFunction) {
+        classSerializerMap.put(classToSerialize, (Function<FieldContext, String>) (Object) serializationFunction);
+        return this;
+    }
+
+    public Map<Class<?>, Function<FieldContext, String>> getClassSerializerMap() {
+        return classSerializerMap;
     }
 
     /**
@@ -390,5 +462,78 @@ public class EventProcessorConfig {
      */
     public Map<String, String> getClass2replace() {
         return class2replace;
+    }
+
+    public boolean isInstanceOfDispatch() {
+        return instanceOfDispatch;
+    }
+
+    public void setInstanceOfDispatch(boolean instanceOfDispatch) {
+        this.instanceOfDispatch = instanceOfDispatch;
+    }
+
+    public DISPATCH_STRATEGY getDispatchStrategy() {
+        return dispatchStrategy;
+    }
+
+    public void setDispatchStrategy(DISPATCH_STRATEGY dispatchStrategy) {
+        Objects.requireNonNull(dispatchStrategy, "Dispatch strategy must be non null");
+        if (dispatchStrategy == DISPATCH_STRATEGY.PATTERN_MATCH) {
+            enablePreviewFeatures();
+            javaTargetRelease("19");
+        }
+        this.dispatchStrategy = dispatchStrategy;
+    }
+
+    public List<String> getCompilerOptions() {
+        return compilerOptions;
+    }
+
+    public void setCompilerOptions(List<String> compilerOptions) {
+        Objects.requireNonNull(compilerOptions);
+        this.compilerOptions = compilerOptions;
+    }
+
+    public EventProcessorConfig enablePreviewFeatures() {
+        compilerOptions.add("--enable-preview");
+        return this;
+    }
+
+    public EventProcessorConfig javaTargetRelease(String release) {
+        Objects.requireNonNull(release);
+        compilerOptions.add("--release");
+        compilerOptions.add(release);
+        return this;
+    }
+
+    public enum DISPATCH_STRATEGY {
+        CLASS_NAME,
+        INSTANCE_OF,
+        PATTERN_MATCH
+    }
+
+    enum NodeFactoryConfig {
+        required(
+                CallBackDispatcherFactory.class,
+                CallbackNodeFactory.class,
+                ClockFactory.class,
+                InstanceSupplierFactory.class,
+                DirtyStateMonitorFactory.class,
+                EventDispatcherFactory.class,
+                EventProcessorCallbackInternalFactory.class,
+                EventProcessorContextFactory.class,
+                NodeNameLookupFactory.class,
+                SubscriptionManagerFactory.class
+        );
+
+        private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
+
+        NodeFactoryConfig(Class<? extends NodeFactory<?>>... factoryClasses) {
+            Arrays.asList(factoryClasses).forEach(defaultFactories::add);
+        }
+
+        public Set<Class<? extends NodeFactory<?>>> getFactoryClasses() {
+            return new HashSet<>(defaultFactories);
+        }
     }
 }

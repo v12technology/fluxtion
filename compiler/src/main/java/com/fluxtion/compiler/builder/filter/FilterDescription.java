@@ -148,6 +148,42 @@ public class FilterDescription {
         nullId = value;
     }
 
+    public int getValue() {
+        return value;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public String getNullId() {
+        return nullId;
+    }
+
+    public boolean isIntFilter() {
+        return isIntFilter;
+    }
+
+    public boolean isFiltered() {
+        return isFiltered;
+    }
+
+    public Class<? extends Event> getEventClass() {
+        return eventClass;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public void setEventClass(Class<? extends Event> eventClass) {
+        this.eventClass = eventClass;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;

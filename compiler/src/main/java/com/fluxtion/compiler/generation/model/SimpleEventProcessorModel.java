@@ -18,24 +18,14 @@
 package com.fluxtion.compiler.generation.model;
 
 import com.fluxtion.compiler.builder.filter.DefaultFilterDescriptionProducer;
+import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.builder.filter.FilterDescriptionProducer;
 import com.fluxtion.compiler.generation.model.Field.MappedField;
+import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.FilterId;
-import com.fluxtion.runtime.annotations.FilterType;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnBatchPause;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.runtime.event.Event;
@@ -52,22 +42,9 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -106,6 +83,14 @@ public class SimpleEventProcessorModel {
      * life-cycle callback methods for initialise, sorted in call order.
      */
     private final ArrayList<CbMethodHandle> initialiseMethods;
+    /**
+     * life-cycle callback methods for initialise, sorted in call order.
+     */
+    private final ArrayList<CbMethodHandle> startMethods;
+    /**
+     * life-cycle callback methods for initialise, sorted in call order.
+     */
+    private final ArrayList<CbMethodHandle> stopMethods;
 
     /**
      * life-cycle callback methods for end of batch, sorted in call order.
@@ -226,6 +211,9 @@ public class SimpleEventProcessorModel {
      * subsequent event filtering.
      */
     private boolean supportDirtyFiltering;
+    private final FieldSerializer fieldSerializer;
+    private List<CbMethodHandle> triggerOnlyCallBacks;
+    private Set<Object> forkedTriggerInstances;
 
     public SimpleEventProcessorModel(TopologicallySortedDependencyGraph dependencyGraph) throws Exception {
         this(dependencyGraph, new HashMap<>());
@@ -246,6 +234,8 @@ public class SimpleEventProcessorModel {
         constructorArgumentMap = new HashMap<>();
         beanPropertyMap = new HashMap<>();
         initialiseMethods = new ArrayList<>();
+        startMethods = new ArrayList<>();
+        stopMethods = new ArrayList<>();
         tearDownMethods = new ArrayList<>();
         batchEndMethods = new ArrayList<>();
         batchPauseMethods = new ArrayList<>();
@@ -259,6 +249,7 @@ public class SimpleEventProcessorModel {
         nodeGuardMap = HashMultimap.create();
         node2UpdateMethodMap = new HashMap<>();
         importClasses = new HashSet<>();
+        fieldSerializer = new FieldSerializer(dependencyGraph.getConfig());
     }
 
     /**
@@ -329,7 +320,7 @@ public class SimpleEventProcessorModel {
                 LOGGER.debug("mapping property mutators for var:{}", f.name);
                 List<String> properties = stream(Introspector.getBeanInfo(f.instance.getClass()).getPropertyDescriptors())
                         .filter((PropertyDescriptor p) -> p.getWriteMethod() != null)
-                        .filter((PropertyDescriptor p) -> ClassUtils.propertySupported(p, f, nodeFields))
+                        .filter((PropertyDescriptor p) -> fieldSerializer.propertySupported(p, f, nodeFields))
                         .filter(p -> {
                             boolean isConstructorArg = false;
                             try {
@@ -339,7 +330,7 @@ public class SimpleEventProcessorModel {
                             }
                             return !isConstructorArg;
                         })
-                        .map(p -> ClassUtils.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
+                        .map(p -> fieldSerializer.mapPropertyToJavaSource(p, f, nodeFields, importClasses))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
@@ -397,29 +388,30 @@ public class SimpleEventProcessorModel {
                     }
                     if (directParents.contains(parent)) {
                         final Field.MappedField mappedField = new Field.MappedField(fieldName, getFieldForInstance(parent));
-                        mappedField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        mappedField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(mappedField);
-                    } else if (List.class.isAssignableFrom(parent.getClass())) {
+                    } else if (List.class.isAssignableFrom(parent.getClass()) || Set.class.isAssignableFrom(parent.getClass())) {
                         //
-                        Field.MappedField collectionField = new Field.MappedField(fieldName);
-                        List<?> collection = (List<?>) parent;
+                        Class collectionClass = List.class.isAssignableFrom(parent.getClass()) ? List.class : Set.class;
+                        Field.MappedField collectionField = new Field.MappedField(fieldName, collectionClass);
+                        Collection<?> collection = (Collection<?>) parent;
                         for (Object element : collection) {
                             collectionField.addField(getFieldForInstance(element));
                         }
-                        collectionField.derivedVal = ClassUtils.mapToJavaSource(parent, nodeFields, importClasses);
+                        collectionField.derivedVal = fieldSerializer.mapToJavaSource(parent, nodeFields, importClasses);
                         if (!collectionField.isEmpty() || collectionField.derivedVal.length() > 1) {
                             privateFields.add(collectionField);
                             LOGGER.debug("collection field:{}, val:{}", fieldName, input.get(field));
                         }
-                    } else if (ClassUtils.typeSupported(input.getType())) {
+                    } else if (fieldSerializer.typeSupported(input.getType())) {
                         LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
                         Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        primitiveField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
-                    } else if (ClassUtils.typeSupported(input.get(field).getClass())) {
+                    } else if (fieldSerializer.typeSupported(input.get(field).getClass())) {
                         LOGGER.debug("primitive field:{}, val:{}", fieldName, input.get(field));
                         Field.MappedField primitiveField = new Field.MappedField(fieldName, input.get(field));
-                        primitiveField.derivedVal = ClassUtils.mapToJavaSource(input.get(field), nodeFields, importClasses);
+                        primitiveField.derivedVal = fieldSerializer.mapToJavaSource(input.get(field), nodeFields, importClasses);
                         privateFields.add(primitiveField);
                     }
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -487,11 +479,25 @@ public class SimpleEventProcessorModel {
                         LOGGER.debug("initialise call back : " + validCb);
                     }
                 }
+                if (annotationInHierarchy(method, Start.class)) {
+                    startMethods.add(new CbMethodHandle(method, object, name));
+                    if (LOGGER.isDebugEnabled()) {
+                        final String validCb = name + "." + method.getName() + "()";
+                        LOGGER.debug("start call back : " + validCb);
+                    }
+                }
                 if (annotationInHierarchy(method, TearDown.class)) {
                     tearDownMethods.add(0, new CbMethodHandle(method, object, name));
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
                         LOGGER.debug("tear down call back : " + validCb);
+                    }
+                }
+                if (annotationInHierarchy(method, Stop.class)) {
+                    stopMethods.add(0, new CbMethodHandle(method, object, name));
+                    if (LOGGER.isDebugEnabled()) {
+                        final String validCb = name + "." + method.getName() + "()";
+                        LOGGER.debug("stop call back : " + validCb);
                     }
                 }
             }
@@ -1039,15 +1045,15 @@ public class SimpleEventProcessorModel {
      *
      * @return dependents that will be notified with methods @{@link OnTrigger}
      */
-    public Set<Object> getOnEventDependenciesForNode(CbMethodHandle callSource) {
+    public Set<Object> getOnTriggerDependenciesForNode(CbMethodHandle callSource) {
         if (callSource.isNoPropagateEventHandler()) {
             return Collections.emptySet();
         }
-        return getOnEventDependenciesForNode(callSource.getInstance());
+        return getOnTriggerDependenciesForNode(callSource.getInstance());
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Object> getOnEventDependenciesForNode(Object instance) {
+    public Set<Object> getOnTriggerDependenciesForNode(Object instance) {
         return getDirectChildrenListeningForEvent(instance).stream()
                 .peek(o -> log.debug("checking for OnEvent instance:{}", o))
                 .filter(object -> !ReflectionUtils.getAllMethods(object.getClass(), ReflectionUtils.withAnnotation(OnTrigger.class)).isEmpty())
@@ -1081,6 +1087,14 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableList(initialiseMethods);
     }
 
+    public List<CbMethodHandle> getStartMethods() {
+        return Collections.unmodifiableList(startMethods);
+    }
+
+    public List<CbMethodHandle> getStopMethods() {
+        return Collections.unmodifiableList(stopMethods);
+    }
+
     public List<CbMethodHandle> getTearDownMethods() {
         return Collections.unmodifiableList(tearDownMethods);
     }
@@ -1106,9 +1120,22 @@ public class SimpleEventProcessorModel {
     }
 
     public List<CbMethodHandle> getTriggerOnlyCallBacks() {
-        return allEventCallBacks.stream()
-                .filter(cb -> !(cb.isEventHandler() || cb.isNoPropagateEventHandler()))
-                .collect(Collectors.toList());
+        if (triggerOnlyCallBacks == null) {
+            triggerOnlyCallBacks = Collections.unmodifiableList(allEventCallBacks.stream()
+                    .filter(cb -> !(cb.isEventHandler() || cb.isNoPropagateEventHandler()))
+                    .collect(Collectors.toList()));
+        }
+        return triggerOnlyCallBacks;
+    }
+
+    public Set<Object> getForkedTriggerInstances() {
+        if (forkedTriggerInstances == null) {
+            forkedTriggerInstances = Collections.unmodifiableSet(getTriggerOnlyCallBacks().stream()
+                    .filter(CbMethodHandle::isForkExecution)
+                    .map(CbMethodHandle::getInstance)
+                    .collect(Collectors.toSet()));
+        }
+        return forkedTriggerInstances;
     }
 
     public Map<Class<?>, Map<FilterDescription, List<CbMethodHandle>>> getDispatchMap() {
@@ -1133,6 +1160,10 @@ public class SimpleEventProcessorModel {
 
     public List<FilterDescription> getFilterDescriptionList() {
         return Collections.unmodifiableList(filterDescriptionList);
+    }
+
+    public FieldSerializer getFieldSerializer() {
+        return fieldSerializer;
     }
 
     public Set<Class<?>> getImportClasses() {
@@ -1291,7 +1322,18 @@ public class SimpleEventProcessorModel {
             }
             boolean overrideFilter = filterIdOverride != Integer.MAX_VALUE;
             boolean overideStringFilter = filterStringOverride != null && !filterStringOverride.isEmpty();
-            if (filterMap.containsKey(instance)) {
+            OptionalInt overrideMethodFilter = filterMap.entrySet().stream()
+                    .filter(e -> e.getKey() instanceof EventHandlerFilterOverride)
+                    .filter(e -> {
+                        EventHandlerFilterOverride override = (EventHandlerFilterOverride) e.getKey();
+                        return override.getEventHandlerInstance() == instance
+                                && override.getEventType() == onEventMethod.getParameterTypes()[0];
+                    })
+                    .mapToInt(Entry::getValue)
+                    .findFirst();
+            if (overrideMethodFilter.isPresent()) {
+                tmpFilterId = overrideMethodFilter.getAsInt();
+            } else if (filterMap.containsKey(instance)) {
                 tmpFilterId = filterMap.get(instance);
             } else if (fields.isEmpty() && overrideFilter) {
                 tmpFilterId = filterIdOverride;

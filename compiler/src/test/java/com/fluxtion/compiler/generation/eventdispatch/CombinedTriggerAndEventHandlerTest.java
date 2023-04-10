@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.eventdispatch;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -10,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProcessTest {
-    public CombinedTriggerAndEventHandlerTest(boolean compiledSep) {
+    public CombinedTriggerAndEventHandlerTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.reentrant;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import org.junit.Test;
 
@@ -13,21 +14,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ReEntrantTest extends MultipleSepTargetInProcessTest {
 
-    public ReEntrantTest(boolean compiledSep) {
+    public ReEntrantTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void queueEventsInOrderTest() {
         List<String> results = new ArrayList<>();
-        sep(c -> EventFlow.subscribe(String.class)
+        sep(c -> DataFlow.subscribe(String.class)
                 .sink("queueEvent")
                 .sink("results"));
 
-        addSink("queueEvent", (String s) ->{
-            if(!s.startsWith("rentrant-")){
+        addSink("queueEvent", (String s) -> {
+            if (!s.startsWith("rentrant-")) {
                 onEvent("rentrant-1-" + s);
-            }else if(s.startsWith("rentrant-1-")){
+            } else if (s.startsWith("rentrant-1-")) {
                 onEvent("rentrant-2-" + s);
             }
         });

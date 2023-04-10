@@ -17,18 +17,20 @@ package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.audit.LogRecordListener;
+import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.node.InstanceSupplier;
-import com.fluxtion.runtime.stream.EventStream;
-import com.fluxtion.runtime.stream.SinkDeregister;
-import com.fluxtion.runtime.stream.SinkRegistration;
+import com.fluxtion.runtime.output.SinkDeregister;
+import com.fluxtion.runtime.output.SinkRegistration;
+import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -318,8 +320,13 @@ public interface StaticEventProcessor {
     }
 
     default <T> T getStreamed(String name) throws NoSuchFieldException {
-        EventStream<T> stream = getNodeById(name);
+        FlowFunction<T> stream = getNodeById(name);
         return stream.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    default <A extends Auditor> A getAuditorById(String id) throws NoSuchFieldException, IllegalAccessException {
+        return getNodeById(id);
     }
 
     default void addEventFeed(EventFeed eventProcessorFeed) {
@@ -354,5 +361,9 @@ public interface StaticEventProcessor {
         } catch (Throwable e) {
             return "";
         }
+    }
+
+    default void setClockStrategy(ClockStrategy clockStrategy) {
+        onEvent(ClockStrategy.registerClockEvent(clockStrategy));
     }
 }

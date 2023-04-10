@@ -50,16 +50,25 @@ public class EventProcessorFactory {
 
     @SneakyThrows
     public static InMemoryEventProcessor interpreted(SerializableConsumer<EventProcessorConfig> cfgBuilder) {
+        return interpreted(cfgBuilder, false);
+    }
+
+    @SneakyThrows
+    public static InMemoryEventProcessor interpreted(SerializableConsumer<EventProcessorConfig> cfgBuilder, boolean generateDescription) {
         EventProcessorConfig cfg = new EventProcessorConfig();
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
         GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
         cfgBuilder.accept(cfg);
-        return new EventProcessorGenerator().inMemoryProcessor(cfg, false);
+        return new EventProcessorGenerator().inMemoryProcessor(cfg, generateDescription);
     }
 
     @SneakyThrows
     public static InMemoryEventProcessor interpreted(RootNodeConfig rootNode) {
         return interpreted((EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode));
+    }
+
+    public static InMemoryEventProcessor interpreted(RootNodeConfig rootNode, boolean generateDescription) {
+        return interpreted((EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode), generateDescription);
     }
 
     @SneakyThrows
@@ -68,7 +77,7 @@ public class EventProcessorFactory {
         cfgBuilder.accept(cfg);
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
         String pkg = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();
-        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_TESTGEN_DIR), new File(OutputRegistry.RESOURCE_TEST_DIR));
+        GenerationContext.setupStaticContext(pkg, "Processor", new File(OutputRegistry.JAVA_TESTGEN_DIR), new File(OutputRegistry.RESOURCE_GENERATED_TEST_DIR));
         return eventProcessorGenerator.inMemoryProcessor(cfg, false);
     }
 
@@ -102,7 +111,7 @@ public class EventProcessorFactory {
                 pckg,
                 sepName,
                 OutputRegistry.JAVA_TESTGEN_DIR,
-                OutputRegistry.RESOURCE_TEST_DIR,
+                OutputRegistry.RESOURCE_GENERATED_TEST_DIR,
                 false,
                 writeSourceFile,
                 generateMetaInformation);

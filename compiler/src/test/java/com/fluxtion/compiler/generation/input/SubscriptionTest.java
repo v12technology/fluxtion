@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.generation.input;
 
-import com.fluxtion.compiler.builder.stream.EventFlow;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -21,7 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SubscriptionTest extends MultipleSepTargetInProcessTest {
-    public SubscriptionTest(boolean compiledSep) {
+    public SubscriptionTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
@@ -57,7 +58,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
     public void subscriptionTestFunctional() {
         Set<Object> subscriptions = new HashSet<>();
         sep(c -> {
-            EventFlow.subscribeToIntSignal("subscriber_1").id("subscriber_1");
+            DataFlow.subscribeToIntSignal("subscriber_1").id("subscriber_1");
         });
         sep.addEventFeed(new MyEventFeed(subscriptions));
         assertThat(subscriptions,

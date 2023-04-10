@@ -16,9 +16,10 @@
  */
 package com.fluxtion.compiler.generation.propagation;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import lombok.Data;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class PropagationTest extends MultipleSepTargetInProcessTest {
 
-    public PropagationTest(boolean compiledSep) {
+    public PropagationTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

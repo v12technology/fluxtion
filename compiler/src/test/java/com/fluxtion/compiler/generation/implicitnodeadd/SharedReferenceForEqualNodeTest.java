@@ -1,8 +1,10 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import lombok.Value;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,14 +13,16 @@ import java.util.List;
 
 public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessTest {
 
-    public SharedReferenceForEqualNodeTest(boolean compiledSep) {
+    public SharedReferenceForEqualNodeTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void equalNodeAddedMultipleTimesTest() {
         sep(c -> {
-            c.addNode(new MyHolder(new KeyedStringHandler("A"), new KeyedStringHandler("A")), "holder");
+            c.addNode(new MyHolder(
+                    new KeyedStringHandler("A"),
+                    new KeyedStringHandler("A")), "holder");
         });
         onEvent("TEST");
         MyHolder holder = getField("holder");
@@ -26,10 +30,18 @@ public class SharedReferenceForEqualNodeTest extends MultipleSepTargetInProcessT
     }
 
 
-    @Value
     public static class MyHolder {
-        KeyedStringHandler handler1;
-        KeyedStringHandler handler2;
+        private final KeyedStringHandler handler1;
+        private final KeyedStringHandler handler2;
+
+        public MyHolder(
+                @AssignToField("handler1")
+                KeyedStringHandler handler1,
+                @AssignToField("handler2")
+                KeyedStringHandler handler2) {
+            this.handler1 = handler1;
+            this.handler2 = handler2;
+        }
 
         @OnTrigger
         public boolean update() {

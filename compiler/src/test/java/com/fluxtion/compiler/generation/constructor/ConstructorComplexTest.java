@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation.constructor;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.partition.LambdaReflection;
@@ -31,7 +32,7 @@ import java.util.Date;
  */
 public class ConstructorComplexTest extends MultipleSepTargetInProcessTest {
 
-    public ConstructorComplexTest(boolean compiledSep) {
+    public ConstructorComplexTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

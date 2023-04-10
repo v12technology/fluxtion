@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.inject;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -12,7 +13,7 @@ import org.junit.Test;
 
 public class FactoryInConfig extends MultipleSepTargetInProcessTest {
 
-    public FactoryInConfig(boolean compiledSep) {
+    public FactoryInConfig(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

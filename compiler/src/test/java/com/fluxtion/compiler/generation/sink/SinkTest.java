@@ -1,8 +1,9 @@
 package com.fluxtion.compiler.generation.sink;
 
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.output.SinkPublisher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SinkTest extends MultipleSepTargetInProcessTest {
-    public SinkTest(boolean compiledSep) {
+    public SinkTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

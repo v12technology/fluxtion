@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.factory;
 
 import com.fluxtion.compiler.RootNodeConfig;
+import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -20,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 
 public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
 
-    public RootNodeWithFactoryTest(boolean compiledSep) {
+    public RootNodeWithFactoryTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 

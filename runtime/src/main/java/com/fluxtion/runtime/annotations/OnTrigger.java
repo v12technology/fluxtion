@@ -89,4 +89,13 @@ public @interface OnTrigger {
      * @return
      */
     boolean failBuildIfNotGuarded() default true;
+
+    /**
+     * Forks the annotated trigger method to execute in parallel if possible. The method may execute on this thread
+     * or on a another thread, no guarantees are made as the runtime operation depends upon the combination of the VM and
+     * the underlying execution environment.
+     *
+     * @return request parallel execution flag
+     */
+    boolean parallelExecution() default false;
 }

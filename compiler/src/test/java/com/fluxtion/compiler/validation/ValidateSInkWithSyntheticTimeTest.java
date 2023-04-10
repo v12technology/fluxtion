@@ -4,7 +4,7 @@ import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.extension.csvcompiler.annotations.CsvMarshaller;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.stream.SinkPublisher;
+import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.time.Clock;
 import org.junit.Test;
 
