@@ -28,7 +28,7 @@ aux_links:
 heading_anchors: true
 
 # Color scheme supports "light" (default) and "dark"
-color_scheme: dark
+color_scheme: fluxtion_style
 
 compress_html:
   ignore:
