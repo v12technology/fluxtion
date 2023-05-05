@@ -6,26 +6,65 @@ published: true
 ---
 
 # Introduction to Fluxtion
-Welcome to Fluxtion, and thanks for coming, hope you enjoy exploring :) 
 
-Fluxtion is a java library utility that builds embeddable, reactive complex event processors for data in motion streaming
+Welcome to Fluxtion, and thanks for coming, hope you enjoy exploring :)
+
+Fluxtion is a java library utility that builds embeddable, reactive complex event processors for data in motion
+streaming
 applications. Suitable use cases include:
 
 - **Real-time applications** processing multiple event streams
 - **Embedding within an existing system** No middleware vendor lock-in
 - **Edge processing** executing on edge devices zero dependency
 - **Low latency** response time in microseconds
-- **Fast start times** supports ahead of time compilation 
+- **Fast start times** supports ahead of time compilation
 
 Write simple clean Java code to create real-time applications. programs are quick to build, test, deploy and debug ,with
-no dependencies. Data streams can be merged, filtered, aggregated, joined, grouped and enriched. Windowing of data is 
+no dependencies. Data streams can be merged, filtered, aggregated, joined, grouped and enriched. Windowing of data is
 fully supported.
 
-A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
+A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support
+costs.
 
 ### Cant wait? [Dive into our 5 minute Fluxtion hello world](overview/detailpages/helloworld_imperative.html)
 
+## What is Fluxtion
+
+Fluxtion is a library that employs incremental computation and data flow programming for realtime data. Basically
+Fluxtion is like a spreadsheet on steroids for realtime processing. When a cell or node changes the whole Fluxtion graph 
+is re-evaluated only recalculating nodes that are updated.
+
+Incremental computing is an approach that aims to minimize the amount of work required to compute a result by reusing as
+much of the previous computation as possible. This is achieved by computing only the parts of the result that have
+changed since the last time the computation was performed. This approach is often used in interactive systems, such as
+spreadsheets, where computations need to be performed quickly and in response to user input.
+
+Data flow programming, on the other hand, is an approach that focuses on the flow of data through a system. In a data
+flow system, data is represented as streams of values that flow through a network of processing nodes. Each node
+performs a specific operation on the data, and the results are passed on to the next node in the network. This approach
+is often used in systems that process large amounts of data, such as signal processing and data analysis.
+
+A combined approach of incremental computation and data flow programming can offer several benefits over using either
+approach alone. This combined approach can be particularly useful in systems that process large amounts of data in
+real-time.
+
+In this approach, the data is represented as streams of values that flow through a network of processing nodes, as in
+data flow programming. However, each node performs incremental computation, meaning it only processes the parts of the
+stream that have changed since the last time the computation was performed.
+
+This approach can help reduce the computational cost of processing large amounts of data by avoiding redundant
+computations. Instead of recomputing the entire data stream every time a new input arrives, the system only computes the
+parts of the stream that have changed.
+
+Additionally, this approach can improve the responsiveness of the system by processing the data in real-time as it
+arrives, rather than waiting for the entire data stream to be processed before producing an output.
+
+Overall, a combined approach of incremental computation and data flow programming can provide a powerful and efficient
+solution for processing large amounts of data in real-time, making it suitable for a wide range of applications,
+including real-time data analysis, streaming video and audio processing, and more.
+
 ## Fluxtion dependencies
+
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
   <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
@@ -64,8 +103,8 @@ Fluxtion dependency description
 | Compiler            | Fluxtion#interpret<br/>Fluxtion#compile | Generates the EventProcessor <br/> from a description | Many                        |
 | Runtime             | EventProcessor#onEvent                  | Runtime dispatch of events and helper libraries       | None                        |
 
-It is possible to use ```Fluxtion#compile``` to create an EventProcessor ahead of time and then only the runtime 
-library is required on the running classpath to support the source code generated EventProcessor. In this case 
+It is possible to use ```Fluxtion#compile``` to create an EventProcessor ahead of time and then only the runtime
+library is required on the running classpath to support the source code generated EventProcessor. In this case
 set the scope to provided in maven.
 
 ## Key terms
@@ -82,8 +121,8 @@ set the scope to provided in maven.
 | Event notification   | Trigger or event handler methods notify a change by returning a boolean flag to control event propagation                                       |
 | Graph space          | Construction of the meta model occurs in graph space, before generating the EventProcessor and after the user has provided all node information |
 
-
 ## Steps to create an EventProcessor instance
+
 1. **Describe** the processing logic in user code
 2. **Generate** the EventProcessor by supplying a description to the Fluxtion eventProcessorGenerator
 3. **Process** events in the Fluxtion generated EventProcessor instance from (2)
@@ -93,29 +132,36 @@ set the scope to provided in maven.
 There are three main steps to building and running a stream processor application using Fluxtion
 
 ## Step 1: Describe processing logic
+
 Describe the values that are calculated and actions invoked in response to an incoming event. Fluxtion provides two
 api's to describe the processing logic:
-1. [A set of annotations]({{site.fluxtion_src_runtime}}/annotations) 
-that mark members of user written classes as being managed by the event processor
+
+1. [A set of annotations]({{site.fluxtion_src_runtime}}/annotations)
+   that mark members of user written classes as being managed by the event processor
 2. [A java 8 stream like api]({{site.fluxtion_src_compiler}}/builder/stream)
-, that can describe processing with a fluent functional style
+   , that can describe processing with a fluent functional style
 
 ## Step 2: Build an EventProcessor
+
 Fluxtion provides a eventProcessorGenerator that converts the description into an executable
 [EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
 instance. The eventProcessorGenerator
-is invoked from 
+is invoked from
 [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java)
 with one of two utility methods:
-1. **compile**: this generates a java source code version of the EventProcessor. The file is compiled in process and used
-to handle events. Total nodes are limited to the number of elements a source file can handle
-2. **interpret**: Creates an in memory model of the processing backed with data structures. Can support millions of nodes
+
+1. **compile**: this generates a java source code version of the EventProcessor. The file is compiled in process and
+   used
+   to handle events. Total nodes are limited to the number of elements a source file can handle
+2. **interpret**: Creates an in memory model of the processing backed with data structures. Can support millions of
+   nodes
 
 ## Step 3: Process events
+
 Once the
 [EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
 has been generated the instance is ready to consume events. The EventProcessor has a lifecycle so **init must be called
-before sending any events for processing**. 
+before sending any events for processing**.
 
 The application pulls events from any source and invokes ```EventProcessor#onEvent```
 
@@ -127,7 +173,7 @@ The application pulls events from any source and invokes ```EventProcessor#onEve
 A Fluxtion event processor embeds within a user application, processing events,
 publishing events to sinks or interacting with user classes. Events are feed from
 the application directly into the processor or into a pipeline. A pipeline provides
-additional capabilities such as threading, scheduling, auditing, access control. 
+additional capabilities such as threading, scheduling, auditing, access control.
 
 <script>
 document.getElementById("defaultOpen").click();
