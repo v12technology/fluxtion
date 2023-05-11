@@ -26,7 +26,28 @@ import java.util.function.ToLongFunction;
 public class LongLookupPredicate {
 
     private final String lookupString;
-    private final InstanceSupplier<ToLongFunction<String>> longLookupFunction;
+    private final InstanceSupplier<LongLookup> longLookupFunction;
+
+    /**
+     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
+     *
+     * @param lookupString       the String to apply at runtime to lookup the long value
+     * @param longLookupFunction The lookup function provided at runtime ready for injection
+     */
+    public LongLookupPredicate(String lookupString, InstanceSupplier<LongLookup> longLookupFunction) {
+        this.lookupString = lookupString;
+        this.longLookupFunction = longLookupFunction;
+    }
+
+    /**
+     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
+     *
+     * @param lookupString         the String to apply at runtime to lookup the long value
+     * @param longLookupFunctionId The name of the lookup function provided at runtime ready for injection
+     */
+    public LongLookupPredicate(String lookupString, String longLookupFunctionId) {
+        this(lookupString, InstanceSupplier.build(LongLookup.class, longLookupFunctionId));
+    }
 
     /**
      * Build a LongLookupPredicate, supplying the functionId to use at runtime
@@ -41,25 +62,7 @@ public class LongLookupPredicate {
         return new LongLookupPredicate(lookupString, longLookupFunctionId)::isEqual;
     }
 
-    /**
-     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
-     *
-     * @param lookupString       the String to apply at runtime to lookup the long value
-     * @param longLookupFunction The lookup function provided at runtime ready for injection
-     */
-    public LongLookupPredicate(String lookupString, InstanceSupplier<ToLongFunction<String>> longLookupFunction) {
-        this.lookupString = lookupString;
-        this.longLookupFunction = longLookupFunction;
-    }
-
-    /**
-     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
-     *
-     * @param lookupString         the String to apply at runtime to lookup the long value
-     * @param longLookupFunctionId The name of the lookup function provided at runtime ready for injection
-     */
-    public LongLookupPredicate(String lookupString, String longLookupFunctionId) {
-        this(lookupString, InstanceSupplier.build(ToLongFunction.class, longLookupFunctionId));
+    public interface LongLookup extends ToLongFunction<String> {
     }
 
     public boolean isEqual(long longToCompare) {

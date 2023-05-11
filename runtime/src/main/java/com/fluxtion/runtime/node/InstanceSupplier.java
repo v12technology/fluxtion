@@ -45,11 +45,11 @@ public interface InstanceSupplier<T> extends Supplier<T> {
         return new InstanceSupplierNode<>(contextKey);
     }
 
-    static <S> InstanceSupplier<S> build(Class<?> suppliedClass, String instanceName) {
+    static <S> InstanceSupplier<S> build(Class<? extends S> suppliedClass, String instanceName) {
         return new InstanceSupplierNode<>(suppliedClass.getCanonicalName() + "_" + instanceName);
     }
 
-    static <S> InstanceSupplier<S> build(Class<?> suppliedClass) {
+    static <S> InstanceSupplier<S> build(Class<? extends S> suppliedClass) {
         return new InstanceSupplierNode<>(suppliedClass.getCanonicalName());
     }
 
@@ -57,11 +57,11 @@ public interface InstanceSupplier<T> extends Supplier<T> {
         return new InstanceSupplierNode<>(contextKey, true);
     }
 
-    static <S> InstanceSupplier<S> buildFailFast(Class<?> suppliedClass, String instanceName) {
+    static <S> InstanceSupplier<S> buildFailFast(Class<? extends S> suppliedClass, String instanceName) {
         return new InstanceSupplierNode<>(suppliedClass.getCanonicalName() + "_" + instanceName, true);
     }
 
-    static <S> InstanceSupplier<S> buildFailFast(Class<?> suppliedClass) {
+    static <S> InstanceSupplier<S> buildFailFast(Class<? extends S> suppliedClass) {
         return new InstanceSupplierNode<>(suppliedClass.getCanonicalName(), true);
     }
 

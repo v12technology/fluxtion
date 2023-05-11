@@ -4,8 +4,8 @@ import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.dataflow.Stateful;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -145,9 +145,9 @@ public interface Predicates {
     }
 
     class MapHasChanged {
-        private final Map<Object, Object> oldMap = new HashMap<>();
+        private final transient Map<Object, Object> oldMap = new HashMap<>();
 
-        public <K, V> Boolean checkMapChanged(Map<K, V> map) {
+        public Boolean checkMapChanged(Map map) {
             boolean changed = !map.equals(oldMap);
             oldMap.clear();
             oldMap.putAll(map);

@@ -5,12 +5,11 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.lookup.IntLookupPredicate;
+import com.fluxtion.runtime.dataflow.lookup.IntLookupPredicate.IntLookup;
 import com.fluxtion.runtime.dataflow.lookup.LongLookupPredicate;
+import com.fluxtion.runtime.dataflow.lookup.LongLookupPredicate.LongLookup;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 
 public class StreamLookupTest extends MultipleSepTargetInProcessTest {
 
@@ -43,7 +42,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
             ;
 
         });
-        sep.injectNamedInstance((ToLongFunction<String>) new MarketReferenceData()::toIdLong, ToLongFunction.class, "marketRefData");
+        sep.injectNamedInstance(new MarketReferenceData()::toIdLong, LongLookup.class, "marketRefData");
         enableInitCheck(true);
         init();
         sendMarketEvents();
@@ -63,7 +62,7 @@ public class StreamLookupTest extends MultipleSepTargetInProcessTest {
             ;
 
         });
-        sep.injectNamedInstance((ToIntFunction<String>) new MarketReferenceData()::toId, ToIntFunction.class, "marketRefData");
+        sep.injectNamedInstance(new MarketReferenceData()::toId, IntLookup.class, "marketRefData");
         enableInitCheck(true);
         init();
         sendMarketEvents();

@@ -26,7 +26,28 @@ import java.util.function.ToIntFunction;
 public class IntLookupPredicate {
 
     private final String lookupString;
-    private final InstanceSupplier<ToIntFunction<String>> intLookupFunction;
+    private final InstanceSupplier<IntLookup> intLookupFunction;
+
+    /**
+     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
+     *
+     * @param lookupString      the String to apply at runtime to lookup the int value
+     * @param intLookupFunction The lookup function provided at runtime ready for injection
+     */
+    public IntLookupPredicate(String lookupString, InstanceSupplier<IntLookup> intLookupFunction) {
+        this.lookupString = lookupString;
+        this.intLookupFunction = intLookupFunction;
+    }
+
+    /**
+     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
+     *
+     * @param lookupString        the String to apply at runtime to lookup the int value
+     * @param intLookupFunctionId The name of the lookup function provided at runtime ready for injection
+     */
+    public IntLookupPredicate(String lookupString, String intLookupFunctionId) {
+        this(lookupString, InstanceSupplier.build(IntLookup.class, intLookupFunctionId));
+    }
 
     /**
      * Build a LongLookupPredicate, supplying the functionId to use at runtime
@@ -41,29 +62,11 @@ public class IntLookupPredicate {
         return new IntLookupPredicate(lookupString, intLookupFunctionId)::isEqual;
     }
 
-    /**
-     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
-     *
-     * @param lookupString      the String to apply at runtime to lookup the int value
-     * @param intLookupFunction The lookup function provided at runtime ready for injection
-     */
-    public IntLookupPredicate(String lookupString, InstanceSupplier<ToIntFunction<String>> intLookupFunction) {
-        this.lookupString = lookupString;
-        this.intLookupFunction = intLookupFunction;
-    }
-
-    /**
-     * See {@link InstanceSupplier} for injecting runtime instance of the lookup function
-     *
-     * @param lookupString        the String to apply at runtime to lookup the int value
-     * @param intLookupFunctionId The name of the lookup function provided at runtime ready for injection
-     */
-    public IntLookupPredicate(String lookupString, String intLookupFunctionId) {
-        this(lookupString, InstanceSupplier.build(ToIntFunction.class, intLookupFunctionId));
-    }
-
     public boolean isEqual(int intToCompare) {
         return intToCompare == intLookupFunction.get().applyAsInt(lookupString);
+    }
+
+    public interface IntLookup extends ToIntFunction<String> {
     }
 
 }
