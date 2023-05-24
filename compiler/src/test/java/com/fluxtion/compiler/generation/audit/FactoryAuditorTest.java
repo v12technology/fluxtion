@@ -37,7 +37,7 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         MyNode myNode = getAuditor("myNode");
         Assert.assertTrue(myNode.registerCalled);
         onEvent(new CharEvent('a'));
-        assertThat(myNode.eventAuditCount, is(1));
+        assertThat(myNode.eventAuditCount, is(2));
     }
 
     public static class ParentNode {

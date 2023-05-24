@@ -281,12 +281,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void batchPause() {
+        auditNewEvent(Name.BatchPause);
         simpleEventProcessorModel.getBatchPauseMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
     @Override
     public void batchEnd() {
+        auditNewEvent(Name.BatchEnd);
         simpleEventProcessorModel.getBatchEndMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
     @Override
@@ -312,7 +316,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     public void init() {
         initCalled = true;
         buildDispatch();
+        auditNewEvent(Name.Init);
         simpleEventProcessorModel.getInitialiseMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
     @Override
@@ -320,7 +326,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
+        auditNewEvent(Name.Start);
         simpleEventProcessorModel.getStartMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
     @Override
@@ -328,13 +336,17 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
+        auditNewEvent(Name.Stop);
         simpleEventProcessorModel.getStopMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
     @Override
     public void tearDown() {
         initCalled = false;
+        auditNewEvent(Name.TearDown);
         simpleEventProcessorModel.getTearDownMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
     }
 
 
