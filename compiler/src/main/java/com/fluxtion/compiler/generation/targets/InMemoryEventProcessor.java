@@ -281,16 +281,22 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void batchPause() {
-        auditNewEvent(Name.BatchPause);
+        processing = true;
+        auditNewEvent(LifecycleEvent.BatchPause);
         simpleEventProcessorModel.getBatchPauseMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
-        auditNewEvent(Name.BatchEnd);
+        processing = true;
+        auditNewEvent(LifecycleEvent.BatchEnd);
         simpleEventProcessorModel.getBatchEndMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -316,7 +322,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     public void init() {
         initCalled = true;
         buildDispatch();
-        auditNewEvent(Name.Init);
+        auditNewEvent(LifecycleEvent.Init);
         simpleEventProcessorModel.getInitialiseMethods().forEach(this::invokeRunnable);
         postEventProcessing();
     }
@@ -326,9 +332,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
-        auditNewEvent(Name.Start);
+        processing = true;
+        auditNewEvent(LifecycleEvent.Start);
         simpleEventProcessorModel.getStartMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -336,15 +345,18 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
-        auditNewEvent(Name.Stop);
+        processing = true;
+        auditNewEvent(LifecycleEvent.Stop);
         simpleEventProcessorModel.getStopMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void tearDown() {
         initCalled = false;
-        auditNewEvent(Name.TearDown);
+        auditNewEvent(LifecycleEvent.TearDown);
         simpleEventProcessorModel.getTearDownMethods().forEach(this::invokeRunnable);
         postEventProcessing();
     }

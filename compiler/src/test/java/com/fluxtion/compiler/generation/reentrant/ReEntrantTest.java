@@ -3,6 +3,12 @@ package com.fluxtion.compiler.generation.reentrant;
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.Start;
+import com.fluxtion.runtime.annotations.Stop;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.callback.EventDispatcher;
+import com.fluxtion.runtime.output.SinkPublisher;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -45,5 +51,50 @@ public class ReEntrantTest extends MultipleSepTargetInProcessTest {
                 "third", "rentrant-1-third", "rentrant-2-rentrant-1-third");
 
         assertThat(results, is(expected));
+    }
+
+    @Test
+    public void queueStartReentrantTest() {
+        List<String> results = new ArrayList<>();
+        sep(c -> {
+            c.addNode(new StartClass());
+        });
+        addSink("lifecycleSink", (String s) -> results.add(s));
+        onEvent("event1");
+        start();
+        stop();
+
+        List<String> expected = Arrays.asList(
+                "event1",
+                "started", "reentrant-start",
+                "stopped", "reentrant-stop"
+        );
+
+        assertThat(results, is(expected));
+    }
+
+    public static class StartClass {
+        public SinkPublisher<String> publisher = new SinkPublisher<>("lifecycleSink");
+        @Inject
+        public EventDispatcher dispatcher;
+
+        @Start
+        public void start() {
+            dispatcher.processAsNewEventCycle("reentrant-start");
+            publisher.publish("started");
+        }
+
+        @Stop
+        public void stop() {
+            dispatcher.processAsNewEventCycle("reentrant-stop");
+            publisher.publish("stopped");
+        }
+
+        @OnEventHandler
+        public boolean stringUpdate(String in) {
+            publisher.publish(in);
+            return false;
+        }
+
     }
 }
