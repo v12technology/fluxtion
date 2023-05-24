@@ -65,5 +65,5 @@ public interface Lifecycle {
     default void stop() {
     }
 
-    enum Name {Init, TearDown, Start, Stop, BatchPause, BatchEnd}
+    enum LifecycleEvent {Init, TearDown, Start, Stop, BatchPause, BatchEnd}
 }
