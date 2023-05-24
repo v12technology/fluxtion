@@ -123,9 +123,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before start()");
         }
+        processing = true;
         auditEvent(Lifecycle.LifecycleEvent.Start);
         ${MODEL.startMethods}
         afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -133,9 +136,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before stop()");
         }
+        processing = true;
         auditEvent(Lifecycle.LifecycleEvent.Stop);
         ${MODEL.stopMethods}
         afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -148,16 +154,22 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     @Override
     public void batchPause() {
-       auditEvent(Lifecycle.LifecycleEvent.BatchPause);
-       ${MODEL.batchPauseMethods}
-       afterEvent();
+        auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+        processing = true;
+        ${MODEL.batchPauseMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
-       auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
-       ${MODEL.batchEndMethods}
-       afterEvent();
+        auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+        processing = true;
+        ${MODEL.batchEndMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override

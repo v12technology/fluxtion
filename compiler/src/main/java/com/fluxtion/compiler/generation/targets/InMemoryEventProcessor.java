@@ -281,16 +281,22 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void batchPause() {
+        processing = true;
         auditNewEvent(LifecycleEvent.BatchPause);
         simpleEventProcessorModel.getBatchPauseMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
+        processing = true;
         auditNewEvent(LifecycleEvent.BatchEnd);
         simpleEventProcessorModel.getBatchEndMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -326,9 +332,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
+        processing = true;
         auditNewEvent(LifecycleEvent.Start);
         simpleEventProcessorModel.getStartMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -336,9 +345,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
         }
+        processing = true;
         auditNewEvent(LifecycleEvent.Stop);
         simpleEventProcessorModel.getStopMethods().forEach(this::invokeRunnable);
         postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
