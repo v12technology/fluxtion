@@ -111,7 +111,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     @Override
     public void init() {
         initCalled = true;
-        auditEvent(Lifecycle.Name.Init);
+        auditEvent(Lifecycle.LifecycleEvent.Init);
        //initialise dirty lookup map
        isDirty("test");
        ${MODEL.initialiseMethods}
@@ -123,9 +123,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before start()");
         }
-        auditEvent(Lifecycle.Name.Start);
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Start);
         ${MODEL.startMethods}
         afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -133,31 +136,40 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before stop()");
         }
-        auditEvent(Lifecycle.Name.Stop);
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Stop);
         ${MODEL.stopMethods}
         afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void tearDown() {
         initCalled = false;
-        auditEvent(Lifecycle.Name.TearDown);
+        auditEvent(Lifecycle.LifecycleEvent.TearDown);
         ${MODEL.tearDownMethods}
         afterEvent();
     }
 
     @Override
     public void batchPause() {
-       auditEvent(Lifecycle.Name.BatchPause);
-       ${MODEL.batchPauseMethods}
-       afterEvent();
+        auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+        processing = true;
+        ${MODEL.batchPauseMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
-       auditEvent(Lifecycle.Name.BatchEnd);
-       ${MODEL.batchEndMethods}
-       afterEvent();
+        auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+        processing = true;
+        ${MODEL.batchEndMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
