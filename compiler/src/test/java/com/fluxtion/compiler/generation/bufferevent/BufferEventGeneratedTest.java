@@ -38,7 +38,7 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(0));
         //parent
         MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
-        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
         MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
 
 
@@ -50,7 +50,7 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(0));
         //parent
         MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
-        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
         MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
 
 
@@ -61,7 +61,7 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(child.triggerCount, CoreMatchers.is(1));
         //parent
         MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
-        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(2));
         MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(1));
     }
 
@@ -82,12 +82,12 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         bufferEvent("test");
         EventHolder eventHolder = getField("eventHolder");
         MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
-        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(0));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
         MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(0));
 
         triggerCalculation();
         MatcherAssert.assertThat(eventHolder.eventCount, CoreMatchers.is(3));
-        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(1));
+        MatcherAssert.assertThat(eventHolder.afterEventCount, CoreMatchers.is(2));
         MatcherAssert.assertThat(eventHolder.afterTriggerCount, CoreMatchers.is(1));
     }
 

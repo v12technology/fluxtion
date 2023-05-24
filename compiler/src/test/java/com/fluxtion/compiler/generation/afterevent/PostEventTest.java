@@ -42,6 +42,8 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
         onEvent("helloWorld");
         assertThat(postInvocationTrace, is(
                 Arrays.asList(
+                        "Child::afterEvent",
+                        "Parent::afterEvent",
                         "Parent::newEvent",
                         "Child::onEvent",
                         "Child::eventComplete",
