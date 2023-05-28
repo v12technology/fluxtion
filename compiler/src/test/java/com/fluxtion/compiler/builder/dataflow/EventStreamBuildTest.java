@@ -986,14 +986,6 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         return new PostMap(preMap.getName(), lookupValue);
     }
 
-    public static boolean isTrue(String in) {
-        return Boolean.parseBoolean(in);
-    }
-
-    public static boolean gt5(int val) {
-        return val > 5;
-    }
-
     public static int parseInt(String in) {
         return Integer.parseInt(in);
     }

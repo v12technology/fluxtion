@@ -4,8 +4,8 @@ import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.dataflow.Stateful;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -239,6 +239,15 @@ public interface Predicates {
         @Override
         public void reset() {
             init();
+        }
+    }
+
+    @Value
+    class PredicateWrapper {
+        SerializableSupplier<Boolean> predicate;
+
+        public boolean test(Object o) {
+            return predicate.get();
         }
     }
 }

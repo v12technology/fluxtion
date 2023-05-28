@@ -197,4 +197,29 @@ public interface DataFlow {
         MergeMapFlowFunction<T> build = builder.build();
         return new FlowBuilder<>(build);
     }
+
+    /**
+     * Merges two {@link FlowBuilder}'s into a single event stream of type T
+     *
+     * @param streamAToMerge stream A to merge
+     * @param streamBToMerge stream B to merge
+     * @param <T>            type of stream A
+     * @param <S>            type of stream B
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, S extends T> FlowBuilder<T> merge(FlowBuilder<T> streamAToMerge, FlowBuilder<S> streamBToMerge) {
+        return streamAToMerge.merge(streamBToMerge);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, S extends T> FlowBuilder<T> merge(
+            FlowBuilder<T> streamAToMerge,
+            FlowBuilder<S> streamBToMerge,
+            FlowBuilder<? extends T>... streamsToMerge) {
+        FlowBuilder<T> mergedStream = streamAToMerge.merge(streamBToMerge);
+        for (FlowBuilder<? extends T> streamToMerge : streamsToMerge) {
+            mergedStream = mergedStream.merge(streamToMerge);
+        }
+        return mergedStream;
+    }
 }
