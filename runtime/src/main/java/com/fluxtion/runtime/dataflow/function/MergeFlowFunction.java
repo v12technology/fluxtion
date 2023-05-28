@@ -2,6 +2,7 @@ package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
@@ -17,7 +18,9 @@ public class MergeFlowFunction<T, S extends FlowFunction<T>, R extends FlowFunct
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
 
-    public MergeFlowFunction(S inputEventStream1, R inputEventStream2) {
+    public MergeFlowFunction(
+            @AssignToField("inputEventStream1") S inputEventStream1,
+            @AssignToField("inputEventStream2") R inputEventStream2) {
         this.inputEventStream1 = inputEventStream1;
         this.inputEventStream2 = inputEventStream2;
     }
