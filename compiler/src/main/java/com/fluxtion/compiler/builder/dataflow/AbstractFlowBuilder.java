@@ -16,11 +16,13 @@ import com.fluxtion.runtime.dataflow.function.PeekFlowFunction;
 import com.fluxtion.runtime.dataflow.function.PushFlowFunction;
 import com.fluxtion.runtime.dataflow.helpers.InternalEventDispatcher;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
+import com.fluxtion.runtime.dataflow.helpers.Predicates.PredicateWrapper;
 import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>> {
 
@@ -66,6 +68,10 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
     //FILTERS - START
     public B filter(SerializableFunction<T, Boolean> filterFunction) {
         return connect(new FilterFlowFunction<>(eventStream, filterFunction));
+    }
+
+    public B filter(SerializableSupplier<Boolean> filterFunction) {
+        return filter(new PredicateWrapper(filterFunction)::test);
     }
 
     public <P> B filterByProperty(SerializableFunction<T, P> accessor, SerializableFunction<P, Boolean> filterFunction) {
