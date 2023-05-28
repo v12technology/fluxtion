@@ -34,7 +34,6 @@ public class ForkJoinDataFlowTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testSimple() {
-        writeSourceFile = true;
         sep(c -> {
             AsyncProcess asynch1 = new AsyncProcess("asynch_1", 200);
             AsyncProcess asynch2 = new AsyncProcess("asynch_1", 100);
@@ -53,8 +52,7 @@ public class ForkJoinDataFlowTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testSimple2() {
-        writeSourceFile = true;
-        writeOutputsToFile(true);
+//        writeOutputsToFile(true);
         sep(c -> {
             c.addNode(SyncCollectorMulti.builder().name("multiCollector")
                     .parent(new AsyncProcess("asynch_1", 45))
@@ -74,8 +72,7 @@ public class ForkJoinDataFlowTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void parallelMap() {
-        writeSourceFile = true;
-        writeOutputsToFile(true);
+//        writeOutputsToFile(true);
 //        addAuditor();
         sep(c -> {
             c.addNode(SyncCollectorMulti.builder().name("multiCollector")

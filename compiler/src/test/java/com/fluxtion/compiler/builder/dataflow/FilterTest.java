@@ -8,6 +8,9 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.helpers.Predicates;
+import com.fluxtion.runtime.node.SingleNamedNode;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +27,7 @@ public class FilterTest extends MultipleSepTargetInProcessTest {
     @Test
     public void filterTest() {
         sep(c -> subscribe(String.class)
-                .filter(EventStreamBuildTest::isTrue)
+                .filter(FilterTest::isTrue)
                 .notify(new NotifyAndPushTarget())
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -36,9 +39,42 @@ public class FilterTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void filterInstanceNoArgumentTest() {
+        sep(c -> subscribe(String.class)
+                .filter(new FilterNoArgs("filter")::isValid)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("86");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("true");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        getField("filter", FilterNoArgs.class).setValid(true);
+        onEvent("86");
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+        onEvent("true");
+        assertThat(notifyTarget.getOnEventCount(), is(2));
+    }
+
+    @Test
+    public void filterNoArgumentTest() {
+        sep(c -> subscribe(String.class)
+                .filter(FilterTest::alwaysTrue)
+                .notify(new NotifyAndPushTarget())
+        );
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(0));
+        onEvent("86");
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+        onEvent("true");
+        assertThat(notifyTarget.getOnEventCount(), is(2));
+    }
+
+    @Test
     public void filterByPropertyTest() {
         sep(c -> subscribe(String.class)
-                .filterByProperty(String::length, EventStreamBuildTest::gt5)
+                .filterByProperty(String::length, FilterTest::gt5)
                 .notify(new NotifyAndPushTarget())
         );
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
@@ -185,7 +221,30 @@ public class FilterTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(2, (int) getStreamed("count"));
     }
 
+    @Setter
+    @Getter
+    public static class FilterNoArgs extends SingleNamedNode {
+        private boolean valid = false;
+
+        public FilterNoArgs(String name) {
+            super(name);
+        }
+
+    }
+
     public static boolean filterMutableNumber(MutableNumber number, int check) {
         return number.intValue() > check;
+    }
+
+    public static boolean isTrue(String in) {
+        return Boolean.parseBoolean(in);
+    }
+
+    public static boolean alwaysTrue() {
+        return true;
+    }
+
+    public static boolean gt5(int val) {
+        return val > 5;
     }
 }
