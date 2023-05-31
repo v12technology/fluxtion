@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
@@ -27,6 +28,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -90,6 +92,17 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public FlowBuilder<T> merge(FlowBuilder<? extends T> streamToMerge) {
         return new FlowBuilder<>(new MergeFlowFunction<>(eventStream, streamToMerge.eventStream));
+    }
+
+    @SuppressWarnings("unchecked")
+    public FlowBuilder<T> merge(FlowBuilder<? extends T> streamToMerge, FlowBuilder<? extends T>... streamsToMerge) {
+        List<FlowFunction<? extends T>> mergeList = new ArrayList<>();
+        mergeList.add(eventStream);
+        mergeList.add(streamToMerge.eventStream);
+        for (FlowBuilder<? extends T> flowBuilder : streamsToMerge) {
+            mergeList.add(flowBuilder.eventStream);
+        }
+        return new FlowBuilder<>(new MergeFlowFunction<>(mergeList));
     }
 
     public <R> FlowBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction) {
