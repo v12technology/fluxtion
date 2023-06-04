@@ -101,6 +101,9 @@ public class EventProcessorCompilation {
             outFile.getParentFile().mkdirs();
             if (outFile.exists()) {
                 backupFile = new File(outFile.getParentFile(), outFile.getName() + ".backup");
+                if (backupFile.exists()) {
+                    throw new RuntimeException("Fluxtion generation problem backup file exists - please move or delete file:" + backupFile.getCanonicalPath());
+                }
                 FileUtils.moveFile(outFile, backupFile);
             }
             writer = new FileWriter(outFile);

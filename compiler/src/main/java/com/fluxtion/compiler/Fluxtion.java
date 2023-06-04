@@ -236,10 +236,38 @@ public interface Fluxtion {
                 generationCount.increment();
                 System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
                 try {
+
                     final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) c.loadClass().getDeclaredConstructor().newInstance();
                     compile(newInstance::buildGraph, newInstance::configureGeneration);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
+                    throw new RuntimeException("cannot instantiate FluxtionGraphBuilder", e);
+                }
+            });
+        }
+        return generationCount.intValue();
+    }
+
+    static int scanAndCompileFluxtionBuilders(ClassLoader classLoader, File... files) {
+        Objects.requireNonNull(files, "provide valid locations to search for fluxtion builders");
+        LongAdder generationCount = new LongAdder();
+        try (ScanResult scanResult = new ClassGraph()
+                .enableAllInfo()
+                .overrideClasspath(files)
+                .scan()) {
+
+            ClassInfoList builderList = scanResult
+                    .getClassesImplementing(FluxtionGraphBuilder.class)
+                    .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()));
+
+            builderList.forEach(c -> {
+                generationCount.increment();
+                System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
+                try {
+                    final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) classLoader.loadClass(c.getName()).getDeclaredConstructor().newInstance();
+                    compile(newInstance::buildGraph, newInstance::configureGeneration);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException | ClassNotFoundException e) {
                     throw new RuntimeException("cannot instantiate FluxtionGraphBuilder", e);
                 }
             });
