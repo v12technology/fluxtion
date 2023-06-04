@@ -197,9 +197,8 @@ public class EventProcessorFactory {
 
         cfgBuilder.accept(fluxtionCompilerConfig);
         EventProcessorCompilation compiler = new EventProcessorCompilation();
-        Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, new InProcessEventProcessorConfig(sepConfig));
-        EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        return sep;
+        Class<EventProcessor<?>> sepClass = compiler.compile(fluxtionCompilerConfig, new InProcessEventProcessorConfig(sepConfig));
+        return sepClass == null ? null : sepClass.getDeclaredConstructor().newInstance();
     }
 
     public static EventProcessor compile(
