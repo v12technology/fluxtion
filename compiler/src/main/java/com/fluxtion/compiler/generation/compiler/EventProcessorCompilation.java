@@ -22,6 +22,7 @@ import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.google.googlejavaformat.java.Formatter;
 import org.apache.commons.io.FileUtils;
@@ -143,7 +144,7 @@ public class EventProcessorCompilation {
             EventProcessorGenerator.formatSource(file);
             LOG.debug("completed formatting source");
         }
-        if (compilerConfig.isCompileSource()) {
+        if (compilerConfig.isCompileSource() && !Boolean.getBoolean(RuntimeConstants.FLUXTION_NO_COMPILE)) {
             LOG.debug("start compiling source");
             if (compilerConfig.isWriteSourceToFile()) {
                 builderConfig.getCompilerOptions();

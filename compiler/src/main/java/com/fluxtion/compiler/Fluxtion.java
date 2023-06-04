@@ -1,6 +1,7 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.EventProcessorFactory;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.builder.Disabled;
@@ -248,8 +249,21 @@ public interface Fluxtion {
         return generationCount.intValue();
     }
 
-    static int scanAndCompileFluxtionBuilders(ClassLoader classLoader, File... files) {
+    /**
+     * Scans the supplied File resources for any classes that implement the {@link FluxtionGraphBuilder} interface
+     * and will generate an {@link EventProcessor} for any located builders.
+     * <p>
+     * Any builder marked with the {@link Disabled} annotation will be ignored
+     * <p>
+     * No compilations are carried out
+     *
+     * @param classLoader the classloader to be used for the generation
+     * @param files       The locations to search for {@link FluxtionGraphBuilder} classes
+     * @return The number of processors generated
+     */
+    static int scanAndGenerateFluxtionBuilders(ClassLoader classLoader, File... files) {
         Objects.requireNonNull(files, "provide valid locations to search for fluxtion builders");
+        System.setProperty(RuntimeConstants.FLUXTION_NO_COMPILE, "true");
         LongAdder generationCount = new LongAdder();
         try (ScanResult scanResult = new ClassGraph()
                 .enableAllInfo()
