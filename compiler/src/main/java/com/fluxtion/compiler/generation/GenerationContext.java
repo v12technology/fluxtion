@@ -16,6 +16,7 @@
  */
 package com.fluxtion.compiler.generation;
 
+import com.fluxtion.runtime.callback.InstanceCallback;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -185,6 +186,7 @@ public class GenerationContext {
         log.info("classloader:{}", this.classLoader);
         log.debug("built GenerationContext: {}", this);
         cacheMap = new HashMap<>();
+        InstanceCallback.reset();
     }
 
     private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory) {
@@ -194,6 +196,7 @@ public class GenerationContext {
         this.resourcesRootDirectory = resourcesRootDirectory;
         this.classLoader = classLoasder;
         cacheMap = new HashMap<>();
+        InstanceCallback.reset();
         log.debug("built GenerationContext: {}", this);
     }
 
