@@ -4,7 +4,9 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.callback.CallBackNode;
+import lombok.Data;
 import lombok.Value;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
@@ -14,19 +16,37 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void directInvokeTest() {
-        writeOutputsToFile(true);
         sep(c -> {
-            c.addNode(new Child(new ExternalCallback("callback1")));
-            c.addNode(new Child(new ExternalCallback("callback2")));
+            c.addNode(new Child(new ExternalCallback("callback1")), "child1");
+            c.addNode(new Child(new ExternalCallback("callback2")), "child2");
         });
 
-        ExternalCallback callback1 = getField("callback1");
-        callback1.doubleEvent(new MyEvent<>(32.4));
-        callback1.stringEvent(new MyEvent<>("jjjj"));
+        Child child1 = getField("child1");
+        Child child2 = getField("child2");
 
+        ExternalCallback callback1 = getField("callback1");
         ExternalCallback callback2 = getField("callback2");
+
+
+        callback1.doubleEvent(new MyEvent<>(32.4));
+        Assert.assertEquals(32.4, (Double) child1.getResult(), 0.0001);
+        Assert.assertNull(child2.getResult());
+
+        callback1.stringEvent(new MyEvent<>("jjjj"));
+        Assert.assertEquals("jjjj", child1.getResult());
+        Assert.assertNull(child2.getResult());
+
+        child1.setResult(null);
+        child2.setResult(null);
+
         callback2.doubleEvent(new MyEvent<>(32.4));
+        Assert.assertNull(child1.getResult());
+        Assert.assertEquals(32.4, (Double) child2.getResult(), 0.0001);
+
+
         callback2.stringEvent(new MyEvent<>("jjjj"));
+        Assert.assertNull(child1.getResult());
+        Assert.assertEquals("jjjj", child2.getResult());
     }
 
 
@@ -50,13 +70,14 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
 
     }
 
-    @Value
+    @Data
     public static class Child {
-        ExternalCallback externalCallback;
+        private final ExternalCallback externalCallback;
+        private Object result;
 
         @OnTrigger
         public boolean triggered() {
-            System.out.println("parent:" + externalCallback.getName() + " updated:" + externalCallback.update);
+            result = externalCallback.update;
             return true;
         }
     }
