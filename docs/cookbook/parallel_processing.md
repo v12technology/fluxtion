@@ -2,7 +2,7 @@
 title: Parallel processing
 parent: Cookbook
 has_children: false
-nav_order: 7
+nav_order: 8
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/parallel
 ---
