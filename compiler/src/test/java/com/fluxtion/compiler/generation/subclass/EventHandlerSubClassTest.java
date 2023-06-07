@@ -49,19 +49,19 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         //init
         assertThat(node.eventCount, is(0));
         assertThat(node.initCount, is(1));
-        assertThat(node.afterEvent, is(0));
+        assertThat(node.afterEvent, is(1));
         assertThat(node.batchEnd, is(0));
         assertThat(node.batchPause, is(0));
         assertThat(node.tearDownCount, is(0));
         //event + after event
         onEvent("test string");
         assertThat(node.eventCount, is(1));
-        assertThat(node.afterEvent, is(1));
+        assertThat(node.afterEvent, is(2));
         //batch pause
         batchPause();
         assertThat(node.eventCount, is(1));
         assertThat(node.initCount, is(1));
-        assertThat(node.afterEvent, is(1));
+        assertThat(node.afterEvent, is(3));
         assertThat(node.batchEnd, is(0));
         assertThat(node.batchPause, is(1));
         assertThat(node.tearDownCount, is(0));
@@ -69,7 +69,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         batchEnd();
         assertThat(node.eventCount, is(1));
         assertThat(node.initCount, is(1));
-        assertThat(node.afterEvent, is(1));
+        assertThat(node.afterEvent, is(4));
         assertThat(node.batchEnd, is(1));
         assertThat(node.batchPause, is(1));
         assertThat(node.tearDownCount, is(0));
@@ -77,7 +77,7 @@ public class EventHandlerSubClassTest extends MultipleSepTargetInProcessTest {
         tearDown();
         assertThat(node.eventCount, is(1));
         assertThat(node.initCount, is(1));
-        assertThat(node.afterEvent, is(1));
+        assertThat(node.afterEvent, is(5));
         assertThat(node.batchEnd, is(1));
         assertThat(node.batchPause, is(1));
         assertThat(node.tearDownCount, is(1));

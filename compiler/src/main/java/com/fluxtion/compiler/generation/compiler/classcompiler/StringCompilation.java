@@ -1,11 +1,19 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventHandlerAnnotations;
 import com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations;
 import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnParentUpdateHandlerAnnotations;
 import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnTriggerAnnotations;
 
-import javax.tools.*;
+import javax.tools.DiagnosticCollector;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -36,6 +44,12 @@ public interface StringCompilation {
         final JavaByteObject byteObject = new JavaByteObject(className);
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaFileManager fileManager = createFileManager(standardFileManager, byteObject);
+        String cp = System.getProperty(RuntimeConstants.GENERATION_CLASSPATH);
+        if (cp != null) {
+            optionList.add("-classpath");
+            optionList.add(cp);
+        }
+
         JavaCompiler.CompilationTask task = compiler.getTask(
                 null, fileManager, diagnostics, optionList, null, Collections.singletonList(new JavaStringObject(className, source))
         );

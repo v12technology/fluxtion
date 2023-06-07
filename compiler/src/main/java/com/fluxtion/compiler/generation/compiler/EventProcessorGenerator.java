@@ -138,8 +138,8 @@ public class EventProcessorGenerator {
 
 
     private static void initVelocity() {
-        Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+        Velocity.setProperty(RuntimeConstants.RESOURCE_LOADERS, "classpath");
+        Velocity.setProperty("resource.loader.classpath.class", ClasspathResourceLoader.class.getName());
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(GenerationContext.SINGLETON.getClassLoader());
         Velocity.init();

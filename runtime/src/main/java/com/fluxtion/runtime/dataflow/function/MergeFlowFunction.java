@@ -8,28 +8,33 @@ import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MergeFlowFunction<T, S extends FlowFunction<T>, R extends FlowFunction<? extends T>> extends EventLogNode
         implements TriggeredFlowFunction<T> {
 
-    private final S inputEventStream1;
-    private final R inputEventStream2;
+    private final List<FlowFunction<? extends T>> mergeList;
+
     private T update;
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
 
-    public MergeFlowFunction(S inputEventStream1, R inputEventStream2) {
-        this.inputEventStream1 = inputEventStream1;
-        this.inputEventStream2 = inputEventStream2;
+    public MergeFlowFunction(
+            S inputEventStream1,
+            R inputEventStream2) {
+        mergeList = new ArrayList<>();
+        mergeList.add(inputEventStream1);
+        mergeList.add(inputEventStream2);
     }
 
-    @OnParentUpdate("inputEventStream1")
-    public void inputStream1Updated(S inputEventStream1) {
-        update = inputEventStream1.get();
+    public MergeFlowFunction(List<FlowFunction<? extends T>> mergeList) {
+        this.mergeList = mergeList;
     }
 
-    @OnParentUpdate("inputEventStream2")
-    public void inputStream2Updated(R inputEventStream2) {
-        update = inputEventStream2.get();
+    @OnParentUpdate("mergeList")
+    public void inputStreamUpdated(FlowFunction<? extends T> inputEventStream1) {
+        update = (T) inputEventStream1.get();
     }
 
     @Override

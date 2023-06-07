@@ -111,9 +111,11 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     @Override
     public void init() {
         initCalled = true;
+        auditEvent(Lifecycle.LifecycleEvent.Init);
        //initialise dirty lookup map
        isDirty("test");
        ${MODEL.initialiseMethods}
+       afterEvent();
     }
 
     @Override
@@ -121,7 +123,12 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before start()");
         }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Start);
         ${MODEL.startMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -129,23 +136,40 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         if(!initCalled){
             throw new RuntimeException("init() must be called before stop()");
         }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Stop);
         ${MODEL.stopMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void tearDown() {
         initCalled = false;
-       ${MODEL.tearDownMethods}
+        auditEvent(Lifecycle.LifecycleEvent.TearDown);
+        ${MODEL.tearDownMethods}
+        afterEvent();
     }
 
     @Override
     public void batchPause() {
-       ${MODEL.batchPauseMethods}
+        auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+        processing = true;
+        ${MODEL.batchPauseMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
-       ${MODEL.batchEndMethods}
+        auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+        processing = true;
+        ${MODEL.batchEndMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override

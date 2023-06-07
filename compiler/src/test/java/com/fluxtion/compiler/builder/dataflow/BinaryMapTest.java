@@ -174,6 +174,25 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("formattedDate"), is("July-28-2022"));
     }
 
+    @Test
+    public void referenceTypesDataFlowBiFunctionTest() {
+        sep(c -> {
+            FlowBuilder<String> stringStream = subscribe(String.class);
+            FlowBuilder<Date> dateStream = subscribe(Date.class);
+            DataFlow.mapBiFunction(
+                    BinaryMapTest::dateFormat, stringStream, dateStream).id("formattedDate");
+        });
+        Calendar calendar = Calendar.getInstance(Locale.UK);
+        calendar.set(2022, 06, 28);
+
+        onEvent("MMM-YYYY");
+        onEvent(calendar.getTime());
+        assertThat(getStreamed("formattedDate"), is("Jul-2022"));
+
+        onEvent("MMMM-dd-YYYY");
+        assertThat(getStreamed("formattedDate"), is("July-28-2022"));
+    }
+
     @Value
     public static class Data_1 {
         int intValue;
