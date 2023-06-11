@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 V12 Technology Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -11,16 +11,16 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.partition;
 
 import com.fluxtion.runtime.StaticEventProcessor;
-//import com.fluxtion.api.event.Event;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,31 +36,31 @@ import java.util.function.Supplier;
  * to that instance. Partitioning allows a separate memory context for an
  * EventHandler, this can be useful when the structure of processing is repeated
  * but the state is different for each instance.<p>
- *
- For example monitoring the fuel level on a fleet of cars is the same
+ * <p>
+ * For example monitoring the fuel level on a fleet of cars is the same
  * processing for each car, but an individual car will have a unique fuel level.
  * In this case the StaticEventProcessor can be partitioned on vehicle
  * identification number.
  * <p>
- *
- The StaticEventProcessor instance will be re-used or a new one created when
+ * <p>
+ * The StaticEventProcessor instance will be re-used or a new one created when
  * new events are received. The {@link #partition(SerializableFunction)} methods provide
  * functions that map keys from an incoming event. the key is used
  * manage StaticEventProcessor instances in an underlying map. If no key/value
  * mapping is found then a new StaticEventProcessor is created and handles the
  * incoming message.
  * <p>
- *
+ * <p>
  * New instances are created with s {@link Supplier} factory. Optionally an
  * initialiser can be provided that can access the newly created
  * StaticEventProcessor before any messages are processed. Using the car/fuel
  * analogy the initialiser function may set a reference to a global fuel monitor
  * from each newly created car processor.
  *
- * @author gregp
  * @param <E>
+ * @author gregp
  */
-public class Partitioner< E extends StaticEventProcessor> implements StaticEventProcessor, Lifecycle, BatchHandler {
+public class Partitioner<E extends StaticEventProcessor> implements StaticEventProcessor, Lifecycle, BatchHandler {
 
     private HashMap<Class, SerializableFunction> class2Function;
     private HashMap<Class, MultiKeyGenerator> class2MultiFunction;
@@ -77,7 +77,7 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
     /**
      * Create a partitioner with a factory and initialiser function.
      *
-     * @param factory factory creating instances of EventHandlers
+     * @param factory     factory creating instances of EventHandlers
      * @param initialiser Initialisation function applied to new EventHandlers
      */
     public Partitioner(Supplier<E> factory, Consumer<E> initialiser) {
@@ -94,7 +94,6 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
     }
 
     /**
-     *
      * Create a partitioner with a factory.
      *
      * @param factory factory creating instances of EventHandlers
@@ -115,7 +114,7 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
      * </ul>
      *
      * @param <I>
-     * @param <K> Generated key
+     * @param <K>             Generated key
      * @param partitionKeyGen key mapping function
      */
     public <I, K extends CharSequence> void keyPartitioner(Function<I, K> partitionKeyGen) {
@@ -126,8 +125,8 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
      * Register a partition key generator function that creates keys from a
      * property on an incoming event. an incoming Event
      *
-     * @param <s> The incoming event
-     * @param <t> The key type
+     * @param <s>      The incoming event
+     * @param <t>      The key type
      * @param supplier Key value supplier
      */
     public <s, t> void partition(SerializableFunction<s, t> supplier) {
@@ -139,8 +138,8 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
      * Register a partition key generator function that creates keys from a set
      * of properties on an incoming event. an incoming Event
      *
-     * @param <s> The incoming event
-     * @param <t> The key type
+     * @param <s>      The incoming event
+     * @param <t>      The key type
      * @param supplier Key value suppliers
      */
     public <s, t> void partition(SerializableFunction<s, ?>... supplier) {
@@ -174,8 +173,8 @@ public class Partitioner< E extends StaticEventProcessor> implements StaticEvent
             }
         }
     }
-    
-    public E getProcessor(Object key){
+
+    public E getProcessor(Object key) {
         return handlerMap.get(key);
     }
 

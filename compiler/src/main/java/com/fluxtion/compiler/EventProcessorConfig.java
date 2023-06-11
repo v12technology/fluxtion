@@ -139,7 +139,8 @@ public class EventProcessorConfig {
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
-    public void addNode(Object... nodeList) {
+    public void addNode(Object node, Object... nodeList) {
+        addNode(node);
         Arrays.asList(nodeList).forEach(this::addNode);
     }
 

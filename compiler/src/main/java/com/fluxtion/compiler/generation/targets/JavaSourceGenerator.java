@@ -23,6 +23,7 @@ import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.DirtyFlag;
+import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
@@ -56,6 +57,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapPrimitiveToWrapper;
@@ -212,6 +214,10 @@ public class JavaSourceGenerator {
      */
     private String eventHandlers;
     /**
+     * String representing exported events
+     */
+    private String exportedMethods;
+    /**
      * determines whether separate delegate eventHandling methods are generated.
      */
     private boolean isInlineEventHandling;
@@ -264,6 +270,7 @@ public class JavaSourceGenerator {
         buildForkAwareMethodSource(model.getEventEndMethods(), eventEndMethodList);
         buildMethodSource(model.getBatchEndMethods(), batchEndMethodList);
         buildMethodSource(model.getTearDownMethods(), tearDownMethodList);
+        buildExportedMethods();
         addDefaultImports();
         buildNodeDeclarations();
         buildDirtyFlags();
@@ -349,6 +356,29 @@ public class JavaSourceGenerator {
             final String methodString = String.format("%8s%s.%s();", "", method.variableName, method.method.getName());
             methodSourceList.add(methodString);
         }
+    }
+
+    private void buildExportedMethods() {
+        Map<String, ExportFunctionData> exportedFunctionDataMap = model.getExportedFunctionMap();
+        List<String> keys = new ArrayList<>(exportedFunctionDataMap.keySet());
+        keys.sort(String::compareTo);
+        StringJoiner joiner = new StringJoiner("\n");
+        joiner.setEmptyValue("");
+//        //filtered
+//        for (String key : keys) {
+//            List<CbMethodHandle> cbMethodHandles = exportedFunctionMap.get(key);
+//            if (!cbMethodHandles.isEmpty()) {
+//                CbMethodHandle cbMethodHandle = cbMethodHandles.get(0);
+//                joiner.add(ClassUtils.wrapNodeCall(cbMethodHandle.getMethod(), key, cbMethodHandle.getVariableName()));
+//            }
+//        }
+        //multicast
+        for (String key : keys) {
+            if (!exportedFunctionDataMap.get(key).getFunctionCallBackList().isEmpty()) {
+                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionDataMap.get(key), model));
+            }
+        }
+        exportedMethods = joiner.toString();
     }
 
     private void buildForkAwareMethodSource(List<CbMethodHandle> methodList, List<String> methodSourceList) {
@@ -1267,6 +1297,10 @@ public class JavaSourceGenerator {
      */
     public String getEventHandlers() {
         return eventHandlers;
+    }
+
+    public String getExportedMethods() {
+        return exportedMethods;
     }
 
     public String getNodeDeclarations() {
