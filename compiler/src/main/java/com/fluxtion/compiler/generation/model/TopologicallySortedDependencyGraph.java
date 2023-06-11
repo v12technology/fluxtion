@@ -29,6 +29,7 @@ import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.ExportFunction;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnBatchEnd;
@@ -106,6 +107,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
+    /**
+     * Map of all the public functions that are exported with {@link ExportFunction}
+     * annotation
+     */
+    private final Map<String, ExportFunctionData> exportedFunctionMap;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final HashMap<String, CbMethodHandle> name2FactoryMethod;
@@ -160,6 +166,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         this.inst2NameTemp = HashBiMap.create();
         this.class2FactoryMethod = new HashMap<>();
         this.name2FactoryMethod = new HashMap<>();
+        this.exportedFunctionMap = new HashMap<>();
         if (nodes == null) {
             nodes = Collections.EMPTY_LIST;
         }
@@ -248,6 +255,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     public List<Object> getObjectSortedDependents() throws Exception {
         generateDependencyTree();
         return Collections.unmodifiableList(noPushTopologicalHandlers);
+    }
+
+    public Map<String, ExportFunctionData> getExportedFunctionMap() {
+        return Collections.unmodifiableMap(exportedFunctionMap);
     }
 
     //TODO this should be a list that is sorted topologically and then
@@ -562,6 +573,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         inst2Name.putAll(inst2NameTemp);
         inst2Name.entrySet().removeIf(o -> Anchor.class.isAssignableFrom(o.getKey().getClass()));
         inst2Name.entrySet().removeIf(o -> o.getKey().getClass().isAnnotationPresent(ExcludeNode.class));
+        inst2Name.keySet().forEach(this::addExportedMethods);
 
         //all instances are in inst2Name, can now generate final graph
         for (Map.Entry<Object, String> entry : inst2Name.entrySet()) {
@@ -745,6 +757,24 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
     }
 
+    private void addExportedMethods(Object object) {
+        final Class<?> clazz = object.getClass();
+
+        Set<Method> exportMethodSet = ReflectionUtils.getAllMethods(clazz, ReflectionUtils.withAnnotation(ExportFunction.class));
+        exportMethodSet.forEach(method -> {
+            String exportMethodName = method.getAnnotation(ExportFunction.class).value();
+            ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
+                    exportMethodName, n -> {
+                        ExportFunctionData data = new ExportFunctionData(exportMethodName);
+                        registerNode(data.getExportFunctionTrigger(), null);
+                        return data;
+                    });
+            final String name = inst2Name.get(object);
+            exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
+            exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
+        });
+    }
+
     @SuppressWarnings("unchecked")
     private String getInstanceName(Field field, Object node) throws IllegalArgumentException, IllegalAccessException {
         Object refField = field.get(node);
@@ -800,6 +830,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 .or(ReflectionUtils.withAnnotation(TearDown.class))
                 .or(ReflectionUtils.withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                .or(ReflectionUtils.withAnnotation(ExportFunction.class))
                 ;
     }
 
@@ -1083,5 +1114,4 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private String nameNode(Object node) {
         return nameStrategy.mappedNodeName(node);
     }
-
 }
