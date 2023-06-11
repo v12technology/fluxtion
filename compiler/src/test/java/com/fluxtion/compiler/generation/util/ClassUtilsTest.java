@@ -18,6 +18,7 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,37 +35,6 @@ import static org.junit.Assert.assertEquals;
  * @author Greg Higgins
  */
 public class ClassUtilsTest {
-
-
-    public static class A {
-    }
-
-    public static class B {
-    }
-
-    public static class B1 extends B {
-    }
-
-    public static class B2 extends B1 {
-    }
-
-
-    public static class Handler1 {
-        public void handleA(A a) {
-        }
-
-        public void handleB(B a) {
-        }
-
-        public void handleB1(B1 a) {
-        }
-
-        public void handleB2(B2 a) {
-        }
-
-        public void handleObject(Object o) {
-        }
-    }
 
     @Test
     public void testCbLocate() throws NoSuchMethodException {
@@ -113,5 +84,57 @@ public class ClassUtilsTest {
         Assert.assertTrue(sortClassHierarchy.indexOf(CharSequence.class) > sortClassHierarchy.indexOf(String.class));
 
         Assert.assertTrue(sortClassHierarchy.indexOf(Object.class) > sortClassHierarchy.indexOf(A.class));
+    }
+
+    public void crazyMethod(String a, List<String> x, Map<List<List<String>>, ?> map) {
+
+    }
+
+    @Test
+    public void printSignature() {
+        String generated = Arrays.stream(ClassUtilsTest.class.getDeclaredMethods())
+                .filter(m -> m.getName().contains("crazyMethod"))
+                .findAny()
+                .map(m -> ClassUtils.wrapExportedFunctionCall(m, "wrappedCrazy", "instanceA"))
+                .get();
+        String expected = "" +
+                "public void wrappedCrazy(java.lang.String arg0, java.util.List<java.lang.String> arg1, java.util.Map<java.util.List<java.util.List<java.lang.String>>, ?> arg2, String identifer){" +
+                "    try {\n" +
+                "        ExportingNode instance = getNodeById(identifer);\n" +
+                "        instance.crazyMethod(arg0, arg1, arg2);\n" +
+                "    } catch (NoSuchFieldException e) {\n" +
+                "        throw new RuntimeException(e);\n" +
+                "    }" +
+                "}";
+        assertEquals(StringUtils.deleteWhitespace(expected), StringUtils.deleteWhitespace(generated));
+    }
+
+    public static class A {
+    }
+
+    public static class B {
+    }
+
+    public static class B1 extends B {
+    }
+
+    public static class B2 extends B1 {
+    }
+
+    public static class Handler1 {
+        public void handleA(A a) {
+        }
+
+        public void handleB(B a) {
+        }
+
+        public void handleB1(B1 a) {
+        }
+
+        public void handleB2(B2 a) {
+        }
+
+        public void handleObject(Object o) {
+        }
     }
 }

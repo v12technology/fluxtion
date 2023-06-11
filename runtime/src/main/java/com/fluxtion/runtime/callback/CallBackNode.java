@@ -34,7 +34,7 @@ public abstract class CallBackNode extends SingleNamedNode implements EventHandl
     @SneakyThrows
     public final Class<?> eventClass() {
         if (cbClass == null) {
-            cbClass = InstanceCallback.cbClassList.remove(0);
+            cbClass = InstanceCallbackEvent.cbClassList.remove(0);
             eventClassName = cbClass.getName();
         }
         return cbClass;

@@ -64,7 +64,7 @@ import java.util.function.LongConsumer;
  *
  * @author Greg Higgins
  */
-public interface StaticEventProcessor {
+public interface StaticEventProcessor extends NodeDiscovery {
 
     StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };

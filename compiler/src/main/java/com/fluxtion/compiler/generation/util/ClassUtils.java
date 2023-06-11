@@ -18,19 +18,26 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
+import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 /**
@@ -131,4 +138,108 @@ public interface ClassUtils {
         });
         return clazzSorted;
     }
+
+    @SneakyThrows
+    static String wrapExportedFunctionCall(Method delegateMethod, String exportedMethodName, String instanceName) {
+        LongAdder argNumber = new LongAdder();
+        StringBuilder signature = new StringBuilder("public void " + exportedMethodName);
+        signature.append('(');
+        StringJoiner sj = new StringJoiner(", ");
+        Type[] params = delegateMethod.getGenericParameterTypes();
+        for (int j = 0; j < params.length; j++) {
+            String param = params[j].getTypeName();
+            if (delegateMethod.isVarArgs() && (j == params.length - 1)) // replace T[] with T...
+                param = param.replaceFirst("\\[\\]$", "...");
+            param += " arg" + argNumber.intValue();
+            sj.add(param);
+            argNumber.increment();
+        }
+        signature.append(sj.toString());
+        signature.append(", String identifer");
+        signature.append("){");
+        signature.append("try {\n" +
+                "            ExportingNode instance = getNodeById(identifer);");
+        signature.append("\n  instance." + delegateMethod.getName() + "(");
+        StringJoiner sjInvoker = new StringJoiner(", ");
+        for (int i = 0; i < argNumber.intValue(); i++) {
+            sjInvoker.add("arg" + i);
+        }
+        signature.append(sjInvoker.toString());
+        signature.append(");\n");
+        signature.append("} catch (NoSuchFieldException e) {\n" +
+                "            throw new RuntimeException(e);\n" +
+                "        }" +
+                "    }");
+        return signature.toString();
+    }
+
+    @SneakyThrows
+    static String wrapExportedFunctionCall(String exportedMethodName, List<CbMethodHandle> callBackList, SimpleEventProcessorModel model) {
+        LongAdder argNumber = new LongAdder();
+        Method delegateMethod = callBackList.get(0).getMethod();
+        StringBuilder signature = new StringBuilder("public void " + exportedMethodName);
+        signature.append('(');
+        StringJoiner sj = new StringJoiner(", ");
+        Type[] params = delegateMethod.getGenericParameterTypes();
+        for (int j = 0; j < params.length; j++) {
+            String param = params[j].getTypeName();
+            if (delegateMethod.isVarArgs() && (j == params.length - 1)) // replace T[] with T...
+                param = param.replaceFirst("\\[\\]$", "...");
+            param += " arg" + argNumber.intValue();
+            sj.add(param);
+            argNumber.increment();
+        }
+        signature.append(sj);
+        signature.append("){");
+        //method calls
+        StringJoiner sjInvoker = new StringJoiner(", ", "(", "));");
+        for (int i = 0; i < argNumber.intValue(); i++) {
+            sjInvoker.add("arg" + i);
+        }
+        callBackList.forEach(cb -> {
+            signature.append("setDirty(").append(cb.getVariableName()).append(", ").
+                    append(cb.getVariableName()).append(".").append(cb.getMethod().getName()).append(sjInvoker);
+        });
+        //close
+        signature.append("  triggerCalculation();\n  }");
+        return signature.toString();
+    }
+
+    @SneakyThrows
+    static String wrapExportedFunctionCall(String exportedMethodName, ExportFunctionData exportFunctionData, SimpleEventProcessorModel model) {
+        LongAdder argNumber = new LongAdder();
+        List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
+        Method delegateMethod = callBackList.get(0).getMethod();
+        StringBuilder signature = new StringBuilder("public void " + exportedMethodName);
+        signature.append('(');
+        StringJoiner sj = new StringJoiner(", ");
+        Type[] params = delegateMethod.getGenericParameterTypes();
+        for (int j = 0; j < params.length; j++) {
+            String param = params[j].getTypeName();
+            if (delegateMethod.isVarArgs() && (j == params.length - 1)) // replace T[] with T...
+                param = param.replaceFirst("\\[\\]$", "...");
+            param += " arg" + argNumber.intValue();
+            sj.add(param);
+            argNumber.increment();
+        }
+        signature.append(sj);
+        signature.append("){");
+        //method calls
+        StringJoiner sjInvoker = new StringJoiner(", ", "(", "));\n");
+        for (int i = 0; i < argNumber.intValue(); i++) {
+            sjInvoker.add("arg" + i);
+        }
+        callBackList.forEach(cb -> {
+            String variableName = cb.getVariableName();
+            signature.append(variableName).append(".setTriggered(").
+                    append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker);
+        });
+        //close
+        //onEvent(handlerExportFunctionTriggerEvent_0.getEvent());
+        signature.append("onEvent(")
+                .append(exportFunctionData.getExportFunctionTrigger().getName()).append(".getEvent());\n")
+                .append("}");
+        return signature.toString();
+    }
+
 }
