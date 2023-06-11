@@ -759,10 +759,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private void addExportedMethods(Object object) {
         final Class<?> clazz = object.getClass();
-
         Set<Method> exportMethodSet = ReflectionUtils.getAllMethods(clazz, ReflectionUtils.withAnnotation(ExportFunction.class));
         exportMethodSet.forEach(method -> {
-            String exportMethodName = method.getAnnotation(ExportFunction.class).value();
+            String overrideExportMethodName = method.getAnnotation(ExportFunction.class).value();
+            String exportMethodName = overrideExportMethodName.trim().isEmpty() ? method.getName() : overrideExportMethodName;
             ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
                     exportMethodName, n -> {
                         ExportFunctionData data = new ExportFunctionData(exportMethodName);
