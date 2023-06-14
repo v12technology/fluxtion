@@ -65,9 +65,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
     private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
     private final List<Auditor> auditors = new ArrayList<>();
-    private boolean buffering = false;
+    public boolean buffering = false;
     private Object currentEvent;
-    private boolean processing = false;
+    public boolean processing = false;
     private boolean isDefaultHandling;
     private boolean initCalled = false;
     private Object exportingWrapper;
@@ -572,11 +572,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                                 "\tthis.processor = processor;\n\t",
                         ";" + triggerAssignments + "}\n"));
 
-        String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}" +
-                "public void init(){\n\tprocessor.init();\n}" +
-                "public void start(){\n\tprocessor.start();\n}" +
-                "public void stop(){\n\tprocessor.stop();\n}" +
-                "public InMemoryEventProcessor processor(){\n\treturn processor;\n}" +
+        String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}\n\n" +
+                "public void init(){\n\tprocessor.init();\n}\n\n" +
+                "public void start(){\n\tprocessor.start();\n}\n\n" +
+                "public void stop(){\n\tprocessor.stop();\n}\n\n" +
+                "public InMemoryEventProcessor processor(){\n\treturn processor;\n}\n\n" +
                 "public void tearDown(){\n\tprocessor.tearDown();\n}";
 
         List<String> keys = new ArrayList<>(exportedFunctionMap.keySet());
@@ -585,7 +585,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         joiner.setEmptyValue("");
         for (String key : keys) {
             if (!exportedFunctionMap.get(key).getFunctionCallBackList().isEmpty()) {
-                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionMap.get(key), simpleEventProcessorModel));
+                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionMap.get(key), true));
             }
         }
         String exportedMethods = joiner.toString();

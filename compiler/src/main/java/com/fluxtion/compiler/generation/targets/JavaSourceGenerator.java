@@ -375,7 +375,7 @@ public class JavaSourceGenerator {
         //multicast
         for (String key : keys) {
             if (!exportedFunctionDataMap.get(key).getFunctionCallBackList().isEmpty()) {
-                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionDataMap.get(key), model));
+                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionDataMap.get(key), false));
             }
         }
         exportedMethods = joiner.toString();
