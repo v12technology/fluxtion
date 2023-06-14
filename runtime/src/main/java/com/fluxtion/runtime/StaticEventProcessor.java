@@ -366,4 +366,17 @@ public interface StaticEventProcessor extends NodeDiscovery {
     default void setClockStrategy(ClockStrategy clockStrategy) {
         onEvent(ClockStrategy.registerClockEvent(clockStrategy));
     }
+
+    /**
+     * Returns an instance of the event processor cast to an interface type. The implemented interfaces of an event processor
+     * are specified using the com.fluxtion.compiler.EventProcessorConfig#addInterfaceImplementation during the
+     * building phase of the processor.
+     *
+     * @param <T> the interface type to cast to
+     * @return The {@link StaticEventProcessor} cast to an interface
+     */
+    @SuppressWarnings("unchecked")
+    default <T> T asInterface() {
+        return (T) this;
+    }
 }

@@ -92,7 +92,7 @@ public class EventProcessorGenerator {
         if (generateDescription && !GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
-        return new InMemoryEventProcessor(simpleEventProcessorModel);
+        return new InMemoryEventProcessor(simpleEventProcessorModel, config);
     }
 
     public void templateSep(EventProcessorConfig config, boolean generateDescription, Writer writer) throws Exception {
