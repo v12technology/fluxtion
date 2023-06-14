@@ -572,7 +572,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                                 "\tthis.processor = processor;\n\t",
                         ";" + triggerAssignments + "}\n"));
 
-        String delegateOnEvent = "void onEvent(Object o){\n\tprocessor.onEvent(o);\n}";
+        String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}" +
+                "public void init(){\n\tprocessor.init();\n}" +
+                "public void start(){\n\tprocessor.start();\n}" +
+                "public void stop(){\n\tprocessor.stop();\n}" +
+                "public InMemoryEventProcessor processor(){\n\treturn processor;\n}" +
+                "public void tearDown(){\n\tprocessor.tearDown();\n}";
 
         List<String> keys = new ArrayList<>(exportedFunctionMap.keySet());
         keys.sort(String::compareTo);
