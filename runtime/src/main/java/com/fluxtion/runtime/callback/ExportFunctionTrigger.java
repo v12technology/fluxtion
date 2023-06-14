@@ -34,11 +34,11 @@ public class ExportFunctionTrigger implements EventHandlerNode, NamedNode {
     }
 
     @Override
-    public boolean onEvent(Object e) {
+    public final boolean onEvent(Object e) {
         return true;
     }
 
-    public Object getEvent() {
+    public final Object getEvent() {
         return event;
     }
 
