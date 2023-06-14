@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>9.0.8</version>
+    <version>9.0.10</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
 
@@ -92,7 +92,8 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
+                        <version>1.6.13</version>
+<!--                        <version>1.6.7</version>-->
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>

@@ -1,7 +1,7 @@
 package com.fluxtion.compiler.generation.exportfunction;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
-import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
+import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportFunction;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -13,7 +13,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-public class ExportFunctionTest extends CompiledOnlySepTest {
+public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
+
     public ExportFunctionTest(SepTestConfig compile) {
         super(compile);
     }
@@ -21,13 +22,14 @@ public class ExportFunctionTest extends CompiledOnlySepTest {
     @Test
     public void exportTest() {
 //        writeSourceFile = true;
-        MyExportedInterface myExportedInterface = (MyExportedInterface) sep(c -> {
+        sep(c -> {
             c.addNode(new Aggregator(
                     new ExportingNode("export1"),
                     new ExportingNode("export2")
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterface.class);
         });
+        MyExportedInterface myExportedInterface = sep.asInterface();
         Aggregator aggregator = getField("aggregator");
         myExportedInterface.updatedDetails("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);
@@ -52,13 +54,14 @@ public class ExportFunctionTest extends CompiledOnlySepTest {
     @Test
     public void exportTestNoOverride() {
 //        writeSourceFile = true;
-        MyExportedInterfaceNoOverride myExportedInterface = (MyExportedInterfaceNoOverride) sep(c -> {
+        sep(c -> {
             c.addNode(new Aggregator2(
                     new ExportingNodeNoOverride("export1"),
                     new ExportingNodeNoOverride("export2")
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterfaceNoOverride.class);
         });
+        MyExportedInterfaceNoOverride myExportedInterface = sep.asInterface();
         Aggregator2 aggregator = getField("aggregator");
         myExportedInterface.myfunctionString("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);

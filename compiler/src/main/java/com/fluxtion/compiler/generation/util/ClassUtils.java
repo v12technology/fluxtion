@@ -223,9 +223,9 @@ public interface ClassUtils {
             argNumber.increment();
         }
         signature.append(sj);
-        signature.append("){");
+        signature.append("){\n\t");
         //method calls
-        StringJoiner sjInvoker = new StringJoiner(", ", "(", "));\n");
+        StringJoiner sjInvoker = new StringJoiner(", ", "(", "));\n\t");
         for (int i = 0; i < argNumber.intValue(); i++) {
             sjInvoker.add("arg" + i);
         }
