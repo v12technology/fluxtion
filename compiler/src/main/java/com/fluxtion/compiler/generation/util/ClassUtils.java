@@ -21,6 +21,7 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.runtime.callback.ExportFunctionTrigger;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -206,7 +207,7 @@ public interface ClassUtils {
     }
 
     @SneakyThrows
-    static String wrapExportedFunctionCall(String exportedMethodName, ExportFunctionData exportFunctionData, SimpleEventProcessorModel model) {
+    static String wrapExportedFunctionCall(String exportedMethodName, ExportFunctionData exportFunctionData, boolean onEventDispatch) {
         LongAdder argNumber = new LongAdder();
         List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
         Method delegateMethod = callBackList.get(0).getMethod();
@@ -215,7 +216,9 @@ public interface ClassUtils {
         StringJoiner sj = new StringJoiner(", ");
         Type[] params = delegateMethod.getGenericParameterTypes();
         for (int j = 0; j < params.length; j++) {
-            String param = params[j].getTypeName();
+            String param = params[j].getTypeName()
+                    .replace("$", ".")
+                    .replace("java.lang.", "");
             if (delegateMethod.isVarArgs() && (j == params.length - 1)) // replace T[] with T...
                 param = param.replaceFirst("\\[\\]$", "...");
             param += " arg" + argNumber.intValue();
@@ -224,6 +227,17 @@ public interface ClassUtils {
         }
         signature.append(sj);
         signature.append("){\n\t");
+        //
+        if (onEventDispatch) {
+            signature.append("if(processor().buffering){\n" +
+                    "      processor().triggerCalculation();\n" +
+                    "    }\n\t");
+        } else {
+            signature.append("if(buffering){\n" +
+                    "      triggerCalculation();\n" +
+                    "    }\n" +
+                    "    processing = true;\n\t");
+        }
         //method calls
         StringJoiner sjInvoker = new StringJoiner(", ", "(", "));\n\t");
         for (int i = 0; i < argNumber.intValue(); i++) {
@@ -236,9 +250,20 @@ public interface ClassUtils {
         });
         //close
         //onEvent(handlerExportFunctionTriggerEvent_0.getEvent());
-        signature.append("onEvent(")
-                .append(exportFunctionData.getExportFunctionTrigger().getName()).append(".getEvent());\n")
-                .append("}");
+        ExportFunctionTrigger exportFunctionTrigger = exportFunctionData.getExportFunctionTrigger();
+        if (onEventDispatch) {
+            signature.append("onEvent(")
+                    .append(exportFunctionTrigger.getName()).append(".getEvent());\n");
+        } else {
+            signature.append("handleEvent(")
+                    .append("(").append(exportFunctionTrigger.eventClass().getSimpleName()).append(")")
+                    .append(exportFunctionTrigger.getName()).append(".getEvent());\n")
+            ;
+        }
+        if (!onEventDispatch) {
+            signature.append("    processing = false;");
+        }
+        signature.append("}");
         return signature.toString();
     }
 
