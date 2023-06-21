@@ -693,7 +693,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 });
         fields = s.toArray(fields);
         for (Field field : fields) {
-            if (!trySetAccessible(field)) {
+            if (!trySetAccessible(field) || Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
             Object refField = field.get(object);
