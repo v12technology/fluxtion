@@ -43,6 +43,14 @@ public interface Fluxtion {
         return EventProcessorFactory.compile(sepConfig);
     }
 
+    static EventProcessor compile(Object... nodes) {
+        return compile(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
+
     /**
      * Compiles the SEP in memory and captures the output to a user supplied {@link Writer}
      *
@@ -72,6 +80,23 @@ public interface Fluxtion {
         return compile(cfgBuilder, compilerCfg -> compilerCfg.setPackageName(packageName));
     }
 
+    static EventProcessor compileAot(String packageName,
+                                     String className,
+                                     Object... nodes) {
+        return compileAot(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        }, packageName, className);
+    }
+
+    static EventProcessor compileAot(Object... nodes) {
+        return compileAot(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
 
     @SneakyThrows
     static EventProcessor compileAot(SerializableConsumer<EventProcessorConfig> cfgBuilder,
@@ -100,6 +125,14 @@ public interface Fluxtion {
 
     static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig, boolean generateDescription) {
         return EventProcessorFactory.interpreted(sepConfig, generateDescription);
+    }
+
+    static EventProcessor interpret(Object... nodes) {
+        return interpret(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
     }
 
     /**
