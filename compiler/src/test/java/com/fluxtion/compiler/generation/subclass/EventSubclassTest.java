@@ -21,11 +21,9 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.SingleNamedNode;
+import lombok.Value;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,13 +37,29 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
         super(compiledSep);
     }
 
+    @Test
+    public void singleFilteredHandler() {
+        sep(new AnyTimeHandler("node"));
+        AnyTimeHandler handler = getField("node");
+        onEvent(new ImplEvent());
+        assertThat(handler.timeEvent, is(0));
+        onEvent(new FilteredImplEvent("test"));
+        assertThat(handler.timeEvent, is(1));
+    }
 
-    @Parameterized.Parameters
-    public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(
-                SepTestConfig.COMPILED_METHOD_PER_EVENT,
-                SepTestConfig.INTERPRETED
-        );
+    public static class AnyTimeHandler extends SingleNamedNode {
+        private int timeEvent;
+
+        public AnyTimeHandler(String name) {
+            super(name);
+        }
+
+        @OnEventHandler(filterString = "test")
+        public boolean anyTimeEvent(TimeEvent e) {
+            timeEvent++;
+            System.out.println("time event " + timeEvent);
+            return true;
+        }
     }
 
     @Test
@@ -116,6 +130,17 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
 
     public static class ImplEvent extends TimeEvent {
 
+    }
+
+    @Value
+    public static class FilteredImplEvent extends TimeEvent {
+
+        String filterString;
+
+        @Override
+        public String filterString() {
+            return filterString;
+        }
     }
 
     public static class ExtendTimeEvent extends TimeEvent {
