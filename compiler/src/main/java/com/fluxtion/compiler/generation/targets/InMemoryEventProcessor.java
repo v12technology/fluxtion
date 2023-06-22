@@ -169,7 +169,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     .filter(c -> c.isInstance(currentEvent))
                     .findFirst()
                     .ifPresent(c -> {
-                        if (c.isAssignableFrom(Event.class)) {
+                        if (Event.class.isAssignableFrom(c)) {
                             FilterDescription filterDescription = FilterDescription.build(currentEvent);
                             filterDescription.setEventClass((Class<? extends Event>) c);
                             filteredEventHandlerToBitsetMap.getOrDefault(filterDescription, Collections.emptyList()).forEach(updateBitset::set);

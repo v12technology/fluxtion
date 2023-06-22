@@ -136,6 +136,14 @@ public abstract class MultipleSepTargetInProcessTest {
         return sep(cfgBuilder, new HashMap<>());
     }
 
+    protected StaticEventProcessor sep(Object... nodes) {
+        return sep(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
+
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
         Consumer<EventProcessorConfig> wrappedBuilder = cfgBuilder;
         if (addAuditor || inlineCompiled || !instanceOfDispatch) {
