@@ -148,4 +148,44 @@ public class ValidatingAnnotationProcessorTest {
                 "}";
         StringCompilation.compile("MyStringHandler", source);
     }
+
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void failCompileString_ExportFunction() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.ExportFunction;\n" +
+                "import com.fluxtion.runtime.callback.ExportFunctionNode;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @ExportFunction\n" +
+                "    public boolean stringUpdated(String in) {\n" +
+                "        this.in = in;\n" +
+                "        return true;\n" +
+                "    }\n" +
+                "}";
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test(expected = RuntimeException.class)
+    public void failCompileString_ExportFunction_NoBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.ExportFunction;\n" +
+                "import com.fluxtion.runtime.callback.ExportFunctionNode;\n" +
+                "\n" +
+                "public class MyStringHandler extends ExportFunctionNode{\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @ExportFunction\n" +
+                "    public void stringUpdated(String in) {\n" +
+                "        this.in = in;\n" +
+                "    }\n" +
+                "}";
+        StringCompilation.compile("MyStringHandler", source);
+    }
 }
