@@ -2,11 +2,7 @@ package com.fluxtion.compiler.generation.audit;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.Start;
-import com.fluxtion.runtime.annotations.Stop;
-import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.LogRecord;
 import org.junit.Assert;
@@ -37,6 +33,26 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(4, logSink.size());
         tearDown();
         Assert.assertEquals(5, logSink.size());
+    }
+
+    @Test
+    public void replaceLogRecord() {
+        List<LogRecord> logSink = new ArrayList<>();
+        MyLogRecord myLogRecord = new MyLogRecord();
+        addAuditor();
+        sep(c -> c.addNode(new MyNode(new Parent())));
+        sep.setAuditLogProcessor(logSink::add);
+        sep.setAuditLogRecordEncoder(myLogRecord);
+        start();
+        Assert.assertEquals(2, myLogRecord.getTerminateCount());
+        onEvent("test");
+        Assert.assertEquals(3, myLogRecord.getTerminateCount());
+        onEvent("test2");
+        Assert.assertEquals(4, myLogRecord.getTerminateCount());
+        stop();
+        Assert.assertEquals(5, myLogRecord.getTerminateCount());
+        tearDown();
+        Assert.assertEquals(6, myLogRecord.getTerminateCount());
     }
 
     public static class Parent extends EventLogNode {
@@ -101,5 +117,23 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
             return false;
         }
 
+    }
+
+    public static class MyLogRecord extends LogRecord {
+        public int terminateCount;
+
+        public MyLogRecord() {
+            super(null);
+        }
+
+        @Override
+        public boolean terminateRecord() {
+            terminateCount++;
+            return super.terminateRecord();
+        }
+
+        public int getTerminateCount() {
+            return terminateCount;
+        }
     }
 }

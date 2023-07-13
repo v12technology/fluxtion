@@ -112,6 +112,10 @@ public class LogRecord {
         addSourceId(sourceId, null);
     }
 
+    public void setClock(Clock clock) {
+        this.clock = clock;
+    }
+
     public void printEventToString(boolean printEventToString) {
         this.printEventToString = printEventToString;
     }
