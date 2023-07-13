@@ -98,6 +98,11 @@ public class LogRecord {
         sb.append(value);
     }
 
+    public void addRecord(String sourceId, String propertyKey, Object value) {
+        addSourceId(sourceId, propertyKey);
+        sb.append(value == null ? "NULL" : value);
+    }
+
     public void addRecord(String sourceId, String propertyKey, boolean value) {
         addSourceId(sourceId, propertyKey);
         sb.append(value);

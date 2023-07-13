@@ -255,7 +255,7 @@ public class EventLogger {
 
     public EventLogger log(String key, Object value, LogLevel logLevel) {
         if (this.logLevel.level >= logLevel.level) {
-            log(key, value == null ? "NULL" : value.toString(), logLevel);
+            logrecord.addRecord(logSourceId, key, value);
         }
         return this;
     }
