@@ -17,11 +17,8 @@ package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.*;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
-import com.fluxtion.runtime.audit.EventLogManager;
-import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
@@ -33,11 +30,7 @@ import com.fluxtion.runtime.output.SinkRegistration;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
+import java.util.function.*;
 
 /**
  * Processes events of any type and dispatches to registered {@link EventHandlerNode}
@@ -347,6 +340,10 @@ public interface StaticEventProcessor extends NodeDiscovery {
 
     default void setAuditLogProcessor(LogRecordListener logProcessor) {
         onEvent(new EventLogControlEvent(logProcessor));
+    }
+
+    default void setAuditLogRecordEncoder(LogRecord logRecord) {
+        onEvent(new EventLogControlEvent(logRecord));
     }
 
     /**
