@@ -135,6 +135,10 @@ public class EventLogManager implements Auditor {
         if (newConfig.getLogRecordProcessor() != null) {
             this.sink = newConfig.getLogRecordProcessor();
         }
+        if (newConfig.getLogRecord() != null) {
+            this.logRecord = newConfig.getLogRecord();
+            this.logRecord.setClock(clock);
+        }
         final EventLogControlEvent.LogLevel level = newConfig.getLevel();
         if (level != null
                 && (logRecord.groupingId == null || logRecord.groupingId.equals(newConfig.getGroupId()))) {
