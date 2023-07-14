@@ -7,6 +7,7 @@ import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.callback.ExportFunctionNode;
+import com.fluxtion.runtime.callback.ExportFunctionTrigger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +20,23 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
         super(compile);
     }
 
+
+    @Test
+    public void addTriggerNode() {
+        sep(c -> {
+            c.addNode(new ExportFunctionTrigger());
+        });
+    }
+
+    @Test
+    public void addExportingNodeX() {
+        sep(c -> {
+            c.addNode(new ExportingNode("iodauhf"));
+        });
+    }
+
     @Test
     public void exportTest() {
-//        writeSourceFile = true;
         sep(c -> {
             c.addNode(new Aggregator(
                     new ExportingNode("export1"),
