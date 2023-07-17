@@ -10,6 +10,7 @@ public class ExportFunctionData {
     private final String publicMethodName;
     private final ExportFunctionTrigger exportFunctionTrigger = new ExportFunctionTrigger();
     private final List<CbMethodHandle> functionCallBackList = new ArrayList<>();
+    private boolean exportedInterface = false;
 
     public ExportFunctionData(String publicMethodName) {
         this.publicMethodName = publicMethodName;
@@ -30,5 +31,23 @@ public class ExportFunctionData {
     public void addCbMethodHandle(CbMethodHandle cbMethodHandle) {
         functionCallBackList.add(cbMethodHandle);
         exportFunctionTrigger.getFunctionPointerList().add(cbMethodHandle.getInstance());
+    }
+
+    public boolean isBooleanReturn() {
+        for (int i = 0, functionCallBackListSize = functionCallBackList.size(); i < functionCallBackListSize; i++) {
+            CbMethodHandle cbMethodHandle = functionCallBackList.get(i);
+            if (cbMethodHandle.getMethod().getReturnType() == boolean.class) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setExportedInterface(boolean exportedInterface) {
+        this.exportedInterface = exportedInterface;
+    }
+
+    public boolean isExportedInterface() {
+        return exportedInterface;
     }
 }

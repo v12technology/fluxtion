@@ -206,7 +206,8 @@ public interface ClassUtils {
         LongAdder argNumber = new LongAdder();
         List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
         Method delegateMethod = callBackList.get(0).getMethod();
-        StringBuilder signature = new StringBuilder("public void " + exportedMethodName);
+        boolean booleanReturn = exportFunctionData.isBooleanReturn() && exportFunctionData.isExportedInterface();
+        StringBuilder signature = booleanReturn ? new StringBuilder("public boolean " + exportedMethodName) : new StringBuilder("public void " + exportedMethodName);
         signature.append('(');
         StringJoiner sj = new StringJoiner(", ");
         Type[] params = delegateMethod.getGenericParameterTypes();
@@ -249,7 +250,6 @@ public interface ClassUtils {
             }
         });
         //close
-        //onEvent(handlerExportFunctionTriggerEvent_0.getEvent());
         ExportFunctionTrigger exportFunctionTrigger = exportFunctionData.getExportFunctionTrigger();
         if (onEventDispatch) {
             signature.append("onEvent(")
@@ -261,7 +261,10 @@ public interface ClassUtils {
             ;
         }
         if (!onEventDispatch) {
-            signature.append("    processing = false;");
+            signature.append("    processing = false;\n");
+        }
+        if (booleanReturn) {
+            signature.append("    return true;\n");
         }
         signature.append("}");
         return signature.toString();

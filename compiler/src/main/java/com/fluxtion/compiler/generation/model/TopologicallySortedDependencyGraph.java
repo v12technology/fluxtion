@@ -27,24 +27,8 @@ import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.ExportFunction;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnBatchPause;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.TearDown;
-import com.fluxtion.runtime.annotations.TriggerEventOverride;
-import com.fluxtion.runtime.annotations.builder.Config;
-import com.fluxtion.runtime.annotations.builder.ConfigVariable;
-import com.fluxtion.runtime.annotations.builder.ExcludeNode;
-import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.annotations.builder.SepNode;
+import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.builder.*;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.Anchor;
@@ -69,24 +53,9 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.Writer;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -773,6 +742,27 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
             exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
         });
+        //now find the methods for an interface
+        for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
+            if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
+                Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                config.addInterfaceImplementation(interfaceType);
+                for (Method method : interfaceType.getMethods()) {
+                    String exportMethodName = method.getName();
+                    ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
+                            exportMethodName, n -> {
+                                ExportFunctionData data = new ExportFunctionData(exportMethodName);
+                                registerNode(data.getExportFunctionTrigger(), null);
+                                return data;
+                            });
+                    final String name = inst2Name.get(object);
+                    exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
+                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
+                    exportFunctionData.setExportedInterface(true);
+                }
+            }
+        }
+
     }
 
     @SuppressWarnings("unchecked")
