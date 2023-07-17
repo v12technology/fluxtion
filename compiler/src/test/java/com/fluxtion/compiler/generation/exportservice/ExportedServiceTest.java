@@ -2,7 +2,6 @@ package com.fluxtion.compiler.generation.exportservice;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.ExportFunction;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.callback.ExportFunctionNode;
@@ -19,10 +18,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     @Test
     public void exportVoidReturn() {
 //        writeSourceFile = true;
-        sep(c -> {
-            c.addNode(new MyExportingServiceNode());
-            c.addInterfaceImplementation(MyService.class);
-        });
+        sep(new MyExportingServiceNode());
         init();
         MyService mySvc = sep.asInterface();
         mySvc.testAdd(23, 50);
@@ -31,11 +27,20 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void exportBooleanReturn() {
+//        writeSourceFile = true;
+        sep(new MyExportingTriggerServiceNode());
+        init();
+        MyTriggeringService mySvc = sep.asInterface();
+        mySvc.testAdd(23, 50);
+        MyExportingTriggerServiceNode myNode = getField("myService");
+        Assert.assertEquals(73, myNode.result);
+    }
+
+    @Test
     public void exportVoidAndAlwaysTrigger() {
-        sep(c -> {
-            c.addNode(new MyResultHolder());
-            c.addInterfaceImplementation(MyService.class);
-        });
+//        writeSourceFile = true;
+        sep(new MyResultHolder());
         init();
         MyService mySvc = sep.asInterface();
         MyResultHolder myResultHolder = getField("myResultHolder");
@@ -43,26 +48,87 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         MyExportingServiceNode myNode = getField("myService");
         Assert.assertEquals(73, myNode.result);
         Assert.assertEquals(1, myResultHolder.triggerCount);
+
+        mySvc.testSubtract(23, 8);
+        Assert.assertEquals(15, myNode.result);
+        Assert.assertEquals(2, myResultHolder.triggerCount);
+    }
+
+    @Test
+    public void exportBooleanTriggerWhenPositive() {
+//        writeSourceFile = true;
+        sep(new MyResultHolderTrigger());
+        init();
+        MyTriggeringService mySvc = sep.asInterface();
+        MyResultHolderTrigger myResultHolder = getField("myResultHolder");
+        mySvc.testAdd(23, 50);
+        MyExportingTriggerServiceNode myNode = getField("myService");
+        Assert.assertEquals(73, myNode.result);
+        Assert.assertEquals(1, myResultHolder.triggerCount);
+
+        mySvc.testSubtract(23, 8);
+        Assert.assertEquals(15, myNode.result);
+        Assert.assertEquals(2, myResultHolder.triggerCount);
+
+        mySvc.triggerPositive(10);
+        Assert.assertEquals(3, myResultHolder.triggerCount);
+
+        mySvc.triggerPositive(-10);
+        Assert.assertEquals(3, myResultHolder.triggerCount);
+    }
+
+    public interface MyTriggeringService extends MyService {
+        boolean triggerPositive(int x);
+
     }
 
     public interface MyService {
 
         void testAdd(int a, int b);
+
+        void testSubtract(int a, int b);
     }
 
     public static class MyExportingServiceNode extends ExportFunctionNode implements @ExportService MyService, NamedNode {
         int result;
 
-        @ExportFunction
         @Override
         public void testAdd(int a, int b) {
             result = a + b;
-            System.out.println("resilt:" + result);
+        }
+
+        @Override
+        public void testSubtract(int a, int b) {
+            result = a - b;
         }
 
         @Override
         public String getName() {
             return "myService";
+        }
+    }
+
+    public static class MyExportingTriggerServiceNode extends ExportFunctionNode implements @ExportService MyTriggeringService, NamedNode {
+        int result;
+
+        @Override
+        public void testAdd(int a, int b) {
+            result = a + b;
+        }
+
+        @Override
+        public void testSubtract(int a, int b) {
+            result = a - b;
+        }
+
+        @Override
+        public String getName() {
+            return "myService";
+        }
+
+        @Override
+        public boolean triggerPositive(int x) {
+            return x > 0;
         }
     }
 
@@ -81,7 +147,30 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         @OnTrigger
         public boolean triggered() {
             triggerCount++;
-            System.out.println("triggerCount:" + triggerCount);
+            return true;
+        }
+
+        @Override
+        public String getName() {
+            return "myResultHolder";
+        }
+    }
+
+    public static class MyResultHolderTrigger implements NamedNode {
+        private final MyExportingTriggerServiceNode myExportingServiceNode;
+        private int triggerCount;
+
+        public MyResultHolderTrigger() {
+            this(new MyExportingTriggerServiceNode());
+        }
+
+        public MyResultHolderTrigger(MyExportingTriggerServiceNode myExportingServiceNode) {
+            this.myExportingServiceNode = myExportingServiceNode;
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            triggerCount++;
             return true;
         }
 
