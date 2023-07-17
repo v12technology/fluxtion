@@ -119,6 +119,7 @@ public class EventLogManager implements Auditor {
             EventLogger logger = new EventLogger(logRecord, nodeName);
             calcSource.setLogger(logger);
             name2LogSourceMap.put(nodeName, calcSource);
+            node2Logger.put(nodeName, logger);
         }
     }
 

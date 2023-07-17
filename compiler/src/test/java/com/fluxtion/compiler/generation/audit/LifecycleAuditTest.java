@@ -3,6 +3,7 @@ package com.fluxtion.compiler.generation.audit;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.LogRecord;
 import org.junit.Assert;
@@ -57,17 +58,27 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         onEvent("test2");
         Assert.assertEquals("eventHandler", myLogRecord.logMap.get("lifecycle"));
         Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
+        Assert.assertNull(myLogRecord.logMap.get("debugMessage"));
         Assert.assertEquals(4, myLogRecord.getTerminateCount());
+
+        sep.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
+        Assert.assertEquals(5, myLogRecord.getTerminateCount());
+
+        onEvent("testDebug");
+        Assert.assertEquals("eventHandler", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("message"));
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("debugMessage"));
+        Assert.assertEquals(6, myLogRecord.getTerminateCount());
 
         stop();
         Assert.assertEquals("stop", myLogRecord.logMap.get("lifecycle"));
-        Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
-        Assert.assertEquals(5, myLogRecord.getTerminateCount());
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("message"));
+        Assert.assertEquals(7, myLogRecord.getTerminateCount());
 
         tearDown();
         Assert.assertEquals("teardown", myLogRecord.logMap.get("lifecycle"));
-        Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
-        Assert.assertEquals(6, myLogRecord.getTerminateCount());
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("message"));
+        Assert.assertEquals(8, myLogRecord.getTerminateCount());
     }
 
     public static class Parent extends EventLogNode {
@@ -95,6 +106,7 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         public boolean eventHandler(String in) {
             auditLog.info("lifecycle", "eventHandler");
             auditLog.info("message", in);
+            auditLog.debug("debugMessage", in);
             return false;
         }
     }
