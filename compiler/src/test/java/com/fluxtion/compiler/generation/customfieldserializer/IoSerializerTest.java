@@ -2,19 +2,11 @@ package com.fluxtion.compiler.generation.customfieldserializer;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.*;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 
 public class IoSerializerTest extends MultipleSepTargetInProcessTest {
     public IoSerializerTest(SepTestConfig testConfig) {
@@ -23,6 +15,7 @@ public class IoSerializerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void testIoSerializersConstructor() {
+//        writeSourceFile = true;
         sep(c -> {
             try {
                 c.addNode(IoHolder.builder()
@@ -56,6 +49,20 @@ public class IoSerializerTest extends MultipleSepTargetInProcessTest {
         });
     }
 
+    @Test
+    public void serializeFieldTest() {
+        sep(c -> {
+            try {
+                IoHolderFieldProperty ioHolderFieldProperty = new IoHolderFieldProperty();
+                ioHolderFieldProperty.setFile(new File("c:\\my_made_up\\path"));
+                ioHolderFieldProperty.setUrl(new URL("http://www.example.com/docs/resource1.html"));
+                c.addNode(ioHolderFieldProperty);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 
     @Builder
     @AllArgsConstructor
@@ -72,6 +79,15 @@ public class IoSerializerTest extends MultipleSepTargetInProcessTest {
     @NoArgsConstructor
     @Data
     public static class IoHolderProperty {
+        File file;
+        URL url;
+        URI uri;
+        InetSocketAddress inetSocketAddress;
+    }
+
+
+    @Data
+    public static class IoHolderFieldProperty {
         File file;
         URL url;
         URI uri;

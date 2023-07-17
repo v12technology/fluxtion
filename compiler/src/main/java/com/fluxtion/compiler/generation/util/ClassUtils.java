@@ -32,12 +32,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
@@ -245,8 +240,13 @@ public interface ClassUtils {
         }
         callBackList.forEach(cb -> {
             String variableName = cb.getVariableName();
-            signature.append(variableName).append(".setTriggered(").
-                    append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker);
+            if (cb.getMethod().getReturnType() == void.class) {
+                signature.append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker.toString().replace("));", ");"));
+                signature.append(variableName).append(".setTriggered(true);\n");
+            } else {
+                signature.append(variableName).append(".setTriggered(").
+                        append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker);
+            }
         });
         //close
         //onEvent(handlerExportFunctionTriggerEvent_0.getEvent());

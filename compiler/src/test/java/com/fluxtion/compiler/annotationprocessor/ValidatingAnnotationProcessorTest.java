@@ -172,7 +172,26 @@ public class ValidatingAnnotationProcessorTest {
 
     @SneakyThrows
     @Test(expected = RuntimeException.class)
-    public void failCompileString_ExportFunction_NoBooleanReturn() {
+    public void failCompileString_ExportFunction_NoBooleanOrVoidReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "import com.fluxtion.runtime.annotations.ExportFunction;\n" +
+                "import com.fluxtion.runtime.callback.ExportFunctionNode;\n" +
+                "\n" +
+                "public class MyStringHandler extends ExportFunctionNode{\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @ExportFunction\n" +
+                "    public int stringUpdated(String in) {\n" +
+                "        this.in = in;\n" +
+                "        return 0;\n" +
+                "    }\n" +
+                "}";
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    public void success_ExportFunction_VoidReturn() {
         String source = "    " +
                 "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
                 "import com.fluxtion.runtime.annotations.ExportFunction;\n" +
