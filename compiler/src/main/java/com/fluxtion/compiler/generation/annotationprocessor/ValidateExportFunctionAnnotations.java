@@ -26,8 +26,11 @@ public class ValidateExportFunctionAnnotations extends AbstractProcessor {
             Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
             Set<? extends Element> typeElements = annotatedElements.stream()
                     .filter(element ->
-                            ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN
-                                    || !element.getModifiers().contains(Modifier.PUBLIC)
+                            {
+                                TypeKind returnType = ((ExecutableType) element.asType()).getReturnType().getKind();
+                                boolean validReturn = returnType == TypeKind.BOOLEAN || returnType == TypeKind.VOID;
+                                return !validReturn || !element.getModifiers().contains(Modifier.PUBLIC);
+                            }
                     )
                     .collect(Collectors.toSet());
 

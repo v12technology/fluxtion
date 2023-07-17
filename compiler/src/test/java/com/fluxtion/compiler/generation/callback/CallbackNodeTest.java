@@ -16,6 +16,7 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void directInvokeTest() {
+        //writeOutputsToFile(true);
         sep(c -> {
             c.addNode(new Child(new ExternalCallback("callback1")), "child1");
             c.addNode(new Child(new ExternalCallback("callback2")), "child2");

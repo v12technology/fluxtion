@@ -9,7 +9,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
     public LifecycleAuditTest(SepTestConfig testConfig) {
@@ -44,14 +46,27 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         sep.setAuditLogProcessor(logSink::add);
         sep.setAuditLogRecordEncoder(myLogRecord);
         start();
+        Assert.assertEquals("started", myLogRecord.logMap.get("lifecycle"));
         Assert.assertEquals(2, myLogRecord.getTerminateCount());
+
         onEvent("test");
+        Assert.assertEquals("eventHandler", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("test", myLogRecord.logMap.get("message"));
         Assert.assertEquals(3, myLogRecord.getTerminateCount());
+
         onEvent("test2");
+        Assert.assertEquals("eventHandler", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
         Assert.assertEquals(4, myLogRecord.getTerminateCount());
+
         stop();
+        Assert.assertEquals("stop", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
         Assert.assertEquals(5, myLogRecord.getTerminateCount());
+
         tearDown();
+        Assert.assertEquals("teardown", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("test2", myLogRecord.logMap.get("message"));
         Assert.assertEquals(6, myLogRecord.getTerminateCount());
     }
 
@@ -79,6 +94,7 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         @OnEventHandler
         public boolean eventHandler(String in) {
             auditLog.info("lifecycle", "eventHandler");
+            auditLog.info("message", in);
             return false;
         }
     }
@@ -121,9 +137,15 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
 
     public static class MyLogRecord extends LogRecord {
         public int terminateCount;
+        public Map<String, String> logMap = new HashMap<>();
 
         public MyLogRecord() {
             super(null);
+        }
+
+        @Override
+        public void addRecord(String sourceId, String propertyKey, CharSequence value) {
+            logMap.put(propertyKey, value.toString());
         }
 
         @Override
