@@ -241,7 +241,10 @@ public interface ClassUtils {
         }
         callBackList.forEach(cb -> {
             String variableName = cb.getVariableName();
-            if (cb.getMethod().getReturnType() == void.class) {
+            if (cb.isNoPropagateFunction()) {
+                signature.append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker.toString().replace("));", ");"));
+                signature.append(variableName).append(".setTriggered(false);\n");
+            } else if (cb.getMethod().getReturnType() == void.class) {
                 signature.append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker.toString().replace("));", ");"));
                 signature.append(variableName).append(".setTriggered(true);\n");
             } else {
