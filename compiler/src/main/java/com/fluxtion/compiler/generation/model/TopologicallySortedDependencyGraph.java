@@ -749,6 +749,11 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 config.addInterfaceImplementation(interfaceType);
                 for (Method method : interfaceType.getMethods()) {
                     String exportMethodName = method.getName();
+                    try {
+                        method = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                    } catch (NoSuchMethodException e) {
+
+                    }
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
                             exportMethodName, n -> {
                                 ExportFunctionData data = new ExportFunctionData(exportMethodName);
