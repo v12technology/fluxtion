@@ -17,10 +17,7 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.dataflow.ParallelFunction;
 
 import java.lang.reflect.Method;
@@ -64,6 +61,7 @@ public class CbMethodHandle {
     private final boolean isNoPropagateEventHandler;
     private final boolean failBuildOnUnguardedTrigger;
     private final boolean forkExecution;
+    private final boolean isNoPropagateFunction;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false);
@@ -79,12 +77,14 @@ public class CbMethodHandle {
         OnTrigger onTriggerAnnotation = method.getAnnotation(OnTrigger.class);
         OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
         OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
+        NoPropagateFunction noPropagateFunction = method.getAnnotation(NoPropagateFunction.class);
         this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
         boolean parallel = (instance instanceof ParallelFunction) ? ((ParallelFunction) instance).parallelCandidate() : false;
         this.forkExecution = parallel || onTriggerAnnotation != null && onTriggerAnnotation.parallelExecution();
         this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
         this.isGuardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
         this.isNoPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
+        this.isNoPropagateFunction = noPropagateFunction != null;
     }
 
     public Method getMethod() {
@@ -125,6 +125,10 @@ public class CbMethodHandle {
 
     public boolean isForkExecution() {
         return forkExecution;
+    }
+
+    public boolean isNoPropagateFunction() {
+        return isNoPropagateFunction;
     }
 
     public String getMethodTarget() {

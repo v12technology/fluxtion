@@ -3,6 +3,7 @@ package com.fluxtion.compiler.generation.exportfunction;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportFunction;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
@@ -97,6 +98,19 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(2, aggregator.triggerCount);
         Assert.assertEquals("ExportingNode{name='export1', result='myfunction s:3 y:33'}", aggregator.parent.toString());
         Assert.assertEquals("ExportingNode{name='export2', result='myfunction s:3 y:33'}", aggregator.parent2.toString());
+    }
+
+    @Test
+    public void noPropagateTest() {
+        writeSourceFile = true;
+        sep(c -> {
+            c.addNode(new NoPropagateExport(), "exportNode");
+            c.addInterfaceImplementation(AddService.class);
+        });
+        AddService svc = sep.asInterface();
+        svc.addFunction(10, 10);
+        NoPropagateExport node = getField("exportNode");
+        Assert.assertFalse(node.isTriggered());
     }
 
 
@@ -232,5 +246,21 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
             result = x + y;
 //            return true;
         }
+    }
+
+    @Getter
+    public static class NoPropagateExport extends ExportFunctionNode {
+        private int result;
+
+        @ExportFunction()
+        @NoPropagateFunction
+        public boolean addFunction(int x, int y) {
+            result = x + y;
+            return true;
+        }
+    }
+
+    public static interface AddService {
+        void addFunction(int x, int y);
     }
 }
