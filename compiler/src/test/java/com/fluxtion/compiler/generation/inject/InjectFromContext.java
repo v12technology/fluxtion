@@ -105,6 +105,7 @@ public class InjectFromContext extends MultipleSepTargetInProcessTest {
 
     @Test
     public void addNamedLambda() {
+//        writeSourceFile = true;
         enableInitCheck(false);
         sep(c -> {
             c.addNode(new InjectNamedInterfaceType(), "injectionHolder");

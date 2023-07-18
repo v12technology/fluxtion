@@ -3,6 +3,7 @@ package com.fluxtion.compiler.builder.context;
 import com.fluxtion.compiler.builder.factory.NodeFactory;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.node.InstanceSupplier;
 import com.fluxtion.runtime.node.InstanceSupplierNode;
@@ -35,10 +36,11 @@ public class InstanceSupplierFactory implements NodeFactory<InstanceSupplier> {
             rawType = Object.class;
         }
         final String typeName = "contextService_" + rawType.getSimpleName() + "_" + instanceName + count++;
+
         return new InstanceSupplierNode<>(
                 hasInstanceQualifier ? rawType.getCanonicalName() + "_" + instanceName : rawType.getCanonicalName(),
                 true,
-                null,
+                registry.findOrCreateNode(EventProcessorContext.class, config, null),
                 typeName.replace(".", "_"));
     }
 

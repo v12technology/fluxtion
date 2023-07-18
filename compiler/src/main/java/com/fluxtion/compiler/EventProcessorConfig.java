@@ -22,6 +22,7 @@ import com.fluxtion.compiler.builder.context.InstanceSupplierFactory;
 import com.fluxtion.compiler.builder.factory.*;
 import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
+import com.fluxtion.compiler.builder.output.SinkPublisherFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
 import com.fluxtion.compiler.generation.serialiser.*;
 import com.fluxtion.runtime.audit.Auditor;
@@ -499,7 +500,8 @@ public class EventProcessorConfig {
                 EventProcessorCallbackInternalFactory.class,
                 EventProcessorContextFactory.class,
                 NodeNameLookupFactory.class,
-                SubscriptionManagerFactory.class
+                SubscriptionManagerFactory.class,
+                SinkPublisherFactory.class
         );
 
         private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();
