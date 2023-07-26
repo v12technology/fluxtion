@@ -15,7 +15,7 @@ public class PricerTest extends CompiledOnlySepTest {
 
     @Test
     public void pricer() {
-        writeOutputsToFile(true);
+//        writeOutputsToFile(true);
         sep(c -> {
             ParamsChecker checker = new ParamsChecker();
             PriceCalc priceCalc = new PriceCalc();
@@ -33,8 +33,6 @@ public class PricerTest extends CompiledOnlySepTest {
                     .filter(PricerTest::sanityCheck)
                     .map(stepAway::applyStepaway)
                     .filter(new ThrottlePublisher()::canPublish);
-
-
         });
 
     }

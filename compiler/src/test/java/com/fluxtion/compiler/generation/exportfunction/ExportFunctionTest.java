@@ -102,7 +102,6 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateTest() {
-        writeSourceFile = true;
         sep(c -> {
             c.addNode(new NoPropagateExport(), "exportNode");
             c.addInterfaceImplementation(AddService.class);
