@@ -46,7 +46,7 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterface.class);
         });
-        MyExportedInterface myExportedInterface = sep.asInterface();
+        MyExportedInterface myExportedInterface = sep.getExportedService();
         Aggregator aggregator = getField("aggregator");
         myExportedInterface.updatedDetails("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);
@@ -78,7 +78,7 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterfaceNoOverride.class);
         });
-        MyExportedInterfaceNoOverride myExportedInterface = sep.asInterface();
+        MyExportedInterfaceNoOverride myExportedInterface = sep.getExportedService();
         Aggregator2 aggregator = getField("aggregator");
         myExportedInterface.myfunctionString("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);
@@ -106,7 +106,7 @@ public class ExportFunctionTest extends MultipleSepTargetInProcessTest {
             c.addNode(new NoPropagateExport(), "exportNode");
             c.addInterfaceImplementation(AddService.class);
         });
-        AddService svc = sep.asInterface();
+        AddService svc = sep.getExportedService();
         svc.addFunction(10, 10);
         NoPropagateExport node = getField("exportNode");
         Assert.assertFalse(node.isTriggered());

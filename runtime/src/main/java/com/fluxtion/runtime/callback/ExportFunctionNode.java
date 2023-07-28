@@ -1,6 +1,5 @@
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.Start;
@@ -8,32 +7,55 @@ import com.fluxtion.runtime.annotations.Start;
 public class ExportFunctionNode {
 
     private boolean triggered;
+    private boolean functionTriggered;
 
     @OnTrigger
-    public boolean triggered() {
-        return triggered;
+    public final boolean triggered() {
+        boolean tempTriggered = triggered;
+        boolean tempFunctionTriggered = functionTriggered;
+        triggered = false;
+        functionTriggered = false;
+        if (tempFunctionTriggered) {
+            return tempTriggered;
+        } else {
+            return propagateParentNotification();
+        }
     }
 
-    @AfterEvent
-    public void afterEvent() {
+    /**
+     * Overriding classes should subclass this method if they want to be notified
+     * when parents have triggered a notification.
+     *
+     * @return flag to propagate event notification, true -> propagate, false -> swallow
+     */
+    protected boolean propagateParentNotification() {
+        return true;
+    }
+
+    //    @AfterEvent
+    public final void afterEvent() {
         triggered = false;
+        functionTriggered = false;
     }
 
     @Initialise
-    public void init() {
+    public final void init() {
         triggered = false;
+        functionTriggered = false;
     }
 
     @Start
-    public void start() {
+    public final void start() {
         triggered = false;
+        functionTriggered = false;
     }
 
-    public boolean isTriggered() {
+    public final boolean isTriggered() {
         return triggered;
     }
 
-    public void setTriggered(boolean triggered) {
+    public final void setTriggered(boolean triggered) {
         this.triggered = triggered;
+        functionTriggered = true;
     }
 }
