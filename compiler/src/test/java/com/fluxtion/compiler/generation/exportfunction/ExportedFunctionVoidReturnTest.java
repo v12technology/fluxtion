@@ -24,7 +24,7 @@ public class ExportedFunctionVoidReturnTest extends MultipleSepTargetInProcessTe
             c.addInterfaceImplementation(MyService.class);
         });
         init();
-        MyService mySvc = sep.asInterface();
+        MyService mySvc = sep.getExportedService();
         mySvc.testAdd(23, 50);
         MyExportingServiceNode myNode = getField("myService");
         Assert.assertEquals(73, myNode.result);
@@ -38,7 +38,7 @@ public class ExportedFunctionVoidReturnTest extends MultipleSepTargetInProcessTe
             c.addInterfaceImplementation(MyService.class);
         });
         init();
-        MyService mySvc = sep.asInterface();
+        MyService mySvc = sep.getExportedService();
         MyResultHolder myResultHolder = getField("myResultHolder");
         mySvc.testAdd(23, 50);
         MyExportingServiceNode myNode = getField("myService");

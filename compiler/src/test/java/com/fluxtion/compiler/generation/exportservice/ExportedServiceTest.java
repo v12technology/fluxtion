@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.generation.exportservice;
 
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
@@ -20,7 +21,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 //        writeSourceFile = true;
         sep(new MyExportingServiceNode());
         init();
-        MyService mySvc = sep.asInterface();
+        MyService mySvc = sep.getExportedService();
         mySvc.testAdd(23, 50);
         MyExportingServiceNode myNode = getField("myService");
         Assert.assertEquals(73, myNode.result);
@@ -31,7 +32,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 //        writeSourceFile = true;
         sep(new MyExportingTriggerServiceNode());
         init();
-        MyTriggeringService mySvc = sep.asInterface();
+        MyTriggeringService mySvc = sep.getExportedService();
         mySvc.testAdd(23, 50);
         MyExportingTriggerServiceNode myNode = getField("myService");
         Assert.assertEquals(73, myNode.result);
@@ -42,7 +43,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 //        writeSourceFile = true;
         sep(new MyResultHolder());
         init();
-        MyService mySvc = sep.asInterface();
+        MyService mySvc = sep.getExportedService();
         MyResultHolder myResultHolder = getField("myResultHolder");
         mySvc.testAdd(23, 50);
         MyExportingServiceNode myNode = getField("myService");
@@ -59,7 +60,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 //        writeSourceFile = true;
         sep(new MyResultHolderTrigger());
         init();
-        MyTriggeringService mySvc = sep.asInterface();
+        MyTriggeringService mySvc = sep.getExportedService();
         MyResultHolderTrigger myResultHolder = getField("myResultHolder");
         mySvc.testAdd(23, 50);
         MyExportingTriggerServiceNode myNode = getField("myService");
@@ -75,6 +76,35 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
         mySvc.triggerPositive(-10);
         Assert.assertEquals(3, myResultHolder.triggerCount);
+    }
+
+    @Test
+    public void exportServiceAndParentNotification() {
+        writeSourceFile = true;
+        sep(c -> {
+            MyResultHolderTrigger resultHolderTrigger = c.addNode(new MyResultHolderTrigger());
+            resultHolderTrigger.myExportingServiceNode.triggerObject = DataFlow.subscribe(String.class).flowSupplier();
+        });
+        init();
+        MyTriggeringService mySvc = sep.getExportedService();
+        MyResultHolderTrigger myResultHolder = getField("myResultHolder");
+        mySvc.testAdd(23, 50);
+        MyExportingTriggerServiceNode myNode = getField("myService");
+        Assert.assertEquals(73, myNode.result);
+        Assert.assertEquals(1, myResultHolder.triggerCount);
+
+        mySvc.testSubtract(23, 8);
+        Assert.assertEquals(15, myNode.result);
+        Assert.assertEquals(2, myResultHolder.triggerCount);
+
+        mySvc.triggerPositive(10);
+        Assert.assertEquals(3, myResultHolder.triggerCount);
+
+        mySvc.triggerPositive(-10);
+        Assert.assertEquals(3, myResultHolder.triggerCount);
+
+        onEvent("Hello");
+        Assert.assertEquals(4, myResultHolder.triggerCount);
     }
 
     public interface MyTriggeringService extends MyService {
@@ -111,6 +141,8 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     public static class MyExportingTriggerServiceNode extends ExportFunctionNode implements @ExportService MyTriggeringService, NamedNode {
         int result;
 
+        public Object triggerObject;
+
         @Override
         public void testAdd(int a, int b) {
             result = a + b;
@@ -129,6 +161,11 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         @Override
         public boolean triggerPositive(int x) {
             return x > 0;
+        }
+
+        @Override
+        protected boolean propagateParentNotification() {
+            return true;
         }
     }
 

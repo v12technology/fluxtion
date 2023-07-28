@@ -17,25 +17,21 @@ public class MetaSerializerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void serializeFieldTest() {
-        writeSourceFile = true;
         sep(new ClassFieldHolder(String.class));
     }
 
     @Test
     public void serializeConstructorTest() {
-        writeSourceFile = true;
         sep(new ClassFieldHolder(String.class));
     }
 
     @Test
     public void serializeInnerClassConstructorTest() {
-        writeSourceFile = true;
         sep(new ClassFieldHolder(MyInnerClass.class));
     }
 
     @Test
     public void serializeField_WithSingleNamedNodeTest() {
-        writeSourceFile = true;
         InstanceCallbackEvent.reset();
         sep(new CbSample("test"));
     }

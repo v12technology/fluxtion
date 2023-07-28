@@ -33,17 +33,7 @@ import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
@@ -528,7 +518,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public <T> T asInterface() {
+    public <T> T getExportedService() {
         if (exportingWrapper != null) {
             return (T) exportingWrapper;
         }
