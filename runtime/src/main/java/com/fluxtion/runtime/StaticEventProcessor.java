@@ -373,7 +373,7 @@ public interface StaticEventProcessor extends NodeDiscovery {
      * @return The {@link StaticEventProcessor} cast to an interface
      */
     @SuppressWarnings("unchecked")
-    default <T> T asInterface() {
+    default <T> T getExportedService() {
         return (T) this;
     }
 }

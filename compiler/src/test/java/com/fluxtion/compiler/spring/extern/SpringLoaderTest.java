@@ -60,13 +60,13 @@ public class SpringLoaderTest {
         eventBean = eventProcessor.getNodeById("customBean");
         Assert.assertEquals("HELLO WORLD", eventBean.input);
     }
-    
+
     @Test
     public void loadGraphSpringInterpret() throws NoSuchFieldException {
         Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-accountgraph.xml");
         EventProcessor<?> eventProcessor = FluxtionSpring.interpret(path);
         eventProcessor.init();
-        Account account = eventProcessor.asInterface();
+        Account account = eventProcessor.getExportedService();
         account.credit(12.4);
         account.debit(31.6);
     }

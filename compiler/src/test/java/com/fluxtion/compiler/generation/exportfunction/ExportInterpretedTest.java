@@ -25,7 +25,7 @@ public class ExportInterpretedTest extends InMemoryOnlySepTest {
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterface.class);
         });
-        MyExportedInterface myExportedInterface = sep.asInterface();
+        MyExportedInterface myExportedInterface = sep.getExportedService();
         Aggregator aggregator = getField("aggregator");
         myExportedInterface.updatedDetails("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);
@@ -56,7 +56,7 @@ public class ExportInterpretedTest extends InMemoryOnlySepTest {
             ), "aggregator");
             c.addInterfaceImplementation(MyExportedInterfaceNoOverride.class);
         });
-        MyExportedInterfaceNoOverride myExportedInterface = sep.asInterface();
+        MyExportedInterfaceNoOverride myExportedInterface = sep.getExportedService();
         Aggregator2 aggregator = getField("aggregator");
         myExportedInterface.myfunctionString("hello", 300);
         Assert.assertEquals(2, aggregator.updateCount);
