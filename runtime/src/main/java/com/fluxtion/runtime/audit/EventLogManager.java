@@ -53,6 +53,7 @@ public class EventLogManager implements Auditor {
     private LogRecordListener sink;
     private LogRecord logRecord;
     private Map<String, EventLogger> node2Logger;
+    private Map<String, EventLogSource> name2LogSourceMap;
     private boolean clearAfterPublish;
     private static final Logger LOGGER = Logger.getLogger(EventLogManager.class.getName());
     public boolean trace = false;
@@ -105,9 +106,21 @@ public class EventLogManager implements Auditor {
         if (node instanceof EventLogSource) {
             EventLogSource calcSource = (EventLogSource) node;
             calcSource.setLogger(logger);
+            name2LogSourceMap.put(nodeName, calcSource);
         }
         node2Logger.put(nodeName, logger);
         canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
+    }
+
+    private void updateLogRecord() {
+        for (Map.Entry<String, EventLogSource> stringEventLogSourceEntry : name2LogSourceMap.entrySet()) {
+            String nodeName = stringEventLogSourceEntry.getKey();
+            EventLogSource calcSource = stringEventLogSourceEntry.getValue();
+            EventLogger logger = new EventLogger(logRecord, nodeName);
+            calcSource.setLogger(logger);
+            name2LogSourceMap.put(nodeName, calcSource);
+            node2Logger.put(nodeName, logger);
+        }
     }
 
     @Override
@@ -134,6 +147,11 @@ public class EventLogManager implements Auditor {
     public void calculationLogConfig(EventLogControlEvent newConfig) {
         if (newConfig.getLogRecordProcessor() != null) {
             this.sink = newConfig.getLogRecordProcessor();
+        }
+        if (newConfig.getLogRecord() != null) {
+            this.logRecord = newConfig.getLogRecord();
+            this.logRecord.setClock(clock);
+            updateLogRecord();
         }
         final EventLogControlEvent.LogLevel level = newConfig.getLevel();
         if (level != null
@@ -198,6 +216,7 @@ public class EventLogManager implements Auditor {
         logRecord.printEventToString(printEventToString);
         logRecord.setPrintThreadName(printThreadName);
         node2Logger = new HashMap<>();
+        name2LogSourceMap = new HashMap<>();
         clearAfterPublish = true;
     }
 

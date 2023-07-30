@@ -1,7 +1,10 @@
 package com.fluxtion.compiler.generation.targets;
 
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
+import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.compiler.generation.util.ClassUtils;
@@ -12,6 +15,7 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
+import com.fluxtion.runtime.callback.ExportFunctionTrigger;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
@@ -23,20 +27,13 @@ import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
@@ -45,6 +42,7 @@ import java.util.stream.Collectors;
 public class InMemoryEventProcessor implements EventProcessor, StaticEventProcessor, InternalEventProcessor, Lifecycle, BatchHandler {
 
     private final SimpleEventProcessorModel simpleEventProcessorModel;
+    private final EventProcessorConfig config;
     private final MutableEventProcessorContext context;
     private final EventProcessorCallbackInternal callbackDispatcher;
     private final SubscriptionManagerNode subscriptionManager;
@@ -57,14 +55,16 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private final Map<Class<?>, List<Integer>> noFilterEventHandlerToBitsetMap = new HashMap<>();
     private final Map<FilterDescription, List<Integer>> filteredEventHandlerToBitsetMap = new HashMap<>();
     private final List<Auditor> auditors = new ArrayList<>();
-    private boolean buffering = false;
+    public boolean buffering = false;
     private Object currentEvent;
-    private boolean processing = false;
+    public boolean processing = false;
     private boolean isDefaultHandling;
     private boolean initCalled = false;
+    private Object exportingWrapper;
 
-    public InMemoryEventProcessor(SimpleEventProcessorModel simpleEventProcessorModel) {
+    public InMemoryEventProcessor(SimpleEventProcessorModel simpleEventProcessorModel, EventProcessorConfig config) {
         this.simpleEventProcessorModel = simpleEventProcessorModel;
+        this.config = config;
         try {
             context = getNodeById(EventProcessorContext.DEFAULT_NODE_NAME);
             callbackDispatcher = getNodeById(CallbackDispatcher.DEFAULT_NODE_NAME);
@@ -159,7 +159,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     .filter(c -> c.isInstance(currentEvent))
                     .findFirst()
                     .ifPresent(c -> {
-                        if (c.isAssignableFrom(Event.class)) {
+                        if (Event.class.isAssignableFrom(c)) {
                             FilterDescription filterDescription = FilterDescription.build(currentEvent);
                             filterDescription.setEventClass((Class<? extends Event>) c);
                             filteredEventHandlerToBitsetMap.getOrDefault(filterDescription, Collections.emptyList()).forEach(updateBitset::set);
@@ -503,6 +503,96 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         Set<Object> duplicatesOnEventComplete = new HashSet<>();
         eventHandlers.forEach(n -> n.deDuplicateOnEventComplete(duplicatesOnEventComplete));
         registerAuditors();
+    }
+
+    @Value
+    private static class CallbackInstance {
+        Object instance;
+        String variableName;
+
+        private CallbackInstance(CbMethodHandle cbMethodHandle) {
+            instance = cbMethodHandle.getInstance();
+            variableName = cbMethodHandle.getVariableName();
+        }
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public <T> T getExportedService() {
+        if (exportingWrapper != null) {
+            return (T) exportingWrapper;
+        }
+        String packageName = "com.fluxtion.compiler.generation.targets.temp";
+        String className = "InMemoryExportWrapper_" + UUID.randomUUID().toString().replace("-", "_");
+        String fqn = packageName + "." + className;
+
+        String additionalInterfaces = "";
+        if (!config.interfacesToImplement().isEmpty()) {
+            additionalInterfaces = config.interfacesToImplement().stream()
+                    .map(Class::getCanonicalName)
+                    .collect(Collectors.joining(", ", " implements ", ""));
+        }
+
+        Map<String, ExportFunctionData> exportedFunctionMap = simpleEventProcessorModel.getExportedFunctionMap();
+        Set<CallbackInstance> exportCbSet = exportedFunctionMap.values().stream()
+                .map(ExportFunctionData::getFunctionCallBackList).flatMap(List::stream)
+                .map(CallbackInstance::new)
+                .collect(Collectors.toSet());
+
+        String triggerDeclarations = exportedFunctionMap.values().stream()
+                .map(ExportFunctionData::getExportFunctionTrigger)
+                .map(e -> "ExportFunctionTrigger " + e.getName())
+                .collect(Collectors.joining(";\n\t", "\n\t", ";\n"));
+
+        String declarations = exportCbSet.stream()
+                .map(c -> c.getInstance().getClass().getCanonicalName() + " " + c.getVariableName())
+                .collect(Collectors.joining(";\n\t", "\tInMemoryEventProcessor processor;\n\t", ";" + triggerDeclarations));
+
+
+        String triggerAssignments = exportedFunctionMap.values().stream()
+                .map(ExportFunctionData::getExportFunctionTrigger)
+                .map(e -> e.getName() + " = processor.getNodeById(\"" + e.getName() + "\")")
+                .collect(Collectors.joining(";\n\t", "\n\t", ";\n"));
+
+        String constructor = exportCbSet.stream()
+                .map(c -> c.getVariableName() + " = processor.getNodeById(\"" + c.getVariableName() + "\")")
+                .collect(Collectors.joining(
+                        ";\n\t",
+                        "public " + className + "(InMemoryEventProcessor processor) throws java.lang.NoSuchFieldException {\n" +
+                                "\tthis.processor = processor;\n\t",
+                        ";" + triggerAssignments + "}\n"));
+
+        String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}\n\n" +
+                "public void init(){\n\tprocessor.init();\n}\n\n" +
+                "public void start(){\n\tprocessor.start();\n}\n\n" +
+                "public void stop(){\n\tprocessor.stop();\n}\n\n" +
+                "public InMemoryEventProcessor processor(){\n\treturn processor;\n}\n\n" +
+                "public void tearDown(){\n\tprocessor.tearDown();\n}";
+
+        List<String> keys = new ArrayList<>(exportedFunctionMap.keySet());
+        keys.sort(String::compareTo);
+        StringJoiner joiner = new StringJoiner("\n\n", "\n", "");
+        joiner.setEmptyValue("");
+        for (String key : keys) {
+            if (!exportedFunctionMap.get(key).getFunctionCallBackList().isEmpty()) {
+                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionMap.get(key), true));
+            }
+        }
+        String exportedMethods = joiner.toString();
+
+        StringBuilder sb = new StringBuilder("package " + packageName + ";\n\n" +
+                "import " + this.getClass().getCanonicalName() + ";\n" +
+                "import " + ExportFunctionTrigger.class.getCanonicalName() + ";\n\n" +
+                "public class " + className + additionalInterfaces + " {\n" +
+                declarations + "\n" +
+                constructor + "\n" +
+                delegateOnEvent + "\n" +
+                exportedMethods + "\n" +
+                "}");
+
+        Class clazz = StringCompilation.compile(fqn, sb.toString());
+        exportingWrapper = clazz.getConstructor(InMemoryEventProcessor.class).newInstance(this);
+        return (T) exportingWrapper;
     }
 
     private void registerAuditors() {

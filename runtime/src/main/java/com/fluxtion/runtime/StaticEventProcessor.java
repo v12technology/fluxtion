@@ -17,11 +17,8 @@ package com.fluxtion.runtime;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.Auditor;
-import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.*;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
-import com.fluxtion.runtime.audit.EventLogManager;
-import com.fluxtion.runtime.audit.LogRecordListener;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
@@ -33,11 +30,7 @@ import com.fluxtion.runtime.output.SinkRegistration;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
+import java.util.function.*;
 
 /**
  * Processes events of any type and dispatches to registered {@link EventHandlerNode}
@@ -64,7 +57,7 @@ import java.util.function.LongConsumer;
  *
  * @author Greg Higgins
  */
-public interface StaticEventProcessor {
+public interface StaticEventProcessor extends NodeDiscovery {
 
     StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };
@@ -349,6 +342,10 @@ public interface StaticEventProcessor {
         onEvent(new EventLogControlEvent(logProcessor));
     }
 
+    default void setAuditLogRecordEncoder(LogRecord logRecord) {
+        onEvent(new EventLogControlEvent(logRecord));
+    }
+
     /**
      * Attempts to get the last {@link com.fluxtion.runtime.audit.LogRecord} as a String if one is available. Useful
      * for error handling if there is a filure in the graph;
@@ -365,5 +362,18 @@ public interface StaticEventProcessor {
 
     default void setClockStrategy(ClockStrategy clockStrategy) {
         onEvent(ClockStrategy.registerClockEvent(clockStrategy));
+    }
+
+    /**
+     * Returns an instance of the event processor cast to an interface type. The implemented interfaces of an event processor
+     * are specified using the com.fluxtion.compiler.EventProcessorConfig#addInterfaceImplementation during the
+     * building phase of the processor.
+     *
+     * @param <T> the interface type to cast to
+     * @return The {@link StaticEventProcessor} cast to an interface
+     */
+    @SuppressWarnings("unchecked")
+    default <T> T getExportedService() {
+        return (T) this;
     }
 }

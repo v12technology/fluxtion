@@ -16,25 +16,15 @@
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.callback.CallBackDispatcherFactory;
-import com.fluxtion.compiler.builder.callback.CallbackNodeFactory;
-import com.fluxtion.compiler.builder.callback.DirtyStateMonitorFactory;
-import com.fluxtion.compiler.builder.callback.EventDispatcherFactory;
-import com.fluxtion.compiler.builder.callback.EventProcessorCallbackInternalFactory;
+import com.fluxtion.compiler.builder.callback.*;
 import com.fluxtion.compiler.builder.context.EventProcessorContextFactory;
 import com.fluxtion.compiler.builder.context.InstanceSupplierFactory;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
-import com.fluxtion.compiler.builder.factory.NodeNameProducer;
-import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
+import com.fluxtion.compiler.builder.factory.*;
 import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
+import com.fluxtion.compiler.builder.output.SinkPublisherFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
-import com.fluxtion.compiler.generation.serialiser.FieldContext;
-import com.fluxtion.compiler.generation.serialiser.FormatSerializer;
-import com.fluxtion.compiler.generation.serialiser.IoSerializer;
-import com.fluxtion.compiler.generation.serialiser.TimeSerializer;
+import com.fluxtion.compiler.generation.serialiser.*;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
@@ -49,23 +39,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.time.*;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -114,6 +89,7 @@ public class EventProcessorConfig {
         classSerializerMap.put(DateFormat.class, FormatSerializer::simpleDataFormatToSource);
         classSerializerMap.put(DecimalFormat.class, FormatSerializer::decimalFormatToSource);
         classSerializerMap.put(NumberFormat.class, FormatSerializer::decimalFormatToSource);
+        classSerializerMap.put(Class.class, MetaSerializer::classToSource);
     }
 
     /**
@@ -139,7 +115,8 @@ public class EventProcessorConfig {
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
-    public void addNode(Object... nodeList) {
+    public void addNode(Object node, Object... nodeList) {
+        addNode(node);
         Arrays.asList(nodeList).forEach(this::addNode);
     }
 
@@ -523,7 +500,8 @@ public class EventProcessorConfig {
                 EventProcessorCallbackInternalFactory.class,
                 EventProcessorContextFactory.class,
                 NodeNameLookupFactory.class,
-                SubscriptionManagerFactory.class
+                SubscriptionManagerFactory.class,
+                SinkPublisherFactory.class
         );
 
         private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();

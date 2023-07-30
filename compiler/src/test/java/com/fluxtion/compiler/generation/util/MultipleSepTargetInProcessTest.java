@@ -29,6 +29,7 @@ import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.JULLogRecordListener;
+import com.fluxtion.runtime.callback.InstanceCallbackEvent;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
@@ -103,6 +104,7 @@ public abstract class MultipleSepTargetInProcessTest {
         addAuditor = false;
         reuseSep = false;
         callInit = true;
+        InstanceCallbackEvent.reset();
     }
 
     @After
@@ -134,6 +136,14 @@ public abstract class MultipleSepTargetInProcessTest {
 
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder) {
         return sep(cfgBuilder, new HashMap<>());
+    }
+
+    protected StaticEventProcessor sep(Object... nodes) {
+        return sep(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
     }
 
     protected StaticEventProcessor sep(Consumer<EventProcessorConfig> cfgBuilder, Map<Object, Object> contextMap) {
