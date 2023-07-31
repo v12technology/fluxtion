@@ -10,23 +10,24 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbo
 ## Introduction
 
 Fluxtion acts as dependency injection container for event driven applications routing service calls to managed
-instances. An instance can expose a service interface at the container level using annotations. Any child connected to
-the service instance will be triggered as the event propagates through the container.
+instances, a service interface is exposed at the container level by adding annotations to the application classes. Any
+instance referencing the service handler will be triggered by the container as the event propagates through the object
+graph.
 
-In this example we will construct a small banking app, that supports credit, debit, account query, credit checking,
+Spring is a popular DI container in the java world, the tutorial demonstrates how the construction logic of spring can
+be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
+the developer to concentrate on developing application logic while the container automatically builds the object graph and
+constructs event dispatch logic.
+
+This example constructs a small banking application, that supports credit, debit, account query, credit checking,
 opening hours and persistence functions. The methods are grouped into service interfaces that are exposed by the
 container.
 
-Spring is a popular DI container in the java world. This example demonstrates how the construction logic of spring can
-be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
-the developer to concentrate on developing application logic and the container automatically builds the object graph and 
-constructs event dispatch logic.
+The steps to combine spring and fluxtion:
 
-The steps to combine spring and fluxtion are:
-
-- Use a spring config file to define the instances that are to be managed
 - Create service interfaces that define the api of the banking app
-- Create implementing classes for the services
+- Create implementing classes for the service interfaces
+- Create a spring config file defining instances the DI container will manage
 - Use Fluxtion annotations to export services and define event notification methods
 - Pass the spring config file to the Fluxtion compiler and generate the DI container AOT
 - Create an instance of the DI container and locate the service interfaces
@@ -34,7 +35,8 @@ The steps to combine spring and fluxtion are:
 
 ## Application structure
 
-The top level java package is, com.fluxtion.example.cookbook.spring.service, see the [example here]({{page.example_src}}).
+The top level java package is, com.fluxtion.example.cookbook.spring.service, see
+the [example here]({{page.example_src}}).
 
 sample app package structure is:
 

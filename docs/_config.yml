@@ -18,10 +18,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-theme: jekyll-theme-cayman
+theme: just-the-docs
+
+url: https://just-the-docs.github.io
 title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
-remote_theme: pmarsceill/just-the-docs
+#remote_theme: pmarsceill/just-the-docs
 aux_links:
   "release 9.0.24":
     - "//github.com/v12technology/fluxtion/tree/9.0.24"
