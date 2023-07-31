@@ -270,7 +270,7 @@ DEPENDENCIES
   github-pages (~> 226)
   http_parser.rb (~> 0.6.0)
   jekyll-feed (~> 0.12)
-  just-the-docs
+  just-the-docs (= 0.5.4)
   minima (~> 2.5)
   tzinfo (~> 1.2)
   tzinfo-data
