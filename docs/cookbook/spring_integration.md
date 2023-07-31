@@ -9,12 +9,12 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbo
 
 ## Introduction
 
-Fluxtion acts as dependency injection container for event driven applications routing service calls to managed
+Fluxtion is as dependency injection container for event driven applications routing service calls to managed
 instances, a service interface is exposed at the container level by adding annotations to the application classes. Any
-instance referencing the service handler will be triggered by the container as the event propagates through the object
-graph.
+managed instance referencing the service handler will be triggered by the container as it propagates the event through 
+the object graph.
 
-Spring is a popular DI container in the java world, the tutorial demonstrates how the construction logic of spring can
+Spring is a popular DI container in the java world, this tutorial demonstrates how the construction logic of spring can
 be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
 the developer to concentrate on developing application logic while the container automatically builds the object graph and
 constructs event dispatch logic.
@@ -27,7 +27,7 @@ The steps to combine spring and fluxtion:
 
 - Create service interfaces that define the api of the banking app
 - Create implementing classes for the service interfaces
-- Create a spring config file defining instances the DI container will manage
+- Create a spring config file declaring instances the DI container will manage
 - Use Fluxtion annotations to export services and define event notification methods
 - Pass the spring config file to the Fluxtion compiler and generate the DI container AOT
 - Create an instance of the DI container and locate the service interfaces
@@ -35,34 +35,41 @@ The steps to combine spring and fluxtion:
 
 ## Application structure
 
-The top level java package is, com.fluxtion.example.cookbook.spring.service, see
-the [example here]({{page.example_src}}).
+[See the example on GitHUb]({{page.example_src}}), top level package is `com.fluxtion.example.cookbook.spring.service`.
 
-sample app package structure is:
+Package structure:
 
-- top level: Banking app and a sample main
-- service: interfaces the sample main and banking app invoke
-- node: implementations of the service interfaces
-- data: data types used by services
-- generation: location of the Fluxtion ahead of time generated DI container
+- **top level**: Banking app and a sample main
+- **service**: interfaces the sample main and banking app invoke
+- **node**: implementations of the service interfaces
+- **data**: data types used by services
+- **generation**: location of the Fluxtion ahead of time generated DI container
 
 ## Invoking a service
 
-The main method acquires references to the exported service interfaces via tbe BankingApp. The BankingApp instance
-creates an instance of the Fluxtion DI container and passes references to exported services back to the client code. The
-reference the client code receives is a proxy handler the DI container creates, the proxy handler routes method calls
-to managed instances in the container.
+The BankingApp instance creates an instance of the AOT generated Fluxtion DI container and provides access to container 
+exported services. The service reference the client code receives is a proxy the DI container creates, the 
+proxy handler routes method calls to instances managed by the container.
 
-Services the DI container exposes are event driven, they are designed to be invoked asynchronously and not return a
-value to client code. A service can optionally return a boolean value that is used by the container as a dirty flag,
-if the flag is true then child references are notified the parent has been updated. Child instances are notified by
-calling a method if it is annotated with an OnTrigger annotation. OnTrigger methods return a boolean flag that is used
-to signal children should be notified of a change.
+Services the DI container exposes are event driven, they are designed to be invoked asynchronously and do not return 
+application values to client code. A service method can optionally return a boolean value that is used by the container 
+as an event propagation flag. If the flag is true then child references are notified the parent has changed due to an 
+external event. Child instances are notified of event propagation by the container calling a trigger method. A trigger 
+method is any zero argument method marked with an `OnTrigger` annotation. `OnTrigger` methods return an event 
+propagation flag to control event notification dispatch in the same was as exported service methods.
 
 The fluxtion DI container manages all the proxy creation, event dispatch to services, monitoring dirty flags and
-propagating event notifications to child references.
+propagating event notifications to child references. To access an exported service client code calls:
+
+{% highlight java %}
+T exportedService = eventProcessor.getExportedService();
+{% endhighlight %}
 
 ### Main method execution
+
+The main method creates an instance of the BankingApp, rerieves service interfaces and invokes application methods on
+the interfaces. It is expected the BankingApp would be instantiated and used within a larger application that marshalls
+client requests from the network and then invokes the BankingApp appropiately.
 
 {% highlight java %}
 public class Main {
@@ -112,6 +119,128 @@ public class Main {
 
 ## Exporting a service
 
+To export a service the following steps are required:
+- Create an interface and then implement the interface with a concrete class
+- The implementation class must extend ```ExportFunctionNode``` 
+- Mark the interface to export with ```@ExportService``` annotation
+
+For example to export the CreditCheck service:
+
+### CreditCheck interface
+
+{% highlight java %}
+public interface CreditCheck {
+    void blackListAccount(int accountNumber);
+    void whiteListAccount(int accountNumber);
+}
+
+{% endhighlight %}
+
+### CreditCheckNode concrete class
+The CreditCheckNode implements two interfaces CreditCheck and TransactionProcessor. Only the CreditCheck interface 
+methods are exported as this is only interface marked with ```@ExportService```
+
+{% highlight java %}
+public class CreditCheckNode extends ExportFunctionNode implements @ExportService CreditCheck, TransactionProcessor {
+
+    private transient Set<Integer> blackListedAccounts = new HashSet<>();
+    private TransactionProcessor transactionSource;
+    private ResponsePublisher responsePublisher;
+
+    @Override
+    @NoPropagateFunction
+    public void blackListAccount(int accountNumber) {
+        log.info("credit check blacklisted:{}", accountNumber);
+        blackListedAccounts.add(accountNumber);
+    }
+
+    @Override
+    @NoPropagateFunction
+    public void whiteListAccount(int accountNumber) {
+        log.info("credit check whitelisted:{}", accountNumber);
+        blackListedAccounts.remove(accountNumber);
+    }
+
+    public boolean propagateParentNotification(){
+        Transaction transaction = transactionSource.currentTransactionRequest();
+        int accountNumber = transaction.accountNumber();
+        if(blackListedAccounts.contains(accountNumber)){
+            log.warn("credit check failed");
+            transactionSource.rollbackTransaction();
+            responsePublisher.rejectTransaction(transaction);
+            return false;
+        }
+        log.info("credit check passed");
+        return true;
+    }
+
+    @Override
+    public Transaction currentTransactionRequest() {
+        return transactionSource.currentTransactionRequest();
+    }
+
+    @Override
+    public void rollbackTransaction() {
+        transactionSource.rollbackTransaction();
+    }
+
+    @Override
+    public void commitTransaction(){
+        transactionSource.commitTransaction();
+    }
+}
+{% endhighlight %}
+
+Notice the two CreditCheck methods are annotated with ```@NoPropagateFunction```, telling Fluxtion that no event
+propagation will occur when either of these methods is invoked. The credit black list is a map and these methods should 
+only change the state of the internal map and not cause further processing to occur in the object graph.
+
+## Locating a service
+
+The steps required to locate a service and invoke methods on it are:
+- Build the DI container using one of the Fluxtion build methods
+- To correctly intitialise the container call ```eventProcessor.init()``` on the DI instance
+- To access the service call ```T service = eventProcessor.getExportedService()``` with the desired service type T
+
+### Accessing CreditCheck service
+The code below uses an enum to allow the user to select the DI generation strategy, in this example we are using the
+AOT strategy. After eventprocessor generation the exported service are located and assigned to member variables in 
+the BankingApp class.
+
+{% highlight java %}
+public class BankingApp {
+
+    private final EventProcessor<?> eventProcessor;
+    private final Account bankAccount;
+    private final CreditCheck creditCheck;
+    private final BankingOperations bankingOperations;
+    private final Consumer eventConsumer;
+
+    @SneakyThrows
+    public BankingApp(GenerationStrategy generationStrategy) {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/spring/spring-account.xml");
+        eventProcessor = switch (generationStrategy) {
+            case USE_AOT -> new SpringBankEventProcessor();
+            case INTERPRET -> FluxtionSpring.interpret(context);
+            case COMPILE -> FluxtionSpring.compile(context);
+            case GENERATE_AOT -> FluxtionSpring.compileAot(context, c -> {
+                c.setPackageName("com.fluxtion.example.cookbook.spring.generated");
+                c.setClassName("SpringBankEventProcessor");
+            });
+        };
+        eventProcessor.init();
+        bankAccount = eventProcessor.getExportedService();
+        creditCheck = eventProcessor.getExportedService();
+        bankingOperations = eventProcessor.getExportedService();
+        eventConsumer = eventProcessor::onEvent;
+    }
+
+    public CreditCheck getCreditCheck() {
+        return creditCheck;
+    }
+
+}
+{% endhighlight %}
 
 
 
