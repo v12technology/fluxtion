@@ -9,17 +9,21 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbo
 
 ## Introduction
 
-Fluxtion is as dependency injection container for event driven applications routing service calls to managed
-instances, a service interface is exposed at the container level by adding annotations to the application classes. Any
-managed instance referencing the service handler will be triggered by the container as it propagates the event through 
-the object graph.
+Fluxtion is a dependency injection container specialised for event driven application deployments. The container
+exposes event consumer end-points, routing events as methods calls to beans within the running container. A bean
+registers a method as an event-handler by using Fluxtion annotations. Any beans referencing an event-handler bean will
+be triggered by the container as the internal dispatcher propagates an event notification through the object graph.
+
+All methods on an interface can be exported by annotating the interface in an implementing bean, the container exports
+the interface methods as a single service. A client can look up an exported service by interface type using the 
+container apis. All method calls on the service proxy are routed through the container's internal dispatcher.
 
 Spring is a popular DI container in the java world, this tutorial demonstrates how the construction logic of spring can
 be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
-the developer to concentrate on developing application logic while the container automatically builds the object graph and
-constructs event dispatch logic.
+the developer to concentrate on developing application logic while the container automatically builds the object graph
+and constructs event dispatch logic.
 
-This example constructs a small banking application, that supports credit, debit, account query, credit checking,
+This example builds a small banking application, that supports credit, debit, account query, credit checking,
 opening hours and persistence functions. The methods are grouped into service interfaces that are exposed by the
 container.
 
@@ -47,15 +51,15 @@ Package structure:
 
 ## Invoking a service
 
-The BankingApp instance creates an instance of the AOT generated Fluxtion DI container and provides access to container 
-exported services. The service reference the client code receives is a proxy the DI container creates, the 
+The BankingApp instance creates an instance of the AOT generated Fluxtion DI container and provides access to container
+exported services. The service reference the client code receives is a proxy the DI container creates, the
 proxy handler routes method calls to instances managed by the container.
 
-Services the DI container exposes are event driven, they are designed to be invoked asynchronously and do not return 
-application values to client code. A service method can optionally return a boolean value that is used by the container 
-as an event propagation flag. If the flag is true then child references are notified the parent has changed due to an 
-external event. Child instances are notified of event propagation by the container calling a trigger method. A trigger 
-method is any zero argument method marked with an `OnTrigger` annotation. `OnTrigger` methods return an event 
+Services the DI container exposes are event driven, they are designed to be invoked asynchronously and do not return
+application values to client code. A service method can optionally return a boolean value that is used by the container
+as an event propagation flag. If the flag is true then child references are notified the parent has changed due to an
+external event. Child instances are notified of event propagation by the container calling a trigger method. A trigger
+method is any zero argument method marked with an `OnTrigger` annotation. `OnTrigger` methods return an event
 propagation flag to control event notification dispatch in the same was as exported service methods.
 
 The fluxtion DI container manages all the proxy creation, event dispatch to services, monitoring dirty flags and
@@ -117,11 +121,81 @@ public class Main {
 }
 {% endhighlight %}
 
+running the main method prints the following to the console:
+
+{% highlight text %}
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=999, amount=250.12, debit=false]
+[INFO] AccountNode - reject unknown account:999
+[INFO] ResponsePublisher - response reject:Transaction[accountNumber=999, amount=250.12, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] ResponsePublisher - account:100, balance:3267.22
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - opened account:100
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=100, amount=250.12, debit=false]
+[INFO] CreditCheckNode - credit check passed
+[WARN] CentralTransactionProcessor - reject bank closed
+[INFO] ResponsePublisher - response reject:Transaction[accountNumber=100, amount=250.12, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] CentralTransactionProcessor - open accepting transactions
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=100, amount=250.12, debit=false]
+[INFO] CreditCheckNode - credit check passed
+[INFO] CentralTransactionProcessor - accept bank open
+[INFO] AccountNode - updated balance:3517.3399999999997 account:100
+[INFO] ResponsePublisher - response accept:Transaction[accountNumber=100, amount=250.12, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] CreditCheckNode - credit check blacklisted:100
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=100, amount=46.9, debit=false]
+[WARN] CreditCheckNode - credit check failed
+[INFO] ResponsePublisher - response reject:Transaction[accountNumber=100, amount=46.9, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[INFO] CreditCheckNode - credit check whitelisted:100
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=100, amount=46.9, debit=false]
+[INFO] CreditCheckNode - credit check passed
+[INFO] CentralTransactionProcessor - accept bank open
+[INFO] AccountNode - updated balance:3564.24 account:100
+[INFO] ResponsePublisher - response accept:Transaction[accountNumber=100, amount=46.9, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+[WARN] CentralTransactionProcessor - closed rejecting all transactions
+[INFO] AccountNode - ------------------------------------------------------
+[INFO] AccountNode - deposit request:Transaction[accountNumber=100, amount=13.0, debit=false]
+[INFO] CreditCheckNode - credit check passed
+[WARN] CentralTransactionProcessor - reject bank closed
+[INFO] ResponsePublisher - response reject:Transaction[accountNumber=100, amount=13.0, debit=false]
+[INFO] AccountNode - request complete
+[INFO] AccountNode - ------------------------------------------------------
+
+
+Process finished with exit code 0
+{% endhighlight %}
+
 ## Exporting a service
 
 To export a service the following steps are required:
+
 - Create an interface and then implement the interface with a concrete class
-- The implementation class must extend ```ExportFunctionNode``` 
+- The implementation class must extend ```ExportFunctionNode```
 - Mark the interface to export with ```@ExportService``` annotation
 
 For example to export the CreditCheck service:
@@ -130,14 +204,15 @@ For example to export the CreditCheck service:
 
 {% highlight java %}
 public interface CreditCheck {
-    void blackListAccount(int accountNumber);
-    void whiteListAccount(int accountNumber);
+void blackListAccount(int accountNumber);
+void whiteListAccount(int accountNumber);
 }
 
 {% endhighlight %}
 
 ### CreditCheckNode concrete class
-The CreditCheckNode implements two interfaces CreditCheck and TransactionProcessor. Only the CreditCheck interface 
+
+The CreditCheckNode implements two interfaces CreditCheck and TransactionProcessor. Only the CreditCheck interface
 methods are exported as this is only interface marked with ```@ExportService```
 
 {% highlight java %}
@@ -150,14 +225,14 @@ public class CreditCheckNode extends ExportFunctionNode implements @ExportServic
     @Override
     @NoPropagateFunction
     public void blackListAccount(int accountNumber) {
-        log.info("credit check blacklisted:{}", accountNumber);
+        log.[INFO]("credit check blacklisted:{}", accountNumber);
         blackListedAccounts.add(accountNumber);
     }
 
     @Override
     @NoPropagateFunction
     public void whiteListAccount(int accountNumber) {
-        log.info("credit check whitelisted:{}", accountNumber);
+        log.[INFO]("credit check whitelisted:{}", accountNumber);
         blackListedAccounts.remove(accountNumber);
     }
 
@@ -165,12 +240,12 @@ public class CreditCheckNode extends ExportFunctionNode implements @ExportServic
         Transaction transaction = transactionSource.currentTransactionRequest();
         int accountNumber = transaction.accountNumber();
         if(blackListedAccounts.contains(accountNumber)){
-            log.warn("credit check failed");
+            log.[WARN]("credit check failed");
             transactionSource.rollbackTransaction();
             responsePublisher.rejectTransaction(transaction);
             return false;
         }
-        log.info("credit check passed");
+        log.[INFO]("credit check passed");
         return true;
     }
 
@@ -188,23 +263,26 @@ public class CreditCheckNode extends ExportFunctionNode implements @ExportServic
     public void commitTransaction(){
         transactionSource.commitTransaction();
     }
+
 }
 {% endhighlight %}
 
 Notice the two CreditCheck methods are annotated with ```@NoPropagateFunction```, telling Fluxtion that no event
-propagation will occur when either of these methods is invoked. The credit black list is a map and these methods should 
+propagation will occur when either of these methods is invoked. The credit black list is a map and these methods should
 only change the state of the internal map and not cause further processing to occur in the object graph.
 
 ## Locating a service
 
 The steps required to locate a service and invoke methods on it are:
+
 - Build the DI container using one of the Fluxtion build methods
 - To correctly intitialise the container call ```eventProcessor.init()``` on the DI instance
 - To access the service call ```T service = eventProcessor.getExportedService()``` with the desired service type T
 
 ### Accessing CreditCheck service
+
 The code below uses an enum to allow the user to select the DI generation strategy, in this example we are using the
-AOT strategy. After eventprocessor generation the exported service are located and assigned to member variables in 
+AOT strategy. After eventprocessor generation the exported service are located and assigned to member variables in
 the BankingApp class.
 
 {% highlight java %}
