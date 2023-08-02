@@ -58,6 +58,11 @@ logo: "/images/fluxtion_logo_small.png"
 plugins:
   - jekyll-feed
 
+callouts:
+  note:
+    title: NOTE
+    color: blue
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
