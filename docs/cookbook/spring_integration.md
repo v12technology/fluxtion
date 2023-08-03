@@ -204,8 +204,8 @@ For example to export the CreditCheck service:
 
 {% highlight java %}
 public interface CreditCheck {
-void blackListAccount(int accountNumber);
-void whiteListAccount(int accountNumber);
+    void blackListAccount(int accountNumber);
+    void whiteListAccount(int accountNumber);
 }
 
 {% endhighlight %}
@@ -285,7 +285,7 @@ The code below uses an enum to allow the user to select the DI generation strate
 AOT strategy. After eventprocessor generation the exported service are located and assigned to member variables in
 the BankingApp class.
 
-{% highlight java %}
+```java
 public class BankingApp {
 
     private final EventProcessor<?> eventProcessor;
@@ -316,9 +316,8 @@ public class BankingApp {
     public CreditCheck getCreditCheck() {
         return creditCheck;
     }
-
 }
-{% endhighlight %}
+```
 
-
+**line 22-24** acquire the exported services from the container by interface type
 
