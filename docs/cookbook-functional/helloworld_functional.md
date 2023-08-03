@@ -1,8 +1,8 @@
 ---
 title: Helloworld functional
-parent: Overview
+parent:  Cookbook functional
 has_children: false
-nav_order: 3
+nav_order: 1
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functional-helloworld/src/main/java/com/fluxtion/example/functional/helloworld
 ---
@@ -23,7 +23,7 @@ Code is available as a [maven project]({{page.example_src}})
 
 Graphical representation of the processing graph that Fluxtion will generate.
 
-![](../../images/helloworld_eventstream.png)
+![](../images/helloworld_eventstream.png)
 
 ## Dependencies
 
