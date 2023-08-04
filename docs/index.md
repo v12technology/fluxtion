@@ -41,17 +41,17 @@ The Fluxtion container combines construction, instance lifecycle and event dispa
 
 ## Dependency injection container
 Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions 
-supported by the container include: creating instances, injecting references between instance beans, setting properties
-on beans, calling lifecycle methods, factory methods, singleton injection, named references, constructor and setter 
-injection. Configuration data can be programmatic, spring xml config, yaml or custom data format.
+supported by the container include: creating instances, injecting references between beans, setting properties, calling 
+lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection. 
+Configuration data can be programmatic, spring xml config, yaml or custom data format.
 
-The cointainer can be built in one of three ways:
+There are three options for building a container:
 - Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
 - Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
 - Compiled AOT - code generated at build time, zero cost start time when deployed
 
 Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be 
-used within a single application providing specialised processing requirements. 
+used within a single application each container providing specialised processing. 
 
 ## Automatic event dispatch
 
