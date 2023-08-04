@@ -5,11 +5,17 @@ nav_order: 1
 published: true
 ---
 
-# Introduction to Fluxtion
+# Introduction
 
 Fluxtion is a java utility that builds embeddable dependency injection containers for use as a low latency event
-processor within streaming applications. The Fluxtion DI container combines construction, instance lifecycle and event
-dispatch, supporting:
+processor within streaming applications. Developers concentrate on developing and extending business logic, dependency 
+injection and event dispatch is handled by the container.
+
+{: .info }
+Fluxtion = Dependency injection + Event dispatch
+{: .fs-8 }
+
+The Fluxtion container combines construction, instance lifecycle and event dispatch, supporting:
 
 <div class="grid">
 <div class="col-1-2">
@@ -32,9 +38,6 @@ dispatch, supporting:
 </div>
 </div>
 
-{: .note }
-Developers concentrate on developing and extending business logic, dependency injection and event dispatch is handled by the
-container.
 
 ## Dependency injection container
 Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions 

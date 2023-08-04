@@ -104,7 +104,6 @@ public class Data1handler {
     public double getValue() {
         return value;
     }
-
 }
 {% endhighlight %}
 
@@ -126,7 +125,6 @@ public class Data2handler {
     public double getValue() {
         return value;
     }
-
 }
 {% endhighlight %}
 
@@ -137,7 +135,6 @@ has its updated method invoked. Annotate the trigger method as follows:
 
 {% highlight java %}
 public class DataSumCalculator {
-
     private final Data1handler data1handler;
     private final Data2handler data2handler;
     private double sum;
@@ -166,7 +163,6 @@ public class DataSumCalculator {
     public double getSum() {
         return sum;
     }
-
 }
 {% endhighlight %}
 
@@ -197,7 +193,6 @@ public class BreachNotifier {
         System.out.println("WARNING DataSumCalculator value is greater than 100 sum = " + dataAddition.getSum());
         return true;
     }
-
 }
 {% endhighlight %}
 
@@ -205,8 +200,10 @@ public class BreachNotifier {
 
 Java records as used as events.
 
-- ```public record InputDataEvent_1(double value) {}```
-- ```public record InputDataEvent_2(double value) {}```
+{% highlight java %}
+public record InputDataEvent_1(double value) {}
+public record InputDataEvent_2(double value) {}
+{% endhighlight %}
 
 ## Building the EventProcessor and processing events
 

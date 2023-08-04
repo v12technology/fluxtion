@@ -59,6 +59,8 @@ plugins:
   - jekyll-feed
 
 callouts:
+  info:
+    color: blue
   note:
     title: NOTE
     color: blue
