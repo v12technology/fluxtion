@@ -1,6 +1,6 @@
 ---
 title: Zero dependency processor
-parent: Development
+parent: Event stream processing
 has_children: false
 nav_order: 6
 published: true

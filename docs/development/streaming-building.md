@@ -1,8 +1,8 @@
 ---
-title: Streaming api
-parent: Describe processing logic
+title: Functional support
+parent: Development
 has_children: false
-nav_order: 1
+nav_order: 4
 published: true
 ---
 

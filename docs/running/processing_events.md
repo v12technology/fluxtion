@@ -1,8 +1,8 @@
 ---
 title: Processing event streams
-parent: Development
+parent: Event stream processing
 has_children: false
-nav_order: 5
+nav_order: 1
 published: true
 ---
 
