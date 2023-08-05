@@ -82,4 +82,4 @@ before sending any events for processing**.
 
 The application pulls events from any source and invokes ```EventProcessor#onEvent```
 
-![](../../images/integration-overview.png)
+![](../images/integration-overview.png)

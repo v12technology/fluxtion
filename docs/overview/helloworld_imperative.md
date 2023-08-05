@@ -1,5 +1,5 @@
 ---
-title: Helloworld imperative
+title: Helloworld
 parent: Overview
 has_children: false
 nav_order: 2
@@ -7,7 +7,7 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
 ---
 
-# 5 minute hello world - imperative
+# 5 minute hello world
 
 Fluxtion hello world stream example. Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream.
@@ -40,7 +40,7 @@ All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}
 
 Graphical representation of the processing graph that Fluxtion will generate.
 
-![](../../images/helloworld/helloworld_imperative.png)
+![](../images/helloworld/helloworld_imperative.png)
 
 ## Dependencies
 
