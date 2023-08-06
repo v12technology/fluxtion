@@ -21,12 +21,7 @@ import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.EventProcessorConfig.DISPATCH_STRATEGY;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.model.CbMethodHandle;
-import com.fluxtion.compiler.generation.model.DirtyFlag;
-import com.fluxtion.compiler.generation.model.ExportFunctionData;
-import com.fluxtion.compiler.generation.model.Field;
-import com.fluxtion.compiler.generation.model.InvokerFilterTarget;
-import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
@@ -46,18 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.compiler.generation.targets.JavaGenHelper.mapPrimitiveToWrapper;
@@ -845,106 +830,7 @@ public class JavaSourceGenerator {
                 }
                 cbList = cbList == null ? Collections.emptyList() : cbList;
                 ct.delete(0, ct.length());
-                for (CbMethodHandle method : cbList) {
-                    DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
-                    String dirtyAssignment = "";
-                    if (dirtyFlagForUpdateCb != null) {
-                        if (dirtyFlagForUpdateCb.alwaysDirty) {
-                            dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
-                        } else {
-                            dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
-                        }
-                    }
-                    //protect with guards
-                    Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
-                    //HERE TO JOIN THINGS
-                    String OR = "";
-                    if (nodeGuardConditions.size() > 0) {
-                        ct.append(s24).append("if(guardCheck_" + method.getVariableName() + "()) {\n");
-                    }
-
-                    //add audit
-                    if (auditingInvocations) {
-                        if (method.isForkExecution()) {
-                            ct.append(s24).append("auditInvocation(")
-                                    .append(method.forkVariableName())
-                                    .append(", \"").append(method.variableName).append("\"")
-                                    .append(", \"").append(method.method.getName()).append("\"")
-                                    .append(", typedEvent")
-                                    .append(");\n");
-                        } else {
-                            ct.append(s24).append("auditInvocation(")
-                                    .append(method.variableName)
-                                    .append(", \"").append(method.variableName).append("\"")
-                                    .append(", \"").append(method.method.getName()).append("\"")
-                                    .append(", typedEvent")
-                                    .append(");\n");
-                        }
-                    }
-                    //assign return if appropriate
-                    if (method.parameterClass == null) {//triggers
-                        if (method.isForkExecution()) {
-                            ct.append(method.forkVariableName() + ".onTrigger();\n");
-                        } else {
-                            ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
-                        }
-                    } else {
-                        ct.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
-                    }
-                    if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
-                        ct.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
-                    }
-                    //child callbacks - listening to an individual parent change
-                    //if guards are in operation for the parent node, conditionally invoke only on a change
-                    final Map<Object, List<CbMethodHandle>> listenerMethodMap = model.getParentUpdateListenerMethodMap();
-                    Object parent = method.instance;
-                    String parentVar = method.variableName;
-
-                    //guard
-                    DirtyFlag parentFlag = model.getDirtyFieldMap().get(model.getFieldForInstance(parent));
-                    //the parent listener map should be keyed on instance and event filter
-                    //we carry out filtering here so that no propagate annotations on parents
-                    //do not generate the parent callback
-                    List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
-                    final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
-                    if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
-                    } else if (model.getForkedTriggerInstances().contains(parent)) {
-                        //close guards clause
-                        if (nodeGuardConditions.size() > 0) {
-                            //callTree += String.format("%16s}\n", "");
-                            ct.append(s16 + "}\n");
-                        }
-                    } else {
-                        if (parentFlag != null && updateListenerCbList.size() > 0) {
-                            //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
-                            ct.append(s20 + "if(").append(parentFlag.name).append(") {\n");
-                        }
-                        //child callbacks
-                        boolean unguarded = false;
-                        StringBuilder sbUnguarded = new StringBuilder();
-                        for (CbMethodHandle cbMethod : updateListenerCbList) {
-                            //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
-                            if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
-                                unguarded = true;
-                                sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
-                            } else {
-                                ct.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
-                            }
-                        }
-                        if (parentFlag != null && updateListenerCbList.size() > 0) {
-                            //callTree += String.format("%20s}\n", "", parentFlag.name);
-                            ct.append(s20).append("}\n");
-                            if (unguarded) {
-                                ct.append(sbUnguarded);
-                            }
-                        }
-                        //close guards clause
-                        if (nodeGuardConditions.size() > 0) {
-                            //callTree += String.format("%16s}\n", "");
-                            ct.append(s16 + "}\n");
-                        }
-                    }
-                }
+                buildDispatchForCbMethodHandles(cbList, ct);
                 //chec for null on cbList and escape
                 cbList = cbMapPostEvent.get(filterDescription);
                 if (cbList == null || cbList.size() > 0) {
@@ -991,6 +877,109 @@ public class JavaSourceGenerator {
             }
         }
         return switchF.length() == 0 ? null : switchF.toString();
+    }
+
+    private void buildDispatchForCbMethodHandles(List<CbMethodHandle> cbList, StringBuilder stringBuilder) {
+        for (CbMethodHandle method : cbList) {
+            DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
+            String dirtyAssignment = "";
+            if (dirtyFlagForUpdateCb != null) {
+                if (dirtyFlagForUpdateCb.alwaysDirty) {
+                    dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                } else {
+                    dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
+                }
+            }
+            //protect with guards
+            Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
+            //HERE TO JOIN THINGS
+            String OR = "";
+            if (nodeGuardConditions.size() > 0) {
+                stringBuilder.append(s24).append("if(guardCheck_" + method.getVariableName() + "()) {\n");
+            }
+
+            //add audit
+            if (auditingInvocations) {
+                if (method.isForkExecution()) {
+                    stringBuilder.append(s24).append("auditInvocation(")
+                            .append(method.forkVariableName())
+                            .append(", \"").append(method.variableName).append("\"")
+                            .append(", \"").append(method.method.getName()).append("\"")
+                            .append(", typedEvent")
+                            .append(");\n");
+                } else {
+                    stringBuilder.append(s24).append("auditInvocation(")
+                            .append(method.variableName)
+                            .append(", \"").append(method.variableName).append("\"")
+                            .append(", \"").append(method.method.getName()).append("\"")
+                            .append(", typedEvent")
+                            .append(");\n");
+                }
+            }
+            //assign return if appropriate
+            if (method.parameterClass == null) {//triggers
+                if (method.isForkExecution()) {
+                    stringBuilder.append(method.forkVariableName() + ".onTrigger();\n");
+                } else {
+                    stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
+                }
+            } else {
+                stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
+            }
+            if (dirtyFlagForUpdateCb != null && dirtyFlagForUpdateCb.requiresInvert) {
+                stringBuilder.append(s24).append("not" + dirtyFlagForUpdateCb.name + " = !" + dirtyFlagForUpdateCb.name + ";\n");
+            }
+            //child callbacks - listening to an individual parent change
+            //if guards are in operation for the parent node, conditionally invoke only on a change
+            final Map<Object, List<CbMethodHandle>> listenerMethodMap = model.getParentUpdateListenerMethodMap();
+            Object parent = method.instance;
+            String parentVar = method.variableName;
+
+            //guard
+            DirtyFlag parentFlag = model.getDirtyFieldMap().get(model.getFieldForInstance(parent));
+            //the parent listener map should be keyed on instance and event filter
+            //we carry out filtering here so that no propagate annotations on parents
+            //do not generate the parent callback
+            List<CbMethodHandle> updateListenerCbList = listenerMethodMap.get(parent);
+            final OnEventHandler handlerAnnotation = method.method.getAnnotation(OnEventHandler.class);
+            if (handlerAnnotation != null && (!handlerAnnotation.propagate())) {
+            } else if (model.getForkedTriggerInstances().contains(parent)) {
+                //close guards clause
+                if (nodeGuardConditions.size() > 0) {
+                    //callTree += String.format("%16s}\n", "");
+                    stringBuilder.append(s16 + "}\n");
+                }
+            } else {
+                if (parentFlag != null && updateListenerCbList.size() > 0) {
+                    //callTree += String.format("%20sif(%s) {\n", "", parentFlag.name);
+                    stringBuilder.append(s20 + "if(").append(parentFlag.name).append(") {\n");
+                }
+                //child callbacks
+                boolean unguarded = false;
+                StringBuilder sbUnguarded = new StringBuilder();
+                for (CbMethodHandle cbMethod : updateListenerCbList) {
+                    //callTree += String.format("%24s%s.%s(%s);%n", "", cbMethod.variableName, cbMethod.method.getName(), parentVar);
+                    if (!cbMethod.method.getAnnotation(OnParentUpdate.class).guarded()) {
+                        unguarded = true;
+                        sbUnguarded.append(s20).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                    } else {
+                        stringBuilder.append(s24).append(cbMethod.variableName).append(".").append(cbMethod.method.getName()).append("(").append(parentVar).append(");\n");
+                    }
+                }
+                if (parentFlag != null && updateListenerCbList.size() > 0) {
+                    //callTree += String.format("%20s}\n", "", parentFlag.name);
+                    stringBuilder.append(s20).append("}\n");
+                    if (unguarded) {
+                        stringBuilder.append(sbUnguarded);
+                    }
+                }
+                //close guards clause
+                if (nodeGuardConditions.size() > 0) {
+                    //callTree += String.format("%16s}\n", "");
+                    stringBuilder.append(s16 + "}\n");
+                }
+            }
+        }
     }
 
     private String buildFilteredDispatch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
