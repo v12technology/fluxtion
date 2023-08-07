@@ -5,6 +5,7 @@ has_children: false
 nav_order: 1
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/spring
+resources_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/resources/com/fluxtion/example/cookbook/spring
 ---
 
 ## Introduction
@@ -48,6 +49,44 @@ Package structure:
 - **node**: implementations of the service interfaces
 - **data**: data types used by services
 - **generation**: location of the Fluxtion ahead of time generated DI container
+
+## Spring beans
+Fluxtion provides support for building the DI container using spring configuration. The example uses [a spring 
+configuration]({{page.resources_src}}/spring-account.xml) file to declare the beans that will be managed by the Fluxtion DI container:
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="accountBean" class="com.fluxtion.example.cookbook.spring.node.AccountNode">
+        <property name="responsePublisher" ref="responsePublisher" />
+    </bean>
+
+    <bean id="creditCheck" class="com.fluxtion.example.cookbook.spring.node.CreditCheckNode">
+        <property name="transactionSource" ref="accountBean"/>
+        <property name="responsePublisher" ref="responsePublisher" />
+    </bean>
+
+    <bean id="transactionStore" class="com.fluxtion.example.cookbook.spring.node.CentralTransactionProcessor">
+        <property name="transactionSource" ref="creditCheck"/>
+        <property name="responsePublisher" ref="responsePublisher" />
+    </bean>
+
+    <bean id="responsePublisher" class="com.fluxtion.example.cookbook.spring.node.ResponsePublisher">
+    </bean>
+</beans>
+{% endhighlight %}
+
+Once the file is created the file location can be passed to Fluxtion to build the container:
+
+{% highlight java %}
+ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/spring/spring-account.xml");
+eventProcessor = FluxtionSpring.interpret(context);
+{% endhighlight %}
 
 ## Invoking a service
 
