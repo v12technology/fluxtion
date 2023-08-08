@@ -100,12 +100,15 @@ to the processor for processing
 
 ### Pojo classes
 
-| Name              | Event handler | Description                                                      |
-|-------------------|---------------|------------------------------------------------------------------|
-| Data1Handler      | yes           | Handles incoming events of type InputDataEvent_1                 |
-| Data2Handler      | yes           | Handles incoming events of type InputDataEvent_2                 |
-| DataSumCalculator | no            | References DataHandler nodes and calcultes the current sum       |
-| BreachNotifier    | no            | References the DataSumCalculator and logs a warning if sum > 100 |
+| Name              | Event handler | Trigger handler | Description                                                      |
+|-------------------|---------------|-----------------|------------------------------------------------------------------|
+| Data1Handler      | yes           | no              | Handles incoming events of type InputDataEvent_1                 |
+| Data2Handler      | yes           | no              | Handles incoming events of type InputDataEvent_2                 |
+| DataSumCalculator | no            | yes             | References DataHandler nodes and calculates the current sum      |
+| BreachNotifier    | no            | yes             | References the DataSumCalculator and logs a warning if sum > 100 |
+
+The event handler method is called when a matching event type is published to the container, the trigger handler is 
+called when a parent dependency haa been trigger or a parent event handler method has been called.
 
 #### [Data1Handler]({{page.example_src}}/Data1handler.java)
 
