@@ -18,13 +18,28 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportVoidReturn() {
-//        writeSourceFile = true;
         sep(new MyExportingServiceNode());
         init();
         MyService mySvc = sep.getExportedService();
         mySvc.testAdd(23, 50);
         MyExportingServiceNode myNode = getField("myService");
         Assert.assertEquals(73, myNode.result);
+    }
+
+    @Test
+    public void serviceIsExported() {
+        sep(new MyExportingServiceNode());
+        init();
+        Assert.assertFalse(sep.exportsService(MyMissingService.class));
+        Assert.assertTrue(sep.exportsService(MyService.class));
+    }
+
+    @Test
+    public void serviceGetExportedByClass() {
+        sep(new MyExportingServiceNode());
+        init();
+        Assert.assertNull(sep.getExportedService(MyMissingService.class));
+        Assert.assertNotNull(sep.getExportedService(MyService.class));
     }
 
     @Test
@@ -117,6 +132,9 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         void testAdd(int a, int b);
 
         void testSubtract(int a, int b);
+    }
+
+    public interface MyMissingService {
     }
 
     public static class MyExportingServiceNode extends ExportFunctionNode implements @ExportService MyService, NamedNode {
