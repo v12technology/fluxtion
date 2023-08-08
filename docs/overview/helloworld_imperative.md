@@ -22,19 +22,12 @@ Code is available as a [maven project]({{page.example_src}})
 All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}) at runtime follow similar steps
 
 - Create a maven or gradle project adding the Fluxtion compiler dependency to the project runtime classpath
-- Write pojo's that will be nodes in the graph
-- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling callback
-- Create a collection of instances of the pojo's that will act as nodes in the EvenProcessor
-- Set references between the pojos as per normal java. Constructor, getter/setter, public access etc.
-- Use one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in a
-  builder method that accepts [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java)
-- Add your the root node/s of your object instance graph using EventProcessorConfig.addNode in your builder method or
-  give the list of nodes to the Fluxtion builder method
+- Write pojo's that will be nodes in the graph, set references between the pojos as per normal java
+- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling callback or a trigger method
+- Use one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in the list of nodes to the builder method
 - An EventProcessor instance is returned ready to be used
 - Call EventProcessor.init() to ensure the graph is ready to process events
 - To publish events to the processor call EventProcessor.onEvent(object)
-- Fluxtion guarantees the dispatch of notifications to your pojo's is in topological order
-- When you process ends you can optionally call EventProcessor.tearDown()
 
 ## Processing graph
 
@@ -68,6 +61,34 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 {% endhighlight %}
 </div>
 </div>
+
+## Maven pom
+
+{% highlight java %}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <groupId>com.fluxtion.example</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>functional-helloworld</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+    </dependencies>
+</project>
+{% endhighlight %}
 
 ## Java code
 
