@@ -5,7 +5,6 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.callback.ExportFunctionNode;
 import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportBooleanTriggerWhenPositive() {
-//        writeSourceFile = true;
+        writeSourceFile = true;
         sep(new MyResultHolderTrigger());
         init();
         MyTriggeringService mySvc = sep.getExportedService();
@@ -137,7 +136,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     public interface MyMissingService {
     }
 
-    public static class MyExportingServiceNode extends ExportFunctionNode implements @ExportService MyService, NamedNode {
+    public static class MyExportingServiceNode implements @ExportService MyService, NamedNode {
         int result;
 
         @Override
@@ -156,7 +155,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class MyExportingTriggerServiceNode extends ExportFunctionNode implements @ExportService MyTriggeringService, NamedNode {
+    public static class MyExportingTriggerServiceNode implements @ExportService MyTriggeringService, NamedNode {
         int result;
 
         public Object triggerObject;
@@ -181,8 +180,8 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
             return x > 0;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean propagateParentNotification() {
             return true;
         }
     }
