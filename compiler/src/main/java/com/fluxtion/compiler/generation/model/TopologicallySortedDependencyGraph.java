@@ -76,10 +76,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
-    /**
-     * Map of all the public functions that are exported with {@link ExportFunction}
-     * annotation
-     */
     private final Map<String, ExportFunctionData> exportedFunctionMap;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
@@ -728,20 +724,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private void addExportedMethods(Object object) {
         final Class<?> clazz = object.getClass();
-        Set<Method> exportMethodSet = ReflectionUtils.getAllMethods(clazz, ReflectionUtils.withAnnotation(ExportFunction.class));
-        exportMethodSet.forEach(method -> {
-            String overrideExportMethodName = method.getAnnotation(ExportFunction.class).value();
-            String exportMethodName = overrideExportMethodName.trim().isEmpty() ? method.getName() : overrideExportMethodName;
-            ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                    exportMethodName, n -> {
-                        ExportFunctionData data = new ExportFunctionData(exportMethodName);
-                        registerNode(data.getExportFunctionTrigger(), null);
-                        return data;
-                    });
-            final String name = inst2Name.get(object);
-            exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
-            exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
-        });
         //now find the methods for an interface
         for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
             if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
@@ -755,15 +737,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
                     }
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                            exportMethodName, n -> {
-                                ExportFunctionData data = new ExportFunctionData(exportMethodName);
-                                registerNode(data.getExportFunctionTrigger(), null);
-                                return data;
-                            });
+                            exportMethodName, n -> new ExportFunctionData(exportMethodName));
+                    registerNode(object, null);
                     final String name = inst2Name.get(object);
-                    exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
                     exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
-                    exportFunctionData.setExportedInterface(true);
                 }
             }
         }
@@ -783,7 +760,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
-                    | refField.getClass().getAnnotation(SepNode.class) != null;
+                    | refField.getClass().getAnnotation(SepNode.class) != null
+                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+            ;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
@@ -806,7 +785,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
-                    | refField.getClass().getAnnotation(SepNode.class) != null;
+                    | refField.getClass().getAnnotation(SepNode.class) != null
+                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+            ;
             if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
             }
@@ -825,7 +806,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 .or(ReflectionUtils.withAnnotation(TearDown.class))
                 .or(ReflectionUtils.withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
-                .or(ReflectionUtils.withAnnotation(ExportFunction.class))
+                .or(ReflectionUtils.withAnnotation(ExportService.class))
                 ;
     }
 
@@ -833,12 +814,14 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return ReflectionUtils.withAnnotation(OnEventHandler.class)
                 .or(ReflectionUtils.withAnnotation(OnTrigger.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                .or(ReflectionUtils.withAnnotation(ExportService.class))
                 ;
     }
 
     private boolean handlesEvents(Object obj) {
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
-                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty();
+                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty()
+                || Arrays.stream(obj.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class));
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {

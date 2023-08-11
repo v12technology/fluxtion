@@ -3,7 +3,7 @@ package com.fluxtion.compiler.generation.exportservice;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
-import com.fluxtion.runtime.callback.ExportFunctionNode;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,7 +72,7 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         boolean notifyBottom(int arg);
     }
 
-    public static class TopNode extends ExportFunctionNode implements @ExportService Top, NamedNode {
+    public static class TopNode implements @ExportService Top, NamedNode {
 
         int functionCount = 0;
 
@@ -81,13 +81,17 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             functionCount++;
         }
 
+        public boolean trigger() {
+            return true;
+        }
+
         @Override
         public String getName() {
             return "top";
         }
     }
 
-    public static class MiddleNode extends ExportFunctionNode implements @ExportService Middle, NamedNode {
+    public static class MiddleNode implements @ExportService Middle, NamedNode {
         private final TopNode topNode;
         int triggerCount = 0;
         int functionCount = 0;
@@ -106,8 +110,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             return arg > 0;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean propagateParentNotification() {
             triggerCount++;
             return true;
         }
@@ -118,7 +122,7 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class BottomNode extends ExportFunctionNode implements @ExportService Bottom, NamedNode {
+    public static class BottomNode implements @ExportService Bottom, NamedNode {
 
         private final MiddleNode middleNode;
         int triggerCount = 0;
@@ -138,8 +142,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             return false;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean propagateParentNotification() {
             triggerCount++;
             return true;
         }

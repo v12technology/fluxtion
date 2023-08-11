@@ -96,11 +96,10 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         }
     }
 
+    @Override
     public void onEventInternal(Object event) {
        ${MODEL.eventDispatch}
     }
-
-    ${MODEL.exportedMethods}
 
     ${MODEL.eventHandlers}
 
@@ -179,6 +178,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return dirtySupplier(node).getAsBoolean();
     }
 
+    @Override
     public BooleanSupplier dirtySupplier(Object node) {
         if(dirtyFlagSupplierMap.isEmpty()){
             ${MODEL.dirtyFlagLookup}

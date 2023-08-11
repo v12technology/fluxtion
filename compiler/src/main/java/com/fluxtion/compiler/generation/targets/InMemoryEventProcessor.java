@@ -15,7 +15,6 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
-import com.fluxtion.runtime.callback.ExportFunctionTrigger;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
@@ -539,20 +538,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .map(CallbackInstance::new)
                 .collect(Collectors.toSet());
 
-        String triggerDeclarations = exportedFunctionMap.values().stream()
-                .map(ExportFunctionData::getExportFunctionTrigger)
-                .map(e -> "ExportFunctionTrigger " + e.getName())
-                .collect(Collectors.joining(";\n\t", "\n\t", ";\n"));
-
         String declarations = exportCbSet.stream()
                 .map(c -> c.getInstance().getClass().getCanonicalName() + " " + c.getVariableName())
-                .collect(Collectors.joining(";\n\t", "\tInMemoryEventProcessor processor;\n\t", ";" + triggerDeclarations));
-
-
-        String triggerAssignments = exportedFunctionMap.values().stream()
-                .map(ExportFunctionData::getExportFunctionTrigger)
-                .map(e -> e.getName() + " = processor.getNodeById(\"" + e.getName() + "\")")
-                .collect(Collectors.joining(";\n\t", "\n\t", ";\n"));
+                .collect(Collectors.joining(";\n\t", "\tInMemoryEventProcessor processor;\n\t", ";\n"));
 
         String constructor = exportCbSet.stream()
                 .map(c -> c.getVariableName() + " = processor.getNodeById(\"" + c.getVariableName() + "\")")
@@ -560,7 +548,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                         ";\n\t",
                         "public " + className + "(InMemoryEventProcessor processor) throws java.lang.NoSuchFieldException {\n" +
                                 "\tthis.processor = processor;\n\t",
-                        ";" + triggerAssignments + "}\n"));
+                        ";\n}\n"));
 
         String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}\n\n" +
                 "public void init(){\n\tprocessor.init();\n}\n\n" +
@@ -582,14 +570,13 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
         StringBuilder sb = new StringBuilder("package " + packageName + ";\n\n" +
                 "import " + this.getClass().getCanonicalName() + ";\n" +
-                "import " + ExportFunctionTrigger.class.getCanonicalName() + ";\n\n" +
                 "public class " + className + additionalInterfaces + " {\n" +
                 declarations + "\n" +
                 constructor + "\n" +
                 delegateOnEvent + "\n" +
                 exportedMethods + "\n" +
                 "}");
-
+//        System.out.println(sb.toString());
         Class clazz = StringCompilation.compile(fqn, sb.toString());
         exportingWrapper = clazz.getConstructor(InMemoryEventProcessor.class).newInstance(this);
         return (T) exportingWrapper;

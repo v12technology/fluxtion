@@ -21,7 +21,6 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
-import com.fluxtion.runtime.callback.ExportFunctionTrigger;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -206,7 +205,7 @@ public interface ClassUtils {
         LongAdder argNumber = new LongAdder();
         List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
         Method delegateMethod = callBackList.get(0).getMethod();
-        boolean booleanReturn = exportFunctionData.isBooleanReturn() && exportFunctionData.isExportedInterface();
+        boolean booleanReturn = exportFunctionData.isBooleanReturn();
         StringBuilder signature = booleanReturn ? new StringBuilder("public boolean " + exportedMethodName) : new StringBuilder("public void " + exportedMethodName);
         signature.append('(');
         StringJoiner sj = new StringJoiner(", ");
@@ -224,16 +223,9 @@ public interface ClassUtils {
         signature.append(sj);
         signature.append("){\n\t");
         //
-        if (onEventDispatch) {
-            signature.append("if(processor().buffering){\n" +
-                    "      processor().triggerCalculation();\n" +
-                    "    }\n\t");
-        } else {
-            signature.append("if(buffering){\n" +
-                    "      triggerCalculation();\n" +
-                    "    }\n" +
-                    "    processing = true;\n\t");
-        }
+        signature.append("if(processor().buffering){\n" +
+                "      processor().triggerCalculation();\n" +
+                "    }\n\t");
         //method calls
         StringJoiner sjInvoker = new StringJoiner(", ", "(", "));\n\t");
         for (int i = 0; i < argNumber.intValue(); i++) {
@@ -243,29 +235,15 @@ public interface ClassUtils {
             String variableName = cb.getVariableName();
             if (cb.isNoPropagateFunction()) {
                 signature.append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker.toString().replace("));", ");"));
-                signature.append(variableName).append(".setTriggered(false);\n");
             } else if (cb.getMethod().getReturnType() == void.class) {
                 signature.append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker.toString().replace("));", ");"));
-                signature.append(variableName).append(".setTriggered(true);\n");
+                signature.append("processor.setDirty(").append(variableName).append(", true);\n\t");
             } else {
-                signature.append(variableName).append(".setTriggered(").
-                        append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker);
+                signature.append("processor.setDirty(").
+                        append(variableName).append(", ").append(variableName).append(".").append(cb.getMethod().getName()).append(sjInvoker);
             }
         });
-        //close
-        ExportFunctionTrigger exportFunctionTrigger = exportFunctionData.getExportFunctionTrigger();
-        if (onEventDispatch) {
-            signature.append("onEvent(")
-                    .append(exportFunctionTrigger.getName()).append(".getEvent());\n");
-        } else {
-            signature.append("handleEvent(")
-                    .append("(").append(exportFunctionTrigger.eventClass().getSimpleName()).append(")")
-                    .append(exportFunctionTrigger.getName()).append(".getEvent());\n")
-            ;
-        }
-        if (!onEventDispatch) {
-            signature.append("    processing = false;\n");
-        }
+        signature.append("processor().triggerCalculation();\n");
         if (booleanReturn) {
             signature.append("    return true;\n");
         }
