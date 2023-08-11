@@ -165,7 +165,7 @@ public class CbMethodHandle {
                 ", variableName='" + variableName + '\'' +
                 ", parameterClass=" + parameterClass +
                 ", isEventHandler=" + isEventHandler +
-                ", isMultiArg=" + exportedHandler +
+                ", isExportHandler=" + exportedHandler +
                 ", isPostEventHandler=" + isPostEventHandler +
                 ", isInvertedDirtyHandler=" + isInvertedDirtyHandler +
                 ", isGuardedParent=" + isGuardedParent +

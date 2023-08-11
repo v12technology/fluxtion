@@ -823,7 +823,6 @@ public class JavaSourceGenerator {
                         switchF.append(s20).append("case(").append(filterVariable).append("):\n");
                     }
                 }
-//                cbList = cbList == null ? Collections.emptyList() : cbList;
                 ct.delete(0, ct.length());
                 buildDispatchForCbMethodHandles(cbList, ct);
                 buildPostDispatchForCbMethodHandles(cbMapPostEvent.get(filterDescription), ct);

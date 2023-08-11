@@ -71,7 +71,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportBooleanTriggerWhenPositive() {
-        writeSourceFile = true;
+//        writeSourceFile = true;
         sep(new MyResultHolderTrigger());
         init();
         MyTriggeringService mySvc = sep.getExportedService();
@@ -94,7 +94,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportServiceAndParentNotification() {
-        writeSourceFile = true;
+//        writeSourceFile = true;
         sep(c -> {
             MyResultHolderTrigger resultHolderTrigger = c.addNode(new MyResultHolderTrigger());
             resultHolderTrigger.myExportingServiceNode.triggerObject = DataFlow.subscribe(String.class).flowSupplier();

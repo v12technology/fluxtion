@@ -55,14 +55,11 @@ public class PostEventTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-//    @Ignore("broken for in memory test - multiple calls are made to the afterTrigger child")
     public void singleOnEventComplete() {
         sep(c -> {
             c.addNode(new ChildWithEventHandler(new Parent()));
         });
         onEvent("helloWorld");
-        //TODO FIXME for in memory
-        //handler and trigger in same class with parent of same event type breaks
         assertThat(counter.intValue(), is(1));
     }
 
