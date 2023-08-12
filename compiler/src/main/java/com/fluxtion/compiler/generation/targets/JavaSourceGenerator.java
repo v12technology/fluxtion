@@ -752,15 +752,30 @@ public class JavaSourceGenerator {
     private void generateExportMethodDispatcher() {
         Map<FilterDescription, List<CbMethodHandle>> eventDispatch = model.getDispatchMap().get(ExportFunctionMarker.class);
         Map<FilterDescription, List<CbMethodHandle>> postDispatch = model.getPostDispatchMap().get(ExportFunctionMarker.class);
+        final String audit;
+        List<Field> listenerFields = model.getNodeRegistrationListenerFields();
+        if (listenerFields != null && !listenerFields.isEmpty()) {
+            audit = "String typedEvent = \"No event information - export function\";\n" +
+                    "auditEvent(typedEvent);\n";
+        } else {
+            audit = "";
+        }
         if (eventDispatch != null) {
             eventHandlers += "\n//EXPORTED SERVICE FUNCTIONS - START\n";
             List<FilterDescription> list = new ArrayList<>(eventDispatch.keySet());
             list.sort(Comparator.comparing(FilterDescription::getStringValue));
             list.forEach(f -> {
-                StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n");
+                StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n")
+                        .append(audit)
+                        .append("if(buffering){\n" +
+                                "    triggerCalculation();\n" +
+                                "}\n" +
+                                "processing = true;\n");
                 buildDispatchForCbMethodHandles(eventDispatch.get(f), sb);
                 buildPostDispatchForCbMethodHandles(postDispatch.get(f), sb);
-                sb.append("afterEvent();\n");
+                sb.append("afterEvent();\n" +
+                        "callbackDispatcher.dispatchQueuedCallbacks();\n" +
+                        "processing = false;\n");
                 sb.append(f.getStringValue().contains("void") ? "}\n" : "return true;}\n");
                 eventHandlers += sb.toString();
             });

@@ -17,6 +17,23 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         super(testConfig);
     }
 
+
+    public void multiServiceExportAuditTest() {
+//        writeSourceFile = true;
+        addAuditor();
+        sep(new BottomNode());
+        Top top = sep.getExportedService();
+        Middle middle = sep.getExportedService();
+        Bottom bottom = sep.getExportedService();
+        //nodes
+        TopNode topNode = getField("top");
+        MiddleNode middleNode = getField("middle");
+        BottomNode bottomNode = getField("bottom");
+        Assert.assertEquals(1, bottomNode.afterEventCount);
+        //
+        top.notifyTop(10);
+    }
+
     @Test
     public void multiServiceExportTest() {
 //        writeSourceFile = true;

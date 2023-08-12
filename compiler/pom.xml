@@ -27,7 +27,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <name>fluxtion :: compiler</name>
 
     <properties>
-        <org.springframework.version>5.2.21.RELEASE</org.springframework.version>
+        <org.springframework.version>6.0.11</org.springframework.version>
     </properties>
 
     <build>

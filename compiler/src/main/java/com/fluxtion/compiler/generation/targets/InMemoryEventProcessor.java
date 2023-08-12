@@ -151,6 +151,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         currentEvent = null;
     }
 
+    public void dispatchQueuedCallbacks() {
+        callbackDispatcher.dispatchQueuedCallbacks();
+    }
+
     private void subclassDispatchSearch(BitSet updateBitset) {
         if (updateBitset.isEmpty()) {
             Set<Class<?>> eventClassSet = new HashSet<>();
@@ -263,7 +267,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         return mapped;
     }
 
-    private void auditNewEvent(Object event) {
+    public void auditNewEvent(Object event) {
         if (Event.class.isAssignableFrom(event.getClass())) {
             auditors.stream()
                     .filter(a -> Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
@@ -279,6 +283,12 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     .filter(a -> !Auditor.FirstAfterEvent.class.isAssignableFrom(a.getClass()))
                     .forEach(a -> a.eventReceived(event));
         }
+    }
+
+    public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
+        auditors.stream()
+                .filter(Auditor::auditInvocations)
+                .forEachOrdered(a -> a.nodeInvoked(node, nodeName, methodName, event));
     }
 
     @Override

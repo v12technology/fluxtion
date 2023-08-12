@@ -1,4 +1,9 @@
-com.fluxtion.compiler.generation.inject.InjectionTest$Char2IntFactory
-com.fluxtion.compiler.generation.inject.InjectionTest$CharHandlerFactory
-com.fluxtion.compiler.generation.audit.FactoryAuditorTest$MyNodeFactory
+com.fluxtion.compiler.builder.factory.SignalGroupCalculatorFactory
+com.fluxtion.compiler.generation.audit.MyNodeFactory
+com.fluxtion.compiler.generation.inject.Char2IntFactory
+com.fluxtion.compiler.generation.inject.CharHandlerFactory
+com.fluxtion.compiler.generation.inject.MyGenericServiceFactory
+com.fluxtion.compiler.generation.inject.MyUniqueDataBlueFactory
+com.fluxtion.compiler.generation.inject.MyUniqueDataGreenFactory
+com.fluxtion.test.nodes.KeyProcessorFactory
 
