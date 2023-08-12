@@ -17,8 +17,6 @@
  */
 package com.fluxtion.compiler.generation.inject;
 
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.FilterId;
@@ -35,8 +33,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -257,26 +253,6 @@ public class InjectionTest extends MultipleSepTargetInProcessTest {
             return true;
 //            //System.out.println("received char:"+ charEvent.filterId());
         }
-    }
-
-    public static class Char2IntFactory implements NodeFactory<Char2Int> {
-
-        @Override
-        public Char2Int createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-            return new Char2Int();
-        }
-    }
-
-    public static class CharHandlerFactory implements NodeFactory<CharHandler> {
-
-        @Override
-        public CharHandler createNode(Map<String, ? super Object> arg0, NodeRegistry arg1) {
-            if (arg0.containsKey("char")) {
-                return new CharHandler(((String) arg0.get("char")).charAt(0));
-            }
-            return new CharHandler();
-        }
-
     }
 
 }

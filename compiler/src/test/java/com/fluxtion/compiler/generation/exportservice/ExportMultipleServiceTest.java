@@ -2,8 +2,10 @@ package com.fluxtion.compiler.generation.exportservice;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.AfterEvent;
+import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.ExportService;
-import com.fluxtion.runtime.callback.ExportFunctionNode;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,6 +15,23 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
     public ExportMultipleServiceTest(CompiledAndInterpretedSepTest.SepTestConfig testConfig) {
         super(testConfig);
+    }
+
+
+    public void multiServiceExportAuditTest() {
+//        writeSourceFile = true;
+        addAuditor();
+        sep(new BottomNode());
+        Top top = sep.getExportedService();
+        Middle middle = sep.getExportedService();
+        Bottom bottom = sep.getExportedService();
+        //nodes
+        TopNode topNode = getField("top");
+        MiddleNode middleNode = getField("middle");
+        BottomNode bottomNode = getField("bottom");
+        Assert.assertEquals(1, bottomNode.afterEventCount);
+        //
+        top.notifyTop(10);
     }
 
     @Test
@@ -27,6 +46,7 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         TopNode topNode = getField("top");
         MiddleNode middleNode = getField("middle");
         BottomNode bottomNode = getField("bottom");
+        Assert.assertEquals(1, bottomNode.afterEventCount);
         //
         top.notifyTop(10);
         Assert.assertEquals(1, topNode.functionCount);
@@ -34,6 +54,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(1, middleNode.triggerCount);
         Assert.assertEquals(0, bottomNode.functionCount);
         Assert.assertEquals(1, bottomNode.triggerCount);
+        Assert.assertEquals(1, bottomNode.afterTriggerCount);
+        Assert.assertEquals(2, bottomNode.afterEventCount);
 
         //
         bottom.notifyBottom(10);
@@ -42,6 +64,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(1, middleNode.triggerCount);
         Assert.assertEquals(1, bottomNode.functionCount);
         Assert.assertEquals(1, bottomNode.triggerCount);
+        Assert.assertEquals(1, bottomNode.afterTriggerCount);
+        Assert.assertEquals(3, bottomNode.afterEventCount);
 
         //no trigger bottom
         middle.notifyMiddle(-10);
@@ -50,6 +74,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(1, middleNode.triggerCount);//?
         Assert.assertEquals(1, bottomNode.functionCount);
         Assert.assertEquals(1, bottomNode.triggerCount);
+        Assert.assertEquals(1, bottomNode.afterTriggerCount);
+        Assert.assertEquals(4, bottomNode.afterEventCount);
 
         //trigger middle
         middle.notifyMiddle(10);
@@ -58,6 +84,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(1, middleNode.triggerCount);
         Assert.assertEquals(1, bottomNode.functionCount);
         Assert.assertEquals(2, bottomNode.triggerCount);
+        Assert.assertEquals(2, bottomNode.afterTriggerCount);
+        Assert.assertEquals(5, bottomNode.afterEventCount);
     }
 
     public interface Top {
@@ -72,7 +100,7 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         boolean notifyBottom(int arg);
     }
 
-    public static class TopNode extends ExportFunctionNode implements @ExportService Top, NamedNode {
+    public static class TopNode implements @ExportService Top, NamedNode {
 
         int functionCount = 0;
 
@@ -81,13 +109,17 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             functionCount++;
         }
 
+        public boolean trigger() {
+            return true;
+        }
+
         @Override
         public String getName() {
             return "top";
         }
     }
 
-    public static class MiddleNode extends ExportFunctionNode implements @ExportService Middle, NamedNode {
+    public static class MiddleNode implements @ExportService Middle, NamedNode {
         private final TopNode topNode;
         int triggerCount = 0;
         int functionCount = 0;
@@ -106,8 +138,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             return arg > 0;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean triggered() {
             triggerCount++;
             return true;
         }
@@ -118,11 +150,13 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class BottomNode extends ExportFunctionNode implements @ExportService Bottom, NamedNode {
+    public static class BottomNode implements @ExportService Bottom, NamedNode {
 
         private final MiddleNode middleNode;
         int triggerCount = 0;
         int functionCount = 0;
+        int afterEventCount = 0;
+        int afterTriggerCount = 0;
 
         public BottomNode(MiddleNode middleNode) {
             this.middleNode = middleNode;
@@ -138,10 +172,20 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
             return false;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean triggered() {
             triggerCount++;
             return true;
+        }
+
+        @AfterEvent
+        public void afterEvent() {
+            afterEventCount++;
+        }
+
+        @AfterTrigger
+        public void afterTrigger() {
+            afterTriggerCount++;
         }
 
         @Override

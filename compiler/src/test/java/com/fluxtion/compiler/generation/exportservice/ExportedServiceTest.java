@@ -5,7 +5,8 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.callback.ExportFunctionNode;
+import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.callback.Callback;
 import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,7 +96,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportServiceAndParentNotification() {
-        writeSourceFile = true;
+//        writeSourceFile = true;
         sep(c -> {
             MyResultHolderTrigger resultHolderTrigger = c.addNode(new MyResultHolderTrigger());
             resultHolderTrigger.myExportingServiceNode.triggerObject = DataFlow.subscribe(String.class).flowSupplier();
@@ -122,6 +123,21 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(4, myResultHolder.triggerCount);
     }
 
+    @Test
+    public void serviceWithCallBack() {
+        writeSourceFile = true;
+        sep(new ServiceWithCallback());
+        MyTriggeringService mySvc = sep.getExportedService();
+        ServiceWithCallback svcNode = getField("myService");
+        Assert.assertEquals(0, svcNode.triggerCount);
+
+        mySvc.triggerPositive(10);
+        Assert.assertEquals(1, svcNode.triggerCount);
+
+        mySvc.triggerPositive(-10);
+        Assert.assertEquals(1, svcNode.triggerCount);
+    }
+
     public interface MyTriggeringService extends MyService {
         boolean triggerPositive(int x);
 
@@ -137,7 +153,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     public interface MyMissingService {
     }
 
-    public static class MyExportingServiceNode extends ExportFunctionNode implements @ExportService MyService, NamedNode {
+    public static class MyExportingServiceNode implements @ExportService MyService, NamedNode {
         int result;
 
         @Override
@@ -156,7 +172,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class MyExportingTriggerServiceNode extends ExportFunctionNode implements @ExportService MyTriggeringService, NamedNode {
+    public static class MyExportingTriggerServiceNode implements @ExportService MyTriggeringService, NamedNode {
         int result;
 
         public Object triggerObject;
@@ -181,8 +197,8 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
             return x > 0;
         }
 
-        @Override
-        protected boolean propagateParentNotification() {
+        @OnTrigger
+        public boolean propagateParentNotification() {
             return true;
         }
     }
@@ -232,6 +248,43 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         @Override
         public String getName() {
             return "myResultHolder";
+        }
+    }
+
+    public static class ServiceWithCallback implements @ExportService MyTriggeringService, NamedNode {
+        int result;
+        int triggerCount;
+        @Inject
+        public Callback callback;
+
+        @Override
+        public void testAdd(int a, int b) {
+            result = a + b;
+        }
+
+        @Override
+        public void testSubtract(int a, int b) {
+            result = a - b;
+        }
+
+        @Override
+        public boolean triggerPositive(int x) {
+            boolean b = x > 0;
+            if (b) {
+                callback.fireCallback();
+            }
+            return b;
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            triggerCount++;
+            return true;
+        }
+
+        @Override
+        public String getName() {
+            return "myService";
         }
     }
 }

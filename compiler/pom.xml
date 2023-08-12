@@ -19,7 +19,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.0.25-SNAPSHOT</version>
+        <version>9.1.0-SNAPSHOT</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
@@ -27,7 +27,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <name>fluxtion :: compiler</name>
 
     <properties>
-        <org.springframework.version>5.2.21.RELEASE</org.springframework.version>
+        <org.springframework.version>5.3.29</org.springframework.version>
     </properties>
 
     <build>
