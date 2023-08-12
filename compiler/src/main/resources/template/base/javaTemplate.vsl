@@ -71,59 +71,19 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
-    public void setContextParameterMap(Map<Object, Object> newContextMapping){
-        context.replaceMappings(newContextMapping);
-    }
-
-
-    @Override
-    public void addContextParameter(Object key, Object value) {
-        context.addMapping(key, value);
-    }
-
-    @Override
-    public void onEvent(Object event) {
-        if(buffering){
-            triggerCalculation();
-        }
-        if(processing){
-          callbackDispatcher.processReentrantEvent(event);
-        }else{
-            processing = true;
-            onEventInternal(event);
-            callbackDispatcher.dispatchQueuedCallbacks();
-            processing = false;
-        }
-    }
-
-    public void onEventInternal(Object event) {
-       ${MODEL.eventDispatch}
-    }
-
-    ${MODEL.exportedMethods}
-
-    ${MODEL.eventHandlers}
-
-    private void afterEvent() {
-        ${MODEL.eventEndMethods}
-        ${MODEL.resetDirtyFlags}
-        ${MODEL.resetForkTasks}
-    }
-
-    @Override
     public void init() {
         initCalled = true;
         auditEvent(Lifecycle.LifecycleEvent.Init);
-       //initialise dirty lookup map
-       isDirty("test");
-       ${MODEL.initialiseMethods}
-       afterEvent();
+        //initialise dirty lookup map
+        isDirty("test");
+        ${MODEL.initialiseMethods}
+        afterEvent();
     }
 
     @Override
     public void start() {
         if(!initCalled){
-            throw new RuntimeException("init() must be called before start()");
+         throw new RuntimeException("init() must be called before start()");
         }
         processing = true;
         auditEvent(Lifecycle.LifecycleEvent.Start);
@@ -155,6 +115,46 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
+    public void setContextParameterMap(Map<Object, Object> newContextMapping){
+        context.replaceMappings(newContextMapping);
+    }
+
+
+    @Override
+    public void addContextParameter(Object key, Object value) {
+        context.addMapping(key, value);
+    }
+
+    //EVENT DISPATCH - START
+    @Override
+    public void onEvent(Object event) {
+        if(buffering){
+            triggerCalculation();
+        }
+        if(processing){
+          callbackDispatcher.processReentrantEvent(event);
+        }else{
+            processing = true;
+            onEventInternal(event);
+            callbackDispatcher.dispatchQueuedCallbacks();
+            processing = false;
+        }
+    }
+
+    @Override
+    public void onEventInternal(Object event) {
+       ${MODEL.eventDispatch}
+    }
+
+    ${MODEL.eventHandlers}
+
+    private void afterEvent() {
+        ${MODEL.eventEndMethods}
+        ${MODEL.resetDirtyFlags}
+        ${MODEL.resetForkTasks}
+    }
+
+    @Override
     public void batchPause() {
         auditEvent(Lifecycle.LifecycleEvent.BatchPause);
         processing = true;
@@ -179,6 +179,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return dirtySupplier(node).getAsBoolean();
     }
 
+    @Override
     public BooleanSupplier dirtySupplier(Object node) {
         if(dirtyFlagSupplierMap.isEmpty()){
             ${MODEL.dirtyFlagLookup}

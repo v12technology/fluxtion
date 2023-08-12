@@ -255,7 +255,6 @@ public class JavaSourceGenerator {
         buildForkAwareMethodSource(model.getEventEndMethods(), eventEndMethodList);
         buildMethodSource(model.getBatchEndMethods(), batchEndMethodList);
         buildMethodSource(model.getTearDownMethods(), tearDownMethodList);
-        buildExportedMethods();
         addDefaultImports();
         buildNodeDeclarations();
         buildDirtyFlags();
@@ -341,29 +340,6 @@ public class JavaSourceGenerator {
             final String methodString = String.format("%8s%s.%s();", "", method.variableName, method.method.getName());
             methodSourceList.add(methodString);
         }
-    }
-
-    private void buildExportedMethods() {
-        Map<String, ExportFunctionData> exportedFunctionDataMap = model.getExportedFunctionMap();
-        List<String> keys = new ArrayList<>(exportedFunctionDataMap.keySet());
-        keys.sort(String::compareTo);
-        StringJoiner joiner = new StringJoiner("\n");
-        joiner.setEmptyValue("");
-//        //filtered
-//        for (String key : keys) {
-//            List<CbMethodHandle> cbMethodHandles = exportedFunctionMap.get(key);
-//            if (!cbMethodHandles.isEmpty()) {
-//                CbMethodHandle cbMethodHandle = cbMethodHandles.get(0);
-//                joiner.add(ClassUtils.wrapNodeCall(cbMethodHandle.getMethod(), key, cbMethodHandle.getVariableName()));
-//            }
-//        }
-        //multicast
-        for (String key : keys) {
-            if (!exportedFunctionDataMap.get(key).getFunctionCallBackList().isEmpty()) {
-                joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionDataMap.get(key), false));
-            }
-        }
-        exportedMethods = joiner.toString();
     }
 
     private void buildForkAwareMethodSource(List<CbMethodHandle> methodList, List<String> methodSourceList) {
@@ -613,6 +589,7 @@ public class JavaSourceGenerator {
 
     private void buildEventDispatch() {
         generateClassBasedDispatcher();
+        generateExportMethodDispatcher();
         generateEventBufferedDispatcher();
         addEventAsJavaDoc();
         if (auditingEvent) {
@@ -649,6 +626,7 @@ public class JavaSourceGenerator {
         isInlineEventHandling = true;
         //sort the classes and then loop through the sorted list
         List<Class<?>> sortedClasses = ClassUtils.sortClassHierarchy(handlerOnlyDispatchMap.keySet());
+        sortedClasses.remove(ExportFunctionMarker.class);
         String elsePrefix = "if";
         for (Class<?> eventId : sortedClasses) {
             Map<FilterDescription, List<CbMethodHandle>> m = handlerOnlyDispatchMap.get(eventId);
@@ -703,10 +681,6 @@ public class JavaSourceGenerator {
         eventHandlers += bufferedTrigger;
     }
 
-    public void dispatchBufferedEvents() {
-
-    }
-
     /**
      * generates the implementation of the onEvent method, and writes to the
      * eventDispatch or debugEventDispatch string. This is the top level method
@@ -727,6 +701,7 @@ public class JavaSourceGenerator {
         Set<Class<?>> keySet = dispatchMap.keySet();
         HashSet<Class<?>> classSet = new HashSet<>(keySet);
         classSet.addAll(postDispatchMap.keySet());
+        classSet.remove(ExportFunctionMarker.class);
         List<Class<?>> clazzList = ClassUtils.sortClassHierarchy(classSet);
         String elsePrefix = "if";
         for (Class<?> eventId : clazzList) {
@@ -771,6 +746,41 @@ public class JavaSourceGenerator {
         //build a noIddispatchString - just copy method above and only
         //process <Event>.ID free events.
         eventDispatch = dispatchStringNoId + "\n";
+        eventHandlers += "  //EVENT DISPATCH - END\n";
+    }
+
+    private void generateExportMethodDispatcher() {
+        Map<FilterDescription, List<CbMethodHandle>> eventDispatch = model.getDispatchMap().get(ExportFunctionMarker.class);
+        Map<FilterDescription, List<CbMethodHandle>> postDispatch = model.getPostDispatchMap().get(ExportFunctionMarker.class);
+        final String audit;
+        List<Field> listenerFields = model.getNodeRegistrationListenerFields();
+        if (listenerFields != null && !listenerFields.isEmpty()) {
+            audit = "String typedEvent = \"No event information - export function\";\n" +
+                    "auditEvent(typedEvent);\n";
+        } else {
+            audit = "";
+        }
+        if (eventDispatch != null) {
+            eventHandlers += "\n//EXPORTED SERVICE FUNCTIONS - START\n";
+            List<FilterDescription> list = new ArrayList<>(eventDispatch.keySet());
+            list.sort(Comparator.comparing(FilterDescription::getStringValue));
+            list.forEach(f -> {
+                StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n")
+                        .append(audit)
+                        .append("if(buffering){\n" +
+                                "    triggerCalculation();\n" +
+                                "}\n" +
+                                "processing = true;\n");
+                buildDispatchForCbMethodHandles(eventDispatch.get(f), sb);
+                buildPostDispatchForCbMethodHandles(postDispatch.get(f), sb);
+                sb.append("afterEvent();\n" +
+                        "callbackDispatcher.dispatchQueuedCallbacks();\n" +
+                        "processing = false;\n");
+                sb.append(f.getStringValue().contains("void") ? "}\n" : "return true;}\n");
+                eventHandlers += sb.toString();
+            });
+            eventHandlers += "//EXPORTED SERVICE FUNCTIONS - END\n";
+        }
     }
 
     private String buildFilteredSwitch(Map<FilterDescription, List<CbMethodHandle>> cbMap,
@@ -828,46 +838,9 @@ public class JavaSourceGenerator {
                         switchF.append(s20).append("case(").append(filterVariable).append("):\n");
                     }
                 }
-                cbList = cbList == null ? Collections.emptyList() : cbList;
                 ct.delete(0, ct.length());
                 buildDispatchForCbMethodHandles(cbList, ct);
-                //chec for null on cbList and escape
-                cbList = cbMapPostEvent.get(filterDescription);
-                if (cbList == null || cbList.size() > 0) {
-                    //callTree += String.format("%16s//event stack unwind callbacks\n", "");
-                    ct.append(s16 + "//event stack unwind callbacks\n");
-                }
-                cbList = cbList == null ? Collections.EMPTY_LIST : cbList;
-                for (CbMethodHandle method : cbList) {
-                    //protect with guards
-                    Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
-                    String OR = "";
-                    if (nodeGuardConditions.size() > 0) {
-                        Set<Object> forkedTriggers = model.getForkedTriggerInstances();
-                        if (forkedTriggers.contains(method.getInstance())) {
-                            ct.append(method.forkVariableName() + ".afterEvent();\n");
-                        }
-                        ct.append(s24 + "if(");
-                        for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
-                            ct.append(OR).append(nodeGuardCondition.name);
-//                            OR = " || ";
-                            OR = " | ";
-                        }
-                        ct.append(") {\n");
-                    }
-
-                    //assign return if appropriate
-                    if (method.parameterClass == null) {
-                        ct.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
-                    } else {
-                        ct.append(s24).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
-                    }
-                    //close guarded clause
-                    if (nodeGuardConditions.size() > 0) {
-                        ct.append(s16 + "}\n");
-                    }
-                }
-                //INVOKETARGET
+                buildPostDispatchForCbMethodHandles(cbMapPostEvent.get(filterDescription), ct);
                 invokerTarget.methodBody = ct.toString();
                 if (!noFilter) {
                     ct.append(s24 + "afterEvent();\n");
@@ -880,6 +853,9 @@ public class JavaSourceGenerator {
     }
 
     private void buildDispatchForCbMethodHandles(List<CbMethodHandle> cbList, StringBuilder stringBuilder) {
+        if (cbList == null || cbList.isEmpty()) {
+            return;
+        }
         for (CbMethodHandle method : cbList) {
             DirtyFlag dirtyFlagForUpdateCb = model.getDirtyFlagForUpdateCb(method);
             String dirtyAssignment = "";
@@ -923,6 +899,19 @@ public class JavaSourceGenerator {
                 } else {
                     stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("();\n");
                 }
+            } else if (method.isExportedHandler()) {
+                StringJoiner sjInvoker = new StringJoiner(", ", "(", ");\n\t");
+                for (int i = 0; i < method.getMethod().getParameterCount(); i++) {
+                    sjInvoker.add("arg" + i);
+                }
+                if (dirtyFlagForUpdateCb != null) {
+                    if (method.getMethod().getReturnType() == boolean.class) {
+                        dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
+                    } else {
+                        dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                    }
+                }
+                stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append(sjInvoker);
             } else {
                 stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append("(typedEvent);\n");
             }
@@ -978,6 +967,35 @@ public class JavaSourceGenerator {
                     //callTree += String.format("%16s}\n", "");
                     stringBuilder.append(s16 + "}\n");
                 }
+            }
+        }
+    }
+
+    private void buildPostDispatchForCbMethodHandles(List<CbMethodHandle> cbList, StringBuilder stringBuilder) {
+        if (cbList == null || cbList.isEmpty()) {
+            return;
+        }
+        stringBuilder.append(s16 + "//event stack unwind callbacks\n");
+        for (CbMethodHandle method : cbList) {
+            //protect with guards
+            Collection<DirtyFlag> nodeGuardConditions = model.getNodeGuardConditions(method);
+            String OR = "";
+            if (!nodeGuardConditions.isEmpty()) {
+                Set<Object> forkedTriggers = model.getForkedTriggerInstances();
+                if (forkedTriggers.contains(method.getInstance())) {
+                    stringBuilder.append(method.forkVariableName()).append(".afterEvent();\n");
+                }
+                stringBuilder.append(s24 + "if(");
+                for (DirtyFlag nodeGuardCondition : nodeGuardConditions) {
+                    stringBuilder.append(OR).append(nodeGuardCondition.name);
+                    OR = " | ";
+                }
+                stringBuilder.append(") {\n");
+            }
+            stringBuilder.append(s24).append(method.variableName).append(".").append(method.method.getName()).append("();\n");
+            //close guarded clause
+            if (!nodeGuardConditions.isEmpty()) {
+                stringBuilder.append(s16 + "}\n");
             }
         }
     }

@@ -25,21 +25,7 @@ import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.FilterId;
-import com.fluxtion.runtime.annotations.FilterType;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.NoTriggerReference;
-import com.fluxtion.runtime.annotations.OnBatchEnd;
-import com.fluxtion.runtime.annotations.OnBatchPause;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.Start;
-import com.fluxtion.runtime.annotations.Stop;
-import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
 import com.fluxtion.runtime.event.Event;
@@ -56,24 +42,10 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -668,6 +640,7 @@ public class SimpleEventProcessorModel {
         List<Object> topologicalHandlers = dependencyGraph.getSortedDependents();
         List<EventCallList> eventCbList = new ArrayList<>();
         for (Object object : topologicalHandlers) {
+            String name = dependencyGraph.getInstanceMap().get(object);
             if (object instanceof EventHandlerNode) {
                 eventCbList.add(new EventCallList((EventHandlerNode<?>) object));
             }
@@ -677,7 +650,47 @@ public class SimpleEventProcessorModel {
                     eventCbList.add(new EventCallList(object, method));
                 }
             }
+            Class<?> clazz = object.getClass();
+            //exported services
+            for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
+                if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
+                    Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                    dependencyGraph.getConfig().addInterfaceImplementation(interfaceType);
+                    for (Method method : interfaceType.getMethods()) {
+                        String exportMethodName = method.getName();
+                        try {
+                            method = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                            LongAdder argNumber = new LongAdder();
+                            boolean booleanReturn = method.getReturnType() == boolean.class;
+                            StringBuilder signature = booleanReturn
+                                    ? new StringBuilder("@Override\npublic boolean " + exportMethodName)
+                                    : new StringBuilder("@Override\npublic void " + exportMethodName);
+                            signature.append('(');
+                            StringJoiner sj = new StringJoiner(", ");
+                            Type[] params = method.getGenericParameterTypes();
+                            for (int j = 0; j < params.length; j++) {
+                                String param = params[j].getTypeName()
+                                        .replace("$", ".")
+                                        .replace("java.lang.", "");
+                                if (method.isVarArgs() && (j == params.length - 1)) // replace T[] with T...
+                                    param = param.replaceFirst("\\[\\]$", "...");
+                                param += " arg" + argNumber.intValue();
+                                sj.add(param);
+                                argNumber.increment();
+                            }
+                            signature.append(sj);
+                            signature.append(")");
+                            eventCbList.add(new EventCallList(object, method, signature.toString()));
+                            node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
+                        } catch (NoSuchMethodException e) {
+
+                        }
+                    }
+                }
+            }
         }
+
+
         //build the no filter handlers - ready to merge in with the filtered lists
         for (EventCallList eventCb : eventCbList) {
             if (eventCb.isFiltered) {
@@ -1282,7 +1295,7 @@ public class SimpleEventProcessorModel {
             );
             Method onEventMethod = ehMethodList.iterator().next();
             String name = dependencyGraph.variableName(eh);
-            final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true);
+            final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true, false);
             dispatchMethods.add(cbMethodHandle);
             node2UpdateMethodMap.put(eh, cbMethodHandle);
             for (int i = 1; i < sortedDependents.size(); i++) {
@@ -1308,6 +1321,45 @@ public class SimpleEventProcessorModel {
             isInverseFiltered = false;
         }
 
+        EventCallList(Object instance, Method onEventMethod, String exportedMethodName) throws Exception {
+            sortedDependents = dependencyGraph.getEventSortedDependents(instance);
+            dispatchMethods = new ArrayList<>();
+            postDispatchMethods = new ArrayList<>();
+            eventTypeClass = ExportFunctionMarker.class;
+            filterId = 0;
+            filterString = exportedMethodName;
+            isIntFilter = false;
+            isFiltered = true;
+            isInverseFiltered = false;
+            String name = dependencyGraph.variableName(instance);
+            dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true, true));
+            //check for @OnEventComplete on the root of the event tree
+            Method[] methodList = instance.getClass().getMethods();
+            for (Method method : methodList) {
+                if (annotationInHierarchy(method, AfterTrigger.class)) {
+                    postDispatchMethods.add(new CbMethodHandle(method, instance, name));
+                }
+            }
+
+            for (int i = 0; i < sortedDependents.size(); i++) {
+                Object object = sortedDependents.get(i);
+                if (object == instance) {
+                    continue;
+                }
+                name = dependencyGraph.variableName(object);
+                methodList = object.getClass().getMethods();
+                for (Method method : methodList) {
+                    if (annotationInHierarchy(method, OnTrigger.class)) {
+                        dispatchMethods.add(new CbMethodHandle(method, object, name));
+                    }
+                    if (annotationInHierarchy(method, AfterTrigger.class) && i > 0) {
+                        postDispatchMethods.add(new CbMethodHandle(method, object, name));
+                    }
+                }
+            }
+
+        }
+
         @SuppressWarnings("unchecked")
         EventCallList(Object instance, Method onEventMethod) throws Exception {
             String tmpFilterString = null;
@@ -1319,15 +1371,7 @@ public class SimpleEventProcessorModel {
             OnEventHandler annotation = onEventMethod.getAnnotation(OnEventHandler.class);
             //int attribute filter on annoatation 
             int filterIdOverride = annotation.filterId();
-            //String attribute filter on annoatation 
-//            String genericFilter = "";
-//            if (onEventMethod.getGenericParameterTypes().length == 1 && onEventMethod.getGenericParameterTypes()[0] instanceof ParameterizedType) {
-//                ParameterizedType pt = (ParameterizedType) onEventMethod.getGenericParameterTypes()[0];
-//                final Type actualType = pt.getActualTypeArguments()[0];
-//                genericFilter = actualType instanceof Class ? ((Class<?>) actualType).getCanonicalName() : actualType.getTypeName();
-//            }
             String filterStringOverride = annotation.filterStringFromClass() != void.class ? annotation.filterStringFromClass().getCanonicalName() : annotation.filterString();
-//            filterStringOverride = filterStringOverride.isEmpty() ? genericFilter : filterStringOverride;
             Set<java.lang.reflect.Field> s = ReflectionUtils.getAllFields(instance.getClass(), ReflectionUtils.withName(annotation.filterVariable()));
             if (annotation.filterVariable().length() > 0 && s.size() > 0) {
                 java.lang.reflect.Field f = s.iterator().next();
@@ -1406,7 +1450,7 @@ public class SimpleEventProcessorModel {
             postDispatchMethods = new ArrayList<>();
             eventTypeClass = annotation.ofType() == void.class ? onEventMethod.getParameterTypes()[0] : annotation.ofType();
             String name = dependencyGraph.variableName(instance);
-            dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true));
+            dispatchMethods.add(new CbMethodHandle(onEventMethod, instance, name, eventTypeClass, true, false));
             //check for @OnEventComplete on the root of the event tree
             Method[] methodList = instance.getClass().getMethods();
             for (Method method : methodList) {
