@@ -48,6 +48,7 @@ EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, Batc
 
 //Node declarations
 ${MODEL.nodeDeclarations}
+    private ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
 //Dirty flags
 private boolean initCalled = false;
 private boolean processing = false;

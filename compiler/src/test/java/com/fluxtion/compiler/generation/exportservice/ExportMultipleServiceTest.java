@@ -18,20 +18,16 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
     }
 
 
+    @Test
     public void multiServiceExportAuditTest() {
 //        writeSourceFile = true;
         addAuditor();
         sep(new BottomNode());
+        sep.setAuditLogProcessor(l -> {
+        });
         Top top = sep.getExportedService();
-        Middle middle = sep.getExportedService();
-        Bottom bottom = sep.getExportedService();
-        //nodes
-        TopNode topNode = getField("top");
-        MiddleNode middleNode = getField("middle");
-        BottomNode bottomNode = getField("bottom");
-        Assert.assertEquals(1, bottomNode.afterEventCount);
-        //
         top.notifyTop(10);
+        top.notifyTopNoArgs();
     }
 
     @Test
@@ -90,6 +86,8 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
     public interface Top {
         void notifyTop(int arg);
+
+        void notifyTopNoArgs();
     }
 
     public interface Middle {
@@ -107,6 +105,10 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         @Override
         public void notifyTop(int arg) {
             functionCount++;
+        }
+
+        public void notifyTopNoArgs() {
+
         }
 
         public boolean trigger() {

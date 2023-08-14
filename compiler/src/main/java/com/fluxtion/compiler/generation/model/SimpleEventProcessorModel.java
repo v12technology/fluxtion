@@ -781,6 +781,7 @@ public class SimpleEventProcessorModel {
                 //Ignore as this non-filtered dispatch - already resolved
                 continue;
             }
+            filterDescription.setExportFunction(eventCb.exportMethod);
             //TODO add null filter singleton
             Map<FilterDescription, List<CbMethodHandle>> handlerMap = getHandlerMap(eventClass);
             //get the sublist for this event handler
@@ -1192,7 +1193,7 @@ public class SimpleEventProcessorModel {
         return Collections.unmodifiableMap(handlerOnlyDispatchMap);
     }
 
-    public Map<String, ExportFunctionData> getExportedFunctionMap() {
+    public Map<Method, ExportFunctionData> getExportedFunctionMap() {
         return Collections.unmodifiableMap(dependencyGraph.getExportedFunctionMap());
     }
 
@@ -1266,6 +1267,7 @@ public class SimpleEventProcessorModel {
         final boolean isFiltered;
         final boolean isInverseFiltered;
         final Class<?> eventTypeClass;
+        final Method exportMethod;
         private final List<?> sortedDependents;
         private final List<CbMethodHandle> dispatchMethods;
         /**
@@ -1283,6 +1285,7 @@ public class SimpleEventProcessorModel {
             sortedDependents = dependencyGraph.getEventSortedDependents(eh);
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
+            exportMethod = null;
             if (eh.eventClass() == null) {
                 eventTypeClass = (TypeResolver.resolveRawArguments(EventHandlerNode.class, eh.getClass()))[0];
             } else {
@@ -1322,7 +1325,12 @@ public class SimpleEventProcessorModel {
         }
 
         EventCallList(Object instance, Method onEventMethod, String exportedMethodName) throws Exception {
-            sortedDependents = dependencyGraph.getEventSortedDependents(instance);
+            if (onEventMethod.getAnnotation(NoPropagateFunction.class) == null) {
+                sortedDependents = dependencyGraph.getEventSortedDependents(instance);
+            } else {
+                sortedDependents = Collections.EMPTY_LIST;
+            }
+            exportMethod = onEventMethod;
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
             eventTypeClass = ExportFunctionMarker.class;
@@ -1367,6 +1375,7 @@ public class SimpleEventProcessorModel {
             boolean tmpIsIntFilter = true;
             boolean tmpIsFiltered = true;
             boolean tmpIsInverseFiltered = false;
+            exportMethod = null;
             Set<java.lang.reflect.Field> fields = ReflectionUtils.getAllFields(instance.getClass(), ReflectionUtils.withAnnotation(FilterId.class));
             OnEventHandler annotation = onEventMethod.getAnnotation(OnEventHandler.class);
             //int attribute filter on annoatation 
