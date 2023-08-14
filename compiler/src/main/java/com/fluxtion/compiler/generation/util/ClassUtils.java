@@ -169,7 +169,8 @@ public interface ClassUtils {
     }
 
     @SneakyThrows
-    static String wrapExportedFunctionCall(String exportedMethodName, List<CbMethodHandle> callBackList, SimpleEventProcessorModel model) {
+    static String wrapExportedFunctionCall(Method exportedMethod, List<CbMethodHandle> callBackList, SimpleEventProcessorModel model) {
+        String exportedMethodName = exportedMethod.getName();
         LongAdder argNumber = new LongAdder();
         Method delegateMethod = callBackList.get(0).getMethod();
         StringBuilder signature = new StringBuilder("public void " + exportedMethodName);
@@ -201,7 +202,8 @@ public interface ClassUtils {
     }
 
     @SneakyThrows
-    static String wrapExportedFunctionCall(String exportedMethodName, ExportFunctionData exportFunctionData, boolean onEventDispatch) {
+    static String wrapExportedFunctionCall(Method exportedMethod, ExportFunctionData exportFunctionData, boolean onEventDispatch) {
+        String exportedMethodName = exportedMethod.getName();
         LongAdder argNumber = new LongAdder();
         List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
         Method delegateMethod = callBackList.get(0).getMethod();
@@ -223,7 +225,7 @@ public interface ClassUtils {
         signature.append(sj);
         signature.append("){\n\t");
         //
-        signature.append("processor.auditNewEvent(\"No event information - export function\");\n" +
+        signature.append("processor.auditNewEvent( functionAudit.setFunctionDescription(\"" + exportFunctionData.getExportedmethod().toGenericString() + "\"));\n" +
                 "    if(processor.buffering){\n" +
                 "      processor.triggerCalculation();\n" +
                 "    }\n" +
@@ -236,7 +238,7 @@ public interface ClassUtils {
         callBackList.forEach(cb -> {
             String variableName = cb.getVariableName();
             String methodName = cb.getMethod().getName();
-            signature.append("processor.nodeInvoked(" + variableName + ", \"" + variableName + "\", \"" + methodName + "\", \"export function\");\n");
+            signature.append("processor.nodeInvoked(" + variableName + ", \"" + variableName + "\", \"" + methodName + "\", functionAudit);\n");
             if (cb.isNoPropagateFunction()) {
                 signature.append(variableName).append(".").append(methodName).append(sjInvoker.toString().replace("));", ");"));
             } else if (cb.getMethod().getReturnType() == void.class) {

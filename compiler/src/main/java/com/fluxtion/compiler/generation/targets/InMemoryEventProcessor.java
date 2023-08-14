@@ -15,6 +15,7 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
+import com.fluxtion.runtime.callback.ExportFunctionAuditEvent;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
 import com.fluxtion.runtime.dataflow.groupby.MutableTuple;
 import com.fluxtion.runtime.event.Event;
@@ -543,7 +544,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                     .collect(Collectors.joining(", ", " implements ", ""));
         }
 
-        Map<String, ExportFunctionData> exportedFunctionMap = simpleEventProcessorModel.getExportedFunctionMap();
+        Map<Method, ExportFunctionData> exportedFunctionMap = simpleEventProcessorModel.getExportedFunctionMap();
         Set<CallbackInstance> exportCbSet = exportedFunctionMap.values().stream()
                 .map(ExportFunctionData::getFunctionCallBackList).flatMap(List::stream)
                 .map(CallbackInstance::new)
@@ -551,7 +552,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
         String declarations = exportCbSet.stream()
                 .map(c -> c.getInstance().getClass().getCanonicalName() + " " + c.getVariableName())
-                .collect(Collectors.joining(";\n\t", "\tInMemoryEventProcessor processor;\n\t", ";\n"));
+                .collect(Collectors.joining(
+                        ";\n\t", "\tInMemoryEventProcessor processor;\n\t",
+                        ";\n\tprivate ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();\n"));
 
         String constructor = exportCbSet.stream()
                 .map(c -> c.getVariableName() + " = processor.getNodeById(\"" + c.getVariableName() + "\")")
@@ -568,11 +571,11 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 "public InMemoryEventProcessor processor(){\n\treturn processor;\n}\n\n" +
                 "public void tearDown(){\n\tprocessor.tearDown();\n}";
 
-        List<String> keys = new ArrayList<>(exportedFunctionMap.keySet());
-        keys.sort(String::compareTo);
+        List<Method> keys = new ArrayList<>(exportedFunctionMap.keySet());
+        keys.sort(Comparator.comparing(Method::toString));
         StringJoiner joiner = new StringJoiner("\n\n", "\n", "");
         joiner.setEmptyValue("");
-        for (String key : keys) {
+        for (Method key : keys) {
             if (!exportedFunctionMap.get(key).getFunctionCallBackList().isEmpty()) {
                 joiner.add(ClassUtils.wrapExportedFunctionCall(key, exportedFunctionMap.get(key), true));
             }
@@ -581,6 +584,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
         StringBuilder sb = new StringBuilder("package " + packageName + ";\n\n" +
                 "import " + this.getClass().getCanonicalName() + ";\n" +
+                "import " + ExportFunctionAuditEvent.class.getCanonicalName() + ";\n" +
                 "public class " + className + additionalInterfaces + " {\n" +
                 declarations + "\n" +
                 constructor + "\n" +

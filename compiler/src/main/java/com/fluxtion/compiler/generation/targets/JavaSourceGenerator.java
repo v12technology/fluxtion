@@ -29,6 +29,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.callback.ExportFunctionAuditEvent;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.node.ForkedTriggerTask;
@@ -755,8 +756,10 @@ public class JavaSourceGenerator {
         final String audit;
         List<Field> listenerFields = model.getNodeRegistrationListenerFields();
         if (listenerFields != null && !listenerFields.isEmpty()) {
-            audit = "String typedEvent = \"No event information - export function\";\n" +
-                    "auditEvent(typedEvent);\n";
+            audit = "//String typedEvent = \"No event information - export function\";\n" +
+                    "functionAudit.setFunctionDescription(\"&&FUNC&&\");\n" +
+                    "ExportFunctionAuditEvent typedEvent = functionAudit;\n" +
+                    "auditEvent(functionAudit);\n";
         } else {
             audit = "";
         }
@@ -765,8 +768,12 @@ public class JavaSourceGenerator {
             List<FilterDescription> list = new ArrayList<>(eventDispatch.keySet());
             list.sort(Comparator.comparing(FilterDescription::getStringValue));
             list.forEach(f -> {
+                String exportAudit = "";
+                if (f.getExportFunction() != null) {
+                    exportAudit = f.getExportFunction().toGenericString();
+                }
                 StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n")
-                        .append(audit)
+                        .append(audit.replace("&&FUNC&&", exportAudit))
                         .append("if(buffering){\n" +
                                 "    triggerCalculation();\n" +
                                 "}\n" +
@@ -1408,6 +1415,7 @@ public class JavaSourceGenerator {
         importList.add(Map.class.getCanonicalName());
         importList.add(EventFeed.class.getCanonicalName());
         importList.add(EventLogManager.class.getCanonicalName());
+        importList.add(ExportFunctionAuditEvent.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);

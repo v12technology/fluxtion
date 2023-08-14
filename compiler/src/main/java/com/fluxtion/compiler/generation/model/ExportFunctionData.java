@@ -1,19 +1,20 @@
 package com.fluxtion.compiler.generation.model;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExportFunctionData {
 
-    private final String publicMethodName;
+    private final Method exportedmethod;
     private final List<CbMethodHandle> functionCallBackList = new ArrayList<>();
 
-    public ExportFunctionData(String publicMethodName) {
-        this.publicMethodName = publicMethodName;
+    public ExportFunctionData(Method exportedmethod) {
+        this.exportedmethod = exportedmethod;
     }
 
-    public String getPublicMethodName() {
-        return publicMethodName;
+    public Method getExportedmethod() {
+        return exportedmethod;
     }
 
     public List<CbMethodHandle> getFunctionCallBackList() {

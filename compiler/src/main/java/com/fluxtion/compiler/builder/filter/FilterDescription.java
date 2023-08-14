@@ -19,6 +19,7 @@ package com.fluxtion.compiler.builder.filter;
 import com.fluxtion.runtime.event.Event;
 import lombok.ToString;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
@@ -80,6 +81,8 @@ public class FilterDescription {
      * relevant rules.
      */
     public String variableName;
+
+    private Method exportFunction;
 
     public static FilterDescription build(Object input) {
         FilterDescription result = DEFAULT_FILTER;
@@ -182,6 +185,14 @@ public class FilterDescription {
 
     public void setEventClass(Class<? extends Event> eventClass) {
         this.eventClass = eventClass;
+    }
+
+    public void setExportFunction(Method exportFunction) {
+        this.exportFunction = exportFunction;
+    }
+
+    public Method getExportFunction() {
+        return exportFunction;
     }
 
     @Override
