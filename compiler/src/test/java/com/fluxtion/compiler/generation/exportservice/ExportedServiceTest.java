@@ -4,12 +4,17 @@ import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.Callback;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
@@ -138,6 +143,20 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(1, svcNode.triggerCount);
     }
 
+    @Test
+    public void noPropagateFunctionTest() {
+        writeSourceFile = true;
+        sep(c -> DataFlow.subscribeToNode(new NoPropagateMySvc())
+                .mapToInt(Mappers.count()).id("count"));
+        MyTriggeringService triggeringService = sep.getExportedService();
+        triggeringService.triggerPositive(10);
+        assertThat(getStreamed("count"), is(1));
+        triggeringService.testAdd(10, 10);
+        assertThat(getStreamed("count"), is(1));
+        triggeringService.testSubtract(10, 10);
+        assertThat(getStreamed("count"), is(2));
+    }
+
     public interface MyTriggeringService extends MyService {
         boolean triggerPositive(int x);
 
@@ -200,6 +219,25 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         @OnTrigger
         public boolean propagateParentNotification() {
             return true;
+        }
+    }
+
+    public static class NoPropagateMySvc implements @ExportService MyTriggeringService {
+
+        @Override
+        @NoPropagateFunction
+        public void testAdd(int a, int b) {
+
+        }
+
+        @Override
+        public void testSubtract(int a, int b) {
+
+        }
+
+        @Override
+        public boolean triggerPositive(int x) {
+            return x > 0;
         }
     }
 

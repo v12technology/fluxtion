@@ -1322,7 +1322,11 @@ public class SimpleEventProcessorModel {
         }
 
         EventCallList(Object instance, Method onEventMethod, String exportedMethodName) throws Exception {
-            sortedDependents = dependencyGraph.getEventSortedDependents(instance);
+            if (onEventMethod.getAnnotation(NoPropagateFunction.class) == null) {
+                sortedDependents = dependencyGraph.getEventSortedDependents(instance);
+            } else {
+                sortedDependents = Collections.EMPTY_LIST;
+            }
             dispatchMethods = new ArrayList<>();
             postDispatchMethods = new ArrayList<>();
             eventTypeClass = ExportFunctionMarker.class;
