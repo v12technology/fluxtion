@@ -76,7 +76,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
-    private final Map<String, ExportFunctionData> exportedFunctionMap;
+    private final Map<Method, ExportFunctionData> exportedFunctionMap;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final HashMap<String, CbMethodHandle> name2FactoryMethod;
@@ -222,7 +222,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return Collections.unmodifiableList(noPushTopologicalHandlers);
     }
 
-    public Map<String, ExportFunctionData> getExportedFunctionMap() {
+    public Map<Method, ExportFunctionData> getExportedFunctionMap() {
         return Collections.unmodifiableMap(exportedFunctionMap);
     }
 
@@ -731,16 +731,18 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 config.addInterfaceImplementation(interfaceType);
                 for (Method method : interfaceType.getMethods()) {
                     String exportMethodName = method.getName();
+                    Method cbMethod = method;
                     try {
-                        method = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                        cbMethod = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
                     } catch (NoSuchMethodException e) {
 
                     }
+                    //TODO key on method
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                            exportMethodName, n -> new ExportFunctionData(exportMethodName));
+                            method, n -> new ExportFunctionData(method));
                     registerNode(object, null);
                     final String name = inst2Name.get(object);
-                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
+                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(cbMethod, object, name));
                 }
             }
         }

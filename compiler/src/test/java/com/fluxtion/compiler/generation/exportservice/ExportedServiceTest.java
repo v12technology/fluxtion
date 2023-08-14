@@ -50,7 +50,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportBooleanReturn() {
-//        writeSourceFile = true;
         sep(new MyExportingTriggerServiceNode());
         init();
         MyTriggeringService mySvc = sep.getExportedService();
@@ -61,7 +60,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportVoidAndAlwaysTrigger() {
-//        writeSourceFile = true;
         sep(new MyResultHolder());
         init();
         MyService mySvc = sep.getExportedService();
@@ -78,7 +76,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportBooleanTriggerWhenPositive() {
-//        writeSourceFile = true;
         sep(new MyResultHolderTrigger());
         init();
         MyTriggeringService mySvc = sep.getExportedService();
@@ -101,7 +98,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void exportServiceAndParentNotification() {
-//        writeSourceFile = true;
         sep(c -> {
             MyResultHolderTrigger resultHolderTrigger = c.addNode(new MyResultHolderTrigger());
             resultHolderTrigger.myExportingServiceNode.triggerObject = DataFlow.subscribe(String.class).flowSupplier();
@@ -130,7 +126,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void serviceWithCallBack() {
-        writeSourceFile = true;
         sep(new ServiceWithCallback());
         MyTriggeringService mySvc = sep.getExportedService();
         ServiceWithCallback svcNode = getField("myService");
@@ -145,7 +140,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateFunctionTest() {
-        writeSourceFile = true;
         sep(c -> DataFlow.subscribeToNode(new NoPropagateMySvc())
                 .mapToInt(Mappers.count()).id("count"));
         MyTriggeringService triggeringService = sep.getExportedService();
