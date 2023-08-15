@@ -37,7 +37,7 @@ public interface IoSerializer {
     static String inetSocketAddressToSource(FieldContext<InetSocketAddress> fieldContext) {
         fieldContext.getImportList().add(InetSocketAddress.class);
         InetSocketAddress inetSockeAddress = fieldContext.getInstanceToMap();
-        return "new InetSocketAddress(" +
+        return "InetSocketAddress.createUnresolved(" +
                 "\"" + StringEscapeUtils.escapeJava(inetSockeAddress.getHostString()) + "\", "
                 + inetSockeAddress.getPort() + ")";
     }
