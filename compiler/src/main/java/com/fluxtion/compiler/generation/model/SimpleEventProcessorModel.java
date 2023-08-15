@@ -348,7 +348,7 @@ public class SimpleEventProcessorModel {
         nodeFields.forEach(f -> {
             HashSet<Field.MappedField> privateFields = new HashSet<>();
             final Object field = f.instance;
-            LOGGER.debug("mapping constructor for var:{}", f.name);
+            LOGGER.debug("mapping constructor for var:{} {}", f.name, f);
             List<?> directParents = dependencyGraph.getDirectParents(field);
             Field.MappedField[] cstrArgList = new Field.MappedField[(directParents.size()) + 200];
             Class<?> fieldClass = field.getClass();

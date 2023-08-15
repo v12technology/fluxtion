@@ -1,6 +1,6 @@
-package com.fluxtion.compiler.generation.customfieldserializer;
+package com.fluxtion.compiler.generation.fieldserializer;
 
-import com.fluxtion.compiler.generation.customfieldserializer.CustomSerializerTest.WithBuilderFactory;
+import com.fluxtion.compiler.generation.fieldserializer.CustomSerializerTest.WithBuilderFactory;
 import com.fluxtion.compiler.generation.serialiser.FieldContext;
 import com.fluxtion.compiler.generation.serialiser.FieldToSourceSerializer;
 import com.google.auto.service.AutoService;

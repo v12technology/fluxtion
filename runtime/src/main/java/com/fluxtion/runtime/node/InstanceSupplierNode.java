@@ -8,7 +8,7 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.annotations.builder.SepNode;
 
 @SepNode
-public class InstanceSupplierNode<T> extends SingleNamedNode implements NamedNode, InstanceSupplier<T> {
+public class InstanceSupplierNode<T> extends SingleNamedNode implements InstanceSupplier<T> {
 
     @Inject
     private final EventProcessorContext context;
