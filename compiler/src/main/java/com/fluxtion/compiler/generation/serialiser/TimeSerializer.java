@@ -1,13 +1,6 @@
 package com.fluxtion.compiler.generation.serialiser;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Date;
 
 public interface TimeSerializer {
@@ -72,7 +65,6 @@ public interface TimeSerializer {
         fieldContext.getImportList().add(ZonedDateTime.class);
         fieldContext.getImportList().add(ZoneId.class);
         ZonedDateTime zoneDateTime = fieldContext.getInstanceToMap();
-
         return "ZonedDateTime.of(%N)".replace(
                 "%N",
                 zoneDateTime.getYear() + "," + zoneDateTime.getMonthValue() + "," + zoneDateTime.getDayOfMonth() + "," +
