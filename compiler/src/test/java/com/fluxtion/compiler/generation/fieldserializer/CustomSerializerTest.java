@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.generation.customfieldserializer;
+package com.fluxtion.compiler.generation.fieldserializer;
 
 import com.fluxtion.compiler.generation.serialiser.FieldContext;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;

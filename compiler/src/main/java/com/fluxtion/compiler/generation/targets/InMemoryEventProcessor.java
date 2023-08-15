@@ -504,7 +504,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         //calculate event handler bitset id's for an event without filtering
         simpleEventProcessorModel.getDispatchMap().forEach((key, value) ->
                 noFilterEventHandlerToBitsetMap.put(
-                        key,
+                        JavaGenHelper.mapPrimitiveToWrapper(key),
                         value.getOrDefault(FilterDescription.DEFAULT_FILTER, Collections.emptyList()).stream()
                                 .filter(Objects::nonNull)
                                 .filter(CbMethodHandle::isEventHandler)

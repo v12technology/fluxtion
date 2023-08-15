@@ -28,6 +28,8 @@ import com.fluxtion.compiler.generation.serialiser.*;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.dataflow.function.MergeProperty;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
@@ -72,6 +74,26 @@ public class EventProcessorConfig {
 
     public EventProcessorConfig() {
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
+        classSerializerMap.put(String.class, BasicTypeSerializer::stringToSource);
+        classSerializerMap.put(Character.class, BasicTypeSerializer::charToSource);
+        classSerializerMap.put(char.class, BasicTypeSerializer::charToSource);
+        classSerializerMap.put(Long.class, BasicTypeSerializer::longToSource);
+        classSerializerMap.put(long.class, BasicTypeSerializer::longToSource);
+        classSerializerMap.put(int.class, BasicTypeSerializer::intToSource);
+        classSerializerMap.put(Integer.class, BasicTypeSerializer::intToSource);
+        classSerializerMap.put(Short.class, BasicTypeSerializer::shortToSource);
+        classSerializerMap.put(short.class, BasicTypeSerializer::shortToSource);
+        classSerializerMap.put(Byte.class, BasicTypeSerializer::byteToSource);
+        classSerializerMap.put(byte.class, BasicTypeSerializer::byteToSource);
+        classSerializerMap.put(Double.class, BasicTypeSerializer::doubleToSource);
+        classSerializerMap.put(double.class, BasicTypeSerializer::doubleToSource);
+        classSerializerMap.put(Float.class, BasicTypeSerializer::floatToSource);
+        classSerializerMap.put(float.class, BasicTypeSerializer::floatToSource);
+        classSerializerMap.put(Boolean.class, BasicTypeSerializer::booleanToSource);
+        classSerializerMap.put(boolean.class, BasicTypeSerializer::booleanToSource);
+        classSerializerMap.put(Map.class, CollectionSerializer::mapToSource);
+        classSerializerMap.put(List.class, CollectionSerializer::listToSource);
+        classSerializerMap.put(Set.class, CollectionSerializer::setToSource);
         classSerializerMap.put(Duration.class, TimeSerializer::durationToSource);
         classSerializerMap.put(Instant.class, TimeSerializer::instantToSource);
         classSerializerMap.put(LocalDate.class, TimeSerializer::localDateToSource);
@@ -90,6 +112,8 @@ public class EventProcessorConfig {
         classSerializerMap.put(DecimalFormat.class, FormatSerializer::decimalFormatToSource);
         classSerializerMap.put(NumberFormat.class, FormatSerializer::decimalFormatToSource);
         classSerializerMap.put(Class.class, MetaSerializer::classToSource);
+        classSerializerMap.put(MergeProperty.class, MetaSerializer::mergePropertyToSource);
+        classSerializerMap.put(LambdaReflection.MethodReferenceReflection.class, MetaSerializer::methodReferenceToSource);
     }
 
     /**
