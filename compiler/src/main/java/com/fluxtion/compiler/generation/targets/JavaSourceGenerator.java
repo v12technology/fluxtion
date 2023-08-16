@@ -915,7 +915,7 @@ public class JavaSourceGenerator {
                     if (method.getMethod().getReturnType() == boolean.class) {
                         dirtyAssignment = dirtyFlagForUpdateCb.name + " = ";
                     } else {
-                        dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
+                        //dirtyAssignment = dirtyFlagForUpdateCb.name + " = true;\n" + s24;
                     }
                 }
                 stringBuilder.append(s24).append(dirtyAssignment).append(method.getMethodTarget()).append(".").append(method.method.getName()).append(sjInvoker);

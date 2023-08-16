@@ -1058,6 +1058,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         JgraphGraphMLExporter<Object, Object> mlExporter = new JgraphGraphMLExporter<>(np, np,
                 new IntegerEdgeNameProvider<>(), new IntegerEdgeNameProvider<>());
         @SuppressWarnings("unchecked") SimpleDirectedGraph<Object, Object> exportGraph = (SimpleDirectedGraph<Object, Object>) graph.clone();
+        Set<Class<?>> exportServiceSet = new HashSet<>();
         if (addEvents) {
             graph.vertexSet().forEach((t) -> {
                 Method[] methodList = t.getClass().getMethods();
@@ -1076,6 +1077,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventClass, t);
                     }
                 }
+                for (AnnotatedType annotatedInterface : t.getClass().getAnnotatedInterfaces()) {
+                    if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
+                        Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                        exportServiceSet.add(interfaceType);
+                        exportGraph.addVertex(interfaceType);
+                        exportGraph.addEdge(interfaceType, t);
+                    }
+                }
+//                t.getClass().getInterfaces()
             });
 
 //            pushEdges.stream()
@@ -1088,7 +1098,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 //                    });
 
         }
-        mlExporter.export(writer, exportGraph);//new EdgeReversedGraph(graph));
+        mlExporter.export(writer, exportGraph, exportServiceSet);//new EdgeReversedGraph(graph));
     }
 
     private String nameNode(Object node) {
