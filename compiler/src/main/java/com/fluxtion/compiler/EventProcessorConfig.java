@@ -291,6 +291,15 @@ public class EventProcessorConfig {
         return publicNodes;
     }
 
+    public <T> T getNode(String name) {
+        Object[] obj = new Object[1];
+        publicNodes.entrySet().stream()
+                .filter(e -> e.getValue().equals(name))
+                .findFirst()
+                .ifPresent(e -> obj[0] = e.getKey());
+        return (T) obj[0];
+    }
+
     public void setPublicNodes(HashMap<Object, String> publicNodes) {
         this.publicNodes = publicNodes;
     }

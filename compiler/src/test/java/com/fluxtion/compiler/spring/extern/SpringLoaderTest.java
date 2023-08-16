@@ -1,9 +1,11 @@
 package com.fluxtion.compiler.spring.extern;
 
 import com.fluxtion.compiler.FluxtionCompilerConfig;
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.extern.spring.FluxtionSpring;
 import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +16,7 @@ public class SpringLoaderTest {
 
     @Test
     public void loadSingleSpringBeanInterpret() throws NoSuchFieldException {
-        Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-1.xml");
+        Path path = FileSystems.getDefault().getPath("src/test/resources/spring/application-context-test-1.xml");
         EventProcessor<?> eventProcessor = FluxtionSpring.interpret(path);
         eventProcessor.init();
         eventProcessor.onEvent("HELLO WORLD");
@@ -24,7 +26,7 @@ public class SpringLoaderTest {
 
     @Test
     public void loadSingleSpringBeanCompile() throws NoSuchFieldException {
-        Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-1.xml");
+        Path path = FileSystems.getDefault().getPath("src/test/resources/spring/application-context-test-1.xml");
         EventProcessor<?> eventProcessor = FluxtionSpring.compile(path);
         eventProcessor.init();
         eventProcessor.onEvent("HELLO WORLD");
@@ -34,7 +36,7 @@ public class SpringLoaderTest {
 
     @Test
     public void loadSingleSpringBeanCompileAot() throws NoSuchFieldException {
-        Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-1.xml");
+        Path path = FileSystems.getDefault().getPath("src/test/resources/spring/application-context-test-1.xml");
         EventProcessor<?> eventProcessor = FluxtionSpring.compileAot(path, (FluxtionCompilerConfig c) -> {
             c.setOutputDirectory(OutputRegistry.JAVA_TESTGEN_DIR);
             c.setGenerateDescription(false);
@@ -48,10 +50,15 @@ public class SpringLoaderTest {
 
     @Test
     public void customiseConfig() throws NoSuchFieldException {
-        Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-1.xml");
-        EventProcessor<?> eventProcessor = FluxtionSpring.interpret(path, c -> {
-            c.addNode(new EventBean(), "customBean");
-        });
+        EventProcessor<?> eventProcessor = FluxtionSpring.interpret(
+                FileSystems.getDefault().getPath("src/test/resources/spring/application-context-test-1.xml"),
+                c -> {
+                    c.addNode(new EventBean(), "customBean");
+                    DataFlow.subscribeToNode(c.<EventBean>getNode("eventBean"))
+                            .mapToInt(Mappers.count())
+                            .id("springBeanCount");
+                }
+        );
         eventProcessor.init();
         eventProcessor.onEvent("HELLO WORLD");
         EventBean eventBean = eventProcessor.getNodeById("eventBean");
@@ -59,11 +66,12 @@ public class SpringLoaderTest {
         //
         eventBean = eventProcessor.getNodeById("customBean");
         Assert.assertEquals("HELLO WORLD", eventBean.input);
+        Assert.assertEquals(1, (int) eventProcessor.getStreamed("springBeanCount"));
     }
 
     @Test
     public void loadGraphSpringInterpret() throws NoSuchFieldException {
-        Path path = FileSystems.getDefault().getPath("src/test/spring/application-context-test-accountgraph.xml");
+        Path path = FileSystems.getDefault().getPath("src/test/resources/spring/application-context-test-accountgraph.xml");
         EventProcessor<?> eventProcessor = FluxtionSpring.interpret(path);
         eventProcessor.init();
         Account account = eventProcessor.getExportedService();

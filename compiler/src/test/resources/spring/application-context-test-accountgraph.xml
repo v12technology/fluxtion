@@ -9,7 +9,7 @@
     </bean>
     
     <bean id="transactionStore" class="com.fluxtion.compiler.spring.extern.BankTransactionStore">
-        <property name="accountNode" ref="accountBean"></property>
+        <property name="accountNode" ref="accountBean"/>
     </bean>
 
 </beans>

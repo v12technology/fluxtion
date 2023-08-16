@@ -20,8 +20,6 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void multiServiceExportAuditTest() {
-//        writeSourceFile = true;
-        addAuditor();
         sep(new BottomNode());
         sep.setAuditLogProcessor(l -> {
         });
@@ -32,7 +30,6 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void multiServiceExportTest() {
-//        writeSourceFile = true;
         sep(new BottomNode());
         //services
         Top top = sep.getExportedService();
