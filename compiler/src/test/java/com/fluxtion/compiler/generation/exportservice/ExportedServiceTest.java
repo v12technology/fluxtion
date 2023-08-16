@@ -5,6 +5,7 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.NoPropagateFunction;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.Callback;
@@ -140,7 +141,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateFunctionTest() {
-        sep(c -> DataFlow.subscribeToNode(new NoPropagateMySvc())
+        sep(c -> DataFlow.subscribeToNode(new NoPropagateSomeMethodsMySvc())
                 .mapToInt(Mappers.count()).id("count"));
         MyTriggeringService triggeringService = sep.getExportedService();
         triggeringService.triggerPositive(10);
@@ -148,6 +149,36 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         triggeringService.testAdd(10, 10);
         assertThat(getStreamed("count"), is(1));
         triggeringService.testSubtract(10, 10);
+        assertThat(getStreamed("count"), is(2));
+    }
+
+    @Test
+    public void noPropagateAnyFunctionTest() {
+        writeOutputsToFile(true);
+        sep(c -> {
+            NoPropagateAnyMethodsMySvc noPropagateAnyMethodsMySvc = new NoPropagateAnyMethodsMySvc();
+            noPropagateAnyMethodsMySvc.triggerObject = new StringHandler();
+            DataFlow.subscribeToNode(noPropagateAnyMethodsMySvc)
+                    .mapToInt(Mappers.count()).id("count");
+        });
+        onEvent("test");
+        assertThat(getStreamed("count"), is(0));
+
+        MyService triggeringService = sep.getExportedService();
+        triggeringService.testAdd(10, 10);
+        assertThat(getStreamed("count"), is(0));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(1));
+
+
+        triggeringService.testSubtract(10, 10);
+        assertThat(getStreamed("count"), is(1));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(1));
+
+        triggeringService.testAdd(10, 10);
+        assertThat(getStreamed("count"), is(1));
+        onEvent("test");
         assertThat(getStreamed("count"), is(2));
     }
 
@@ -164,6 +195,13 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     }
 
     public interface MyMissingService {
+    }
+
+    public static class StringHandler {
+        @OnEventHandler
+        public boolean onString(String id) {
+            return true;
+        }
     }
 
     public static class MyExportingServiceNode implements @ExportService MyService, NamedNode {
@@ -216,7 +254,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class NoPropagateMySvc implements @ExportService MyTriggeringService {
+    public static class NoPropagateSomeMethodsMySvc implements @ExportService MyTriggeringService {
 
         @Override
         @NoPropagateFunction
@@ -232,6 +270,28 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         @Override
         public boolean triggerPositive(int x) {
             return x > 0;
+        }
+    }
+
+    public static class NoPropagateAnyMethodsMySvc implements @ExportService MyService {
+        public Object triggerObject;
+        int sum = 0;
+
+        @Override
+        @NoPropagateFunction
+        public void testAdd(int a, int b) {
+            sum = a + b;
+        }
+
+        @Override
+        @NoPropagateFunction
+        public void testSubtract(int a, int b) {
+            sum = a - b;
+        }
+
+        @OnTrigger
+        public boolean trigger() {
+            return sum > 0;
         }
     }
 

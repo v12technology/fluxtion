@@ -17,8 +17,8 @@
  */
 package com.fluxtion.compiler.generation.exporter;
 
-import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.node.EventHandlerNode;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.EdgeNameProvider;
 import org.jgrapht.ext.IntegerEdgeNameProvider;
@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 
 /**
@@ -104,7 +105,7 @@ public class JgraphGraphMLExporter<V, E> {
      * @throws org.xml.sax.SAXException                              exception during reading
      * @throws javax.xml.transform.TransformerConfigurationException exception during reading
      */
-    public void export(Writer writer, Graph<V, E> g)
+    public void export(Writer writer, Graph<V, E> g, Set<Class<?>> exportServiceSet)
             throws SAXException, TransformerConfigurationException {
         // Prepare an XML file to receive the GraphML data
         PrintWriter out = new PrintWriter(writer);
@@ -182,6 +183,7 @@ public class JgraphGraphMLExporter<V, E> {
         // Add all the vertices as <node> elements...
         for (V v : g.vertexSet()) {
             boolean isHandler = v instanceof EventHandlerNode;
+            boolean isServiceClass = v instanceof Class && exportServiceSet.contains(v);
             boolean isEventClass = v instanceof Class;
             if (!isHandler) {
                 Method[] methodList = v.getClass().getMethods();
@@ -224,8 +226,12 @@ public class JgraphGraphMLExporter<V, E> {
                 attr.clear();
                 if (isHandler) {
                     attr.addAttribute("", "", "text", "CDATA", "<<EventHandle>>\n"
-                            + vertexLabel + ":\n"
-                            + v.getClass().getSimpleName()
+                            + "id:" + vertexLabel + "\n"
+                            + "class:" + v.getClass().getSimpleName()
+                    );
+                } else if (isServiceClass) {
+                    attr.addAttribute("", "", "text", "CDATA", "<<ExportService>>\n"
+                            + "class:" + ((Class<?>) v).getSimpleName() + "\n"
                     );
                 } else if (isEventClass) {
                     attr.addAttribute("", "", "text", "CDATA", "<<Event>>\n"
@@ -233,8 +239,8 @@ public class JgraphGraphMLExporter<V, E> {
                     );
                 } else {
                     attr.addAttribute("", "", "text", "CDATA", ""
-                            + vertexLabel + ":\n"
-                            + v.getClass().getSimpleName()
+                            + "id:" + vertexLabel + "\n"
+                            + "class:" + v.getClass().getSimpleName()
                     );
                 }
                 handler.startElement("", "", "jGraph:label", attr);
@@ -244,6 +250,8 @@ public class JgraphGraphMLExporter<V, E> {
                 attr.clear();
                 if (isHandler) {
                     attr.addAttribute("", "", "properties", "CDATA", "EVENTHANDLER");
+                } else if (isServiceClass) {
+                    attr.addAttribute("", "", "properties", "CDATA", "EXPORTSERVICE");
                 } else if (isEventClass) {
                     attr.addAttribute("", "", "properties", "CDATA", "EVENT");
                 } else {

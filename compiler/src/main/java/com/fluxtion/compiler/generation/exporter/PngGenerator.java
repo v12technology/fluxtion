@@ -77,6 +77,7 @@ public class PngGenerator {
         style.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
         style.put(mxConstants.STYLE_AUTOSIZE, 1);
         stylesheet.putCellStyle("EVENT", style);
+        stylesheet.putCellStyle("EXPORTSERVICE", style);
 
         style = new Hashtable<>();
         style.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE);

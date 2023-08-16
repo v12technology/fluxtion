@@ -681,7 +681,9 @@ public class SimpleEventProcessorModel {
                             signature.append(sj);
                             signature.append(")");
                             eventCbList.add(new EventCallList(object, method, signature.toString()));
-                            node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
+                            if (method.getAnnotation(NoPropagateFunction.class) == null) {
+                                node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
+                            }
                         } catch (NoSuchMethodException e) {
 
                         }
