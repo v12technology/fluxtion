@@ -149,6 +149,21 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     ${MODEL.eventHandlers}
 
+    private void beforeServiceCall(String functionDescription){
+        functionAudit.setFunctionDescription(functionDescription);
+        auditEvent(functionAudit);
+        if (buffering) {
+            triggerCalculation();
+        }
+        processing = true;
+    }
+
+    private void afterServiceCall(){
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
     private void afterEvent() {
         ${MODEL.eventEndMethods}
         ${MODEL.resetDirtyFlags}
