@@ -756,12 +756,10 @@ public class JavaSourceGenerator {
         final String audit;
         List<Field> listenerFields = model.getNodeRegistrationListenerFields();
         if (listenerFields != null && !listenerFields.isEmpty()) {
-            audit = "//String typedEvent = \"No event information - export function\";\n" +
-                    "functionAudit.setFunctionDescription(\"&&FUNC&&\");\n" +
-                    "ExportFunctionAuditEvent typedEvent = functionAudit;\n" +
-                    "auditEvent(functionAudit);\n";
+            audit = "beforeServiceCall(\"&&FUNC&&\");\n" +
+                    "ExportFunctionAuditEvent typedEvent = functionAudit;\n";
         } else {
-            audit = "";
+            audit = "beforeServiceCall(\"&&FUNC&&\");\n";
         }
         if (eventDispatch != null) {
             eventHandlers += "\n//EXPORTED SERVICE FUNCTIONS - START\n";
@@ -773,16 +771,10 @@ public class JavaSourceGenerator {
                     exportAudit = f.getExportFunction().toGenericString();
                 }
                 StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n")
-                        .append(audit.replace("&&FUNC&&", exportAudit))
-                        .append("if(buffering){\n" +
-                                "    triggerCalculation();\n" +
-                                "}\n" +
-                                "processing = true;\n");
+                        .append(audit.replace("&&FUNC&&", exportAudit));
                 buildDispatchForCbMethodHandles(eventDispatch.get(f), sb);
                 buildPostDispatchForCbMethodHandles(postDispatch.get(f), sb);
-                sb.append("afterEvent();\n" +
-                        "callbackDispatcher.dispatchQueuedCallbacks();\n" +
-                        "processing = false;\n");
+                sb.append("afterServiceCall();\n");
                 sb.append(f.getStringValue().contains("void") ? "}\n" : "return true;}\n");
                 eventHandlers += sb.toString();
             });
@@ -1374,9 +1366,10 @@ public class JavaSourceGenerator {
     }
 
     public String getImports() {
-        Collections.sort(importList);
+        List<String> dedupeList = new ArrayList<>(new HashSet<>(importList));
+        Collections.sort(dedupeList);
         StringBuilder sb = new StringBuilder(2048);
-        importList.stream().forEach(s -> {
+        dedupeList.stream().forEach(s -> {
             sb.append("import ")
                     .append(s)
                     .append(";\n");
@@ -1479,6 +1472,7 @@ public class JavaSourceGenerator {
         if (!interfacesToImplement.isEmpty()) {
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassTypeName)
+                    .sorted()
                     .collect(Collectors.joining(", ", ", ", ""));
         }
     }
