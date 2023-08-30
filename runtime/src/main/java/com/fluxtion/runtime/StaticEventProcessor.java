@@ -367,7 +367,7 @@ public interface StaticEventProcessor extends NodeDiscovery {
     /**
      * Returns an instance of the event processor cast to an interface type. The implemented interfaces of an event processor
      * are specified using the com.fluxtion.compiler.EventProcessorConfig#addInterfaceImplementation during the
-     * building phase of the processor.
+     * building phase of the processor or using the @ExportService annotation.
      *
      * @param <T> the interface type to cast to
      * @return The {@link StaticEventProcessor} cast to an interface
@@ -377,15 +377,53 @@ public interface StaticEventProcessor extends NodeDiscovery {
         return (T) this;
     }
 
+    /**
+     * Determines if the event processor exports the service interface. The implemented interfaces of an event processor
+     * are specified using the com.fluxtion.compiler.EventProcessorConfig#addInterfaceImplementation during the
+     * building phase of the processor or using the @ExportService annotation.
+     *
+     * @param exportedServiceClass the type of service to search for
+     * @param <T>                  the interface type to cast to
+     * @return flag indicating the event processor exports the interface
+     */
     default <T> boolean exportsService(Class<T> exportedServiceClass) {
         T svcExport = getExportedService();
         return exportedServiceClass.isInstance(svcExport);
     }
 
+    /**
+     * Returns an instance of the event processor cast to an interface type. The implemented interfaces of an event processor
+     * are specified using the com.fluxtion.compiler.EventProcessorConfig#addInterfaceImplementation during the
+     * building phase of the processor or using the @ExportService annotation.
+     *
+     * @param exportedServiceClass the type of service to search for
+     * @param <T>                  the interface type to cast to
+     * @return The {@link StaticEventProcessor} cast to an interface
+     */
     default <T> T getExportedService(Class<T> exportedServiceClass) {
         return exportsService(exportedServiceClass) ? getExportedService() : null;
     }
 
+    /**
+     * Returns an instance of the event processor cast to an interface type, returning a default value if one cannot
+     * be found
+     *
+     * @param exportedServiceClass the type of service to search for
+     * @param defaultValue         default service instance to return if no service is exported
+     * @param <T>                  the interface type to cast to
+     * @return The {@link StaticEventProcessor} cast to an interface
+     */
+    default <T> T getExportedService(Class<T> exportedServiceClass, T defaultValue) {
+        return exportsService(exportedServiceClass) ? getExportedService() : defaultValue;
+    }
+
+    /**
+     * Passes the event processor cast to an interface for a consumer to process if the event processor exports service
+     *
+     * @param exportedServiceClass the type of service to search for
+     * @param serviceConsumer      service consumer callback, invoked if the service is exported
+     * @param <T>                  the interface type to cast to
+     */
     default <T> void consumeServiceIfExported(Class<T> exportedServiceClass, Consumer<T> serviceConsumer) {
         T exportedService = getExportedService(exportedServiceClass);
         if (exportedService != null) {

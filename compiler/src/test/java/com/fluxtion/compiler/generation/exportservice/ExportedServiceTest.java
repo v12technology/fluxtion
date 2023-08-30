@@ -52,6 +52,15 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void serviceDefaultGetExportedByClass() {
+        sep(new MyExportingServiceNode());
+        init();
+        Assert.assertNotNull(sep.getExportedService(MyMissingService.class, new MyMissingService() {
+        }));
+        Assert.assertNotNull(sep.getExportedService(MyService.class));
+    }
+
+    @Test
     public void consumeExportedByClass() {
         LongAdder counter = new LongAdder();
         sep(new MyExportingServiceNode());
