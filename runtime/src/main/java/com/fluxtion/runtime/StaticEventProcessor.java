@@ -377,12 +377,19 @@ public interface StaticEventProcessor extends NodeDiscovery {
         return (T) this;
     }
 
-    default <T> boolean exportsService(Class<T> svc) {
+    default <T> boolean exportsService(Class<T> exportedServiceClass) {
         T svcExport = getExportedService();
-        return svc.isInstance(svcExport);
+        return exportedServiceClass.isInstance(svcExport);
     }
 
-    default <T> T getExportedService(Class<T> svc) {
-        return exportsService(svc) ? getExportedService() : null;
+    default <T> T getExportedService(Class<T> exportedServiceClass) {
+        return exportsService(exportedServiceClass) ? getExportedService() : null;
+    }
+
+    default <T> void consumeServiceIfExported(Class<T> exportedServiceClass, Consumer<T> serviceConsumer) {
+        T exportedService = getExportedService(exportedServiceClass);
+        if (exportedService != null) {
+            serviceConsumer.accept(exportedService);
+        }
     }
 }
