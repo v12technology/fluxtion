@@ -14,6 +14,8 @@ import com.fluxtion.runtime.node.NamedNode;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.atomic.LongAdder;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -47,6 +49,26 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         init();
         Assert.assertNull(sep.getExportedService(MyMissingService.class));
         Assert.assertNotNull(sep.getExportedService(MyService.class));
+    }
+
+    @Test
+    public void serviceDefaultGetExportedByClass() {
+        sep(new MyExportingServiceNode());
+        init();
+        Assert.assertNotNull(sep.getExportedService(MyMissingService.class, new MyMissingService() {
+        }));
+        Assert.assertNotNull(sep.getExportedService(MyService.class));
+    }
+
+    @Test
+    public void consumeExportedByClass() {
+        LongAdder counter = new LongAdder();
+        sep(new MyExportingServiceNode());
+        init();
+        sep.consumeServiceIfExported(MyMissingService.class, svc -> counter.increment());
+        Assert.assertEquals(0, counter.intValue());
+        sep.consumeServiceIfExported(MyService.class, svc -> counter.increment());
+        Assert.assertEquals(1, counter.intValue());
     }
 
     @Test
