@@ -11,13 +11,13 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.time;
 
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
@@ -40,6 +40,7 @@ public class Clock implements Auditor, Auditor.FirstAfterEvent {
     private long eventTime;
     private long processTime;
     private ClockStrategy wallClock;
+    public static final Clock DEFAULT_CLOCK = new Clock();
 
     @Override
     public void eventReceived(Event event) {
@@ -61,7 +62,7 @@ public class Clock implements Auditor, Auditor.FirstAfterEvent {
     public void setClockStrategy(ClockStrategyEvent event) {
         this.wallClock = event.getStrategy();
     }
-    
+
     /**
      * The time the last event was received by the processor
      *
