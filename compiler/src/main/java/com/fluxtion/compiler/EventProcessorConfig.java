@@ -55,7 +55,7 @@ import java.util.function.Function;
 public class EventProcessorConfig {
 
     private final Set<Class<?>> interfaces = new HashSet<>();
-    private final Clock clock = ClockFactory.SINGLETON;
+    private final Clock clock = Clock.DEFAULT_CLOCK;
     private final Map<String, String> class2replace = new HashMap<>();
     private final Map<Object, Integer> filterMap = new HashMap<>();
     private final Map<Class<?>, Function<FieldContext, String>> classSerializerMap = new HashMap<>();
