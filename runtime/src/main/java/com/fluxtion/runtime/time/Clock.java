@@ -37,8 +37,8 @@ import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
  */
 public class Clock implements Auditor, Auditor.FirstAfterEvent {
 
-    private long eventTime;
-    private long processTime;
+    private transient long eventTime;
+    private transient long processTime;
     private ClockStrategy wallClock;
     public static final Clock DEFAULT_CLOCK = new Clock();
 
