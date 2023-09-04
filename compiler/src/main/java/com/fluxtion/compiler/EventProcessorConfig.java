@@ -73,6 +73,7 @@ public class EventProcessorConfig {
     private List<String> compilerOptions = new ArrayList<>();
 
     public EventProcessorConfig() {
+        clock();
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
         classSerializerMap.put(String.class, BasicTypeSerializer::stringToSource);
         classSerializerMap.put(Character.class, BasicTypeSerializer::charToSource);
