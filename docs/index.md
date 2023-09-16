@@ -1,6 +1,6 @@
 ---
 title: Overview
-has_children: true
+has_children: false
 nav_order: 1
 published: true
 ---
@@ -63,57 +63,3 @@ event handler and trigger methods are dispatch targets. When building a containe
 calculate the dispatch call trees for the internal dispatcher. A bean can export multiple service interfaces or just a
 single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
 to the container's dispatcher.
-
-## Event sourcing
-
-If an event sourcing architectural style is followed the application behaviour will be completely reflected in the
-test environment. Data driven clocks and audit logs tracing method call stacks are supported, when combined with event
-replay this gives the developer a powerful and easy to use toolset for supporting a deployed system.
-
-## Fluxtion dependencies
-
-<div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
-</div>
-<div id="Maven" class="tabcontent">
-<div markdown="1">
-{% highlight xml %}
-    <dependencies>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>runtime</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>compiler</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-    </dependencies>
-{% endhighlight %}
-</div>
-</div>
-<div id="Gradle" class="tabcontent">
-<div markdown="1">
-{% highlight groovy %}
-implementation 'com.fluxtion:runtime:{{site.fluxtion_version}}'
-implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
-{% endhighlight %}
-</div>
-</div>
-
-### Dependency description
-
-| Fluxtion dependency | Example use                             | Description                                           | 3rd party<br/> dependencies |
-|---------------------|-----------------------------------------|-------------------------------------------------------|-----------------------------|
-| Compiler            | Fluxtion#interpret<br/>Fluxtion#compile | Generates the EventProcessor <br/> from a description | Many                        |
-| Runtime             | EventProcessor#onEvent                  | Runtime dispatch of events and helper libraries       | None                        |
-
-It is possible to use one of the [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) compileAOT methods to generate an
-EventProcessor ahead of time. An aot generated event processor only requires the runtime library on the classpath. In 
-this case set the scope of the compiler dependency to provided in maven.
-
-<script>
-document.getElementById("defaultOpen").click();
-</script>
