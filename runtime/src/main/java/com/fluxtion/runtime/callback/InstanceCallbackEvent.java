@@ -24,7 +24,7 @@ public interface InstanceCallbackEvent {
     }
 
     static void reset() {
-        ExportFunctionTriggerEvent.reset();
+//        ExportFunctionTriggerEvent.reset();
 //        System.out.println("FunctionTriggerNode::reset");
         cbClassList.clear();
         cbClassList.add(InstanceCallbackEvent_0.class);

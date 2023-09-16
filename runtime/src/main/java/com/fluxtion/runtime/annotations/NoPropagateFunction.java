@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
  * Marks an exported function as non propagating.
  *
  * @author Greg Higgins
- * @see ExportFunction
  * @see ExportService
  */
 @Retention(RetentionPolicy.RUNTIME)

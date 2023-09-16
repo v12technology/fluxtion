@@ -2,9 +2,11 @@ package com.fluxtion.runtime.dataflow.groupby;
 
 import com.fluxtion.runtime.dataflow.Tuple;
 import com.fluxtion.runtime.util.ObjectPool;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
+@EqualsAndHashCode
 public class MutableTuple<F, S> implements Tuple<F, S> {
     private F first;
     private S second;

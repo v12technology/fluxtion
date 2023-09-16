@@ -1,27 +1,20 @@
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.callback.ExportFunctionTrigger;
-
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExportFunctionData {
 
-    private final String publicMethodName;
-    private final ExportFunctionTrigger exportFunctionTrigger = new ExportFunctionTrigger();
+    private final Method exportedmethod;
     private final List<CbMethodHandle> functionCallBackList = new ArrayList<>();
-    private boolean exportedInterface = false;
 
-    public ExportFunctionData(String publicMethodName) {
-        this.publicMethodName = publicMethodName;
+    public ExportFunctionData(Method exportedmethod) {
+        this.exportedmethod = exportedmethod;
     }
 
-    public String getPublicMethodName() {
-        return publicMethodName;
-    }
-
-    public ExportFunctionTrigger getExportFunctionTrigger() {
-        return exportFunctionTrigger;
+    public Method getExportedmethod() {
+        return exportedmethod;
     }
 
     public List<CbMethodHandle> getFunctionCallBackList() {
@@ -30,7 +23,6 @@ public class ExportFunctionData {
 
     public void addCbMethodHandle(CbMethodHandle cbMethodHandle) {
         functionCallBackList.add(cbMethodHandle);
-        exportFunctionTrigger.getFunctionPointerList().add(cbMethodHandle.getInstance());
     }
 
     public boolean isBooleanReturn() {
@@ -41,13 +33,5 @@ public class ExportFunctionData {
             }
         }
         return false;
-    }
-
-    public void setExportedInterface(boolean exportedInterface) {
-        this.exportedInterface = exportedInterface;
-    }
-
-    public boolean isExportedInterface() {
-        return exportedInterface;
     }
 }

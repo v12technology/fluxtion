@@ -1,7 +1,5 @@
 package com.fluxtion.compiler.generation.annotationprocessor;
 
-import com.fluxtion.runtime.annotations.ExportFunction;
-import com.fluxtion.runtime.callback.ExportFunctionNode;
 import com.google.auto.service.AutoService;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -33,22 +31,9 @@ public class ValidateExportFunctionAnnotations extends AbstractProcessor {
                             }
                     )
                     .collect(Collectors.toSet());
-
-            TypeElement exportNodeType = processingEnv.getElementUtils().getTypeElement(ExportFunctionNode.class.getCanonicalName());
-            Set<Element> failingSubClass = annotatedElements.stream()
-                    .map(Element::getEnclosingElement)
-                    .filter(element -> {
-                        return !processingEnv.getTypeUtils().isSubtype(element.asType(), exportNodeType.asType());
-                    })
-                    .collect(Collectors.toSet());
-
             typeElements.forEach(element ->
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                             "exported method should be public method and a boolean return type ", element));
-
-            failingSubClass.forEach(element ->
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-                            "class with exported method must extend " + ExportFunctionNode.class.getCanonicalName(), element));
 
         }
         return false;
@@ -62,7 +47,6 @@ public class ValidateExportFunctionAnnotations extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> supportedAnnotations = new HashSet<>();
-        supportedAnnotations.add(ExportFunction.class.getCanonicalName());
         return supportedAnnotations;
     }
 }

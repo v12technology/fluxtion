@@ -6,21 +6,7 @@ import com.fluxtion.runtime.event.Event;
 import com.fluxtion.test.event.TestEventNoId;
 import com.fluxtion.test.event.TestEventNoIdFilteredHandler;
 import com.fluxtion.test.event.TestEventNoIdHandler;
-import com.fluxtion.test.tracking.Extends_Handler_TraceEvent_InFilter_0;
-import com.fluxtion.test.tracking.HandlerNoFilter_TraceEvent_InFilter_0;
-import com.fluxtion.test.tracking.Handler_TraceEvent_0;
-import com.fluxtion.test.tracking.Handler_TraceEvent_InFilter_0;
-import com.fluxtion.test.tracking.Handler_UnMatchedFilter_TraceEvent_InFilter_0;
-import com.fluxtion.test.tracking.Node_DirtyFilter_TraceEvent;
-import com.fluxtion.test.tracking.Node_TraceEventHolder_Aggregator;
-import com.fluxtion.test.tracking.Node_TraceEvent_0;
-import com.fluxtion.test.tracking.Node_TraceEvent_Aggregator;
-import com.fluxtion.test.tracking.Node_TraceEvent_IntFilter_0;
-import com.fluxtion.test.tracking.TraceEvent;
-import com.fluxtion.test.tracking.TraceEventHolder;
-import com.fluxtion.test.tracking.TraceEventHolderChild;
-import com.fluxtion.test.tracking.TraceEvent_0;
-import com.fluxtion.test.tracking.TraceEvent_InFilter_0;
+import com.fluxtion.test.tracking.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -392,6 +378,4 @@ public class EventDispatchTraceTest extends CompiledAndInterpretedSepTest {
         JavaTestGeneratorHelper.testTraceIdOrder(te_2.getTraceAfterEventIdList(), "B3", "B1");
         JavaTestGeneratorHelper.testTraceIdOrder(te_2.getTraceEventCompleteIdList(), "B2");
     }
-
-
 }

@@ -29,6 +29,8 @@ import java.util.Objects;
  */
 public class CbMethodHandle {
 
+    public enum CallBackType {TRIGGER, EVENT_HANDLER, EXPORT_FUNCTION;}
+
     /**
      * The callback method.
      */
@@ -51,6 +53,10 @@ public class CbMethodHandle {
      * indicates is an {@link OnEventHandler} method
      */
     public final boolean isEventHandler;
+    /**
+     * Is a multi arg event handler
+     */
+    private final boolean exportedHandler;
 
     public final boolean isPostEventHandler;
 
@@ -64,10 +70,10 @@ public class CbMethodHandle {
     private final boolean isNoPropagateFunction;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
-        this(method, instance, variableName, null, false);
+        this(method, instance, variableName, null, false, false);
     }
 
-    public CbMethodHandle(Method method, Object instance, String variableName, Class<?> parameterClass, boolean isEventHandler) {
+    public CbMethodHandle(Method method, Object instance, String variableName, Class<?> parameterClass, boolean isEventHandler, boolean exportedHandler) {
         this.method = method;
         this.instance = instance;
         this.variableName = variableName;
@@ -78,6 +84,7 @@ public class CbMethodHandle {
         OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
         OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
         NoPropagateFunction noPropagateFunction = method.getAnnotation(NoPropagateFunction.class);
+        this.exportedHandler = exportedHandler;
         this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
         boolean parallel = (instance instanceof ParallelFunction) ? ((ParallelFunction) instance).parallelCandidate() : false;
         this.forkExecution = parallel || onTriggerAnnotation != null && onTriggerAnnotation.parallelExecution();
@@ -131,6 +138,10 @@ public class CbMethodHandle {
         return isNoPropagateFunction;
     }
 
+    public boolean isExportedHandler() {
+        return exportedHandler;
+    }
+
     public String getMethodTarget() {
         if (Modifier.isStatic(getMethod().getModifiers())) {
             return instance.getClass().getSimpleName();
@@ -154,6 +165,7 @@ public class CbMethodHandle {
                 ", variableName='" + variableName + '\'' +
                 ", parameterClass=" + parameterClass +
                 ", isEventHandler=" + isEventHandler +
+                ", isExportHandler=" + exportedHandler +
                 ", isPostEventHandler=" + isPostEventHandler +
                 ", isInvertedDirtyHandler=" + isInvertedDirtyHandler +
                 ", isGuardedParent=" + isGuardedParent +

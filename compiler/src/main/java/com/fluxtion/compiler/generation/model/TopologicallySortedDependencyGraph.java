@@ -76,11 +76,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private final Set<DefaultEdge> pushEdges = new HashSet<>();
     private final List<Object> topologicalHandlers = new ArrayList<>();
     private final List<Object> noPushTopologicalHandlers = new ArrayList<>();
-    /**
-     * Map of all the public functions that are exported with {@link ExportFunction}
-     * annotation
-     */
-    private final Map<String, ExportFunctionData> exportedFunctionMap;
+    private final Map<Method, ExportFunctionData> exportedFunctionMap;
     private final NodeFactoryRegistration nodeFactoryRegistration;
     private final HashMap<Class<?>, CbMethodHandle> class2FactoryMethod;
     private final HashMap<String, CbMethodHandle> name2FactoryMethod;
@@ -226,7 +222,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return Collections.unmodifiableList(noPushTopologicalHandlers);
     }
 
-    public Map<String, ExportFunctionData> getExportedFunctionMap() {
+    public Map<Method, ExportFunctionData> getExportedFunctionMap() {
         return Collections.unmodifiableMap(exportedFunctionMap);
     }
 
@@ -728,20 +724,6 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     private void addExportedMethods(Object object) {
         final Class<?> clazz = object.getClass();
-        Set<Method> exportMethodSet = ReflectionUtils.getAllMethods(clazz, ReflectionUtils.withAnnotation(ExportFunction.class));
-        exportMethodSet.forEach(method -> {
-            String overrideExportMethodName = method.getAnnotation(ExportFunction.class).value();
-            String exportMethodName = overrideExportMethodName.trim().isEmpty() ? method.getName() : overrideExportMethodName;
-            ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                    exportMethodName, n -> {
-                        ExportFunctionData data = new ExportFunctionData(exportMethodName);
-                        registerNode(data.getExportFunctionTrigger(), null);
-                        return data;
-                    });
-            final String name = inst2Name.get(object);
-            exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
-            exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
-        });
         //now find the methods for an interface
         for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
             if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
@@ -749,21 +731,18 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 config.addInterfaceImplementation(interfaceType);
                 for (Method method : interfaceType.getMethods()) {
                     String exportMethodName = method.getName();
+                    Method cbMethod = method;
                     try {
-                        method = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                        cbMethod = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
                     } catch (NoSuchMethodException e) {
 
                     }
+                    //TODO key on method
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                            exportMethodName, n -> {
-                                ExportFunctionData data = new ExportFunctionData(exportMethodName);
-                                registerNode(data.getExportFunctionTrigger(), null);
-                                return data;
-                            });
+                            method, n -> new ExportFunctionData(method));
+                    registerNode(object, null);
                     final String name = inst2Name.get(object);
-                    exportFunctionData.getExportFunctionTrigger().getFunctionPointerList().add(object);
-                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(method, object, name));
-                    exportFunctionData.setExportedInterface(true);
+                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(cbMethod, object, name));
                 }
             }
         }
@@ -783,7 +762,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
-                    | refField.getClass().getAnnotation(SepNode.class) != null;
+                    | refField.getClass().getAnnotation(SepNode.class) != null
+                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+            ;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
             LOGGER.debug("cannot find node in supplied list, but has SepNode annotation adding to managed node list");
@@ -806,7 +787,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
-                    | refField.getClass().getAnnotation(SepNode.class) != null;
+                    | refField.getClass().getAnnotation(SepNode.class) != null
+                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+            ;
             if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
             }
@@ -825,7 +808,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 .or(ReflectionUtils.withAnnotation(TearDown.class))
                 .or(ReflectionUtils.withAnnotation(Initialise.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
-                .or(ReflectionUtils.withAnnotation(ExportFunction.class))
+                .or(ReflectionUtils.withAnnotation(ExportService.class))
                 ;
     }
 
@@ -833,12 +816,14 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         return ReflectionUtils.withAnnotation(OnEventHandler.class)
                 .or(ReflectionUtils.withAnnotation(OnTrigger.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
+                .or(ReflectionUtils.withAnnotation(ExportService.class))
                 ;
     }
 
     private boolean handlesEvents(Object obj) {
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
-                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty();
+                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty()
+                || Arrays.stream(obj.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class));
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -1073,6 +1058,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         JgraphGraphMLExporter<Object, Object> mlExporter = new JgraphGraphMLExporter<>(np, np,
                 new IntegerEdgeNameProvider<>(), new IntegerEdgeNameProvider<>());
         @SuppressWarnings("unchecked") SimpleDirectedGraph<Object, Object> exportGraph = (SimpleDirectedGraph<Object, Object>) graph.clone();
+        Set<Class<?>> exportServiceSet = new HashSet<>();
         if (addEvents) {
             graph.vertexSet().forEach((t) -> {
                 Method[] methodList = t.getClass().getMethods();
@@ -1091,6 +1077,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventClass, t);
                     }
                 }
+                for (AnnotatedType annotatedInterface : t.getClass().getAnnotatedInterfaces()) {
+                    if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
+                        Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                        exportServiceSet.add(interfaceType);
+                        exportGraph.addVertex(interfaceType);
+                        exportGraph.addEdge(interfaceType, t);
+                    }
+                }
+//                t.getClass().getInterfaces()
             });
 
 //            pushEdges.stream()
@@ -1103,7 +1098,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 //                    });
 
         }
-        mlExporter.export(writer, exportGraph);//new EdgeReversedGraph(graph));
+        mlExporter.export(writer, exportGraph, exportServiceSet);//new EdgeReversedGraph(graph));
     }
 
     private String nameNode(Object node) {

@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.generation.exportfunction;
+package com.fluxtion.compiler.generation.exportservice;
 
 import com.fluxtion.runtime.partition.LambdaReflection;
 import org.junit.Test;
