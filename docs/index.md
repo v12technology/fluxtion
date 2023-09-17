@@ -7,15 +7,16 @@ published: true
 
 # Introduction
 
-Fluxtion is a java utility that builds embeddable dependency injection containers for use as a low latency event
-processor within streaming applications. Developers concentrate on developing and extending business logic, dependency 
-injection and event dispatch is handled by the container.
+Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
+and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
+container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
 
 {: .info }
-Fluxtion = Dependency injection + Event dispatch
-{: .fs-8 }
+Fluxtion combines dependency injection and event dispatch
+{: .fs-4 }
 
-The Fluxtion container combines construction, instance lifecycle and event dispatch, supporting:
+Developers concentrate on developing and extending business logic, dependency injection and realtime event dispatch is
+handled by the container. The container supports:
 
 <div class="grid">
 <div class="col-1-2">
@@ -38,20 +39,54 @@ The Fluxtion container combines construction, instance lifecycle and event dispa
 </div>
 </div>
 
+# The cost of complexity problem
+
+Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
+complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
+profitable in a competitive environment.
+
+Event driven systems have two types of complexity to manage:
+
+- Delivering events to application components in a fault-tolerant predictable fashion.
+- Developing application logic responses to events that meets business requirements
+
+Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
+the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
+cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
+over time and developing application logic becomes ever more complex and expensive to deliver.
+
+{: .info }
+Fluxtion minimises the cost of developing event driven business logic
+{: .fs-4 }
+
+# Combining dependency injection and event processing
+
+The introduction of dependency injection gave developers a consistent approach to linking application components. 
+Fluxtion extends dependency injection to support container managed event driven beans. Extending a familiar development
+pattern has the following benefits:
+- Shallow learning curve for developers to use Fluxtion effectively
+- Consistent programming model for event driven logic increases developer productivity
+- Re-use of industrial quality and predictable event dispatch model
+
+{: .info }
+Familiar programming model simplifies Fluxtion integration
+{: .fs-4 }
 
 ## Dependency injection container
-Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions 
-supported by the container include: creating instances, injecting references between beans, setting properties, calling 
-lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection. 
+
+Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions
+supported by the container include: creating instances, injecting references between beans, setting properties, calling
+lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection.
 Configuration data can be programmatic, spring xml config, yaml or custom data format.
 
 There are three options for building a container:
+
 - Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
 - Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
 - Compiled AOT - code generated at build time, zero cost start time when deployed
 
-Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be 
-used within a single application each container providing specialised processing. 
+Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be
+used within a single application each container providing specialised business processing logic.
 
 ## Automatic event dispatch
 
