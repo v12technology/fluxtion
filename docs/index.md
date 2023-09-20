@@ -12,7 +12,7 @@ and quicker. The Fluxtion dependency injection container exposes user beans as e
 container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
 
 {: .info }
-Fluxtion combines dependency injection and event dispatch
+Fluxtion minimises the cost of developing and maintaining event driven business logic
 {: .fs-4 }
 
 Developers concentrate on developing and extending business logic, dependency injection and realtime event dispatch is
@@ -56,7 +56,7 @@ cost of event distribution. The opposite is true for event driven application lo
 over time and developing application logic becomes ever more complex and expensive to deliver.
 
 {: .info }
-Fluxtion minimises the cost of developing event driven business logic
+Fluxtion combines dependency injection and event dispatch increasing developer productivity
 {: .fs-4 }
 
 # Combining dependency injection and event processing
@@ -69,7 +69,7 @@ pattern has the following benefits:
 - Re-use of industrial quality and predictable event dispatch model
 
 {: .info }
-Familiar programming model simplifies Fluxtion integration
+Fluxtion's familiar dependency injection programming model simplifies integration
 {: .fs-4 }
 
 ## Dependency injection container
