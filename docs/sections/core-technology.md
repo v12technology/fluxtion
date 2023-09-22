@@ -1,5 +1,5 @@
 ---
-title: Technical deep dive
+title: Core technology
 has_children: true
 nav_order: 3
 published: true

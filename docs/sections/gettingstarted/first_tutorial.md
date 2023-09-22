@@ -33,9 +33,10 @@ publishes the lucky number to a queue.
 
 # Designing the components
 
-Our application will be service driven and present api interfaces for the outside world to code against. We must first 
+Our application will be event driven through a service interface api for the outside world to code against. We must first 
 think about the design of our services and then the concrete implementations. Once this design is complete we will use
-Fluxtion to wire up the components. Fluxtion is low touch allowing engineers and architects to concentrate on components.
+Fluxtion to wire up the components. Fluxtion is low touch allowing engineers and architects to concentrate on design and 
+components with no distraction.
 
 ## Service api
 
@@ -224,7 +225,128 @@ public static void start(Consumer<String> ticketReceiptHandler, Consumer<String>
 }
 {% endhighlight %}
 
+
 ## Event dispatch
+
+When a ticket has been successfully purchased the LotteryMachineNode instance method processNewTicketSale is invoked by 
+Fluxtion. The processNewTicketSale method grabs the last ticket sale from the Supplier<Ticket> reference and adds it to 
+the cache. Fluxtion knows to trigger a method if it is annotated with @OnTrigger and one of its dependencies has been
+triggered from an incoming client service call.
+
+
+{% highlight java %}
+@Slf4j
+@RequiredArgsConstructor
+public class LotteryMachineNode implements LotteryMachine {
+  //code removed for clarity
+
+  @OnTrigger
+  public boolean processNewTicketSale() {
+    ticketsBought.add(ticketSupplier.get());
+    log.info("tickets sold:{}", ticketsBought.size());
+    return false;
+  }
+}
+{% endhighlight %}
+
+How does Fluxtion know to invoke this method at the correct time? The container knows the dependency relationship between
+TicketStoreNode and LotteryMachineNode, so when an exported service method is invoked on TicketStoreNode Fluxtion calls
+the processNewTicketSale trigger method on LotteryMachineNode. This is great as it removes the need for the programmer 
+to manually call the event dispatch call graph. 
+
+The next problem is we only want the processNewTicketSale method called when a ticket is successfully purchased. If we
+try to add a ticket when the openStore is called a null pointer exception will be thrown at runtime. How can the 
+developer control the propagation of calling dependent trigger methods? 
+
+Fluxtion has two ways of managing propagation from an exported service method
+
+- boolean return type, false indicates no event propagation, true propagates the notification
+- annotate the method with **@NoPropagateFunction** annotation
+
+Both are used in LotteryMachineNode
+
+{% highlight java %}
+public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketStore {
+  //code removed for clarity
+  
+  @Override
+  @NoPropagateFunction
+  public void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher) {}
+  
+  public void start() {}
+  
+  //triggers event propagation
+  public boolean buyTicket(Ticket ticket) {
+    if (ticket.number() < 9_99_99 | ticket.number() > 99_99_99) {
+        ticketSalesPublisher.accept("invalid numbers " + ticket);
+        this.ticket = null;
+    } else if (storeOpen) {
+        ticketSalesPublisher.accept("good luck with " + ticket);
+        this.ticket = ticket;
+    } else {
+        ticketSalesPublisher.accept("store shut - no tickets can be bought");
+        this.ticket = null;
+    }
+    return this.ticket != null;
+  }
+  
+  public Ticket get() {}
+  
+  @NoPropagateFunction
+  public void openStore() {}
+  
+  @NoPropagateFunction
+  public void closeStore() {}
+}
+{% endhighlight %}
+
+The TicketStoreNode#buyTicket is the only method that will trigger an event notification to LotteryMachineNode and 
+only if the ticket passes basic validation and the store is open. 
+
+## Lifecycle methods
+Applications often benefit from lifecycle methods such as init, start and stop, allowing checks to be carried out before
+executing the application. Fluxtion supports init, start and stop by annotating a method with an annotation **@Start @Stop**
+or **@Initialise**. We use
+the start method in our application to check output receivers ticketSalesPublisher and resultPublisher have been set 
+by the client code.
+
+
+{% highlight java %}
+//code removed for clarity
+public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketStore {
+
+  @Start
+  public void start() {
+      Objects.requireNonNull(ticketSalesPublisher, "must have a ticketSalesPublisher set");
+      storeOpen = false;
+  }
+}
+
+public class LotteryMachineNode implements @ExportService LotteryMachine {
+
+  @Start
+  public void start(){
+    Objects.requireNonNull(resultPublisher, "must set a results publisher before starting the lottery game");
+    log.info("started");
+  }
+}
+{% endhighlight %}
+
+Client code invokes the lifecycle method on the container and Fluxtion will ensure all the lifecycle methods registered
+by components will be called in the right order.
+
+{% highlight java %}
+public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
+  EventProcessor lotteryEventProcessor = FluxtionSpring.interpret(
+      new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
+  lotteryEventProcessor.init();
+  LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
+  TicketStore ticketStore = lotteryEventProcessor.getExportedService();
+  lotteryMachine.setResultPublisher(resultsPublisher);
+  ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
+  lotteryEventProcessor.start();
+}
+{% endhighlight %}
 
 ## Wiring the components together
 

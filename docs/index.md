@@ -106,3 +106,39 @@ to the container's dispatcher.
 | Runtime   | [![Fluxtion runtime](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)    |
 | Compiler  | [![Fluxtion compiler](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler) |
 
+## Build dependencies
+
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
+</div>
+<div id="Maven" class="tabcontent">
+<div markdown="1">
+{% highlight xml %}
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>runtime</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+    </dependencies>
+{% endhighlight %}
+</div>
+</div>
+<div id="Gradle" class="tabcontent">
+<div markdown="1">
+{% highlight groovy %}
+implementation 'com.fluxtion:runtime:{{site.fluxtion_version}}'
+implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
+{% endhighlight %}
+</div>
+</div>
+
+<script>
+document.getElementById("defaultOpen").click();
+</script>
