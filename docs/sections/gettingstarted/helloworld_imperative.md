@@ -1,8 +1,9 @@
 ---
 title: Hello fluxtion world
+parent: Getting started
 has_children: false
 nav_order: 2
-published: true
+published: false
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
 ---
 
@@ -32,7 +33,7 @@ All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}
 
 Graphical representation of the processing graph that Fluxtion will generate.
 
-![](../images/helloworld/helloworld_imperative.png)
+![](../../images/helloworld/helloworld_imperative.png)
 
 ## Dependencies
 
