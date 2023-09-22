@@ -5,7 +5,7 @@ nav_order: 1
 published: true
 ---
 
-# Introduction
+# Introduction 
 
 Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
 and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
@@ -98,3 +98,11 @@ event handler and trigger methods are dispatch targets. When building a containe
 calculate the dispatch call trees for the internal dispatcher. A bean can export multiple service interfaces or just a
 single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
 to the container's dispatcher.
+
+# Latest release
+
+| component | maven central                                                                                                                                                                    |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Runtime   | [![Fluxtion runtime](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)    |
+| Compiler  | [![Fluxtion compiler](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler) |
+

@@ -1,5 +1,5 @@
 ---
-title: First app tutorial
+title: First tutorial
 parent: Getting started
 has_children: false
 nav_order: 1
@@ -17,7 +17,7 @@ Serialising requests to a queue makes our application event driven and easier to
 stores the output from the application. This example is focused on building event driven processing by wiring together
 software components using Fluxtion and not the connection to real queues.
 
-At the end of this tutorial you should understand how Fuxtion:
+At the end of this tutorial you should understand how Fluxtion:
 
 - Exposes service interfaces for managed components
 - Calls lifecycle methods on managed components
@@ -33,9 +33,9 @@ publishes the lucky number to a queue.
 
 # Designing the components
 
-Our application will be service driven and present api interfaces for the outside world to code against. Fluxtion will
-wire up the components later, but we must first think about the design of our services and then the concrete 
-implementations. 
+Our application will be service driven and present api interfaces for the outside world to code against. We must first 
+think about the design of our services and then the concrete implementations. Once this design is complete we will use
+Fluxtion to wire up the components. Fluxtion is low touch allowing engineers and architects to concentrate on components.
 
 ## Service api
 
@@ -57,13 +57,13 @@ public interface TicketStore {
   void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher);
 }
 
-public interface LotteryGame {
+public interface LotteryMachine {
   void selectWinningTicket();
   void setResultPublisher(Consumer<String> resultPublisher);
 }
 {% endhighlight %}
 
-Our interfaces are simple and separate concerns logically, making the api simple to work with. The methods
+Our interfaces separate concerns logically making the api simple to work with. The methods
 setTicketSalesPublisher and setResultPublisher connect the results of processing to output queues or a unit test. One
 of our goals is to make the logic easy to test with the minimum of infrastructure.
 
@@ -133,7 +133,7 @@ public class TicketStoreNode implements Supplier<Ticket>, TicketStore {
 
 ### LotteryGameNode
 
-The LotteryGameNode implements LotteryGame and supports logic to run the lottery. LotteryGameNode holds a reference to 
+The LotteryMachineNode implements LotteryMachine and supports logic to run the lottery. LotteryMachineNode holds a reference to 
 an instance of Supplier<Ticket> and whenever processNewTicketSale is called, acquires a purchased ticket and adds it 
 to the internal cache. A lifecycle method start is created that checks the resultPublisher has been set before 
 progressing any further. 
@@ -141,7 +141,7 @@ progressing any further.
 {% highlight java %}
 @Slf4j
 @RequiredArgsConstructor
-public class LotteryGameNode implements LotteryGame {
+public class LotteryMachineNode implements LotteryMachine {
 
     private final Supplier<Ticket> ticketSupplier;
     private final transient List<Ticket> ticketsBought = new ArrayList<>();
@@ -179,17 +179,50 @@ public class LotteryGameNode implements LotteryGame {
 The lifecycle methods and how clients access the TicketStore interface are described later on.
 
 # Building the application
-Now we have our service interfaces designed and implemented we need to connect them together and make sure they provide
-the functionality required. There are several problems to solve to deliver functionality:
+Now we have our service interfaces designed and implemented we need to connect components together and make sure they provide
+the functionality required in the expected manner. There are several problems to solve to deliver functionality:
 
 - How do clients access the components via service interfaces
 - How are the lifecycle methods called
-- How is LotteryGameNode processNewTicketSale called at the right time
+- How is LotteryGameNode#processNewTicketSale called only when a ticket is successfully purchased
 - How are the components wired together
 
-This is the goal of Fluxtion to solve these four problems for any event driven application. 
+Fluxtion solves these four problems for any event driven application. 
 
 ## Exporting services
+We want clients to access components via service interface, this is simple to achieve by adding an **ExportService** 
+annotation to the interface definitions on the concrete classes, as shown below.
+
+{% highlight java %}
+import com.fluxtion.runtime.annotations.ExportService;
+public class LotteryMachineNode implements @ExportService LotteryMachine {
+  //removed for clarity
+}
+
+import com.fluxtion.runtime.annotations.ExportService;
+public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketStore {
+  //removed for clarity
+}
+{% endhighlight %}
+
+Fluxtion will only export annotated interfaces at the container level, in this case Fluxtion will not export the 
+Supplier interface that TicketStoreNode implements.
+
+## Accessing exported services
+Once the service interface has been marked for export client code can locate it through the EventProcessor instance that
+holds the application components by calling EventProcessor#getExportedService. Client code invokes methods on the 
+interface and Fluxtion container will take care of all method routing.
+
+{% highlight java %}
+public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
+  EventProcessor lotteryEventProcessor = FluxtionSpring.interpret(
+      new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
+  LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
+  TicketStore ticketStore = lotteryEventProcessor.getExportedService(); 
+  lotteryMachine.setResultPublisher(resultsPublisher);
+  ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
+}
+{% endhighlight %}
 
 ## Event dispatch
 
