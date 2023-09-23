@@ -42,7 +42,7 @@ handled by the container. The container supports:
 </div>
 
 # Top level components
-There are two major components provided by Fluxtion the developer uses build event driven logic.
+There are two major components provided by Fluxtion the developer uses to build event driven logic.
 
 ## Compiler
 The compiler analyses the configuration information provided by the programmer and builds a dependency injection container
