@@ -9,66 +9,123 @@
 
 ## [User documentation](https://v12technology.github.io/fluxtion/)
 
-# Lightweight event stream processor
-- Pure java in memory complex event processing
-- Ultra fast [sub-microsecond response times](http://fluxtion.com/solutions/high-performance-flight-analysis/)
-- Ahead of time compiler for fast startup and easy embedding
 
-# Introduction
-Thanks for dropping by, hope we can persuade you to donate your time to investigate Fluxtion further.
 
-Fluxtion is a fully featured java based event stream processor that brings real-time data processing
-inside your application. If you need to build applications that react to complex events and make
-fast decisions then Fluxtion is for you. We build stream processing logic free from any messaging
-layer.
+# Fluxtion is event driven Java
 
-Whether you need to process tens of millions of events per
-second or write complex rule driven applications that make decisions in microseconds Fluxtion can help.
-Built to embed within an applications, invoking user functions as well as publishing data results.
+---
 
-Uniquely among stream processors Fluxtion employs ahead of time compilation to create a stream processing engine.
-Describe your processing and Fluxtion tailors a solution to your needs at build time.
-Ahead of time compilation offers several critical advantages over existing products,
-- Faster startup times for your application, perfect for serverless architectures
-- No vendor lock-in, the engine can be used within any java application
-- Compiler optimized code gives higher performance and lower running costs
-- Generated source code simplifies debugging and maintenance
+Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
+and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
+container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
 
-# Uses
-- Real-time analytics and processing
-- ETL
-- Rules engines
-- Low response time requirements
-- IoT processing
+**Fluxtion minimises the cost of developing and maintaining event driven business logic**
 
-## Fluxtion application integration
-![](docs/images/integration-overview.png)
+Developers concentrate on developing and extending business logic, dependency injection and realtime event dispatch is
+handled by the container. The container supports:
 
-A Fluxtion event processor embeds within a user application, processing events,
-publishing events to sinks or interacting with user classes. Events are feed from
-the application directly into the processor or into a pipeline. A pipeline provides
-additional capabilities such as threading, scheduling, auditing, access control
+<div class="grid">
+<div class="col-1-2">
+<div class="content">
+<ul>
+  <li><strong>Streaming event processing</strong></li>
+  <li><strong>AOT compilation for fast start</strong></li>
+  <li><strong>Spring integration</strong></li>
+</ul>
+</div>
+</div>
+<div class="col-1-2">
+<div class="content">
+<ul>
+  <li><strong>Low latency microsecond response</strong></li>
+  <li><strong>Event sourcing compatible</strong></li>
+  <li><strong>Functional and imperative construction</strong></li>
+</ul>
+</div>
+</div>
+</div>
 
-## Philosophy
+# Fluxtion components
+There are two major components provided by Fluxtion the developer uses to develop with.
+
+## Compiler
+The compiler analyses the configuration information provided by the programmer and builds a dependency injection container
+that houses all the user components or beans combined with pre-calculated event dispatch. Outputs from the compiler 
+are either 
+- In memory di container running in an interpreted mode
+- A container generated ahead of time and serialised to code 
+
+## Runtime
+The runtime provides the dependency injection container with a core set of libraries required at runtime. An AOT generated
+container only requires the runtime to function. The compiler is only required
+
+# Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a
-clean modern api similar to the familiar Java streams api. The Fluxtion compiler carries the
+clean modern api that requires very little integration effort. The Fluxtion compiler carries the
 burden of generating simple efficient code that is optimised for your specific application.
 We pay the cost at compile time only once, so every execution of your stream processor sees
 benefits in reduced startup time and smaller running costs.
 
-Why concentrate solely on the processing logic? There are many great messaging systems
-out there offering scale out to hundreds of millions of events per second. But many reactive
-applications do not need that scale, the problem is integrating the event streams from
-different messaging systems into a single decision making engine. In cases like these
-you want to concentrate on writing the logic.
+# The cost of complexity problem
 
-## Example
-We have a five minute tutorial to dive into [here](https://github.com/v12technology/fluxtion-quickstart/tree/master).
+Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
+complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
+profitable in a competitive environment.
 
-The sample below demonstrates the fluent functional api Fluxtion provides to describe data processing logic. The api
-should be familiar to anyone who has coded with java 8 streams.
+Event driven systems have two types of complexity to manage:
 
-### Code sample
+- Delivering events to application components in a fault-tolerant predictable fashion.
+- Developing application logic responses to events that meets business requirements
+
+Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
+the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
+cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
+over time and developing application logic becomes ever more complex and expensive to deliver.
+
+**Fluxtion combines dependency injection and event dispatch increasing developer productivity**
+
+# Combining dependency injection and event processing
+
+The introduction of dependency injection gave developers a consistent approach to linking application components.
+Fluxtion extends dependency injection to support container managed event driven beans. Extending a familiar development
+pattern has the following benefits:
+- Shallow learning curve for developers to use Fluxtion effectively
+- Consistent programming model for event driven logic increases developer productivity
+- Re-use of industrial quality and predictable event dispatch model
+
+**Fluxtion's familiar dependency injection programming model simplifies integration**
+
+## Dependency injection container
+
+Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions
+supported by the container include: creating instances, injecting references between beans, setting properties, calling
+lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection.
+Configuration data can be programmatic, spring xml config, yaml or custom data format.
+
+There are three options for building a container:
+
+- Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
+- Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
+- Compiled AOT - code generated at build time, zero cost start time when deployed
+
+Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be
+used within a single application each container providing specialised business processing logic.
+
+## Automatic event dispatch
+
+The container exposes event consumer end-points, routing events as methods calls to beans within the container
+via an internal dispatcher. The internal dispatcher propagates event notification through the object graph.
+
+Fluxtion leverages the familiar dependency injection workflow for constructing the object graph. Annotated
+event handler and trigger methods are dispatch targets. When building a container Fluxtion uses the annotations to
+calculate the dispatch call trees for the internal dispatcher. A bean can export multiple service interfaces or just a
+single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
+to the container's dispatcher.
+
+
+
+
+## Code sample
 ```java
 /**
  * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100
@@ -112,7 +169,7 @@ public class HelloWorld {
 }
 ```
 
-### Execution output
+## Execution output
 ```text
 rcvd -> Data1[value=20.5]
 rcvd -> Data2[value=63.0]
@@ -123,32 +180,10 @@ Process finished with exit code 0
 ```
 
 
-## Highlights
-### Ahead of time compiler
-Fluxtion constructs a model of the stream processor and generates a set of java classes
-that meet the requirement. The compiled code is highly optimised for memory and cpu. Small,
-compact and jit friendly flxution stream processors get the best out of the JVM, giving
-unbeatable performance.
-### Pipeline vs graph processing
-Fluxtion is built as a graph processor and not a pipeline. A pipeline has a single entry
-point and single execution path, a graph processor has multiple entry points multiple execution
-paths. Handling heterogeneous event types in a unique fashion is the default behaviour.
-In fact the more complex the problem the greater the advantage that Fluxtion displays.
-### Integrating with client code
-Traditional stream processors have an ingest, transform and publish cycle. When moving
-from analytics to actually taking actions there is a barrier to integrating the output
-with the client application. With Fluxtion client code is integrated into the generated
-processor and invoked directly.
-### Describing a processor
-Fluxtion constructs an intermediate representation for the ahead of time compiler to process.
-The intermediate representation can be built from a variety of forms each with their
-own advantages. The following descriptions are supported:
-- Declarative or DSL
-- Imperative
-- Data driven
-- Dependency injection based
 
-## Contributing
+
+
+# Contributing
 We welcome contributions to the project. Detailed information on our ways of working will
 be written in time. In brief our goals are:
 
@@ -156,7 +191,7 @@ be written in time. In brief our goals are:
 * Author a change with suitabke test case and documentation.
 * Push your changes to a fork.
 * Submit a pull request.
-## License
+# License
 Fluxtion is licensed under the [Server Side Public License](https://www.mongodb.com/licensing/server-side-public-license).
 This license is created by MongoDb, for further info see [FAQ](https://www.mongodb.com/licensing/server-side-public-license/faq)
 and comparison with [AGPL v3.0](https://www.mongodb.com/licensing/server-side-public-license/faq).
