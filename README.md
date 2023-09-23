@@ -123,7 +123,7 @@ to the container's dispatcher.
 
 ## Code sample
 Fluxtion supports both imperative service style and functional patterns. Below is an example of functional coding style
-that adds two numbers from independent data streams and logs when the um is greater than 100.
+that adds two numbers from independent data streams and logs when the sum is greater than 100.
 
 ```java
 /**
