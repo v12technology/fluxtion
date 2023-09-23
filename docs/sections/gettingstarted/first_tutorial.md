@@ -6,6 +6,16 @@ nav_order: 1
 published: true
 ---
 
+<details markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
+
+
 # Introduction
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
@@ -46,21 +56,21 @@ drive the system.
 
 {% highlight java %}
 public record Ticket(int number, UUID id) {
-  public Ticket(int number){
-      this(number, UUID.randomUUID());
-  }
+    public Ticket(int number){
+        this(number, UUID.randomUUID());
+    }
 }
 
 public interface TicketStore {
-  boolean buyTicket(Ticket ticket);
-  void openStore();
-  void closeStore();
-  void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher);
+    boolean buyTicket(Ticket ticket);
+    void openStore();
+    void closeStore();
+    void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher);
 }
 
 public interface LotteryMachine {
-  void selectWinningTicket();
-  void setResultPublisher(Consumer<String> resultPublisher);
+    void selectWinningTicket();
+    void setResultPublisher(Consumer<String> resultPublisher);
 }
 {% endhighlight %}
 
@@ -77,7 +87,7 @@ to remove boilerplate code.
 
 The TicketStoreNode implements TicketSore and supports logic to buy and sell tickets depending on the state of the store
 . A lifecycle method start is created that checks the ticketSalesPublisher has been set before progressing any further.
-TicketStoreNode also implements Supplier<Ticket> which allows any child component to access the last sold ticket without
+TicketStoreNode also implements Supplier&lt;Ticket&gt; which allows any child component to access the last sold ticket without
 accessing the concrete type. Making components reference each other through interfaces is good practice.
 
 {% highlight java %}
@@ -135,7 +145,7 @@ public class TicketStoreNode implements Supplier<Ticket>, TicketStore {
 ### LotteryGameNode
 
 The LotteryMachineNode implements LotteryMachine and supports logic to run the lottery. LotteryMachineNode holds a reference to 
-an instance of Supplier<Ticket> and whenever processNewTicketSale is called, acquires a purchased ticket and adds it 
+an instance of Supplier&lt;Ticket&gt; and whenever processNewTicketSale is called, acquires a purchased ticket and adds it 
 to the internal cache. A lifecycle method start is created that checks the resultPublisher has been set before 
 progressing any further. 
 
@@ -177,11 +187,12 @@ public class LotteryMachineNode implements LotteryMachine {
 }
 {% endhighlight %}
 
-The lifecycle methods and how clients access the TicketStore interface are described later on.
+The lifecycle methods and how clients access the TicketStore and LotteryMachine services are described below.
 
 # Building the application
 Now we have our service interfaces designed and implemented we need to connect components together and make sure they provide
-the functionality required in the expected manner. There are several problems to solve to deliver functionality:
+the functionality required in the expected manner. There are several problems to solve to deliver correct event driven 
+functionality:
 
 - How do clients access the components via service interfaces
 - How are the lifecycle methods called
@@ -191,7 +202,7 @@ the functionality required in the expected manner. There are several problems to
 Fluxtion solves these four problems for any event driven application. 
 
 ## Exporting services
-We want clients to access components via service interface, this is simple to achieve by adding an **ExportService** 
+We want clients to access components via service interface, this is simple to achieve by adding an **@ExportService** 
 annotation to the interface definitions on the concrete classes, as shown below.
 
 {% highlight java %}
@@ -206,8 +217,8 @@ public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketS
 }
 {% endhighlight %}
 
-Fluxtion will only export annotated interfaces at the container level, in this case Fluxtion will not export the 
-Supplier interface that TicketStoreNode implements.
+Fluxtion will only export annotated interfaces at the container level, in this case Fluxtion will not export the
+Supplier&lt;Ticket&gt; interface that TicketStoreNode implements.
 
 ## Accessing exported services
 Once the service interface has been marked for export client code can locate it through the EventProcessor instance that
@@ -216,12 +227,11 @@ interface and Fluxtion container will take care of all method routing.
 
 {% highlight java %}
 public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
-  EventProcessor lotteryEventProcessor = FluxtionSpring.interpret(
-      new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
-  LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
-  TicketStore ticketStore = lotteryEventProcessor.getExportedService(); 
-  lotteryMachine.setResultPublisher(resultsPublisher);
-  ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
+    EventProcessor lotteryEventProcessor = //removed for clarity
+    LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
+    TicketStore ticketStore = lotteryEventProcessor.getExportedService(); 
+    lotteryMachine.setResultPublisher(resultsPublisher);
+    ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
 }
 {% endhighlight %}
 
@@ -229,14 +239,12 @@ public static void start(Consumer<String> ticketReceiptHandler, Consumer<String>
 ## Event dispatch
 
 When a ticket has been successfully purchased the LotteryMachineNode instance method processNewTicketSale is invoked by 
-Fluxtion. The processNewTicketSale method grabs the last ticket sale from the Supplier<Ticket> reference and adds it to 
-the cache. Fluxtion knows to trigger a method if it is annotated with @OnTrigger and one of its dependencies has been
+Fluxtion. The processNewTicketSale method grabs the last ticket sale from the Supplier&lt;Ticket&gt; reference and adds it to 
+the cache. Fluxtion knows to trigger a method if it is annotated with **@OnTrigger** and one of its dependencies has been
 triggered from an incoming client service call.
 
 
 {% highlight java %}
-@Slf4j
-@RequiredArgsConstructor
 public class LotteryMachineNode implements LotteryMachine {
   //code removed for clarity
 
@@ -249,59 +257,59 @@ public class LotteryMachineNode implements LotteryMachine {
 }
 {% endhighlight %}
 
-How does Fluxtion know to invoke this method at the correct time? The container knows the dependency relationship between
+How does Fluxtion know to invoke this method at the correct time? The container maps the dependency relationship between
 TicketStoreNode and LotteryMachineNode, so when an exported service method is invoked on TicketStoreNode Fluxtion calls
 the processNewTicketSale trigger method on LotteryMachineNode. This is great as it removes the need for the programmer 
 to manually call the event dispatch call graph. 
 
 The next problem is we only want the processNewTicketSale method called when a ticket is successfully purchased. If we
 try to add a ticket when the openStore is called a null pointer exception will be thrown at runtime. How can the 
-developer control the propagation of calling dependent trigger methods? 
+developer control the propagation of dependent trigger methods? 
 
-Fluxtion has two ways of managing propagation from an exported service method
+Fluxtion manages exported service event propagation in two ways:
 
-- boolean return type, false indicates no event propagation, true propagates the notification
+- boolean return type from the service method, false indicates no event propagation, true propagates the notification
 - annotate the method with **@NoPropagateFunction** annotation
 
-Both are used in LotteryMachineNode
+Both propagation controls are used in LotteryMachineNode ensuring the LotteryMachine is only triggered on successful 
+ticket purchases. The TicketStoreNode#buyTicket is the only method that will trigger an event notification to 
+LotteryMachineNode and only if the ticket passes basic validation and the store is open.
 
 {% highlight java %}
 public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketStore {
-  //code removed for clarity
-  
-  @Override
-  @NoPropagateFunction
-  public void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher) {}
-  
-  public void start() {}
-  
-  //triggers event propagation
-  public boolean buyTicket(Ticket ticket) {
-    if (ticket.number() < 9_99_99 | ticket.number() > 99_99_99) {
-        ticketSalesPublisher.accept("invalid numbers " + ticket);
-        this.ticket = null;
-    } else if (storeOpen) {
-        ticketSalesPublisher.accept("good luck with " + ticket);
-        this.ticket = ticket;
-    } else {
-        ticketSalesPublisher.accept("store shut - no tickets can be bought");
-        this.ticket = null;
+    //code removed for clarity
+    
+    @Override
+    @NoPropagateFunction
+    public void setTicketSalesPublisher(Consumer<String> ticketSalesPublisher) {}
+    
+    public void start() {}
+    
+    //return true -> triggers event propagation
+    public boolean buyTicket(Ticket ticket) {
+      if (ticket.number() < 9_99_99 | ticket.number() > 99_99_99) {
+          ticketSalesPublisher.accept("invalid numbers " + ticket);
+          this.ticket = null;
+      } else if (storeOpen) {
+          ticketSalesPublisher.accept("good luck with " + ticket);
+          this.ticket = ticket;
+      } else {
+          ticketSalesPublisher.accept("store shut - no tickets can be bought");
+          this.ticket = null;
+      }
+      return this.ticket != null;
     }
-    return this.ticket != null;
-  }
-  
-  public Ticket get() {}
-  
-  @NoPropagateFunction
-  public void openStore() {}
-  
-  @NoPropagateFunction
-  public void closeStore() {}
+    
+    public Ticket get() {}
+    
+    @NoPropagateFunction
+    public void openStore() {}
+    
+    @NoPropagateFunction
+    public void closeStore() {}
 }
 {% endhighlight %}
 
-The TicketStoreNode#buyTicket is the only method that will trigger an event notification to LotteryMachineNode and 
-only if the ticket passes basic validation and the store is open. 
 
 ## Lifecycle methods
 Applications often benefit from lifecycle methods such as init, start and stop, allowing checks to be carried out before
@@ -312,44 +320,166 @@ by the client code.
 
 
 {% highlight java %}
-//code removed for clarity
 public class TicketStoreNode implements Supplier<Ticket>, @ExportService TicketStore {
-
-  @Start
-  public void start() {
-      Objects.requireNonNull(ticketSalesPublisher, "must have a ticketSalesPublisher set");
-      storeOpen = false;
-  }
+  //code removed for clarity
+    @Start
+    public void start() {
+        Objects.requireNonNull(ticketSalesPublisher, "must have a ticketSalesPublisher set");
+        storeOpen = false;
+    }
 }
 
 public class LotteryMachineNode implements @ExportService LotteryMachine {
-
-  @Start
-  public void start(){
-    Objects.requireNonNull(resultPublisher, "must set a results publisher before starting the lottery game");
-    log.info("started");
-  }
+  //code removed for clarity
+    @Start
+    public void start(){
+        Objects.requireNonNull(resultPublisher, "must set a results publisher before starting the lottery game");
+        log.info("started");
+    }
 }
 {% endhighlight %}
 
-Client code invokes the lifecycle method on the container and Fluxtion will ensure all the lifecycle methods registered
-by components will be called in the right order.
+Client code invokes the lifecycle method on the container Fluxtion then calls all the lifecycle methods registered
+by components in the right order.
 
 {% highlight java %}
 public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
-  EventProcessor lotteryEventProcessor = FluxtionSpring.interpret(
-      new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
-  lotteryEventProcessor.init();
-  LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
-  TicketStore ticketStore = lotteryEventProcessor.getExportedService();
-  lotteryMachine.setResultPublisher(resultsPublisher);
-  ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
-  lotteryEventProcessor.start();
+    EventProcessor lotteryEventProcessor = //removed for clarity
+    lotteryEventProcessor.init();
+    LotteryMachine lotteryMachine = lotteryEventProcessor.getExportedService();
+    TicketStore ticketStore = lotteryEventProcessor.getExportedService();
+    lotteryMachine.setResultPublisher(resultsPublisher);
+    ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
+    lotteryEventProcessor.start();
 }
 {% endhighlight %}
 
 ## Wiring the components together
+The dependency injection container wires components depending upon the configuration supplied. As Fluxtion natively supports  
+spring ApplicationContext we use a spring configuration file in this example to wire the TicketStore to the LotteryMachine.
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="">
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode"/>
+
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+</beans>
+{% endhighlight %}
+
+Fluxtion provides a spring extension for building a container using static helper methods. The built container is free
+of any spring dependencies, Fluxtion just reads the spring file to drive its own configuration. To build the container
+the tutorial loads the spring file from the classpath:
+
+{% highlight java %}
+public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
+  EventProcessor lotteryEventProcessor = FluxtionSpring.interpret(
+    new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
+  //removed for clarity
+}
+{% endhighlight %}
 
 # Running the application
+Running the application requires the following from client code:
 
+-  Building the container using the spring config file 
+-  Call lifecycle methods on the container
+-  Lookup container exported service interfaces and store the references for use in client code
 
+The fact the components are managed by a container is completely hidden from the client code, this
+makes integrating Fluxtion into an existing system extremely simple as no new programming models need to be adopted.
+
+In our example the main method only interacts with the business logic via the service interfaces, in a real application
+the methods would be invoked by taking commands from an incoming request queue.
+
+{% highlight java %}
+public class LotteryApp {
+
+    private static LotteryMachine lotteryMachine;
+    private static TicketStore ticketStore;
+
+    public static void main(String[] args) {
+        start(LotteryApp::ticketReceipt, LotteryApp::lotteryResult);
+        //try and buy a ticket - store is closed
+        ticketStore.buyTicket(new Ticket(12_65_56));
+
+        //open store and buy ticket
+        ticketStore.openStore();
+        ticketStore.buyTicket(new Ticket(12_65_56));
+        ticketStore.buyTicket(new Ticket(36_58_58));
+        ticketStore.buyTicket(new Ticket(73_00_12));
+
+        //bad numbers
+        ticketStore.buyTicket(new Ticket(25));
+
+        //close the store and run the lottery
+        ticketStore.closeStore();
+
+        //try and buy a ticket - store is closed
+        ticketStore.buyTicket(new Ticket(12_65_56));
+
+        //run the lottery
+        lotteryMachine.selectWinningTicket();
+    }
+
+    public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
+        var lotteryEventProcessor = FluxtionSpring.interpret(
+                new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
+        lotteryEventProcessor.init();
+        lotteryMachine = lotteryEventProcessor.getExportedService();
+        ticketStore = lotteryEventProcessor.getExportedService();
+        lotteryMachine.setResultPublisher(resultsPublisher);
+        ticketStore.setTicketSalesPublisher(ticketReceiptHandler);
+        lotteryEventProcessor.start();
+    }
+
+    public static void ticketReceipt(String receipt){
+        log.info(receipt);
+    }
+
+    public static void lotteryResult(String receipt){
+        log.info(receipt);
+    }
+}
+{% endhighlight %}
+
+Executing our application produces the following output:
+
+{% highlight console %}
+[main] INFO LotteryMachineNode - started
+[main] INFO LotteryApp - store shut - no tickets can be bought
+[main] INFO TicketStoreNode - store opened
+[main] INFO LotteryApp - good luck with Ticket[number=126556, id=77376783-3513-4f22-88be-5ace6cdf5839]
+[main] INFO LotteryMachineNode - tickets sold:1
+[main] INFO LotteryApp - good luck with Ticket[number=365858, id=05e6f44e-5938-4b28-a183-047c6e75c532]
+[main] INFO LotteryMachineNode - tickets sold:2
+[main] INFO LotteryApp - good luck with Ticket[number=730012, id=30af94d7-7aec-4e82-8159-2cade3b38b2b]
+[main] INFO LotteryMachineNode - tickets sold:3
+[main] INFO LotteryApp - invalid numbers Ticket[number=25, id=62afdb45-25f8-4a80-bfba-37c22bfe8bf2]
+[main] INFO TicketStoreNode - store closed
+[main] INFO LotteryApp - store shut - no tickets can be bought
+[main] INFO LotteryMachineNode - WINNING ticket Ticket[number=365858, id=05e6f44e-5938-4b28-a183-047c6e75c532]
+
+Process finished with exit code 0
+{% endhighlight %}
+
+# Conclusion
+We have quite a lot of ground in a seemingly simple event driven application. Hopefully you can see the benefits of using 
+Fluxtion to write event driven business logic:
+-  Forcing client code to interact with components through interfaces
+-  Formal lifecycle phases that are easy to plug in to
+-  Dispatch of events to any bean managed instance exporting a service
+-  Automatic dispatch of dependent trigger methods 
+-  Removal of state and conditional dispatch logic from business code
+-  Deterministic event handling that is well tested
+-  Control of event propagation with simple boolean returns or annotations
+-  More time spent writing logic and less time writing infrastructure
+-  Simple programming model that leverages Spring for quick adoption
+
+As applications grow and become more complex programming event driven logic becomes ever more expensive. The benefits 
+of a tool like Fluxtion really shine during the growth and maintenance phase.
+
+I hope you have enjoyed reading this tutorial, and it has given you an understanding of Fluxtion and a desire to use it 
+in your applications. Please send me in any comments or suggestions to improve this tutorial

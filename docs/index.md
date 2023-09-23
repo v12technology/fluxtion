@@ -5,7 +5,9 @@ nav_order: 1
 published: true
 ---
 
-# Introduction 
+# Fluxtion is event driven Java 
+
+---
 
 Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
 and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
