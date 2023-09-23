@@ -7,13 +7,9 @@
 [![Github build](https://github.com/v12technology/fluxtion/workflows/MavenCI/badge.svg)](https://github.com/v12technology/fluxtion/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)
 
-## [User documentation](https://v12technology.github.io/fluxtion/)
-
-
+# [USER DOCUMENTATION](https://v12technology.github.io/fluxtion/)
 
 # Fluxtion is event driven Java
-
----
 
 Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
 and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
@@ -45,8 +41,8 @@ handled by the container. The container supports:
 </div>
 </div>
 
-# Fluxtion components
-There are two major components provided by Fluxtion the developer uses to develop with.
+# Top level components
+There are two major components provided by Fluxtion the developer uses build event driven logic.
 
 ## Compiler
 The compiler analyses the configuration information provided by the programmer and builds a dependency injection container
