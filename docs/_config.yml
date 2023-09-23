@@ -48,6 +48,7 @@ fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.1.9/comp
 EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.1.9/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
 Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.1.9/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
 cookbook_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook
+getting_started: https://github.com/v12technology/fluxtion-examples/tree/main/getting-started
 
 
 ga_tracking: G-NGDV621P1P

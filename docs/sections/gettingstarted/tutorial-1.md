@@ -20,9 +20,9 @@ published: true
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
 proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection. The project source can be
-found [here.]({{site.cookbook_src}}/lottery)
+found [here.]({{site.getting_started}}/tutorial1-lottery)
 
-Our goal is to build the logic for a simple lottery application that will be connected to request and response queues.
+Our goal is to build the logic for[tutorial-2.md](tutorial-2.md) a simple lottery application that will be connected to request and response queues.
 Serialising requests to a queue makes our application event driven and easier to scale in the future, the response queue
 stores the output from the application. This example is focused on building event driven processing by wiring together
 software components using Fluxtion and not the connection to real queues.
