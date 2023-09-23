@@ -53,7 +53,7 @@ are either
 
 ## Runtime
 The runtime provides the dependency injection container with a core set of libraries required at runtime. An AOT generated
-container only requires the runtime to function. The compiler is only required
+container only requires the runtime to function, no compiler libraries are required.
 
 # Philosophy
 Our philosophy is to make delivering streaming applications in java simple by employing a
@@ -122,6 +122,9 @@ to the container's dispatcher.
 
 
 ## Code sample
+Fluxtion supports both imperative service style and functional patterns. Below is an example of functional coding style
+that adds two numbers from independent data streams and logs when the um is greater than 100.
+
 ```java
 /**
  * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100
