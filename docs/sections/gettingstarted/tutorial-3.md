@@ -1,0 +1,18 @@
+---
+title: 3rd tutorial - audit logging
+parent: Getting started
+has_children: false
+nav_order: 3
+published: true
+---
+
+<details markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
+
+# Introduction

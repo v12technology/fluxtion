@@ -58,7 +58,7 @@ cost of event distribution. The opposite is true for event driven application lo
 over time and developing application logic becomes ever more complex and expensive to deliver.
 
 {: .info }
-Fluxtion combines dependency injection and event dispatch increasing developer productivity
+Fluxtion simplifies adding application functionality to increase business value
 {: .fs-4 }
 
 # Combining dependency injection and event processing
@@ -71,7 +71,7 @@ pattern has the following benefits:
 - Re-use of industrial quality and predictable event dispatch model
 
 {: .info }
-Fluxtion's familiar dependency injection programming model simplifies integration
+Fluxtion combines dependency injection and event dispatch increasing developer productivity
 {: .fs-4 }
 
 ## Dependency injection container

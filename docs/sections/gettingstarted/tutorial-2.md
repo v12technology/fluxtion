@@ -1,5 +1,5 @@
 ---
-title: Second tutorial - AOT
+title: 2nd tutorial - AOT
 parent: Getting started
 has_children: false
 nav_order: 2
@@ -92,6 +92,65 @@ generated EventProcessor file: /x/tutorial2-lottery-aot/src/main/java/com/fluxti
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
+{% endhighlight %}
+
+## Build system
+The example use maven to build the application, the Fluxtion runtime dependency is pulled in transitively via the
+compiler. Lombok is added to reduce boilerplate code, spring-context enables reading the spring config file,
+both of these dependencies are optional in vanilla Fluxtion usage.
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<groupId>com.fluxtion.example</groupId>
+<artifactId>getting-started-tutorial2</artifactId>
+<version>1.0.0-SNAPSHOT</version>
+<packaging>jar</packaging>
+<name>getting-started :: tutorial 2 :: lottery aot</name>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fluxtion.version>9.1.9</fluxtion.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>com.fluxtion.example.cookbook.lottery.BuildAot</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>${fluxtion.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.29</version>
+        </dependency>
+    </dependencies>
+</project>
 {% endhighlight %}
 
 # Running the application
