@@ -1,5 +1,5 @@
 ---
-title: 3rd tutorial - audit logging
+title: 3rd tutorial - auditor
 parent: Getting started
 has_children: false
 nav_order: 3
