@@ -95,9 +95,25 @@ generated EventProcessor file: /x/tutorial2-lottery-aot/src/main/java/com/fluxti
 {% endhighlight %}
 
 ## Build system
-The example use maven to build the application, the Fluxtion runtime dependency is pulled in transitively via the
-compiler. Lombok is added to reduce boilerplate code, spring-context enables reading the spring config file,
-both of these dependencies are optional in vanilla Fluxtion usage.
+The example use maven to build the application but as we are generating the container aot we only need the compiler 
+dependency at build time. We could leave the pom file dependencies unchanged from tutorial 1 but having less runtime 
+dependencies will make for easier integration in the future. The following changes are made to the pom file dependencies
+
+| Nmae              | Purpose                    | scope    | available at runtime |
+|-------------------|----------------------------|----------|----------------------|
+| fluxtion-runtime  | libraries for di container | compile  | YES                  |
+| Slf4j             | runtime logging            | compile  | YES                  |
+| fluxtion-compiler | generating di container    | provided | NO                   |
+| Spring            | spring config parsing      | provided | NO                   |
+| lombok            | source annotations         | provided | NO                   |
+
+
+Fluxtion compiler is build time only so we must now explicitly add Fluxtion runtime and slf4j dependencies to the runtime 
+classpath. Spring-context enables reading the spring config file for the Fluxtion compiler, as this is now an aot 
+operation we can move spring to the provided scope as well. 
+
+We are using Spring in these tutorials because of its familiarity to readers it is not required by Fluxtion when using
+other methods to specify the container beans.
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,15 +142,30 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>com.fluxtion.example.cookbook.lottery.BuildAot</mainClass>
+                    <classpathScope>compile</classpathScope>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
+<!--        PROVIDED SCOPE - BUILD TIME ONLY-->
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>compiler</artifactId>
+            <version>${fluxtion.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.29</version>
+            <scope>provided</scope>
+        </dependency>
+<!--        RUNTIME -->
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>runtime</artifactId>
             <version>${fluxtion.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -144,13 +175,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
+<!--        EXPLICITLY SET DEPENDENCY - NO LONGER SUPPLIED BY FLUXTION COMPILER-->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.29</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>compile</scope>
+            <version>2.0.7</version>
         </dependency>
     </dependencies>
 </project>
+
+
 {% endhighlight %}
 
 # Running the application
