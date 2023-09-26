@@ -162,20 +162,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>5.3.29</version>
             <scope>provided</scope>
         </dependency>
-<!--        RUNTIME -->
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>runtime</artifactId>
-            <version>${fluxtion.version}</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
-<!--        EXPLICITLY SET DEPENDENCY - NO LONGER SUPPLIED BY FLUXTION COMPILER-->
+<!--        RUNTIME SCOPE NO LONGER SUPPLIED BY FLUXTION COMPILER-->
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>runtime</artifactId>
+            <version>${fluxtion.version}</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
