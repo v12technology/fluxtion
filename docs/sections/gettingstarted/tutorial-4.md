@@ -1,5 +1,5 @@
 ---
-title: 4th tutorial - audit logger
+title: 4th tutorial - event logger
 parent: Getting started
 has_children: false
 nav_order: 4

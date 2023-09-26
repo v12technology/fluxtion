@@ -357,6 +357,8 @@ public static void start(Consumer<String> ticketReceiptHandler, Consumer<String>
 ## Wiring the components together
 The dependency injection container wires components depending upon the configuration supplied. As Fluxtion natively supports  
 spring ApplicationContext we use a spring configuration file in this example to wire the TicketStore to the LotteryMachine.
+We are using Spring in these tutorials because of its familiarity to readers, spring is not required by Fluxtion when using
+other methods to specify container managed beans.
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>

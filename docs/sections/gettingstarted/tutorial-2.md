@@ -110,10 +110,7 @@ dependencies will make for easier integration in the future. The following chang
 
 Fluxtion compiler is build time only so we must now explicitly add Fluxtion runtime and slf4j dependencies to the runtime 
 classpath. Spring-context enables reading the spring config file for the Fluxtion compiler, as this is now an aot 
-operation we can move spring to the provided scope as well. 
-
-We are using Spring in these tutorials because of its familiarity to readers it is not required by Fluxtion when using
-other methods to specify the container beans.
+operation we can move spring to the provided scope as well.
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
