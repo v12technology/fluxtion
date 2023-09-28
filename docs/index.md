@@ -111,8 +111,8 @@ to the container's dispatcher.
 ## Build dependencies
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')">Maven</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle</button>
 </div>
 <div id="Maven" class="tabcontent">
 <div markdown="1">

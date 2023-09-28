@@ -530,3 +530,6 @@ of a tool like Fluxtion really shine during the growth and maintenance phase.
 
 I hope you have enjoyed reading this tutorial, and it has given you an understanding of Fluxtion and a desire to use it 
 in your applications. Please send me in any comments or suggestions to improve this tutorial
+
+[next tutorial 2](tutorial-2.md)
+{: .text-right }
