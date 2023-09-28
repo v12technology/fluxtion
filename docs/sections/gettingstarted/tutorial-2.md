@@ -49,7 +49,7 @@ for creating a container ahead of time:
 - The application's **runtime** dependencies must include the Fluxtion runtime and can exclude the Fluxtion compiler
 
 The function to build the container uses spring configuration file and the Fluxtion api to compile aot. The first
-argument is the location of the spring config file and the second argument gives access to FluxtionCompilerConfig which
+argument is the location of the spring config file and the second argument gives access to  [FluxtionCompilerConfig]({{site.fluxtion_src_compiler}}/FluxtionCompilerConfig.java) which
 allows for configuration of the compiler output. We configure the class name and package of the generated source file.
 
 {% highlight java %}
@@ -69,10 +69,10 @@ public class BuildAot {
 {% endhighlight %}
 
 By default, the Fluxtion compiler generates the source file in the standard maven location src/main/java but can be 
-configured by the developer using the supplied FluxtionCompilerConfig instance. 
+configured by the developer using the supplied [FluxtionCompilerConfig]({{site.fluxtion_src_compiler}}/FluxtionCompilerConfig.java) instance. 
+The serialised source file [LotteryProcessor is here.]({{site.getting_started}}/tutorial2-lottery-aot/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java)
 
-The serialised source file 
-[LotteryProcessor is here.]({{site.getting_started}}/tutorial2-lottery-aot/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java)
+**FluxtionCompilerConfig is the configuration object for aot generated outputs passed to the compiler.**
 
 BuildAot main can be run from maven via a build plugin:
 
