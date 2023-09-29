@@ -2,7 +2,7 @@
 title: Audit logging
 parent: Examples
 has_children: false
-nav_order: 3
+nav_order: 4
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/auditlog
 ---

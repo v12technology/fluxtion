@@ -2,7 +2,7 @@
 title: Lombok integration
 parent: Examples
 has_children: false
-nav_order: 2
+nav_order: 3
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/lombok
 ---
