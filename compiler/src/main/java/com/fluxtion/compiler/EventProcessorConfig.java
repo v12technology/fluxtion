@@ -233,6 +233,13 @@ public class EventProcessorConfig {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), EventLogManager.NODE_NAME);
     }
 
+    /**
+     * Add an {@link EventLogManager} auditor to the generated SEP without method tracing
+     */
+    public void addEventAudit() {
+        addAuditor(new EventLogManager().tracingOff(), EventLogManager.NODE_NAME);
+    }
+
     public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
         addEventAudit(tracingLogLevel, printEventToString, true);
     }
