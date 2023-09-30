@@ -1,29 +1,115 @@
 ---
 title: Overview
-has_children: true
+has_children: false
 nav_order: 1
 published: true
 ---
 
-# Introduction to Fluxtion
-Welcome to Fluxtion, and thanks for coming, hope you enjoy exploring :) 
+# Fluxtion is event driven Java 
 
-Fluxtion is a java library utility that builds embeddable, reactive complex event processors for data in motion streaming
-applications. Suitable use cases include:
+---
 
-- **Real-time applications** processing multiple event streams
-- **Embedding within an existing system** No middleware vendor lock-in
-- **Edge processing** executing on edge devices zero dependency
-- **Low latency** response time in microseconds
-- **Fast start times** supports ahead of time compilation 
+Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
+and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
+container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
 
-Write simple clean Java code to create real-time applications. programs are quick to build, test, deploy and debug ,with
-no dependencies. Data streams can be merged, filtered, aggregated, joined, grouped and enriched. Windowing of data is 
-fully supported.
+{: .info }
+Fluxtion minimises the cost of developing and maintaining event driven business logic
+{: .fs-4 }
 
-A full set of tools for debugging, tracing, auditing and visualisation are provided to reduce development and support costs.
+Developers concentrate on developing and extending business logic, dependency injection and realtime event dispatch is
+handled by the container. The container supports:
 
-## Fluxtion dependencies
+<div class="grid">
+<div class="col-1-2">
+<div class="content">
+<ul>
+  <li><strong>Streaming event processing</strong></li>
+  <li><strong>AOT compilation for fast start</strong></li>
+  <li><strong>Spring integration</strong></li>
+</ul>
+</div>
+</div>
+<div class="col-1-2">
+<div class="content">
+<ul>
+  <li><strong>Low latency microsecond response</strong></li>
+  <li><strong>Event sourcing compatible</strong></li>
+  <li><strong>Functional and imperative construction</strong></li>
+</ul>
+</div>
+</div>
+</div>
+
+# The cost of complexity problem
+
+Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
+complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
+profitable in a competitive environment.
+
+Event driven systems have two types of complexity to manage:
+
+- Delivering events to application components in a fault-tolerant predictable fashion.
+- Developing application logic responses to events that meets business requirements
+
+Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
+the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
+cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
+over time and developing application logic becomes ever more complex and expensive to deliver.
+
+{: .info }
+Fluxtion combines dependency injection and event dispatch increasing developer productivity
+{: .fs-4 }
+
+# Combining dependency injection and event processing
+
+The introduction of dependency injection gave developers a consistent approach to linking application components. 
+Fluxtion extends dependency injection to support container managed event driven beans. Extending a familiar development
+pattern has the following benefits:
+- Shallow learning curve for developers to use Fluxtion effectively
+- Consistent programming model for event driven logic increases developer productivity
+- Re-use of industrial quality and predictable event dispatch model
+
+{: .info }
+Fluxtion's familiar dependency injection programming model simplifies integration
+{: .fs-4 }
+
+## Dependency injection container
+
+Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions
+supported by the container include: creating instances, injecting references between beans, setting properties, calling
+lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection.
+Configuration data can be programmatic, spring xml config, yaml or custom data format.
+
+There are three options for building a container:
+
+- Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
+- Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
+- Compiled AOT - code generated at build time, zero cost start time when deployed
+
+Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be
+used within a single application each container providing specialised business processing logic.
+
+## Automatic event dispatch
+
+The container exposes event consumer end-points, routing events as methods calls to beans within the container
+via an internal dispatcher. The internal dispatcher propagates event notification through the object graph.
+
+Fluxtion leverages the familiar dependency injection workflow for constructing the object graph. Annotated
+event handler and trigger methods are dispatch targets. When building a container Fluxtion uses the annotations to
+calculate the dispatch call trees for the internal dispatcher. A bean can export multiple service interfaces or just a
+single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
+to the container's dispatcher.
+
+# Latest release
+
+| component | maven central                                                                                                                                                                    |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Runtime   | [![Fluxtion runtime](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/runtime)    |
+| Compiler  | [![Fluxtion compiler](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler) |
+
+## Build dependencies
+
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
   <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
@@ -35,12 +121,12 @@ A full set of tools for debugging, tracing, auditing and visualisation are provi
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>runtime</artifactId>
-            <version>5.0.8</version>
+            <version>{{site.fluxtion_version}}</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>compiler</artifactId>
-            <version>5.0.8</version>
+            <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
 {% endhighlight %}
@@ -54,72 +140,6 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 {% endhighlight %}
 </div>
 </div>
-
-Fluxtion dependency description
-
-| Fluxtion dependency | Example use                             | Description                                           | 3rd party<br/> dependencies |
-|---------------------|-----------------------------------------|-------------------------------------------------------|-----------------------------|
-| Compiler            | Fluxtion#interpret<br/>Fluxtion#compile | Generates the EventProcessor <br/> from a description | Many                        |
-| Runtime             | EventProcessor#onEvent                  | Runtime dispatch of events and helper libraries       | None                        |
-
-It is possible to use ```Fluxtion#compile``` to create an EventProcessor ahead of time and then only the runtime 
-library is required on the running classpath to support the source code generated EventProcessor. In this case 
-set the scope to provided in maven.
-
-## Key terms
-
-| Term           | Description                                                                                             |
-|----------------|---------------------------------------------------------------------------------------------------------|
-| Event          | An event is any valid java instance that is submitted to the event processor                            |
-| Stream         | A stream is a set of events. An event instance can only appear once in a stream                         |
-| EventProcessor | Processes the event stream with user defined logic. An EventProcessor instance is generated by Fluxtion |
-
-
-## Steps to create an EventProcessor instance
-1. **Describe** the processing logic in user code
-2. **Generate** the EventProcessor by supplying a description to the Fluxtion eventProcessorGenerator
-3. **Process** events in the Fluxtion generated EventProcessor instance from (2)
-
-# Processing events in a stream processor
-
-There are three main steps to building and running a stream processor application using Fluxtion
-
-## Step 1: Describe processing logic
-Describe the values that are calculated and actions invoked in response to an incoming event. Fluxtion provides two
-api's to describe the processing logic:
-1. [A set of annotations](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/annotations) 
-that mark members of user written classes as being managed by the event processor
-2. [A java 8 stream like api](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/compiler/src/main/java/com/fluxtion/compiler/builder/stream)
-, that can describe processing with a fluent functional style
-
-## Step 2: Build an EventProcessor
-Fluxtion provides a eventProcessorGenerator that converts the description into an executable
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-instance. The eventProcessorGenerator
-is invoked from 
-[Fluxtion](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java)
-with one of two utility methods:
-1. **compile**: this generates a java source code version of the EventProcessor. The file is compiled in process and used
-to handle events. Total nodes are limited to the number of elements a source file can handle
-2. **interpret**: Creates an in memory model of the processing backed with data structures. Can support millions of nodes
-
-## Step 3: Process events
-Once the
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-has been generated the instance is ready to consume events. The EventProcessor has a lifecycle so **init must be called
-before sending any events for processing**. 
-
-The application pulls events from any source and invokes ```EventProcessor#onEvent```
-
-# Application integration
----
-
-![](images/integration-overview.png)
-
-A Fluxtion event processor embeds within a user application, processing events,
-publishing events to sinks or interacting with user classes. Events are feed from
-the application directly into the processor or into a pipeline. A pipeline provides
-additional capabilities such as threading, scheduling, auditing, access control. 
 
 <script>
 document.getElementById("defaultOpen").click();

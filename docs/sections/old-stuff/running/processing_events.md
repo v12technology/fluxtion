@@ -1,7 +1,9 @@
 ---
 title: Processing event streams
+parent: Event stream processing
+grand_parent: Old stuff
 has_children: false
-nav_order: 4
+nav_order: 1
 published: true
 ---
 

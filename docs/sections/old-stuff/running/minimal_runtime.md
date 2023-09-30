@@ -1,8 +1,9 @@
 ---
 title: Zero dependency processor
-parent: First Fluxtion application
+parent: Event stream processing
+grand_parent: Old stuff
 has_children: false
-nav_order: 3
+nav_order: 6
 published: true
 ---
 
@@ -24,7 +25,7 @@ To generate an event processor with no builder dependencies at runtime four step
 1. Remove any calls to dynamically build a processor at runtime and use the fqn above to instantiate a statically generated processor, including test cases.
 1. Update the pom file to exclude builder libraries as transitive dependencies.
 
-The first three steps are covered in the previous [buildtime generation example](aot_compilation.md).
+The first three steps are covered in the previous [buildtime generation example](../starting/aot_compilation.md).
 
 ### Build zero dependency artifact
 The builder libraries are compile time only and marked 
@@ -99,7 +100,7 @@ the relevant section are shown below.
 ## Artifact analysis
 As part of the build the maven shade plugin generates an uber jar that contains all the dependencies to run the application.
 The uber jar contains Fluxtion runtime libraries, application classes and slf4j interfaces only. 
-The table below shows a comparinson with the [prevous example](aot_compilation.md) where the 
+The table below shows a comparinson with the [prevous example](../starting/aot_compilation.md) where the 
 final artifact contains all the Fluxtion builders and their transitive dependencies.
 
 | Fluxtion libraries   | Size              | External library count |

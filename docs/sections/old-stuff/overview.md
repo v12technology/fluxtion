@@ -1,5 +1,6 @@
 ---
-title: Concepts
+title: Concepts 2
+parent: Overview
 has_children: false
 nav_order: 13
 published: false
@@ -23,7 +24,7 @@ When building a stream processing application the developer has to answer three 
 Fluxtion is the automatic generation of the **WHEN** logic in a streaming application. 
 Looking at the example diagram below Fluxtion acts as the arrows connecting components:
 
-![](../images/flow-processing-example.png)
+![](../../images/flow-processing-example.png)
 
 When a specific event is received only connected components are executed and always 
 in the [correct predictable order](https://www.geeksforgeeks.org/topological-sorting/). 
