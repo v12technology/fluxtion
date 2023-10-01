@@ -3,7 +3,7 @@ title: Audit logging
 parent: Examples
 has_children: false
 nav_order: 4
-published: true
+published: false
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/auditlog
 ---
 
@@ -275,7 +275,7 @@ Process finished with exit code 0
 
 ### EventProcessor graph for the example
 
-![](../../images/audit/Processor.png)
+![](../../../images/audit/Processor.png)
 
 
 
