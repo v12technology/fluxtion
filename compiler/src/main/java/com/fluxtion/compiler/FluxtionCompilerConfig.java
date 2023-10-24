@@ -94,6 +94,10 @@ public class FluxtionCompilerConfig {
      * The if {@link #writeSourceToFile} is false this writer will capture the content of the generation process
      */
     private Writer sourceWriter;
+    /**
+     * Flag controlling adding build time to generated source files
+     */
+    private boolean addBuildTime;
 
     private transient ClassLoader classLoader;
 
@@ -101,6 +105,7 @@ public class FluxtionCompilerConfig {
         generateDescription = false;
         writeSourceToFile = false;
         compileSource = true;
+        addBuildTime = false;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
         classLoader = FluxtionCompilerConfig.class.getClassLoader();
@@ -155,6 +160,14 @@ public class FluxtionCompilerConfig {
 
     public void setWriteSourceToFile(boolean writeSourceToFile) {
         this.writeSourceToFile = writeSourceToFile;
+    }
+
+    public boolean isAddBuildTime() {
+        return addBuildTime;
+    }
+
+    public void setAddBuildTime(boolean addBuildTime) {
+        this.addBuildTime = addBuildTime;
     }
 
     public void setPackageName(String packageName) {
