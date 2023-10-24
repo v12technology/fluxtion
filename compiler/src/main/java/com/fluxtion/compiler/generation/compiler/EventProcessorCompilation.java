@@ -105,7 +105,7 @@ public class EventProcessorCompilation {
         }
 
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
-        eventProcessorGenerator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
+        eventProcessorGenerator.templateSep(builderConfig, compilerConfig, writer);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
