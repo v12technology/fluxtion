@@ -4,6 +4,7 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,20 +19,25 @@ import java.util.Objects;
 @ToString(of = {"key", "name"})
 public class GroupByKey<T> {
     public final List<LambdaReflection.SerializableFunction<T, ?>> accessors;
+    public final transient List<Method> accessorsMethods;
     private final transient StringBuilder keyHolder = new StringBuilder();
     @Getter
     private final transient Class<T> valueClass;
     @Getter
     private transient String key;
+    @Getter
+    private transient T keyInstance;
     private transient final String name;
 
     public GroupByKey(List<LambdaReflection.SerializableFunction<T, ?>> accessorsToAdd) {
         this.accessors = new ArrayList<>();
+        this.accessorsMethods = new ArrayList<>();
         String tmpName = "";
         for (LambdaReflection.SerializableFunction<T, ?> element : accessorsToAdd) {
             if (!accessors.contains(element)) {
                 accessors.add(element);
                 tmpName += "_" + element.method().getName();
+                accessorsMethods.add(element.method());
             }
         }
         valueClass = (Class<T>) accessors.get(0).method().getDeclaringClass();
@@ -49,6 +55,7 @@ public class GroupByKey<T> {
 
     private GroupByKey(GroupByKey<T> toClone) {
         accessors = toClone.accessors;
+        accessorsMethods = toClone.accessorsMethods;
         valueClass = toClone.getValueClass();
         name = toClone.name;
     }
@@ -59,10 +66,8 @@ public class GroupByKey<T> {
 
     @SafeVarargs
     public static <T> LambdaReflection.SerializableFunction<T, GroupByKey<T>> build(
-            LambdaReflection.SerializableFunction<T, ?> accessor,
             LambdaReflection.SerializableFunction<T, ?>... accessorList) {
         List<LambdaReflection.SerializableFunction<T, ?>> accessors = new ArrayList<>();
-        accessors.add(accessor);
         accessors.addAll(Arrays.asList(accessorList));
         GroupByKey<T> accessorKey = new GroupByKey<>(accessors);
         return accessorKey::toKey;
@@ -70,13 +75,14 @@ public class GroupByKey<T> {
 
 
     public boolean keyPresent(LambdaReflection.SerializableFunction<T, ?> keyToCheck) {
-        return accessors.contains(keyToCheck);
+        return accessorsMethods.contains(keyToCheck.method());
     }
 
     public GroupByKey<T> toKey(T input) {
         //TODO add object pooling
         GroupByKey<T> cloned = new GroupByKey<>(this);
         cloned.keyHolder.setLength(0);
+        cloned.keyInstance = input;
         for (int i = 0, accessorsSize = accessors.size(); i < accessorsSize; i++) {
             LambdaReflection.SerializableFunction<T, ?> accessor = accessors.get(i);
             cloned.keyHolder.append(accessor.apply(input).toString());
