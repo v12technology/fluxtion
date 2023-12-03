@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AggregateToListFlowFunction<T> implements AggregateFlowFunction<T, List<T>, AggregateToListFlowFunction<T>> {
 
-    private final List<T> list = new ArrayList<>();
+    private transient final List<T> list = new ArrayList<>();
     private final int maxElementCount;
 
 

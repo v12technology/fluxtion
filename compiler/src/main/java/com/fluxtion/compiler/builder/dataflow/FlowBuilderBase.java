@@ -129,12 +129,12 @@ public class FlowBuilderBase<T> extends AbstractFlowBuilder<T, FlowBuilderBase<T
 
     public <V, K> GroupByFlowBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction) {
-        return groupBy(keyFunction, Mappers::identity, Collectors.toList());
+        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory());
     }
 
     public <V, K> GroupByFlowBuilder<K, List<T>>
     groupByAsList(SerializableFunction<T, K> keyFunction, int maxElementsInList) {
-        return groupBy(keyFunction, Mappers::identity, Collectors.toList(maxElementsInList));
+        return groupBy(keyFunction, Mappers::identity, Collectors.listFactory(maxElementsInList));
     }
 
     public <V, K, A, F extends AggregateFlowFunction<V, A, F>> GroupByFlowBuilder<K, A>
