@@ -4,6 +4,7 @@ import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.util.ClassUtils;
+import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
 import com.fluxtion.runtime.dataflow.helpers.GroupingFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -183,6 +184,10 @@ public class FieldSerializer implements MapFieldToJavaSource {
             }
             String genericDeclaration = "<" + inputClass + ", " + returnType + ", ?, ?>";
             return genericDeclaration;
+        }
+        if (instance instanceof GroupByKey) {
+            GroupByKey groupByKey = (GroupByKey) instance;
+            return "<" + classNameConverter.apply(groupByKey.getValueClass()) + ">";
         }
         return "";
     }
