@@ -218,15 +218,13 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
      * Creates a GroupByFlowBuilder using a compound key created by a set of method reference accessors to for the value.
      * The value is the last value supplied
      *
-     * @param keyFunction  key accessor
      * @param keyFunctions multi arg key accessors
      * @return GroupByFlowBuilder keyed on properties
      */
     @SafeVarargs
     public final GroupByFlowBuilder<GroupByKey<T>, T> groupByFields(
-            SerializableFunction<T, ?> keyFunction,
             SerializableFunction<T, ?>... keyFunctions) {
-        return groupBy(GroupByKey.build(keyFunction, keyFunctions));
+        return groupBy(GroupByKey.build(keyFunctions));
     }
 
     /**
@@ -234,7 +232,6 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
      * bucket. The key is a compound key created by a set of method reference accessors to for the value.
      *
      * @param aggregateFunctionSupplier A factory that supplies aggregating functions, each function has its own function instance
-     * @param keyFunction               key accessor
      * @param keyFunctions              multi arg key accessors
      * @param <A>                       The return type of the aggregating function
      * @param <F>                       The aggregating function type
@@ -244,9 +241,8 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     @SafeVarargs
     public final <A, F extends AggregateFlowFunction<T, A, F>> GroupByFlowBuilder<GroupByKey<T>, A> groupByFieldsAggregate(
             SerializableSupplier<F> aggregateFunctionSupplier,
-            SerializableFunction<T, ?> keyFunction,
             SerializableFunction<T, ?>... keyFunctions) {
-        return groupBy(GroupByKey.build(keyFunction, keyFunctions), aggregateFunctionSupplier);
+        return groupBy(GroupByKey.build(keyFunctions), aggregateFunctionSupplier);
     }
 
     /**
@@ -254,16 +250,14 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
      * The value is extracted from the input using the value function
      *
      * @param valueFunction the value that will be stored in the groupBy
-     * @param keyFunction   key accessor
      * @param keyFunctions  multi arg key accessors
      * @return GroupByFlowBuilder keyed on properties
      */
     @SafeVarargs
     public final <V> GroupByFlowBuilder<GroupByKey<T>, V> groupByFieldsAndGet(
             SerializableFunction<T, V> valueFunction,
-            SerializableFunction<T, ?> keyFunction,
             SerializableFunction<T, ?>... keyFunctions) {
-        return groupBy(GroupByKey.build(keyFunction, keyFunctions), valueFunction);
+        return groupBy(GroupByKey.build(keyFunctions), valueFunction);
     }
 
     /**
@@ -272,7 +266,6 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
      *
      * @param valueFunction             the value that will be stored in the groupBy
      * @param aggregateFunctionSupplier A factory that supplies aggregating functions, each function has its own function instance
-     * @param keyFunction               key accessor
      * @param keyFunctions              multi arg key accessors
      * @param <V>                       Value type extracted from the incoming data flow
      * @param <A>                       The return type of the aggregating function
@@ -284,9 +277,8 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     public final <V, A, F extends AggregateFlowFunction<V, A, F>> GroupByFlowBuilder<GroupByKey<T>, A> groupByFieldsGetAndAggregate(
             SerializableFunction<T, V> valueFunction,
             SerializableSupplier<F> aggregateFunctionSupplier,
-            SerializableFunction<T, ?> keyFunction,
             SerializableFunction<T, ?>... keyFunctions) {
-        return groupBy(GroupByKey.build(keyFunction, keyFunctions), valueFunction, aggregateFunctionSupplier);
+        return groupBy(GroupByKey.build(keyFunctions), valueFunction, aggregateFunctionSupplier);
     }
 
     public <K> GroupByFlowBuilder<K, List<T>> groupByToList(SerializableFunction<T, K> keyFunction) {
