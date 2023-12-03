@@ -5,8 +5,6 @@
  */
 package com.fluxtion.compiler.generation.audit;
 
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -16,8 +14,6 @@ import com.fluxtion.runtime.event.Event;
 import com.fluxtion.test.event.CharEvent;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +33,7 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         MyNode myNode = getAuditor("myNode");
         Assert.assertTrue(myNode.registerCalled);
         onEvent(new CharEvent('a'));
-        assertThat(myNode.eventAuditCount, is(1));
+        assertThat(myNode.eventAuditCount, is(2));
     }
 
     public static class ParentNode {
@@ -69,17 +65,6 @@ public class FactoryAuditorTest extends MultipleSepTargetInProcessTest {
         @Override
         public void nodeRegistered(Object node, String nodeName) {
             registerCalled = true;
-        }
-
-    }
-
-    public static class MyNodeFactory implements NodeFactory<MyNode> {
-
-        @Override
-        public MyNode createNode(Map config, NodeRegistry registry) {
-            final MyNode myNode = new MyNode();
-            registry.registerAuditor(myNode, "myNode");
-            return myNode;
         }
 
     }

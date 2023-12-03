@@ -22,6 +22,7 @@ import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
 import com.google.googlejavaformat.java.Formatter;
 import org.apache.commons.io.FileUtils;
@@ -30,15 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -101,6 +94,9 @@ public class EventProcessorCompilation {
             outFile.getParentFile().mkdirs();
             if (outFile.exists()) {
                 backupFile = new File(outFile.getParentFile(), outFile.getName() + ".backup");
+                if (backupFile.exists()) {
+                    throw new RuntimeException("Fluxtion generation problem backup file exists - please move or delete file:" + backupFile.getCanonicalPath());
+                }
                 FileUtils.moveFile(outFile, backupFile);
             }
             writer = new FileWriter(outFile);
@@ -109,7 +105,7 @@ public class EventProcessorCompilation {
         }
 
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
-        eventProcessorGenerator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
+        eventProcessorGenerator.templateSep(builderConfig, compilerConfig, writer);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");
@@ -140,7 +136,7 @@ public class EventProcessorCompilation {
             EventProcessorGenerator.formatSource(file);
             LOG.debug("completed formatting source");
         }
-        if (compilerConfig.isCompileSource()) {
+        if (compilerConfig.isCompileSource() && !Boolean.getBoolean(RuntimeConstants.FLUXTION_NO_COMPILE)) {
             LOG.debug("start compiling source");
             if (compilerConfig.isWriteSourceToFile()) {
                 builderConfig.getCompilerOptions();
@@ -155,6 +151,8 @@ public class EventProcessorCompilation {
                 FileUtils.delete(backupFile);
                 backupFile = null;
             }
+        } else if (backupFile != null && formatSuccess) {
+            FileUtils.delete(backupFile);
         }
         if (backupFile != null && !formatSuccess) {
             FileUtils.delete(backupFile);

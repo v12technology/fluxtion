@@ -4,6 +4,7 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProce
 
     @Test
     public void noRootClassTest() {
-        sep(c -> c.addNode(new CombinedTriggerAndEventHandler(), "node"));
+        sep(new CombinedTriggerAndEventHandler());
         CombinedTriggerAndEventHandler node = getField("node");
         assertFalse(node.isEventNotified());
         assertFalse(node.isTriggerNotified());
@@ -29,22 +30,32 @@ public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProce
 
     @Test
     public void withRootClassTest() {
-        sep(c -> c.addNode(
-                new Root(c.addNode(new CombinedTriggerAndEventHandler(), "node"))));
+        sep(new Root(new CombinedTriggerAndEventHandler()));
         CombinedTriggerAndEventHandler node = getField("node");
+        Root root = getField("root");
         assertFalse(node.isEventNotified());
         assertFalse(node.isTriggerNotified());
+        assertFalse(root.isTriggered());
 
         onEvent("hello");
         assertTrue(node.isEventNotified());
         assertFalse(node.isTriggerNotified());
+        assertTrue(root.isTriggered());
+
+        root.triggered = false;
+        node.triggerNotified = false;
+        node.eventNotified = false;
+
+        onEvent(22);
+        assertTrue(node.isEventNotified());
+        assertFalse(node.isTriggerNotified());
+        assertFalse(root.isTriggered());
     }
 
 
     @Test
     public void withRootNoTriggerClassTest() {
-        sep(c -> c.addNode(
-                new RootNoTrigger(c.addNode(new CombinedTriggerAndEventHandler(), "node"))));
+        sep(new RootNoTrigger(new CombinedTriggerAndEventHandler()));
         CombinedTriggerAndEventHandler node = getField("node");
         assertFalse(node.isEventNotified());
         assertFalse(node.isTriggerNotified());
@@ -55,7 +66,7 @@ public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProce
     }
 
     @Data
-    public static class CombinedTriggerAndEventHandler {
+    public static class CombinedTriggerAndEventHandler implements NamedNode {
         private boolean eventNotified;
         private boolean triggerNotified;
 
@@ -65,15 +76,26 @@ public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProce
             return true;
         }
 
+        @OnEventHandler(propagate = false)
+        public boolean intUpdate(int newValue) {
+            eventNotified = true;
+            return true;
+        }
+
         @OnTrigger
         public boolean triggered() {
             triggerNotified = true;
             return true;
         }
+
+        @Override
+        public String getName() {
+            return "node";
+        }
     }
 
     @Data
-    public static class Root {
+    public static class Root implements NamedNode {
         private final Object parent;
         private boolean triggered;
 
@@ -81,6 +103,11 @@ public class CombinedTriggerAndEventHandlerTest extends MultipleSepTargetInProce
         public boolean parentTriggered() {
             triggered = true;
             return true;
+        }
+
+        @Override
+        public String getName() {
+            return "root";
         }
     }
 

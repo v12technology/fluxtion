@@ -1,6 +1,7 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.EventProcessorFactory;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.builder.Disabled;
@@ -42,6 +43,14 @@ public interface Fluxtion {
         return EventProcessorFactory.compile(sepConfig);
     }
 
+    static EventProcessor compile(Object... nodes) {
+        return compile(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
+
     /**
      * Compiles the SEP in memory and captures the output to a user supplied {@link Writer}
      *
@@ -71,6 +80,23 @@ public interface Fluxtion {
         return compile(cfgBuilder, compilerCfg -> compilerCfg.setPackageName(packageName));
     }
 
+    static EventProcessor compileAot(String packageName,
+                                     String className,
+                                     Object... nodes) {
+        return compileAot(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        }, packageName, className);
+    }
+
+    static EventProcessor compileAot(Object... nodes) {
+        return compileAot(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
 
     @SneakyThrows
     static EventProcessor compileAot(SerializableConsumer<EventProcessorConfig> cfgBuilder,
@@ -99,6 +125,14 @@ public interface Fluxtion {
 
     static EventProcessor interpret(SerializableConsumer<EventProcessorConfig> sepConfig, boolean generateDescription) {
         return EventProcessorFactory.interpreted(sepConfig, generateDescription);
+    }
+
+    static EventProcessor interpret(Object... nodes) {
+        return interpret(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
     }
 
     /**
@@ -236,10 +270,51 @@ public interface Fluxtion {
                 generationCount.increment();
                 System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
                 try {
+
                     final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) c.loadClass().getDeclaredConstructor().newInstance();
                     compile(newInstance::buildGraph, newInstance::configureGeneration);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
+                    throw new RuntimeException("cannot instantiate FluxtionGraphBuilder", e);
+                }
+            });
+        }
+        return generationCount.intValue();
+    }
+
+    /**
+     * Scans the supplied File resources for any classes that implement the {@link FluxtionGraphBuilder} interface
+     * and will generate an {@link EventProcessor} for any located builders.
+     * <p>
+     * Any builder marked with the {@link Disabled} annotation will be ignored
+     * <p>
+     * No compilations are carried out
+     *
+     * @param classLoader the classloader to be used for the generation
+     * @param files       The locations to search for {@link FluxtionGraphBuilder} classes
+     * @return The number of processors generated
+     */
+    static int scanAndGenerateFluxtionBuilders(ClassLoader classLoader, File... files) {
+        Objects.requireNonNull(files, "provide valid locations to search for fluxtion builders");
+        System.setProperty(RuntimeConstants.FLUXTION_NO_COMPILE, "true");
+        LongAdder generationCount = new LongAdder();
+        try (ScanResult scanResult = new ClassGraph()
+                .enableAllInfo()
+                .overrideClasspath(files)
+                .scan()) {
+
+            ClassInfoList builderList = scanResult
+                    .getClassesImplementing(FluxtionGraphBuilder.class)
+                    .exclude(scanResult.getClassesWithAnnotation(Disabled.class.getCanonicalName()));
+
+            builderList.forEach(c -> {
+                generationCount.increment();
+                System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
+                try {
+                    final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) classLoader.loadClass(c.getName()).getDeclaredConstructor().newInstance();
+                    compile(newInstance::buildGraph, newInstance::configureGeneration);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException | ClassNotFoundException e) {
                     throw new RuntimeException("cannot instantiate FluxtionGraphBuilder", e);
                 }
             });

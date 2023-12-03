@@ -1,16 +1,17 @@
 package com.fluxtion.runtime.output;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.node.NamedNode;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.node.SingleNamedNode;
 
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
-public class SinkPublisher<T> implements NamedNode {
+public class SinkPublisher<T> extends SingleNamedNode {
 
-    private final String filterString;
+    private transient final String filterString;
     private Consumer<T> sink;
     private IntConsumer intConsumer;
 
@@ -18,7 +19,8 @@ public class SinkPublisher<T> implements NamedNode {
 
     private DoubleConsumer doubleConsumer;
 
-    public SinkPublisher(String filterString) {
+    public SinkPublisher(@AssignToField("name") String filterString) {
+        super(filterString);
         this.filterString = filterString;
     }
 
@@ -58,8 +60,4 @@ public class SinkPublisher<T> implements NamedNode {
             longConsumer.accept(value);
     }
 
-    @Override
-    public String getName() {
-        return filterString + "_Sink";
-    }
 }

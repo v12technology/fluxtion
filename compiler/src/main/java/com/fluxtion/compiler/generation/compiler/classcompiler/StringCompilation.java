@@ -1,9 +1,7 @@
 package com.fluxtion.compiler.generation.compiler.classcompiler;
 
-import com.fluxtion.compiler.generation.annotationprocessor.ValidateEventHandlerAnnotations;
-import com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations;
-import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnParentUpdateHandlerAnnotations;
-import com.fluxtion.compiler.generation.annotationprocessor.ValidateOnTriggerAnnotations;
+import com.fluxtion.compiler.generation.RuntimeConstants;
+import com.fluxtion.compiler.generation.annotationprocessor.*;
 
 import javax.tools.*;
 import java.io.IOException;
@@ -36,6 +34,12 @@ public interface StringCompilation {
         final JavaByteObject byteObject = new JavaByteObject(className);
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaFileManager fileManager = createFileManager(standardFileManager, byteObject);
+        String cp = System.getProperty(RuntimeConstants.GENERATION_CLASSPATH);
+        if (cp != null) {
+            optionList.add("-classpath");
+            optionList.add(cp);
+        }
+
         JavaCompiler.CompilationTask task = compiler.getTask(
                 null, fileManager, diagnostics, optionList, null, Collections.singletonList(new JavaStringObject(className, source))
         );
@@ -43,7 +47,8 @@ public interface StringCompilation {
                 new ValidateEventHandlerAnnotations(),
                 new ValidateLifecycleAnnotations(),
                 new ValidateOnTriggerAnnotations(),
-                new ValidateOnParentUpdateHandlerAnnotations()));
+                new ValidateOnParentUpdateHandlerAnnotations(),
+                new ValidateExportFunctionAnnotations()));
         if (!task.call()) {
             diagnostics.getDiagnostics().forEach(System.out::println);
             throw new RuntimeException("unable to compile source file to class:'" + className + "'");

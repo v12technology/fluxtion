@@ -27,12 +27,10 @@ import java.util.Map;
  */
 public class ClockFactory implements NodeFactory<Clock> {
 
-    public static final Clock SINGLETON = new Clock();
-
     @Override
     public Clock createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        registry.registerAuditor(SINGLETON, "clock");
-        return SINGLETON;
+        registry.registerAuditor(Clock.DEFAULT_CLOCK, "clock");
+        return Clock.DEFAULT_CLOCK;
     }
 
 }

@@ -98,6 +98,11 @@ public class LogRecord {
         sb.append(value);
     }
 
+    public void addRecord(String sourceId, String propertyKey, Object value) {
+        addSourceId(sourceId, propertyKey);
+        sb.append(value == null ? "NULL" : value);
+    }
+
     public void addRecord(String sourceId, String propertyKey, boolean value) {
         addSourceId(sourceId, propertyKey);
         sb.append(value);
@@ -110,6 +115,10 @@ public class LogRecord {
         firstProp = true;
         this.sourceId = null;
         addSourceId(sourceId, null);
+    }
+
+    public void setClock(Clock clock) {
+        this.clock = clock;
     }
 
     public void printEventToString(boolean printEventToString) {
@@ -156,10 +165,10 @@ public class LogRecord {
         sb.append("\n    groupingId: ").append(groupingId);
         sb.append("\n    event: ").append(aClass.getSimpleName());
         if (printEventToString) {
-            sb.append("\n    eventToString: {").append(event.toString()).append('}');
+            sb.append("\n    eventToString: ").append(event.toString());
         }
         if (printThreadName) {
-            sb.append("\n    thread: {").append(Thread.currentThread().getName()).append('}');
+            sb.append("\n    thread: ").append(Thread.currentThread().getName());
         }
         if (event.filterString() != null && !event.filterString().isEmpty()) {
             sb.append("\n    eventFilter: ").append(event.filterString());
@@ -178,7 +187,7 @@ public class LogRecord {
             sb.append("\n    groupingId: ").append(groupingId);
             sb.append("\n    event: ").append(aClass.getSimpleName());
             if (printEventToString) {
-                sb.append("\n    eventToString: {").append(event.toString()).append('}');
+                sb.append("\n    eventToString: ").append(event.toString());
             }
             sb.append("\n    nodeLogs: ");
         }

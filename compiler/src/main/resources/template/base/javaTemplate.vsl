@@ -48,6 +48,7 @@ EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, Batc
 
 //Node declarations
 ${MODEL.nodeDeclarations}
+    private ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
 //Dirty flags
 private boolean initCalled = false;
 private boolean processing = false;
@@ -71,6 +72,50 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
+    public void init() {
+        initCalled = true;
+        auditEvent(Lifecycle.LifecycleEvent.Init);
+        //initialise dirty lookup map
+        isDirty("test");
+        ${MODEL.initialiseMethods}
+        afterEvent();
+    }
+
+    @Override
+    public void start() {
+        if(!initCalled){
+         throw new RuntimeException("init() must be called before start()");
+        }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Start);
+        ${MODEL.startMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public void stop() {
+        if(!initCalled){
+            throw new RuntimeException("init() must be called before stop()");
+        }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Stop);
+        ${MODEL.stopMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public void tearDown() {
+        initCalled = false;
+        auditEvent(Lifecycle.LifecycleEvent.TearDown);
+        ${MODEL.tearDownMethods}
+        afterEvent();
+    }
+
+    @Override
     public void setContextParameterMap(Map<Object, Object> newContextMapping){
         context.replaceMappings(newContextMapping);
     }
@@ -81,6 +126,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         context.addMapping(key, value);
     }
 
+    //EVENT DISPATCH - START
     @Override
     public void onEvent(Object event) {
         if(buffering){
@@ -96,11 +142,27 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         }
     }
 
+    @Override
     public void onEventInternal(Object event) {
        ${MODEL.eventDispatch}
     }
 
     ${MODEL.eventHandlers}
+
+    private void beforeServiceCall(String functionDescription){
+        functionAudit.setFunctionDescription(functionDescription);
+        auditEvent(functionAudit);
+        if (buffering) {
+            triggerCalculation();
+        }
+        processing = true;
+    }
+
+    private void afterServiceCall(){
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
 
     private void afterEvent() {
         ${MODEL.eventEndMethods}
@@ -109,43 +171,23 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
-    public void init() {
-        initCalled = true;
-       //initialise dirty lookup map
-       isDirty("test");
-       ${MODEL.initialiseMethods}
-    }
-
-    @Override
-    public void start() {
-        if(!initCalled){
-            throw new RuntimeException("init() must be called before start()");
-        }
-        ${MODEL.startMethods}
-    }
-
-    @Override
-    public void stop() {
-        if(!initCalled){
-            throw new RuntimeException("init() must be called before stop()");
-        }
-        ${MODEL.stopMethods}
-    }
-
-    @Override
-    public void tearDown() {
-        initCalled = false;
-       ${MODEL.tearDownMethods}
-    }
-
-    @Override
     public void batchPause() {
-       ${MODEL.batchPauseMethods}
+        auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+        processing = true;
+        ${MODEL.batchPauseMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
     public void batchEnd() {
-       ${MODEL.batchEndMethods}
+        auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+        processing = true;
+        ${MODEL.batchEndMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
     }
 
     @Override
@@ -153,6 +195,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         return dirtySupplier(node).getAsBoolean();
     }
 
+    @Override
     public BooleanSupplier dirtySupplier(Object node) {
         if(dirtyFlagSupplierMap.isEmpty()){
             ${MODEL.dirtyFlagLookup}

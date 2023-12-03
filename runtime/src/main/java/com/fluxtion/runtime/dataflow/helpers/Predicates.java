@@ -241,4 +241,13 @@ public interface Predicates {
             init();
         }
     }
+
+    @Value
+    class PredicateWrapper {
+        SerializableSupplier<Boolean> predicate;
+
+        public boolean test(Object o) {
+            return predicate.get();
+        }
+    }
 }

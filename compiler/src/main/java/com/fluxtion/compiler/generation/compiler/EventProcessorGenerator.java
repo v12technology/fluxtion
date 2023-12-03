@@ -18,6 +18,7 @@
 package com.fluxtion.compiler.generation.compiler;
 
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.builder.factory.NodeFactoryLocator;
 import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
@@ -63,6 +64,7 @@ public class EventProcessorGenerator {
     private EventProcessorConfig config;
     private static final Logger LOG = LoggerFactory.getLogger(EventProcessorGenerator.class);
     private SimpleEventProcessorModel simpleEventProcessorModel;
+    private FluxtionCompilerConfig compilerConfig;
 
     public InMemoryEventProcessor inMemoryProcessor(EventProcessorConfig config, boolean generateDescription) throws Exception {
         config.buildConfig();
@@ -92,13 +94,14 @@ public class EventProcessorGenerator {
         if (generateDescription && !GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
-        return new InMemoryEventProcessor(simpleEventProcessorModel);
+        return new InMemoryEventProcessor(simpleEventProcessorModel, config);
     }
 
-    public void templateSep(EventProcessorConfig config, boolean generateDescription, Writer writer) throws Exception {
+    public void templateSep(EventProcessorConfig config, FluxtionCompilerConfig compilerConfig, Writer writer) throws Exception {
         ExecutorService execSvc = Executors.newCachedThreadPool();
         config.buildConfig();
         this.config = config;
+        this.compilerConfig = compilerConfig;
         LOG.debug("init velocity");
         initVelocity();
         LOG.debug("start graph calc");
@@ -117,7 +120,7 @@ public class EventProcessorGenerator {
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
         //TODO add conditionality for different target languages
         //buildJava output
-        if (generateDescription) {
+        if (compilerConfig.isGenerateDescription()) {
             execSvc.submit(() -> {
                 LOG.debug("start exporting graphML/images");
                 exportGraphMl(graph);
@@ -138,8 +141,8 @@ public class EventProcessorGenerator {
 
 
     private static void initVelocity() {
-        Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+        Velocity.setProperty(RuntimeConstants.RESOURCE_LOADERS, "classpath");
+        Velocity.setProperty("resource.loader.classpath.class", ClasspathResourceLoader.class.getName());
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(GenerationContext.SINGLETON.getClassLoader());
         Velocity.init();
@@ -190,7 +193,11 @@ public class EventProcessorGenerator {
     private void addVersionInformation(Context ctx) {
         ctx.put("generator_version_information", this.getClass().getPackage().getImplementationVersion());
         ctx.put("api_version_information", OnEventHandler.class.getPackage().getImplementationVersion());
-        ctx.put("build_time", LocalDateTime.now());
+        if (compilerConfig.isAddBuildTime()) {
+            ctx.put("build_time", LocalDateTime.now());
+        } else {
+            ctx.put("build_time", "Not available");
+        }
     }
 
     public static void formatSource(File outFile) {

@@ -43,7 +43,14 @@ public class EventLogControlEvent implements Event {
      * default, is no filtering and configuration will be applied to all SEP's.
      */
     private String groupId;
+    /**
+     * user configured {@link LogRecordListener}
+     */
     private LogRecordListener logRecordProcessor;
+    /**
+     * User configured {@link LogRecord}
+     */
+    private LogRecord logRecord;
 
     public EventLogControlEvent() {
         this(LogLevel.INFO);
@@ -56,6 +63,11 @@ public class EventLogControlEvent implements Event {
     public EventLogControlEvent(LogRecordListener logRecordProcessor) {
         this(null, null, null);
         this.logRecordProcessor = logRecordProcessor;
+    }
+
+    public EventLogControlEvent(LogRecord logRecord) {
+        this(null, null, null);
+        this.logRecord = logRecord;
     }
 
     public EventLogControlEvent(String sourceId, String groupId, LogLevel level) {
@@ -85,6 +97,10 @@ public class EventLogControlEvent implements Event {
 
     public LogRecordListener getLogRecordProcessor() {
         return logRecordProcessor;
+    }
+
+    public LogRecord getLogRecord() {
+        return logRecord;
     }
 
     public enum LogLevel {

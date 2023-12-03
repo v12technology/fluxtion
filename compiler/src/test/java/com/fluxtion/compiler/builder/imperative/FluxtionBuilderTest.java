@@ -143,6 +143,30 @@ public class FluxtionBuilderTest {
     }
 
     @Test
+    @SneakyThrows
+    public void generateNoCompileTestDeleteBackup() {
+        String path = new File(OutputRegistry.JAVA_TESTGEN_DIR).getCanonicalPath();
+        Fluxtion.compile(
+                processorCfg -> processorCfg.addNode(new MyStringHandler(), "handler"),
+                compilerConfig -> {
+                    compilerConfig.setCompileSource(false);
+                    compilerConfig.setPackageName("com.whatever");
+                    compilerConfig.setClassName("MYProcessor");
+                    compilerConfig.setGenerateDescription(false);
+                    compilerConfig.setOutputDirectory(path);
+                });
+        Fluxtion.compile(
+                processorCfg -> processorCfg.addNode(new MyStringHandler(), "handler"),
+                compilerConfig -> {
+                    compilerConfig.setCompileSource(false);
+                    compilerConfig.setPackageName("com.whatever");
+                    compilerConfig.setClassName("MYProcessor");
+                    compilerConfig.setGenerateDescription(false);
+                    compilerConfig.setOutputDirectory(path);
+                });
+    }
+
+    @Test
     public void buildFromFluxtionGraphBuilder() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, URISyntaxException, NoSuchFieldException {
         int generationCount = Fluxtion.scanAndCompileFluxtionBuilders(
                 new File("target/test-classes"), new File("target/test-classes"));

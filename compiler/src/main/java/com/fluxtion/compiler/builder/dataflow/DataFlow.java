@@ -9,6 +9,7 @@ import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.DefaultEventHandlerNode;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
@@ -69,6 +70,231 @@ public interface DataFlow {
         );
     }
 
+    /**
+     * Subscribes to an internal node within the processing graph and presents it as an {@link FlowBuilder}
+     * for constructing stream processing logic.
+     *
+     * @param source The node to be wrapped and made head of this stream
+     * @param <T>    The type of the node
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<T> subscribeToNode(T source) {
+        return new FlowBuilder<>(new NodeToFlowFunction<>(source));
+    }
+
+    /**
+     * Subscribes to a property on an internal node within the processing graph and presents it as an {@link FlowBuilder}
+     * for constructing stream processing logic. The node will be created and added to the graph
+     *
+     * @param sourceProperty The property accessor
+     * @param <T>            The type of the node
+     * @param <R>            The type of the property that will be supplied in the stream
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, R> FlowBuilder<R> subscribeToNodeProperty(SerializableFunction<T, R> sourceProperty) {
+        T source;
+        if (sourceProperty.captured().length == 0) {
+            try {
+                source = (T) sourceProperty.getContainingClass().getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException("no default constructor found for class:"
+                        + sourceProperty.getContainingClass()
+                        + " either add default constructor or pass in a node instance");
+            }
+        } else {
+            source = (T) sourceProperty.captured()[0];
+        }
+        return subscribeToNode(source).map(sourceProperty);
+    }
+
+    /**
+     * Subscribes to a property on an internal node within the processing graph and presents it as an {@link FlowBuilder}
+     * for constructing stream processing logic.
+     *
+     * @param propertySupplier The property accessor
+     * @param <R>              The type of the property that will be supplied in the stream
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <R> FlowBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier) {
+        EventProcessorBuilderService.service().addOrReuse(propertySupplier.captured()[0]);
+        return new FlowBuilder<>(new NodePropertyToFlowFunction<>(propertySupplier));
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows.
+     *
+     * @param filterId The filter string to apply
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static FlowBuilder<Signal> subscribeToSignal(String filterId) {
+        return subscribe(Signal.class, filterId);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a stream that subscribes to a filtered
+     * {@link Signal} event, containing an event of the type specified. Useful for invoking triggers on flows.
+     *
+     * @param filterId   The filter string to apply
+     * @param signalType The type of value that is held by the {@link Signal} event
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<T> subscribeToSignal(String filterId, Class<T> signalType) {
+        return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a stream that subscribes to a filtered
+     * {@link Signal} event, containing an event of the type specified. A default value is provided if the signal
+     * event contains a null value. Useful for invoking triggers on flows.
+     *
+     * @param filterId     The filter string to apply
+     * @param signalType   The type of value that is held by the {@link Signal} event
+     * @param defaultValue the value to use if the signal event value is null
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<T> subscribeToSignal(String filterId, Class<T> signalType, T defaultValue) {
+        return subscribe(Signal.class, filterId).map(Signal<T>::getValue).defaultValue(defaultValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a int stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows.
+     *
+     * @param filterId The filter string to apply
+     * @return An {@link IntFlowBuilder} that can used to construct stream processing logic
+     */
+    static IntFlowBuilder subscribeToIntSignal(String filterId) {
+        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a int stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows. A default value is provided if the signal
+     * event contains a 0 value
+     *
+     * @param filterId     The filter string to apply
+     * @param defaultValue to use if the signal event value is 0
+     * @return An {@link IntFlowBuilder} that can used to construct stream processing logic
+     */
+    static IntFlowBuilder subscribeToIntSignal(String filterId, int defaultValue) {
+        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a double stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows.
+     *
+     * @param filterId The filter string to apply
+     * @return An {@link DoubleFlowBuilder} that can used to construct stream processing logic
+     */
+    static DoubleFlowBuilder subscribeToDoubleSignal(String filterId) {
+        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a double stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows. A default value is provided if the signal
+     * event contains a 0 value
+     *
+     * @param filterId     The filter string to apply
+     * @param defaultValue to use if the signal event value is 0
+     * @return An {@link DoubleFlowBuilder} that can used to construct stream processing logic
+     */
+    static DoubleFlowBuilder subscribeToDoubleSignal(String filterId, double defaultValue) {
+        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a long stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows.
+     *
+     * @param filterId The filter string to apply
+     * @return An {@link LongFlowBuilder} that can used to construct stream processing logic
+     */
+    static LongFlowBuilder subscribeToLongSignal(String filterId) {
+        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
+    }
+
+    /**
+     * See {@link DataFlow#subscribe(Class)} shortcut method to create a long stream that subscribes to a filtered
+     * {@link Signal} event. Useful for invoking triggers on flows. A default value is provided if the signal
+     * event contains a 0 value
+     *
+     * @param filterId     The filter string to apply
+     * @param defaultValue to use if the signal event value is 0
+     * @return An {@link LongFlowBuilder} that can used to construct stream processing logic
+     */
+    static LongFlowBuilder subscribeToLongSignal(String filterId, long defaultValue) {
+        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue)
+                .defaultValue(defaultValue);
+    }
+
+
+    /**
+     * Merges and maps several  {@link FlowFunction}'s into a single event stream of type T
+     *
+     * @param builder The builder defining the merge operations
+     * @param <T>     The output type of the merged stream
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<T> mergeMap(MergeAndMapFlowBuilder<T> builder) {
+        MergeMapFlowFunction<T> build = builder.build();
+        return new FlowBuilder<>(build);
+    }
+
+    /**
+     * Merges two {@link FlowBuilder}'s into a single event stream of type T
+     *
+     * @param streamAToMerge stream A to merge
+     * @param streamBToMerge stream B to merge
+     * @param <T>            type of stream A
+     * @param <S>            type of stream B
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, S extends T> FlowBuilder<T> merge(FlowBuilder<T> streamAToMerge, FlowBuilder<S> streamBToMerge) {
+        return streamAToMerge.merge(streamBToMerge);
+    }
+
+    /**
+     * Merges multiple {@link FlowBuilder}'s into a single event stream of type T
+     *
+     * @param streamAToMerge stream A to merge
+     * @param streamBToMerge stream B to merge
+     * @param streamsToMerge streams to merge
+     * @param <T>            type of stream A
+     * @param <S>            type of stream B
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    @SuppressWarnings("unchecked")
+    static <T, S extends T> FlowBuilder<T> merge(
+            FlowBuilder<T> streamAToMerge,
+            FlowBuilder<S> streamBToMerge,
+            FlowBuilder<? extends T>... streamsToMerge) {
+        return streamAToMerge.merge(streamBToMerge, streamsToMerge);
+    }
+
+    /**
+     * Applies a mapping bi function to a pair of streams, creating a stream that is the output of the function. The
+     * mapping function will be invoked whenever either stream triggers a notification
+     *
+     * @param biFunction The mapping {@link java.util.function.BiFunction}
+     * @param streamArg1 Stream providing the first argument to the mapping function
+     * @param streamArg2 Stream providing the second argument to the mapping function
+     * @param <T>        The type of argument 1 stream
+     * @param <S>        The type of argument 2 stream
+     * @param <R>        The return type of the mapping function
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, S, R> FlowBuilder<R> mapBiFunction(SerializableBiFunction<T, S, R> biFunction,
+                                                  FlowBuilder<T> streamArg1,
+                                                  FlowBuilder<S> streamArg2) {
+        return streamArg1.mapBiFunction(biFunction, streamArg2);
+    }
+
     static <T, K> GroupByFlowBuilder<K, T> groupBy(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
@@ -110,91 +336,5 @@ public interface DataFlow {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction, aggregateFunctionSupplier);
-    }
-
-    static FlowBuilder<Signal> subscribeToSignal(String filterId) {
-        return subscribe(Signal.class, filterId);
-    }
-
-    static <T> FlowBuilder<T> subscribeToSignal(String filterId, Class<T> signalType) {
-        //subscribe(Signal.class, filterId);
-        return subscribe(Signal.class, filterId).map(Signal<T>::getValue);
-    }
-
-    static <T> FlowBuilder<T> subscribeToSignal(String filterId, Class<T> signalType, T defaultValue) {
-        return subscribe(Signal.class, filterId).map(Signal<T>::getValue).defaultValue(defaultValue);
-    }
-
-    static IntFlowBuilder subscribeToIntSignal(String filterId) {
-        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue);
-    }
-
-    static IntFlowBuilder subscribeToIntSignal(String filterId, int defaultValue) {
-        return subscribe(Signal.IntSignal.class, filterId).mapToInt(Signal.IntSignal::getValue)
-                .defaultValue(defaultValue);
-    }
-
-    static DoubleFlowBuilder subscribeToDoubleSignal(String filterId) {
-        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue);
-    }
-
-    static DoubleFlowBuilder subscribeToDoubleSignal(String filterId, double defaultValue) {
-        return subscribe(Signal.DoubleSignal.class, filterId).mapToDouble(Signal.DoubleSignal::getValue)
-                .defaultValue(defaultValue);
-    }
-
-    static LongFlowBuilder subscribeToLongSignal(String filterId) {
-        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue);
-    }
-
-    static LongFlowBuilder subscribeToLongSignal(String filterId, long defaultValue) {
-        return subscribe(Signal.LongSignal.class, filterId).mapToLong(Signal.LongSignal::getValue)
-                .defaultValue(defaultValue);
-    }
-
-    /**
-     * Subscribes to an internal node within the processing graph and presents it as an {@link FlowBuilder}
-     * for constructing stream processing logic.
-     *
-     * @param source The node to be wrapped and made head of this stream
-     * @param <T>    The type of the node
-     * @return An {@link FlowBuilder} that can used to construct stream processing logic
-     */
-    static <T> FlowBuilder<T> subscribeToNode(T source) {
-        return new FlowBuilder<>(new NodeToFlowFunction<>(source));
-    }
-
-    static <T, R> FlowBuilder<R> subscribeToNodeProperty(SerializableFunction<T, R> sourceProperty) {
-        T source;
-        if (sourceProperty.captured().length == 0) {
-            try {
-                source = (T) sourceProperty.getContainingClass().getDeclaredConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException("no default constructor found for class:"
-                        + sourceProperty.getContainingClass()
-                        + " either add default constructor or pass in a node instance");
-            }
-        } else {
-            source = (T) sourceProperty.captured()[0];
-        }
-        return subscribeToNode(source).map(sourceProperty);
-    }
-
-    static <R> FlowBuilder<R> subscribeToNodeProperty(SerializableSupplier<R> propertySupplier) {
-        EventProcessorBuilderService.service().addOrReuse(propertySupplier.captured()[0]);
-        return new FlowBuilder<>(new NodePropertyToFlowFunction<>(propertySupplier));
-    }
-
-    /**
-     * Merges and maps several  {@link FlowFunction}'s into a single event stream of type T
-     *
-     * @param builder The builder defining the merge operations
-     * @param <T>     The output type of the merged stream
-     * @return An {@link FlowBuilder} that can used to construct stream processing logic
-     */
-    static <T> FlowBuilder<T> mergeMap(MergeAndMapFlowBuilder<T> builder) {
-        MergeMapFlowFunction<T> build = builder.build();
-        return new FlowBuilder<>(build);
     }
 }

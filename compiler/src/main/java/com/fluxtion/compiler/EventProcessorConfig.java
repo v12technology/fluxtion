@@ -16,28 +16,20 @@
  */
 package com.fluxtion.compiler;
 
-import com.fluxtion.compiler.builder.callback.CallBackDispatcherFactory;
-import com.fluxtion.compiler.builder.callback.CallbackNodeFactory;
-import com.fluxtion.compiler.builder.callback.DirtyStateMonitorFactory;
-import com.fluxtion.compiler.builder.callback.EventDispatcherFactory;
-import com.fluxtion.compiler.builder.callback.EventProcessorCallbackInternalFactory;
+import com.fluxtion.compiler.builder.callback.*;
 import com.fluxtion.compiler.builder.context.EventProcessorContextFactory;
 import com.fluxtion.compiler.builder.context.InstanceSupplierFactory;
-import com.fluxtion.compiler.builder.factory.NodeFactory;
-import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
-import com.fluxtion.compiler.builder.factory.NodeNameLookupFactory;
-import com.fluxtion.compiler.builder.factory.NodeNameProducer;
-import com.fluxtion.compiler.builder.factory.SingletonNodeFactory;
+import com.fluxtion.compiler.builder.factory.*;
 import com.fluxtion.compiler.builder.filter.EventHandlerFilterOverride;
 import com.fluxtion.compiler.builder.input.SubscriptionManagerFactory;
+import com.fluxtion.compiler.builder.output.SinkPublisherFactory;
 import com.fluxtion.compiler.builder.time.ClockFactory;
-import com.fluxtion.compiler.generation.serialiser.FieldContext;
-import com.fluxtion.compiler.generation.serialiser.FormatSerializer;
-import com.fluxtion.compiler.generation.serialiser.IoSerializer;
-import com.fluxtion.compiler.generation.serialiser.TimeSerializer;
+import com.fluxtion.compiler.generation.serialiser.*;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.dataflow.function.MergeProperty;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.time.Clock;
 import lombok.ToString;
 
@@ -49,23 +41,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.time.*;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -78,7 +55,7 @@ import java.util.function.Function;
 public class EventProcessorConfig {
 
     private final Set<Class<?>> interfaces = new HashSet<>();
-    private final Clock clock = ClockFactory.SINGLETON;
+    private final Clock clock = Clock.DEFAULT_CLOCK;
     private final Map<String, String> class2replace = new HashMap<>();
     private final Map<Object, Integer> filterMap = new HashMap<>();
     private final Map<Class<?>, Function<FieldContext, String>> classSerializerMap = new HashMap<>();
@@ -96,7 +73,28 @@ public class EventProcessorConfig {
     private List<String> compilerOptions = new ArrayList<>();
 
     public EventProcessorConfig() {
+        clock();
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
+        classSerializerMap.put(String.class, BasicTypeSerializer::stringToSource);
+        classSerializerMap.put(Character.class, BasicTypeSerializer::charToSource);
+        classSerializerMap.put(char.class, BasicTypeSerializer::charToSource);
+        classSerializerMap.put(Long.class, BasicTypeSerializer::longToSource);
+        classSerializerMap.put(long.class, BasicTypeSerializer::longToSource);
+        classSerializerMap.put(int.class, BasicTypeSerializer::intToSource);
+        classSerializerMap.put(Integer.class, BasicTypeSerializer::intToSource);
+        classSerializerMap.put(Short.class, BasicTypeSerializer::shortToSource);
+        classSerializerMap.put(short.class, BasicTypeSerializer::shortToSource);
+        classSerializerMap.put(Byte.class, BasicTypeSerializer::byteToSource);
+        classSerializerMap.put(byte.class, BasicTypeSerializer::byteToSource);
+        classSerializerMap.put(Double.class, BasicTypeSerializer::doubleToSource);
+        classSerializerMap.put(double.class, BasicTypeSerializer::doubleToSource);
+        classSerializerMap.put(Float.class, BasicTypeSerializer::floatToSource);
+        classSerializerMap.put(float.class, BasicTypeSerializer::floatToSource);
+        classSerializerMap.put(Boolean.class, BasicTypeSerializer::booleanToSource);
+        classSerializerMap.put(boolean.class, BasicTypeSerializer::booleanToSource);
+        classSerializerMap.put(Map.class, CollectionSerializer::mapToSource);
+        classSerializerMap.put(List.class, CollectionSerializer::listToSource);
+        classSerializerMap.put(Set.class, CollectionSerializer::setToSource);
         classSerializerMap.put(Duration.class, TimeSerializer::durationToSource);
         classSerializerMap.put(Instant.class, TimeSerializer::instantToSource);
         classSerializerMap.put(LocalDate.class, TimeSerializer::localDateToSource);
@@ -114,6 +112,9 @@ public class EventProcessorConfig {
         classSerializerMap.put(DateFormat.class, FormatSerializer::simpleDataFormatToSource);
         classSerializerMap.put(DecimalFormat.class, FormatSerializer::decimalFormatToSource);
         classSerializerMap.put(NumberFormat.class, FormatSerializer::decimalFormatToSource);
+        classSerializerMap.put(Class.class, MetaSerializer::classToSource);
+        classSerializerMap.put(MergeProperty.class, MetaSerializer::mergePropertyToSource);
+        classSerializerMap.put(LambdaReflection.MethodReferenceReflection.class, MetaSerializer::methodReferenceToSource);
     }
 
     /**
@@ -139,7 +140,8 @@ public class EventProcessorConfig {
         return (T) getNodeList().get(getNodeList().indexOf(node));
     }
 
-    public void addNode(Object... nodeList) {
+    public void addNode(Object node, Object... nodeList) {
+        addNode(node);
         Arrays.asList(nodeList).forEach(this::addNode);
     }
 
@@ -231,6 +233,13 @@ public class EventProcessorConfig {
         addAuditor(new EventLogManager().tracingOn(tracingLogLevel), EventLogManager.NODE_NAME);
     }
 
+    /**
+     * Add an {@link EventLogManager} auditor to the generated SEP without method tracing
+     */
+    public void addEventAudit() {
+        addAuditor(new EventLogManager().tracingOff(), EventLogManager.NODE_NAME);
+    }
+
     public void addEventAudit(LogLevel tracingLogLevel, boolean printEventToString) {
         addEventAudit(tracingLogLevel, printEventToString, true);
     }
@@ -288,6 +297,15 @@ public class EventProcessorConfig {
      */
     public HashMap<Object, String> getPublicNodes() {
         return publicNodes;
+    }
+
+    public <T> T getNode(String name) {
+        Object[] obj = new Object[1];
+        publicNodes.entrySet().stream()
+                .filter(e -> e.getValue().equals(name))
+                .findFirst()
+                .ifPresent(e -> obj[0] = e.getKey());
+        return (T) obj[0];
     }
 
     public void setPublicNodes(HashMap<Object, String> publicNodes) {
@@ -523,7 +541,8 @@ public class EventProcessorConfig {
                 EventProcessorCallbackInternalFactory.class,
                 EventProcessorContextFactory.class,
                 NodeNameLookupFactory.class,
-                SubscriptionManagerFactory.class
+                SubscriptionManagerFactory.class,
+                SinkPublisherFactory.class
         );
 
         private final HashSet<Class<? extends NodeFactory<?>>> defaultFactories = new HashSet<>();

@@ -6,15 +6,12 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Signal.IntSignal;
-import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
 import lombok.Data;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -74,14 +71,4 @@ public class RootNodeWithFactoryTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    @AutoService(NodeFactory.class)
-    public static class SignalGroupCalculatorFactory implements NodeFactory<SignalGroupCalculator> {
-
-        @Override
-        public SignalGroupCalculator createNode(Map<String, Object> config, NodeRegistry registry) {
-            @SuppressWarnings("unchecked")
-            List<String> keys = (List<String>) config.get("keys");
-            return new SignalGroupCalculator(keys.stream().map(SignalHandler::new).collect(Collectors.toList()));
-        }
-    }
 }
