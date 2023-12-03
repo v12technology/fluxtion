@@ -31,7 +31,7 @@ public class GroupingFactory<T, K, O, F extends AggregateFlowFunction<T, O, F>> 
     }
 
     public GroupByFlowFunctionWrapper<T, K, T, List<T>, AggregateToListFlowFunction<T>> groupByToList() {
-        SerializableSupplier<AggregateToListFlowFunction<T>> list = Collectors.toList();
+        SerializableSupplier<AggregateToListFlowFunction<T>> list = Collectors.listFactory();
         return new GroupByFlowFunctionWrapper<>(keyFunction, Mappers::identity, list);
     }
 

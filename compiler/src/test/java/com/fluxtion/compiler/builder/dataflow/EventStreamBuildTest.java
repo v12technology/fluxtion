@@ -27,13 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 
 import static com.fluxtion.compiler.builder.dataflow.DataFlow.*;
@@ -494,7 +488,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     @Test
     public void aggregateToLIstTest() {
         sep(c -> subscribe(String.class)
-                .aggregate(Collectors.toList(4))
+                .aggregate(Collectors.listFactory(4))
                 .id("myList"));
 
         onEvent("A");
@@ -546,6 +540,111 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), is(0));
     }
 
+    @Test
+    public void testMapToSet() {
+        sep(c -> DataFlow.subscribe(String.class).mapToSet().id("set"));
+        HashSet<String> set = new HashSet<>();
+        set.add("test");
+        onEvent("test");
+        onEvent("test");
+        assertThat(getStreamed("set"), is(set));
+        onEvent("test2");
+        set.add("test2");
+        assertThat(getStreamed("set"), is(set));
+        onEvent("test");
+        assertThat(getStreamed("set"), is(set));
+    }
+
+    @Test
+    public void testMapToSetFromProperty() {
+        sep(c -> DataFlow.subscribe(GroupByTest.Data.class).mapToSet(GroupByTest.Data::getName).id("set"));
+        HashSet<String> set = new HashSet<>();
+        set.add("test");
+        onEvent(new GroupByTest.Data("test", 22));
+        onEvent(new GroupByTest.Data("test", 31));
+        assertThat(getStreamed("set"), is(set));
+        onEvent(new GroupByTest.Data("test2", 2334));
+        set.add("test2");
+        assertThat(getStreamed("set"), is(set));
+        onEvent(new GroupByTest.Data("test", 31));
+        assertThat(getStreamed("set"), is(set));
+    }
+
+    @Test
+    public void testMapToList() {
+        sep(c -> DataFlow.subscribe(String.class).mapToList().id("list"));
+        List<String> list = new ArrayList<>();
+        list.add("test");
+        list.add("test");
+        onEvent("test");
+        onEvent("test");
+        assertThat(getStreamed("list"), is(list));
+        onEvent("test2");
+        list.add("test2");
+        assertThat(getStreamed("list"), is(list));
+        onEvent("test");
+        list.add("test");
+        assertThat(getStreamed("list"), is(list));
+    }
+
+    @Test
+    public void testMapToList_MaxElements() {
+        sep(c -> DataFlow.subscribe(String.class).mapToList(2).id("list"));
+        List<String> list = new ArrayList<>();
+        list.add("test");
+        list.add("test");
+        onEvent("test");
+        onEvent("test");
+        assertThat(getStreamed("list"), is(list));
+        //deleting
+        onEvent("test2");
+        list.add("test2");
+        list.remove(0);
+        assertThat(getStreamed("list"), is(list));
+        //deleting
+        onEvent("test");
+        list.add("test");
+        list.remove(0);
+        assertThat(getStreamed("list"), is(list));
+    }
+
+    @Test
+    public void testMapToListFromProperty() {
+        sep(c -> DataFlow.subscribe(GroupByTest.Data.class).mapToList(GroupByTest.Data::getName).id("list"));
+        List<String> list = new ArrayList<>();
+        list.add("test");
+        list.add("test");
+        onEvent(new GroupByTest.Data("test", 22));
+        onEvent(new GroupByTest.Data("test", 31));
+        assertThat(getStreamed("list"), is(list));
+        onEvent(new GroupByTest.Data("test2", 2334));
+        list.add("test2");
+        assertThat(getStreamed("list"), is(list));
+        onEvent(new GroupByTest.Data("test3", 3451));
+        list.add("test3");
+        assertThat(getStreamed("list"), is(list));
+    }
+
+    @Test
+    public void testMapToListFromProperty_MaxElements() {
+        sep(c -> DataFlow.subscribe(GroupByTest.Data.class).mapToList(GroupByTest.Data::getName, 2).id("list"));
+        List<String> list = new ArrayList<>();
+        list.add("test1");
+        list.add("test2");
+        onEvent(new GroupByTest.Data("test1", 22));
+        onEvent(new GroupByTest.Data("test2", 31));
+        assertThat(getStreamed("list"), is(list));
+        //deleting
+        onEvent(new GroupByTest.Data("test3", 2334));
+        list.add("test3");
+        list.remove(0);
+        assertThat(getStreamed("list"), is(list));
+        //deleting
+        onEvent(new GroupByTest.Data("tes4", 3451));
+        list.add("tes4");
+        list.remove(0);
+        assertThat(getStreamed("list"), is(list));
+    }
 
     @Value
     public static class Person {
@@ -554,11 +653,9 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         String gender;
     }
 
-
     public static int doubleInt(int value) {
         return value * 2;
     }
-
 
     @Value
     public static class MergedType {

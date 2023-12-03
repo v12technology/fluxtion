@@ -120,7 +120,7 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
     @Test
     public void nestedDataFlowGroupBy_toCollector() {
         sep(c -> {
-            DataFlow.groupBy(Person::getCountry, Collectors.groupingBy(Person::getGender, Collectors.toList()))
+            DataFlow.groupBy(Person::getCountry, Collectors.groupingBy(Person::getGender, Collectors.listFactory()))
                     .sink("groupBy");
         });
         this.addSink("groupBy", this::convertToMapList);
@@ -179,7 +179,7 @@ public class NestedGroupByTest extends MultipleSepTargetInProcessTest {
             subscribe(Person.class)
                     .groupBy(
                             Person::getCountry,
-                            Collectors.groupingBy(Person::getGender, Collectors.toList()))
+                            Collectors.groupingBy(Person::getGender, Collectors.listFactory()))
                     .sink("groupBy");
         });
         this.addSink("groupBy", this::convertToMapList);

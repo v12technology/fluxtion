@@ -5,13 +5,16 @@ import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.MergedType;
 import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.MyIntFilter;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.DoubleSumFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.IntSumFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy.KeyValue;
+import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
 import com.fluxtion.runtime.dataflow.helpers.Aggregates;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.helpers.Tuples;
+import lombok.Getter;
 import lombok.Value;
 import lombok.val;
 import org.hamcrest.CoreMatchers;
@@ -604,6 +607,163 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
         onEvent(new MyEvent(SubSystem.REFERENCE, Change_type.DELETE, "greg-1"));
     }
+
+    @Value
+    public static class Data3 {
+        String name;
+        int value;
+        int x;
+
+
+    }
+
+    @Getter
+    public static class Data3Aggregate implements AggregateFlowFunction<Data3, Integer, Data3Aggregate> {
+        int value;
+
+        @Override
+        public Integer reset() {
+            return value;
+        }
+
+        @Override
+        public Integer get() {
+            return value;
+        }
+
+        @Override
+        public Integer aggregate(Data3 input) {
+            value += input.getX();
+            return get();
+        }
+    }
+
+    @Test
+    public void groupingKey() {
+        Map<GroupByKey<Data3>, Data3> expected = new HashMap<>();
+        sep(c -> {
+            subscribe(Data3.class)
+                    .groupByFields(Data3::getName, Data3::getValue)
+                    .map(GroupBy::toMap)
+                    .id("results");
+        });
+        val keyFactory = GroupByKey.build(Data3::getName, Data3::getValue);//.apply();
+
+        onEvent(new Data3("A", 10, 1));
+        expected.put(keyFactory.apply(new Data3("A", 10, 1)), new Data3("A", 10, 1));
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data2 = new Data3("A", 10, 2);
+        onEvent(data2);
+        expected.put(keyFactory.apply(data2), data2);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data3 = new Data3("A", 10, 3);
+        onEvent(data3);
+        expected.put(keyFactory.apply(data3), data3);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data4 = new Data3("A", 15, 111);
+        onEvent(data4);
+        expected.put(keyFactory.apply(data4), data4);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB1 = new Data3("B", 10, 1);
+        onEvent(dataB1);
+        expected.put(keyFactory.apply(dataB1), dataB1);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB2 = new Data3("B", 10, 99);
+        onEvent(dataB2);
+        expected.put(keyFactory.apply(dataB2), dataB2);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+    }
+
+    @Test
+    public void aggregateCompoundField() {
+        Map<GroupByKey<Data3>, Integer> expected = new HashMap<>();
+        sep(c -> {
+            subscribe(Data3.class)
+                    .groupByFieldsAggregate(Data3Aggregate::new, Data3::getName, Data3::getValue)
+                    .map(GroupBy::toMap)
+                    .id("results");
+        });
+        val keyFactory = GroupByKey.build(Data3::getName, Data3::getValue);//.apply();
+
+        onEvent(new Data3("A", 10, 1));
+        expected.put(keyFactory.apply(new Data3("A", 10, 1)), 1);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data2 = new Data3("A", 10, 2);
+        onEvent(data2);
+        expected.put(keyFactory.apply(data2), 3);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data3 = new Data3("A", 10, 3);
+        onEvent(data3);
+        expected.put(keyFactory.apply(data3), 6);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data4 = new Data3("A", 15, 111);
+        onEvent(data4);
+        expected.put(keyFactory.apply(data4), 111);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB1 = new Data3("B", 10, 1);
+        onEvent(dataB1);
+        expected.put(keyFactory.apply(dataB1), 1);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB2 = new Data3("B", 10, 99);
+        onEvent(dataB2);
+        expected.put(keyFactory.apply(dataB2), 100);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+    }
+
+    @Test
+    public void aggregateExtractedPropertyCompoundField() {
+        Map<GroupByKey<Data3>, Integer> expected = new HashMap<>();
+        sep(c -> {
+            subscribe(Data3.class)
+                    .groupByFieldsGetAndAggregate(
+                            Data3::getX,
+                            Aggregates.intSumFactory(),
+                            Data3::getName, Data3::getValue)
+                    .map(GroupBy::toMap)
+                    .id("results");
+        });
+        val keyFactory = GroupByKey.build(Data3::getName, Data3::getValue);//.apply();
+
+        onEvent(new Data3("A", 10, 1));
+        expected.put(keyFactory.apply(new Data3("A", 10, 1)), 1);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data2 = new Data3("A", 10, 2);
+        onEvent(data2);
+        expected.put(keyFactory.apply(data2), 3);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data3 = new Data3("A", 10, 3);
+        onEvent(data3);
+        expected.put(keyFactory.apply(data3), 6);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 data4 = new Data3("A", 15, 111);
+        onEvent(data4);
+        expected.put(keyFactory.apply(data4), 111);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB1 = new Data3("B", 10, 1);
+        onEvent(dataB1);
+        expected.put(keyFactory.apply(dataB1), 1);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+
+        Data3 dataB2 = new Data3("B", 10, 99);
+        onEvent(dataB2);
+        expected.put(keyFactory.apply(dataB2), 100);
+        MatcherAssert.assertThat(getStreamed("results"), is(expected));
+    }
+
 
     public static MyModel updateItemScalar(MyModel model, MyEvent myEvent) {
         model.createItem(myEvent.getData());
