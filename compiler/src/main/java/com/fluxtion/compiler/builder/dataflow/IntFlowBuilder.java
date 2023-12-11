@@ -101,7 +101,7 @@ public class IntFlowBuilder implements FlowDataSupplier<IntFlowSupplier> {
         return new IntFlowBuilder(new MapInt2ToIntFlowFunction(eventStream, int2IntFunction));
     }
 
-    public IntFlowBuilder mapBiFunction(SerializableBiIntFunction int2IntFunction, IntFlowBuilder stream2Builder) {
+    public IntFlowBuilder map(SerializableBiIntFunction int2IntFunction, IntFlowBuilder stream2Builder) {
         return new IntFlowBuilder(
                 new BinaryMapToIntFlowFunction<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)

@@ -7,14 +7,7 @@ import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToRefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.GroupBy;
-import com.fluxtion.runtime.dataflow.groupby.GroupByFilterFlowFunctionWrapper;
-import com.fluxtion.runtime.dataflow.groupby.GroupByMapFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.GroupByReduceFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.InnerJoin;
-import com.fluxtion.runtime.dataflow.groupby.LeftJoin;
-import com.fluxtion.runtime.dataflow.groupby.OuterJoin;
-import com.fluxtion.runtime.dataflow.groupby.RightJoin;
+import com.fluxtion.runtime.dataflow.groupby.*;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
@@ -94,7 +87,6 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
     GroupByFlowBuilder<K, VOUT> biMapValuesByKey(
             SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
             GroupByFlowBuilder<K2, V2> secondArgumentStream) {
-        GroupByMapFlowFunction invoker = new GroupByMapFlowFunction(null, mappingBiFunction, null);
         return biMapValuesByKey(mappingBiFunction, secondArgumentStream, null);
     }
 

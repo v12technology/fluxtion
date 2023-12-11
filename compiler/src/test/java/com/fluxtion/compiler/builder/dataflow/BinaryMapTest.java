@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribeToInt;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -30,8 +31,43 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(Data_1.class)
                         .mapToInt(Data_1::getIntValue)
-                        .mapBiFunction(BinaryMapTest::add, subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
+                        .map(BinaryMapTest::add, subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
                         .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
+        NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        onEvent(new Data_1(10));
+        assertThat(target.getIntPushValue(), is(0));
+        onEvent(new Data_1(20));
+        assertThat(target.getIntPushValue(), is(0));
+        onEvent(new Data_2(80));
+        assertThat(target.getIntPushValue(), is(100));
+    }
+
+    @Test
+    public void testIntBinaryFunctionWithProperty() {
+        sep(c ->
+                subscribe(Data_1::getIntValue)
+                        .mapToInt(Integer::intValue)
+                        .map(BinaryMapTest::add, subscribe(Data_2.class).mapToInt(Data_2::getIntValue))
+                        .push(new NotifyAndPushTarget()::setIntPushValue)
+        );
+        NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
+        onEvent(new Data_1(10));
+        assertThat(target.getIntPushValue(), is(0));
+        onEvent(new Data_1(20));
+        assertThat(target.getIntPushValue(), is(0));
+        onEvent(new Data_2(80));
+        assertThat(target.getIntPushValue(), is(100));
+    }
+
+    @Test
+    public void testIntBinaryFunctionWitIntProperty() {
+        sep(c -> {
+                    IntFlowBuilder data1ValueStream = subscribeToInt(Data_1::getIntValue);
+                    IntFlowBuilder data2ValueStream = subscribeToInt(Data_2::getIntValue);
+                    data1ValueStream.map(BinaryMapTest::add, data2ValueStream)
+                            .push(new NotifyAndPushTarget()::setIntPushValue);
+                }
         );
         NotifyAndPushTarget target = getField(NotifyAndPushTarget.DEFAULT_NAME);
         onEvent(new Data_1(10));
@@ -82,7 +118,7 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c ->
                 subscribe(Data_1.class)
                         .mapToInt(Data_1::getIntValue)
-                        .mapBiFunction(BinaryMapTest::add,
+                        .map(BinaryMapTest::add,
                                 subscribe(Data_2.class).mapToInt(Data_2::getIntValue).defaultValue(50)
                         )
                         .push(new NotifyAndPushTarget()::setIntPushValue)
@@ -101,9 +137,9 @@ public class BinaryMapTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             IntFlowBuilder int1 = subscribe(Data_1.class).mapToInt(Data_1::getIntValue);
             IntFlowBuilder int2 = subscribe(Data_2.class).mapToInt(Data_2::getIntValue);
-            int1.mapBiFunction(Mappers.ADD_INTS, int2).id("add");
-            int1.mapBiFunction(Mappers.SUBTRACT_INTS, int2).id("subtract");
-            int1.mapBiFunction(Mappers.MULTIPLY_INTS, int2).id("multiply");
+            int1.map(Mappers.ADD_INTS, int2).id("add");
+            int1.map(Mappers.SUBTRACT_INTS, int2).id("subtract");
+            int1.map(Mappers.MULTIPLY_INTS, int2).id("multiply");
         });
 
         onEvent(new Data_1(10));

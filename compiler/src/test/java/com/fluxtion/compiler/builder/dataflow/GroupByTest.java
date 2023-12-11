@@ -68,7 +68,12 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     public void groupByAsListIdentityTest() {
         Map<String, List<Data>> expected = new HashMap<>();
         sep(c -> {
-            DataFlow.subscribe(Data.class)
+
+
+            FlowBuilder<Data> dataFlow = subscribe(Data.class);
+//            dataFlow.map(Data::getValue)
+
+            dataFlow
                     .groupByToList(Data::getName)
                     .map(GroupBy::toMap).id("results");
         });
@@ -503,12 +508,9 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     public void bimapKeyedParamStream() {
         Map<String, KeyedData> expected = new HashMap<>();
         sep(c -> {
-            subscribe(KeyedData.class).groupBy(KeyedData::getId)
-                    .biMapValuesByKey(
-                            GroupByTest::applyFactor,
-                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()),
-                            new Data("default", 3)
-                    )
+            val stream_1 = subscribe(KeyedData.class).groupBy(KeyedData::getId);
+            val stream_2 = subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection());
+            stream_1.biMapValuesByKey(GroupByTest::applyFactor, stream_2, new Data("default", 3))
                     .map(GroupBy::toMap)
                     .id("results");
         });
@@ -613,8 +615,6 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         String name;
         int value;
         int x;
-
-
     }
 
     @Getter

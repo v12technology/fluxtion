@@ -74,4 +74,18 @@ public class PeekFlowFunction<T, S extends FlowFunction<T>> extends AbstractFlow
         }
     }
 
+
+//    @ToString
+//    public static class ColumnPeekFlowFunction extends PeekFlowFunction<Integer, ColumnFl> implements IntFlowFunction {
+//
+//        public IntPeekFlowFunction(IntFlowFunction inputEventStream, SerializableConsumer<? super Integer> eventStreamConsumer) {
+//            super(inputEventStream, eventStreamConsumer);
+//        }
+//
+//        @Override
+//        public int getAsInt() {
+//            return getInputEventStream().getAsInt();
+//        }
+//    }
+
 }

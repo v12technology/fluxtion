@@ -172,7 +172,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             //inputs
             IntFlowBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue);
             IntFlowBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue);
-            int1.mapBiFunction(Mappers::divideInts, int2).id("divide")
+            int1.map(Mappers::divideInts, int2).id("divide")
                     .updateTrigger(
                             new AllUpdatedPredicate(
                                     StreamHelper.getSourcesAsList(int1, int2),
@@ -196,7 +196,7 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
             //inputs
             IntFlowBuilder int1 = subscribe(BinaryMapTest.Data_1.class).mapToInt(BinaryMapTest.Data_1::getIntValue);
             IntFlowBuilder int2 = subscribe(BinaryMapTest.Data_2.class).mapToInt(BinaryMapTest.Data_2::getIntValue);
-            int1.mapBiFunction(Mappers::divideInts, int2).id("divide")
+            int1.map(Mappers::divideInts, int2).id("divide")
                     .updateTrigger(PredicateBuilder.allChangedWithReset(subscribe(String.class), int1, int2));
         });
         onEvent(new BinaryMapTest.Data_1(100));

@@ -9,6 +9,8 @@ import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.DefaultEventHandlerNode;
+import com.fluxtion.runtime.node.DefaultEventToColumnHandlerNode;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -36,6 +38,47 @@ public interface DataFlow {
         return new FlowBuilder<>(
                 EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription))
         );
+    }
+
+    static <T> ColumFlowBuilder<T> buildColumn(Class<T> classSubscription) {
+        DefaultEventToColumnHandlerNode<T> columnSubscriber = EventProcessorBuilderService.service().addOrReuse(new DefaultEventToColumnHandlerNode<>(classSubscription));
+        return new ColumFlowBuilder<>(columnSubscriber);
+    }
+
+    static <T, R> ColumFlowBuilder<R> buildColumn(SerializableFunction<T, R> sourceProperty) {
+        Class<T> classSubscription = (Class<T>) sourceProperty.getContainingClass();
+        DefaultEventToColumnHandlerNode<T> columnSubscriber = EventProcessorBuilderService.service().addOrReuse(new DefaultEventToColumnHandlerNode<>(classSubscription));
+        return new ColumFlowBuilder<>(columnSubscriber).map(sourceProperty);
+    }
+
+    @SuppressWarnings("unckecked")
+    static <T, R> FlowBuilder<R> subscribe(SerializableFunction<T, R> sourceProperty) {
+        Class<T> classSubscription = (Class<T>) sourceProperty.getContainingClass();
+        return new FlowBuilder<>(
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription)))
+                .map(sourceProperty);
+    }
+
+    @SuppressWarnings("unckecked")
+    static <T> IntFlowBuilder subscribeToInt(LambdaReflection.SerializableToIntFunction<T> sourceProperty) {
+        Class<T> classSubscription = (Class<T>) sourceProperty.getContainingClass();
+        return new FlowBuilder<>(
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription)))
+                .mapToInt(sourceProperty);
+    }
+
+    static <T> DoubleFlowBuilder subscribeToDouble(LambdaReflection.SerializableToDoubleFunction<T> sourceProperty) {
+        Class<T> classSubscription = (Class<T>) sourceProperty.getContainingClass();
+        return new FlowBuilder<>(
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription)))
+                .mapToDouble(sourceProperty);
+    }
+
+    static <T> LongFlowBuilder subscribeToDouble(LambdaReflection.SerializableToLongFunction<T> sourceProperty) {
+        Class<T> classSubscription = (Class<T>) sourceProperty.getContainingClass();
+        return new FlowBuilder<>(
+                EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription)))
+                .mapToLong(sourceProperty);
     }
 
     /**

@@ -51,7 +51,7 @@ public class SignalTest extends MultipleSepTargetInProcessTest {
     public void subscribeWithDefaultValue() {
         sep(c -> {
             subscribeToIntSignal("A")
-                    .mapBiFunction(Mappers.ADD_INTS, subscribeToIntSignal("B", 10)).id("ansInt");
+                    .map(Mappers.ADD_INTS, subscribeToIntSignal("B", 10)).id("ansInt");
 
             subscribeToDoubleSignal("P")
                     .mapBiFunction(Mappers.ADD_DOUBLES, subscribeToDoubleSignal("Q", 2.5)).id("ansDouble");

@@ -2,9 +2,12 @@ package com.fluxtion.runtime.dataflow.helpers;
 
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.builder.Inject;
+import com.fluxtion.runtime.dataflow.column.Column;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.time.Clock;
+
+import java.util.List;
 
 public interface Peekers {
 
@@ -55,4 +58,9 @@ public interface Peekers {
         }
     }
 
+
+    static <T> List<T> columnToList(Object in) {
+        Column<T> column = (Column<T>) in;
+        return column.values();
+    }
 }
