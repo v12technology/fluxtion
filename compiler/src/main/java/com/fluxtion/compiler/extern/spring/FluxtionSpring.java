@@ -6,11 +6,14 @@ import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.util.ClassUtils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -44,6 +47,24 @@ public class FluxtionSpring {
         this.context = context;
     }
 
+    public static EventProcessor<?> compileAot(File springFile, String className, String packageName) {
+        return new FluxtionSpring(springFile.toURI().toString())._compileAot(
+                c -> {
+                    c.setClassName(className);
+                    c.setPackageName(packageName);
+                });
+    }
+
+    @SneakyThrows
+    public static EventProcessor<?> compileAot(ClassLoader classLoader, File springFile, String className, String packageName) {
+        ClassUtils.overrideThreadContextClassLoader(classLoader);
+        return new FluxtionSpring(springFile.toURI().toString())._compileAot(c -> {
+            c.setClassName(className);
+            c.setPackageName(packageName);
+            c.setCompileSource(false);
+        });
+    }
+
     public static EventProcessor<?> compileAot(
             Path springFile,
             SerializableConsumer<FluxtionCompilerConfig> compilerConfig) {
@@ -62,6 +83,13 @@ public class FluxtionSpring {
             ApplicationContext context,
             SerializableConsumer<FluxtionCompilerConfig> compilerConfig) {
         return new FluxtionSpring(context)._compileAot(compilerConfig);
+    }
+
+    public static EventProcessor<?> compileAot(ApplicationContext context, String className, String packageName) {
+        return new FluxtionSpring(context)._compileAot(c -> {
+            c.setClassName(className);
+            c.setPackageName(packageName);
+        });
     }
 
     public static EventProcessor<?> compileAot(
