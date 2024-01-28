@@ -26,12 +26,10 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import lombok.Data;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.runtime.partition.LambdaReflection.getMethod;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,17 +37,16 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author V12 Technology Ltd.
  */
-public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
+public class HandlerAsDependencyTest extends MultipleSepTargetInProcessTest {
 
-    public HandlerAsDependency(SepTestConfig compiledSep) {
+    public HandlerAsDependencyTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
 
     @Test
     public void testModel() throws Exception {
         TopologicallySortedDependencyGraph graph = new TopologicallySortedDependencyGraph(
-                Arrays.asList(new ChildNoEventHandler(new StringHandler()))
-        );
+                new ChildNoEventHandler(new StringHandler()));
         SimpleEventProcessorModel sep = new SimpleEventProcessorModel(graph);
         sep.generateMetaModel();
         assertThat(
@@ -65,32 +62,9 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noHandlerAsDependency() {
+//        writeSourceFile = true;
         sep((c) -> c.addNode(new ChildNoEventHandler(new StringHandler()), "intHandler"));
-        if (simpleEventProcessorModel == null) {
-            return;
-        }
-        assertThat(
-                simpleEventProcessorModel.getDispatchMapForGraph().stream()
-                        .map(CbMethodHandle::getMethod)
-                        .collect(Collectors.toList()),
-                is(Arrays.asList(
-                        getMethod(StringHandler::newString),
-                        getMethod(ChildNoEventHandler::updated))
-                )
-        );
-
         //order unimportant
-        assertThat(
-                simpleEventProcessorModel.getDispatchMapForGraph().stream()
-                        .map(CbMethodHandle::getMethod)
-                        .collect(Collectors.toList()),
-                hasItems(
-                        getMethod(StringHandler::newString),
-                        getMethod(ChildNoEventHandler::updated)
-                )
-        );
-
-
         ChildNoEventHandler intHandler = getField("intHandler");
         assertFalse(intHandler.notified);
         //int
@@ -101,6 +75,19 @@ public class HandlerAsDependency extends MultipleSepTargetInProcessTest {
         onEvent("hello world");
         assertTrue(intHandler.notified);
         assertTrue(intHandler.parent.isNotified());
+
+        if (simpleEventProcessorModel != null) {
+            assertThat(
+                    simpleEventProcessorModel.getDispatchMapForGraph().stream()
+                            .map(CbMethodHandle::getMethod)
+                            .collect(Collectors.toList()),
+                    hasItems(
+                            getMethod(StringHandler::newString),
+                            getMethod(ChildNoEventHandler::updated)
+                    )
+            );
+        }
+
     }
 
 
