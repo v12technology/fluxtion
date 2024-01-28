@@ -65,8 +65,8 @@ public class RootNodeWithFactoryAndYamlConfigTest {
     private static final String interpretString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
             "  packageName: com.mypackage\n" +
-            "  compileSource: false\n" +
             "  formatSource: false\n" +
+            "  interpreted: true\n" +
             "  generateDescription: false\n" +
             "  writeSourceToFile: false\n" +
             "configMap:\n" +
@@ -78,7 +78,7 @@ public class RootNodeWithFactoryAndYamlConfigTest {
     private static final String interpretNoConfigString = "compilerConfig:\n" +
             "  className: MyProcessor\n" +
             "  packageName: com.mypackage\n" +
-            "  compileSource: false\n" +
+            "  interpreted: true\n" +
             "  formatSource: false\n" +
             "  generateDescription: false\n" +
             "  writeSourceToFile: false\n" +

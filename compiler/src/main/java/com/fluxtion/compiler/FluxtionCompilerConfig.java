@@ -18,6 +18,8 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.OutputRegistry;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -58,6 +60,12 @@ public class FluxtionCompilerConfig {
      * Attempt to compile the generated source files
      */
     private boolean compileSource;
+    /**
+     * Generate an interpreted version
+     */
+    @Getter
+    @Setter
+    private boolean interpreted = false;
     /**
      * Attempt to format the generated source files
      */
@@ -226,6 +234,7 @@ public class FluxtionCompilerConfig {
                 + ", buildOutputdirectory=" + buildOutputDirectory
                 + ", writeSourceToFile=" + writeSourceToFile
                 + ", compileSource=" + compileSource
+                + ", interpreted=" + interpreted
                 + ", formatSource=" + formatSource
                 + ", templateSep=" + templateSep
                 + ", generateDescription=" + generateDescription
