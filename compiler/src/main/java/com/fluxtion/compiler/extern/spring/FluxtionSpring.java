@@ -4,6 +4,7 @@ import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
 import lombok.SneakyThrows;
@@ -15,6 +16,8 @@ import org.springframework.util.ClassUtils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -147,10 +150,27 @@ public class FluxtionSpring {
 
     private void addNodes(EventProcessorConfig config) {
         LOGGER.debug("loading spring context:{}", context);
+        List<Auditor> auditorMap = new ArrayList<>();
         for (String beanDefinitionName : context.getBeanDefinitionNames()) {
             Object bean = context.getBean(beanDefinitionName);
-            LOGGER.debug("adding bean:{} to fluxtion", beanDefinitionName);
-            config.addNode(bean, beanDefinitionName);
+            if (bean instanceof FluxtionSpringConfig) {
+                FluxtionSpringConfig springConfig = (FluxtionSpringConfig) bean;
+                auditorMap.addAll(springConfig.getAuditors());
+                config.addEventAudit(springConfig.getLogLevel());
+            }
+        }
+
+        for (String beanDefinitionName : context.getBeanDefinitionNames()) {
+            Object bean = context.getBean(beanDefinitionName);
+            if (!(bean instanceof FluxtionSpringConfig)) {
+                if (bean instanceof Auditor && auditorMap.contains(bean)) {
+                    LOGGER.debug("adding auditor:{} to fluxtion", beanDefinitionName);
+                    config.addAuditor((Auditor) bean, beanDefinitionName);
+                } else {
+                    LOGGER.debug("adding bean:{} to fluxtion", beanDefinitionName);
+                    config.addNode(bean, beanDefinitionName);
+                }
+            }
         }
         configCustomizer.accept(config);
     }
