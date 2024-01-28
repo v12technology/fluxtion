@@ -206,9 +206,8 @@ public class EventProcessorFactory {
             FluxtionCompilerConfig fluxtionCompilerConfig)
             throws Exception {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
-        Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
-        EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        return sep;
+        Class<EventProcessor<?>> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
+        return fluxtionCompilerConfig.isCompileSource() ? sepClass.getDeclaredConstructor().newInstance() : null;
     }
 
     private static class InProcessEventProcessorConfig extends EventProcessorConfig {
