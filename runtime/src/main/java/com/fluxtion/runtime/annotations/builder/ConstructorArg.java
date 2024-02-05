@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.annotations.builder;
@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
  * Marks a reference as an instance that will be used in the constructor. By default only final, non-static, non-public, non-transient
  * members are used in the constructor.
  * <p>
- *
  *
  * @author Greg Higgins
  */

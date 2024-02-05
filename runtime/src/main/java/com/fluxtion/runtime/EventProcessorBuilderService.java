@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
  * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the
  * context.
  *
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  */
 public interface EventProcessorBuilderService {
 

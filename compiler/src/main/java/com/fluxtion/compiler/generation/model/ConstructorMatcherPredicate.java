@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 V12 Technology Ltd.
+ * Copyright (C) 2021 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  */
 @SuppressWarnings("rawtypes")
 class ConstructorMatcherPredicate implements Predicate<Constructor> {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2018 V12 Technology Ltd.
+Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ Copyright (C) 2018 V12 Technology Ltd.
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.1.16-SNAPSHOT</version>
+        <version>9.1.17-SNAPSHOT</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
