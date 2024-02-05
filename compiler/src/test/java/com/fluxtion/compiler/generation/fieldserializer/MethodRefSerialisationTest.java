@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, V12 Technology Ltd.
+ * Copyright (c) 2020, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.annotations.builder;
@@ -23,14 +23,13 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a reference as an instance that will not be added to the node graph. Can be useful to anchor nodes where the
- * anchor does not need to be in the final graph. 
+ * anchor does not need to be in the final graph.
  * <p>
- *
  *
  * @author Greg Higgins
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value={ElementType.TYPE, ElementType.FIELD})
+@Target(value = {ElementType.TYPE, ElementType.FIELD})
 public @interface ExcludeNode {
 
 }

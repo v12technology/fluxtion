@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 V12 Technology Ltd.
+ * Copyright (C) 2019 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -46,7 +46,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
  * the {@link Event} and the handler and propagate the Event conditional upon a
  * valid match.
  *
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  * @see OnEventHandler
  * @see EventHandlerNode
  */

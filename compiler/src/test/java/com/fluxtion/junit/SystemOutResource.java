@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, V12 Technology Ltd.
+ * Copyright (c) 2020, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12,17 +12,17 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.junit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import org.junit.rules.ExternalResource;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 /**
- *
  * @author Greg Higgins greg.higgins@v12technology.com
  */
 public class SystemOutResource extends ExternalResource {
@@ -44,8 +44,8 @@ public class SystemOutResource extends ExternalResource {
     public String asString() {
         return outContent.toString();
     }
-    
-    public void clear(){
+
+    public void clear() {
         outContent.reset();
     }
 }
