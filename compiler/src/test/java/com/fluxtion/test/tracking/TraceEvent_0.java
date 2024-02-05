@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2019, V12 Technology Ltd.
+/*
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12,27 +12,27 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
 
 import com.fluxtion.runtime.event.Event;
+
 import java.util.ArrayList;
 
 /**
- *
  * @author Greg Higgins
  */
-public class TraceEvent_0 implements Event{
-    
+public class TraceEvent_0 implements Event {
+
     public int intValue;
     public String strValue;
     public Object objValue;
     public ArrayList traceList = new ArrayList();
     public ArrayList<String> traceIdList = new ArrayList();
-    
-    public void reset(){
+
+    public void reset() {
         intValue = 0;
         strValue = null;
         objValue = null;

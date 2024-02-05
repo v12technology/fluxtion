@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,7 +11,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.partition;
@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
- *
  * @author Greg Higgins
  */
 public interface LambdaReflection {
@@ -43,20 +42,20 @@ public interface LambdaReflection {
                 throw new RuntimeException(e);
             }
         }
-        
+
         default Class<?> getContainingClass(ClassLoader loader) {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
-                return Class.forName(className, true,  loader);
+                return Class.forName(className, true, loader);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        
+
         default Class<?> getContainingClass() {
             try {
                 String className = serialized().getImplClass().replaceAll("/", ".");
-                return Class.forName(className );
+                return Class.forName(className);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -70,7 +69,7 @@ public interface LambdaReflection {
             }
             return args;
         }
-        
+
         default Method method(ClassLoader loader) {
             SerializedLambda lambda = serialized();
             Class<?> containingClass = getContainingClass(loader);
@@ -79,8 +78,8 @@ public interface LambdaReflection {
                     .findFirst()
                     .orElseThrow(UnableToGuessMethodException::new);
         }
-        
-        default boolean isDefaultConstructor(){
+
+        default boolean isDefaultConstructor() {
             return serialized().getImplMethodName().equalsIgnoreCase("<init>");
         }
 
@@ -93,12 +92,13 @@ public interface LambdaReflection {
                     .findFirst()
                     .orElseThrow(UnableToGuessMethodException::new);
         }
-        
+
         class UnableToGuessMethodException extends RuntimeException {
         }
     }
 
-    interface SerializableRunnable extends Runnable,  Serializable, MethodReferenceReflection {}
+    interface SerializableRunnable extends Runnable, Serializable, MethodReferenceReflection {
+    }
 
     interface SerializableSupplier<t> extends Supplier<t>, Serializable, MethodReferenceReflection {
     }
@@ -222,20 +222,21 @@ public interface LambdaReflection {
     interface TriFunction<F, T, U, R> {
         R apply(F f, T t, U u);
     }
+
     @FunctionalInterface
     interface QuadFunction<F, T, U, V, R> {
         R apply(F f, T t, U u, V v);
     }
 
-    static <T> Method getMethod(LambdaReflection.SerializableConsumer<T> supplier){
+    static <T> Method getMethod(LambdaReflection.SerializableConsumer<T> supplier) {
         return supplier.method();
     }
 
-    static <T, R> Method getMethod(LambdaReflection.SerializableFunction<T, R> supplier){
+    static <T, R> Method getMethod(LambdaReflection.SerializableFunction<T, R> supplier) {
         return supplier.method();
     }
 
-    static <T, I, R> Method getMethod(LambdaReflection.SerializableBiFunction<T, I, R> supplier){
+    static <T, I, R> Method getMethod(LambdaReflection.SerializableBiFunction<T, I, R> supplier) {
         return supplier.method();
     }
 

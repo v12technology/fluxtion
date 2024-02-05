@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2018 V12 Technology Ltd.
+/*
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,14 +11,14 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.annotations;
 
 /**
  * Filter match strategy for an {@link OnEventHandler}.
- *
+ * <p>
  * Available strategies are:
  * <ul>
  * <li> {@link FilterType#matched} Only matching filters allow event
@@ -31,5 +31,6 @@ package com.fluxtion.runtime.annotations;
  */
 public enum FilterType {
     matched,
-    defaultCase,;
+    defaultCase,
+    ;
 }
