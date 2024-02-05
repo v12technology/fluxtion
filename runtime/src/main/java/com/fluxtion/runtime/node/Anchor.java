@@ -8,7 +8,7 @@ import lombok.Value;
  * Creates a happens before relationship between two nodes even if there is no dependency relationship between the
  * nodes.
  *
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  */
 @Value
 public class Anchor {

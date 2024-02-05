@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * Marks a method as bound to {@link Lifecycle#start()} ()} () } phase. A valid
  * initialise method accepts no arguments.
  *
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  * @see Lifecycle
  */
 @Retention(RetentionPolicy.RUNTIME)

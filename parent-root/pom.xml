@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (C) 2017-2020 V12 Technology Limited
+ * Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
  *
  * This file is part of Fluxtion.
  *
@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>9.1.16</version>
+    <version>9.1.17</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
 
@@ -51,7 +51,6 @@
         <developer>
             <name>Greg Higgins</name>
             <email>greg.higgins@v12technology.com</email>
-            <organization>V12 Technology Limited</organization>
         </developer>
     </developers>
 

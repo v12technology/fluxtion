@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 V12 Technology Ltd.
+ * Copyright (C) 2020 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,7 +11,7 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.audit;
@@ -63,14 +63,14 @@ public class StructuredLogRecord {
         return (String) map.get("event");
     }
 
-    public List< Map> nodeLogs() {
-        return (List< Map>) map.get("nodeLogs");
+    public List<Map> nodeLogs() {
+        return (List<Map>) map.get("nodeLogs");
     }
 
     public List<AuditRecord> getAuditLogs() {
         if (auditList == null) {
             LongAdder accumulator = new LongAdder();
-            auditList = ((List< Map>) map.get("nodeLogs")).stream().map(m -> {
+            auditList = ((List<Map>) map.get("nodeLogs")).stream().map(m -> {
                 Map.Entry entry = (Map.Entry) m.entrySet().iterator().next();
                 final AuditRecord auditRecord = new AuditRecord(entry, accumulator.intValue());
                 accumulator.increment();

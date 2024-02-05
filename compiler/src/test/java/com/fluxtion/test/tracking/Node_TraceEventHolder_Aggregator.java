@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2019, V12 Technology Ltd.
+/*
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.tracking;
@@ -23,7 +23,6 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 
 /**
- *
  * @author Greg Higgins
  */
 public class Node_TraceEventHolder_Aggregator implements TraceEventHolder {
@@ -70,18 +69,18 @@ public class Node_TraceEventHolder_Aggregator implements TraceEventHolder {
         @Override
         @OnParentUpdate
         public void onParentUpdate(TraceEventHolder parentHandler) {
-            super.onParentUpdate(parentHandler); 
+            super.onParentUpdate(parentHandler);
         }
 
         @Override
         @OnTrigger
         public boolean onEvent() {
-            return super.onEvent(); 
+            return super.onEvent();
         }
-        
+
         @AfterEvent
-        public void afterEvent(){
-            if(getTraceEvent()!=null)
+        public void afterEvent() {
+            if (getTraceEvent() != null)
                 getTraceEvent().getTraceAfterEventIdList().add(traceId);
         }
 
@@ -99,17 +98,17 @@ public class Node_TraceEventHolder_Aggregator implements TraceEventHolder {
         @Override
         @OnParentUpdate
         public void onParentUpdate(TraceEventHolder parentHandler) {
-            super.onParentUpdate(parentHandler); 
+            super.onParentUpdate(parentHandler);
         }
 
         @Override
         @OnTrigger
         public boolean onEvent() {
-            return super.onEvent(); 
+            return super.onEvent();
         }
-        
+
         @AfterTrigger
-        public void onEventComplete(){
+        public void onEventComplete() {
             getTraceEvent().getTraceEventCompleteIdList().add(traceId);
         }
 

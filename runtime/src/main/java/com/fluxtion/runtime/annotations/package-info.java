@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 V12 Technology Ltd.
+ * Copyright (C) 2019 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -11,13 +11,13 @@
  * Server Side License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 /**
  * This package contains a set of annotations providing meta-data to the Fluxtion
  * static event compiler.<p>
- *
+ * <p>
  * Compiled user classes are inspected for annotations to generate meta-data.
  * Class
  * information, meta-data and configuration are all extracted by the Fluxtion
@@ -26,11 +26,11 @@
  * Event
  * Processor (SEP)
  * .<p>
- *
+ * <p>
  * The annotations are only used at build time and are not used at runtime by
  * the
  * generated SEP.<p>
- *
+ * <p>
  * Annotations can be classified in the following categories:
  * <ul>
  * <li>Construction - used to bind nodes together in the execution graph
@@ -40,7 +40,7 @@
  * <li>Generation config - Providing instructions to guide the Fluxtion Static
  * Event Compiler
  * </ul>
- *<p>
+ * <p>
  * A SEP
  * processes event handling methods in two phases:
  * <ul>
