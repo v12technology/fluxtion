@@ -42,13 +42,13 @@ ${MODEL.javaDocEventClassList}
 * </ul>
 * @author Greg Higgins
 */
-@SuppressWarnings({"deprecation","unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ${className} implements
 EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
 
 //Node declarations
 ${MODEL.nodeDeclarations}
-    private ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
+    private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
 //Dirty flags
 private boolean initCalled = false;
 private boolean processing = false;
