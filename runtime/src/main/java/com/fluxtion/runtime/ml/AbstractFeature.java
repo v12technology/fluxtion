@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.ml;
 
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public abstract class AbstractFeature implements Feature, CalibrationProcessor {
     }
 
     @Override
+    @NoPropagateFunction
     public boolean setCalibration(List<Calibration> calibrations) {
         for (int i = 0, calibrationsSize = calibrations.size(); i < calibrationsSize; i++) {
             Calibration calibration = calibrations.get(i);
