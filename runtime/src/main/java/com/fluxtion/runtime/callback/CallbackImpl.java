@@ -117,4 +117,9 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHa
     public void processAsNewEventCycle(Object event) {
         callBackDispatcher.processAsNewEventCycle(event);
     }
+
+    @Override
+    public <S> S getService() {
+        return callBackDispatcher.getService();
+    }
 }

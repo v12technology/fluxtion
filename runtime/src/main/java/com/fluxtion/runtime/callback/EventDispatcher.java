@@ -14,4 +14,7 @@ public interface EventDispatcher {
     void processReentrantEvents(Iterable<Object> iterable);
 
     void processAsNewEventCycle(Object event);
+
+    //TODO make this implicitly process the service callbacks as new cycles after the current graph cycle has completed
+    <T> T getService();
 }

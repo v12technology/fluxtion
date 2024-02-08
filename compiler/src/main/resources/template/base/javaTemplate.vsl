@@ -244,6 +244,11 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
+    public <T> T getService() {
+        return getExportedService();
+    }
+
+    @Override
     public String getLastAuditLogRecord() {
         try {
             EventLogManager eventLogManager = (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);

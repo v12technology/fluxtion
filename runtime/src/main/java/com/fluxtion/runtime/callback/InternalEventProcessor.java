@@ -20,4 +20,8 @@ public interface InternalEventProcessor {
     void setDirty(Object node, boolean dirtyFlag);
 
     <T> T getNodeById(String id) throws NoSuchFieldException;
+
+    default <T> T getService() {
+        return null;
+    }
 }

@@ -82,6 +82,11 @@ public class CallbackDispatcherImpl implements EventProcessorCallbackInternal, N
     }
 
     @Override
+    public <T> T getService() {
+        return eventProcessor.getService();
+    }
+
+    @Override
     public String getName() {
         return CallbackDispatcher.DEFAULT_NODE_NAME;
     }

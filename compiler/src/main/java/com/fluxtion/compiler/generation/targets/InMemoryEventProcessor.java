@@ -527,6 +527,10 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
     }
 
+    public <T> T getService() {
+        return getExportedService();
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> T getExportedService() {
@@ -591,7 +595,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 delegateOnEvent + "\n" +
                 exportedMethods + "\n" +
                 "}");
-//        System.out.println(sb.toString());
+        //TODO uncomment
+        //System.out.println(sb.toString());
         Class clazz = StringCompilation.compile(fqn, sb.toString());
         exportingWrapper = clazz.getConstructor(InMemoryEventProcessor.class).newInstance(this);
         return (T) exportingWrapper;

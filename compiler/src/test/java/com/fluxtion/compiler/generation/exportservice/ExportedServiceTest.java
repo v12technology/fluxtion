@@ -163,6 +163,7 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateFunctionTest() {
+        writeSourceFile = true;
         sep(c -> DataFlow.subscribeToNode(new NoPropagateSomeMethodsMySvc())
                 .mapToInt(Mappers.count()).id("count"));
         MyTriggeringService triggeringService = sep.getExportedService();
