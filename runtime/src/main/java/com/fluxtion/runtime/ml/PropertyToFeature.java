@@ -2,6 +2,7 @@ package com.fluxtion.runtime.ml;
 
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableToDoubleFunction;
 
 /**
@@ -18,6 +19,14 @@ public class PropertyToFeature<T> extends FlowSuppliedFeature<T> {
             FlowSupplier<T> dataFlowSupplier,
             SerializableToDoubleFunction<T> propertyExtractor) {
         return new PropertyToFeature<>(name, dataFlowSupplier, propertyExtractor);
+    }
+
+    public static <T, S> MapPropertyToFeature<T, S> build(
+            String name,
+            FlowSupplier<T> dataFlowSupplier,
+            LambdaReflection.SerializableFunction<T, S> propertyExtractor,
+            SerializableToDoubleFunction<S> propertyMapper) {
+        return new MapPropertyToFeature<>(name, dataFlowSupplier, propertyExtractor, propertyMapper);
     }
 
     public PropertyToFeature(

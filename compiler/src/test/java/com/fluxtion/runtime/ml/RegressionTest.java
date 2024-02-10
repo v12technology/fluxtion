@@ -98,6 +98,7 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subscribeFlowExtractWithLambdaTest() {
+//        writeSourceFile = true;
         sep(c -> {
             FlowSupplier<HouseDetails> processedDouseDetails = DataFlow.subscribe(HouseDetails.class).flowSupplier();
             c.addNode(new PredictiveLinearRegressionModel(PropertyToFeature.build("area", processedDouseDetails, HouseDetails::getArea)), "predictiveModel");
@@ -123,6 +124,37 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(36, predictiveModel.predictedValue(), 0.000_1);
     }
 
+    @Test
+    public void subscribeFlowExtractWithLambdaAndMapTest() {
+//        writeSourceFile = true;
+        sep(c -> {
+            FlowSupplier<HouseDetails> processedDouseDetails = DataFlow.subscribe(HouseDetails.class).flowSupplier();
+            c.addNode(new PredictiveLinearRegressionModel(PropertyToFeature.build("area", processedDouseDetails, HouseDetails::getArea, RegressionTest::doubleArea)), "predictiveModel");
+        });
+
+        //initial prediction is NaN
+        PredictiveModel predictiveModel = getField("predictiveModel");
+        Assert.assertTrue(Double.isNaN(predictiveModel.predictedValue()));
+
+        //set calibration prediction is 0
+        sep.getExportedService(CalibrationProcessor.class).setCalibration(
+                Arrays.asList(
+                        Calibration.builder()
+                                .featureIdentifier("area")
+                                .weight(2)
+                                .co_efficient(1.5)
+                                .featureVersion(0)
+                                .build()));
+        Assert.assertEquals(0, predictiveModel.predictedValue(), 0.000_1);
+
+        //send record to generate a prediction
+        onEvent(new HouseDetails(12, 3));
+        Assert.assertEquals(72, predictiveModel.predictedValue(), 0.000_1);
+    }
+
+    public static double doubleArea(double input) {
+        return input * 2;
+    }
 
     public static class AreaFeature extends AbstractFeature {
 
