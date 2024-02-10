@@ -4,6 +4,8 @@ import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.node.NamedNode;
 
+import java.beans.Introspector;
+
 @Experimental
 public interface Feature extends NamedNode, @ExportService CalibrationProcessor {
 
@@ -11,13 +13,9 @@ public interface Feature extends NamedNode, @ExportService CalibrationProcessor 
         return getClass().getSimpleName();
     }
 
-    default int version() {
-        return 0;
-    }
-
     @Override
     default String getName() {
-        return identifier() + "_" + version();
+        return Introspector.decapitalize(identifier());
     }
 
     double value();
