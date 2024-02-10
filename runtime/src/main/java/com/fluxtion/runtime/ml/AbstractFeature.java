@@ -52,6 +52,22 @@ public abstract class AbstractFeature implements Feature, @ExportService Calibra
     }
 
     @Override
+    @NoPropagateFunction
+    public boolean resetToOne() {
+        co_efficient = 1;
+        weight = 1;
+        return false;
+    }
+
+    @Override
+    @NoPropagateFunction
+    public boolean resetToZero() {
+        co_efficient = 0;
+        weight = 0;
+        return false;
+    }
+
+    @Override
     public double value() {
         return value;
     }
