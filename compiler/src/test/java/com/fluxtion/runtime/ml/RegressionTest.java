@@ -3,7 +3,6 @@ package com.fluxtion.runtime.ml;
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
@@ -45,7 +44,6 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subscribeTest() {
-        writeSourceFile = true;
         sep(c -> {
             FlowSupplier<HouseDetails> processedDouseDetails = DataFlow.subscribe(HouseDetails.class).flowSupplier();
             c.addNode(new PredictiveLinearRegressionModel(new AreaFeatureSubscribed(processedDouseDetails)), "predictiveModel");
@@ -71,8 +69,35 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(36, predictiveModel.predictedValue(), 0.000_1);
     }
 
+    @Test
+    public void subscribeFlowTest() {
+        sep(c -> {
+            FlowSupplier<HouseDetails> processedDouseDetails = DataFlow.subscribe(HouseDetails.class).flowSupplier();
+            c.addNode(new PredictiveLinearRegressionModel(new AreaFeatureFlow(processedDouseDetails)), "predictiveModel");
+        });
 
-    public static class AreaFeature extends AbstractFeature implements @ExportService CalibrationProcessor {
+        //initial prediction is NaN
+        PredictiveModel predictiveModel = getField("predictiveModel");
+        Assert.assertTrue(Double.isNaN(predictiveModel.predictedValue()));
+
+        //set calibration prediction is 0
+        sep.getExportedService(CalibrationProcessor.class).setCalibration(
+                Arrays.asList(
+                        Calibration.builder()
+                                .featureClass(AreaFeatureFlow.class)
+                                .weight(2)
+                                .co_efficient(1.5)
+                                .featureVersion(0)
+                                .build()));
+        Assert.assertEquals(0, predictiveModel.predictedValue(), 0.000_1);
+
+        //send record to generate a prediction
+        onEvent(new HouseDetails(12, 3));
+        Assert.assertEquals(36, predictiveModel.predictedValue(), 0.000_1);
+    }
+
+
+    public static class AreaFeature extends AbstractFeature {
 
         @OnEventHandler
         public boolean processRecord(HouseDetails houseDetails) {
@@ -83,7 +108,7 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class AreaFeatureSubscribed extends AbstractFeature implements @ExportService CalibrationProcessor {
+    public static class AreaFeatureSubscribed extends AbstractFeature {
 
         private final FlowSupplier<HouseDetails> houseDetailSupplier;
 
@@ -93,6 +118,17 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
             return true;
         }
 
+    }
+
+    public static class AreaFeatureFlow extends FlowSuppliedFeature<HouseDetails> {
+        public AreaFeatureFlow(FlowSupplier<HouseDetails> dataFlowSupplier) {
+            super(dataFlowSupplier);
+        }
+
+        @Override
+        public double extractFeatureValue() {
+            return data().getArea();
+        }
     }
 
     @Value
