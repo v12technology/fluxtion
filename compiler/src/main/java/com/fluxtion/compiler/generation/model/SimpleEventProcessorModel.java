@@ -652,7 +652,7 @@ public class SimpleEventProcessorModel {
             }
             Class<?> clazz = object.getClass();
             //exported services
-            for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
+            for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
                 if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                     Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
                     dependencyGraph.getConfig().addInterfaceImplementation(interfaceType);
