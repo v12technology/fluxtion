@@ -95,12 +95,12 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
         <dependency>
             <groupId>com.fluxtion.csv-compiler</groupId>
             <artifactId>csv-compiler</artifactId>
-            <version>0.1.13</version>
+            <version>0.1.15</version>
         </dependency>
         <dependency>
             <groupId>com.fluxtion.csv-compiler</groupId>
             <artifactId>csv-compiler-processor</artifactId>
-            <version>0.1.13</version>
+            <version>0.1.15</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

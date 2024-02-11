@@ -433,17 +433,17 @@
                 <version>1.19.0</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>com.fluxtion.csv-compiler</groupId>
-                <artifactId>csv-compiler</artifactId>
-                <version>0.1.6</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fluxtion.csv-compiler</groupId>
-                <artifactId>csv-compiler-processor</artifactId>
-                <version>0.1.6</version>
-                <scope>provided</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.csv-compiler</groupId>-->
+<!--                <artifactId>csv-compiler</artifactId>-->
+<!--                <version>0.1.6</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.csv-compiler</groupId>-->
+<!--                <artifactId>csv-compiler-processor</artifactId>-->
+<!--                <version>0.1.6</version>-->
+<!--                <scope>provided</scope>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>io.github.hakky54</groupId>
                 <artifactId>logcaptor</artifactId>
