@@ -22,6 +22,10 @@ public class PredictiveLinearRegressionModel implements PredictiveModel, @Export
         immutableFeatures = CollectionHelper.listOf(features);
     }
 
+    public PredictiveLinearRegressionModel(List<Feature> featureList) {
+        this(featureList.toArray(new Feature[0]));
+    }
+
     @Initialise
     public void init() {
         prediction = Double.NaN;
