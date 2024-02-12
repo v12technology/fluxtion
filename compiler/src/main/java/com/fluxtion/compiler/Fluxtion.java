@@ -312,7 +312,8 @@ public interface Fluxtion {
                 System.out.println(generationCount.intValue() + ": invoking builder " + c.getName());
                 try {
                     final FluxtionGraphBuilder newInstance = (FluxtionGraphBuilder) classLoader.loadClass(c.getName()).getDeclaredConstructor().newInstance();
-                    compile(newInstance::buildGraph, newInstance::configureGeneration);
+                    FluxtionCompilerConfigOverride override = new FluxtionCompilerConfigOverride(newInstance);
+                    compile(newInstance::buildGraph, override::overrideClassPath);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException | ClassNotFoundException e) {
                     throw new RuntimeException("cannot instantiate FluxtionGraphBuilder", e);
@@ -320,5 +321,26 @@ public interface Fluxtion {
             });
         }
         return generationCount.intValue();
+    }
+
+    class FluxtionCompilerConfigOverride {
+
+        private final FluxtionGraphBuilder newInstance;
+
+        public FluxtionCompilerConfigOverride(FluxtionGraphBuilder newInstance) {
+            this.newInstance = newInstance;
+        }
+
+        public void overrideClassPath(FluxtionCompilerConfig cfgBuilder) {
+            newInstance.configureGeneration(cfgBuilder);
+            String overrideOutputDirectory = System.getProperty(RuntimeConstants.OUTPUT_DIRECTORY);
+            if (overrideOutputDirectory != null && !overrideOutputDirectory.isEmpty()) {
+                cfgBuilder.setOutputDirectory(overrideOutputDirectory);
+            }
+            String overrideResourceDirectory = System.getProperty(RuntimeConstants.RESOURCES_DIRECTORY);
+            if (overrideResourceDirectory != null && !overrideResourceDirectory.isEmpty()) {
+                cfgBuilder.setResourcesOutputDirectory(overrideResourceDirectory);
+            }
+        }
     }
 }
