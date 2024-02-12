@@ -214,6 +214,14 @@ public interface Fluxtion {
     static EventProcessor compileFromReader(Reader reader) {
         Yaml yaml = new Yaml();
         DataDrivenGenerationConfig rootInjectedConfig = yaml.loadAs(reader, DataDrivenGenerationConfig.class);
+        String overrideOutputDirectory = System.getProperty(RuntimeConstants.OUTPUT_DIRECTORY);
+        if (overrideOutputDirectory != null && !overrideOutputDirectory.isEmpty()) {
+            rootInjectedConfig.getCompilerConfig().setOutputDirectory(overrideOutputDirectory);
+        }
+        String overrideResourceDirectory = System.getProperty(RuntimeConstants.RESOURCES_DIRECTORY);
+        if (overrideResourceDirectory != null && !overrideResourceDirectory.isEmpty()) {
+            rootInjectedConfig.getCompilerConfig().setResourcesOutputDirectory(overrideResourceDirectory);
+        }
         if (rootInjectedConfig.getCompilerConfig().isInterpreted()) {
             return interpret(rootInjectedConfig.getRootNodeConfig());
         } else {

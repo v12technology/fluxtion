@@ -3,6 +3,7 @@ package com.fluxtion.compiler.extern.spring;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.partition.LambdaReflection;
@@ -65,6 +66,14 @@ public class FluxtionSpring {
             c.setClassName(className);
             c.setPackageName(packageName);
             c.setCompileSource(false);
+            String overrideOutputDirectory = System.getProperty(RuntimeConstants.OUTPUT_DIRECTORY);
+            if (overrideOutputDirectory != null && !overrideOutputDirectory.isEmpty()) {
+                c.setOutputDirectory(overrideOutputDirectory);
+            }
+            String overrideResourceDirectory = System.getProperty(RuntimeConstants.RESOURCES_DIRECTORY);
+            if (overrideResourceDirectory != null && !overrideResourceDirectory.isEmpty()) {
+                c.setResourcesOutputDirectory(overrideResourceDirectory);
+            }
         });
     }
 
