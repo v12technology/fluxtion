@@ -1,6 +1,5 @@
 package com.fluxtion.compiler.generation.implicitnodeadd;
 
-import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPushTarget;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
@@ -9,7 +8,10 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import com.fluxtion.runtime.partition.ReflectionMethodReference;
+import com.fluxtion.runtime.partition.ReflectionMethodReference.ReflectionToDoubleFunction;
 import com.fluxtion.runtime.time.FixedRateTrigger;
+import lombok.SneakyThrows;
 import lombok.Value;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsIterableContainingInOrder;
@@ -18,8 +20,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.function.DoubleSupplier;
 
 import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPushTarget;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleSupplier;
+import static com.fluxtion.runtime.partition.LambdaReflection.SerializableToDoubleFunction;
 import static org.junit.Assert.assertNotNull;
 
 public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
@@ -150,13 +157,93 @@ public class SerializedLambdaTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    public void regressionTriggerPush() {
+    public void regressionTriggerPush() throws NoSuchMethodException {
         sep(c -> subscribe(String.class)
                 .push(new NotifyAndPushTarget()::setStringPushValue));
     }
 
+    @SneakyThrows
+    @Test
+    public void reflectionLambdaTest() {
+        DoubleSupplier v = new ReflectionMethodReference.ReflectionDoubleSupplier(new Random(10), Random.class.getMethod("nextDouble"));
+        System.out.println("random.nextDouble:" + v.getAsDouble());
+    }
+
+    @SneakyThrows
+    @Test
+    public void regressionTriggerPushXX() {
+        writeSourceFile = true;
+        sep(new RefToDouble(new ReflectionMethodReference.ReflectionDoubleSupplier(new FuncHolder(), "myDoubleFunctionInstance")));
+        RefToDouble.d = 2;
+        Assert.assertEquals(2.0, RefToDouble.d, 0.00001);
+        onEvent("TEST");
+        Assert.assertEquals(10.0, RefToDouble.d, 0.00001);
+    }
+
+    @Test
+    public void toDoubleTest() {
+        writeSourceFile = true;
+        sep(new InvokeFuncHolder(new ReflectionToDoubleFunction<>(FuncHolder.class, "myDoubleFunctionInstance")));
+        InvokeFuncHolder.d = 2;
+        Assert.assertEquals(2.0, InvokeFuncHolder.d, 0.00001);
+        onEvent(new FuncHolder());
+        Assert.assertEquals(10.0, InvokeFuncHolder.d, 0.00001);
+    }
+    
+
+    public static class InvokeFuncHolder {
+        private final SerializableToDoubleFunction function;
+        public static double d = Double.NaN;
+
+        public <T> InvokeFuncHolder(SerializableToDoubleFunction<T> function) {
+            this.function = function;
+        }
+
+        @OnEventHandler()
+        @SuppressWarnings("unchecked")
+        public boolean injectInstance(FuncHolder instance) {
+            d = function.applyAsDouble(instance);
+            System.out.println("ans:" + d);
+            return false;
+        }
+
+    }
+
+
+    public static class RefToDouble {
+        private final SerializableDoubleSupplier func;
+        public static double d = Double.NaN;
+
+        public RefToDouble(SerializableDoubleSupplier func) {
+            this.func = func;
+        }
+
+        @OnEventHandler
+        public boolean stringUpdate(String in) {
+            d = func.getAsDouble();
+            System.out.println("Value:" + func.getAsDouble());
+            return true;
+        }
+    }
+
+
+    public static class FuncHolder {
+
+        public double myDoubleFunctionInstance() {
+            return 10;
+        }
+
+        public static double myDoubleFunction() {
+            return 10;
+        }
+
+        public static double myDoubleFunction(Object o) {
+            return 0;
+        }
+    }
 
     public static class MyFunctionHolder {
+
         private final SerializableFunction<String, String> instanceFunction;
         public transient String output;
 
