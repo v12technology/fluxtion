@@ -570,6 +570,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
 
         buildNonPushSortedHandlers();
+        sortExportedServiceFunctionCallbacks();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("GRAPH:" + graph);
         }
@@ -577,6 +578,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             LOGGER.debug("SORTED LIST:" + topologicalHandlers);
         }
         processed = true;
+    }
+
+    private void sortExportedServiceFunctionCallbacks() {
+        exportedFunctionMap.values().stream().map(ExportFunctionData::getFunctionCallBackList).forEach(this::sortNodeList);
     }
 
     @SuppressWarnings("unchecked")
