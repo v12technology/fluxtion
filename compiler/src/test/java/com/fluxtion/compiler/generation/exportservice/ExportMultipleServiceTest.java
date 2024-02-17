@@ -7,8 +7,15 @@ import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.node.NamedNode;
+import com.fluxtion.runtime.node.SingleNamedNode;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
@@ -79,6 +86,40 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(2, bottomNode.triggerCount);
         Assert.assertEquals(2, bottomNode.afterTriggerCount);
         Assert.assertEquals(5, bottomNode.afterEventCount);
+    }
+
+    @Test
+    public void exportOrderingTest() {
+        OrderedCallBack cb1 = new OrderedCallBack("cb1", null);
+        OrderedCallBack cb2 = new OrderedCallBack("cb2", cb1);
+        OrderedCallBack cb3 = new OrderedCallBack("cb3", cb2);
+        sep(cb3);
+        List<String> stringList = new ArrayList<>();
+        sep.getExportedService(AddId.class).registerId(stringList::add);
+        MatcherAssert.assertThat(stringList, IsIterableContainingInOrder.contains("cb1", "cb2", "cb3"));
+    }
+
+    public static class OrderedCallBack extends SingleNamedNode implements @ExportService AddId {
+
+        public Object parent;
+
+        public OrderedCallBack(String name, Object parent) {
+            super(name);
+            this.parent = parent;
+        }
+
+        public OrderedCallBack(String name) {
+            super(name);
+        }
+
+        @Override
+        public void registerId(Consumer<String> consumer) {
+            consumer.accept(getName());
+        }
+    }
+
+    public interface AddId {
+        void registerId(Consumer<String> consumer);
     }
 
     public interface Top {
