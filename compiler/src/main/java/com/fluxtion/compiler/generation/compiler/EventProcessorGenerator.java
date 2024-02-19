@@ -90,7 +90,7 @@ public class EventProcessorGenerator {
                 config
         );
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), GenerationContext.SINGLETON.getProxyClassMap());
-        simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
+        simpleEventProcessorModel.generateMetaModelInMemory(config.isSupportDirtyFiltering());
         if (generateDescription && !GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
