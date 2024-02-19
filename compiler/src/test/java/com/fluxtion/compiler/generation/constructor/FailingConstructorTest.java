@@ -1,11 +1,11 @@
 package com.fluxtion.compiler.generation.constructor;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import org.junit.Test;
 
-public class FailingConstructorTest extends MultipleSepTargetInProcessTest {
+public class FailingConstructorTest extends CompiledOnlySepTest {
     public FailingConstructorTest(SepTestConfig compiledSep) {
         super(compiledSep);
     }
@@ -13,6 +13,11 @@ public class FailingConstructorTest extends MultipleSepTargetInProcessTest {
     @Test(expected = RuntimeException.class)
     public void failWithExceptionClashingPrivateFields() {
         sep(c -> c.addNode(new ClashingConstructorTypes("AAA", "BBBB")));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void namedParamsInParentClass_FailNoAssignToMember() {
+        sep(c -> c.addNode(new MapFieldWithAnnotationTest.FailingChild("bill", "smith")));
     }
 
     public static class ClashingConstructorTypes {
