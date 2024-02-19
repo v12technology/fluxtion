@@ -285,8 +285,6 @@ public class SimpleEventProcessorModel {
         registrationListenerFields = new ArrayList<>();
         this.supportDirtyFiltering = supportDirtyFiltering;
         generateDependentFields();
-//        generateComplexConstructors();
-//        generatePropertyAssignments();
         lifeCycleHandlers();
         eventHandlers();
         buildDirtySupport();
