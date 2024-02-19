@@ -278,6 +278,20 @@ public class SimpleEventProcessorModel {
         LOGGER.debug("complete model");
     }
 
+    public void generateMetaModelInMemory(boolean supportDirtyFiltering) throws Exception {
+        LOGGER.debug("start model");
+        nodeFields = new ArrayList<>();
+        nodeFieldsSortedTopologically = new ArrayList<>();
+        registrationListenerFields = new ArrayList<>();
+        this.supportDirtyFiltering = supportDirtyFiltering;
+        generateDependentFields();
+        lifeCycleHandlers();
+        eventHandlers();
+        buildDirtySupport();
+        filterList();
+        LOGGER.debug("complete model");
+    }
+
     private void generateDependentFields() throws Exception {
         for (Object object : dependencyGraph.getObjectSortedDependents()) {
             final String name = dependencyGraph.variableName(object);
