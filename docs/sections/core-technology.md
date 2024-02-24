@@ -43,60 +43,9 @@ team of specialist experienced developers
 | Event notification   | Trigger or event handler methods notify a change by returning a boolean flag to control event propagation                                       |
 | Graph space          | Construction of the meta model occurs in graph space, before generating the EventProcessor and after the user has provided all node information |
 
-In formal terms Fluxtion can be classified as a combination of incremental computation and data flow programming.
+Fluxtion can be classified as a combination of incremental computation and data flow programming.
 
-## Event sourcing
-
-If an event sourcing architectural style is followed the application behaviour will be completely reflected in the
-test environment. Data driven clocks and audit logs tracing method call stacks are supported, when combined with event
-replay this gives the developer a powerful and easy to use toolset for supporting a deployed system.
-
-## Fluxtion dependencies
-
-<div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
-</div>
-<div id="Maven" class="tabcontent">
-<div markdown="1">
-{% highlight xml %}
-    <dependencies>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>runtime</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>compiler</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-    </dependencies>
-{% endhighlight %}
-</div>
-</div>
-<div id="Gradle" class="tabcontent">
-<div markdown="1">
-{% highlight groovy %}
-implementation 'com.fluxtion:runtime:{{site.fluxtion_version}}'
-implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
-{% endhighlight %}
-</div>
-</div>
-
-### Dependency description
-
-| Fluxtion dependency | Example use                             | Description                                           | 3rd party<br/> dependencies |
-|---------------------|-----------------------------------------|-------------------------------------------------------|-----------------------------|
-| Compiler            | Fluxtion#interpret<br/>Fluxtion#compile | Generates the EventProcessor <br/> from a description | Many                        |
-| Runtime             | EventProcessor#onEvent                  | Runtime dispatch of events and helper libraries       | None                        |
-
-It is possible to use one of the [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) compileAOT methods to generate an
-EventProcessor ahead of time. An aot generated event processor only requires the runtime library on the classpath. In
-this case set the scope of the compiler dependency to provided in maven.
-
-
-# Event dispatch
+# Event dispatch rules
 Notification connections between beans are calculated at construction time using the same data that is used to add beans
 to the DI container and annotations that mark recalculation methods.
 
@@ -114,47 +63,3 @@ When the proxy event handler method is called on the container it dispatches wit
 - Any instances not connected to an executing root event handler will not be triggered in the cycle
 - Connections can be either direct or through a reference chain
 
-# Processing events in a stream processor
-
-There are three main steps to building and running a stream processor application using Fluxtion
-
-## Step 1: Describe processing logic
-
-Describe the values that are calculated and actions invoked in response to an incoming event. Fluxtion provides two
-api's to describe the processing logic:
-
-1. [A set of annotations]({{site.fluxtion_src_runtime}}/annotations)
-   that mark members of user written classes as being managed by the event processor
-2. [A java 8 stream like api]({{site.fluxtion_src_compiler}}/builder/stream)
-   , that can describe processing with a fluent functional style
-
-## Step 2: Build the event processor container
-
-Fluxtion provides a eventProcessorGenerator that converts the description into an executable
-[EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
-instance. The eventProcessorGenerator
-is invoked from
-[Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java)
-with one of two utility methods:
-
-1. **compile**: this generates a java source code version of the EventProcessor. The file is compiled in process and
-   used
-   to handle events. Total nodes are limited to the number of elements a source file can handle
-2. **interpret**: Creates an in memory model of the processing backed with data structures. Can support millions of
-   nodes
-
-## Step 3: Process events
-
-Once the
-[EventProcessor]({{site.fluxtion_src_runtime}}/EventProcessor.java)
-has been generated the instance is ready to consume events. The EventProcessor has a lifecycle so **init must be called
-before sending any events for processing**.
-
-The application pulls events from any source and invokes ```EventProcessor#onEvent```
-
-![](../../images/integration-overview.png)
-
-
-<script>
-document.getElementById("defaultOpen").click();
-</script>

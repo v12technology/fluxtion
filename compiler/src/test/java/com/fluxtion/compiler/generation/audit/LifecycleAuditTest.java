@@ -6,6 +6,8 @@ import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.LogRecord;
+import com.fluxtion.runtime.event.Event;
+import lombok.Getter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -81,6 +83,38 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(8, myLogRecord.getTerminateCount());
     }
 
+    @Test
+    public void noOpWhenLogLevelNone() {
+        MyLogRecord myLogRecord = new MyLogRecord();
+        addAuditor();
+        sep(c -> c.addNode(new MyNode(new Parent())));
+        sep.setAuditLogRecordEncoder(myLogRecord);
+        start();
+        Assert.assertEquals("started", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals(2, myLogRecord.getTerminateCount());
+
+        sep.setAuditLogLevel(EventLogControlEvent.LogLevel.NONE);
+        myLogRecord.resetCounts();
+
+        onEvent("test");
+        onEvent("test1");
+        onEvent("test2");
+        Assert.assertTrue(myLogRecord.logMap.isEmpty());
+        Assert.assertTrue(myLogRecord.toString().isEmpty());
+        Assert.assertEquals(0, myLogRecord.getAddSourceIdCount());
+        Assert.assertEquals(0, myLogRecord.getTriggerCount());
+        Assert.assertEquals(0, myLogRecord.getTerminateCount());
+
+        sep.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
+        Assert.assertEquals(1, myLogRecord.getTerminateCount());
+
+        onEvent("testDebug");
+        Assert.assertEquals("eventHandler", myLogRecord.logMap.get("lifecycle"));
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("message"));
+        Assert.assertEquals("testDebug", myLogRecord.logMap.get("debugMessage"));
+        Assert.assertEquals(2, myLogRecord.getTerminateCount());
+    }
+
     public static class Parent extends EventLogNode {
         @Initialise
         public void init() {
@@ -148,7 +182,12 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
     }
 
     public static class MyLogRecord extends LogRecord {
+        @Getter
         public int terminateCount;
+        @Getter
+        int triggerCount;
+        @Getter
+        int addSourceIdCount;
         public Map<String, String> logMap = new HashMap<>();
 
         public MyLogRecord() {
@@ -162,12 +201,41 @@ public class LifecycleAuditTest extends MultipleSepTargetInProcessTest {
 
         @Override
         public boolean terminateRecord() {
-            terminateCount++;
+            if (loggingEnabled()) {
+                terminateCount++;
+            }
             return super.terminateRecord();
         }
 
-        public int getTerminateCount() {
-            return terminateCount;
+        @Override
+        public void triggerEvent(Event event) {
+            if (loggingEnabled()) {
+                triggerCount++;
+            }
+            super.triggerEvent(event);
+        }
+
+        @Override
+        public void triggerObject(Object event) {
+            if (loggingEnabled()) {
+                triggerCount++;
+            }
+            super.triggerObject(event);
+        }
+
+        @Override
+        protected void addSourceId(String sourceId, String propertyKey) {
+            if (loggingEnabled()) {
+                addSourceIdCount++;
+            }
+            super.addSourceId(sourceId, propertyKey);
+        }
+
+        void resetCounts() {
+            terminateCount = 0;
+            triggerCount = 0;
+            addSourceIdCount = 0;
+            logMap.clear();
         }
     }
 }

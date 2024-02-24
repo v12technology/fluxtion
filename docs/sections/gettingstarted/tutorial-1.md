@@ -1,5 +1,5 @@
 ---
-title: First tutorial
+title: 1st tutorial
 parent: Getting started
 has_children: false
 nav_order: 1
@@ -20,7 +20,7 @@ published: true
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
 proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection. The project source can be
-found [here.]({{site.cookbook_src}}/lottery)
+found [here.]({{site.getting_started}}/tutorial1-lottery)
 
 Our goal is to build the logic for a simple lottery application that will be connected to request and response queues.
 Serialising requests to a queue makes our application event driven and easier to scale in the future, the response queue
@@ -357,6 +357,8 @@ public static void start(Consumer<String> ticketReceiptHandler, Consumer<String>
 ## Wiring the components together
 The dependency injection container wires components depending upon the configuration supplied. As Fluxtion natively supports  
 spring ApplicationContext we use a spring configuration file in this example to wire the TicketStore to the LotteryMachine.
+We are using Spring in these tutorials because of its familiarity to readers, spring is not required by Fluxtion when using
+other methods to specify container managed beans.
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -379,6 +381,51 @@ public static void start(Consumer<String> ticketReceiptHandler, Consumer<String>
     new ClassPathXmlApplicationContext("com/fluxtion/example/cookbook/lottery/spring-lottery.xml"));
   //removed for clarity
 }
+{% endhighlight %}
+
+## Build system
+The example use maven to build the application, the Fluxtion runtime dependency is pulled in transitively via the 
+compiler. Lombok is added to reduce boilerplate code, spring-context enables reading the spring config file, 
+both of these dependencies are optional in vanilla Fluxtion usage.
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<groupId>com.fluxtion.example</groupId>
+<artifactId>getting-started-tutorial1</artifactId>
+<version>1.0.0-SNAPSHOT</version>
+<packaging>jar</packaging>
+<name>getting-started :: tutorial 1 :: lottery</name>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fluxtion.version>9.1.9</fluxtion.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>${fluxtion.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.29</version>
+        </dependency>
+    </dependencies>
+</project>
 {% endhighlight %}
 
 # Running the application
@@ -483,3 +530,6 @@ of a tool like Fluxtion really shine during the growth and maintenance phase.
 
 I hope you have enjoyed reading this tutorial, and it has given you an understanding of Fluxtion and a desire to use it 
 in your applications. Please send me in any comments or suggestions to improve this tutorial
+
+[next tutorial 2](tutorial-2.md)
+{: .text-right }
