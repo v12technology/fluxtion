@@ -148,8 +148,11 @@ public class EventLogManager implements Auditor {
         if (newConfig.getLogRecordProcessor() != null) {
             this.sink = newConfig.getLogRecordProcessor();
         }
-        if (newConfig.getLogRecord() != null) {
-            this.logRecord = newConfig.getLogRecord();
+        LogRecord newLogRecord = newConfig.getLogRecord();
+        if (newLogRecord != null) {
+            newLogRecord.updateLogLevel(logRecord.getLogLevel());
+            newLogRecord.replaceBuffer(logRecord.sb);
+            this.logRecord = newLogRecord;
             this.logRecord.setClock(clock);
             updateLogRecord();
         }
