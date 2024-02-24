@@ -25,8 +25,8 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 9.1.10":
-    - "//github.com/v12technology/fluxtion/tree/9.1.10"
+  "release 9.2.16":
+    - "//github.com/v12technology/fluxtion/tree/9.2.16"
 heading_anchors: true
 
 # Color scheme supports "light" (default) and "dark"
@@ -41,12 +41,12 @@ kramdown:
     block:
       line_numbers: true
 
-fluxtion_version: 9.1.10
-fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.1.10
-fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.1.10/runtime/src/main/java/com/fluxtion/runtime
-fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.1.10/compiler/src/main/java/com/fluxtion/compiler
-EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.1.10/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
-Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.1.10/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
+fluxtion_version: 9.2.16
+fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.2.16
+fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.2.16/runtime/src/main/java/com/fluxtion/runtime
+fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.2.16/compiler/src/main/java/com/fluxtion/compiler
+EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.2.16/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
+Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.2.16/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
 cookbook_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook
 getting_started: https://github.com/v12technology/fluxtion-examples/tree/main/getting-started
 
