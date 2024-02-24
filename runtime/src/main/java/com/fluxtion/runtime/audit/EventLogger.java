@@ -43,6 +43,7 @@ public class EventLogger {
 
     public EventLogger setLevel(LogLevel level) {
         logLevel = level;
+        logrecord.updateLogLevel(level);
         return this;
     }
 
