@@ -18,6 +18,8 @@ package com.fluxtion.runtime.audit;
 
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.time.Clock;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A structured log record that can be easily converted to a long term store,
@@ -59,18 +61,38 @@ public class LogRecord {
      * group LogRecord's together.
      */
     public String groupingId;
-    public long eventId;
-    private final StringBuilder sb;
-    private String sourceId;
-    private boolean firstProp;
-    private Clock clock;
-    private boolean printEventToString = false;
-    private boolean printThreadName = false;
+    @Getter
+    private EventLogControlEvent.LogLevel logLevel;
+    protected final StringBuilder sb;
+    protected String sourceId;
+    protected boolean firstProp;
+    @Setter
+    protected Clock clock;
+    protected boolean printEventToString = false;
+    @Setter
+    protected boolean printThreadName = false;
 
     public LogRecord(Clock clock) {
+        this(clock, EventLogControlEvent.LogLevel.INFO);
+    }
+
+    public LogRecord(Clock clock, EventLogControlEvent.LogLevel logLevel) {
         sb = new StringBuilder();
         firstProp = true;
         this.clock = clock;
+        updateLogLevel(logLevel);
+    }
+
+    public void updateLogLevel(EventLogControlEvent.LogLevel newLogLevel) {
+        this.logLevel = newLogLevel == null ? EventLogControlEvent.LogLevel.NONE : newLogLevel;
+        if (!loggingEnabled()) {
+            sb.setLength(0);
+        }
+    }
+
+    public void replaceBuffer(CharSequence newBuffer) {
+        sb.setLength(0);
+        sb.append(newBuffer);
     }
 
     public void addRecord(String sourceId, String propertyKey, double value) {
@@ -117,33 +139,27 @@ public class LogRecord {
         addSourceId(sourceId, null);
     }
 
-    public void setClock(Clock clock) {
-        this.clock = clock;
-    }
-
     public void printEventToString(boolean printEventToString) {
         this.printEventToString = printEventToString;
     }
 
-    public void setPrintThreadName(boolean printThreadName) {
-        this.printThreadName = printThreadName;
-    }
-
-    private void addSourceId(String sourceId, String propertyKey) {
-        if (this.sourceId == null) {
-            sb.append("\n        - ").append(sourceId).append(": {");
-            this.sourceId = sourceId;
-        } else if (!this.sourceId.equals(sourceId)) {
-            sb.append("}\n        - ").append(sourceId).append(": {");
-            this.sourceId = sourceId;
-            firstProp = true;
-        }
-        if (!firstProp) {
-            sb.append(",");
-        }
-        if (propertyKey != null) {
-            firstProp = false;
-            sb.append(" ").append(propertyKey).append(": ");
+    protected void addSourceId(String sourceId, String propertyKey) {
+        if (loggingEnabled()) {
+            if (this.sourceId == null) {
+                sb.append("\n        - ").append(sourceId).append(": {");
+                this.sourceId = sourceId;
+            } else if (!this.sourceId.equals(sourceId)) {
+                sb.append("}\n        - ").append(sourceId).append(": {");
+                this.sourceId = sourceId;
+                firstProp = true;
+            }
+            if (!firstProp) {
+                sb.append(",");
+            }
+            if (propertyKey != null) {
+                firstProp = false;
+                sb.append(" ").append(propertyKey).append(": ");
+            }
         }
     }
 
@@ -158,29 +174,8 @@ public class LogRecord {
     }
 
     public void triggerEvent(Event event) {
-        Class<? extends Event> aClass = event.getClass();
-        sb.append("eventLogRecord: ");
-        sb.append("\n    eventTime: ").append(clock.getEventTime());
-        sb.append("\n    logTime: ").append(clock.getWallClockTime());
-        sb.append("\n    groupingId: ").append(groupingId);
-        sb.append("\n    event: ").append(aClass.getSimpleName());
-        if (printEventToString) {
-            sb.append("\n    eventToString: ").append(event.toString());
-        }
-        if (printThreadName) {
-            sb.append("\n    thread: ").append(Thread.currentThread().getName());
-        }
-        if (event.filterString() != null && !event.filterString().isEmpty()) {
-            sb.append("\n    eventFilter: ").append(event.filterString());
-        }
-        sb.append("\n    nodeLogs: ");
-    }
-
-    public void triggerObject(Object event) {
-        if (event instanceof Event) {
-            triggerEvent((Event) event);
-        } else {
-            Class<?> aClass = event.getClass();
+        if (loggingEnabled()) {
+            Class<? extends Event> aClass = event.getClass();
             sb.append("eventLogRecord: ");
             sb.append("\n    eventTime: ").append(clock.getEventTime());
             sb.append("\n    logTime: ").append(clock.getWallClockTime());
@@ -189,7 +184,32 @@ public class LogRecord {
             if (printEventToString) {
                 sb.append("\n    eventToString: ").append(event.toString());
             }
+            if (printThreadName) {
+                sb.append("\n    thread: ").append(Thread.currentThread().getName());
+            }
+            if (event.filterString() != null && !event.filterString().isEmpty()) {
+                sb.append("\n    eventFilter: ").append(event.filterString());
+            }
             sb.append("\n    nodeLogs: ");
+        }
+    }
+
+    public void triggerObject(Object event) {
+        if (loggingEnabled()) {
+            if (event instanceof Event) {
+                triggerEvent((Event) event);
+            } else {
+                Class<?> aClass = event.getClass();
+                sb.append("eventLogRecord: ");
+                sb.append("\n    eventTime: ").append(clock.getEventTime());
+                sb.append("\n    logTime: ").append(clock.getWallClockTime());
+                sb.append("\n    groupingId: ").append(groupingId);
+                sb.append("\n    event: ").append(aClass.getSimpleName());
+                if (printEventToString) {
+                    sb.append("\n    eventToString: ").append(event.toString());
+                }
+                sb.append("\n    nodeLogs: ");
+            }
         }
     }
 
@@ -201,10 +221,12 @@ public class LogRecord {
      */
     public boolean terminateRecord() {
         boolean logged = !firstProp;
-        if (this.sourceId != null) {
-            sb.append("}");
+        if (loggingEnabled()) {
+            if (this.sourceId != null) {
+                sb.append("}");
+            }
+            sb.append("\n    endTime: ").append(clock.getWallClockTime());
         }
-        sb.append("\n    endTime: ").append(clock.getWallClockTime());
         firstProp = true;
         sourceId = null;
         return logged;
@@ -215,4 +237,7 @@ public class LogRecord {
         return asCharSequence().toString();
     }
 
+    protected boolean loggingEnabled() {
+        return logLevel != EventLogControlEvent.LogLevel.NONE;
+    }
 }

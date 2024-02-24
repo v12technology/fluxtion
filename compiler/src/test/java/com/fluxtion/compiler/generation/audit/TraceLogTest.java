@@ -61,7 +61,6 @@ public class TraceLogTest extends MultipleSepTargetInProcessTest {
             c.addNode(new NoAuditNode(), "greatGrandChild");
             c.addEventAudit(LogLevel.DEBUG);
         });
-        YamlLogRecordListener yamlRecord = new YamlLogRecordListener();
         onEvent(new EventLogControlEvent(logRecord -> count.increment()));
         onEvent(new CharEvent('a'));
         assertThat(count.intValue(), is(0));
