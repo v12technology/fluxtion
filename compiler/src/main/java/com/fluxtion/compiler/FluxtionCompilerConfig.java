@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.OutputRegistry;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -59,6 +61,12 @@ public class FluxtionCompilerConfig {
      */
     private boolean compileSource;
     /**
+     * Generate an interpreted version
+     */
+    @Getter
+    @Setter
+    private boolean interpreted = false;
+    /**
      * Attempt to format the generated source files
      */
     private boolean formatSource;
@@ -94,6 +102,10 @@ public class FluxtionCompilerConfig {
      * The if {@link #writeSourceToFile} is false this writer will capture the content of the generation process
      */
     private Writer sourceWriter;
+    /**
+     * Flag controlling adding build time to generated source files
+     */
+    private boolean addBuildTime;
 
     private transient ClassLoader classLoader;
 
@@ -101,6 +113,7 @@ public class FluxtionCompilerConfig {
         generateDescription = false;
         writeSourceToFile = false;
         compileSource = true;
+        addBuildTime = false;
         formatSource = true;
         templateSep = JAVA_TEMPLATE;
         classLoader = FluxtionCompilerConfig.class.getClassLoader();
@@ -155,6 +168,14 @@ public class FluxtionCompilerConfig {
 
     public void setWriteSourceToFile(boolean writeSourceToFile) {
         this.writeSourceToFile = writeSourceToFile;
+    }
+
+    public boolean isAddBuildTime() {
+        return addBuildTime;
+    }
+
+    public void setAddBuildTime(boolean addBuildTime) {
+        this.addBuildTime = addBuildTime;
     }
 
     public void setPackageName(String packageName) {
@@ -213,6 +234,7 @@ public class FluxtionCompilerConfig {
                 + ", buildOutputdirectory=" + buildOutputDirectory
                 + ", writeSourceToFile=" + writeSourceToFile
                 + ", compileSource=" + compileSource
+                + ", interpreted=" + interpreted
                 + ", formatSource=" + formatSource
                 + ", templateSep=" + templateSep
                 + ", generateDescription=" + generateDescription

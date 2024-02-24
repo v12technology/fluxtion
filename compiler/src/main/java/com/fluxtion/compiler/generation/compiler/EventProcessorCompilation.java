@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -105,7 +105,7 @@ public class EventProcessorCompilation {
         }
 
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
-        eventProcessorGenerator.templateSep(builderConfig, compilerConfig.isGenerateDescription(), writer);
+        eventProcessorGenerator.templateSep(builderConfig, compilerConfig, writer);
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");

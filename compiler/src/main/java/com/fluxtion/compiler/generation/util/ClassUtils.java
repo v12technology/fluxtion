@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -259,4 +261,16 @@ public interface ClassUtils {
         return signature.toString();
     }
 
+    static List<AnnotatedType> getAllAnnotatedAnnotationTypes(Class<?> clazz, Class<? extends Annotation> annotation) {
+        List<AnnotatedType> interfaceList = new ArrayList<>();
+        while (clazz != null) {
+            Arrays.asList(clazz.getAnnotatedInterfaces()).stream().filter(a -> a.isAnnotationPresent(annotation)).forEach(interfaceList::add);
+            clazz = clazz.getSuperclass();
+        }
+        return interfaceList;
+    }
+
+    static List<Type> getAllAnnotatedTypes(Class<?> clazz, Class<? extends Annotation> annotation) {
+        return ClassUtils.getAllAnnotatedAnnotationTypes(clazz, annotation).stream().map(AnnotatedType::getType).collect(Collectors.toList());
+    }
 }

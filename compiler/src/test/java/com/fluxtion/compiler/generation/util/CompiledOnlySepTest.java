@@ -14,7 +14,7 @@ public abstract class CompiledOnlySepTest extends MultipleSepTargetInProcessTest
 
     @Parameterized.Parameters
     public static Collection<?> compiledSepStrategy() {
-        return Arrays.asList(SepTestConfig.COMPILED_METHOD_PER_EVENT);
+        return Arrays.asList(SepTestConfig.COMPILED_METHOD_PER_EVENT, SepTestConfig.COMPILED_METHOD_PER_EVENT);
     }
 
 }

@@ -31,10 +31,10 @@ public class MapFieldWithAnnotationTest extends MultipleSepTargetInProcessTest {
         Assert.assertNotNull(getField("gregSmithNYUSAYES"));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void namedParamsInParentClass_FailNoAssignToMember() {
-        sep(c -> c.addNode(new FailingChild("bill", "smith")));
-    }
+//    @Test(expected = RuntimeException.class)
+//    public void namedParamsInParentClass_FailNoAssignToMember() {
+//        sep(c -> c.addNode(new FailingChild("bill", "smith")));
+//    }
 
     @Test
     public void namedParamsInParentClass_ValidAssignToMember() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -271,6 +271,20 @@ public class SimpleEventProcessorModel {
         generateDependentFields();
         generateComplexConstructors();
         generatePropertyAssignments();
+        lifeCycleHandlers();
+        eventHandlers();
+        buildDirtySupport();
+        filterList();
+        LOGGER.debug("complete model");
+    }
+
+    public void generateMetaModelInMemory(boolean supportDirtyFiltering) throws Exception {
+        LOGGER.debug("start model");
+        nodeFields = new ArrayList<>();
+        nodeFieldsSortedTopologically = new ArrayList<>();
+        registrationListenerFields = new ArrayList<>();
+        this.supportDirtyFiltering = supportDirtyFiltering;
+        generateDependentFields();
         lifeCycleHandlers();
         eventHandlers();
         buildDirtySupport();
@@ -652,7 +666,7 @@ public class SimpleEventProcessorModel {
             }
             Class<?> clazz = object.getClass();
             //exported services
-            for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
+            for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
                 if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                     Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
                     dependencyGraph.getConfig().addInterfaceImplementation(interfaceType);

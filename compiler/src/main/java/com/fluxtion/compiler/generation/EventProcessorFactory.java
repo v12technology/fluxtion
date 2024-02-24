@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import java.util.function.Consumer;
  * <br><br>
  * <p>
  *
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  */
 @Slf4j
 public class EventProcessorFactory {
@@ -206,9 +206,8 @@ public class EventProcessorFactory {
             FluxtionCompilerConfig fluxtionCompilerConfig)
             throws Exception {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
-        Class<EventProcessor> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
-        EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
-        return sep;
+        Class<EventProcessor<?>> sepClass = compiler.compile(fluxtionCompilerConfig, eventProcessorConfig);
+        return fluxtionCompilerConfig.isCompileSource() ? sepClass.getDeclaredConstructor().newInstance() : null;
     }
 
     private static class InProcessEventProcessorConfig extends EventProcessorConfig {

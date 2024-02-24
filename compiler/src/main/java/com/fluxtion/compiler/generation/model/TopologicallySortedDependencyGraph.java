@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import com.fluxtion.compiler.builder.factory.NodeNameProducer;
 import com.fluxtion.compiler.builder.factory.NodeRegistry;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
+import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.*;
@@ -569,6 +570,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         }
 
         buildNonPushSortedHandlers();
+        sortExportedServiceFunctionCallbacks();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("GRAPH:" + graph);
         }
@@ -576,6 +578,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             LOGGER.debug("SORTED LIST:" + topologicalHandlers);
         }
         processed = true;
+    }
+
+    private void sortExportedServiceFunctionCallbacks() {
+        exportedFunctionMap.values().stream().map(ExportFunctionData::getFunctionCallBackList).forEach(this::sortNodeList);
     }
 
     @SuppressWarnings("unchecked")
@@ -725,7 +731,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private void addExportedMethods(Object object) {
         final Class<?> clazz = object.getClass();
         //now find the methods for an interface
-        for (AnnotatedType annotatedInterface : clazz.getAnnotatedInterfaces()) {
+        for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
             if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                 Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
                 config.addInterfaceImplementation(interfaceType);
@@ -763,7 +769,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null
-                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+                    | !ClassUtils.getAllAnnotatedAnnotationTypes(refField.getClass(), ExportService.class).isEmpty()
             ;
         }
         if (refName == null && addNode && !inst2NameTemp.containsKey(refField) && refField != null) {
@@ -788,7 +794,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null
-                    | Arrays.stream(refField.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class))
+                    | !ClassUtils.getAllAnnotatedAnnotationTypes(refField.getClass(), ExportService.class).isEmpty()
             ;
             if (addNode | collection.getAnnotation(SepNode.class) != null) {
                 inst2NameTemp.put(refField, nameNode(refField));
@@ -823,7 +829,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     private boolean handlesEvents(Object obj) {
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
                 || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty()
-                || Arrays.stream(obj.getClass().getAnnotatedInterfaces()).anyMatch(i -> i.isAnnotationPresent(ExportService.class));
+                || !ClassUtils.getAllAnnotatedAnnotationTypes(obj.getClass(), ExportService.class).isEmpty();
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -1077,7 +1083,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addEdge(eventClass, t);
                     }
                 }
-                for (AnnotatedType annotatedInterface : t.getClass().getAnnotatedInterfaces()) {
+                for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(t.getClass(), ExportService.class)) {
                     if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                         Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
                         exportServiceSet.add(interfaceType);

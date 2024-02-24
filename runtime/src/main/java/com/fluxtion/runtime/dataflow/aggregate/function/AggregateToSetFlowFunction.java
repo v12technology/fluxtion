@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class AggregateToSetFlowFunction<T> implements AggregateFlowFunction<T, Set<T>, AggregateToSetFlowFunction<T>> {
 
-    private final Set<T> list = new HashSet<>();
+    private transient final Set<T> list = new HashSet<>();
 
     @Override
     public Set<T> reset() {
@@ -36,11 +36,4 @@ public class AggregateToSetFlowFunction<T> implements AggregateFlowFunction<T, S
         return list;
     }
 
-
-    public static class AggregateToSetFactory {
-
-        public <T> AggregateToSetFlowFunction<T> newList() {
-            return new AggregateToSetFlowFunction<>();
-        }
-    }
 }

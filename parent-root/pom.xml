@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (C) 2017-2020 V12 Technology Limited
+ * Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
  *
  * This file is part of Fluxtion.
  *
@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>root-parent-pom</artifactId>
-    <version>9.1.10</version>
+    <version>9.2.16</version>
     <packaging>pom</packaging>
     <name>fluxtion :: poms :: parent root</name>
 
@@ -51,7 +51,6 @@
         <developer>
             <name>Greg Higgins</name>
             <email>greg.higgins@v12technology.com</email>
-            <organization>V12 Technology Limited</organization>
         </developer>
     </developers>
 
@@ -229,7 +228,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -434,17 +433,17 @@
                 <version>1.19.0</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>com.fluxtion.csv-compiler</groupId>
-                <artifactId>csv-compiler</artifactId>
-                <version>0.1.6</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fluxtion.csv-compiler</groupId>
-                <artifactId>csv-compiler-processor</artifactId>
-                <version>0.1.6</version>
-                <scope>provided</scope>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.csv-compiler</groupId>-->
+<!--                <artifactId>csv-compiler</artifactId>-->
+<!--                <version>0.1.6</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.fluxtion.csv-compiler</groupId>-->
+<!--                <artifactId>csv-compiler-processor</artifactId>-->
+<!--                <version>0.1.6</version>-->
+<!--                <scope>provided</scope>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>io.github.hakky54</groupId>
                 <artifactId>logcaptor</artifactId>

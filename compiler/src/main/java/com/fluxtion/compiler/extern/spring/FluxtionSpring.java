@@ -3,15 +3,22 @@ package com.fluxtion.compiler.extern.spring;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
+import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableConsumer;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.util.ClassUtils;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -44,6 +51,32 @@ public class FluxtionSpring {
         this.context = context;
     }
 
+    public static EventProcessor<?> compileAot(File springFile, String className, String packageName) {
+        return new FluxtionSpring(springFile.toURI().toString())._compileAot(
+                c -> {
+                    c.setClassName(className);
+                    c.setPackageName(packageName);
+                });
+    }
+
+    @SneakyThrows
+    public static EventProcessor<?> compileAot(ClassLoader classLoader, File springFile, String className, String packageName) {
+        ClassUtils.overrideThreadContextClassLoader(classLoader);
+        return new FluxtionSpring(springFile.toURI().toString())._compileAot(c -> {
+            c.setClassName(className);
+            c.setPackageName(packageName);
+            c.setCompileSource(false);
+            String overrideOutputDirectory = System.getProperty(RuntimeConstants.OUTPUT_DIRECTORY);
+            if (overrideOutputDirectory != null && !overrideOutputDirectory.isEmpty()) {
+                c.setOutputDirectory(overrideOutputDirectory);
+            }
+            String overrideResourceDirectory = System.getProperty(RuntimeConstants.RESOURCES_DIRECTORY);
+            if (overrideResourceDirectory != null && !overrideResourceDirectory.isEmpty()) {
+                c.setResourcesOutputDirectory(overrideResourceDirectory);
+            }
+        });
+    }
+
     public static EventProcessor<?> compileAot(
             Path springFile,
             SerializableConsumer<FluxtionCompilerConfig> compilerConfig) {
@@ -62,6 +95,13 @@ public class FluxtionSpring {
             ApplicationContext context,
             SerializableConsumer<FluxtionCompilerConfig> compilerConfig) {
         return new FluxtionSpring(context)._compileAot(compilerConfig);
+    }
+
+    public static EventProcessor<?> compileAot(ApplicationContext context, String className, String packageName) {
+        return new FluxtionSpring(context)._compileAot(c -> {
+            c.setClassName(className);
+            c.setPackageName(packageName);
+        });
     }
 
     public static EventProcessor<?> compileAot(
@@ -119,10 +159,27 @@ public class FluxtionSpring {
 
     private void addNodes(EventProcessorConfig config) {
         LOGGER.debug("loading spring context:{}", context);
+        List<Auditor> auditorMap = new ArrayList<>();
         for (String beanDefinitionName : context.getBeanDefinitionNames()) {
             Object bean = context.getBean(beanDefinitionName);
-            LOGGER.debug("adding bean:{} to fluxtion", beanDefinitionName);
-            config.addNode(bean, beanDefinitionName);
+            if (bean instanceof FluxtionSpringConfig) {
+                FluxtionSpringConfig springConfig = (FluxtionSpringConfig) bean;
+                auditorMap.addAll(springConfig.getAuditors());
+                config.addEventAudit(springConfig.getLogLevel());
+            }
+        }
+
+        for (String beanDefinitionName : context.getBeanDefinitionNames()) {
+            Object bean = context.getBean(beanDefinitionName);
+            if (!(bean instanceof FluxtionSpringConfig)) {
+                if (bean instanceof Auditor && auditorMap.contains(bean)) {
+                    LOGGER.debug("adding auditor:{} to fluxtion", beanDefinitionName);
+                    config.addAuditor((Auditor) bean, beanDefinitionName);
+                } else {
+                    LOGGER.debug("adding bean:{} to fluxtion", beanDefinitionName);
+                    config.addNode(bean, beanDefinitionName);
+                }
+            }
         }
         configCustomizer.accept(config);
     }

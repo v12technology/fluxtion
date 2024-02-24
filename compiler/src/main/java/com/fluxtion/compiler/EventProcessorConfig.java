@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 V12 Technology Ltd.
+ * Copyright (C) 2018 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -230,7 +230,9 @@ public class EventProcessorConfig {
      * the level at which method tracing will take place.
      */
     public void addEventAudit(LogLevel tracingLogLevel) {
-        addAuditor(new EventLogManager().tracingOn(tracingLogLevel), EventLogManager.NODE_NAME);
+        if (tracingLogLevel != null) {
+            addAuditor(new EventLogManager().tracingOn(tracingLogLevel), EventLogManager.NODE_NAME);
+        }
     }
 
     /**

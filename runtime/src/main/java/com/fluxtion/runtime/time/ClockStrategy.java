@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 V12 Technology Ltd.
+ * Copyright (C) 2019 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -19,7 +19,7 @@ package com.fluxtion.runtime.time;
 import lombok.Data;
 
 /**
- * @author V12 Technology Ltd.
+ * @author 2024 gregory higgins.
  */
 public interface ClockStrategy {
 

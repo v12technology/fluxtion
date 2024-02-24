@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, V12 Technology Ltd.
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,16 +18,24 @@
 package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
+import com.fluxtion.runtime.annotations.ExportService;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.node.NamedNode;
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -107,6 +115,61 @@ public class ClassUtilsTest {
                 "    }" +
                 "}";
         assertEquals(StringUtils.deleteWhitespace(expected), StringUtils.deleteWhitespace(generated));
+    }
+
+    @Test
+    public void testExportAnnotationOnSuperClass() {
+        List<Type> list = ClassUtils.getAllAnnotatedAnnotationTypes(B_Export.class, ExportService.class).stream().map(AnnotatedType::getType).collect(Collectors.toList());
+        MatcherAssert.assertThat(
+                list,
+                IsIterableContainingInAnyOrder.containsInAnyOrder(NamedNode.class, BatchHandler.class));
+
+        MatcherAssert.assertThat(
+                ClassUtils.getAllAnnotatedTypes(B_Export.class, ExportService.class),
+                IsIterableContainingInAnyOrder.containsInAnyOrder(NamedNode.class, BatchHandler.class));
+
+
+        list = ClassUtils.getAllAnnotatedAnnotationTypes(A_Export.class, ExportService.class).stream().map(AnnotatedType::getType).collect(Collectors.toList());
+        MatcherAssert.assertThat(
+                list,
+                IsIterableContainingInAnyOrder.containsInAnyOrder(NamedNode.class));
+
+        MatcherAssert.assertThat(
+                ClassUtils.getAllAnnotatedTypes(A_Export.class, ExportService.class),
+                IsIterableContainingInAnyOrder.containsInAnyOrder(NamedNode.class));
+
+        Assert.assertTrue(ClassUtils.getAllAnnotatedAnnotationTypes(A.class, ExportService.class).isEmpty());
+        Assert.assertTrue(ClassUtils.getAllAnnotatedTypes(A.class, ExportService.class).isEmpty());
+    }
+
+    public static class A_Export implements @ExportService NamedNode, BatchHandler {
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public void batchPause() {
+
+        }
+
+        @Override
+        public void batchEnd() {
+
+        }
+    }
+
+    public static class B_Export extends A_Export implements @ExportService BatchHandler {
+
+        @Override
+        public void batchPause() {
+
+        }
+
+        @Override
+        public void batchEnd() {
+
+        }
     }
 
     public static class A {

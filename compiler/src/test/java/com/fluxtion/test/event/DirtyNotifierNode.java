@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2019, V12 Technology Ltd.
+/*
+ * Copyright (c) 2019, 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12,7 +12,7 @@
  * Server Side Public License for more details.
  *
  * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see 
+ * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.test.event;
@@ -20,13 +20,12 @@ package com.fluxtion.test.event;
 import com.fluxtion.runtime.annotations.OnTrigger;
 
 /**
- *
  * @author Greg Higgins
  */
 public class DirtyNotifierNode {
-   public Object[] parents;
-   public String id;
-    
+    public Object[] parents;
+    public String id;
+
 
     public DirtyNotifierNode(String id) {
         this.id = id;
@@ -36,18 +35,17 @@ public class DirtyNotifierNode {
         this.parents = parents;
         this.id = id;
     }
-    
+
 
     public DirtyNotifierNode() {
     }
-    
+
     @OnTrigger
     public boolean onEvent() {
         return true;
     }
 
 
-    
     @Override
     public String toString() {
         return "DirtyNotifierNode{" + "id=" + id + '}';
