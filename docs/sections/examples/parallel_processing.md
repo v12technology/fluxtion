@@ -1,9 +1,8 @@
 ---
 title: Parallel processing
-parent: Cookbook
-grand_parent: Old stuff
+parent: Examples
 has_children: false
-nav_order: 8
+nav_order: 2
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/parallel
 ---
@@ -128,7 +127,7 @@ public class Main {
 The execution graph image shows a set of tasks are triggered from the RequestHandler instance and their outputs are 
 gathered in the TaskCollector instance.
 
-![](../../../images/parallel/parallel.png)
+![](../../images/parallel/parallel.png)
 
 ## Running the example 
 
