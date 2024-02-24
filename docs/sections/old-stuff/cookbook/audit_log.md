@@ -1,10 +1,9 @@
 ---
 title: Audit logging
-parent: Cookbook
+parent: Examples
 has_children: false
-grand_parent: Old stuff
 nav_order: 4
-published: true
+published: false
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/auditlog
 ---
 

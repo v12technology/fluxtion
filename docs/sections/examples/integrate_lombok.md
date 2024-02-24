@@ -1,9 +1,8 @@
 ---
-title: Integrating lombok
-parent: Cookbook
-grand_parent: Old stuff
+title: Lombok integration
+parent: Examples
 has_children: false
-nav_order: 7
+nav_order: 3
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/lombok
 ---
