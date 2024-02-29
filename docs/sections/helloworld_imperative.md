@@ -108,10 +108,32 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 # Java code
 
 All the elements are joined together using an imperative style in the Fluxtion builder. There are two style of class in
-the example, pojo nodes that hold processing logic and events that are fed into the EventProcessor.
+the example, pojo nodes that hold processing logic and events that are fed into the EventProcessor. 
 
 The example [Main method]({{page.example_src}}/Main.java) constructs an EvenProcessor, initialises it and fires events
 to the processor for processing
+
+## Adding user classes to event processor
+[AOT Builder]({{page.example_src}}/AotBuilder.java) class is called by the fluxtion maven plugin at build time generating 
+an event processor source file. AotBuilder adds user classes imperatively to the EventProcessorConfig in the buildGraph method. 
+Source generation configuration is handled in the configureGeneration method.
+
+{% highlight java %}
+public class AotBuilder implements FluxtionGraphBuilder {
+
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+        eventProcessorConfig.addNode(new BreachNotifier());
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
+        fluxtionCompilerConfig.setClassName("BreachNotifierProcessor");
+        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.imperative.helloworld.generated");
+    }
+}
+{% endhighlight %}
+
 
 ## Pojo classes
 
@@ -235,7 +257,7 @@ public class BreachNotifier {
 }
 {% endhighlight %}
 
-### Event classes
+## Event classes
 
 Java records as used as events.
 
