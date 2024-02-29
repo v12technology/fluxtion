@@ -12,7 +12,6 @@ Use Fluxtion to add two numbers from different event streams and log when the su
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long, 
 calculations are run whenever a new event is received. 
 
-
 This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
 a warning will be logged to console.
 
@@ -26,9 +25,11 @@ Code is available as a [maven project]({{page.example_src}})
 All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}) at runtime follow similar steps
 
 - Create a maven or gradle project adding the Fluxtion compiler dependency to the project runtime classpath
-- Write pojo's that will be nodes in the graph, set references between the pojos as per normal java
-- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling callback or a trigger method
-- Use one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in the list of nodes to the builder method
+- Write pojo's that will provide event driven logic, set references between the pojo's as per normal java
+- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling entry pont or a callback trigger method
+- Build the EventProcessor containg user pojo's by either:
+  - Calling one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in the list of nodes to the builder method
+  - Add the Fluxtion maven plugin to your pom.xml for ahead of time compilation(AOT) of builder methods
 - An EventProcessor instance is returned ready to be used
 - Call EventProcessor.init() to ensure the graph is ready to process events
 - To publish events to the processor call EventProcessor.onEvent(object)
@@ -107,33 +108,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 # Java code
 
-All the elements are joined together using an imperative style in the Fluxtion builder. There are two style of class in
-the example, pojo nodes that hold processing logic and events that are fed into the EventProcessor. 
+There are two types of user classes employed at runtime, pojo's that hold processing logic and events that are 
+fed into the generated BreachNotifierProcessor. 
 
-The example [Main method]({{page.example_src}}/Main.java) constructs an EvenProcessor, initialises it and fires events
-to the processor for processing
+The example [Main method]({{page.example_src}}/Main.java) instantiates the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), 
+initialises it and submits events for processing using the onEvent method.
 
-## Adding user classes to event processor
-[AOT Builder]({{page.example_src}}/AotBuilder.java) class is called by the fluxtion maven plugin at build time generating 
-an event processor source file. AotBuilder adds user classes imperatively to the EventProcessorConfig in the buildGraph method. 
-Source generation configuration is handled in the configureGeneration method.
-
-{% highlight java %}
-public class AotBuilder implements FluxtionGraphBuilder {
-
-    @Override
-    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
-        eventProcessorConfig.addNode(new BreachNotifier());
-    }
-
-    @Override
-    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
-        fluxtionCompilerConfig.setClassName("BreachNotifierProcessor");
-        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.imperative.helloworld.generated");
-    }
-}
-{% endhighlight %}
-
+All the pojo classes required for processing are linked together using an imperative style in our [AotBuilder.java]({{page.example_src}}/AotBuilder.java).
+The Fluxtion maven plugin runs at build time, interrogating the AotBuilder to generate the BreachNotifierProcessor.
 
 ## Pojo classes
 
@@ -150,7 +132,7 @@ called when a parent dependency haa been trigger or a parent event handler metho
 ### [Event_A_Handler]({{page.example_src}}/Event_A_Handler.java)
 
 An entry point for processing events of type Event_A and stores the latest value as a member variable.
-Annotate the event handler method as follows:
+Annotate the event handler method with **@OnEventHandler** as follows:
 
 {% highlight java %}
 public class Event_A_Handler {
@@ -171,7 +153,7 @@ public class Event_A_Handler {
 ### [Event_B_Handler]({{page.example_src}}/Event_B_Handler.java)
 
 An entry point for processing events of type Event_B and stores the latest value as a member variable.
-Annotate the event handler method as follows:
+Annotate the event handler method with **@OnEventHandler** as follows:
 
 {% highlight java %}
 public class Event_B_Handler {
@@ -192,7 +174,7 @@ public class Event_B_Handler {
 ### [DataSumCalculator]({{page.example_src}}/DataSumCalculator.java)
 
 Calculates the current sum adding the values of Event_A_Handler and Event_B_Handler. Will be triggered when either handler
-has its updated method invoked. Annotate the trigger method as follows:
+has its updated method invoked. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
 public class DataSumCalculator {
@@ -234,8 +216,7 @@ should be invoked.
 
 Logs to console when the sum breaches a value, BreachNotifier holds a reference to the DataSumCalculator instance.
 The trigger method is only invoked if the DataSumCalculator propagates the notification, by returning true from its
-trigger
-method. Annotate the trigger method as follows:
+trigger method. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
 public class BreachNotifier {
@@ -266,9 +247,9 @@ public record Event_A(double value) {}
 public record Event_B(double value) {}
 {% endhighlight %}
 
-# Building the EventProcessor and processing events
+## Building an EventProcessor containing user classes
 
-The process for building an event processor with Fluxtion are quite simple:
+The process for building an event processor AOT with Fluxtion are quite simple:
 
 - Create user classes with business logic
 - Annotate callback methods
@@ -278,33 +259,61 @@ The process for building an event processor with Fluxtion are quite simple:
 - Add the user classes to a [fluxtion builder]({{page.example_src}}/AotBuilder.java)
 - Add the Fluxtion maven plugin to your build [pom.xml](https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/pom.xml), the event processor will be generated ahead of time (AOT)
   as part of the build
-- Instantiate the generated event processor and call init
-- Invoke onEvent to trigger a calculation cycle when a user event is received, see [main example]({{page.example_src}}/Main.java)
 
-The AotBuilder adds the user classes as nodes to the container. Fluxtion inspects all the references from the root node(s) and
-constructs the EventProcessor with instances of Event_A_Handler, Event_B_Handler and DataSumCalculator all included.
+## [AotBuilder]({{page.example_src}}/AotBuilder.java) 
+AotBuilder adds user classes imperatively to the EventProcessorConfig in the buildGraph method.
+
+Fluxtion inspects all the references from the supplied object list to generate the EventProcessor. As instances of 
+Event_A_Handler, Event_B_Handler and DataSumCalculator are all directly or indirectly referenced by BreachNotifier 
+there is no need to tell Fluxtion about them. Any connected instance will be automatically discovered and added to the 
+final EventProcessor. 
+
+Source generation configuration is handled in the configureGeneration method.
+
+{% highlight java %}
+public class AotBuilder implements FluxtionGraphBuilder {
+
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+        eventProcessorConfig.addNode(new BreachNotifier());
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
+        fluxtionCompilerConfig.setClassName("BreachNotifierProcessor");
+        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.imperative.helloworld.generated");
+    }
+}
+{% endhighlight %}
 
 ## Generated event processor source
 The AOT generated event processor source file is here [BreachNotifierProcessor.java]({{page.example_src}}/generated/BreachNotifierProcessor.java)
 
 # Executing the example
 
-Publishing events to the container by calling init on the EventProcessor and then onEvent() with instances of
-Event_A or Event_B. The code for building and sending events follows:
-root nodes to as follows:
+Before publishing events to the EventProcessor it must be initialised by calling init. After initialisation event processing is 
+ready, call onEvent() with instances of Event_A or Event_B as required. 
+
+The code for instantiating, initializing and sending events is:
 
 {% highlight java %}
 public class Main {
-  public static void main(String[] args) {
-    var eventProcessor = Fluxtion.interpret(new BreachNotifier());
-    eventProcessor.init();
-    eventProcessor.onEvent(new Event_A(34.4));
-    eventProcessor.onEvent(new Event_B(52.1));
-    eventProcessor.onEvent(new Event_A(105));//should create a breach warning
-    eventProcessor.onEvent(new Event_A(12.4));
-  }
+private static final boolean USE_AOT = true;
+
+    public static void main(String[] args) {
+        var eventProcessor = USE_AOT ? new BreachNotifierProcessor() : Fluxtion.interpret(new BreachNotifier());
+        eventProcessor.init();
+        eventProcessor.onEvent(new Event_A(34.4));
+        eventProcessor.onEvent(new Event_B(52.1));
+        eventProcessor.onEvent(new Event_A(105));//should create a breach warning
+        eventProcessor.onEvent(new Event_A(12.4));
+    }
+
 }
 {% endhighlight %}
+
+Fluxtion can be run in an interpreted mode, in this case no AOT build step is required and the maven plugin can be
+removed from the pom.xml file. 
 
 ## Example execution output
 
