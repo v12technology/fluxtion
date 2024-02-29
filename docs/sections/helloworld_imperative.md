@@ -94,6 +94,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+    </dependencies>
 </project>
 {% endhighlight %}
 
