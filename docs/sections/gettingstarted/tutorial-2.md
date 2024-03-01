@@ -125,10 +125,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 <name>getting-started :: tutorial 2 :: lottery aot</name>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <fluxtion.version>9.1.9</fluxtion.version>
+        <fluxtion.version>{{site.fluxtion_version}}</fluxtion.version>
     </properties>
 
     <build>

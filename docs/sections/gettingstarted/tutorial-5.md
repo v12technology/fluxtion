@@ -16,3 +16,9 @@ published: true
 </details>
 
 # Introduction
+
+To be completed
+
+
+[next tutorial 6](tutorial-6.md)
+{: .text-right }
