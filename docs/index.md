@@ -546,10 +546,6 @@ the complexity demands are minimal. Pre-packaged event delivery systems are a co
 cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
 over time and developing application logic becomes ever more complex and expensive to deliver.
 
-{: .info }
-Fluxtion simplifies adding application functionality to increase business value
-{: .fs-4 }
-
 <script>
 document.getElementById("defaultOpen").click();
 document.getElementById("defaultExample").click();
