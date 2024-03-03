@@ -28,7 +28,7 @@ is free from vendor lock-in, deployable anywhere and simple to test.
 <ul>
   <li><strong>Low latency microsecond response</strong></li>
   <li><strong>Event sourcing compatible</strong></li>
-  <li><strong>Optimised to reduce running costs</strong></li>
+  <li><strong>Optimised for zero gc to reduce running costs</strong></li>
 </ul>
 </div>
 </div>
