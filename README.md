@@ -11,9 +11,9 @@
 
 # Fluxtion is event driven Java
 
-Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
-and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
-container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
+Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event
+streams to application functionality, increasing developer productivity by automating mechanical tasks. Application code
+is free from vendor lock-in, deployable anywhere and simple to test.
 
 **Fluxtion minimises the cost of developing and maintaining event driven business logic**
 
@@ -35,7 +35,7 @@ handled by the container. The container supports:
 <ul>
   <li><strong>Low latency microsecond response</strong></li>
   <li><strong>Event sourcing compatible</strong></li>
-  <li><strong>Functional and imperative construction</strong></li>
+  <li><strong>Optimised for zero gc to reduce running costs</strong></li>
 </ul>
 </div>
 </div>
