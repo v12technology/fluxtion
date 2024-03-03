@@ -41,6 +41,63 @@ handled by the container. The container supports:
 </div>
 </div>
 
+## Code sample
+Fluxtion supports both imperative service style and functional patterns. Below is an example of functional coding style
+that adds two numbers from independent data streams and logs when the sum is greater than 100.
+
+```java
+/**
+ * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100
+ * <ul>
+ *     <li>Subscribe to two event streams, Data1 and Data1</li>
+ *     <li>Map the double values of each stream using getter</li>
+ *     <li>Apply a stateless binary function {@link Double#sum(double, double)}</li>
+ *     <li>Apply a filter that logs to console when the sum > 100</li>
+ * </ul>
+ */
+public class HelloWorld {
+    public static void main(String[] args) {
+        //builds the EventProcessor
+        EventProcessor eventProcessor = Fluxtion.interpret(cfg -> {
+            var data1Stream = subscribe(Data1.class)
+                    .console("rcvd -> {}")
+                    .mapToDouble(Data1::value);
+
+            subscribe(Data2.class)
+                    .console("rcvd -> {}")
+                    .mapToDouble(Data2::value)
+                    .map(Double::sum, data1Stream)
+                    .filter(d -> d > 100)
+                    .console("OUT: sum {} > 100");
+        });
+        //init and send events
+        eventProcessor.init();
+        //no output < 100
+        eventProcessor.onEvent(new Data1(20.5));
+        //no output < 100
+        eventProcessor.onEvent(new Data2(63));
+        //output > 100 - log to console
+        eventProcessor.onEvent(new Data1(56.8));
+    }
+
+    public record Data1(double value) {
+    }
+
+    public record Data2(double value) {
+    }
+}
+```
+
+## Execution output
+```text
+rcvd -> Data1[value=20.5]
+rcvd -> Data2[value=63.0]
+rcvd -> Data1[value=56.8]
+OUT: sum 119.8 > 100
+
+Process finished with exit code 0
+```
+
 # Top level components
 There are two major components provided by Fluxtion the developer uses to build event driven logic.
 
@@ -119,72 +176,6 @@ single method. For exported interfaces the container generates proxies that rout
 to the container's dispatcher.
 
 
-
-
-## Code sample
-Fluxtion supports both imperative service style and functional patterns. Below is an example of functional coding style
-that adds two numbers from independent data streams and logs when the sum is greater than 100.
-
-```java
-/**
- * Simple Fluxtion hello world stream example. Add two numbers and log when sum > 100
- * <ul>
- *     <li>Subscribe to two event streams, Data1 and Data1</li>
- *     <li>Map the double values of each stream using getter</li>
- *     <li>Apply a stateless binary function {@link Double#sum(double, double)}</li>
- *     <li>Apply a filter that logs to console when the sum > 100</li>
- * </ul>
- */
-public class HelloWorld {
-    public static void main(String[] args) {
-        //builds the EventProcessor
-        EventProcessor eventProcessor = Fluxtion.interpret(cfg -> {
-            var data1Stream = subscribe(Data1.class)
-                    .console("rcvd -> {}")
-                    .mapToDouble(Data1::value);
-
-            subscribe(Data2.class)
-                    .console("rcvd -> {}")
-                    .mapToDouble(Data2::value)
-                    .map(Double::sum, data1Stream)
-                    .filter(d -> d > 100)
-                    .console("OUT: sum {} > 100");
-        });
-        //init and send events
-        eventProcessor.init();
-        //no output < 100
-        eventProcessor.onEvent(new Data1(20.5));
-        //no output < 100
-        eventProcessor.onEvent(new Data2(63));
-        //output > 100 - log to console
-        eventProcessor.onEvent(new Data1(56.8));
-    }
-
-    public record Data1(double value) {
-    }
-
-    public record Data2(double value) {
-    }
-}
-```
-
-## Execution output
-```text
-rcvd -> Data1[value=20.5]
-rcvd -> Data2[value=63.0]
-rcvd -> Data1[value=56.8]
-OUT: sum 119.8 > 100
-
-Process finished with exit code 0
-```
-
-
-# Donations
-
-The guys from ej technologies kindly donated their [java profiler JProfiler](https://www.ej-technologies.com/products/jprofiler/overview.html)
-to allow me to optimise Fluxtion, many thanks. 
-
-[![](docs/images/miscellaneous/jprofiler_medium.png)](https://www.ej-technologies.com/products/jprofiler/overview.html)
 
 # Contributing
 We welcome contributions to the project. Detailed information on our ways of working will
