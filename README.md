@@ -9,7 +9,7 @@
 
 # [USER DOCUMENTATION](https://v12technology.github.io/fluxtion/)
 
-# Fluxtion is event driven Java
+# Fluxtion automating event driven development
 
 Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event
 streams to application functionality, increasing developer productivity by automating mechanical tasks. Application code
