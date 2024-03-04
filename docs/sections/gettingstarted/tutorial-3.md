@@ -215,7 +215,7 @@ drive the statistics we want to capture.
 As Fluxtion is in aot mode the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) can be inspected
 to locate where the notification callbacks to the auditor are injected. 
 
-A [FluxtionSpringConfig]({{site.getting_started}}/extern/spring/FluxtionSpringConfig.java) bean is added to the spring 
+A [FluxtionSpringConfig]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpringConfig.java) bean is added to the spring 
 config file that references the SystemStatisticsAuditor we want to include in the event processor. A specialised handler 
 for FluxtionSpringConfig customises the generated event processor by calling methods on 
 the [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) at build time.
