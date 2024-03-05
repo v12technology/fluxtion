@@ -175,7 +175,12 @@ calculate the dispatch call trees for the internal dispatcher. A bean can export
 single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
 to the container's dispatcher.
 
+# Donations
 
+The guys from ej technologies kindly donated their [java profiler JProfiler](https://www.ej-technologies.com/products/jprofiler/overview.html)
+to allow me to optimise Fluxtion, many thanks.
+
+[![](docs/images/miscellaneous/jprofiler_medium.png)](https://www.ej-technologies.com/products/jprofiler/overview.html)
 
 # Contributing
 We welcome contributions to the project. Detailed information on our ways of working will
