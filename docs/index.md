@@ -35,7 +35,7 @@ is free from vendor lock-in, deployable anywhere and simple to test.
 </div>
 
 {: .info }
-Fluxtion saves time and money when developing and maintaining event driven applications
+Fluxtion saves developer time and increases stability when building event driven applications
 {: .fs-4 }
 
 # Example
@@ -544,7 +544,12 @@ Event driven systems have two types of complexity to manage:
 Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
 the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
 cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
-over time and developing application logic becomes ever more complex and expensive to deliver.
+over time and developing application logic becomes ever more complex and expensive to deliver. As more functionality is 
+added the danger of instability increases.
+
+Fluxtion reduces the cost to develop and maintain business logic, while maintaining stability. Automating the expensive
+and error-prone process of wiring application logic to multiple event streams is Fluxtion's target. For long term development
+projects the ROI of using Fluxtion increases exponentially.
 
 <script>
 document.getElementById("defaultOpen").click();
