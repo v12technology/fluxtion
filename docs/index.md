@@ -10,8 +10,8 @@ published: true
 ---
 
 Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event 
-streams to application functionality, increasing developer productivity by automating mechanical tasks. Application code 
-is free from vendor lock-in, deployable anywhere and simple to test.
+streams to application functions, increasing developer productivity by automating creation of dispatch logic. 
+Application code is free from vendor lock-in, deployable anywhere and simple to test.
 
 <div class="grid">
 <div class="col-1-2">
@@ -43,7 +43,8 @@ Fluxtion saves developer time and increases stability when building event driven
 as a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
 
 The developer writes the core business logic, Fluxtion takes care of generating all the event dispatch code that is time
-consuming to write, error prone and adds little value.
+consuming to write, error prone and adds little value. The generated event processor is used like any normal java class 
+in the application.
 
 <div class="tab">
   <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">Event logic</button>
@@ -112,7 +113,7 @@ public class RaceCalculator {
 
 <div id="App integration" class="tabcontent2">
 <div markdown="1">
-Application feeds events to the generated event proccessor
+Application feeds events to the generated event processor, that dispatches to business functions
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {
@@ -156,12 +157,47 @@ public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
     }
 }
 {% endhighlight %}
+
+Pom.xml executes maven plugin to generate the event processor
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.fluxtion</groupId>
+                <artifactId>fluxtion-maven-plugin</artifactId>
+                <version>3.0.14</version>
+                <executions>
+                    <execution>
+                        <id>fluxtion builder cookbook</id>
+                        <goals>
+                            <goal>scan</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+{% endhighlight %}
 </div>
 </div>
 
 <div id="Fluxtion generated" class="tabcontent2">
 <div markdown="1">
-Event processor generated at build time by maven plugin
+Event processor generated at build time by maven plugin, connects events to business logic
 {% highlight java %}
 /**
  *
