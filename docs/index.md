@@ -48,12 +48,13 @@ consuming to write, error prone and adds little value.
 <div class="tab">
   <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">Event logic</button>
   <button class="tablinks2" onclick="openTab2(event, 'App integration')">App integration</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">Bind event logic</button>
   <button class="tablinks2" onclick="openTab2(event, 'Fluxtion generated')">Generated code</button>
-  <button class="tablinks2" onclick="openTab2(event, 'Generated image')">Generated image</button>
 </div>
 
 <div id="Event logic" class="tabcontent2">
 <div markdown="1">
+Custom business logic written by developer
 {% highlight java %}
 public class RaceCalculator {
     //streamed events
@@ -111,6 +112,7 @@ public class RaceCalculator {
 
 <div id="App integration" class="tabcontent2">
 <div markdown="1">
+Application feeds events to the generated event proccessor
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {
@@ -136,8 +138,30 @@ public class RaceCalculatorApp {
 </div>
 </div>
 
+<div id="Binding functions" class="tabcontent2">
+<div markdown="1">
+Bind user functions to the event processor at build time with maven plugin
+{% highlight java %}
+public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+        RaceTimeTracker raceCalculator = eventProcessorConfig.addNode(new RaceTimeTracker(), "raceCalculator");
+        eventProcessorConfig.addNode(new ResultsPublisherImpl(raceCalculator), "resultsPublisher");
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
+        fluxtionCompilerConfig.setClassName("RaceCalculatorProcessor");
+        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.cookbook.racing.generated");
+    }
+}
+{% endhighlight %}
+</div>
+</div>
+
 <div id="Fluxtion generated" class="tabcontent2">
 <div markdown="1">
+Event processor generated at build time by maven plugin
 {% highlight java %}
 /**
  *
