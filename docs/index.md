@@ -113,7 +113,8 @@ public class RaceCalculator {
 
 <div id="App integration" class="tabcontent2">
 <div markdown="1">
-Application feeds events to the generated event processor, that dispatches to business functions
+Application feeds events to an instance of the generated event processor. The event processor dispatches 
+events to business functions
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {

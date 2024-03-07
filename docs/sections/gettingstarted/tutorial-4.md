@@ -5,6 +5,7 @@ has_children: false
 nav_order: 4
 published: true
 auditor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/auditor/SystemStatisticsAuditor.java
+processor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
 slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.properties
 ---
 
@@ -92,24 +93,10 @@ lotteryEventProcessor.setAuditLogProcessor(new FluxtionSlf4jAuditor());
 The event audit encodes the log records as a yaml document, the container accepts a custom encoder at runtime that 
 encodes the log record before it is pushed to the LogRecordListener.
 
-## Binding 
-Event auditing is bound in to the container at build time using the auditor framework. The [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) provides
-utility methods to add event audit support for easier programming:
-
-{% highlight java %}
-eventProcessorConfig.addEventAudit()
-{% endhighlight %}
-
 ## Method tracing
 By default, the nodeLogs element only contains elements where user code has written a key/value pair to the LogRecord.
 If method tracing is enabled any node visited is added to nodeLogs regardless of user code. The log level that method 
-that enables tracing is passed as an argument to addEventAudit
-
-{% highlight java %}
-eventProcessorConfig.addEventAudit(EventLogControlEvent.LogLevel.DEBUG)
-{% endhighlight %}
-
-For the above if the runtime event audit LogLevel for the container is set to DEBUG tracing will be enabled
+that enables tracing is passed as an argument to addEventAudit or as a config element in ths spring file
 
 ## Runtime log level
 The runtime event audit LogLevel can be controlled at the container level:
@@ -118,12 +105,18 @@ The runtime event audit LogLevel can be controlled at the container level:
 lotteryEventProcessor.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
 {% endhighlight %}
 
-## Writing key/value pairs
-User code can access the audit LogRecord at runtime via an  **[EventLogger]({{site.fluxtion_src_runtime}}/audit/EventLogger.java)** 
+## Add audit logging to user classes
+To add audit logging to our nodes we extend EventLogNode and use the injected EventLogger to write key/value pairs.
+User code can access the audit LogRecord at runtime via an  **[EventLogger]({{site.fluxtion_src_runtime}}/audit/EventLogger.java)**
 instance and write values that will appear in the nodeLogs element for this node. The container injects EventLogger
-instances to any bean that implements **[EventLogSource]({{site.fluxtion_src_runtime}}/audit/EventLogSource.java)**. 
-Extending **[EventLogNode]({{site.fluxtion_src_runtime}}/audit/EventLogNode.java)** gives access to an injected EventLogger,
-writing values is simply:
+instances to any bean that implements **[EventLogSource]({{site.fluxtion_src_runtime}}/audit/EventLogSource.java)**.
+
+
+# Adding custom event auditing to the application
+
+## Add auditing 
+Classes that want to create audit log records extend **[EventLogNode]({{site.fluxtion_src_runtime}}/audit/EventLogNode.java)** and will receive an injected EventLogger
+at runtime. Writing audit key/values is simply:
 
 {% highlight java %}
 public class LotteryMachineNode extends EventLogNode implements @ExportService LotteryMachine {
@@ -144,9 +137,13 @@ public class LotteryMachineNode extends EventLogNode implements @ExportService L
 }
 {% endhighlight %}
 
-# Adding event audit to the application
-We are going to add a custom audit logger using SLf4J's simple logger to our application. First we create the custom
-logger.
+## Custom Slf4f audit logger
+The default Fluxtion audit implementation uses java.util.logging as and audit logger, we are going to replace this with  
+a custom audit logger that is implemented with Slf4J's logger. Logging events will be sent to this class and can be 
+processed in any way the user wants. 
+
+To create a custom logger we implement the LogRecordListener interface to create the 
+custom logger. 
 
 {% highlight java %}
 @Slf4j
@@ -158,39 +155,44 @@ public class FluxtionSlf4jAuditor implements LogRecordListener {
 }
 {% endhighlight %}
 
-## Add node logging
-To add audit logging to our nodes we extend EventLogNode and use the injected EventLogger to write key/value pairs
+## Building the event processor with audit logging
+As Fluxtion is in aot mode the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) can be inspected
+to locate where the notification callbacks to the auditor are injected.
 
-{% highlight java %}
-public class LotteryMachineNode extends EventLogNode implements @ExportService LotteryMachine {
+The [FluxtionSpringConfig]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpringConfig.java) bean in the spring
+config file will automatically add the audit logger to the generated container. The supplied log level determines 
+when method tracing is switched on, when audit LogLevel for the container is set to DEBUG tracing will be enabled.
 
-    //code removed for clarity ....
-    @Start
-    public void start() {
-        Objects.requireNonNull(resultPublisher, "must set a results publisher before starting the lottery game");
-        auditLog.info("resultPublisher", "valid");
-    }
 
-    @OnTrigger
-    public boolean processNewTicketSale() {
-        ticketsBought.add(ticketSupplier.get());
-        auditLog.info("ticketsSold", ticketsBought.size());
-        return false;
-    }
-}
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
+    </bean>
+
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+
+    <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
+        <property name="logLevel" value="DEBUG"/>
+    </bean>
+
+</beans>
 {% endhighlight %}
 
-## Adding audit logging to the container
-Audit logging support is bound to the container at build time by calling addEventAudit on the supplied EventProcessorConfig
-instance. The custom FluxtionSlf4jAuditor is injected to the built container using setAuditLogProcessor
+The Fluxtion maven plugin will run as part of the build, logging this output as part of the build:
 
-{% highlight java %}
-    public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
-        lotteryEventProcessor = FluxtionSpring.interpret(
-                new ClassPathXmlApplicationContext("/spring-lottery.xml"),
-                c -> c.addEventAudit(EventLogControlEvent.LogLevel.INFO));
-        lotteryEventProcessor.setAuditLogProcessor(new FluxtionSlf4jAuditor());
-    }
+{% highlight console %}
+greg@Gregs-iMac tutorial3-lottery-auditor % mvn compile exec:java
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --- fluxtion:3.0.14:springToFluxtion (spring to fluxtion builder) @ getting-started-tutorial3 ---
+[main] INFO com.fluxtion.compiler.generation.compiler.EventProcessorCompilation - generated EventProcessor file: /development/fluxtion-examples/getting-started/tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
 {% endhighlight %}
 
 # Running the application

@@ -27,17 +27,24 @@ Sends an incoming even to the EventProcessor to trigger a new stream calculation
 '@OnEvent' receives the event from the event processor
 
 {% highlight java %}
-EventProcessor processor = Fluxtion.interpret(new MyNode());
-processor.init();
-processor.onEvent("test");
-
 public static class MyNode {
-
     @OnEventHandler
     public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received:" + stringToProcess);
         return true;
     }
 }
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.init();
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+received:TEST
 {% endhighlight %}
 
 ## Lifecycle callbacks
@@ -64,26 +71,44 @@ The stop calls are invoked reverse topological order.
 User nodes that are added to the processing graph can attach to the lifecycle callbacks
 
 {% highlight java %}
-EventProcessor processor = Fluxtion.interpret(new MyNode());
-processor.init();
-processor.start();
-processor.stop();
-processor.tearDown();
-
-public class MyNode{
+public static class MyNode {
 
     @Initialise
-    public void myInitMethod(){}
-
-    @TearDown
-    public void myTearDownMethod(){}
+    public void myInitMethod() {
+        System.out.println("Initialise");
+    }
 
     @Start
-    public void myStartMethod(){}
-    
+    public void myStartMethod() {
+        System.out.println("Start");
+    }
+
     @Stop
-    public void myStopMethod(){}
+    public void myStopMethod() {
+        System.out.println("Stop");
+    }
+
+    @TearDown
+    public void myTearDownMethod() {
+        System.out.println("TearDown");
+    }
 }
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.init();
+    processor.start();
+    processor.stop();
+    processor.tearDown();
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+Initialise
+Start
+Stop
+TearDown
 {% endhighlight %}
 
 ## Filtering events
@@ -92,17 +117,46 @@ field. Event handlers can specify the filter value, so they only see events with
 
 
 {% highlight java %}
-EventProcessor processor = Fluxtion.interpret(new MyNode());
-processor.init();
-processor.onEvent(new Signal<>("DANGER_SIGNAL", "power failure"));
-
 public static class MyNode {
+    @OnEventHandler(filterString = "CLEAR_SIGNAL")
+    public boolean allClear(Signal<String> signalToProcess) {
+        System.out.println("allClear [" + signalToProcess + "]");
+        return true;
+    }
 
     @OnEventHandler(filterString = "ALERT_SIGNAL")
-    public boolean handleStringEvent(Signal<String> siganlToProcess) {
+    public boolean alertSignal(Signal<String> signalToProcess) {
+        System.out.println("alertSignal [" + signalToProcess + "]");
+        return true;
+    }
+
+    @OnEventHandler()
+    public boolean anySignal(Signal<String> signalToProcess) {
+        System.out.println("anySignal [" + signalToProcess + "]");
         return true;
     }
 }
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.init();
+    processor.onEvent(new Signal<>("ALERT_SIGNAL", "power failure"));
+    System.out.println();
+    processor.onEvent(new Signal<>("CLEAR_SIGNAL", "power restored"));
+    System.out.println();
+    processor.onEvent(new Signal<>("HEARTBEAT_SIGNAL", "heartbeat message"));
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+alertSignal [Signal: {filterString: ALERT_SIGNAL, value: power failure}]
+anySignal [Signal: {filterString: ALERT_SIGNAL, value: power failure}]
+
+allClear [Signal: {filterString: CLEAR_SIGNAL, value: power restored}]
+anySignal [Signal: {filterString: CLEAR_SIGNAL, value: power restored}]
+
+anySignal [Signal: {filterString: HEARTBEAT_SIGNAL, value: heartbeat message}]
 {% endhighlight %}
 
 ## Functional support
@@ -119,33 +173,56 @@ into the streaming api.
 
 Maps an int signal to a String and republishes to the graph
 {% highlight java %}
-EventProcessor processor = Fluxtion.interpret(cfg -> {
-            DataFlow.subscribeToIntSignal("myIntSignal")
-                    .mapToObj(d -> "intValue:" + d)
-                    .processAsNewGraphEvent();
-            cfg.addNode(new MyNode());
-        }
-);
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received [" + stringToProcess +"]");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+                DataFlow.subscribeToIntSignal("myIntSignal")
+                        .mapToObj(d -> "intValue:" + d)
+                        .console("republish re-entrant [{}]")
+                        .processAsNewGraphEvent();
+                cfg.addNode(new MyNode());
+            }
+    );
+    processor.init();
+    processor.publishSignal("myIntSignal", 256);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+republish re-entrant [intValue:256]
+received [intValue:256]
 {% endhighlight %}
 
 ## Processing output
 An application can register for output from the EventProcessor by supplying a consumer
-to addSink. Support for publishing to a sink is built into the streaming api, ```EventStreamBuilder#sink```. 
+to addSink. Support for publishing to a sink is built into the streaming api, `[builder_type]#sink`. 
 A consumer has a string key to partition outputs.
 
 {% highlight java %}
-EventProcessor processor = Fluxtion.interpret(cfg -> EventFlow.subscribeToIntSignal("myIntSignal")
-        .mapToObj(d -> "intValue:" + d)
-        .sink("mySink")
-);
-processor.init();
-processor.addSink("mySink", (Consumer<String>) System.out::println);
-processor.publishSignal("myIntSignal", 10);
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg ->
+            DataFlow.subscribeToIntSignal("myIntSignal")
+                    .mapToObj(d -> "intValue:" + d)
+                    .sink("mySink"));
+    processor.init();
+    processor.addSink("mySink", (Consumer<String>) System.out::println);
+    processor.publishSignal("myIntSignal", 10);
+    processor.publishSignal("myIntSignal", 256);
+}
 {% endhighlight %}
 
 Output
 {% highlight console %}
 intValue:10
+intValue:256
 {% endhighlight %}
 
 An application can remove sink using the call `EventProcessor#removeSink`

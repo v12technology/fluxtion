@@ -38,32 +38,13 @@ All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}
 ## Dependencies
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle</button>
-</div>
-<div id="Maven" class="tabcontent">
-<div markdown="1">
-{% highlight xml %}
-    <dependencies>
-        <dependency>
-            <groupId>com.fluxtion</groupId>
-            <artifactId>compiler</artifactId>
-            <version>{{site.fluxtion_version}}</version>
-        </dependency>
-    </dependencies>
-{% endhighlight %}
-</div>
-</div>
-<div id="Gradle" class="tabcontent">
-<div markdown="1">
-{% highlight groovy %}
-implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
-{% endhighlight %}
-</div>
+  <button class="tablinks" onclick="openTab(event, 'pom_xml')" id="defaultOpen">Maven pom</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')">Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
 </div>
 
-## Maven pom
-
+<div id="pom_xml" class="tabcontent">
+<div markdown="1">
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -105,6 +86,30 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </dependencies>
 </project>
 {% endhighlight %}
+</div>
+</div>
+
+<div id="Maven" class="tabcontent">
+<div markdown="1">
+{% highlight xml %}
+    <dependencies>
+        <dependency>
+            <groupId>com.fluxtion</groupId>
+            <artifactId>compiler</artifactId>
+            <version>{{site.fluxtion_version}}</version>
+        </dependency>
+    </dependencies>
+{% endhighlight %}
+</div>
+</div>
+
+<div id="Gradle" class="tabcontent">
+<div markdown="1">
+{% highlight groovy %}
+implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
+{% endhighlight %}
+</div>
+</div>
 
 # Java code
 
