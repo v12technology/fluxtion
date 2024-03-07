@@ -7,6 +7,15 @@ published: true
 ---
 
 # Processing event streams
+{: .no_toc }
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
 
 An instance of an 
 [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
@@ -18,9 +27,8 @@ routes events to an instance.
 - **Call EventProcessor#init before first use** 
 - **Each new event processed triggers a graph calculation cycle.**
 
-# EventProcessor
-User code interacts with an EventProcessor instance at runtime to process event streams. An EventProcessor provides 
-interface methods for the user code to invoke depending on the usecase.
+An EventProcessor provides interface methods for the user code to post events for processing. The event processing
+api is documented below.
 
 ## Event input 
 Sends an incoming even to the EventProcessor to trigger a new stream calculation. Any method annotated with 
@@ -52,18 +60,22 @@ Fluxtion allows user classes to register for lifecycle callbacks when bound to a
 are exposed by the generated event processor and are automatically routed to the client classes.
 
 ### Lifecycle - init
+{: .no_toc }
 `EventProcessor#init` Calls init on any node in the graph that has registered for an init callback. The init calls
 are invoked in topological order.
 
 ### Lifecycle - teardown
+{: .no_toc }
 `EventProcessor#tearDown` Calls tearDown on any node in the graph that has registered for an tearDown callback.
 The tearDown calls are invoked reverse topological order.
 
 ### Lifecycle - start
+{: .no_toc }
 `EventProcessor#start` Calls start on any node in the graph that has registered for an onStart callback. The start calls
 are invoked in topological order. Start must be called after init
 
 ### Lifecycle - stop
+{: .no_toc }
 `EventProcessor#stop` Calls stop on any node in the graph that has registered for an onStop callback.
 The stop calls are invoked reverse topological order.
 
@@ -157,6 +169,122 @@ allClear [Signal: {filterString: CLEAR_SIGNAL, value: power restored}]
 anySignal [Signal: {filterString: CLEAR_SIGNAL, value: power restored}]
 
 anySignal [Signal: {filterString: HEARTBEAT_SIGNAL, value: heartbeat message}]
+{% endhighlight %}
+
+## Triggering children
+Event notification is propagated to child instances of event handlers. The notification is sent to any method that is
+annotated with an `OnTrigger` annotation. Trigger propagation is kin topological order.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class MyNode2 {
+    @OnEventHandler
+    public boolean handleStringEvent(int intToProcess) {
+        System.out.println("received:" + intToProcess);
+        return true;
+    }
+}
+
+public static class Child{
+    private final MyNode myNode;
+    private final MyNode2 myNode2;
+
+    public Child(MyNode myNode, MyNode2 myNode2) {
+        this.myNode = myNode;
+        this.myNode2 = myNode2;
+    }
+
+    @OnTrigger
+    public boolean triggered(){
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(new MyNode(), new MyNode2()));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();   
+    processor.onEvent(200);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+received:test
+triggered
+
+received:200
+triggered
+{% endhighlight %}
+
+## Conditional triggering children
+Event notification is propagated to child instances of event handlers, if the event handler method returns a true value. 
+A false value will
+
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class MyNode2 {
+    @OnEventHandler
+    public boolean handleStringEvent(int intToProcess) {
+        boolean propagate = intToProcess > 100;
+        System.out.println("conditional propagate:" + propagate);
+        return propagate;
+    }
+}
+
+public static class Child{
+    private final MyNode myNode;
+    private final MyNode2 myNode2;
+
+    public Child(MyNode myNode, MyNode2 myNode2) {
+        this.myNode = myNode;
+        this.myNode2 = myNode2;
+    }
+
+    @OnTrigger
+    public boolean triggered(){
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(new MyNode(), new MyNode2()));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();   
+    processor.onEvent(200);
+    System.out.println();   
+    processor.onEvent(50);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+received:test
+Child:triggered
+
+conditional propagate:true
+Child:triggered
+
+conditional propagate:false
 {% endhighlight %}
 
 ## Functional support
