@@ -10,7 +10,7 @@ published: true
 ---
 
 Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event 
-streams to application functions, increasing developer productivity by automating creation of dispatch logic. 
+streams to application functions, increasing developer productivity by automating the creation of dispatch logic. 
 Application code is free from vendor lock-in, deployable anywhere and simple to test.
 
 <div class="grid">
@@ -39,12 +39,12 @@ Fluxtion saves developer time and increases stability when building event driven
 {: .fs-4 }
 
 # Example
-[This example]({{site.cookbook_src}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as stream of events,
-as a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
+[This example]({{site.cookbook_src}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
+when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
 
-The developer writes the core business logic, Fluxtion takes care of generating all the event dispatch code that is time
-consuming to write, error prone and adds little value. The generated event processor is used like any normal java class 
-in the application.
+The developer writes the core business logic annotating any methods that should receive event callbacks. Fluxtion takes 
+care of generating all the event dispatch code that is time consuming to write, error prone and adds little value. 
+The generated event processor is used like any normal java class in the application.
 
 <div class="tab">
   <button class="tablinks2" onclick="openTab2(event, 'App integration')" id="defaultExample">App integration</button>
@@ -55,7 +55,7 @@ in the application.
 
 <div id="Event logic" class="tabcontent2">
 <div markdown="1">
-Custom business logic written by developer
+Custom business logic written by developer, annotated methods receive event callbacks.
 {% highlight java %}
 public class RaceCalculator {
     //streamed events
@@ -70,44 +70,50 @@ public class RaceCalculator {
     //event driven logic
     @Getter
     public static class RaceTimeTracker {
-
         private final transient Map<Long, RunningRecord> raceTimeMap = new HashMap<>();
+        private RunningRecord latestFinisher;
+
+        @Initialise
+        public void init(){
+            raceTimeMap.clear();
+        }
 
         @OnEventHandler(propagate = false)
         public boolean runnerStarted(RunnerStarted runnerStarted) {
-            raceTimeMap.put(runnerStarted.runnerId(), new RunningRecord(runnerStarted.startTime()));
+            long runnerId = runnerStarted.runnerId();
+            raceTimeMap.put(runnerId, new RunningRecord(runnerId, runnerStarted.startTime()));
             return false;
         }
 
         @OnEventHandler
-        public boolean runnerFinished(RunnerFinished runnerFinished) {
-            raceTimeMap.computeIfPresent(
+        public boolean runnerFinished(RunnerFinished runner) {
+            latestFinisher = raceTimeMap.computeIfPresent(
                     runner.runnerId(),
-                    (id, startRecord) -> new RunningRecord(startRecord.startTime(), runner.finishTime()));
+                    (id, startRecord) -> new RunningRecord(id, startRecord.startTime(), runner.finishTime()));
             return true;
         }
     }
 
     @RequiredArgsConstructor
     public static class ResultsPublisherImpl implements @ExportService ResultsPublisher{
-
         private final RaceTimeTracker raceTimeTracker;
 
-        @OnEventHandler(propagate = false)
-        public boolean runnerFinished(RunnerFinished runnerFinished) {
-            var raceTime = raceTimeTracker.getRaceTimeMap().get(runner.runnerId());
-            System.out.format("Crossed the line runner:%d time:%s%n", runner.runnerId(), raceTime.runDuration());
+        @OnTrigger
+        public boolean sendIndividualRunnerResult(){
+            var raceRecord = raceTimeTracker.getLatestFinisher();
+            System.out.format("Crossed the line runner:%d time [%s]%n", raceRecord.runnerId(), raceRecord.runDuration());
             return false;
         }
 
         @Override
         public void publishAllResults() {
-            System.out.println("FINAL RESULTS");
+            System.out.println("\nFINAL RESULTS");
             raceTimeTracker.getRaceTimeMap().forEach((l, r) ->
-                    System.out.println("id:" + l + " final time:" + r.runDuration()));
+                    System.out.println("id:" + l + " time [" + r.runDuration() + "]"));
         }
     }
 
+    //internal record
     private record RunningRecord(Instant startTime, Instant finishTime) {
         public String runDuration() {
             Duration duration = Duration.between(startTime, finishTime);
@@ -164,7 +170,7 @@ id:3 final time:1:52:48
 
 <div id="Binding functions" class="tabcontent2">
 <div markdown="1">
-Bind user functions to the event processor at build time with maven plugin
+Bind user functions to the event processor, at build time the maven plugin executes this class
 {% highlight java %}
 public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
     @Override
@@ -220,10 +226,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 <div id="Fluxtion generated" class="tabcontent2">
 <div markdown="1">
-Event processor generated at build time by maven plugin, connects events to business logic
+Generated event processor connects events to business logic. AOT generated event processor has zero startup cost.
 {% highlight java %}
 /**
- *
  *
  * <pre>
  * generation time                 : Not available
@@ -295,6 +300,7 @@ public class RaceCalculatorProcessor
     auditEvent(Lifecycle.LifecycleEvent.Init);
     // initialise dirty lookup map
     isDirty("test");
+    raceCalculator.init();
     clock.init();
     afterEvent();
   }
@@ -379,7 +385,9 @@ public class RaceCalculatorProcessor
     auditEvent(typedEvent);
     // Default, no filter methods
     isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
-    resultsPublisher.runnerFinished(typedEvent);
+    if (guardCheck_resultsPublisher()) {
+      resultsPublisher.sendIndividualRunnerResult();
+    }
     afterEvent();
   }
 
@@ -415,7 +423,6 @@ public class RaceCalculatorProcessor
       RunnerFinished typedEvent = (RunnerFinished) event;
       auditEvent(typedEvent);
       isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
-      resultsPublisher.runnerFinished(typedEvent);
     } else if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted) {
       RunnerStarted typedEvent = (RunnerStarted) event;
       auditEvent(typedEvent);
@@ -430,6 +437,9 @@ public class RaceCalculatorProcessor
   public void triggerCalculation() {
     buffering = false;
     String typedEvent = "No event information - buffered dispatch";
+    if (guardCheck_resultsPublisher()) {
+      resultsPublisher.sendIndividualRunnerResult();
+    }
     afterEvent();
   }
 
@@ -561,6 +571,9 @@ public class RaceCalculatorProcessor
     }
   }
 }
+
+
+
 {% endhighlight %}
 </div>
 </div>

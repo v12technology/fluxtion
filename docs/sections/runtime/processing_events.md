@@ -186,10 +186,10 @@ public static void main(String[] args) {
 Output
 {% highlight console %}
 received:test
-triggered
+Child:triggered
 
 received:200
-triggered
+Child:triggered
 {% endhighlight %}
 
 ## Conditional triggering children
