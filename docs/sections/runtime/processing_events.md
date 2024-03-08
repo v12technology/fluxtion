@@ -485,3 +485,17 @@ intValue:256
 
 An application can remove sink using the call `EventProcessor#removeSink`
 
+# To be completed
+- Complex graphs
+- After event
+- After trigger
+- Push reference
+- No propagate
+- Export service
+- Collection support, parent update
+- Trigger override
+- Forking
+- Dynamic filter
+- Batch support
+- Buffer/trigger
+
