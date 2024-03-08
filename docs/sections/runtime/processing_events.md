@@ -1,12 +1,20 @@
 ---
 title: Processing events
-parent: Core technology
+parent: Runtime execution
 has_children: false
 nav_order: 1
 published: true
 ---
 
 # Processing event streams
+{: .no_toc }
+
+This section documents the runtime event processing api. An instance of an
+[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
+is the bridge between event streams and processing logic, it provides interface methods for the user code to call at 
+runtime. Fluxtion allows user classes to register for event callbacks when bound into an event processor. Event 
+consumption methods are exposed by the generated event processor and are automatically routed to the client classes.
+
 {: .no_toc }
 <details open markdown="block">
   <summary>
@@ -17,18 +25,11 @@ published: true
 {:toc}
 </details>
 
-An instance of an 
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-is the bridge between event streams and processing logic, user code connects
-the EventProcessor to the application event sources. An application can contain multiple EventProcessors instances, and
-routes events to an instance. 
+## Event processing requirements 
+To process an event stream correctly the following requirements must be met:
 
-- **EventProcessors are not thread safe** a single event should be processed at one time. 
-- **Call EventProcessor#init before first use** 
-- **Each new event processed triggers a graph calculation cycle.**
-
-An EventProcessor provides interface methods for the user code to post events for processing. The event processing
-api is documented below.
+-  **Call EventProcessor.init() before first use**
+-  **EventProcessors are not thread safe** a single event should be processed at one time.
 
 ## Event input 
 Sends an incoming even to the EventProcessor to trigger a new stream calculation. Any method annotated with 
@@ -86,74 +87,6 @@ Output
 {% highlight console %}
 String received:TEST
 Int received:16
-{% endhighlight %}
-
-## Lifecycle callbacks
-Fluxtion allows user classes to register for lifecycle callbacks when bound to an event processor. Lifecycle callbacks 
-are exposed by the generated event processor and are automatically routed to the client classes.
-
-### Lifecycle - init
-{: .no_toc }
-`EventProcessor#init` Calls init on any node in the graph that has registered for an init callback. The init calls
-are invoked in topological order.
-
-### Lifecycle - teardown
-{: .no_toc }
-`EventProcessor#tearDown` Calls tearDown on any node in the graph that has registered for an tearDown callback.
-The tearDown calls are invoked reverse topological order.
-
-### Lifecycle - start
-{: .no_toc }
-`EventProcessor#start` Calls start on any node in the graph that has registered for an onStart callback. The start calls
-are invoked in topological order. Start must be called after init
-
-### Lifecycle - stop
-{: .no_toc }
-`EventProcessor#stop` Calls stop on any node in the graph that has registered for an onStop callback.
-The stop calls are invoked reverse topological order.
-
-### Attaching a user node to lifecycle callback
-User nodes that are added to the processing graph can attach to the lifecycle callbacks
-
-{% highlight java %}
-public static class MyNode {
-
-    @Initialise
-    public void myInitMethod() {
-        System.out.println("Initialise");
-    }
-
-    @Start
-    public void myStartMethod() {
-        System.out.println("Start");
-    }
-
-    @Stop
-    public void myStopMethod() {
-        System.out.println("Stop");
-    }
-
-    @TearDown
-    public void myTearDownMethod() {
-        System.out.println("TearDown");
-    }
-}
-
-public static void main(String[] args) {
-    var processor = Fluxtion.interpret(new MyNode());
-    processor.init();
-    processor.start();
-    processor.stop();
-    processor.tearDown();
-}
-{% endhighlight %}
-
-Output
-{% highlight console %}
-Initialise
-Start
-Stop
-TearDown
 {% endhighlight %}
 
 ## Filtering events

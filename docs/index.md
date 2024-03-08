@@ -47,8 +47,8 @@ consuming to write, error prone and adds little value. The generated event proce
 in the application.
 
 <div class="tab">
-  <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">Event logic</button>
-  <button class="tablinks2" onclick="openTab2(event, 'App integration')">App integration</button>
+  <button class="tablinks2" onclick="openTab2(event, 'App integration')" id="defaultExample">App integration</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Event logic')">Event logic</button>
   <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">Bind event logic</button>
   <button class="tablinks2" onclick="openTab2(event, 'Fluxtion generated')">Generated code</button>
 </div>
@@ -71,17 +71,19 @@ public class RaceCalculator {
     @Getter
     public static class RaceTimeTracker {
 
-        private final transient Map<Long, Long> runnerRaceTimeMap = new HashMap<>();
+        private final transient Map<Long, RunningRecord> raceTimeMap = new HashMap<>();
 
         @OnEventHandler(propagate = false)
         public boolean runnerStarted(RunnerStarted runnerStarted) {
-            //add runner start time to map
+            raceTimeMap.put(runnerStarted.runnerId(), new RunningRecord(runnerStarted.startTime()));
             return false;
         }
 
         @OnEventHandler
         public boolean runnerFinished(RunnerFinished runnerFinished) {
-            //calc runner total race time and add to map
+            raceTimeMap.computeIfPresent(
+                    runner.runnerId(),
+                    (id, startRecord) -> new RunningRecord(startRecord.startTime(), runner.finishTime()));
             return true;
         }
     }
@@ -93,15 +95,23 @@ public class RaceCalculator {
 
         @OnEventHandler(propagate = false)
         public boolean runnerFinished(RunnerFinished runnerFinished) {
-            //get the runner race time and send individual their results
-            long raceTime = raceTimeTracker.getRunnerRaceTimeMap().get(runnerFinished.runnerId());
+            var raceTime = raceTimeTracker.getRaceTimeMap().get(runner.runnerId());
+            System.out.format("Crossed the line runner:%d time:%s%n", runner.runnerId(), raceTime.runDuration());
             return false;
         }
 
         @Override
         public void publishAllResults() {
-            //get all results and publish
-            var runnerRaceTimeMap = raceTimeTracker.getRunnerRaceTimeMap();
+            System.out.println("FINAL RESULTS");
+            raceTimeTracker.getRaceTimeMap().forEach((l, r) ->
+                    System.out.println("id:" + l + " final time:" + r.runDuration()));
+        }
+    }
+
+    private record RunningRecord(Instant startTime, Instant finishTime) {
+        public String runDuration() {
+            Duration duration = Duration.between(startTime, finishTime);
+            return duration.toHoursPart() + ":" + duration.toMinutesPart() + ":" + duration.toSecondsPart();
         }
     }
 }
@@ -118,24 +128,36 @@ events to business functions
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {
-        RaceCalculatorProcessor raceCalculatorProcessor = new RaceCalculatorProcessor();
-        raceCalculatorProcessor.init();
+        RaceCalculatorProcessor raceCalculator = new RaceCalculatorProcessor();
+        raceCalculator.init();
 
-        ResultsPublisher resultsPublisher = raceCalculatorProcessor.getExportedService();
-        
+        ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
+
         //connect to event stream and process runner timing events
-        raceCalculatorProcessor.onEvent(new RunnerStarted(1, Instant.now()));
-        raceCalculatorProcessor.onEvent(new RunnerStarted(2, Instant.now()));
-        raceCalculatorProcessor.onEvent(new RunnerStarted(3, Instant.now()));
+        raceCalculator.onEvent(new RunnerStarted(1, "2019-02-14T09:00:00Z"));
+        raceCalculator.onEvent(new RunnerStarted(2, "2019-02-14T09:02:10Z"));
+        raceCalculator.onEvent(new RunnerStarted(3, "2019-02-14T09:06:22Z"));
 
-        raceCalculatorProcessor.onEvent(new RunnerFinished(2, Instant.now()));
-        raceCalculatorProcessor.onEvent(new RunnerFinished(3, Instant.now()));
-        raceCalculatorProcessor.onEvent(new RunnerFinished(1, Instant.now()));
-        
+        raceCalculator.onEvent(new RunnerFinished(2, "2019-02-14T10:32:15Z"));
+        raceCalculator.onEvent(new RunnerFinished(3, "2019-02-14T10:59:10Z"));
+        raceCalculator.onEvent(new RunnerFinished(1, "2019-02-14T11:14:32Z"));
+
         //publish full results
         resultsPublisher.publishAllResults();
     }
 }
+{% endhighlight %}
+
+Output from executing the application 
+
+{% highlight console %}
+Crossed the line runner:2 time:1:30:5
+Crossed the line runner:3 time:1:52:48
+Crossed the line runner:1 time:2:14:32
+FINAL RESULTS
+id:1 final time:2:14:32
+id:2 final time:1:30:5
+id:3 final time:1:52:48
 {% endhighlight %}
 </div>
 </div>
