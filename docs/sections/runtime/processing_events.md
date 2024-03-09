@@ -932,13 +932,22 @@ cause all potentially dirty trigger to fire. This is known as buffering and trig
 
 Output
 {% highlight console %}
+MyNode2 event received:test
+2 - myNode2 updated
+MyNode event received:test
+1 - myNode updated
 
-{% endhighlight %}****
+MyNode2 conditional propagate:true
+2 - myNode2 updated
+
+MyNode2 conditional propagate:false
+
+Child:triggered
+{% endhighlight %}
 
 # To be completed
 
 - Complex graphs
-
 
 - Collection support, parent update
 - Export service
