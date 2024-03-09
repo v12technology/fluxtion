@@ -683,12 +683,69 @@ Child:triggered
 MyNode::handleIntEvent received:200
 {% endhighlight %}
 
+## No trigger reference
+A child can isolate itself from a parent's event notification by marking the reference with a `@NoTriggerReference`
+annotation. This will stop the onTrigger method from firing even when the parent has triggered.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::handleStringEvent received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class MyNode2 {
+    @OnEventHandler
+    public boolean handleIntEvent(int intToProcess) {
+        System.out.println("MyNode2::handleIntEvent received:" + intToProcess);
+        return true;
+    }
+}
+
+
+public static class Child {
+    private final MyNode myNode;
+    @NoTriggerReference
+    private final MyNode2 myNode2;
+
+    public Child(MyNode myNode, MyNode2 myNode2) {
+        this.myNode = myNode;
+        this.myNode2 = myNode2;
+    }
+
+
+    @OnTrigger
+    public boolean triggered() {
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(new MyNode(), new MyNode2()));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();
+    processor.onEvent(200);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::handleStringEvent received:test
+Child:triggered
+
+MyNode2::handleIntEvent received:200
+{% endhighlight %}
+
+
 # To be completed
+
 - Complex graphs
 
-
-- No propagate
-- No trigger reference
+- 
 - Export service
 - Collection support, parent update
 - Trigger override
