@@ -1,12 +1,12 @@
 ---
-title: Functional event processing
+title: Functional programming
 parent: Runtime execution
 has_children: false
 nav_order: 2
 published: true
 ---
 
-# Function event stream processing
+# Functional event stream processing
 {: .no_toc }
 
 This section documents the runtime event processing callback api and behaviour using functional programming.
