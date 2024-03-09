@@ -586,6 +586,16 @@ Image is generated as part of the code generator
 </div>
 </div>
 
+# Getting started
+
+## Developers
+A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
+Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md)
+
+## Architects
+For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
+[core technology section](sections/core-technology.md).
+
 # Latest release
 
 | component | maven central                                                                                                                                                                    |

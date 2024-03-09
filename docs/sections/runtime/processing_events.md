@@ -420,48 +420,6 @@ Parent B updated
 Child:triggered
 {% endhighlight %}
 
-## Functional support
-The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind functions
-into the processor without having to construct classes. Functional building is accessed through the 
-[DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) 
-builder methods.
-
-## Re-entrant events
-Events can be added for processing from inside the graph for processing in the next available cycle. Internal events
-are added to LIFO queue for processing in the correct order. The EventProcessor instance maintains the LIFO queue, any 
-new input events are queued if there is processing currently acting. Support for internal event publishing is built 
-into the streaming api.
-
-Maps an int signal to a String and republishes to the graph
-{% highlight java %}
-public static class MyNode {
-    @OnEventHandler
-    public boolean handleStringEvent(String stringToProcess) {
-        System.out.println("received [" + stringToProcess +"]");
-        return true;
-    }
-}
-
-public static void main(String[] args) {
-    var processor = Fluxtion.interpret(cfg -> {
-                DataFlow.subscribeToIntSignal("myIntSignal")
-                        .mapToObj(d -> "intValue:" + d)
-                        .console("republish re-entrant [{}]")
-                        .processAsNewGraphEvent();
-                cfg.addNode(new MyNode());
-            }
-    );
-    processor.init();
-    processor.publishSignal("myIntSignal", 256);
-}
-{% endhighlight %}
-
-Output
-{% highlight console %}
-republish re-entrant [intValue:256]
-received [intValue:256]
-{% endhighlight %}
-
 ## After event callback
 Register for a post event method callback with the `@AfterEvent` annotation. The callback will be executed whenever
 any event is sent to the event processor. Unlike the `@AfterTrigger` which is only called if the containing instance has
