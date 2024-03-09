@@ -533,7 +533,7 @@ MyNode::afterEvent
 MyNode::afterEvent
 {% endhighlight %}
 
-## After event callback
+## After trigger callback
 Register for a post trigger method callback with the `@AfterTrigger` annotation. The callback will only be executed if 
 this class has been triggered on tby an incoming event. Unlike the `@AfterEvent` which is always called on any event.
 
@@ -797,19 +797,87 @@ MyNode2::handleIntEvent received:200
 Child:triggered
 {% endhighlight %}
 
+
+## Non-dirty triggering
+The condition that causes a trigger callback to fire can be inverted so that an indication of no change from the parent
+will cause the trigger to fire.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(int intToProcess) {
+        boolean propagate = intToProcess > 100;
+        System.out.println("conditional propagate:" + propagate);
+        return propagate;
+    }
+}
+
+
+public static class Child {
+    private final MyNode myNode;
+
+    public Child(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean triggered() {
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static class NonDirtyChild {
+    private final MyNode myNode;
+
+    public NonDirtyChild(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger(dirty = false)
+    public boolean triggered() {
+        System.out.println("NonDirtyChild:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    MyNode myNode = new MyNode();
+    var processor = Fluxtion.interpret(new Child(myNode), new NonDirtyChild(myNode));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();
+    processor.onEvent(200);
+    System.out.println();
+    processor.onEvent(50);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+conditional propagate:true
+Child:triggered
+
+conditional propagate:false
+NonDirtyChild:triggered
+{% endhighlight %}
+
+
 # To be completed
 
 - Complex graphs
+- Buffer/trigger
 
-- Dirty trigger
-- Export service
+
 - Collection support, parent update
+- Export service
 - Forking
 - Dynamic filter
 - Batch support
-- Buffer/trigger
 
 {% highlight java %}
+
+
 
 {% endhighlight %}
 
