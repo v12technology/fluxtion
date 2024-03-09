@@ -794,13 +794,89 @@ conditional propagate:false
 NonDirtyChild:triggered
 {% endhighlight %}
 
+## Collection support
+Collections or arrays of references are supported, if any element in the collection fires a change notification the 
+trigger method will be called. The trigger method is invoked only once per event cycle whatever the number of 
+parent's updating. 
 
+Parent change identity can be tracked using the `@OnParentUpdate` annotation.
+
+{% highlight java %}
+public static class MyNode {
+    @FilterId
+    private final String filter;
+    private final String name;
+
+    public MyNode(String filter, String name) {
+        this.filter = filter;
+        this.name = name;
+    }
+
+    @OnEventHandler
+    public boolean handleIntSignal(IntSignal intSignal) {
+        System.out.printf("MyNode-%s::handleIntSignal - %s%n", filter, intSignal.getValue());
+        return true;
+    }
+}
+
+public static class Child {
+    private final MyNode[] nodes;
+    private int updateCount;
+
+    public Child(MyNode... nodes) {
+        this.nodes = nodes;
+    }
+
+    @OnParentUpdate
+    public void parentUpdated(MyNode updatedNode) {
+        updateCount++;
+        System.out.printf("parentUpdated '%s'%n", updatedNode.name);
+    }
+
+    @OnTrigger
+    public boolean triggered() {
+        System.out.printf("Child::triggered updateCount:%d%n%n", updateCount);
+        updateCount = 0;
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(
+            new MyNode("A", "a_1"),
+            new MyNode("A", "a_2"),
+            new MyNode("B", "b_1")));
+    processor.init();
+    processor.publishIntSignal("A", 10);
+    processor.publishIntSignal("B", 25);
+    processor.publishIntSignal("A", 12);
+    processor.publishIntSignal("C", 200);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode-A::handleIntSignal - 10
+parentUpdated 'a_1'
+MyNode-A::handleIntSignal - 10
+parentUpdated 'a_2'
+Child::triggered updateCount:2
+
+MyNode-B::handleIntSignal - 25
+parentUpdated 'b_1'
+Child::triggered updateCount:1
+
+MyNode-A::handleIntSignal - 12
+parentUpdated 'a_1'
+MyNode-A::handleIntSignal - 12
+parentUpdated 'a_2'
+Child::triggered updateCount:2
+{% endhighlight %}
 
 # To be completed
 
 - Complex graphs
 
-- Collection support, parent update
 - Export service
 - Forking
 - Dynamic filter
