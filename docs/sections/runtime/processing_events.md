@@ -573,12 +573,69 @@ MyNode::handleStringEvent received:TEST
 MyNode::afterTrigger
 {% endhighlight %}
 
+## Push trigger
+Invert the trigger order so the instance holding the reference receives the event notification before the reference target 
+and can push data into the target. Annotate the reference to be a push target with the `@PushReference` annotation.
+
+The normal order is to trigger the target first, which can perform internal calculations if required. Then the instance 
+holding the reference is triggered so it can pull calculated data from the target reference.
+
+{% highlight java %}
+public static class MyNode {
+    @PushReference
+    private final PushTarget pushTarget;
+
+    public MyNode(PushTarget pushTarget) {
+        this.pushTarget = pushTarget;
+    }
+
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::handleStringEvent " + stringToProcess);
+        if (stringToProcess.startsWith("PUSH")) {
+            pushTarget.myValue = stringToProcess;
+            return true;
+        }
+        return false;
+    }
+}
+
+public static class PushTarget {
+    public String myValue;
+
+    @OnTrigger
+    public boolean onTrigger() {
+        System.out.println("PushTarget::onTrigger -> myValue:'" + myValue + "'");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode(new PushTarget()));
+    processor.init();
+    processor.onEvent("PUSH - test 1");
+    System.out.println();
+    processor.onEvent("ignore me - XXXXX");
+    System.out.println();
+    processor.onEvent("PUSH - test 2");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::handleStringEvent PUSH - test 1
+PushTarget::onTrigger ->  myValue:'PUSH - test 1'
+
+MyNode::handleStringEvent ignore me - XXXXX
+
+MyNode::handleStringEvent PUSH - test 2
+PushTarget::onTrigger ->  myValue:'PUSH - test 2'
+{% endhighlight %}
 
 # To be completed
 - Complex graphs
 
 
-- Push reference
 - No propagate
 - No trigger reference
 - Export service
