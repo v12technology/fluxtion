@@ -34,7 +34,7 @@ To process an event stream correctly the following requirements must be met:
 -  **Call EventProcessor.init() before first use**
 -  **EventProcessors are not thread safe** a single event should be processed at one time.
 
-## Event input 
+## Handle event input 
 Sends an incoming even to the EventProcessor to trigger a new stream calculation. Any method annotated with 
 `@OnEvent` receives the event from the event processor
 
@@ -59,7 +59,7 @@ Output
 received:TEST
 {% endhighlight %}
 
-## Handle multiple Event types
+## Handle multiple event types
 An event handler class can handle multiple event types. Add as many handler methods as required and annotate each method
 with an `@OnEvent` annotation.
 
@@ -740,15 +740,70 @@ Child:triggered
 MyNode2::handleIntEvent received:200
 {% endhighlight %}
 
+## Override trigger reference
+A child can force only a single parent to fire its trigger, all other parents will be treated as if they were annotated with 
+`@NoTriggerReference` and removed from the event notification triggers for this class.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::handleStringEvent received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class MyNode2 {
+    @OnEventHandler
+    public boolean handleIntEvent(int intToProcess) {
+        System.out.println("MyNode2::handleIntEvent received:" + intToProcess);
+        return true;
+    }
+}
+
+
+public static class Child {
+    private final MyNode myNode;
+    @TriggerEventOverride
+    private final MyNode2 myNode2;
+
+    public Child(MyNode myNode, MyNode2 myNode2) {
+        this.myNode = myNode;
+        this.myNode2 = myNode2;
+    }
+
+
+    @OnTrigger
+    public boolean triggered() {
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(new MyNode(), new MyNode2()));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();
+    processor.onEvent(200);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::handleStringEvent received:test
+
+MyNode2::handleIntEvent received:200
+Child:triggered
+{% endhighlight %}
 
 # To be completed
 
 - Complex graphs
 
-- 
+- Dirty trigger
 - Export service
 - Collection support, parent update
-- Trigger override
 - Forking
 - Dynamic filter
 - Batch support
