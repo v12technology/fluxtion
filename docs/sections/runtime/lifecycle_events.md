@@ -9,13 +9,13 @@ published: true
 # Processing lifecycle callbacks
 {: .no_toc }
 
-The section documents the lifecycle api. An instance of an
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) 
-is the bridge between event streams and processing logic, it provides interface methods for the user code to call at 
-runtime. Fluxtion allows user classes to register for lifecycle callbacks when bound into an event processor.
-Lifecycle callbacks are exposed by the generated event processor and are automatically routed to the client classes.
+The section documents the lifecycle api and its behaviour. 
 
-The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution)
+Classes bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) register for lifecycle callbacks with annotations on methods. 
+A [Lifecycle]({{site.fluxtion_src_runtime}}/lifecycle/Lifecycle.java) interface is implemented by the generated EventProcessor, lifecycle method calls are routed to 
+annotated callback methods.
+
+The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution/src/main/java/com/fluxtion/example/reference/lifecycle)
 
 {: .no_toc }
 <details open markdown="block">

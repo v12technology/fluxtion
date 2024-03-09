@@ -9,13 +9,14 @@ published: true
 # Processing event streams
 {: .no_toc }
 
-This section documents the runtime event processing api. An instance of an
-[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-is the bridge between event streams and processing logic, it provides interface methods for the user code to call at 
-runtime. Fluxtion allows user classes to register for event callbacks when bound into an event processor. Event 
-consumption methods are exposed by the generated event processor and are automatically routed to the client classes.
+This section documents the runtime event processing callback api and behaviour. 
 
-The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution)
+Classes bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) register for event callbacks with annotations. The generated EventProcessor
+implements the [StaticEventProcessor]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java), with the onEvent method acting as 
+a bridge between external event streams and bound processing logic. User code reads the event streams calling onEvent
+with each new event received, the event processor then notifies annotated callback methods according to the [dispatch rules](../core-technology#event-dispatch-rules).
+
+The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution/src/main/java/com/fluxtion/example/reference/execution)
 
 {: .no_toc }
 <details open markdown="block">
