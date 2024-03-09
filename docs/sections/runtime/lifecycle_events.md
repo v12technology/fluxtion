@@ -15,6 +15,7 @@ is the bridge between event streams and processing logic, it provides interface 
 runtime. Fluxtion allows user classes to register for lifecycle callbacks when bound into an event processor.
 Lifecycle callbacks are exposed by the generated event processor and are automatically routed to the client classes.
 
+The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution)
 
 {: .no_toc }
 <details open markdown="block">

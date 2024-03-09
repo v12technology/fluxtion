@@ -39,7 +39,7 @@ Fluxtion saves developer time and increases stability when building event driven
 {: .fs-4 }
 
 # Example
-[This example]({{site.cookbook_src}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
+[This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
 when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
 
 The developer writes the core business logic annotating any methods that should receive event callbacks. Fluxtion takes 
