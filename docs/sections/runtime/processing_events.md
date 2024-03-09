@@ -633,6 +633,56 @@ MyNode::handleStringEvent PUSH - test 2
 PushTarget::onTrigger ->  myValue:'PUSH - test 2'
 {% endhighlight %}
 
+## No propagate event handler
+An event handler method can prevent its method triggering a notification by setting the propagate attribute to false 
+on any event handler annotation, `@OnEventHandler(propagate = false)`
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::handleStringEvent received:" + stringToProcess);
+        return true;
+    }
+
+    @OnEventHandler(propagate = false)
+    public boolean handleIntEvent(int intToProcess) {
+        System.out.println("MyNode::handleIntEvent received:" + intToProcess);
+        return true;
+    }
+}
+
+public static class Child {
+    private final MyNode myNode;
+
+    public Child(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean triggered(){
+        System.out.println("Child:triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Child(new MyNode()));
+    processor.init();
+    processor.onEvent("test");
+    System.out.println();
+    processor.onEvent(200);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::handleStringEvent received:test
+Child:triggered
+
+MyNode::handleIntEvent received:200
+{% endhighlight %}
+
 # To be completed
 - Complex graphs
 
