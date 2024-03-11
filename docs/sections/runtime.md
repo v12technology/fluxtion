@@ -7,7 +7,7 @@ published: true
 
 # Introduction
 
-Compiling and generation are independent functions that can be in separate processes. This section details the runtime 
+Building and executing an event processor are independent functions that can run in separate processes. This section details the runtime 
 execution of the event processor and its integration with client code.
 
 An instance of an
@@ -19,3 +19,6 @@ routes events to an instance.
 - **Call EventProcessor.init() before first use**
 - **EventProcessors are not thread safe** a single event should be processed at one time.
 - **Each new event processed triggers a graph calculation cycle.**
+
+
+![](../images/integration_overview-running.drawio.png)

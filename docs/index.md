@@ -590,15 +590,18 @@ Image is generated as part of the code generator
 
 ## Developers
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
-Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md)
-
-Reference documentation for [event processing at runtime](sections/runtime.md)
-
-Reference documentation for [generating an event processor](sections/generating.md) containing user classes and functions.
+Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
 
 ## Architects
 For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
 [core technology section](sections/core-technology.md).
+
+## Reference documentation
+* [Runtime execution](sections/runtime.md)
+* [Event processor building](sections/generating.md)
+* [Deploying and testing](sections/deploying-testing.md)
+* [Quick reference](sections/quick-reference.md)
+
 
 # Latest release
 

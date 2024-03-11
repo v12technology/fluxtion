@@ -38,9 +38,9 @@ All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}
 ## Dependencies
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'pom_xml')" id="defaultOpen">Maven pom</button>
-  <button class="tablinks" onclick="openTab(event, 'Maven')">Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 
 <div id="pom_xml" class="tabcontent">
@@ -111,16 +111,17 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 </div>
 </div>
 
-# Java code
+# User event processing logic
 
-There are two types of user classes employed at runtime, pojo's that hold processing logic and events that are 
-fed into the generated BreachNotifierProcessor. 
+There are two types of user classes employed at runtime. First, pojo's that hold processing logic that are bound into the 
+generated event processor. Secondly, record classes that defines the event types that are fed into the BreachNotifierProcessor. 
 
 The example [Main method]({{page.example_src}}/Main.java) instantiates the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), 
 initialises it and submits events for processing using the onEvent method.
 
 All the pojo classes required for processing are linked together using an imperative style in our [AotBuilder.java]({{page.example_src}}/AotBuilder.java).
-The Fluxtion maven plugin runs at build time, interrogating the AotBuilder to generate the BreachNotifierProcessor.
+The Fluxtion maven plugin runs at build time, interrogating the AotBuilder to generate the EventProcessor. The
+user pojo's are bound into the BreachNotifierProcessor.
 
 ## Pojo classes
 
@@ -134,11 +135,17 @@ The Fluxtion maven plugin runs at build time, interrogating the AotBuilder to ge
 The event handler method is called when a matching event type is published to the container, the trigger handler is 
 called when a parent dependency haa been trigger or a parent event handler method has been called.
 
-### [Event_A_Handler]({{page.example_src}}/Event_A_Handler.java)
+<div class="tab">
+  <button class="tablinks2" onclick="openTab2(event, 'Handler A')" id="defaultExample">Handler A</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Handler B')">Handler B</button>
+  <button class="tablinks2" onclick="openTab2(event, 'DataSumCalculator')">DataSumCalculator</button>
+  <button class="tablinks2" onclick="openTab2(event, 'BreachNotifier')">BreachNotifier</button>
+</div>
 
+<div id="Handler A" class="tabcontent2">
+<div markdown="1">
 An entry point for processing events of type Event_A and stores the latest value as a member variable.
-Annotate the event handler method with **@OnEventHandler** as follows:
-
+Annotate the event handler method with `@OnEventHandler` as follows:
 {% highlight java %}
 public class Event_A_Handler {
     private double value;
@@ -154,12 +161,13 @@ public class Event_A_Handler {
     }
 }
 {% endhighlight %}
+</div>
+</div>
 
-### [Event_B_Handler]({{page.example_src}}/Event_B_Handler.java)
-
+<div id="Handler B" class="tabcontent2">
+<div markdown="1">
 An entry point for processing events of type Event_B and stores the latest value as a member variable.
-Annotate the event handler method with **@OnEventHandler** as follows:
-
+Annotate the event handler method with `@OnEventHandler` as follows:
 {% highlight java %}
 public class Event_B_Handler {
     private double value;
@@ -175,9 +183,11 @@ public class Event_B_Handler {
     }
 }
 {% endhighlight %}
+</div>
+</div>
 
-### [DataSumCalculator]({{page.example_src}}/DataSumCalculator.java)
-
+<div id="DataSumCalculator" class="tabcontent2">
+<div markdown="1">
 Calculates the current sum adding the values of Event_A_Handler and Event_B_Handler. Will be triggered when either handler
 has its updated method invoked. Annotate the trigger method with **@OnTrigger** as follows:
 
@@ -216,9 +226,12 @@ public class DataSumCalculator {
 
 The return flag indicates that the event notification should be propagated and any child nodes trigger methods
 should be invoked.
+</div>
+</div>
 
-### [BreachNotifier]({{page.example_src}}/BreachNotifier.java)
 
+<div id="BreachNotifier" class="tabcontent2">
+<div markdown="1">
 Logs to console when the sum breaches a value, BreachNotifier holds a reference to the DataSumCalculator instance.
 The trigger method is only invoked if the DataSumCalculator propagates the notification, by returning true from its
 trigger method. Annotate the trigger method with **@OnTrigger** as follows:
@@ -242,17 +255,19 @@ public class BreachNotifier {
     }
 }
 {% endhighlight %}
+</div>
+</div>
 
 ## Event classes
 
-Java records as used as events.
+Java records are used as events.
 
 {% highlight java %}
 public record Event_A(double value) {}
 public record Event_B(double value) {}
 {% endhighlight %}
 
-## Building an EventProcessor containing user classes
+# Generating the EventProcessor
 
 The process for building an event processor AOT with Fluxtion are quite simple:
 
@@ -265,14 +280,22 @@ The process for building an event processor AOT with Fluxtion are quite simple:
 - Add the Fluxtion maven plugin to your build [pom.xml](https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/pom.xml), the event processor will be generated ahead of time (AOT)
   as part of the build
 
-## [AotBuilder]({{page.example_src}}/AotBuilder.java) 
-AotBuilder adds user classes imperatively to the EventProcessorConfig in the buildGraph method.
+Fluxtion inspects all the references from the supplied object list to generate the EventProcessor. As instances of
+Event_A_Handler, Event_B_Handler and DataSumCalculator are all directly or indirectly referenced by BreachNotifier
+there is no need to tell Fluxtion about them. Any connected instance will be automatically discovered and added to the
+final EventProcessor.
 
-Fluxtion inspects all the references from the supplied object list to generate the EventProcessor. As instances of 
-Event_A_Handler, Event_B_Handler and DataSumCalculator are all directly or indirectly referenced by BreachNotifier 
-there is no need to tell Fluxtion about them. Any connected instance will be automatically discovered and added to the 
-final EventProcessor. 
 
+
+<div class="tab">
+  <button class="tablinks3" onclick="openTab3(event, 'AotBuilder')" id="aotBuilder">AotBuilder</button>
+  <button class="tablinks3" onclick="openTab3(event, 'BreachNotifierProcessor')">Generated code</button>
+</div>
+
+
+<div id="AotBuilder" class="tabcontent3">
+<div markdown="1">
+The [AotBuilder]({{page.example_src}}/AotBuilder.java)  adds user classes imperatively to the EventProcessorConfig in the buildGraph method.
 Source generation configuration is handled in the configureGeneration method.
 
 {% highlight java %}
@@ -290,9 +313,375 @@ public class AotBuilder implements FluxtionGraphBuilder {
     }
 }
 {% endhighlight %}
+</div>
+</div>
 
-## Generated event processor source
+
+<div id="BreachNotifierProcessor" class="tabcontent3">
+<div markdown="1">
 The AOT generated event processor source file is here [BreachNotifierProcessor.java]({{page.example_src}}/generated/BreachNotifierProcessor.java)
+
+{% highlight java %}
+/**
+ * <pre>
+ * generation time                 : Not available
+ * eventProcessorGenerator version : 9.2.17
+ * api version                     : 9.2.17
+ * </pre>
+ * <p>
+ * Event classes supported:
+ *
+ * <ul>
+ *   <li>com.fluxtion.example.imperative.helloworld.Event_A
+ *   <li>com.fluxtion.example.imperative.helloworld.Event_B
+ *   <li>com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent
+ * </ul>
+ *
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class BreachNotifierProcessor
+        implements EventProcessor<BreachNotifierProcessor>,
+        StaticEventProcessor,
+        InternalEventProcessor,
+        BatchHandler,
+        Lifecycle {
+
+    //Node declarations
+    private final CallbackDispatcherImpl callbackDispatcher = new CallbackDispatcherImpl();
+    private final Event_A_Handler event_A_Handler_2 = new Event_A_Handler();
+    private final Event_B_Handler event_B_Handler_3 = new Event_B_Handler();
+    private final DataSumCalculator dataSumCalculator_1 =
+            new DataSumCalculator(event_A_Handler_2, event_B_Handler_3);
+    private final BreachNotifier breachNotifier_0 = new BreachNotifier(dataSumCalculator_1);
+    public final NodeNameAuditor nodeNameLookup = new NodeNameAuditor();
+    private final SubscriptionManagerNode subscriptionManager = new SubscriptionManagerNode();
+    private final MutableEventProcessorContext context =
+            new MutableEventProcessorContext(
+                    nodeNameLookup, callbackDispatcher, subscriptionManager, callbackDispatcher);
+    public final Clock clock = new Clock();
+    private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
+    //Dirty flags
+    private boolean initCalled = false;
+    private boolean processing = false;
+    private boolean buffering = false;
+    private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap =
+            new IdentityHashMap<>(3);
+    private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap =
+            new IdentityHashMap<>(3);
+
+    private boolean isDirty_dataSumCalculator_1 = false;
+    private boolean isDirty_event_A_Handler_2 = false;
+    private boolean isDirty_event_B_Handler_3 = false;
+    //Forked declarations
+
+    //Filter constants
+
+    public BreachNotifierProcessor(Map<Object, Object> contextMap) {
+        context.replaceMappings(contextMap);
+        //node auditors
+        initialiseAuditor(clock);
+        initialiseAuditor(nodeNameLookup);
+        subscriptionManager.setSubscribingEventProcessor(this);
+        context.setEventProcessorCallback(this);
+    }
+
+    public BreachNotifierProcessor() {
+        this(null);
+    }
+
+    @Override
+    public void init() {
+        initCalled = true;
+        auditEvent(Lifecycle.LifecycleEvent.Init);
+        //initialise dirty lookup map
+        isDirty("test");
+        clock.init();
+        afterEvent();
+    }
+
+    @Override
+    public void start() {
+        if (!initCalled) {
+            throw new RuntimeException("init() must be called before start()");
+        }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Start);
+
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public void stop() {
+        if (!initCalled) {
+            throw new RuntimeException("init() must be called before stop()");
+        }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.Stop);
+
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public void tearDown() {
+        initCalled = false;
+        auditEvent(Lifecycle.LifecycleEvent.TearDown);
+        nodeNameLookup.tearDown();
+        clock.tearDown();
+        subscriptionManager.tearDown();
+        afterEvent();
+    }
+
+    @Override
+    public void setContextParameterMap(Map<Object, Object> newContextMapping) {
+        context.replaceMappings(newContextMapping);
+    }
+
+    @Override
+    public void addContextParameter(Object key, Object value) {
+        context.addMapping(key, value);
+    }
+
+    //EVENT DISPATCH - START
+    @Override
+    public void onEvent(Object event) {
+        if (buffering) {
+            triggerCalculation();
+        }
+        if (processing) {
+            callbackDispatcher.processReentrantEvent(event);
+        } else {
+            processing = true;
+            onEventInternal(event);
+            callbackDispatcher.dispatchQueuedCallbacks();
+            processing = false;
+        }
+    }
+
+    @Override
+    public void onEventInternal(Object event) {
+        if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
+            Event_A typedEvent = (Event_A) event;
+            handleEvent(typedEvent);
+        } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
+            Event_B typedEvent = (Event_B) event;
+            handleEvent(typedEvent);
+        } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+            ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+            handleEvent(typedEvent);
+        }
+    }
+
+    public void handleEvent(Event_A typedEvent) {
+        auditEvent(typedEvent);
+        //Default, no filter methods
+        isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
+        if (guardCheck_dataSumCalculator_1()) {
+            isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+        }
+        if (guardCheck_breachNotifier_0()) {
+            breachNotifier_0.printWarning();
+        }
+        afterEvent();
+    }
+
+    public void handleEvent(Event_B typedEvent) {
+        auditEvent(typedEvent);
+        //Default, no filter methods
+        isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
+        if (guardCheck_dataSumCalculator_1()) {
+            isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+        }
+        if (guardCheck_breachNotifier_0()) {
+            breachNotifier_0.printWarning();
+        }
+        afterEvent();
+    }
+
+    public void handleEvent(ClockStrategyEvent typedEvent) {
+        auditEvent(typedEvent);
+        //Default, no filter methods
+        clock.setClockStrategy(typedEvent);
+        afterEvent();
+    }
+    //EVENT DISPATCH - END
+
+    public void bufferEvent(Object event) {
+        buffering = true;
+        if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
+            Event_A typedEvent = (Event_A) event;
+            auditEvent(typedEvent);
+            isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
+        } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
+            Event_B typedEvent = (Event_B) event;
+            auditEvent(typedEvent);
+            isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
+        } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+            ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+            auditEvent(typedEvent);
+            clock.setClockStrategy(typedEvent);
+        }
+    }
+
+    public void triggerCalculation() {
+        buffering = false;
+        String typedEvent = "No event information - buffered dispatch";
+        if (guardCheck_dataSumCalculator_1()) {
+            isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+        }
+        if (guardCheck_breachNotifier_0()) {
+            breachNotifier_0.printWarning();
+        }
+        afterEvent();
+    }
+
+    private void auditEvent(Object typedEvent) {
+        clock.eventReceived(typedEvent);
+        nodeNameLookup.eventReceived(typedEvent);
+    }
+
+    private void auditEvent(Event typedEvent) {
+        clock.eventReceived(typedEvent);
+        nodeNameLookup.eventReceived(typedEvent);
+    }
+
+    private void initialiseAuditor(Auditor auditor) {
+        auditor.init();
+        auditor.nodeRegistered(breachNotifier_0, "breachNotifier_0");
+        auditor.nodeRegistered(dataSumCalculator_1, "dataSumCalculator_1");
+        auditor.nodeRegistered(event_A_Handler_2, "event_A_Handler_2");
+        auditor.nodeRegistered(event_B_Handler_3, "event_B_Handler_3");
+        auditor.nodeRegistered(callbackDispatcher, "callbackDispatcher");
+        auditor.nodeRegistered(subscriptionManager, "subscriptionManager");
+        auditor.nodeRegistered(context, "context");
+    }
+
+    private void beforeServiceCall(String functionDescription) {
+        functionAudit.setFunctionDescription(functionDescription);
+        auditEvent(functionAudit);
+        if (buffering) {
+            triggerCalculation();
+        }
+        processing = true;
+    }
+
+    private void afterServiceCall() {
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    private void afterEvent() {
+
+        clock.processingComplete();
+        nodeNameLookup.processingComplete();
+        isDirty_dataSumCalculator_1 = false;
+        isDirty_event_A_Handler_2 = false;
+        isDirty_event_B_Handler_3 = false;
+    }
+
+    @Override
+    public void batchPause() {
+        auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+        processing = true;
+
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public void batchEnd() {
+        auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+        processing = true;
+
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
+    public boolean isDirty(Object node) {
+        return dirtySupplier(node).getAsBoolean();
+    }
+
+    @Override
+    public BooleanSupplier dirtySupplier(Object node) {
+        if (dirtyFlagSupplierMap.isEmpty()) {
+            dirtyFlagSupplierMap.put(dataSumCalculator_1, () -> isDirty_dataSumCalculator_1);
+            dirtyFlagSupplierMap.put(event_A_Handler_2, () -> isDirty_event_A_Handler_2);
+            dirtyFlagSupplierMap.put(event_B_Handler_3, () -> isDirty_event_B_Handler_3);
+        }
+        return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
+    }
+
+    @Override
+    public void setDirty(Object node, boolean dirtyFlag) {
+        if (dirtyFlagUpdateMap.isEmpty()) {
+            dirtyFlagUpdateMap.put(dataSumCalculator_1, (b) -> isDirty_dataSumCalculator_1 = b);
+            dirtyFlagUpdateMap.put(event_A_Handler_2, (b) -> isDirty_event_A_Handler_2 = b);
+            dirtyFlagUpdateMap.put(event_B_Handler_3, (b) -> isDirty_event_B_Handler_3 = b);
+        }
+        dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
+    }
+
+    private boolean guardCheck_breachNotifier_0() {
+        return isDirty_dataSumCalculator_1;
+    }
+
+    private boolean guardCheck_dataSumCalculator_1() {
+        return isDirty_event_A_Handler_2 | isDirty_event_B_Handler_3;
+    }
+
+    @Override
+    public <T> T getNodeById(String id) throws NoSuchFieldException {
+        return nodeNameLookup.getInstanceById(id);
+    }
+
+    @Override
+    public <A extends Auditor> A getAuditorById(String id)
+            throws NoSuchFieldException, IllegalAccessException {
+        return (A) this.getClass().getField(id).get(this);
+    }
+
+    @Override
+    public void addEventFeed(EventFeed eventProcessorFeed) {
+        subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public void removeEventFeed(EventFeed eventProcessorFeed) {
+        subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
+    }
+
+    @Override
+    public BreachNotifierProcessor newInstance() {
+        return new BreachNotifierProcessor();
+    }
+
+    @Override
+    public BreachNotifierProcessor newInstance(Map<Object, Object> contextMap) {
+        return new BreachNotifierProcessor();
+    }
+
+    @Override
+    public String getLastAuditLogRecord() {
+        try {
+            EventLogManager eventLogManager =
+                    (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
+            return eventLogManager.lastRecordAsString();
+        } catch (Throwable e) {
+            return "";
+        }
+    }
+}
+{% endhighlight %}
+</div>
+</div>
 
 # Executing the example
 
@@ -340,4 +729,6 @@ complicated.
 
 <script>
 document.getElementById("defaultOpen").click();
+document.getElementById("defaultExample").click();
+document.getElementById("aotBuilder").click();
 </script>

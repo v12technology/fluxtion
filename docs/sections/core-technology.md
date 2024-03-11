@@ -103,3 +103,18 @@ calculate the dispatch call trees for the internal dispatcher. A bean can export
 single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
 to the container's dispatcher.
 
+# Building and executing
+There are two components provided by Fluxtion the developer uses to build event driven logic and then to execute it.
+
+## Compiler
+The compiler analyses the configuration information provided by the programmer and builds a dependency injection container
+that houses all the user components or beans combined with pre-calculated event dispatch. Outputs from the compiler
+are either
+- In memory di container running in an interpreted mode
+- A container generated ahead of time and serialised to code
+
+## Runtime
+The runtime provides the dependency injection container with a core set of libraries required at runtime. An AOT generated
+container only requires the runtime to function, no compiler libraries are required.
+
+![](../images/integration_overview-generating.png)

@@ -12,6 +12,8 @@ published: true
 The Fluxtion compiler provides several tools for generating an event processor from a model supplied by the client. 
 This section documents the generation utilities and tools available and how to use them.
 
+
+![TEST](../../images/integration_overview-generating.png)
 ## To be documented
 - AOT building
 - Interpreted
