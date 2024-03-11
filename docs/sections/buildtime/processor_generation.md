@@ -1,8 +1,8 @@
 ---
-title: Generation
-parent: Event processor generation
+title: Processor generation
+parent: Event processor building
 has_children: false
-nav_order: 1
+nav_order: 2
 published: true
 ---
 

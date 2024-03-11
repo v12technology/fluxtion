@@ -140,6 +140,43 @@ anySignal [Signal: {filterString: CLEAR_SIGNAL, value: power restored}]
 anySignal [Signal: {filterString: HEARTBEAT_SIGNAL, value: heartbeat message}]
 {% endhighlight %}
 
+## Filter variables
+The filter value on the event handler method can be extracted from an instance field in the class. Annotate the event
+handler method with an attribute that points to the filter variable `@OnEventHandler(filterVariable = "[class variable]")`
+
+
+{% highlight java %}
+public static class MyNode {
+    private final String name;
+
+    public MyNode(String name) {
+        this.name = name;
+    }
+
+
+    @OnEventHandler(filterVariable = "name")
+    public boolean handleIntSignal(Signal.IntSignal intSignal) {
+        System.out.printf("MyNode-%s::handleIntSignal - %s%n", name, intSignal.getValue());
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode("A"), new MyNode("B"));
+    processor.init();
+
+    processor.publishIntSignal("A", 22);
+    processor.publishIntSignal("B", 45);
+    processor.publishIntSignal("C", 100);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode-A::handleIntSignal - 22
+MyNode-B::handleIntSignal - 45
+{% endhighlight %}
+
 ## Triggering children
 Event notification is propagated to child instances of event handlers. The notification is sent to any method that is
 annotated with an `@OnTrigger` annotation. Trigger propagation is in topological order.
@@ -873,23 +910,275 @@ parentUpdated 'a_2'
 Child::triggered updateCount:2
 {% endhighlight %}
 
-# To be completed
+## Export service
+Exporting a service interface from a bound class is supported. The generated event processor implements the interface and 
+routes calls to bound instances exporting the interface. The normal dispatch rules apply child instances receive trigger
+callbacks on a change notification. Steps to export a service
 
-- Complex graphs
+- Create the interface
+- Implement the interface in a bound class
+- Mark the interface to export with an `@ExportService` annotation
+- Lookup the interface on the container using `<T> serviceT = processor.getExportedService()`
 
-- Export service
-- Forking
-- Dynamic filter
-- Batch support
+The methods on an exported service must either be a boolean or void return type. The return value is used to notify 
+a signal change, void is equivalent to returning true.
+
+{% highlight java %}
+public interface MyService {
+    void addNumbers(int a, int b);
+}
+
+public static class MyServiceImpl implements @ExportService MyService, IntSupplier {
+    private int sum;
+
+    @Override
+    public void addNumbers(int a, int b) {
+        System.out.printf("adding %d + %d %n", a, b);
+        sum = a + b;
+    }
+
+    @Override
+    public int getAsInt() {
+        return sum;
+    }
+}
+
+public static class ResultPublisher {
+    private final IntSupplier intSupplier;
+
+    public ResultPublisher(IntSupplier intSupplier) {
+        this.intSupplier = intSupplier;
+    }
+
+    @OnTrigger
+    public boolean printResult() {
+        System.out.println("result - " + intSupplier.getAsInt());
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new ResultPublisher(new MyServiceImpl()));
+    processor.init();
+
+    //get the exported service
+    MyService myService = processor.getExportedService();
+    myService.addNumbers(30, 12);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+adding 30 + 12
+result - 42
+{% endhighlight %}
+
+## No propagate service methods
+An individual exported method can prevent a triggering a notification by adding `@NoPropagateFunction` to an interface
+method
 
 {% highlight java %}
 
+public interface MyService {
+    void cumulativeSum(int a);
+    void reset();
+}
 
+public static class MyServiceImpl implements @ExportService MyService, IntSupplier {
+
+    private int sum;
+
+    @Override
+    public void cumulativeSum(int a) {
+        sum += a;
+        System.out.printf("MyServiceImpl::adding %d cumSum: %d %n", a, sum);
+    }
+
+    @Override
+    @NoPropagateFunction
+    public void reset() {
+        sum = 0;
+        System.out.printf("MyServiceImpl::reset cumSum: %d %n", sum);
+    }
+
+    @Override
+    public int getAsInt() {
+        return sum;
+    }
+}
+
+public static class ResultPublisher {
+    private final IntSupplier intSupplier;
+
+    public ResultPublisher(IntSupplier intSupplier) {
+        this.intSupplier = intSupplier;
+    }
+
+    @OnTrigger
+    public boolean printResult() {
+        System.out.println("ResultPublisher::result - " + intSupplier.getAsInt());
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new ResultPublisher(new MyServiceImpl()));
+    processor.init();
+
+    //get the exported service
+    MyService myService = processor.getExportedService();
+    myService.cumulativeSum(11);
+    myService.cumulativeSum(31);
+    System.out.println();
+
+    myService.reset();
+}
 
 {% endhighlight %}
 
 Output
 {% highlight console %}
+MyServiceImpl::adding 11 cumSum: 11
+ResultPublisher::result - 11
+MyServiceImpl::adding 31 cumSum: 42
+ResultPublisher::result - 42
 
+MyServiceImpl::reset cumSum: 0
+{% endhighlight %}
+
+
+## Forking trigger methods
+Forking trigger methods is supported. If multiple trigger methods are fired from a single parent they can be forked to 
+run in parallel using the fork join pool. Only when all the forked trigger methods have completed will an event notification
+be propagated to their children. 
+
+To for a trigger callback use `@OnTrigger(parallelExecution = true)` annotation on the callback method.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.printf("%s MyNode::handleStringEvent %n", Thread.currentThread().getName());
+        return true;
+    }
+}
+
+public static class ForkedChild {
+    private final MyNode myNode;
+    private final int id;
+
+    public ForkedChild(MyNode myNode, int id) {
+        this.myNode = myNode;
+        this.id = id;
+    }
+
+    @OnTrigger(parallelExecution = true)
+    public boolean triggered() {
+        int millisSleep = new Random(id).nextInt(25, 200);
+        String threadName = Thread.currentThread().getName();
+        System.out.printf("%s ForkedChild[%d]::triggered - sleep:%d %n", threadName, id, millisSleep);
+        try {
+            Thread.sleep(millisSleep);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.printf("%s ForkedChild[%d]::complete %n", threadName, id);
+        return true;
+    }
+}
+
+public static class ResultJoiner {
+    private final ForkedChild[] forkedTasks;
+
+    public ResultJoiner(ForkedChild[] forkedTasks) {
+        this.forkedTasks = forkedTasks;
+    }
+
+    public ResultJoiner(int forkTaskNumber){
+        MyNode myNode = new MyNode();
+        forkedTasks = new ForkedChild[forkTaskNumber];
+        for (int i = 0; i < forkTaskNumber; i++) {
+            forkedTasks[i] = new ForkedChild(myNode, i);
+        }
+    }
+
+    @OnTrigger
+    public boolean complete(){
+        System.out.printf("%s ResultJoiner:complete %n%n", Thread.currentThread().getName());
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new ResultJoiner(5));
+    processor.init();
+
+    Instant start = Instant.now();
+    processor.onEvent("test");
+
+    System.out.printf("duration: %d milliseconds%n", Duration.between(start, Instant.now()).toMillis());
+}
+
+{% endhighlight %}
+
+Output
+{% highlight console %}
+main MyNode::handleStringEvent
+ForkJoinPool.commonPool-worker-1 ForkedChild[0]::triggered - sleep:135
+ForkJoinPool.commonPool-worker-2 ForkedChild[1]::triggered - sleep:85
+ForkJoinPool.commonPool-worker-3 ForkedChild[2]::triggered - sleep:58
+ForkJoinPool.commonPool-worker-4 ForkedChild[3]::triggered - sleep:184
+ForkJoinPool.commonPool-worker-5 ForkedChild[4]::triggered - sleep:112
+ForkJoinPool.commonPool-worker-3 ForkedChild[2]::complete
+ForkJoinPool.commonPool-worker-2 ForkedChild[1]::complete
+ForkJoinPool.commonPool-worker-5 ForkedChild[4]::complete
+ForkJoinPool.commonPool-worker-1 ForkedChild[0]::complete
+ForkJoinPool.commonPool-worker-4 ForkedChild[3]::complete
+main ResultJoiner:complete
+
+duration: 184 milliseconds
+{% endhighlight %}
+
+## Batch support
+Batch callbacks are supported through the BatchHandler interface that the generated EventHandler implements. Any methods 
+that are annotated with, `@OnBatchPause` or `@OnBatchEnd` will receive calls from the matching BatchHandler method. 
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode event received:" + stringToProcess);
+        return true;
+    }
+
+    @OnBatchPause
+    public void batchPause(){
+        System.out.println("MyNode::batchPause");
+    }
+
+    @OnBatchEnd
+    public void batchEnd(){
+        System.out.println("MyNode::batchEnd");
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.init();
+
+    processor.onEvent("test");
+
+    //use BatchHandler service
+    BatchHandler batchHandler = (BatchHandler)processor;
+    batchHandler.batchPause();
+    batchHandler.batchEnd();
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode event received:test
+MyNode::batchPause
+MyNode::batchEnd
 {% endhighlight %}
 
