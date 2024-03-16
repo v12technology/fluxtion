@@ -22,6 +22,16 @@ a number of options are available for adding user classes to an EventProcessorCo
 These examples use `Fluxtion.interpret` which executes the event processor as an in-process interpretation, the 
 available output types of the generated event processor are described in [Processor generation](processor_generation.md).
 
+{: .no_toc }
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
+
 # Imperative model building
 Call one of the static Fluxtion [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) build methods with a
 `Consumer<EventProcessorConfig>`. User classes are bound into the model by invoking methods on the supplied 
@@ -131,8 +141,6 @@ Root1::triggered
 {% endhighlight %}
 
 ## Adding shared references
-If two nodes point to a shared instance, that instance will only be added once to the model. The shared node will 
-trigger both children when propagating event notification.
 
 {% highlight java %}
 public static class MyNode {
@@ -183,12 +191,189 @@ root_1::triggered
 root_2::triggered
 {% endhighlight %}
 
+## Adding references that are equal
+The model acts like a set, checking equality when a node is added imperatively or implicitly. If equal the second reference 
+is substituted with the first and only one instance is in the model. 
 
-## To be documented
-- implicit add
-- naming nodes
-- uniqueness
-- factory/inject
+{% highlight java %}
+public static class MyNode {
+    private final String name;
+    int identifier;
+
+    public MyNode(String name, int identifier) {
+        this.name = name;
+        this.identifier = identifier;
+    }
+
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println(name + " identifier:" + identifier + " received:" + stringToProcess);
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyNode myNode = (MyNode) o;
+        return name.equals(myNode.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "MyNode{" +
+                "name='" + name + '\'' +
+                ", identifier=" + identifier +
+                '}';
+    }
+}
+
+public static class Root1 {
+    private final String name;
+    private final MyNode myNode;
+
+    public Root1(String name, MyNode myNode) {
+        this.name = name;
+        this.myNode = myNode;
+        System.out.println(name + "::new " + myNode);
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println(name + "::triggered " + myNode);
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        MyNode myNode1 = new MyNode("myNode_1", 999);
+        MyNode myNode2 = new MyNode("myNode_1", 444);
+        cfg.addNode(new Root1("root_1", myNode1));
+        cfg.addNode(new Root1("root_2", myNode2));
+    });
+    processor.init();
+    System.out.println();
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+root_1::new MyNode{name='myNode_1', identifier=999}
+root_2::new MyNode{name='myNode_1', identifier=444}
+
+myNode_1 identifier:999 received:TEST
+root_1::triggered MyNode{name='myNode_1', identifier=999}
+root_2::triggered MyNode{name='myNode_1', identifier=999}
+{% endhighlight %}
+
+## Naming nodes 
+Nodes can be given a name when they are added to the graph, if a node has been previously added with the same name the
+generation process will fail with a name clash. A node can be accessed by calling `EventProcessor.getById`. There are 
+two ways to give a node an addressable identifier:
+
+* Implement the Named interface on a bound node
+* Call `EventProcessorConfig.addnode` with a name as the second argument
+
+
+{% highlight java %}
+public static class MyNode {
+    private final String name;
+
+    public MyNode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+public static class MyNamedNode implements NamedNode {
+    private final String name;
+
+    public MyNamedNode(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+}
+
+public static void main(String[] args) throws NoSuchFieldException {
+    var processor = Fluxtion.interpret(cfg -> {
+        cfg.addNode(new MyNode("customName"), "overrideName");
+        cfg.addNode(new MyNamedNode("name1"));
+    });
+    processor.init();
+
+    System.out.println(processor.<MyNode>getNodeById("overrideName").getName());
+    System.out.println(processor.<MyNamedNode>getNodeById("name1").getName());
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+customName
+name1
+{% endhighlight %}
+
+## Inject a reference
+Fluxtion supports injecting a reference with the `@Inject` annotation
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class Root1 {
+    @Inject
+    private final MyNode myNode;
+
+    public Root1() {
+        myNode = null;
+    }
+
+    public Root1(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println("Root1::triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> cfg.addNode(new Root1()));
+    processor.init();
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::received:TEST
+Root1::triggered
+{% endhighlight %}
+
+# To be documented
+- NamedNode
+- Inject singleton
+- factory + inject
 - Config for factory
 - Including/excluding classes
 - Injecting nodes by reference
