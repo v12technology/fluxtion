@@ -678,7 +678,7 @@ nodeInvoked  nodeName:'root1_0' invoked:'trigger' node:'Root1{myNode=MyNode{}}'
 nodeInvoked  nodeName:'unlinked' invoked:'handleStringEvent' node:'MyNode{}'
 {% endhighlight %}
 
-## Excluding node from binding
+## Exclude a node from binding
 A user node can be excluded from binding into the model by adding the annotation `@ExcludeNode` on a user class. An 
 excluded class can be used as a holder for complex construction logic when the user does not want to use a NodeFactory.
 
