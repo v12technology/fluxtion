@@ -720,8 +720,45 @@ MyNode::received:TEST
 {% endhighlight %}
 
 
+## Inject runtime instance
+Instances can be injected at runtime to a node using the `@Inject(instanceName = "startData")` annotation on a 
+[InstanceSupplier]({{site.fluxtion_src_runtime}}/node/InstanceSupplier.java)  data member. The instance has to be injected at 
+runtime to a built event processor before calling init with:
+
+`processor.injectNamedInstance(new Date(1000000), "startData")`
+
+Instances can be updated once the processor is running by injecting a new instance with the same name.
+
+{% highlight java %}
+public static class MyNode{
+    @Inject(instanceName = "startData")
+    public InstanceSupplier<Date> myDate;
+
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("runtime injected:" + myDate.get());
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.injectNamedInstance(new Date(1000000), "startData");
+
+    processor.init();
+    processor.onEvent("TEST");
+
+    processor.injectNamedInstance(new Date(999000000), "startData");
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::received:TEST
+{% endhighlight %}
+
 # To be documented
-- Including classes
 - Injecting nodes by reference
 - Declarative/functional
   - Spring
