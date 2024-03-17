@@ -371,7 +371,8 @@ name1
 ## Using name as equality
 The string name can be used as the equality test removing the need for users to implement custom equals and hashcode 
 methods. A utility class [SingleNamedNode]({{site.fluxtion_src_runtime}}/node/SingleNamedNode.java) can be extended to 
-simplify implementation.
+simplify implementation. As equals, hashcode and getName are all synchronised name clashes are avoided and single instance
+is in the model. This allows user building code to use name as a key to create a shared reference when building.
 
 {% highlight java %}
 public static class MyNode extends SingleNamedNode {
@@ -394,7 +395,9 @@ name1
 {% endhighlight %}
 
 ## Inject a reference
-Fluxtion supports injecting a reference with the `@Inject` annotation
+Fluxtion supports injecting a reference with the `@Inject` annotation, a new instance will be created by the model 
+with the default constructor and added implicitly to the model. The injected instance will analysed for implicit
+nodes to add to the model.
 
 {% highlight java %}
 public static class MyNode {
@@ -435,6 +438,52 @@ Output
 {% highlight console %}
 MyNode::received:TEST
 Root1::triggered
+{% endhighlight %}
+
+## Inject a singleton
+Fluxtion supports injecting a singleton reference with the `@Inject(singleton = true)` annotation, the same reference
+is used throughout the model so only one instance is present in the generated processor.
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class Root1{
+    @Inject(singleton = true)
+    private final MyNode myNode;
+    private final String id;
+
+    public Root1(String id) {
+        this(null, id);
+    }
+
+    public Root1(MyNode myNode, String id) {
+        this.myNode = myNode;
+        this.id = id;
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println(id + "::triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Root1("r1"), new Root1("r2"), new Root1("r3"));
+    processor.init();
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+
 {% endhighlight %}
 
 # To be documented
