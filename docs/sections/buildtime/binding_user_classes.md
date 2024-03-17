@@ -483,7 +483,10 @@ public static void main(String[] args) {
 
 Output
 {% highlight console %}
-
+MyNode::received:TEST
+r1::triggered
+r2::triggered
+r3::triggered
 {% endhighlight %}
 
 # To be documented
