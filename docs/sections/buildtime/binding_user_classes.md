@@ -489,11 +489,105 @@ r2::triggered
 r3::triggered
 {% endhighlight %}
 
+## Inject from factory
+A factory can supply the injected instance to the model. A user implements the [NodeFactory]({{site.fluxtion_src_compiler}}/builder/factory/NodeFactory.java)
+and returns the instance to the model. Factories can be registered programmatically with EventProcessorConfig but the
+easiest method is to use the ServiceLoader pattern to register factories. In this example the google auto service 
+annotation to remove all the boiler plate code `@AutoService(NodeFactory.class)`.
+
+Configuration key/values can be supplied at the inject site e.g.
+
+`@Config(key = "filter", value = "red")`
+
+Tuples are wrapped in a map and passed to the NodeFactory.createNode as an argument,  the factory creates 
+custom instances using the map as required.
+
+{% highlight java %}
+public static class MyNode {
+    private final String filter;
+
+    public MyNode(String filter) {
+        this.filter = filter;
+    }
+
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        boolean match = stringToProcess.equals(filter);
+        System.out.println(toString() +  " match:" + match + " for:" + stringToProcess);
+        return match;
+    }
+
+    @Override
+    public String toString() {
+        return "MyNode{" +
+                "filter='" + filter + '\'' +
+                '}';
+    }
+}
+
+public static class Root1 {
+    @Inject
+    @Config(key = "filter", value = "red")
+    public MyNode myNodeRed;
+
+    @Inject
+    @Config(key = "filter", value = "blue")
+    public MyNode myNodeBlue;
+
+    @OnParentUpdate
+    public void parentUpdated(Object parent){
+        System.out.println("Root1::parentUpdated " + parent);
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println("Root1::triggered");
+        return true;
+    }
+}
+
+@AutoService(NodeFactory.class)
+public static class MyNodeFactory implements NodeFactory<MyNode>{
+    @Override
+    public MyNode createNode(Map<String, Object> config, NodeRegistry registry) {
+
+        return new MyNode((String) config.get("filter"));
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        cfg.addNode(new Root1());
+    });
+    processor.init();
+
+    processor.onEvent("red");
+    System.out.println();
+    processor.onEvent("ignored");
+    System.out.println();
+    processor.onEvent("blue");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode{filter='red'} match:true for:red
+Root1::parentUpdated MyNode{filter='red'}
+MyNode{filter='blue'} match:false for:red
+Root1::triggered
+
+MyNode{filter='red'} match:false for:ignored
+MyNode{filter='blue'} match:false for:ignored
+
+MyNode{filter='red'} match:false for:blue
+MyNode{filter='blue'} match:true for:blue
+Root1::parentUpdated MyNode{filter='blue'}
+Root1::triggered
+{% endhighlight %}
+
+
 # To be documented
 - Auditing
-- Inject singleton
-- factory + inject
-- Config for factory
 - Including/excluding classes
 - Injecting nodes by reference
 - Declarative/functional
