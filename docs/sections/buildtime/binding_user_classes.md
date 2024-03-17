@@ -781,9 +781,9 @@ public static String toUpper(String incoming){
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(cfg -> {
         DataFlow.subscribe(String.class)
-                .console("input:{}")
+                .console("input: '{}'")
                 .map(FunctionalStatic::toUpper)
-                .console("transformed:{}");
+                .console("transformed: '{}'");
     });
 
     processor.init();
@@ -793,9 +793,45 @@ public static void main(String[] args) {
 
 Output
 {% highlight console %}
-input:hello world
-transformed:HELLO WORLD
+input: 'hello world'
+transformed: 'HELLO WORLD'
 {% endhighlight %}
+
+## Bind instance functions
+Instance functions can be bound into the event processor using method references
+
+{% highlight java %}
+public static class PrefixString{
+    private final String prefix;
+
+    public PrefixString(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String addPrefix(String input){
+        return prefix + input;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        DataFlow.subscribe(String.class)
+                .console("input: '{}'")
+                .map(new PrefixString("XXXX")::addPrefix)
+                .console("transformed: '{}'");
+    });
+
+    processor.init();
+    processor.onEvent("hello world");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+input: 'hello world'
+transformed: 'XXXXhello world'
+{% endhighlight %}
+
 
 
 # To be documented
