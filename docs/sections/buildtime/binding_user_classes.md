@@ -550,7 +550,6 @@ public static class Root1 {
 public static class MyNodeFactory implements NodeFactory<MyNode>{
     @Override
     public MyNode createNode(Map<String, Object> config, NodeRegistry registry) {
-
         return new MyNode((String) config.get("filter"));
     }
 }
@@ -755,7 +754,8 @@ public static void main(String[] args) {
 
 Output
 {% highlight console %}
-MyNode::received:TEST
+runtime injected:Thu Jan 01 01:16:40 GMT 1970
+runtime injected:Mon Jan 12 14:30:00 GMT 1970
 {% endhighlight %}
 
 # Functional model building
@@ -871,9 +871,70 @@ FUNCTIONAL transformed: 'HELLO WORLD'
 IMPERATIVE received:hello world
 {% endhighlight %}
 
+# Build with spring configuration
+Spring configuration is natively supported by Fluxtion. Any beans in the spring ApplicationContext will be bound into 
+the model and eventually the generated event processor. Pass the spring ApplicationContext into fluxtion with 
+
+`FluxtionSpring.interpret(ApplicationContext)`
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static class Root1 {
+    private final MyNode myNode;
+
+    public Root1(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println("Root1::triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var context = new ClassPathXmlApplicationContext("com/fluxtion/example/reference/spring-example.xml");
+    var processor = FluxtionSpring.interpret(context);
+    processor.init();
+
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="myNode" class="com.fluxtion.example.reference.SpringConfigAdd.MyNode">
+    </bean>
+
+    <bean id="root1" class="com.fluxtion.example.reference.SpringConfigAdd.Root1">
+        <constructor-arg ref="myNode"/>
+    </bean>
+</beans>
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::received:TEST
+Root1::triggered
+{% endhighlight %}
+
 
 # To be documented
-- Spring
+
 - yaml
 
 
