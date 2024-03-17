@@ -140,7 +140,48 @@ MyNode::received:TEST
 Root1::triggered
 {% endhighlight %}
 
+
+## Varargs adding nodes
+Add root nodes to the model using the varargs derivative of Fluxtion builder method. Can be useful if no customisation
+of the model is needed and only nodes need to be included in the generated processor.
+
+{% highlight java %}
+public static class MyNode {
+        private final String name;
+
+        public MyNode(String name) {
+            this.name = name;
+        }
+
+        @OnEventHandler
+        public boolean handleStringEvent(String stringToProcess) {
+            System.out.println(name + " received:" + stringToProcess);
+            return true;
+        }
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(
+                new MyNode("node_1"),
+                new MyNode("node_2"),
+                new MyNode("node_3"));
+        processor.init();
+        processor.onEvent("TEST");
+    }
+{% endhighlight %}
+
+Output
+{% highlight console %}
+node_1 received:TEST
+node_2 received:TEST
+node_3 received:TEST
+{% endhighlight %}
+
+
+
 ## Adding shared references
+If two nodes point to a shared instance, that instance will only be added once to the model. The shared node will
+trigger both children when propagating event notification.
 
 {% highlight java %}
 public static class MyNode {
@@ -192,8 +233,9 @@ root_2::triggered
 {% endhighlight %}
 
 ## Adding references that are equal
-The model acts like a set, checking equality when a node is added imperatively or implicitly. If equal the second reference 
-is substituted with the first and only one instance is in the model. 
+The model acts like a set, checking equality when a node is added imperatively or implicitly. If the instance to add is
+equal to a node already in the model it is substituted so only one instance is in the model. References to the duplicate 
+will be re-directed to point at the existing node.
 
 {% highlight java %}
 public static class MyNode {
@@ -326,6 +368,31 @@ customName
 name1
 {% endhighlight %}
 
+## Using name as equality
+The string name can be used as the equality test removing the need for users to implement custom equals and hashcode 
+methods. A utility class [SingleNamedNode]({{site.fluxtion_src_runtime}}/node/SingleNamedNode.java) can be extended to 
+simplify implementation.
+
+{% highlight java %}
+public static class MyNode extends SingleNamedNode {
+    public MyNode(String name) {
+        super(name);
+    }
+}
+
+public static void main(String[] args) throws NoSuchFieldException {
+    var processor = Fluxtion.interpret(new MyNode("name1"));
+    processor.init();
+
+    System.out.println(processor.<MyNode>getNodeById("name1").getName());
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+name1
+{% endhighlight %}
+
 ## Inject a reference
 Fluxtion supports injecting a reference with the `@Inject` annotation
 
@@ -371,7 +438,7 @@ Root1::triggered
 {% endhighlight %}
 
 # To be documented
-- NamedNode
+- Auditing
 - Inject singleton
 - factory + inject
 - Config for factory
