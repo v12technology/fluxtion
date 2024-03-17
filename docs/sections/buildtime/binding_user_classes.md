@@ -832,11 +832,48 @@ input: 'hello world'
 transformed: 'XXXXhello world'
 {% endhighlight %}
 
+## Combining imperative and functional binding
+Both imperative and functional binding can be used in the same build consumer. All the user classes and functions will
+be added to the model for generation.
+
+{% highlight java %}
+public static String toUpper(String incoming){
+    return incoming.toUpperCase();
+}
+
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("IMPERATIVE received:" + stringToProcess);
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        DataFlow.subscribe(String.class)
+                .console("FUNCTIONAL input: '{}'")
+                .map(CombineFunctionalAndImperative::toUpper)
+                .console("FUNCTIONAL transformed: '{}'");
+
+        cfg.addNode(new MyNode());
+    });
+
+    processor.init();
+    processor.onEvent("hello world");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+FUNCTIONAL input: 'hello world'
+FUNCTIONAL transformed: 'HELLO WORLD'
+IMPERATIVE received:hello world
+{% endhighlight %}
 
 
 # To be documented
-- Declarative/functional
-  - Spring
-  - yaml
-- Combining declarative and imperative
+- Spring
+- yaml
+
 
