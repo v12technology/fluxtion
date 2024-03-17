@@ -758,8 +758,47 @@ Output
 MyNode::received:TEST
 {% endhighlight %}
 
+# Functional model building
+Fluxtion supports binding functions into the event processor using functional programming. The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class 
+provides static method that subscribe to events. Once a flow has been built map/filter/grouping functions can be applied
+as chained calls. The flow must be built within the [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) build method,
+DataFlow will add all the functions and classes to the model automatically.
+
+
+## Bind functions to events 
+To bind functions to a flow of events the subscription must first be created with:
+
+`DataFlow.subscribe([event class])`
+
+A lambda or a method reference can be bound as the next item in the function flow. A full description of the functional
+api is in [Functional programming](../runtime/functional_event_processing.md)
+
+{% highlight java %}
+public static String toUpper(String incoming){
+    return incoming.toUpperCase();
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        DataFlow.subscribe(String.class)
+                .console("input:{}")
+                .map(FunctionalStatic::toUpper)
+                .console("transformed:{}");
+    });
+
+    processor.init();
+    processor.onEvent("hello world");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+input:hello world
+transformed:HELLO WORLD
+{% endhighlight %}
+
+
 # To be documented
-- Injecting nodes by reference
 - Declarative/functional
   - Spring
   - yaml
