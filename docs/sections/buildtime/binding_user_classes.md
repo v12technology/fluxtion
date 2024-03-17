@@ -585,6 +585,98 @@ Root1::parentUpdated MyNode{filter='blue'}
 Root1::triggered
 {% endhighlight %}
 
+## Add an auditor
+An [Auditor]({{site.fluxtion_src_runtime}}/audit/Auditor.java) can be bound into the generated event processor. An 
+auditor receives meta-data callbacks that allows tracking of the event processing as notifications propagate through
+the event processor. Implement the Auditor interface and bind it in the processor with:
+
+`cfg.addAuditor(new MyAuditor(), "myAuditor")`
+
+{% highlight java %}
+public static class MyNode extends SingleNamedNode {
+    public MyNode(String name) {
+        super(name);
+    }
+
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MyNode{}";
+    }
+}
+
+
+public static class Root1 {
+    private final MyNode myNode;
+
+    public Root1(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Root1{" +
+                "myNode=" + myNode +
+                '}';
+    }
+}
+
+public static class MyAuditor implements Auditor{
+    @Override
+    public void nodeRegistered(Object node, String nodeName) {
+        System.out.printf("nodeRegistered  nodeName:'%s'  node:'%s'%n", nodeName, node);
+    }
+
+    @Override
+    public void eventReceived(Object event) {
+        System.out.println("eventReceived " + event);
+    }
+
+    @Override
+    public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
+        System.out.printf("nodeInvoked  nodeName:'%s' invoked:'%s' node:'%s'%n", nodeName, methodName, node);
+    }
+
+    @Override
+    public boolean auditInvocations() {
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        cfg.addNode(new MyNode("unlinked"), new Root1(new MyNode("linked")));
+        cfg.addAuditor(new MyAuditor(), "myAuditor");
+    });
+    processor.init();
+
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+nodeRegistered  nodeName:'linked'  node:'MyNode{}'
+nodeRegistered  nodeName:'unlinked'  node:'MyNode{}'
+nodeRegistered  nodeName:'root1_0'  node:'Root1{myNode=MyNode{}}'
+nodeRegistered  nodeName:'callbackDispatcher'  node:'CallbackDispatcherImpl(eventProcessor=com.fluxtion.compiler.generation.targets.InMemoryEventProcessor@79ad8b2f, myStack=[], dispatching=false)'
+nodeRegistered  nodeName:'subscriptionManager'  node:'com.fluxtion.runtime.input.SubscriptionManagerNode@59fa1d9b'
+nodeRegistered  nodeName:'context'  node:'MutableEventProcessorContext{map={}}'
+eventReceived Init
+eventReceived TEST
+nodeInvoked  nodeName:'linked' invoked:'handleStringEvent' node:'MyNode{}'
+nodeInvoked  nodeName:'root1_0' invoked:'trigger' node:'Root1{myNode=MyNode{}}'
+nodeInvoked  nodeName:'unlinked' invoked:'handleStringEvent' node:'MyNode{}'
+{% endhighlight %}
 
 # To be documented
 - Auditing
