@@ -678,9 +678,50 @@ nodeInvoked  nodeName:'root1_0' invoked:'trigger' node:'Root1{myNode=MyNode{}}'
 nodeInvoked  nodeName:'unlinked' invoked:'handleStringEvent' node:'MyNode{}'
 {% endhighlight %}
 
+## Excluding node from binding
+A user node can be excluded from binding into the model by adding the annotation `@ExcludeNode` on a user class. An 
+excluded class can be used as a holder for complex construction logic when the user does not want to use a NodeFactory.
+
+
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode::received:" + stringToProcess);
+        return true;
+    }
+}
+
+@ExcludeNode
+public static class Root1 {
+    private final MyNode myNode;
+
+    public Root1(MyNode myNode) {
+        this.myNode = myNode;
+    }
+
+    @OnTrigger
+    public boolean trigger() {
+        System.out.println("Root1::triggered");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new Root1(new MyNode()));
+    processor.init();
+    processor.onEvent("TEST");
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+MyNode::received:TEST
+{% endhighlight %}
+
+
 # To be documented
-- Auditing
-- Including/excluding classes
+- Including classes
 - Injecting nodes by reference
 - Declarative/functional
   - Spring
