@@ -6,12 +6,18 @@ published: true
 ---
 
 # Introduction
-Building and executing an event processor are independent functions that can run in separate processes. This section documents the  
-binding of functions into an event processor and the generation of the processor for use at runtime. Integrating 
-ahead of time compilation of an event processor with build tools is also described.
+Building and executing an event processor are independent functions that can run in separate processes. This section 
+documents the binding of functions into an event processor and the generation of the processor for use at runtime.
+There are three steps to use Fluxtion, step 2 is covered here:
+
+1. Mark event handling methods with annotations or via functional programming
+2. **Build the event processor using fluxtion compiler utility**
+3. Integrate the event processor in the app and feed it events
 
 ![](../images/integration_overview-binding_generating.drawio.png)
 
+Building an event processor has two phases, binding event handler methods into the model and then generating the finished
+event processor.
 
 ## Binding
 The compiler analyses the configuration information provided by the programmer and builds a code model that provides all

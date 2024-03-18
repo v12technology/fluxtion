@@ -55,7 +55,7 @@ The generated event processor is used like any normal java class in the applicat
 <div class="tab">
   <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">1 - Mark event methods</button>
   <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">2 - Build event processor</button>
-  <button class="tablinks2" onclick="openTab2(event, 'App integration')" >3 - Integrate and feed events</button>
+  <button class="tablinks2" onclick="openTab2(event, 'App integration')" >3 - Integrate event feed processing</button>
 </div>
 
 <div id="Event logic" class="tabcontent2">
