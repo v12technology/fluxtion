@@ -9,8 +9,8 @@ published: true
 
 ---
 
-Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event 
-streams to application functions, increasing developer productivity by automating the creation of dispatch logic. 
+Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event
+streams to application functions, increasing developer productivity by automating the creation of dispatch logic.
 Application code is free from vendor lock-in, deployable anywhere and simple to test.
 
 <div class="grid">
@@ -38,6 +38,12 @@ Application code is free from vendor lock-in, deployable anywhere and simple to 
 Fluxtion saves developer time and increases stability when building event driven applications
 {: .fs-4 }
 
+## Three steps to using Fluxtion
+
+1. Mark event handling methods with annotations or via functional programming
+2. Build the event processor using fluxtion compiler utility
+3. Integrate the event processor in the app and feed it events
+
 # Example
 [This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
 when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
@@ -47,15 +53,15 @@ care of generating all the event dispatch code that is time consuming to write, 
 The generated event processor is used like any normal java class in the application.
 
 <div class="tab">
-  <button class="tablinks2" onclick="openTab2(event, 'App integration')" id="defaultExample">App integration</button>
-  <button class="tablinks2" onclick="openTab2(event, 'Event logic')">Event logic</button>
-  <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">Bind event logic</button>
-  <button class="tablinks2" onclick="openTab2(event, 'Fluxtion generated')">Generated code</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">1 - Mark event methods</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">2 - Build event processor</button>
+  <button class="tablinks2" onclick="openTab2(event, 'App integration')" >3 - Integrate and feed events</button>
 </div>
 
 <div id="Event logic" class="tabcontent2">
 <div markdown="1">
-Custom business logic written by developer, annotated methods receive event callbacks.
+Custom business logic written by developer, annotated methods receive event callbacks. Here we use `@OnEventHandler`
+and `@OnTrigger`
 {% highlight java %}
 public class RaceCalculator {
     //streamed events
@@ -126,51 +132,11 @@ public class RaceCalculator {
 </div>
 </div>
 
-
-<div id="App integration" class="tabcontent2">
-<div markdown="1">
-Application feeds events to an instance of the generated event processor. The event processor dispatches 
-events to business functions
-{% highlight java %}
-public class RaceCalculatorApp {
-    public static void main(String[] args) {
-        RaceCalculatorProcessor raceCalculator = new RaceCalculatorProcessor();
-        raceCalculator.init();
-
-        ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
-
-        //connect to event stream and process runner timing events
-        raceCalculator.onEvent(new RunnerStarted(1, "2019-02-14T09:00:00Z"));
-        raceCalculator.onEvent(new RunnerStarted(2, "2019-02-14T09:02:10Z"));
-        raceCalculator.onEvent(new RunnerStarted(3, "2019-02-14T09:06:22Z"));
-
-        raceCalculator.onEvent(new RunnerFinished(2, "2019-02-14T10:32:15Z"));
-        raceCalculator.onEvent(new RunnerFinished(3, "2019-02-14T10:59:10Z"));
-        raceCalculator.onEvent(new RunnerFinished(1, "2019-02-14T11:14:32Z"));
-
-        //publish full results
-        resultsPublisher.publishAllResults();
-    }
-}
-{% endhighlight %}
-
-Output from executing the application 
-
-{% highlight console %}
-Crossed the line runner:2 time:1:30:5
-Crossed the line runner:3 time:1:52:48
-Crossed the line runner:1 time:2:14:32
-FINAL RESULTS
-id:1 final time:2:14:32
-id:2 final time:1:30:5
-id:3 final time:1:52:48
-{% endhighlight %}
-</div>
-</div>
-
 <div id="Binding functions" class="tabcontent2">
 <div markdown="1">
-Bind user functions to the event processor, at build time the maven plugin executes this class
+Bind user functions to the event processor and build. This is an AOT example, maven plugin executes RaceCalculatorAotBuilder to generate
+[RaceCalculatorProcessor.java]({{site.reference_examples}}/racing/src/main/java/com/fluxtion/example/reference/racing/generated/RaceCalculatorProcessor.java) 
+
 {% highlight java %}
 public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
     @Override
@@ -220,6 +186,48 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </plugins>
     </build>
 </project>
+{% endhighlight %}
+</div>
+</div>
+
+
+<div id="App integration" class="tabcontent2">
+<div markdown="1">
+Application feeds events to an instance of the generated event processor. The event processor dispatches 
+events to business functions
+{% highlight java %}
+public class RaceCalculatorApp {
+    public static void main(String[] args) {
+        RaceCalculatorProcessor raceCalculator = new RaceCalculatorProcessor();
+        raceCalculator.init();
+
+        ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
+
+        //connect to event stream and process runner timing events
+        raceCalculator.onEvent(new RunnerStarted(1, "2019-02-14T09:00:00Z"));
+        raceCalculator.onEvent(new RunnerStarted(2, "2019-02-14T09:02:10Z"));
+        raceCalculator.onEvent(new RunnerStarted(3, "2019-02-14T09:06:22Z"));
+
+        raceCalculator.onEvent(new RunnerFinished(2, "2019-02-14T10:32:15Z"));
+        raceCalculator.onEvent(new RunnerFinished(3, "2019-02-14T10:59:10Z"));
+        raceCalculator.onEvent(new RunnerFinished(1, "2019-02-14T11:14:32Z"));
+
+        //publish full results
+        resultsPublisher.publishAllResults();
+    }
+}
+{% endhighlight %}
+
+Output from executing the application 
+
+{% highlight console %}
+Crossed the line runner:2 time:1:30:5
+Crossed the line runner:3 time:1:52:48
+Crossed the line runner:1 time:2:14:32
+FINAL RESULTS
+id:1 final time:2:14:32
+id:2 final time:1:30:5
+id:3 final time:1:52:48
 {% endhighlight %}
 </div>
 </div>

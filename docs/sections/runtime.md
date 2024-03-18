@@ -20,5 +20,12 @@ routes events to an instance.
 - **EventProcessors are not thread safe** a single event should be processed at one time.
 - **Each new event processed triggers a graph calculation cycle.**
 
+## Three steps to using Fluxtion
+
+1. Mark event handling methods with annotations or via functional programming
+2. Build the event processor using fluxtion compiler utility
+3. Integrate the event processor in the app and feed it events
+
+The runtime execution behaviour of the event processor is step 1
 
 ![](../images/integration_overview-running.drawio.png)

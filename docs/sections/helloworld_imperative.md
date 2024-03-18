@@ -7,35 +7,37 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 ---
 
 # 5 minute hello world
+{: .no_toc }
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long, 
 calculations are run whenever a new event is received. 
 
 This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
-a warning will be logged to console.
-
-All dispatch and change notification is handled by Fluxtion when an event is received. Business logic resides in the 
-user functions/classes.
+a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is received. 
+Business logic resides in the user functions/classes.
 
 Code is available as a [maven project]({{page.example_src}})
 
-## Steps to build an EventProcessor
+## Three steps to using Fluxtion
+{: .no_toc }
 
-All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}) at runtime follow similar steps
+1. Mark event handling methods with annotations or via functional programming
+2. Build the event processor using fluxtion compiler utility
+3. Integrate the event processor in the app and feed it events
 
-- Create a maven or gradle project adding the Fluxtion compiler dependency to the project runtime classpath
-- Write pojo's that will provide event driven logic, set references between the pojo's as per normal java
-- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling entry pont or a callback trigger method
-- Build the EventProcessor containg user pojo's by either:
-  - Calling one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in the list of nodes to the builder method
-  - Add the Fluxtion maven plugin to your pom.xml for ahead of time compilation(AOT) of builder methods
-- An EventProcessor instance is returned ready to be used
-- Call EventProcessor.init() to ensure the graph is ready to process events
-- To publish events to the processor call EventProcessor.onEvent(object)
-
+{: .no_toc }
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
 
 ## Dependencies
+{: .no_toc }
 
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
@@ -111,19 +113,19 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 </div>
 </div>
 
-# User event processing logic
+# Step 1 - annotate event handling methods
 
-There are two types of user classes employed at runtime. First, pojo's that hold processing logic that are bound into the 
-generated event processor. Secondly, record classes that defines the event types that are fed into the BreachNotifierProcessor. 
+There are two types of user classes employed at runtime. First, pojo's with event processing methods that are bound into the 
+generated event processor. Secondly, record classes that defines the event types that are fed into the BreachNotifierProcessor.
+The event processor routes events to event handler methods on bound instances.
 
-The example [Main method]({{page.example_src}}/Main.java) instantiates the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), 
-initialises it and submits events for processing using the onEvent method.
+Annotated callback methods
+- **@OnEventHandler** annotation declares the [entry point]({{page.example_src}}/Event_A_Handler.java) of an execution path, triggered by an external event.
+- **@OnTrigger** annotated [methods]({{page.example_src}}/DataSumCalculator.java) indicate call back methods to be invoked if a parent propagates a change.
+      
+The return boolean flag from a trigger or event handler method indicates if event notification should be propagated.
 
-All the pojo classes required for processing are linked together using an imperative style in our [AotBuilder.java]({{page.example_src}}/AotBuilder.java).
-The Fluxtion maven plugin runs at build time, interrogating the AotBuilder to generate the EventProcessor. The
-user pojo's are bound into the BreachNotifierProcessor.
-
-## Pojo classes
+## Event handlers
 
 | Name               | Event handler | Trigger handler | Description                                                      |
 |--------------------|---------------|-----------------|------------------------------------------------------------------|
@@ -258,7 +260,7 @@ public class BreachNotifier {
 </div>
 </div>
 
-## Event classes
+## Events
 
 Java records are used as events.
 
@@ -267,25 +269,17 @@ public record Event_A(double value) {}
 public record Event_B(double value) {}
 {% endhighlight %}
 
-# Generating the EventProcessor
+# Step 2 - build the event processor
 
-The process for building an event processor AOT with Fluxtion are quite simple:
+All the pojo classes required for processing are linked together using an imperative style in our [AotBuilder]({{page.example_src}}/AotBuilder.java).
+The maven plugin interrogates the builder to generate an event processor that binds in all  the user pojos.
 
-- Create user classes with business logic
-- Annotate callback methods
-    - **@OnEventHandler** annotation declares the [entry point]({{page.example_src}}/Event_A_Handler.java) of an execution path, triggered by an external event.
-    - **@OnTrigger** annotated [methods]({{page.example_src}}/DataSumCalculator.java) indicate call back methods to be invoked if a parent propagates a change.
-      The return boolean flag from a trigger method indicates if event notification should be propagated
-- Add the user classes to a [fluxtion builder]({{page.example_src}}/AotBuilder.java)
-- Add the Fluxtion maven plugin to your build [pom.xml](https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/pom.xml), the event processor will be generated ahead of time (AOT)
-  as part of the build
+Fluxtion generator binds all objects supplied in the `buildGraph(EventProcessorConfig eventProcessorConfig)`
+method. Any connected instance will be automatically discovered and added to the final event processor. Due to discovery 
+only BreachNotifier needs to be added with `eventProcessorConfig.addNode(new BreachNotifier())` to bind the whole user 
+object graph into the event processor.
 
-Fluxtion inspects all the references from the supplied object list to generate the EventProcessor. As instances of
-Event_A_Handler, Event_B_Handler and DataSumCalculator are all directly or indirectly referenced by BreachNotifier
-there is no need to tell Fluxtion about them. Any connected instance will be automatically discovered and added to the
-final EventProcessor.
-
-
+The configuration for the generated source file is set in the builder method `configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig)`
 
 <div class="tab">
   <button class="tablinks3" onclick="openTab3(event, 'AotBuilder')" id="aotBuilder">AotBuilder</button>
@@ -683,10 +677,11 @@ public class BreachNotifierProcessor
 </div>
 </div>
 
-# Executing the example
+# Step 3 - Integrate event processor and connect event stream
 
-Before publishing events to the EventProcessor it must be initialised by calling init. After initialisation event processing is 
-ready, call onEvent() with instances of Event_A or Event_B as required. 
+The example [Main method]({{page.example_src}}/Main.java) instantiates the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), initialises it and submits events for 
+processing using the onEvent method. The init method must be called before submitting events. Send event for processing
+by calling `eventProcessor.onEvent()` with instances of Event_A or Event_B as required. 
 
 The code for instantiating, initializing and sending events is:
 
@@ -720,6 +715,7 @@ sum:64.5
 {% endhighlight %}
 
 ## Processing graph
+{: .no_toc }
 
 The AOT processing generates a diagram of the event processor graph that can be very helpful when graphs become
 complicated.
