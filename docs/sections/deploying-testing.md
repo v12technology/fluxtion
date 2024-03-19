@@ -6,18 +6,27 @@ published: true
 ---
 
 # Introduction
+Building and executing an event processor are independent functions that can run in separate processes. This section
+documents integrating an event processor into an application and unit testing the event processor.
 
-All projects that build a Fluxtion [EventProcessor]({{site.EventProcessor_link}}) at runtime follow similar steps
+There are three steps to use Fluxtion, step 3 is covered here:
 
-- Create a maven or gradle project adding the Fluxtion compiler dependency to the project runtime classpath
-- Write pojo's that will provide event driven logic, set references between the pojo's as per normal java
-- [Annotate]({{site.fluxtion_src_runtime}}/annotations/) a method to indicate it is an event handling entry pont or a callback trigger method
-- Build the EventProcessor containg user pojo's by either:
-    - Calling one of the [Fluxtion]({{site.Fluxtion_link}}) compile/interpret methods passing in the list of nodes to the builder method
-    - Add the Fluxtion maven plugin to your pom.xml for ahead of time compilation(AOT) of builder methods
-- An EventProcessor instance is returned ready to be used
-- Call EventProcessor.init() to ensure the graph is ready to process events
-- To publish events to the processor call EventProcessor.onEvent(object)
+1. Mark event handling methods with annotations or via functional programming
+2. Build the event processor using fluxtion compiler utility
+3. **Integrate the event processor in the app and feed it events**
 
+## Using an event processor
+
+Once the event processor has been generated with user methods bound in it can be used by the application. An instance of an
+[EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
+is the bridge between event streams and processing logic, user code connects
+the EventProcessor to the application event sources. An application can contain multiple EventProcessors instances, and
+routes events to an instance.
+
+- **Call EventProcessor.init() before first use**
+- **EventProcessors are not thread safe** a single event should be processed at one time.
+- **Each new event processed triggers a graph calculation cycle.**
+
+![](../images/integration_overview-running.drawio.png)
 
 **To be completed**
