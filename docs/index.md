@@ -48,8 +48,8 @@ Fluxtion saves developer time and increases stability when building event driven
 [This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
 when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
 
-The developer writes the core business logic annotating any methods that should receive event callbacks. Fluxtion takes 
-care of generating all the event dispatch code that is time consuming to write, error prone and adds little value. 
+The developer writes the core business logic annotating any methods that should receive event callbacks or services that are exported. 
+Fluxtion takes care of generating all the event dispatch code that is time consuming to write, error prone and adds little value. 
 The generated event processor is used like any normal java class in the application.
 
 <div class="tab">
@@ -61,7 +61,7 @@ The generated event processor is used like any normal java class in the applicat
 <div id="Event logic" class="tabcontent2">
 <div markdown="1">
 Custom business logic written by developer, annotated methods receive event callbacks. Here we use `@OnEventHandler`
-and `@OnTrigger`
+and `@OnTrigger` for events and `@ExportService` to export a service interface.
 {% highlight java %}
 public class RaceCalculator {
     //streamed events
@@ -134,31 +134,35 @@ public class RaceCalculator {
 
 <div id="Binding functions" class="tabcontent2">
 <div markdown="1">
-Bind user functions to the event processor and build. This is an AOT example, maven plugin executes RaceCalculatorAotBuilder to generate
-[RaceCalculatorProcessor.java]({{site.reference_examples}}/racing/src/main/java/com/fluxtion/example/reference/racing/generated/RaceCalculatorProcessor.java) 
+Bind user functions to the event processor and build. This is an interpreted example there is also an 
+[AOT project]({{site.reference_examples}}/racing-aot) version.
 
 {% highlight java %}
-public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
-    @Override
-    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
-        RaceTimeTracker raceCalculator = eventProcessorConfig.addNode(new RaceTimeTracker(), "raceCalculator");
-        eventProcessorConfig.addNode(new ResultsPublisherImpl(raceCalculator), "resultsPublisher");
-    }
-
-    @Override
-    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
-        fluxtionCompilerConfig.setClassName("RaceCalculatorProcessor");
-        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.cookbook.racing.generated");
+public class RaceCalculatorApp {
+    public static EventProcessor<?> buildEventProcessor(){
+        return Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
     }
 }
 {% endhighlight %}
 
-Pom.xml executes maven plugin to generate the event processor
+Pom.xml includes the fluxtion dependencies
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <groupId>com.fluxtion.example</groupId>
+    <artifactId>reference-examples</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>reference-example :: racing</name>
+    <artifactId>racing</artifactId>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -167,24 +171,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.fluxtion</groupId>
-                <artifactId>fluxtion-maven-plugin</artifactId>
-                <version>3.0.14</version>
-                <executions>
-                    <execution>
-                        <id>fluxtion builder cookbook</id>
-                        <goals>
-                            <goal>scan</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 {% endhighlight %}
 </div>
@@ -198,7 +184,7 @@ events to business functions
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {
-        RaceCalculatorProcessor raceCalculator = new RaceCalculatorProcessor();
+        var raceCalculator = buildEventProcessor();
         raceCalculator.init();
 
         ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
@@ -215,6 +201,10 @@ public class RaceCalculatorApp {
         //publish full results
         resultsPublisher.publishAllResults();
     }
+
+    public static EventProcessor<?> buildEventProcessor(){
+        return Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
+    }
 }
 {% endhighlight %}
 
@@ -224,6 +214,7 @@ Output from executing the application
 Crossed the line runner:2 time:1:30:5
 Crossed the line runner:3 time:1:52:48
 Crossed the line runner:1 time:2:14:32
+
 FINAL RESULTS
 id:1 final time:2:14:32
 id:2 final time:1:30:5
