@@ -1,6 +1,6 @@
 ---
 title: Complex graphs
-parent: Runtime execution
+parent: Event handling
 has_children: false
 nav_order: 5
 published: true
