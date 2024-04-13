@@ -1,6 +1,6 @@
 ---
 title: Processing events
-parent: Runtime execution
+parent: Event handling
 has_children: false
 nav_order: 1
 published: true

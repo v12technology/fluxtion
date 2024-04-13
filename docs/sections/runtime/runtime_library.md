@@ -1,6 +1,6 @@
 ---
 title: Library functions
-parent: Runtime execution
+parent: Event handling
 has_children: false
 nav_order: 4
 published: true

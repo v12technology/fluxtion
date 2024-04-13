@@ -1,6 +1,6 @@
 ---
 title: Functional programming
-parent: Runtime execution
+parent: Event handling
 has_children: false
 nav_order: 2
 published: true
