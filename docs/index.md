@@ -5,20 +5,13 @@ nav_order: 1
 published: true
 ---
 
-# Fluxtion is event driven Java 
+# Fluxtion automating event driven development
 
 ---
 
-Fluxtion is a java development productivity tool that makes writing and maintaining event driven business logic cheaper
-and quicker. The Fluxtion dependency injection container exposes user beans as event driven service endpoints. A
-container instance can be connected to any event delivery system freeing the business logic from messaging vendor lock-in.
-
-{: .info }
-Fluxtion minimises the cost of developing and maintaining event driven business logic
-{: .fs-4 }
-
-Developers concentrate on developing and extending business logic, dependency injection and realtime event dispatch is
-handled by the container. The container supports:
+Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event 
+streams to application functionality, increasing developer productivity by automating mechanical tasks. Application code 
+is free from vendor lock-in, deployable anywhere and simple to test.
 
 <div class="grid">
 <div class="col-1-2">
@@ -35,71 +28,491 @@ handled by the container. The container supports:
 <ul>
   <li><strong>Low latency microsecond response</strong></li>
   <li><strong>Event sourcing compatible</strong></li>
-  <li><strong>Functional and imperative construction</strong></li>
+  <li><strong>Optimised for zero gc to reduce running costs</strong></li>
 </ul>
 </div>
 </div>
 </div>
 
-# The cost of complexity problem
-
-Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
-complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
-profitable in a competitive environment.
-
-Event driven systems have two types of complexity to manage:
-
-- Delivering events to application components in a fault-tolerant predictable fashion.
-- Developing application logic responses to events that meets business requirements
-
-Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
-the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
-cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
-over time and developing application logic becomes ever more complex and expensive to deliver.
-
 {: .info }
-Fluxtion simplifies adding application functionality to increase business value
+Fluxtion saves developer time and increases stability when building event driven applications
 {: .fs-4 }
 
-# Combining dependency injection and event processing
+# Example
+[This example]({{site.cookbook_src}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as stream of events,
+as a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
 
-The introduction of dependency injection gave developers a consistent approach to linking application components. 
-Fluxtion extends dependency injection to support container managed event driven beans. Extending a familiar development
-pattern has the following benefits:
-- Shallow learning curve for developers to use Fluxtion effectively
-- Consistent programming model for event driven logic increases developer productivity
-- Re-use of industrial quality and predictable event dispatch model
+The developer writes the core business logic, Fluxtion takes care of generating all the event dispatch code that is time
+consuming to write, error prone and adds little value.
 
-{: .info }
-Fluxtion combines dependency injection and event dispatch increasing developer productivity
-{: .fs-4 }
+<div class="tab">
+  <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">Event logic</button>
+  <button class="tablinks2" onclick="openTab2(event, 'App integration')">App integration</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">Bind event logic</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Fluxtion generated')">Generated code</button>
+</div>
 
-## Dependency injection container
+<div id="Event logic" class="tabcontent2">
+<div markdown="1">
+Custom business logic written by developer
+{% highlight java %}
+public class RaceCalculator {
+    //streamed events
+    public record RunnerStarted(long runnerId, Instant startTime) {}
+    public record RunnerFinished(long runnerId, Instant finishTime) {}
 
-Fluxtion builds a dependency injection container from configuration information given by the programmer. Functions
-supported by the container include: creating instances, injecting references between beans, setting properties, calling
-lifecycle methods, factory methods, singleton injection, named references, constructor and setter injection.
-Configuration data can be programmatic, spring xml config, yaml or custom data format.
+    //service api
+    public interface ResultsPublisher {
+        void publishAllResults();
+    }
 
-There are three options for building a container:
+    //event driven logic
+    @Getter
+    public static class RaceTimeTracker {
 
-- Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
-- Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
-- Compiled AOT - code generated at build time, zero cost start time when deployed
+        private final transient Map<Long, Long> runnerRaceTimeMap = new HashMap<>();
 
-Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be
-used within a single application each container providing specialised business processing logic.
+        @OnEventHandler(propagate = false)
+        public boolean runnerStarted(RunnerStarted runnerStarted) {
+            //add runner start time to map
+            return false;
+        }
 
-## Automatic event dispatch
+        @OnEventHandler
+        public boolean runnerFinished(RunnerFinished runnerFinished) {
+            //calc runner total race time and add to map
+            return true;
+        }
+    }
 
-The container exposes event consumer end-points, routing events as methods calls to beans within the container
-via an internal dispatcher. The internal dispatcher propagates event notification through the object graph.
+    @RequiredArgsConstructor
+    public static class ResultsPublisherImpl implements @ExportService ResultsPublisher{
 
-Fluxtion leverages the familiar dependency injection workflow for constructing the object graph. Annotated
-event handler and trigger methods are dispatch targets. When building a container Fluxtion uses the annotations to
-calculate the dispatch call trees for the internal dispatcher. A bean can export multiple service interfaces or just a
-single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
-to the container's dispatcher.
+        private final RaceTimeTracker raceTimeTracker;
+
+        @OnEventHandler(propagate = false)
+        public boolean runnerFinished(RunnerFinished runnerFinished) {
+            //get the runner race time and send individual their results
+            long raceTime = raceTimeTracker.getRunnerRaceTimeMap().get(runnerFinished.runnerId());
+            return false;
+        }
+
+        @Override
+        public void publishAllResults() {
+            //get all results and publish
+            var runnerRaceTimeMap = raceTimeTracker.getRunnerRaceTimeMap();
+        }
+    }
+}
+
+{% endhighlight %}
+</div>
+</div>
+
+
+<div id="App integration" class="tabcontent2">
+<div markdown="1">
+Application feeds events to the generated event proccessor
+{% highlight java %}
+public class RaceCalculatorApp {
+    public static void main(String[] args) {
+        RaceCalculatorProcessor raceCalculatorProcessor = new RaceCalculatorProcessor();
+        raceCalculatorProcessor.init();
+
+        ResultsPublisher resultsPublisher = raceCalculatorProcessor.getExportedService();
+        
+        //connect to event stream and process runner timing events
+        raceCalculatorProcessor.onEvent(new RunnerStarted(1, Instant.now()));
+        raceCalculatorProcessor.onEvent(new RunnerStarted(2, Instant.now()));
+        raceCalculatorProcessor.onEvent(new RunnerStarted(3, Instant.now()));
+
+        raceCalculatorProcessor.onEvent(new RunnerFinished(2, Instant.now()));
+        raceCalculatorProcessor.onEvent(new RunnerFinished(3, Instant.now()));
+        raceCalculatorProcessor.onEvent(new RunnerFinished(1, Instant.now()));
+        
+        //publish full results
+        resultsPublisher.publishAllResults();
+    }
+}
+{% endhighlight %}
+</div>
+</div>
+
+<div id="Binding functions" class="tabcontent2">
+<div markdown="1">
+Bind user functions to the event processor at build time with maven plugin
+{% highlight java %}
+public class RaceCalculatorAotBuilder implements FluxtionGraphBuilder {
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+        RaceTimeTracker raceCalculator = eventProcessorConfig.addNode(new RaceTimeTracker(), "raceCalculator");
+        eventProcessorConfig.addNode(new ResultsPublisherImpl(raceCalculator), "resultsPublisher");
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig fluxtionCompilerConfig) {
+        fluxtionCompilerConfig.setClassName("RaceCalculatorProcessor");
+        fluxtionCompilerConfig.setPackageName("com.fluxtion.example.cookbook.racing.generated");
+    }
+}
+{% endhighlight %}
+</div>
+</div>
+
+<div id="Fluxtion generated" class="tabcontent2">
+<div markdown="1">
+Event processor generated at build time by maven plugin
+{% highlight java %}
+/**
+ *
+ *
+ * <pre>
+ * generation time                 : Not available
+ * eventProcessorGenerator version : {{site.fluxtion_version}}
+ * api version                     : {{site.fluxtion_version}}
+ * </pre>
+ *
+ * Event classes supported:
+ *
+ * <ul>
+ *   <li>com.fluxtion.compiler.generation.model.ExportFunctionMarker
+ *   <li>com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished
+ *   <li>com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted
+ *   <li>com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent
+ * </ul>
+ *
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class RaceCalculatorProcessor
+    implements EventProcessor<RaceCalculatorProcessor>,
+        StaticEventProcessor,
+        InternalEventProcessor,
+        BatchHandler,
+        Lifecycle,
+        ResultsPublisher {
+
+  // Node declarations
+  private final CallbackDispatcherImpl callbackDispatcher = new CallbackDispatcherImpl();
+  public final NodeNameAuditor nodeNameLookup = new NodeNameAuditor();
+  public final RaceTimeTracker raceCalculator = new RaceTimeTracker();
+  public final ResultsPublisherImpl resultsPublisher = new ResultsPublisherImpl(raceCalculator);
+  private final SubscriptionManagerNode subscriptionManager = new SubscriptionManagerNode();
+  private final MutableEventProcessorContext context =
+      new MutableEventProcessorContext(
+          nodeNameLookup, callbackDispatcher, subscriptionManager, callbackDispatcher);
+  public final Clock clock = new Clock();
+  private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
+  // Dirty flags
+  private boolean initCalled = false;
+  private boolean processing = false;
+  private boolean buffering = false;
+  private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap =
+      new IdentityHashMap<>(1);
+  private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap =
+      new IdentityHashMap<>(1);
+
+  private boolean isDirty_raceCalculator = false;
+  // Forked declarations
+
+  // Filter constants
+
+  public RaceCalculatorProcessor(Map<Object, Object> contextMap) {
+    context.replaceMappings(contextMap);
+    // node auditors
+    initialiseAuditor(clock);
+    initialiseAuditor(nodeNameLookup);
+    subscriptionManager.setSubscribingEventProcessor(this);
+    context.setEventProcessorCallback(this);
+  }
+
+  public RaceCalculatorProcessor() {
+    this(null);
+  }
+
+  @Override
+  public void init() {
+    initCalled = true;
+    auditEvent(Lifecycle.LifecycleEvent.Init);
+    // initialise dirty lookup map
+    isDirty("test");
+    clock.init();
+    afterEvent();
+  }
+
+  @Override
+  public void start() {
+    if (!initCalled) {
+      throw new RuntimeException("init() must be called before start()");
+    }
+    processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.Start);
+
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
+  }
+
+  @Override
+  public void stop() {
+    if (!initCalled) {
+      throw new RuntimeException("init() must be called before stop()");
+    }
+    processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.Stop);
+
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
+  }
+
+  @Override
+  public void tearDown() {
+    initCalled = false;
+    auditEvent(Lifecycle.LifecycleEvent.TearDown);
+    nodeNameLookup.tearDown();
+    clock.tearDown();
+    subscriptionManager.tearDown();
+    afterEvent();
+  }
+
+  @Override
+  public void setContextParameterMap(Map<Object, Object> newContextMapping) {
+    context.replaceMappings(newContextMapping);
+  }
+
+  @Override
+  public void addContextParameter(Object key, Object value) {
+    context.addMapping(key, value);
+  }
+
+  // EVENT DISPATCH - START
+  @Override
+  public void onEvent(Object event) {
+    if (buffering) {
+      triggerCalculation();
+    }
+    if (processing) {
+      callbackDispatcher.processReentrantEvent(event);
+    } else {
+      processing = true;
+      onEventInternal(event);
+      callbackDispatcher.dispatchQueuedCallbacks();
+      processing = false;
+    }
+  }
+
+  @Override
+  public void onEventInternal(Object event) {
+    if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished) {
+      RunnerFinished typedEvent = (RunnerFinished) event;
+      handleEvent(typedEvent);
+    } else if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted) {
+      RunnerStarted typedEvent = (RunnerStarted) event;
+      handleEvent(typedEvent);
+    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+      handleEvent(typedEvent);
+    }
+  }
+
+  public void handleEvent(RunnerFinished typedEvent) {
+    auditEvent(typedEvent);
+    // Default, no filter methods
+    isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
+    resultsPublisher.runnerFinished(typedEvent);
+    afterEvent();
+  }
+
+  public void handleEvent(RunnerStarted typedEvent) {
+    auditEvent(typedEvent);
+    // Default, no filter methods
+    isDirty_raceCalculator = raceCalculator.runnerStarted(typedEvent);
+    afterEvent();
+  }
+
+  public void handleEvent(ClockStrategyEvent typedEvent) {
+    auditEvent(typedEvent);
+    // Default, no filter methods
+    clock.setClockStrategy(typedEvent);
+    afterEvent();
+  }
+  // EVENT DISPATCH - END
+
+  // EXPORTED SERVICE FUNCTIONS - START
+  @Override
+  public void publishAllResults() {
+    beforeServiceCall(
+        "public void com.fluxtion.example.cookbook.racing.RaceCalculator$ResultsPublisherImpl.publishAllResults()");
+    ExportFunctionAuditEvent typedEvent = functionAudit;
+    resultsPublisher.publishAllResults();
+    afterServiceCall();
+  }
+  // EXPORTED SERVICE FUNCTIONS - END
+
+  public void bufferEvent(Object event) {
+    buffering = true;
+    if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished) {
+      RunnerFinished typedEvent = (RunnerFinished) event;
+      auditEvent(typedEvent);
+      isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
+      resultsPublisher.runnerFinished(typedEvent);
+    } else if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted) {
+      RunnerStarted typedEvent = (RunnerStarted) event;
+      auditEvent(typedEvent);
+      isDirty_raceCalculator = raceCalculator.runnerStarted(typedEvent);
+    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+      auditEvent(typedEvent);
+      clock.setClockStrategy(typedEvent);
+    }
+  }
+
+  public void triggerCalculation() {
+    buffering = false;
+    String typedEvent = "No event information - buffered dispatch";
+    afterEvent();
+  }
+
+  private void auditEvent(Object typedEvent) {
+    clock.eventReceived(typedEvent);
+    nodeNameLookup.eventReceived(typedEvent);
+  }
+
+  private void auditEvent(Event typedEvent) {
+    clock.eventReceived(typedEvent);
+    nodeNameLookup.eventReceived(typedEvent);
+  }
+
+  private void initialiseAuditor(Auditor auditor) {
+    auditor.init();
+    auditor.nodeRegistered(raceCalculator, "raceCalculator");
+    auditor.nodeRegistered(resultsPublisher, "resultsPublisher");
+    auditor.nodeRegistered(callbackDispatcher, "callbackDispatcher");
+    auditor.nodeRegistered(subscriptionManager, "subscriptionManager");
+    auditor.nodeRegistered(context, "context");
+  }
+
+  private void beforeServiceCall(String functionDescription) {
+    functionAudit.setFunctionDescription(functionDescription);
+    auditEvent(functionAudit);
+    if (buffering) {
+      triggerCalculation();
+    }
+    processing = true;
+  }
+
+  private void afterServiceCall() {
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
+  }
+
+  private void afterEvent() {
+
+    clock.processingComplete();
+    nodeNameLookup.processingComplete();
+    isDirty_raceCalculator = false;
+  }
+
+  @Override
+  public void batchPause() {
+    auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+    processing = true;
+
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
+  }
+
+  @Override
+  public void batchEnd() {
+    auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+    processing = true;
+
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
+  }
+
+  @Override
+  public boolean isDirty(Object node) {
+    return dirtySupplier(node).getAsBoolean();
+  }
+
+  @Override
+  public BooleanSupplier dirtySupplier(Object node) {
+    if (dirtyFlagSupplierMap.isEmpty()) {
+      dirtyFlagSupplierMap.put(raceCalculator, () -> isDirty_raceCalculator);
+    }
+    return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
+  }
+
+  @Override
+  public void setDirty(Object node, boolean dirtyFlag) {
+    if (dirtyFlagUpdateMap.isEmpty()) {
+      dirtyFlagUpdateMap.put(raceCalculator, (b) -> isDirty_raceCalculator = b);
+    }
+    dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
+  }
+
+  private boolean guardCheck_resultsPublisher() {
+    return isDirty_raceCalculator;
+  }
+
+  @Override
+  public <T> T getNodeById(String id) throws NoSuchFieldException {
+    return nodeNameLookup.getInstanceById(id);
+  }
+
+  @Override
+  public <A extends Auditor> A getAuditorById(String id)
+      throws NoSuchFieldException, IllegalAccessException {
+    return (A) this.getClass().getField(id).get(this);
+  }
+
+  @Override
+  public void addEventFeed(EventFeed eventProcessorFeed) {
+    subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+  }
+
+  @Override
+  public void removeEventFeed(EventFeed eventProcessorFeed) {
+    subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
+  }
+
+  @Override
+  public RaceCalculatorProcessor newInstance() {
+    return new RaceCalculatorProcessor();
+  }
+
+  @Override
+  public RaceCalculatorProcessor newInstance(Map<Object, Object> contextMap) {
+    return new RaceCalculatorProcessor();
+  }
+
+  @Override
+  public String getLastAuditLogRecord() {
+    try {
+      EventLogManager eventLogManager =
+          (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
+      return eventLogManager.lastRecordAsString();
+    } catch (Throwable e) {
+      return "";
+    }
+  }
+}
+{% endhighlight %}
+</div>
+</div>
+
+<div id="Generated image" class="tabcontent2">
+<div markdown="1">
+Image is generated as part of the code generator
+
+![](images/RaceCalculatorProcessor.png)
+</div>
+</div>
 
 # Latest release
 
@@ -141,6 +554,28 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 </div>
 </div>
 
+# The cost of complexity problem
+
+Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
+complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
+profitable in a competitive environment.
+
+Event driven systems have two types of complexity to manage:
+
+- Delivering events to application components in a fault-tolerant predictable fashion.
+- Developing application logic responses to events that meets business requirements
+
+Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
+the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
+cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
+over time and developing application logic becomes ever more complex and expensive to deliver. As more functionality is 
+added the danger of instability increases.
+
+Fluxtion reduces the cost to develop and maintain business logic, while maintaining stability. Automating the expensive
+and error-prone process of wiring application logic to multiple event streams is Fluxtion's target. For long term development
+projects the ROI of using Fluxtion increases exponentially.
+
 <script>
 document.getElementById("defaultOpen").click();
+document.getElementById("defaultExample").click();
 </script>
