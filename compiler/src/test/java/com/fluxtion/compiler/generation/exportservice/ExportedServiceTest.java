@@ -204,6 +204,36 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("count"), is(2));
     }
 
+    @Test
+    public void noPropagateWholeServiceTest() {
+        writeOutputsToFile(true);
+        sep(c -> {
+            NoPropagateMySvc noPropagateAnyMethodsMySvc = new NoPropagateMySvc();
+            noPropagateAnyMethodsMySvc.triggerObject = new StringHandler();
+            DataFlow.subscribeToNode(noPropagateAnyMethodsMySvc)
+                    .mapToInt(Mappers.count()).id("count");
+        });
+        onEvent("test");
+        assertThat(getStreamed("count"), is(0));
+
+        MyService triggeringService = sep.getExportedService();
+        triggeringService.testAdd(10, 10);
+        assertThat(getStreamed("count"), is(0));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(1));
+
+
+        triggeringService.testSubtract(10, 10);
+        assertThat(getStreamed("count"), is(1));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(1));
+
+        triggeringService.testAdd(10, 10);
+        assertThat(getStreamed("count"), is(1));
+        onEvent("test");
+        assertThat(getStreamed("count"), is(2));
+    }
+
     public interface MyTriggeringService extends MyService {
         boolean triggerPositive(int x);
 
@@ -307,6 +337,26 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
         @Override
         @NoPropagateFunction
+        public void testSubtract(int a, int b) {
+            sum = a - b;
+        }
+
+        @OnTrigger
+        public boolean trigger() {
+            return sum > 0;
+        }
+    }
+
+    public static class NoPropagateMySvc implements @ExportService(propagate = false) MyService {
+        public Object triggerObject;
+        int sum = 0;
+
+        @Override
+        public void testAdd(int a, int b) {
+            sum = a + b;
+        }
+
+        @Override
         public void testSubtract(int a, int b) {
             sum = a - b;
         }

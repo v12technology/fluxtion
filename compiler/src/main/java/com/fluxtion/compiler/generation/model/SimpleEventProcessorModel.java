@@ -669,11 +669,21 @@ public class SimpleEventProcessorModel {
             for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
                 if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                     Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                    boolean propagateClass = ClassUtils.isPropagateExportService(clazz, interfaceType);
                     dependencyGraph.getConfig().addInterfaceImplementation(interfaceType);
                     for (Method method : interfaceType.getMethods()) {
                         String exportMethodName = method.getName();
                         try {
                             method = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                            Method cbMethod = method;
+                            try {
+                                cbMethod = object.getClass().getMethod(exportMethodName, method.getParameterTypes());
+                            } catch (NoSuchMethodException e) {
+
+                            }
+
+                            boolean noPropagateMethod = cbMethod.getAnnotation(NoPropagateFunction.class) != null
+                                    || !propagateClass;
                             LongAdder argNumber = new LongAdder();
                             boolean booleanReturn = method.getReturnType() == boolean.class;
                             StringBuilder signature = booleanReturn
@@ -694,8 +704,8 @@ public class SimpleEventProcessorModel {
                             }
                             signature.append(sj);
                             signature.append(")");
-                            eventCbList.add(new EventCallList(object, method, signature.toString()));
-                            if (method.getAnnotation(NoPropagateFunction.class) == null) {
+                            eventCbList.add(new EventCallList(object, method, signature.toString(), !noPropagateMethod));
+                            if (!noPropagateMethod) {
                                 node2UpdateMethodMap.put(object, new CbMethodHandle(method, object, name));
                             }
                         } catch (NoSuchMethodException e) {
@@ -979,7 +989,7 @@ public class SimpleEventProcessorModel {
                     continue;
                 }
                 CbMethodHandle cb = node2UpdateMethodMap.get(node);
-                final boolean invertedDirtyHandler = cb != null && cb.isInvertedDirtyHandler;
+                final boolean invertedDirtyHandler = cb != null && cb.invertedDirtyHandler;
                 final boolean failIfNotGuarded = cb != null && cb.failBuildOnUnguardedTrigger();
                 //get parents of node and loop through
                 Set<DirtyFlag> guardSet = new HashSet<>();
@@ -1063,7 +1073,7 @@ public class SimpleEventProcessorModel {
      * @return collection of dirty flags that guard the node
      */
     public Collection<DirtyFlag> getNodeGuardConditions(CbMethodHandle cb) {
-        if (cb.isPostEventHandler && dependencyGraph.getDirectParents(cb.instance).isEmpty()) {
+        if (cb.postEventHandler && dependencyGraph.getDirectParents(cb.instance).isEmpty()) {
             return getDirtyFlagForNode(cb.instance) == null
                     ? Collections.emptyList()
                     : Collections.singletonList(getDirtyFlagForNode(cb.instance));
@@ -1340,8 +1350,8 @@ public class SimpleEventProcessorModel {
             isInverseFiltered = false;
         }
 
-        EventCallList(Object instance, Method onEventMethod, String exportedMethodName) throws Exception {
-            if (onEventMethod.getAnnotation(NoPropagateFunction.class) == null) {
+        EventCallList(Object instance, Method onEventMethod, String exportedMethodName, boolean propagate) throws Exception {
+            if (propagate) {
                 sortedDependents = dependencyGraph.getEventSortedDependents(instance);
             } else {
                 sortedDependents = Collections.EMPTY_LIST;

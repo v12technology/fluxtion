@@ -31,10 +31,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -142,6 +139,16 @@ public class ClassUtilsTest {
         Assert.assertTrue(ClassUtils.getAllAnnotatedTypes(A.class, ExportService.class).isEmpty());
     }
 
+    @Test
+    public void testExportNoPropagate() {
+        boolean export1 = ClassUtils.isPropagateExportService(C_Export.class, NamedNode.class);
+        boolean export2 = ClassUtils.isPropagateExportService(C_Export.class, BatchHandler.class);
+        boolean export3 = ClassUtils.isPropagateExportService(C_Export.class, Date.class);
+        Assert.assertFalse(export1);
+        Assert.assertTrue(export2);
+        Assert.assertFalse(export3);
+    }
+
     public static class A_Export implements @ExportService NamedNode, BatchHandler {
         @Override
         public String getName() {
@@ -169,6 +176,27 @@ public class ClassUtilsTest {
         @Override
         public void batchEnd() {
 
+        }
+    }
+
+    public static class C_Export
+            implements
+            @ExportService(propagate = false) NamedNode,
+            @ExportService BatchHandler {
+
+        @Override
+        public void batchPause() {
+
+        }
+
+        @Override
+        public void batchEnd() {
+
+        }
+
+        @Override
+        public String getName() {
+            return null;
         }
     }
 
