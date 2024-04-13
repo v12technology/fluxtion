@@ -1,24 +1,21 @@
 package com.fluxtion.compiler.generation.model;
 
+import lombok.Getter;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class ExportFunctionData {
 
     private final Method exportedmethod;
+    private final boolean propagateMethod;
     private final List<CbMethodHandle> functionCallBackList = new ArrayList<>();
 
-    public ExportFunctionData(Method exportedmethod) {
+    public ExportFunctionData(Method exportedmethod, boolean propagateMethod) {
         this.exportedmethod = exportedmethod;
-    }
-
-    public Method getExportedmethod() {
-        return exportedmethod;
-    }
-
-    public List<CbMethodHandle> getFunctionCallBackList() {
-        return functionCallBackList;
+        this.propagateMethod = propagateMethod;
     }
 
     public void addCbMethodHandle(CbMethodHandle cbMethodHandle) {

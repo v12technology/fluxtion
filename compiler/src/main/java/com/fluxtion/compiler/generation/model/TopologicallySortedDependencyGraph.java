@@ -734,6 +734,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
             if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                 Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
+                boolean propagateClass = ClassUtils.isPropagateExportService(clazz, interfaceType);
                 config.addInterfaceImplementation(interfaceType);
                 for (Method method : interfaceType.getMethods()) {
                     String exportMethodName = method.getName();
@@ -743,16 +744,15 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     } catch (NoSuchMethodException e) {
 
                     }
-                    //TODO key on method
+                    boolean propagateMethod = cbMethod.getAnnotation(NoPropagateFunction.class) == null && propagateClass;
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                            method, n -> new ExportFunctionData(method));
+                            method, n -> new ExportFunctionData(method, propagateMethod));
                     registerNode(object, null);
                     final String name = inst2Name.get(object);
                     exportFunctionData.addCbMethodHandle(new CbMethodHandle(cbMethod, object, name));
                 }
             }
         }
-
     }
 
     @SuppressWarnings("unchecked")

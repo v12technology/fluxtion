@@ -17,8 +17,12 @@
  */
 package com.fluxtion.compiler.generation.model;
 
-import com.fluxtion.runtime.annotations.*;
+import com.fluxtion.runtime.annotations.AfterTrigger;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.dataflow.ParallelFunction;
+import lombok.Getter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,19 +38,23 @@ public class CbMethodHandle {
     /**
      * The callback method.
      */
+    @Getter
     public final Method method;
     /**
      * the instance the method will operate on.
      */
+    @Getter
     public final Object instance;
     /**
      * the variable name of the instance in the SEP.
      */
+    @Getter
     public final String variableName;
 
     /**
      * the parameter type of the callback - can be null
      */
+    @Getter
     public final Class<?> parameterClass;
 
     /**
@@ -56,18 +64,23 @@ public class CbMethodHandle {
     /**
      * Is a multi arg event handler
      */
+    @Getter
     private final boolean exportedHandler;
 
-    public final boolean isPostEventHandler;
+    @Getter
+    public final boolean postEventHandler;
 
-    public final boolean isInvertedDirtyHandler;
+    @Getter
+    public final boolean invertedDirtyHandler;
 
-    private final boolean isGuardedParent;
+    @Getter
+    private final boolean guardedParent;
 
-    private final boolean isNoPropagateEventHandler;
+    @Getter
+    private final boolean noPropagateEventHandler;
     private final boolean failBuildOnUnguardedTrigger;
+    @Getter
     private final boolean forkExecution;
-    private final boolean isNoPropagateFunction;
 
     public CbMethodHandle(Method method, Object instance, String variableName) {
         this(method, instance, variableName, null, false, false);
@@ -79,68 +92,23 @@ public class CbMethodHandle {
         this.variableName = variableName;
         this.parameterClass = parameterClass;
         this.isEventHandler = isEventHandler;
-        this.isPostEventHandler = method.getAnnotation(AfterTrigger.class) != null;
+        this.postEventHandler = method.getAnnotation(AfterTrigger.class) != null;
         OnTrigger onTriggerAnnotation = method.getAnnotation(OnTrigger.class);
         OnParentUpdate onParentUpdateAnnotation = method.getAnnotation(OnParentUpdate.class);
         OnEventHandler onEventHandlerAnnotation = method.getAnnotation(OnEventHandler.class);
-        NoPropagateFunction noPropagateFunction = method.getAnnotation(NoPropagateFunction.class);
         this.exportedHandler = exportedHandler;
-        this.isInvertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
+        this.invertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
         boolean parallel = (instance instanceof ParallelFunction) ? ((ParallelFunction) instance).parallelCandidate() : false;
         this.forkExecution = parallel || onTriggerAnnotation != null && onTriggerAnnotation.parallelExecution();
         this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
-        this.isGuardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
-        this.isNoPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
-        this.isNoPropagateFunction = noPropagateFunction != null;
-    }
-
-    public Method getMethod() {
-        return method;
-    }
-
-    public Object getInstance() {
-        return instance;
-    }
-
-    public String getVariableName() {
-        return variableName;
-    }
-
-    public Class<?> getParameterClass() {
-        return parameterClass;
+        this.guardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
+        this.noPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
     }
 
     public boolean isEventHandler() {
         return isEventHandler;
     }
 
-    public boolean isNoPropagateEventHandler() {
-        return isNoPropagateEventHandler;
-    }
-
-    public boolean isPostEventHandler() {
-        return isPostEventHandler;
-    }
-
-    public boolean isInvertedDirtyHandler() {
-        return isInvertedDirtyHandler;
-    }
-
-    public boolean isGuardedParent() {
-        return isGuardedParent;
-    }
-
-    public boolean isForkExecution() {
-        return forkExecution;
-    }
-
-    public boolean isNoPropagateFunction() {
-        return isNoPropagateFunction;
-    }
-
-    public boolean isExportedHandler() {
-        return exportedHandler;
-    }
 
     public String getMethodTarget() {
         if (Modifier.isStatic(getMethod().getModifiers())) {
@@ -166,10 +134,10 @@ public class CbMethodHandle {
                 ", parameterClass=" + parameterClass +
                 ", isEventHandler=" + isEventHandler +
                 ", isExportHandler=" + exportedHandler +
-                ", isPostEventHandler=" + isPostEventHandler +
-                ", isInvertedDirtyHandler=" + isInvertedDirtyHandler +
-                ", isGuardedParent=" + isGuardedParent +
-                ", isNoPropagateEventHandler=" + isNoPropagateEventHandler +
+                ", isPostEventHandler=" + postEventHandler +
+                ", isInvertedDirtyHandler=" + invertedDirtyHandler +
+                ", isGuardedParent=" + guardedParent +
+                ", isNoPropagateEventHandler=" + noPropagateEventHandler +
                 ", failBuildOnUnguardedTrigger=" + failBuildOnUnguardedTrigger +
                 ", forkExecution=" + forkExecution +
                 '}';
