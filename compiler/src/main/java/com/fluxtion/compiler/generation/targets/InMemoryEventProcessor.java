@@ -763,7 +763,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
 
         private void parentUpdated(boolean parentDirty) {
-            if (callbackHandle.isInvertedDirtyHandler) {
+            if (callbackHandle.invertedDirtyHandler) {
                 parentDirty = !parentDirty;
             }
             if (parentDirty) {

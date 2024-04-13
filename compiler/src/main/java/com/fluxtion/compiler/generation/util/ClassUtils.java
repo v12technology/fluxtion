@@ -21,6 +21,7 @@ import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
+import com.fluxtion.runtime.annotations.ExportService;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -241,7 +242,7 @@ public interface ClassUtils {
             String variableName = cb.getVariableName();
             String methodName = cb.getMethod().getName();
             signature.append("processor.nodeInvoked(" + variableName + ", \"" + variableName + "\", \"" + methodName + "\", functionAudit);\n");
-            if (cb.isNoPropagateFunction()) {
+            if (!exportFunctionData.isPropagateMethod()) {
                 signature.append(variableName).append(".").append(methodName).append(sjInvoker.toString().replace("));", ");"));
             } else if (cb.getMethod().getReturnType() == void.class) {
                 signature.append(variableName).append(".").append(methodName).append(sjInvoker.toString().replace("));", ");"));
@@ -268,6 +269,14 @@ public interface ClassUtils {
             clazz = clazz.getSuperclass();
         }
         return interfaceList;
+    }
+
+    static boolean isPropagateExportService(Class<?> clazz, Class<?> exportedService) {
+        return Arrays.stream(clazz.getAnnotatedInterfaces())
+                .filter(c -> c.getType().equals(exportedService))
+                .filter(a -> a.isAnnotationPresent(ExportService.class))
+                .map(c -> c.getAnnotation(ExportService.class))
+                .anyMatch(ExportService::propagate);
     }
 
     static List<Type> getAllAnnotatedTypes(Class<?> clazz, Class<? extends Annotation> annotation) {
