@@ -212,45 +212,45 @@ drive the statistics we want to capture.
 - **nodeInvoked** - builds the method invocation statistics for a node
 
 # Building the application
-We have chosen to use Fluxtion in aot mode so the reader can inspect the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) 
-and locate where the notification callbacks to the auditor are injected. 
+As Fluxtion is in aot mode the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) can be inspected
+to locate where the notification callbacks to the auditor are injected. 
 
-**EventProcessorConfig is the configuration object for beans managed by the container passed to the compiler.**
+A [FluxtionSpringConfig]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpringConfig.java) bean is added to the spring 
+config file that references the SystemStatisticsAuditor we want to include in the event processor. A specialised handler 
+for FluxtionSpringConfig customises the generated event processor by calling methods on 
+the [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) at build time.
 
-The auditor is added using an overloaded [FluxtionSpring.compileAot]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpring.java) 
-where the second parameter gives access to [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java).
 
-{% highlight java %}
-public class BuildAot {
-  public static void main(String[] args) {
-    FluxtionSpring.compileAot(
-      new ClassPathXmlApplicationContext("/spring-lottery.xml"),
-      e -> e.addAuditor(new SystemStatisticsAuditor(), "systemAuditor"),
-      c -> {
-        c.setPackageName("com.fluxtion.example.cookbook.lottery.aot");
-        c.setClassName("LotteryProcessor");
-        //required because maven does not pass the classpath properly
-        c.setCompileSource(false);
-      }
-    );
-  }
-}
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
+    </bean>
+
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+
+    <!--AUDITORS-->
+    <bean id="systemAuditor" class="com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor"/>
+    <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
+        <property name="auditors">
+            <list>
+                <ref bean="systemAuditor"/>
+            </list>
+        </property>
+    </bean>
+</beans>
 {% endhighlight %}
 
-BuildAot main can be run from maven via a build plugin:
+The Fluxtion maven plugin will run as part of the build, logging this output as part of the build:
 
 {% highlight console %}
 greg@Gregs-iMac tutorial3-lottery-auditor % mvn compile exec:java
 [INFO] Scanning for projects...
 [INFO]
-[INFO] -----------< com.fluxtion.example:getting-started-tutorial3 >-----------
-[INFO] Building getting-started :: tutorial 3 :: custom auditor 1.0.0-SNAPSHOT
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO]
-...
-...
-[INFO] --- exec-maven-plugin:3.1.0:java (default-cli) @ getting-started-tutorial3 ---
-28-Sept-23 08:00:29 [com.fluxtion.example.cookbook.lottery.BuildAot.main()] INFO EventProcessorCompilation - generated EventProcessor file: /Users/greg/IdeaProjects/fluxtion-examples/getting-started/tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
+[INFO] --- fluxtion:3.0.14:springToFluxtion (spring to fluxtion builder) @ getting-started-tutorial3 ---
+[main] INFO com.fluxtion.compiler.generation.compiler.EventProcessorCompilation - generated EventProcessor file: /development/fluxtion-examples/getting-started/tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
