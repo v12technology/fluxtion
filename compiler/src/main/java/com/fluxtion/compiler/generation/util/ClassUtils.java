@@ -271,6 +271,13 @@ public interface ClassUtils {
         return interfaceList;
     }
 
+    static boolean isPropagateExportService(Class<?> clazz) {
+        return Arrays.stream(clazz.getAnnotatedInterfaces())
+                .filter(a -> a.isAnnotationPresent(ExportService.class))
+                .map(c -> c.getAnnotation(ExportService.class))
+                .anyMatch(ExportService::propagate);
+    }
+
     static boolean isPropagateExportService(Class<?> clazz, Class<?> exportedService) {
         return Arrays.stream(clazz.getAnnotatedInterfaces())
                 .filter(c -> c.getType().equals(exportedService))
