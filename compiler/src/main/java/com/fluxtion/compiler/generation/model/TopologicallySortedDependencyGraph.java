@@ -818,18 +818,13 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 ;
     }
 
-    private Predicate<AnnotatedElement> eventHandlingAnnotationPredicate() {
-        return ReflectionUtils.withAnnotation(OnEventHandler.class)
-                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
-                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
-                .or(ReflectionUtils.withAnnotation(ExportService.class))
-                ;
-    }
-
     private boolean handlesEvents(Object obj) {
+        Predicate<AnnotatedElement> predicate = ReflectionUtils.withAnnotation(OnEventHandler.class)
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class));
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
-                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty()
-                || !ClassUtils.getAllAnnotatedAnnotationTypes(obj.getClass(), ExportService.class).isEmpty();
+                || !ReflectionUtils.getAllMethods(obj.getClass(), predicate).isEmpty()
+                || ClassUtils.isPropagateExportService(obj.getClass());
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
