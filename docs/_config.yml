@@ -41,6 +41,11 @@ kramdown:
     block:
       line_numbers: true
 
+mermaid:
+  # Version of mermaid library
+  # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/
+  version: "9.1.3"
+
 fluxtion_version: 9.2.18
 fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.2.18
 fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.2.18/runtime/src/main/java/com/fluxtion/runtime
