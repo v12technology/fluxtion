@@ -669,7 +669,7 @@ public class SimpleEventProcessorModel {
             for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
                 if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                     Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
-                    boolean propagateClass = ClassUtils.isPropagateExportService(clazz, interfaceType);
+                    boolean propagateClass = ClassUtils.isPropagatingExportService(clazz, interfaceType);
                     dependencyGraph.getConfig().addInterfaceImplementation(interfaceType);
                     for (Method method : interfaceType.getMethods()) {
                         String exportMethodName = method.getName();
