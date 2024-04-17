@@ -734,7 +734,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(clazz, ExportService.class)) {
             if (annotatedInterface.isAnnotationPresent(ExportService.class)) {
                 Class<?> interfaceType = (Class<?>) annotatedInterface.getType();
-                boolean propagateClass = ClassUtils.isPropagateExportService(clazz, interfaceType);
+                boolean propagateClass = ClassUtils.isPropagatingExportService(clazz, interfaceType);
                 config.addInterfaceImplementation(interfaceType);
                 for (Method method : interfaceType.getMethods()) {
                     String exportMethodName = method.getName();
@@ -818,18 +818,13 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 ;
     }
 
-    private Predicate<AnnotatedElement> eventHandlingAnnotationPredicate() {
-        return ReflectionUtils.withAnnotation(OnEventHandler.class)
-                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
-                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class))
-                .or(ReflectionUtils.withAnnotation(ExportService.class))
-                ;
-    }
-
     private boolean handlesEvents(Object obj) {
+        Predicate<AnnotatedElement> predicate = ReflectionUtils.withAnnotation(OnEventHandler.class)
+                .or(ReflectionUtils.withAnnotation(OnTrigger.class))
+                .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class));
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
-                || !ReflectionUtils.getAllMethods(obj.getClass(), eventHandlingAnnotationPredicate()).isEmpty()
-                || !ClassUtils.getAllAnnotatedAnnotationTypes(obj.getClass(), ExportService.class).isEmpty();
+                || !ReflectionUtils.getAllMethods(obj.getClass(), predicate).isEmpty()
+                || ClassUtils.isPropagatingExportService(obj.getClass());
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
