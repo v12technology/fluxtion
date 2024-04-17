@@ -500,7 +500,7 @@ public class EventProcessorConfig {
         Objects.requireNonNull(dispatchStrategy, "Dispatch strategy must be non null");
         if (dispatchStrategy == DISPATCH_STRATEGY.PATTERN_MATCH) {
             enablePreviewFeatures();
-            javaTargetRelease("19");
+            javaTargetRelease("21");
         }
         this.dispatchStrategy = dispatchStrategy;
     }
