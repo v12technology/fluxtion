@@ -19,6 +19,7 @@ package com.fluxtion.compiler.generation.util;
 
 import com.fluxtion.compiler.generation.model.CbMethodHandle;
 import com.fluxtion.runtime.annotations.ExportService;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.node.NamedNode;
 import org.apache.commons.lang3.StringUtils;
@@ -141,12 +142,22 @@ public class ClassUtilsTest {
 
     @Test
     public void testExportNoPropagate() {
-        boolean export1 = ClassUtils.isPropagateExportService(C_Export.class, NamedNode.class);
-        boolean export2 = ClassUtils.isPropagateExportService(C_Export.class, BatchHandler.class);
-        boolean export3 = ClassUtils.isPropagateExportService(C_Export.class, Date.class);
+        boolean export1 = ClassUtils.isPropagatingExportService(C_Export.class, NamedNode.class);
+        boolean export2 = ClassUtils.isPropagatingExportService(C_Export.class, BatchHandler.class);
+        boolean export3 = ClassUtils.isPropagatingExportService(C_Export.class, Date.class);
         Assert.assertFalse(export1);
         Assert.assertTrue(export2);
         Assert.assertFalse(export3);
+    }
+
+    @Test
+    public void testAtLeastOneExportedMethodPropagates() {
+        Assert.assertTrue(ClassUtils.isPropagatingExportService(A_Export.class));
+        Assert.assertTrue(ClassUtils.isPropagatingExportService(B_Export.class));
+        Assert.assertTrue(ClassUtils.isPropagatingExportService(C_Export.class));
+
+        Assert.assertFalse(ClassUtils.isPropagatingExportService(No_Export_Service.class));
+        Assert.assertFalse(ClassUtils.isPropagatingExportService(No_ExportMethods_Service.class));
     }
 
     public static class A_Export implements @ExportService NamedNode, BatchHandler {
@@ -197,6 +208,23 @@ public class ClassUtilsTest {
         @Override
         public String getName() {
             return null;
+        }
+    }
+
+    public static class No_Export_Service implements @ExportService(propagate = false) NamedNode {
+
+        @Override
+        public String getName() {
+            return "";
+        }
+    }
+
+    public static class No_ExportMethods_Service implements @ExportService NamedNode {
+
+        @Override
+        @NoPropagateFunction
+        public String getName() {
+            return "";
         }
     }
 

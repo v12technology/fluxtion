@@ -22,6 +22,7 @@ import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.runtime.annotations.ExportService;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -271,19 +272,29 @@ public interface ClassUtils {
         return interfaceList;
     }
 
-    static boolean isPropagateExportService(Class<?> clazz) {
-        return Arrays.stream(clazz.getAnnotatedInterfaces())
-                .filter(a -> a.isAnnotationPresent(ExportService.class))
-                .map(c -> c.getAnnotation(ExportService.class))
-                .anyMatch(ExportService::propagate);
+    static boolean isPropagatingExportService(Class<?> clazz) {
+        return isPropagatingExportService(clazz, null);
     }
 
-    static boolean isPropagateExportService(Class<?> clazz, Class<?> exportedService) {
+    static boolean isPropagatingExportService(Class<?> clazz, Class<?> exportedService) {
         return Arrays.stream(clazz.getAnnotatedInterfaces())
-                .filter(c -> c.getType().equals(exportedService))
+                .filter(c -> exportedService == null || c.getType().equals(exportedService))
                 .filter(a -> a.isAnnotationPresent(ExportService.class))
-                .map(c -> c.getAnnotation(ExportService.class))
-                .anyMatch(ExportService::propagate);
+                .filter(c -> c.getAnnotation(ExportService.class).propagate())
+                .map(AnnotatedType::getType)
+                .filter(Class.class::isInstance)
+                .map(Class.class::cast)
+                .map(Class::getMethods)
+                .flatMap(Arrays::stream)
+                .anyMatch(m -> {
+                    try {
+                        Method implMethod = clazz.getMethod(m.getName(), m.getParameterTypes());
+                        return !implMethod.isAnnotationPresent(NoPropagateFunction.class);
+                    } catch (NoSuchMethodException e) {
+                        //cant find method - assume exported
+                    }
+                    return true;
+                });
     }
 
     static List<Type> getAllAnnotatedTypes(Class<?> clazz, Class<? extends Annotation> annotation) {
