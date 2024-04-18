@@ -4,7 +4,7 @@ parent: Examples
 has_children: false
 nav_order: 4
 published: true
-example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/lombok
+example_src: https://github.com/v12technology/fluxtion-examples/tree/develop/cookbook/src/main/java/com/fluxtion/example/cookbook
 ---
 
 ## Introduction
@@ -22,7 +22,7 @@ This example demonstrates real-time data ingestion using the Fluxtion event proc
   - write valid records to a binary format
 - Record realtime statistic of processing that can be queried
 
-## Sample mermaid
+## Process flow diagram
 
 ```mermaid
 flowchart TB
@@ -46,7 +46,10 @@ flowchart TB
 
 ## Code example
 
-[See the example here]({{page.example_src}}/LombokedNode.java)
+[See the example here]({{page.example_src}}/dataingestion)
+
+
+[Pipe line builder]({{page.example_src}}/dataingestion/DataIngestionPipelineBuilder.java)
 
 {% highlight java %}
 
