@@ -23,12 +23,7 @@ import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
 import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongPredicate;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongConsumer;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableLongUnaryOperator;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public class LongFlowBuilder implements FlowDataSupplier<LongFlowSupplier> {
 
@@ -163,9 +158,12 @@ public class LongFlowBuilder implements FlowDataSupplier<LongFlowSupplier> {
         return push(new SinkPublisher<>(sinkId)::publishLong);
     }
 
-    public LongFlowBuilder push(SerializableLongConsumer pushFunction) {
-        EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
-        return new LongFlowBuilder(new LongPushFlowFunction(eventStream, pushFunction));
+    public final LongFlowBuilder push(SerializableLongConsumer... pushFunctions) {
+        LongFlowBuilder target = null;
+        for (SerializableLongConsumer pushFunction : pushFunctions) {
+            target = new LongFlowBuilder(new LongPushFlowFunction(eventStream, pushFunction));
+        }
+        return target;
     }
 
     public LongFlowBuilder peek(LambdaReflection.SerializableConsumer<Long> peekFunction) {
