@@ -2,18 +2,11 @@ package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FilterByPropertyDynamicFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FilterByPropertyFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FilterDynamicFlowFunction;
-import com.fluxtion.runtime.dataflow.function.FilterFlowFunction;
+import com.fluxtion.runtime.dataflow.function.*;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2ToDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2ToIntFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2ToLongFlowFunction;
-import com.fluxtion.runtime.dataflow.function.MapOnNotifyFlowFunction;
-import com.fluxtion.runtime.dataflow.function.NotifyFlowFunction;
-import com.fluxtion.runtime.dataflow.function.PeekFlowFunction;
-import com.fluxtion.runtime.dataflow.function.PushFlowFunction;
 import com.fluxtion.runtime.dataflow.helpers.InternalEventDispatcher;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
 import com.fluxtion.runtime.dataflow.helpers.Predicates.PredicateWrapper;
@@ -152,9 +145,13 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
     //MAP TO PRIMITIVES
 
     //OUTPUTS - START
-    public B push(SerializableConsumer<T> pushFunction) {
-//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
-        return connect(new PushFlowFunction<>(eventStream, pushFunction));
+    @SafeVarargs
+    public final B push(SerializableConsumer<T>... pushFunctions) {
+        B target = null;
+        for (SerializableConsumer<T> pushFunction : pushFunctions) {
+            target = connect(new PushFlowFunction<>(eventStream, pushFunction));
+        }
+        return target;
     }
 
     public B sink(String sinkId) {
