@@ -22,9 +22,11 @@ Code is available as a [maven project]({{page.example_src}})
 ## Three steps to using Fluxtion
 {: .no_toc }
 
-1. Mark event handling methods with annotations or via functional programming
-2. Build the event processor using fluxtion compiler utility
-3. Integrate the event processor in the app and feed it events
+{: .info }
+1 - Mark event handling methods with annotations or via functional programming<br>
+2 - Build the event processor using fluxtion compiler utility<br>
+3 - Integrate the event processor in the app and feed it events
+{: .fs-4 }
 
 {: .no_toc }
 <details open markdown="block">

@@ -9,9 +9,10 @@ published: true
 
 ---
 
-Fluxtion is a code generation utility that simplifies building event driven applications. Generated code binds event
-streams to application functions, increasing developer productivity by automating the creation of dispatch logic.
-Application code is free from vendor lock-in, deployable anywhere and simple to test.
+Fluxtion is a Java library and code generation utility designed for building high-performance, low-latency streaming
+applications. It provides a lightweight framework for event-driven programming, particularly suited for applications
+such as financial trading systems, real-time analytics, and sensor data processing. Fluxtion emphasizes simplicity,
+efficiency, and ease of use in handling streaming data.
 
 <div class="grid">
 <div class="col-1-2">
@@ -35,22 +36,67 @@ Application code is free from vendor lock-in, deployable anywhere and simple to 
 </div>
 
 {: .info }
-Fluxtion saves developer time and increases stability when building event driven applications
+Overall, Fluxtion provides a powerful framework for building real-time streaming applications in Java, offering high
+performance, flexibility, and ease of use for developers working with streaming data.
 {: .fs-4 }
+
+**Event-driven Programming**: Fluxtion is based on the concept of event-driven programming, where components react to
+incoming events in real-time. Events can represent changes in data, user actions, or any other relevant triggers.
+
+**Dependency Graphs**: Fluxtion models the processing logic of the application as a directed acyclic graph (DAG) of
+nodes,
+where each node represents a computation or transformation operation. Nodes can subscribe to input events, perform
+calculations, and publish output events.
+
+**Event Processing Pipelines**: Fluxtion allows developers to define event processing pipelines, where events flow
+through a
+series of interconnected nodes. This allows for complex data transformations and aggregations to be performed
+efficiently.
+
+**Annotation-Based Configuration**: Fluxtion provides an annotation-based configuration mechanism, allowing developers
+to
+define event processing logic using simple annotations and annotations processors. This simplifies the development
+process and reduces boilerplate code.
+
+**Code Generation**: Fluxtion employs code generation techniques to optimize the performance of event processing
+pipelines.
+During compilation, Fluxtion generates highly optimized Java code tailored to the specific event processing logic
+defined by the developer.
+
+**Low Latency**: Fluxtion is designed to achieve low latency and high throughput, making it suitable for applications
+where
+real-time responsiveness is critical, such as financial trading systems.
+
+**Support for Complex Event Processing (CEP)**: Fluxtion includes support for complex event processing, allowing
+developers
+to define complex event patterns and rules using a high-level DSL (Domain-Specific Language).
+
+**Integration with External Systems**: Fluxtion can easily integrate with external systems and libraries, allowing
+developers to incorporate Fluxtion-based event processing logic into existing applications or frameworks.
+
+**Developer productivity**: Fluxtion has been designed to increases developer productivity when building and
+supporting event driven applications
+
+# Example
+
+[This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish
+times are received as a stream of events,
+when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current
+results.
+
+The developer writes the core business logic annotating any methods that should receive event callbacks or services that
+are exported.
+Fluxtion takes care of generating all the event dispatch code that is time consuming to write, error prone and adds
+little value.
+The generated event processor is used like any normal java class in the application.
 
 ## Three steps to using Fluxtion
 
-1. Mark event handling methods with annotations or via functional programming
-2. Build the event processor using fluxtion compiler utility
-3. Integrate the event processor in the app and feed it events
-
-# Example
-[This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish times are received as a stream of events,
-when a runner finishes they receive their individual time. A call to `publishAllResults` will publish all current results.
-
-The developer writes the core business logic annotating any methods that should receive event callbacks or services that are exported. 
-Fluxtion takes care of generating all the event dispatch code that is time consuming to write, error prone and adds little value. 
-The generated event processor is used like any normal java class in the application.
+{: .info }
+1 - Mark event handling methods with annotations or via functional programming<br>
+2 - Build the event processor using fluxtion compiler utility<br>
+3 - Integrate the event processor in the app and feed it events
+{: .fs-4 }
 
 <div class="tab">
   <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">1 - Mark event methods</button>
@@ -79,11 +125,13 @@ public class RaceCalculator {
         private final transient Map<Long, RunningRecord> raceTimeMap = new HashMap<>();
         private RunningRecord latestFinisher;
 
+        //FLUXTION ANNOTATION - lfecycle init callback
         @Initialise
         public void init(){
             raceTimeMap.clear();
         }
 
+        //FLUXTION ANNOTATION - subscribe to RunnerStarted events, no propagation to child nodes
         @OnEventHandler(propagate = false)
         public boolean runnerStarted(RunnerStarted runnerStarted) {
             long runnerId = runnerStarted.runnerId();
@@ -91,6 +139,7 @@ public class RaceCalculator {
             return false;
         }
 
+        //FLUXTION ANNOTATION - subscribe to RunnerFinished events, propagates trigger to child nodes 
         @OnEventHandler
         public boolean runnerFinished(RunnerFinished runner) {
             latestFinisher = raceTimeMap.computeIfPresent(
@@ -101,9 +150,12 @@ public class RaceCalculator {
     }
 
     @RequiredArgsConstructor
-    public static class ResultsPublisherImpl implements @ExportService ResultsPublisher{
+    public static class ResultsPublisherImpl implements 
+        //FLUXTION ANNOTATION - exports the service api for this instance
+        @ExportService ResultsPublisher {
         private final RaceTimeTracker raceTimeTracker;
 
+        //FLUXTION ANNOTATION - triggered on a parent notification, from RunnerFinished event handler
         @OnTrigger
         public boolean sendIndividualRunnerResult(){
             var raceRecord = raceTimeTracker.getLatestFinisher();
@@ -171,6 +223,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
+
 </project>
 {% endhighlight %}
 </div>
@@ -208,7 +261,7 @@ public class RaceCalculatorApp {
 }
 {% endhighlight %}
 
-Output from executing the application 
+Output from executing the application
 
 {% highlight console %}
 Crossed the line runner:2 time:1:30:5
@@ -219,360 +272,6 @@ FINAL RESULTS
 id:1 final time:2:14:32
 id:2 final time:1:30:5
 id:3 final time:1:52:48
-{% endhighlight %}
-</div>
-</div>
-
-<div id="Fluxtion generated" class="tabcontent2">
-<div markdown="1">
-Generated event processor connects events to business logic. AOT generated event processor has zero startup cost.
-{% highlight java %}
-/**
- *
- * <pre>
- * generation time                 : Not available
- * eventProcessorGenerator version : {{site.fluxtion_version}}
- * api version                     : {{site.fluxtion_version}}
- * </pre>
- *
- * Event classes supported:
- *
- * <ul>
- *   <li>com.fluxtion.compiler.generation.model.ExportFunctionMarker
- *   <li>com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished
- *   <li>com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted
- *   <li>com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent
- * </ul>
- *
- * @author Greg Higgins
- */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class RaceCalculatorProcessor
-    implements EventProcessor<RaceCalculatorProcessor>,
-        StaticEventProcessor,
-        InternalEventProcessor,
-        BatchHandler,
-        Lifecycle,
-        ResultsPublisher {
-
-  // Node declarations
-  private final CallbackDispatcherImpl callbackDispatcher = new CallbackDispatcherImpl();
-  public final NodeNameAuditor nodeNameLookup = new NodeNameAuditor();
-  public final RaceTimeTracker raceCalculator = new RaceTimeTracker();
-  public final ResultsPublisherImpl resultsPublisher = new ResultsPublisherImpl(raceCalculator);
-  private final SubscriptionManagerNode subscriptionManager = new SubscriptionManagerNode();
-  private final MutableEventProcessorContext context =
-      new MutableEventProcessorContext(
-          nodeNameLookup, callbackDispatcher, subscriptionManager, callbackDispatcher);
-  public final Clock clock = new Clock();
-  private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
-  // Dirty flags
-  private boolean initCalled = false;
-  private boolean processing = false;
-  private boolean buffering = false;
-  private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap =
-      new IdentityHashMap<>(1);
-  private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap =
-      new IdentityHashMap<>(1);
-
-  private boolean isDirty_raceCalculator = false;
-  // Forked declarations
-
-  // Filter constants
-
-  public RaceCalculatorProcessor(Map<Object, Object> contextMap) {
-    context.replaceMappings(contextMap);
-    // node auditors
-    initialiseAuditor(clock);
-    initialiseAuditor(nodeNameLookup);
-    subscriptionManager.setSubscribingEventProcessor(this);
-    context.setEventProcessorCallback(this);
-  }
-
-  public RaceCalculatorProcessor() {
-    this(null);
-  }
-
-  @Override
-  public void init() {
-    initCalled = true;
-    auditEvent(Lifecycle.LifecycleEvent.Init);
-    // initialise dirty lookup map
-    isDirty("test");
-    raceCalculator.init();
-    clock.init();
-    afterEvent();
-  }
-
-  @Override
-  public void start() {
-    if (!initCalled) {
-      throw new RuntimeException("init() must be called before start()");
-    }
-    processing = true;
-    auditEvent(Lifecycle.LifecycleEvent.Start);
-
-    afterEvent();
-    callbackDispatcher.dispatchQueuedCallbacks();
-    processing = false;
-  }
-
-  @Override
-  public void stop() {
-    if (!initCalled) {
-      throw new RuntimeException("init() must be called before stop()");
-    }
-    processing = true;
-    auditEvent(Lifecycle.LifecycleEvent.Stop);
-
-    afterEvent();
-    callbackDispatcher.dispatchQueuedCallbacks();
-    processing = false;
-  }
-
-  @Override
-  public void tearDown() {
-    initCalled = false;
-    auditEvent(Lifecycle.LifecycleEvent.TearDown);
-    nodeNameLookup.tearDown();
-    clock.tearDown();
-    subscriptionManager.tearDown();
-    afterEvent();
-  }
-
-  @Override
-  public void setContextParameterMap(Map<Object, Object> newContextMapping) {
-    context.replaceMappings(newContextMapping);
-  }
-
-  @Override
-  public void addContextParameter(Object key, Object value) {
-    context.addMapping(key, value);
-  }
-
-  // EVENT DISPATCH - START
-  @Override
-  public void onEvent(Object event) {
-    if (buffering) {
-      triggerCalculation();
-    }
-    if (processing) {
-      callbackDispatcher.processReentrantEvent(event);
-    } else {
-      processing = true;
-      onEventInternal(event);
-      callbackDispatcher.dispatchQueuedCallbacks();
-      processing = false;
-    }
-  }
-
-  @Override
-  public void onEventInternal(Object event) {
-    if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished) {
-      RunnerFinished typedEvent = (RunnerFinished) event;
-      handleEvent(typedEvent);
-    } else if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted) {
-      RunnerStarted typedEvent = (RunnerStarted) event;
-      handleEvent(typedEvent);
-    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
-      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
-      handleEvent(typedEvent);
-    }
-  }
-
-  public void handleEvent(RunnerFinished typedEvent) {
-    auditEvent(typedEvent);
-    // Default, no filter methods
-    isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
-    if (guardCheck_resultsPublisher()) {
-      resultsPublisher.sendIndividualRunnerResult();
-    }
-    afterEvent();
-  }
-
-  public void handleEvent(RunnerStarted typedEvent) {
-    auditEvent(typedEvent);
-    // Default, no filter methods
-    isDirty_raceCalculator = raceCalculator.runnerStarted(typedEvent);
-    afterEvent();
-  }
-
-  public void handleEvent(ClockStrategyEvent typedEvent) {
-    auditEvent(typedEvent);
-    // Default, no filter methods
-    clock.setClockStrategy(typedEvent);
-    afterEvent();
-  }
-  // EVENT DISPATCH - END
-
-  // EXPORTED SERVICE FUNCTIONS - START
-  @Override
-  public void publishAllResults() {
-    beforeServiceCall(
-        "public void com.fluxtion.example.cookbook.racing.RaceCalculator$ResultsPublisherImpl.publishAllResults()");
-    ExportFunctionAuditEvent typedEvent = functionAudit;
-    resultsPublisher.publishAllResults();
-    afterServiceCall();
-  }
-  // EXPORTED SERVICE FUNCTIONS - END
-
-  public void bufferEvent(Object event) {
-    buffering = true;
-    if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerFinished) {
-      RunnerFinished typedEvent = (RunnerFinished) event;
-      auditEvent(typedEvent);
-      isDirty_raceCalculator = raceCalculator.runnerFinished(typedEvent);
-    } else if (event instanceof com.fluxtion.example.cookbook.racing.RaceCalculator.RunnerStarted) {
-      RunnerStarted typedEvent = (RunnerStarted) event;
-      auditEvent(typedEvent);
-      isDirty_raceCalculator = raceCalculator.runnerStarted(typedEvent);
-    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
-      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
-      auditEvent(typedEvent);
-      clock.setClockStrategy(typedEvent);
-    }
-  }
-
-  public void triggerCalculation() {
-    buffering = false;
-    String typedEvent = "No event information - buffered dispatch";
-    if (guardCheck_resultsPublisher()) {
-      resultsPublisher.sendIndividualRunnerResult();
-    }
-    afterEvent();
-  }
-
-  private void auditEvent(Object typedEvent) {
-    clock.eventReceived(typedEvent);
-    nodeNameLookup.eventReceived(typedEvent);
-  }
-
-  private void auditEvent(Event typedEvent) {
-    clock.eventReceived(typedEvent);
-    nodeNameLookup.eventReceived(typedEvent);
-  }
-
-  private void initialiseAuditor(Auditor auditor) {
-    auditor.init();
-    auditor.nodeRegistered(raceCalculator, "raceCalculator");
-    auditor.nodeRegistered(resultsPublisher, "resultsPublisher");
-    auditor.nodeRegistered(callbackDispatcher, "callbackDispatcher");
-    auditor.nodeRegistered(subscriptionManager, "subscriptionManager");
-    auditor.nodeRegistered(context, "context");
-  }
-
-  private void beforeServiceCall(String functionDescription) {
-    functionAudit.setFunctionDescription(functionDescription);
-    auditEvent(functionAudit);
-    if (buffering) {
-      triggerCalculation();
-    }
-    processing = true;
-  }
-
-  private void afterServiceCall() {
-    afterEvent();
-    callbackDispatcher.dispatchQueuedCallbacks();
-    processing = false;
-  }
-
-  private void afterEvent() {
-
-    clock.processingComplete();
-    nodeNameLookup.processingComplete();
-    isDirty_raceCalculator = false;
-  }
-
-  @Override
-  public void batchPause() {
-    auditEvent(Lifecycle.LifecycleEvent.BatchPause);
-    processing = true;
-
-    afterEvent();
-    callbackDispatcher.dispatchQueuedCallbacks();
-    processing = false;
-  }
-
-  @Override
-  public void batchEnd() {
-    auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
-    processing = true;
-
-    afterEvent();
-    callbackDispatcher.dispatchQueuedCallbacks();
-    processing = false;
-  }
-
-  @Override
-  public boolean isDirty(Object node) {
-    return dirtySupplier(node).getAsBoolean();
-  }
-
-  @Override
-  public BooleanSupplier dirtySupplier(Object node) {
-    if (dirtyFlagSupplierMap.isEmpty()) {
-      dirtyFlagSupplierMap.put(raceCalculator, () -> isDirty_raceCalculator);
-    }
-    return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
-  }
-
-  @Override
-  public void setDirty(Object node, boolean dirtyFlag) {
-    if (dirtyFlagUpdateMap.isEmpty()) {
-      dirtyFlagUpdateMap.put(raceCalculator, (b) -> isDirty_raceCalculator = b);
-    }
-    dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
-  }
-
-  private boolean guardCheck_resultsPublisher() {
-    return isDirty_raceCalculator;
-  }
-
-  @Override
-  public <T> T getNodeById(String id) throws NoSuchFieldException {
-    return nodeNameLookup.getInstanceById(id);
-  }
-
-  @Override
-  public <A extends Auditor> A getAuditorById(String id)
-      throws NoSuchFieldException, IllegalAccessException {
-    return (A) this.getClass().getField(id).get(this);
-  }
-
-  @Override
-  public void addEventFeed(EventFeed eventProcessorFeed) {
-    subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
-  }
-
-  @Override
-  public void removeEventFeed(EventFeed eventProcessorFeed) {
-    subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
-  }
-
-  @Override
-  public RaceCalculatorProcessor newInstance() {
-    return new RaceCalculatorProcessor();
-  }
-
-  @Override
-  public RaceCalculatorProcessor newInstance(Map<Object, Object> contextMap) {
-    return new RaceCalculatorProcessor();
-  }
-
-  @Override
-  public String getLastAuditLogRecord() {
-    try {
-      EventLogManager eventLogManager =
-          (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
-      return eventLogManager.lastRecordAsString();
-    } catch (Throwable e) {
-      return "";
-    }
-  }
-}
-
-
-
 {% endhighlight %}
 </div>
 </div>
@@ -588,19 +287,21 @@ Image is generated as part of the code generator
 # Getting started
 
 ## Developers
+
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
 Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
 
 ## Architects
+
 For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
 [core technology section](sections/core-technology.md).
 
 ## Reference documentation
+
 * [Runtime execution](sections/runtime.md)
 * [Event processor building](sections/generating.md)
 * [Deploying and testing](sections/deploying-testing.md)
 * [Quick reference](sections/quick-reference.md)
-
 
 # Latest release
 
@@ -644,7 +345,8 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 
 # The cost of complexity problem
 
-Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently managing
+Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently
+managing
 complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
 profitable in a competitive environment.
 
@@ -656,11 +358,12 @@ Event driven systems have two types of complexity to manage:
 Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
 the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
 cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
-over time and developing application logic becomes ever more complex and expensive to deliver. As more functionality is 
+over time and developing application logic becomes ever more complex and expensive to deliver. As more functionality is
 added the danger of instability increases.
 
 Fluxtion reduces the cost to develop and maintain business logic, while maintaining stability. Automating the expensive
-and error-prone process of wiring application logic to multiple event streams is Fluxtion's target. For long term development
+and error-prone process of wiring application logic to multiple event streams is Fluxtion's target. For long term
+development
 projects the ROI of using Fluxtion increases exponentially.
 
 <script>
