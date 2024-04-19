@@ -159,11 +159,12 @@ public class IntFlowBuilder implements FlowDataSupplier<IntFlowSupplier> {
         return push(new SinkPublisher<>(sinkId)::publishInt);
     }
 
-    public IntFlowBuilder push(SerializableIntConsumer pushFunction) {
-        if (pushFunction.captured().length > 0) {
-            EventProcessorBuilderService.service().add(pushFunction.captured()[0]);
+    public final IntFlowBuilder push(SerializableIntConsumer... pushFunctions) {
+        IntFlowBuilder target = null;
+        for (SerializableIntConsumer pushFunction : pushFunctions) {
+            target = new IntFlowBuilder(new IntPushFlowFunction(eventStream, pushFunction));
         }
-        return new IntFlowBuilder(new IntPushFlowFunction(eventStream, pushFunction));
+        return target;
     }
 
     public IntFlowBuilder peek(SerializableConsumer<Integer> peekFunction) {

@@ -23,14 +23,7 @@ import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
 import com.fluxtion.runtime.output.SinkPublisher;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoublePredicate;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleConsumer;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToIntFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleToLongFunction;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableDoubleUnaryOperator;
-import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
+import com.fluxtion.runtime.partition.LambdaReflection.*;
 
 public class DoubleFlowBuilder implements FlowDataSupplier<DoubleFlowSupplier> {
 
@@ -165,9 +158,12 @@ public class DoubleFlowBuilder implements FlowDataSupplier<DoubleFlowSupplier> {
         return push(new SinkPublisher<>(sinkId)::publishDouble);
     }
 
-    public DoubleFlowBuilder push(SerializableDoubleConsumer pushFunction) {
-//        EventProcessorConfigService.service().add(pushFunction.captured()[0]);
-        return new DoubleFlowBuilder(new DoublePushFlowFunction(eventStream, pushFunction));
+    public final DoubleFlowBuilder push(SerializableDoubleConsumer... pushFunctions) {
+        DoubleFlowBuilder target = null;
+        for (SerializableDoubleConsumer pushFunction : pushFunctions) {
+            target = new DoubleFlowBuilder(new DoublePushFlowFunction(eventStream, pushFunction));
+        }
+        return target;
     }
 
     public DoubleFlowBuilder peek(LambdaReflection.SerializableConsumer<Double> peekFunction) {
