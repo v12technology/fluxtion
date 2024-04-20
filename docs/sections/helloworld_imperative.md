@@ -31,10 +31,10 @@ flowchart TB
     classDef white color:#022e1f,fill:#fff;
     classDef black color:#fff,fill:#000;
     
-    EventA><b>Input</b>::Event_A]:::eventHandler 
-    EventB><b>Input</b>::Event_B]:::eventHandler 
-    HandlerA[<b>Handler</b>::Event_A_Handler]:::graphNode 
-    HandlerB[<b>Handler</b>::Event_B_Handler]:::graphNode 
+    EventA><b>InputEvent</b>::Event_A]:::eventHandler 
+    EventB><b>InputEvent</b>::Event_B]:::eventHandler 
+    HandlerA[Event_A_Handler\n<b>EventHandler</b>::Event_A]:::graphNode 
+    HandlerB[Event_B_Handler\n<b>EventHandler</b>::Event_A]:::graphNode 
     DataSumCalculator:::graphNode
     BreachNotifier:::graphNode
 

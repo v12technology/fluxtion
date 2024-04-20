@@ -101,10 +101,10 @@ flowchart TB
     classDef white color:#022e1f,fill:#fff;
     classDef black color:#fff,fill:#000;
     
-    RunnerStarted><b>Input</b>::RunnerStarted]:::eventHandler 
-    RunnerFinished><b>Input</b>::RunnerFinished]:::eventHandler 
-    RaceTimeTracker[RaceTimeTracker\n<b>Handler</b>::RunnerStarted \n<b>Handler</b>::RunnerFinished]:::graphNode 
-    ResultsPublisherImpl[ResultsPublisherImpl\n <b>Exports</b>::ResultsPublisher]:::graphNode
+    RunnerStarted><b>InputEvent</b>::RunnerStarted]:::eventHandler 
+    RunnerFinished><b>InputEvent</b>::RunnerFinished]:::eventHandler 
+    RaceTimeTracker[RaceTimeTracker\n<b>EventHandler</b>::RunnerStarted \n<b>EventHandler</b>::RunnerFinished]:::graphNode 
+    ResultsPublisherImpl[ResultsPublisherImpl\n <b>ServiceExports</b>::ResultsPublisher]:::graphNode
 
 
     RunnerStarted --> RaceTimeTracker
