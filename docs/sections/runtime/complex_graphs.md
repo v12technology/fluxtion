@@ -2,7 +2,7 @@
 title: Complex graphs
 parent: Event handling
 has_children: false
-nav_order: 5
+nav_order: 6
 published: true
 ---
 

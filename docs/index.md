@@ -90,6 +90,37 @@ Fluxtion takes care of generating all the event dispatch code that is time consu
 little value.
 The generated event processor is used like any normal java class in the application.
 
+## Processing graph
+{: .no_toc }
+
+```mermaid
+flowchart TB
+
+    classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
+    classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
+    classDef white color:#022e1f,fill:#fff;
+    classDef black color:#fff,fill:#000;
+    
+    RunnerStarted><b>Input</b>::RunnerStarted]:::eventHandler 
+    RunnerFinished><b>Input</b>::RunnerFinished]:::eventHandler 
+    RaceTimeTracker[RaceTimeTracker\n<b>Handler</b>::RunnerStarted \n<b>Handler</b>::RunnerFinished]:::graphNode 
+    ResultsPublisherImpl[ResultsPublisherImpl\n <b>Exports</b>::ResultsPublisher]:::graphNode
+
+
+    RunnerStarted --> RaceTimeTracker
+    RunnerFinished --> RaceTimeTracker
+    RaceTimeTracker --> ResultsPublisherImpl
+```
+## Processing logic
+The Fluxtion event processor manages all the event call backs, the user code handles the business logic.
+
+* The RaceTimeTracker is notified when a RunnerStarted event is received and records the start time for that runner
+* The runnerStarted handler method does not propagate so the event is swallowed at that point
+* The RaceTimeTracker is notified when a RunnerFinished event is received, calculates the runner race time and triggers the RaceTimeTracker
+* The RaceTimeTracker annotated trigger method logs the individual runners race time
+* When the race is over the service method ResultsPublisher.publishAllResults is called, the event processor routes 
+this call to RaceTimeTracker which publishes the final results.
+
 ## Three steps to using Fluxtion
 
 {: .info }

@@ -11,9 +11,11 @@ documents integrating an event processor into an application and unit testing th
 
 There are three steps to use Fluxtion, step 3 is covered here:
 
-1. Mark event handling methods with annotations or via functional programming
-2. Build the event processor using fluxtion compiler utility
-3. **Integrate the event processor in the app and feed it events**
+{: .info }
+1 - Mark event handling methods with annotations or via functional programming<br>
+2 - Build the event processor using fluxtion compiler utility<br>
+3 - **Integrate the event processor in the app and feed it events**
+{: .fs-4 }
 
 ## Using an event processor
 
