@@ -9,14 +9,20 @@ published: true
 # Processing event streams
 {: .no_toc }
 
-This section documents the runtime event processing callback api and behaviour. 
+This section documents the runtime event processing callback api and behaviour taking an imperative approach to using
+Fluxtion.
 
-Classes bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) register for event callbacks with annotations. The generated EventProcessor
-implements the [StaticEventProcessor]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java), with the onEvent method acting as 
-a bridge between external event streams and bound processing logic. User code reads the event streams calling onEvent
-with each new event received, the event processor then notifies annotated callback methods according to the [dispatch rules](../core-technology#event-dispatch-rules).
+## Three steps to using Fluxtion
+{: .no_toc }
 
-The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution/src/main/java/com/fluxtion/example/reference/execution)
+{: .info }
+1 - **Create user classes and mark event handling methods with Fluxtion annotations**<br>
+2 - Build the event processor using fluxtion compiler utility<br>
+3 - Integrate the event processor in the app and feed it events
+{: .fs-4 }
+
+In this section we are covering the first of these **Create user classes and
+mark event handling methods with Fluxtion annotations** using an imperative approach.
 
 {: .no_toc }
 <details open markdown="block">
@@ -28,7 +34,15 @@ The source project for the examples can be found [here]({{site.reference_example
 {:toc}
 </details>
 
-## Event processing requirements 
+# Event handling primer
+User classes bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) register for event callbacks with annotations. The generated EventProcessor
+implements the [StaticEventProcessor]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java), with the onEvent method acting as
+a bridge between external event streams and bound processing logic. User code reads the event streams calling onEvent
+with each new event received, the event processor then notifies annotated callback methods according to the [dispatch rules](../core-technology#event-dispatch-rules).
+
+# Examples
+The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution/src/main/java/com/fluxtion/example/reference/execution)
+
 To process an event stream correctly the following requirements must be met:
 
 -  **Call EventProcessor.init() before first use**

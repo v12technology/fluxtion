@@ -48,6 +48,8 @@ flowchart TB
   config(x-former config) --> x-former 
 
 ```
+## Solution design
+
 ## API
 
 ## User functions
