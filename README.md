@@ -98,6 +98,44 @@ OUT: sum 119.8 > 100
 Process finished with exit code 0
 ```
 
+```mermaid
+flowchart TB
+    
+    style EventProcessor fill:#e9ebe4,stroke:#333,stroke-width:1px
+    classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
+    classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
+    classDef exportedService color:#022e1f,fill:#aaa3ff,stroke:#000;
+
+    
+    EventA><b>InputEvent</b>::Event_A]:::eventHandler 
+    EventB><b>InputEvent</b>::Event_B]:::eventHandler 
+    
+    HandlerA[<b>Subscriber</b>::Event_A]:::graphNode 
+    HandlerB[<b>Subscriber</b>::Event_A]:::graphNode 
+    
+    MapData1[<b>Map</b> -> mapToDouble]:::graphNode 
+    MapData2[<b>Map</b> -> mapToDouble]:::graphNode 
+    
+    MapDefaultData1[<b>Map</b> -> defaultValue]:::graphNode 
+    MapDefaultData2[<b>Map</b> -> defaultValue]:::graphNode 
+    
+    BiMapSum[<b>BiMap</b> -> Double::sum]:::graphNode 
+    
+    Console1[<b>Peek</b> -> console]:::graphNode 
+    Filter[<b>Filter</b> -> d > 100]:::graphNode 
+    Console2[<b>Peek</b> -> console]:::graphNode 
+    
+    EventA --> HandlerA
+    EventB --> HandlerB
+    
+    subgraph EventProcessor
+      HandlerA --> MapData1 --> MapDefaultData1 --> BiMapSum
+      HandlerB --> MapData2 --> MapDefaultData2 --> BiMapSum
+      BiMapSum --> Console1 --> Filter --> Console2
+    end
+    
+```
+
 # Top level components
 There are two major components provided by Fluxtion the developer uses to build event driven logic.
 
