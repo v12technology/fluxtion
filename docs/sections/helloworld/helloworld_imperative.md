@@ -1,6 +1,6 @@
 ---
 title: Hello fluxtion world
-has_children: false
+has_children: true
 nav_order: 2
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
