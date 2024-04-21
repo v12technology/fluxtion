@@ -46,6 +46,15 @@ mermaid:
   # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/
   version: "9.1.3"
 
+#mermaid style
+mermaid_eventProcessor: style EventProcessor fill:#e9ebe4,stroke:#333,stroke-width:1px
+mermaid_eventHandler: classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
+mermaid_graphNode: classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
+mermaid_exportedService: classDef exportedService color:#022e1f,fill:#aaa3ff,stroke:#000;
+mermaid_white: classDef color:#022e1f,fill:#fff;
+mermaid_black: classDef black color:#fff,fill:#000;
+
+#source directories
 fluxtion_version: 9.2.23
 fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.2.23
 fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.2.23/runtime/src/main/java/com/fluxtion/runtime

@@ -55,7 +55,7 @@ efficiently.
 
 **Annotation-Based Configuration**: Fluxtion provides an annotation-based configuration mechanism, allowing developers
 to
-define event processing logic using simple annotations and annotations processors. This simplifies the development
+define event processing logic using simple annotations. This simplifies the development
 process and reduces boilerplate code.
 
 **Code Generation**: Fluxtion employs code generation techniques to optimize the performance of event processing
@@ -74,7 +74,7 @@ to define complex event patterns and rules using a high-level DSL (Domain-Specif
 **Integration with External Systems**: Fluxtion can easily integrate with external systems and libraries, allowing
 developers to incorporate Fluxtion-based event processing logic into existing applications or frameworks.
 
-**Developer productivity**: Fluxtion has been designed to increases developer productivity when building and
+**Developer Productivity**: Fluxtion has been designed to increases developer productivity when building and
 supporting event driven applications
 
 # Example
@@ -95,24 +95,26 @@ The generated event processor is used like any normal java class in the applicat
 
 ```mermaid
 flowchart TB
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
 
-    classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
-    classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
-    classDef exportedService color:#022e1f,fill:#aaa3ff,stroke:#000;
-    classDef white color:#022e1f,fill:#fff;
-    classDef black color:#fff,fill:#000;
-    
     RunnerStarted><b>InputEvent</b>::RunnerStarted]:::eventHandler 
     RunnerFinished><b>InputEvent</b>::RunnerFinished]:::eventHandler 
-    ResultsPublisher([<b>ExportedService</b>::ResultsPublisher]):::exportedService 
+    ResultsPublisher([<b>ExportService</b>::ResultsPublisher]):::exportedService 
     
     RaceTimeTracker[RaceTimeTracker\n<b>EventHandler</b>::RunnerStarted \n<b>EventHandler</b>::RunnerFinished]:::graphNode 
-    ResultsPublisherImpl[ResultsPublisherImpl\n <b>ServiceExports</b>::ResultsPublisher]:::graphNode
+    ResultsPublisherImpl[ResultsPublisherImpl\n <b>ExportService</b>::ResultsPublisher]:::graphNode
 
-    ResultsPublisher --> ResultsPublisherImpl
     RunnerStarted --> RaceTimeTracker
     RunnerFinished --> RaceTimeTracker
-    RaceTimeTracker --> ResultsPublisherImpl
+    ResultsPublisher --> ResultsPublisherImpl
+    
+    subgraph EventProcessor
+        RaceTimeTracker --> ResultsPublisherImpl
+    end
+    
 ```
 ## Processing logic
 The Fluxtion event processor manages all the event call backs, the user code handles the business logic.
@@ -133,9 +135,9 @@ this call to ResultsPublisherImpl which publishes the final results.
 {: .fs-4 }
 
 <div class="tab">
-  <button class="tablinks2" onclick="openTab2(event, 'Event logic')" id="defaultExample">1 - Mark event methods</button>
+  <button class="tablinks2" onclick="openTab2(event, 'Event logic')" >1 - Write logic. Mark event handler methods</button>
   <button class="tablinks2" onclick="openTab2(event, 'Binding functions')">2 - Build event processor</button>
-  <button class="tablinks2" onclick="openTab2(event, 'App integration')" >3 - Integrate event feed processing</button>
+  <button class="tablinks2" onclick="openTab2(event, 'App integration')" id="defaultExample">3 - Integrate event feed processing</button>
 </div>
 
 <div id="Event logic" class="tabcontent2">
@@ -224,11 +226,7 @@ Bind user functions to the event processor and build. This is an interpreted exa
 [AOT project]({{site.reference_examples}}/racing-aot) version.
 
 {% highlight java %}
-public class RaceCalculatorApp {
-    public static EventProcessor<?> buildEventProcessor(){
-        return Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
-    }
-}
+var raceCalculator = Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
 {% endhighlight %}
 
 Pom.xml includes the fluxtion dependencies
@@ -257,7 +255,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
-
 </project>
 {% endhighlight %}
 </div>
@@ -271,10 +268,9 @@ events to business functions
 {% highlight java %}
 public class RaceCalculatorApp {
     public static void main(String[] args) {
-        var raceCalculator = buildEventProcessor();
+        //build and initialise the raceCalculator event processor
+        var raceCalculator = Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
         raceCalculator.init();
-
-        ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
 
         //connect to event stream and process runner timing events
         raceCalculator.onEvent(new RunnerStarted(1, "2019-02-14T09:00:00Z"));
@@ -285,12 +281,9 @@ public class RaceCalculatorApp {
         raceCalculator.onEvent(new RunnerFinished(3, "2019-02-14T10:59:10Z"));
         raceCalculator.onEvent(new RunnerFinished(1, "2019-02-14T11:14:32Z"));
 
-        //publish full results
+        //use the exported service interface ResultsPublisher to publish full results
+        ResultsPublisher resultsPublisher = raceCalculator.getExportedService();
         resultsPublisher.publishAllResults();
-    }
-
-    public static EventProcessor<?> buildEventProcessor(){
-        return Fluxtion.interpret( new ResultsPublisherImpl(new RaceTimeTracker()));
     }
 }
 {% endhighlight %}

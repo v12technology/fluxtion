@@ -26,10 +26,10 @@ Code is available as a [maven project]({{page.example_src}})
 ```mermaid
 flowchart TB
 
-    classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
-    classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
-    classDef white color:#022e1f,fill:#fff;
-    classDef black color:#fff,fill:#000;
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
     
     EventA><b>InputEvent</b>::Event_A]:::eventHandler 
     EventB><b>InputEvent</b>::Event_B]:::eventHandler 
@@ -40,9 +40,13 @@ flowchart TB
 
     EventA --> HandlerA
     EventB --> HandlerB
-    HandlerA --> DataSumCalculator
-    HandlerB --> DataSumCalculator
-    DataSumCalculator --> BreachNotifier
+    
+    subgraph EventProcessor
+      HandlerA --> DataSumCalculator
+      HandlerB --> DataSumCalculator
+      DataSumCalculator --> BreachNotifier
+    end
+    
 ```
 ## Processing logic
 The Fluxtion event processor manages all the event call backs, the user code handles the business logic.
