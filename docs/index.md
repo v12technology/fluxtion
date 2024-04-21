@@ -102,7 +102,7 @@ flowchart TB
 
     RunnerStarted><b>InputEvent</b>::RunnerStarted]:::eventHandler 
     RunnerFinished><b>InputEvent</b>::RunnerFinished]:::eventHandler 
-    ResultsPublisher([<b>ExportService</b>::ResultsPublisher]):::exportedService 
+    ResultsPublisher([<b>ServiceLookup</b>::ResultsPublisher]):::exportedService 
     
     RaceTimeTracker[RaceTimeTracker\n<b>EventHandler</b>::RunnerStarted \n<b>EventHandler</b>::RunnerFinished]:::graphNode 
     ResultsPublisherImpl[ResultsPublisherImpl\n <b>ExportService</b>::ResultsPublisher]:::graphNode

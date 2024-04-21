@@ -43,7 +43,7 @@ flowchart TB
     
     EventA><b>ServiceCall</b> updateA#Event_A]:::eventHandler 
     EventB><b>ServiceCall</b> updateB#Event_B]:::eventHandler 
-    DataSumCalculator([<b>ExportService</b>::DataSumCalculator]):::exportedService 
+    DataSumCalculator([<b>ServiceLookup</b>::DataSumCalculator]):::exportedService 
     DataSumCalculatorImpl[ExportService\n <b>ExportService</b>::ExportService]:::graphNode
     BreachNotifier:::graphNode
     
