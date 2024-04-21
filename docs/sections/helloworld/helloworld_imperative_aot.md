@@ -1,5 +1,5 @@
 ---
-title: Hello fluxtion world - AOT
+title: AOT hello world
 has_children: false
 parent: Hello fluxtion world
 nav_order: 3
