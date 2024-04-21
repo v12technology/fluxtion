@@ -208,7 +208,7 @@ The code for instantiating, initializing and sending events is:
 public class Main {
     public static void main(String[] args) {
         //build the EventProcessor and initialise it
-        var eventProcessor = buildEventProcessor();
+        var eventProcessor = Fluxtion.interpret(Main::bindFunctions);
         eventProcessor.init();
 
         //send events
@@ -216,6 +216,20 @@ public class Main {
         eventProcessor.onEvent(new Data2(52.1));
         eventProcessor.onEvent(new Data1(105));//should create a breach warning
         eventProcessor.onEvent(new Data1(12.4));
+    }
+
+    private static void bindFunctions(EventProcessorConfig cfg) {
+        var data1Stream = DataFlow.subscribe(Data1.class)
+                .mapToDouble(Data1::value)
+                .defaultValue(0);
+    
+        DataFlow.subscribe(Data2.class)
+                .mapToDouble(Data2::value)
+                .defaultValue(0)
+                .mapBiFunction(Double::sum, data1Stream)
+                .console("sum:{}")
+                .filter(d -> d > 100)
+                .console("WARNING DataSumCalculator value is greater than 100 sum = {}");
     }
 }
 {% endhighlight %}
