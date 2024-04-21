@@ -98,6 +98,8 @@ OUT: sum 119.8 > 100
 Process finished with exit code 0
 ```
 
+## Processing graph
+
 ```mermaid
 flowchart TB
     
