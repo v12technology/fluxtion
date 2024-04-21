@@ -9,8 +9,9 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functi
 
 # 5 minute Functional hello world 
 
-Hello world using a functional programming style with Fluxtion DSL. Business logic resides in the user functions with no 
-fluxtion event handling annotations. For an imperative implementation example see [Hello fluxtion world](helloworld_imperative)
+Hello world using a functional programming style with Fluxtion DSL. Business logic resides in user functions removing
+the need to write classes and annotate event handling methods with fluxtion annotations. For an imperative 
+implementation example see [Hello fluxtion world](helloworld_imperative)
 
 Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
@@ -24,8 +25,9 @@ Code is available as a [maven project]({{page.example_src}})
 
 ## Processing graph
 {: .no_toc }
-The functional approach has more nodes in the event processor compared to the imperative version, due to the DSL adding
-them automatically The actual code written to create the algorithm is much shorter.
+The functional approach has more nodes in the event processor compared to the imperative version, but the actual code 
+written by the developer to create the algorithm is much shorter. Fluxtion DSL only requires the developer to write 
+functions, any wrapping nodes are automatically added to the event processor.
 
 ```mermaid
 flowchart TB
@@ -63,13 +65,18 @@ flowchart TB
     end
     
 ```
-## Processing logic
-The Fluxtion event processor manages all the event call backs, the user code handles the business logic.
 
-* An event handlers is notified when an event of the matching type is received.
-* This in turn invokes the DataSumCalculator annotated trigger method which calculates the current sum extracting values from handler_A and handler_B.
-* If the sum > 100 the DataSumCalculator returns true which propagates a notification to the BreachNotifier annotated trigger method.
-* The BreachNotifier trigger method prints a message to the console.
+## Processing logic
+The Fluxtion event processor manages all the event call backs, the user logic is a set of functions that are bound into
+the event processor using the Fluxtion DSL.
+
+* An event handlers is notified when an event of the matching type is received triggering the next item in the chain
+* The event is mapped to a double using the Data1::value or Data2::value function
+* A default double value of 0 is assigned to the output
+* The two event streams are merged and passed to the bi map function. Double::sum is invoked when either input stream triggers
+* A peek function logs the sum to the console
+* A filter function is bound to the graph, if the sum > 100 the filter test passes and the next node is triggered
+* A peek function logs the warning message to the console
 
 
 ## Dependencies
@@ -88,32 +95,15 @@ The Fluxtion event processor manages all the event call backs, the user code han
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<parent>
-<artifactId>example.master</artifactId>
-<groupId>com.fluxtion.example</groupId>
-<version>1.0.0-SNAPSHOT</version>
-</parent>
+    <parent>
+        <artifactId>example.master</artifactId>
+        <groupId>com.fluxtion.example</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>imperative-helloworld</artifactId>
-    <name>imperative :: hello world</name>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.fluxtion</groupId>
-                <artifactId>fluxtion-maven-plugin</artifactId>
-                <version>3.0.14</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>scan</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <artifactId>functional-helloworld</artifactId>
+    <name>functional :: hello world</name>
 
     <dependencies>
         <dependency>
@@ -122,7 +112,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>{{site.fluxtion_version}}</version>
         </dependency>
     </dependencies>
-
 </project>
 {% endhighlight %}
 </div>
@@ -161,6 +150,11 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 
 
 # Step 1 - bind functions to events using Fluxtion DSL
+
+The Fluxtion DSL is used to construct the algorithm chaining together functions that are triggered by an incoming event.
+The algorithm is a graph not a simple pipeline that merges at the bi map function. By default, a bi map function is only invoked
+when both parents have triggered at least once. Supplying a default value removes the trigger check for the input to the
+bi map function.
 
 {% highlight java %}
 private static void bindFunctions(EventProcessorConfig cfg) {
