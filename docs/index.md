@@ -119,10 +119,10 @@ The Fluxtion event processor manages all the event call backs, the user code han
 
 * The RaceTimeTracker is notified when a RunnerStarted event is received and records the start time for that runner
 * The runnerStarted handler method does not propagate so the event is swallowed at that point
-* The RaceTimeTracker is notified when a RunnerFinished event is received, calculates the runner race time and triggers the RaceTimeTracker
-* The RaceTimeTracker annotated trigger method logs the individual runners race time
+* The RaceTimeTracker is notified when a RunnerFinished event is received, calculates the runner race time and triggers the ResultsPublisherImpl
+* The ResultsPublisherImpl annotated trigger method gets the finisher data from RaceTimeTracker and logs the individual runner's race time
 * When the race is over the service method ResultsPublisher.publishAllResults is called, the event processor routes 
-this call to RaceTimeTracker which publishes the final results.
+this call to ResultsPublisherImpl which publishes the final results.
 
 ## Three steps to using Fluxtion
 
