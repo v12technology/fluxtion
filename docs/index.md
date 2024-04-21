@@ -98,15 +98,18 @@ flowchart TB
 
     classDef eventHandler color:#022e1f,fill:#aaa3ff,stroke:#000;
     classDef graphNode color:#022e1f,fill:#00cfff,stroke:#000;
+    classDef exportedService color:#022e1f,fill:#aaa3ff,stroke:#000;
     classDef white color:#022e1f,fill:#fff;
     classDef black color:#fff,fill:#000;
     
     RunnerStarted><b>InputEvent</b>::RunnerStarted]:::eventHandler 
     RunnerFinished><b>InputEvent</b>::RunnerFinished]:::eventHandler 
+    ResultsPublisher([<b>ExportedService</b>::ResultsPublisher]):::exportedService 
+    
     RaceTimeTracker[RaceTimeTracker\n<b>EventHandler</b>::RunnerStarted \n<b>EventHandler</b>::RunnerFinished]:::graphNode 
     ResultsPublisherImpl[ResultsPublisherImpl\n <b>ServiceExports</b>::ResultsPublisher]:::graphNode
 
-
+    ResultsPublisher --> ResultsPublisherImpl
     RunnerStarted --> RaceTimeTracker
     RunnerFinished --> RaceTimeTracker
     RaceTimeTracker --> ResultsPublisherImpl
