@@ -152,9 +152,10 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 # Step 1 - bind functions to events using Fluxtion DSL
 
 The Fluxtion DSL is used to construct the algorithm chaining together functions that are triggered by an incoming event.
-The algorithm is a graph not a simple pipeline that merges at the bi map function. By default, a bi map function is only invoked
-when both parents have triggered at least once. Supplying a default value removes the trigger check for the input to the
-bi map function.
+The algorithm is a graph not a simple pipeline that merges at the bi map function. 
+
+By default, a bi map function is only invoked when both parents have triggered at least once. Supplying a default 
+value removes the trigger check for the input to the bi map function.
 
 {% highlight java %}
 private static void bindFunctions(EventProcessorConfig cfg) {
@@ -183,6 +184,9 @@ public record Event_B(double value) {}
 
 # Step 2 - build the event processor
 
+The functional DSL is used within the context of the `Fluxtion.interpreted` method to build the event processor. The
+DSL processor binds all the user functions and required wrapping nodes into the event processor.
+
 {% highlight java %}
 var eventProcessor = Fluxtion.interpret(Main::bindFunctions);
 {% endhighlight %}
@@ -190,11 +194,10 @@ var eventProcessor = Fluxtion.interpret(Main::bindFunctions);
 
 # Step 3 - Integrate event processor and connect event stream
 
-The example [Main method]({{page.example_src}}/Main.java) instantiates
-the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), initialises it and submits
-events for
-processing using the onEvent method. The init method must be called before submitting events. Send event for processing
-by calling `eventProcessor.onEvent()` with instances of Event_A or Event_B as required.
+The example [Main method]({{page.example_src}}/Main.java) instantiates an event processor in interpreted mode, initialises it and submits events for
+processing using the onEvent method. The init method must be called before submitting events. 
+
+Events are submitted for processing by calling `eventProcessor.onEvent()` with instances of Event_A or Event_B.
 
 The code for instantiating, initializing and sending events is:
 
@@ -227,9 +230,6 @@ public class Main {
     }
 }
 {% endhighlight %}
-
-Fluxtion can be run in an interpreted mode, in this case no AOT build step is required and the maven plugin can be
-removed from the pom.xml file.
 
 ## Example execution output
 

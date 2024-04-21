@@ -301,13 +301,12 @@ var eventProcessor = Fluxtion.interpret(new BreachNotifier());
 
 # Step 3 - Integrate event processor and connect event stream
 
-The example [Main method]({{page.example_src}}/Main.java) instantiates
-the [BreachNotifierProcessor]({{page.example_src}}/generated/BreachNotifierProcessor.java), initialises it and submits
-events for
-processing using the onEvent method. The init method must be called before submitting events. Send event for processing
-by calling `eventProcessor.onEvent()` with instances of Event_A or Event_B as required.
+The example [Main method]({{page.example_src}}/Main.java) instantiates an event processor in interpreted mode, initialises it and submits events for
+processing using the onEvent method. The init method must be called before submitting events.
 
-The code for instantiating, initializing and sending events is:
+Events are submitted for processing by calling `eventProcessor.onEvent()` with instances of Event_A or Event_B.
+
+The code for instantiating, initializing and sending events:
 
 {% highlight java %}
 public class Main {
@@ -321,12 +320,9 @@ private static final boolean USE_AOT = true;
         eventProcessor.onEvent(new Event_A(105));//should create a breach warning
         eventProcessor.onEvent(new Event_A(12.4));
     }
-
 }
 {% endhighlight %}
 
-Fluxtion can be run in an interpreted mode, in this case no AOT build step is required and the maven plugin can be
-removed from the pom.xml file.
 
 ## Example execution output
 
