@@ -14,6 +14,8 @@ Start here to learn how to implement event driven logic with Fluxtion.
 {: .fs-5 }
 
 ## Developers
+For a quick introduction to programming Fluxtion visit the [hello world](helloworld/helloworld_imperative) examples.
+
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of 
 Fluxtion, start with [tutorial 1](gettingstarted/tutorial-1.md).
 

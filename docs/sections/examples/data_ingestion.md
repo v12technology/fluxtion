@@ -55,6 +55,52 @@ flowchart TB
 ## User functions
 
 ## Pipeline building
+{% highlight java %}
+public class PipelineBuilder implements FluxtionGraphBuilder {
+
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+
+        //flow: Csv String -> HouseInputRecord
+        var csv2HouseRecordFlow = DataFlow
+                .subscribe(String.class)
+                .map(new CsvToHouseRecordSerializer()::marshall);
+
+        //flow: HouseInputRecord -> x_formed(HouseInputRecord) -> validated(HouseInputRecord)
+        var validTransformedFlow = csv2HouseRecordFlow
+                .map(CsvToHouseRecordSerializer::getHouseRecord)
+                .map(new HouseRecordTransformer()::transform)
+                .map(new HouseRecordValidator()::validate);
+
+        //outputs
+        var csvWriter = new PostProcessCsvWriter();
+        var binaryWriter = new PostProcessBinaryWriter();
+        var stats = new ProcessingStats();
+        var invalidLog = new InvalidLogWriter();
+
+        //write validated output push to [stats, csv, binary]
+        validTransformedFlow
+                .map(HouseRecordValidator::getValidHouseRecord)
+                .push(stats::validHouseRecord, csvWriter::validHouseRecord, binaryWriter::validHouseRecord);
+
+        //invalid csv parsing output push to [invalid log, stats]
+        csv2HouseRecordFlow
+                .filter(CsvToHouseRecordSerializer::isBadCsvMessage)
+                .push(invalidLog::badCsvRecord, stats::badCsvRecord);
+
+        //invalid transform output push to [invalid log, stats]
+        validTransformedFlow
+                .filter(HouseRecordValidator::isInValidRecord)
+                .push(invalidLog::invalidHouseRecord, stats::invalidHouseRecord);
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig compilerConfig) {
+        compilerConfig.setClassName("DataIngestionPipeline");
+        compilerConfig.setPackageName("com.fluxtion.example.cookbook.dataingestion.pipeline");
+    }
+}
+{% endhighlight %}
 
 ## Testing
 
