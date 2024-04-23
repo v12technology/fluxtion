@@ -1,6 +1,6 @@
 ---
 title: Processor generation
-parent: Event processor building
+parent: Build event processor
 has_children: false
 nav_order: 2
 published: true

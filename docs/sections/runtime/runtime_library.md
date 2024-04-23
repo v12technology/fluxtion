@@ -1,6 +1,6 @@
 ---
 title: Library functions
-parent: Event handling
+parent: Mark event handling
 has_children: false
 nav_order: 5
 published: true

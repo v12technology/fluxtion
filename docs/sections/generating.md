@@ -1,5 +1,5 @@
 ---
-title: Event processor building
+title: Build event processor 
 has_children: true
 nav_order: 6
 published: true

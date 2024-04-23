@@ -1,6 +1,6 @@
 ---
 title: Processing events
-parent: Event handling
+parent: Mark event handling
 has_children: false
 nav_order: 1
 published: true

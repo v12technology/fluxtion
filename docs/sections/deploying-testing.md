@@ -1,5 +1,5 @@
 ---
-title: Integration and testing
+title: Integrate event processor
 has_children: true
 nav_order: 7
 published: true

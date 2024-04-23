@@ -1,6 +1,6 @@
 ---
 title: Binding user classes
-parent: Event processor building
+parent: Build event processor
 has_children: false
 nav_order: 1
 published: true

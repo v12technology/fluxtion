@@ -1,6 +1,6 @@
 ---
 title: Complex graphs
-parent: Event handling
+parent: Mark event handling
 has_children: false
 nav_order: 6
 published: true

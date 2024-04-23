@@ -24,9 +24,9 @@ For a deeper understanding of the architecture, design and paradigms that underp
 [core technology section](core-technology.md).
 
 ## Reference documentation
-* [Runtime execution](runtime.md)
-* [Event processor building](generating.md)
-* [Deploying and testing](deploying-testing.md)
+* [Mark event handling](runtime.md)
+* [Build event processor](generating.md)
+* [Integrate event processor](deploying-testing.md)
 * [Quick reference](quick-reference.md)
 
 ## Examples
