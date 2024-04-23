@@ -39,6 +39,8 @@ The binding of nodes to the event processor is covered in [binding user classes]
 
 The [Fluxtion]({{site.Fluxtion_link}}) class gives static access to the generation methods.
 
+The source project for the examples can be found [here]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation)
+
 ![TEST](../../images/integration_overview-generating.png)
 
 ## Generating modes
@@ -195,11 +197,13 @@ To generate an in process compiled version using Fluxtion DSL, the DataFlow call
 version that accepts an EventProcessorConfig consumer `Fluxtion.compile(Consumer<EventProcessorConfig> configProcessor)`
 
 {% highlight java %}
+
 //DSL calls must use the Supplier<>
 Fluxtion.compile(cfg -> {
     DataFlow.subscribe(String.class)
             .push(new MyNode("node A")::handleStringEvent);        
 });
+
 {% endhighlight %}
 
 # Compiling AOT - programmatically
@@ -265,17 +269,207 @@ public static void main(String[] args) {
     - Java bean properties are serialized using setter
     - Public fields are serialized
 
-## To be documented
+## Serialize fields example
+
+This example demonstrates field serialisation for standard types and passing a named constructor argument. Because there
+are 2 String fields the generated constructor needs a hint to which field is assigned in the constructor: 
+
+```java
+@AssignToField("cId")
+private final String cId;
+```
+
+To ensure the consructor argument is taken from the cId field when generating the event processor source file.
+
+The transient field `transientName` is ignored during the source generation process.
+
+{% highlight java %}
+
+public class FieldsExample {
+
+    public enum SampleEnum {VAL1, VAL2, VALX}
+
+    public static void main(String[] args) {
+        Fluxtion.compileAot("com.fluxtion.example.reference.generation.genoutput", "FieldsExampleProcessor",
+                BasicTypeHolder.builder()
+                        .cId("cid")
+                        .name("holder")
+                        .myChar('$')
+                        .longVal(2334L)
+                        .intVal(12)
+                        .shortVal((short) 45)
+                        .byteVal((byte) 12)
+                        .doubleVal(35.8)
+                        .doubleVal2(Double.NaN)
+                        .floatVal(898.24f)
+                        .boolean1Val(true)
+                        .boolean2Val(false)
+                        .classVal(String.class)
+                        .enumVal(SampleEnum.VAL2)
+                        .build());
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    public static class BasicTypeHolder implements NamedNode {
+        private String name;
+        @AssignToField("cId")
+        private final String cId;
+        private char myChar;
+        private long longVal;
+        private int intVal;
+        private short shortVal;
+        private byte byteVal;
+        private double doubleVal;
+        private double doubleVal2;
+        private float floatVal;
+        private boolean boolean1Val;
+        private boolean boolean2Val;
+        private Class<?> classVal;
+        private SampleEnum enumVal;
+    }
+}
+
+{% endhighlight %}
+
+## Serialised event processor
+The full event processor is [FieldsExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/FieldsExampleProcessor.java)
+this excerpt shows the relevant statements:
+
+{% highlight java %}
+
+public class FieldsExampleProcessor
+    implements EventProcessor<FieldsExampleProcessor>,
+    StaticEventProcessor,
+    InternalEventProcessor,
+    BatchHandler,
+    Lifecycle {
+
+    //REMOVED FOR CLARITY
+    private final BasicTypeHolder holder = new BasicTypeHolder("cid");
+    //REMOVED FOR CLARITY
+    
+    public FieldsExampleProcessor(Map<Object, Object> contextMap) {
+        context.replaceMappings(contextMap);
+        holder.setBoolean1Val(true);
+        holder.setBoolean2Val(false);
+        holder.setByteVal((byte) 12);
+        holder.setClassVal(java.lang.String.class);
+        holder.setDoubleVal(35.8);
+        holder.setDoubleVal2(Double.NaN);
+        holder.setEnumVal(SampleEnum.VAL2);
+        holder.setFloatVal(898.24f);
+        holder.setIntVal(12);
+        holder.setLongVal(2334L);
+        holder.setMyChar('$');
+        holder.setName("holder");
+        holder.setShortVal((short) 45);
+        //node auditors
+        initialiseAuditor(clock);
+        initialiseAuditor(nodeNameLookup);
+        subscriptionManager.setSubscribingEventProcessor(this);
+        context.setEventProcessorCallback(this);
+    }
+    
+    //REMOVED FOR CLARITY
+}
+
+
+{% endhighlight %}
+
+## Custom field serialization
+A custom serializer can be injected for fields that cannot be serialized with the standard algorithm. Add a custom
+serializer to the EventProcesserConfig instance with
+
+`EventProcesserConfig.addClassSerializer(MyThing.class, CustomSerializerExample::customSerialiser);`
+
+The custom serializer function generates a String that can be compiled in the event processor generated source
+
+{% highlight java %}
+
+public class CustomSerializerExample {
+
+    public static void main(String[] args) {
+        Fluxtion.compile(
+                cfg -> {
+                    cfg.addNode(new StringHandler(MyThing.newThing("my instance param")));
+                    cfg.addClassSerializer(MyThing.class, CustomSerializerExample::customSerialiser);
+                },
+                compilerConfig -> {
+                    compilerConfig.setClassName("CustomSerializerExampleProcessor");
+                    compilerConfig.setPackageName("com.fluxtion.example.reference.generation.genoutput");
+                });
+    }
+
+    public static String customSerialiser(FieldContext<MyThing> fieldContext) {
+        fieldContext.getImportList().add(MyThing.class);
+        MyThing myThing = fieldContext.getInstanceToMap();
+        return "MyThing.newThing(\"" + myThing.getID() + "\")";
+    }
+
+    public static class MyThing {
+        private final String iD;
+
+        private MyThing(String iD) {
+            this.iD = iD;
+        }
+
+        public String getID() {
+            return iD;
+        }
+
+        public static MyThing newThing(String in) {
+            return new MyThing(in);
+        }
+    }
+
+
+    public static class StringHandler {
+        private final Object delegate;
+
+        public StringHandler(Object delegate) {
+            this.delegate = delegate;
+        }
+
+        @OnEventHandler
+        public boolean onEvent(MyThing event) {
+            return false;
+        }
+
+    }
+}
+
+{% endhighlight %}
+
+## Serialised event processor
+The full event processor is [CustomSerializerExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/CustomSerializerExampleProcessor.java)
+this excerpt shows the relevant statements that invokes the static build method `MyThing.newThing("my instance param")`
+
+{% highlight java %}
+
+public class CustomSerializerExampleProcessor
+    implements EventProcessor<CustomSerializerExampleProcessor>,
+    StaticEventProcessor,
+    InternalEventProcessor,
+    BatchHandler,
+    Lifecycle {
+    
+    //Node declarations
+    //REMOVED FOR CLARITY
+    private final StringHandler stringHandler_0 = new StringHandler(MyThing.newThing("my instance param"));
+    //REMOVED FOR CLARITY
+}
+
+
+{% endhighlight %}
+
+# To be documented
 - Spring support
 - Yaml support
 - Maven plugin
 - Serialising AOT
-    - final/transient
-    - constructor
-    - getter/setter
-    - public
     - collection support
-    - Default serialisers
-    - Custom serialisers
     - New instance
 
