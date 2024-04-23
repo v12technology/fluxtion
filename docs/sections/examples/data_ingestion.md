@@ -7,6 +7,8 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook
 ---
 
+# Work in progress
+
 ## Introduction
 This example demonstrates real-time data ingestion using the Fluxtion event processing framework. The requirements for
 the processing are:

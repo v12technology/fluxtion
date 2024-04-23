@@ -314,6 +314,7 @@ Image is generated as part of the code generator
 # Getting started
 
 ## Developers
+For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
 
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
 Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
@@ -325,9 +326,9 @@ For a deeper understanding of the architecture, design and paradigms that underp
 
 ## Reference documentation
 
-* [Runtime execution](sections/runtime.md)
-* [Event processor building](sections/generating.md)
-* [Deploying and testing](sections/deploying-testing.md)
+* [Mark event handling](sections/runtime.md)
+* [Build event processor](sections/generating.md)
+* [Integrate event processor](sections/deploying-testing.md)
 * [Quick reference](sections/quick-reference.md)
 
 # Latest release

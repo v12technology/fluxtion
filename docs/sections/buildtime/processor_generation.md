@@ -75,7 +75,49 @@ A user can either supply a varargs list of objects to include in the final event
 and imperatively add nodes. See the interpreted section of [binding user classes](binding_user_classes) document for
 a description of binding functions into an event processor.
 
-# Compiling
+# Interpreted code sample
+Generating an in-memory event processor is achieved with a call to one of the overloaded [Fluxtion.interpret]({{site.Fluxtion_link}}) methods.
+Imperative and DSL models are both generated through the same call to interpret.
+
+## Imperative generation example
+Interpret can be called with list of nodes that are implicitly added to the event processor or the use the version that
+accepts an EventProcessorConfig consumer for user code to imperatively add nodes. 
+{% highlight java %}
+EventProcessor<?> processor;
+
+//these are equivalent processors
+//add a list of nodes using short cut method
+processor = Fluxtion.interpret(new MyNode("node A"));
+//add nodes using supplied EventProcessorConfig
+processor = Fluxtion.interpret(cfg -> {
+    cfg.addNode(new MyNode("node A"));
+});
+
+//these are equivalent processors
+processor = Fluxtion.interpret(new MyNode("node A"), new MyNode("node B"));
+processor = Fluxtion.interpret(cfg -> {
+    cfg.addNode(new MyNode("node A"));
+    cfg.addNode(new MyNode("node B"));
+});
+
+//executing event processor
+processor.init();
+processor.onEvent("hello world");
+{% endhighlight %}
+
+## Functional DSL generation example
+To generate an interpreted version using Fluxtion DSL, the DataFlow calls must happen within the context of interpret 
+version that accepts an EventProcessorConfig consumer `Fluxtion.interpret(Consumer<EventProcessorConfig> configProcessor)`
+
+{% highlight java %}
+//DSL calls must use the Supplier<>
+Fluxtion.interpret(cfg -> {
+    DataFlow.subscribe(String.class)
+            .push(new MyNode("node A")::handleStringEvent);        
+});
+{% endhighlight %}
+
+# Compiling overview
 The compiling mode generates a source file that represents the event processor, ready for compilation and use within an
 application. The source generation and compilation process can happen either in process or as part of the build stage. If
 the source generation happens as part of the build process the event processor is classed as ahead of time (AOT).
@@ -84,25 +126,146 @@ The generate source file is a serialised state of the event processor and all th
 requirements on the nodes bound to the event processor than running in interpreted mode. Bound user classes are declared as fields
 in the generated event processor. The fields of a bound class will be serialized as well.
 
-Rules for serializing bound classes
+## FluxtionCompilerConfig
+
+There are several compile and compileAot methods in the [Fluxtion]({{site.Fluxtion_link}}), most of these are short cuts
+that delegate to a single compile method:
+
+`EventProcessor compile(Consumer<EventProcessorConfig> sepConfig, Consumer<FluxtionCompilerConfig> cfgBuilder)`
+
+We have previosuly seen how EventProcessorConfig controls what elements are bound into the event processor. To configure
+the generated source and compiler user code calls methods on the supplied [FluxtionCompilerConfig]({{site.FluxtionCompilerConfig_link}}).  
+
+### Configurable properties for compilation
+The FluxtionCompilerConfig instance allows user code to configure the compilation process via these properties
+
+* **Compilation control**
+  * interpreted - generate an interpreted version of the event processor
+  * compileSource - flag to enable compilation of any generated source files
+  * ClassLoader - override classLoader at generation time
+
+* **Source control**
+  * templateSep - The velocity template file to use in the source generation process
+  * className - class name for generated event processor
+  * packageName - package name for generated event processor
+  * addBuildTime - flag to add build time to the generated source files
+  * formatSource - flag enable formatting of the generated source files
+  
+* **Output control**
+  * outputDirectory - Output directory for generated event processor source files
+  * buildOutputDirectory - Output directory where compiled artifacts should be written
+  * resourcesOutputDirectory - Output directory for any resources generated with the event processor
+  * writeSourceToFile - Flag controlling if the generated source is written to output or is transient memory only version
+  * sourceWriter - if writeSourceToFile is false this writer will capture the content of the generation process
+  * generateDescription - Flag controlling generation of meta data description resources
+
+# Compiling in process
+Compiling in process is a very similar process to generating an interpreted event processor, just replace the calls to
+FLuxtion.interpret with Fluxtion.compile. The source code will be generated and compiled in memory, no configuration of
+FluxtionCompilerConfig is required
+
+## Imperative generation example
+Compile can be called with list of nodes that are implicitly added to the event processor or the use the version that
+accepts an EventProcessorConfig consumer for user code to imperatively add nodes.
+{% highlight java %}
+EventProcessor<?> processor;
+
+//these are equivalent processors
+//add a list of nodes using short cut method
+processor = Fluxtion.compile(new MyNode("node A"));
+//add nodes using supplied EventProcessorConfig
+processor = Fluxtion.compile(cfg -> {
+    cfg.addNode(new MyNode("node A"));
+});
+
+//these are equivalent processors
+processor = Fluxtion.compile(new MyNode("node A"), new MyNode("node B"));
+processor = Fluxtion.compile(cfg -> {
+    cfg.addNode(new MyNode("node A"));
+    cfg.addNode(new MyNode("node B"));
+});
+
+//executing event processor
+processor.init();
+processor.onEvent("hello world");
+{% endhighlight %}
+
+## Functional DSL generation example
+To generate an in process compiled version using Fluxtion DSL, the DataFlow calls must happen within the context of interpret 
+version that accepts an EventProcessorConfig consumer `Fluxtion.compile(Consumer<EventProcessorConfig> configProcessor)`
+
+{% highlight java %}
+//DSL calls must use the Supplier<>
+Fluxtion.compile(cfg -> {
+    DataFlow.subscribe(String.class)
+            .push(new MyNode("node A")::handleStringEvent);        
+});
+{% endhighlight %}
+
+# Compiling AOT - programmatically
+Compiling AOT in process is a very similar process to compiling in process an event processor, we use the method
+
+`EventProcessor.compile(Consumer<EventProcessorConfig> sepConfig, Consumer<FluxtionCompilerConfig> cfgBuilder)`
+
+We control how and where the source code will be generated with FluxtionCompilerConfig instance. Now we can run this
+generation in a separate process and use the generated event processor in our code as a normal class. 
+
+A maven plugin is provided as part of the Fluxtion toolset that integrates AOT building into a standard part of your 
+build.
+
+## Imperative generation
+Compile can be called with list of nodes that are implicitly added to the event processor or the use the version that
+accepts an EventProcessorConfig consumer for user code to imperatively add nodes.
+{% highlight java %}
+
+public static void main(String[] args) {
+    Fluxtion.compile(
+            //binds classes to event processor
+            eventProcessorConfig -> eventProcessorConfig.addNode(new MyNode("node A")),
+            //controls the generation
+            fluxtionCompilerConfig -> {
+                fluxtionCompilerConfig.setClassName("MyEventProcessor");
+                fluxtionCompilerConfig.setPackageName("com.fluxtion.example.aot.generated");
+            });
+}
+{% endhighlight %}
+
+The output from the generation process is a source file MyEventProcessor.java in package com.fluxtion.example.aot.generated
+written to directory com/fluxtion/example/aot/generated below the current working directory of main method. A message
+to console is printed to confirm the generation process output
+
+{% highlight console %}
+21-Apr-24 07:39:25 [main] INFO EventProcessorCompilation - generated EventProcessor file: /fluxtion-examples/src/main/java/com/fluxtion/example/aot/generated/MyEventProcessor.java
+{% endhighlight %}
+
+## Using an AOT event processor
+Once generated AOT use the event processor like any normal java class in application code.
+
+{% highlight java %}
+
+public static void main(String[] args) {
+    var processor = new com.fluxtion.example.aot.generated.MyEventProcessor();
+    processor.init();
+    processor.onEvent("hello world");
+}
+{% endhighlight %}
+
+
+# Rules for serializing bound classes
 
 - Bound class must have a public constructor or constructors, either:
-  - A zero argument constructor
-  - For complex construction add a custom serializer with [`EventProcessorConfig.addClassSerialize`]({{site.EventProcessorConfig_link}})
+    - A zero argument constructor
+    - For complex construction add a custom serializer with [`EventProcessorConfig.addClassSerialize`]({{site.EventProcessorConfig_link}})
 - Final non-transient fields must be assigned in the constructor
 - A constructor must exist that matches the final non-transient fields as arguments
-- Transient fields are not serialised 
+- Transient fields are not serialised
 - Rules for serializing fields of bound classes
-  - Only non-transient fields are serialized
-  - All standard types are supported
-  - Java bean properties are serialized using setter
-  - Public fields are serialized 
+    - Only non-transient fields are serialized
+    - All standard types are supported
+    - Java bean properties are serialized using setter
+    - Public fields are serialized
 
 ## To be documented
-
-- AOT building
-- Interpreted
-- Programmatic api
 - Spring support
 - Yaml support
 - Maven plugin

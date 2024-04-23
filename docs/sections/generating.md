@@ -8,6 +8,7 @@ published: true
 # Introduction
 Building and executing an event processor are independent functions that can run in separate processes. This section 
 documents the binding of functions into an event processor and the generation of the processor for use at runtime.
+
 There are three steps to use Fluxtion, step 2 is covered here:
 
 {: .info }
