@@ -21,15 +21,19 @@ There are three steps to use Fluxtion, step 2 is covered here:
 Building an event processor has two phases, binding event handler methods into the model and then generating the finished
 event processor.
 
+{: .info }
+The binding and generation functions are located in the Fluxtion compiler library.
+{: .fs-4 }
+
 ## Binding
 The compiler analyses the configuration information provided by the programmer and builds a code model that provides all
 the information required to generate the event processor. Several source types are supported for supplying the binding
 information, Fluxtion transforms each of these sources into a common representation before generating the code model. 
 Supported source config types:
-* Programmatic
-* Yaml based
+* Imperative api
+* Functional dsl api
 * Spring based
-* Functional
+* Yaml based
 
 ## Generating
 To complete building an event processor the code model and a target runtime is passed to the compiler. The final event

@@ -14,10 +14,10 @@ that are bound into the event processor. This section documents the various ways
 [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) is the class that acts as the model,
 a number of options are available for adding user classes to an EventProcessorConfig instance:
 
-* imperative
-* declarative
-* config driven
-* spring config
+* Imperative api
+* Functional dsl api
+* Spring based
+* Yaml based
 
 These examples use `Fluxtion.interpret` which executes the event processor as an in-process interpretation, the 
 available output types of the generated event processor are described in [Processor generation](processor_generation.md).
