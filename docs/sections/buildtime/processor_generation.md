@@ -44,7 +44,7 @@ The source project for the examples can be found [here]({{site.reference_example
 ![TEST](../../images/integration_overview-generating.png)
 
 ## Generating modes
-
+{: .no_toc }
 To complete building an event processor the code model and a generation mode is passed to the compiler. The final event
 processor binds in all user classes combined with pre-calculated event dispatch to meet the dispatch rules.
 
@@ -59,12 +59,23 @@ Regardless of which generation mode is used the generated event processor will b
 dispatch rules.
 
 ## Generation modes comparison
+{: .no_toc }
 
 | Mode                      | Required libraries   | Advantage                                  | Disadvantages                     | Use case |
 |---------------------------|----------------------|--------------------------------------------|-----------------------------------|----------|
 | Interpreted               | compiler<br/>runtime | Supports 1000's nodes<br/>Quick to develop | {{page.interpreted_disadvantage}} |          |
 | In memory compilation     | compiler<br/>runtime | {{page.compile_advantage}}                 | {{page.compile_disadvantage}}     |          |
 | Ahead of time compilation | runtime              | {{page.aot_advantage}}                     | Limit on generated code size      |          |
+
+{: .no_toc }
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
 
 # Interpreted
 The interpreted mode implements the event processor with a map based dispatch. Generation and execution all happen in the
@@ -444,7 +455,7 @@ public class CustomSerializerExample {
 {% endhighlight %}
 
 ## Serialised event processor
-The full event processor is [CustomSerializerExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/CustomSerializerExampleProcessor.java)
+The generated event processor is [CustomSerializerExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/CustomSerializerExampleProcessor.java)
 this excerpt shows the relevant statements that invokes the static build method `MyThing.newThing("my instance param")`
 
 {% highlight java %}
@@ -465,11 +476,76 @@ public class CustomSerializerExampleProcessor
 
 {% endhighlight %}
 
-# To be documented
-- Spring support
-- Yaml support
-- Maven plugin
-- Serialising AOT
-    - collection support
-    - New instance
+# Compile AOT from spring configuration
+Spring configuration is natively supported by Fluxtion. Any beans in the spring ApplicationContext will be bound into
+the model and eventually the generated event processor. Pass the spring ApplicationContext into fluxtion and compile AOT with
 
+`FluxtionSpring.compileAot(ApplicationContext appContext, Consumer<FluxtionCompilerConfig> fluxtionCompilerConfig)`
+
+The generated event processor is [CustomSerializerExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/SpringExampleProcessor.java)
+
+See [FluxtionSpring]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpring.java) for the various compilation methods
+supported for Spring integration.
+
+{% highlight java %}
+
+public class SpringConfigAdd {
+
+    public static class MyNode {
+        @OnEventHandler
+        public boolean handleStringEvent(String stringToProcess) {
+            System.out.println("MyNode::received:" + stringToProcess);
+            return true;
+        }
+    }
+
+    public static class Root1 {
+        private final MyNode myNode;
+
+        public Root1(MyNode myNode) {
+            this.myNode = myNode;
+        }
+
+        @OnTrigger
+        public boolean trigger() {
+            System.out.println("Root1::triggered");
+            return true;
+        }
+    }
+
+    public static void main(String[] args) {
+        FluxtionSpring.compileAot(
+                new ClassPathXmlApplicationContext("com/fluxtion/example/reference/spring-example.xml"),
+                fluxtionCompilerConfig -> {
+                    fluxtionCompilerConfig.setClassName("SpringExampleProcessor");
+                    fluxtionCompilerConfig.setPackageName("com.fluxtion.example.reference.generation.genoutput");
+                });
+    }
+}
+
+{% endhighlight %}
+
+The spring application config
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="myNode" class="com.fluxtion.example.reference.SpringConfigAdd.MyNode">
+    </bean>
+
+    <bean id="root1" class="com.fluxtion.example.reference.SpringConfigAdd.Root1">
+        <constructor-arg ref="myNode"/>
+    </bean>
+</beans>
+{% endhighlight %}
+
+
+# To be documented
+
+- Yaml support
+- Scan and compile
