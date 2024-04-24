@@ -2,17 +2,14 @@ package com.fluxtion.compiler.generation.forkjoin;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.audit.LogRecord;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -144,6 +141,7 @@ public class ForkJoinTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    @EqualsAndHashCode(callSuper = true)
     @Data
     @Slf4j
     public static class CompletionTrigger extends EventLogNode implements NamedNode {

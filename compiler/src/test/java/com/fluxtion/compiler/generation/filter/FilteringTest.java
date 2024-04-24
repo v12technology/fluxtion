@@ -80,7 +80,7 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
 
         publishInstance(new Date());
         assertThat(testHandler.count, is(2));
-        publishInstance(String.class, new Integer(2));
+        publishInstance(String.class, 2);
         assertThat(testHandler.count, is(3));
     }
 

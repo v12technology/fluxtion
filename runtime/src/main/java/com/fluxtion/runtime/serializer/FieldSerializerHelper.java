@@ -17,8 +17,8 @@ public interface FieldSerializerHelper {
 
     static URL buildUrl(String uriString) {
         try {
-            return new URL(uriString);
-        } catch (MalformedURLException e) {
+            return new URI(uriString).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

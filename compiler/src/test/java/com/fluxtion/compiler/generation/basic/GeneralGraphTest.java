@@ -15,7 +15,7 @@ public class GeneralGraphTest extends MultipleSepTargetInProcessTest {
     @Test
     public void singleIntegerAddTest() {
         sep(c -> {
-            c.addNode(new Integer(23), "value");
+            c.addNode(23, "value");
         });
         Integer field = getField("value");
         assertThat(field, is(23));
