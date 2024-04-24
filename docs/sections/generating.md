@@ -11,6 +11,9 @@ documents the binding of functions into an event processor and the generation of
 
 There are three steps to use Fluxtion, step 2 is covered here:
 
+## Three steps to using Fluxtion
+{: .no_toc }
+
 {: .info }
 1 - Mark event handling methods with annotations or via functional programming<br>
 2 - **Build the event processor using fluxtion compiler utility**<br>
