@@ -925,7 +925,7 @@ Child::triggered updateCount:2
 {% endhighlight %}
 
 
-## Forking trigger methods
+## Forking concurrent trigger methods
 Forking trigger methods is supported. If multiple trigger methods are fired from a single parent they can be forked to 
 run in parallel using the fork join pool. Only when all the forked trigger methods have completed will an event notification
 be propagated to their children. 
