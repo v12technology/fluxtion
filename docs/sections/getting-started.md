@@ -26,7 +26,7 @@ For a deeper understanding of the architecture, design and paradigms that underp
 ## Reference documentation
 * [Mark event handling](runtime.md)
 * [Build event processor](generating.md)
-* [Integrate event processor](deploying-testing.md)
+* [Integrate event processor](integrate-eventprocessor)
 * [Quick reference](quick-reference.md)
 
 ## Examples

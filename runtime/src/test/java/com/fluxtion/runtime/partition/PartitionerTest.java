@@ -42,7 +42,7 @@ public class PartitionerTest {
     @Test
     public void singleKeyFilter() {
         System.out.println("single filter");
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new);
         partitioner.keyPartitioner(PartitionerTest::keyGen);
         //
         MyEvent monday = new MyEvent("monday");

@@ -11,13 +11,15 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
-calculations are run whenever a new event is received. For a functional implementation example see [Hello functional fluxtion world](helloworld_functional)
-
-This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
-a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is 
-received. Business logic resides in the user functions/classes.
+calculations are run whenever a new event is received. 
 
 Code is available as a [maven project]({{page.example_src}})
+
+This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
+a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is
+received. Business logic resides in the user functions/classes.
+
+For a functional implementation example see [Hello functional fluxtion world](helloworld_functional)
 
 ## Processing graph
 {: .no_toc }
