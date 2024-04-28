@@ -8,7 +8,7 @@ Overview
 
 
 Getting started
-    re-organise so Spring is not the only thing. Move none-spring AOT to secod
+    re-organise so Spring is not the only thing. Move none-spring AOT to second
     Add mermaid diagrams
 
 Mark event handling
@@ -36,5 +36,5 @@ Examples
 Quick reference
     Add something
 
-Consistent naming and header numbering across all documents
+Consistent header numbering across all documents
 

@@ -1,6 +1,6 @@
 ---
 title: Developer workflow
-parent: Core technology
+parent: Fluxtion explored
 has_children: false
 nav_order: 2
 published: true

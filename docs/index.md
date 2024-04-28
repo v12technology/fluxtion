@@ -327,7 +327,7 @@ For a deeper understanding of the architecture, design and paradigms that underp
 ## Reference documentation
 
 * [Mark event handling](sections/runtime.md)
-* [Build event processor](sections/generating.md)
+* [Build event processor](sections/build-event-processor)
 * [Integrate event processor](sections/integrate-eventprocessor)
 * [Quick reference](sections/quick-reference.md)
 

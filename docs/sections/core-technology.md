@@ -1,5 +1,5 @@
 ---
-title: Core technology
+title: Fluxtion explored
 has_children: true
 nav_order: 4
 published: true

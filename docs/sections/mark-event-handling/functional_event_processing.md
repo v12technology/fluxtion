@@ -47,7 +47,7 @@ In this section we are covering the first of these **Bind functions using functi
 
 # API overview
 Fluxtion offers a DSL to bind functions into the event processor using the familiar map/filter/peek similar to the java
-stream api. Bound functions are invoked in accordance to the dispatch rules [dispatch rules](../core-technology#event-dispatch-rules). 
+stream api. Bound functions are invoked in accordance to the dispatch rules [dispatch rules](../fluxtion-explored#event-dispatch-rules). 
 
 ## Creating a flow
 In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to when onEvent is called

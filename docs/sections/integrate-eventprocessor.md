@@ -72,7 +72,7 @@ Fluxtion provides several strategies for creating an event processor instance th
 * Instance per partitioned event stream 
 
 Once you have created an instance you can use it as any normal java class. For information about generating an event processor 
-see [build event processor section](generating) for further details
+see [build event processor section](build-event-processor) for further details
 
 ## Create an instance
 Creating a new processor in process by calling one of the Fluxtion methods` Fluxtion.interpret` or `Fluxtion.compile`, 
