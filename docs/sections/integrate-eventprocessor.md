@@ -252,7 +252,7 @@ DayEvent[day=Monday, amount=999]
 # Inputs to a processor
 An event processor responds to input by triggering a calculation cycle, triggering a calculation cycle from an input 
 is covered in this section. Functions are bound to the calculation cycle to meet the business requirements, see the
-[mark event handling section](runtime) for further details. To process inputs the event processor instance must be 
+[mark event handling section](mark-event-handling) for further details. To process inputs the event processor instance must be 
 initialised before any input is submitted.
 
 {: .info }

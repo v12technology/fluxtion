@@ -774,7 +774,7 @@ To bind functions to a flow of events the subscription must first be created wit
 `DataFlow.subscribe([event class])`
 
 A lambda or a method reference can be bound as the next item in the function flow. A full description of the functional
-api is in [Functional programming](../runtime/functional_event_processing.md)
+api is in [Functional programming](../mark-event-handling/functional_event_processing.md)
 
 {% highlight java %}
 public static String toUpper(String incoming){
