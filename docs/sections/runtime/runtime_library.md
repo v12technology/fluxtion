@@ -12,6 +12,15 @@ published: true
 The runtime environment provides several library functions that bound classes can use. This section documents the runtime
 environment and how to access the library functions.
 
+{: .no_toc }
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
 
 ## Processing output
 An application can register for output from the EventProcessor by supplying a consumer

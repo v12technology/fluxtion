@@ -25,11 +25,13 @@ There are three steps to use Fluxtion, step 3 is covered here:
 ## Using an event processor
 {: .no_toc }
 
-Once the event processor has been generated with user methods bound in it can be used by the application. An instance of an
+Once the event processor has been generated it can be used by the application. An instance of an
 [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)
-is the bridge between event streams and processing logic, user code connects
-the EventProcessor to the application event sources. An application can contain multiple EventProcessors instances, and
-routes events to an instance.
+is the bridge between event streams and processing logic, application integration connects the event processor to the application 
+event sources. 
+
+An application can contain multiple event processor instances, they are lightweight objects designed to be 
+embedded in your application. The application creates instances of event processors and routes events to an instance.
 
 {: .warning }
 **EventProcessors are not thread safe** a single event should be processed at one time. Application code is responsible 
@@ -56,13 +58,68 @@ User code interacts with an event processor instance in one of five ways
 </details>
 
 # Creating a new processor
-Creating a new processor is simply an instance of creating a new instance of an AOT processor or using one the in process
-methods` Fluxtion.interpret` or `Fluxtion.compile`. 
+Fluxtion provides several strategies for creating an event processor instance that you will use in your application:
+* Generate in process
+* Use an AOT processor as POJO
+* Factory method on an event processor instance
+* Instance per partitioned event stream 
+
+Once you have created an instance you can use it as any normal java class. For information about generating an event processor 
+see [build event processor section](generating) for further details
+
+## Create an instance
+Creating a new processor in process by calling one of the Fluxtion methods` Fluxtion.interpret` or `Fluxtion.compile`, 
+or by using an AOT generated processor. An AOT processor is a normal java class that has a constructor, use it as a POJO
+in your application.
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public class VanillaCreateEventProcessor {
+    public static void main(String[] args) {
+        //IN PROCESS CREATION
+        var processor = Fluxtion.interpret(new VanillaAotBuilder()::buildGraph);
+        processor.init();
+        processor.onEvent("hello world - in process");
+
+        //AOT USE AS POJO
+        processor = new VanillaProcessor();
+        processor.init();
+        processor.onEvent("hello world - AOT");
+    }
+
+    //THE BUILDER IS CALLED AS PART OF THE MAVEN BUILD TO GENERATE AOT PROCESSOR
+    public static class VanillaAotBuilder implements FluxtionGraphBuilder{
+        @Override
+        public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+            DataFlow.subscribe(String.class)
+                    .console("received -> {}");
+        }
+
+        @Override
+        public void configureGeneration(FluxtionCompilerConfig compilerConfig) {
+            compilerConfig.setClassName("VanillaProcessor");
+            compilerConfig.setPackageName("com.fluxtion.example.reference.integration.genoutput");
+        }
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+received -> hello world - in process
+received -> hello world - AOT
+{% endhighlight %}
 
 ## Factory method
 An event processor instance provides a factory method that creates new instances of the same event processor class. This
-can be useful when a multiple instances of the same processor are required but each with different state. Event streams
-are sometimes partitioned, each instance of the event processor can be bound to that partitioned stream.
+can be useful when a multiple instances of the same processor are required but each with different state. Applications 
+sometimes partition an event streams, each instance of the event processor can be bound to that partitioned stream.
 
 ### Code sample
 {: .no_toc }
@@ -117,7 +174,7 @@ Factory method processor.newInstance() is only supported for compiled event proc
 ## Partitioning
 Fluxtion provides an automatic [partitioning function]({{site.fluxtion_src_runtime}}/partition/Partitioner.java) 
 that can be used to query event flow, partition it and assign a new event processor instance to that flow. The partitioner
-takes a factory method to create new event processor instances and a key function to separate event flow.
+takes a factory method to create new event processor instances and a key function to segregate event flow.
 
 The partitioner will create and initialise a new event processor when the key function returns a previously unseen key. 
 
@@ -127,7 +184,6 @@ The partitioner will create and initialise a new event processor when the key fu
 {% highlight java %}
 
 public class AutomaticPartitionExample {
-
     public record DayEvent(String day, int amount) {}
 
     public static void main(String[] args) {
@@ -187,9 +243,10 @@ DayEvent[day=Monday, amount=4]
 {% endhighlight %}
 
 # Inputs to a processor
-An event processor responds to input by triggering a calculation cycle. Functions are bound to the calculation
-cycle to meet the business requirements. Triggering a calculation cycle is covered in this section. To process inputs 
-the event processor instance it must be initialised before any input is submitted.
+An event processor responds to input by triggering a calculation cycle, triggering a calculation cycle from an input 
+is covered in this section. Functions are bound to the calculation cycle to meet the business requirements, see 
+[mark event handling section](runtime) for further details. To process inputs the event processor instance it must be 
+initialised before any input is submitted.
 
 {: .info }
 1 - Call EventProcessor.init() before submitting any input<br/>
@@ -354,58 +411,6 @@ anyStringSignal [Signal: {filterString: java.lang.String, value: WAKEUP}]
 anyDateSignal [Signal: {filterString: java.util.Date, value: Sat Apr 27 06:25:28 BST 2024}]
 {% endhighlight %}
 
-## Batch support
-
-Batch callbacks are supported through the BatchHandler interface that the generated EventHandler implements. Any methods 
-that are annotated with, `@OnBatchPause` or `@OnBatchEnd` will receive calls from the matching BatchHandler method. 
-
-### Code sample
-{: .no_toc }
-
-{% highlight java %}
-
-public static void main(String[] args) {
-    var processor = Fluxtion.interpret(new MyNode());
-    processor.init();
-
-    processor.onEvent("test");
-
-    //use BatchHandler service
-    BatchHandler batchHandler = (BatchHandler)processor;
-    batchHandler.batchPause();
-    batchHandler.batchEnd();
-}
-
-public static class MyNode {
-    @OnEventHandler
-    public boolean handleStringEvent(String stringToProcess) {
-        System.out.println("MyNode event received:" + stringToProcess);
-        return true;
-    }
-
-    @OnBatchPause
-    public void batchPause(){
-        System.out.println("MyNode::batchPause");
-    }
-
-    @OnBatchEnd
-    public void batchEnd(){
-        System.out.println("MyNode::batchEnd");
-    }
-}
-
-{% endhighlight %}
-
-### Sample log
-{: .no_toc }
-
-{% highlight console %}
-MyNode event received:test
-MyNode::batchPause
-MyNode::batchEnd
-{% endhighlight %}
-
-
 ## Buffer and trigger
 
 An event processor can buffer multiple events without causing any triggers to fire, and at some point in the future 
@@ -537,7 +542,7 @@ intValue:256
 
 An application can remove sink using the call `EventProcessor#removeSink`
 
-## Audit logging and log level control
+## Audit logging 
 
 ### Code sample
 {: .no_toc }
@@ -549,18 +554,12 @@ public class AuditExample {
            c.addNode(new MyAuditingNode());
            c.addEventAudit();
         });
-        
         processor.init();
-
+        //AUDIT IS INFO BY DEFAULT
         processor.onEvent("detailed message 1");
-        
-        //change log level dynamically
-        processor.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
-        processor.onEvent("detailed message 2");
     }
 
     public static class MyAuditingNode extends EventLogNode {
-
         @Initialise
         public void init(){
             auditLog.info("MyAuditingNode", "init");
@@ -604,18 +603,6 @@ eventLogRecord:
     nodeLogs: 
         - myAuditingNode_0: { event: detailed message 1, charCount: 18}
     endTime: 1714197503598
----
-Apr 27, 2024 6:58:23 AM com.fluxtion.runtime.audit.EventLogManager calculationLogConfig
-INFO: updating event log config:EventLogConfig{level=INFO, logRecordProcessor=null, sourceId=null, groupId=null}
-eventLogRecord: 
-    eventTime: 1714197503599
-    logTime: 1714197503599
-    groupingId: null
-    event: String
-    eventToString: detailed message 2
-    nodeLogs: 
-        - myAuditingNode_0: { event: detailed message 2}
-    endTime: 1714197503599
 ---
 
 {% endhighlight %}
@@ -673,19 +660,127 @@ TearDown
 
 ## Clocks and time
 
-## Audit log record encoding and sink
+### Code sample
+{: .no_toc }
+{% highlight java %}
+
+public class ClockExample {
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(new TimeLogger());
+        processor.init();
+        //PRINT CURRENT TIME
+        processor.onEvent(DateFormat.getDateTimeInstance());
+
+        //USE A SYNTHETIC STRATEGY TO SET TIME FOR THE PROCESSOR CLOCK
+        LongAdder syntheticTime = new LongAdder();
+        processor.setClockStrategy(syntheticTime::longValue);
+
+        //SET A NEW TIME - GOING BACK IN TIME!!
+        syntheticTime.add(1_000_000_000);
+        processor.onEvent(DateFormat.getDateTimeInstance());
+
+        //SET A NEW TIME - BACK TO THE FUTURE
+        syntheticTime.add(1_800_000_000_000L);
+        processor.onEvent(DateFormat.getDateTimeInstance());
+    }
+
+
+    public static class TimeLogger {
+        public Clock wallClock = Clock.DEFAULT_CLOCK;
+
+        @OnEventHandler
+        public boolean publishTime(DateFormat dateFormat) {
+            System.out.println("time " + dateFormat.format(new Date(wallClock.getWallClockTime())));
+            return true;
+        }
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+time 27 Apr 2024, 09:30:31
+time 12 Jan 1970, 14:46:40
+time 15 Jan 2027, 08:00:02
+{% endhighlight %}
+
+## Batch support
+
+Batch callbacks are supported through the BatchHandler interface that the generated EventHandler implements. Any methods 
+that are annotated with, `@OnBatchPause` or `@OnBatchEnd` will receive calls from the matching BatchHandler method. 
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(new MyNode());
+    processor.init();
+
+    processor.onEvent("test");
+
+    //use BatchHandler service
+    BatchHandler batchHandler = (BatchHandler)processor;
+    batchHandler.batchPause();
+    batchHandler.batchEnd();
+}
+
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("MyNode event received:" + stringToProcess);
+        return true;
+    }
+
+    @OnBatchPause
+    public void batchPause(){
+        System.out.println("MyNode::batchPause");
+    }
+
+    @OnBatchEnd
+    public void batchEnd(){
+        System.out.println("MyNode::batchEnd");
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+MyNode event received:test
+MyNode::batchPause
+MyNode::batchEnd
+{% endhighlight %}
+
+
+
+## Audit log control
 
 ### Code sample
 {: .no_toc }
 {% highlight java %}
 
-public class AuditEncodeExample {
+public class AuditControlExample {
     public static void main(String[] args) {
         var processor = Fluxtion.interpret(c ->{
            c.addNode(new MyAuditingNode());
            c.addEventAudit();
         });
         processor.init();
+
+        //AUDIT IS INFO BY DEFAULT
+        processor.onEvent("detailed message 1");
+
+        //CHANGE LOG LEVEL DYNAMICALLY
+        processor.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
+        processor.onEvent("detailed message 2");
 
         //REPLACE LOGRECORD ENCODER
         processor.setAuditLogRecordEncoder(new MyLogEncoder(Clock.DEFAULT_CLOCK));
@@ -731,31 +826,85 @@ public class AuditEncodeExample {
 
 {% highlight console %}
 eventLogRecord: 
-    eventTime: 1714198359106
-    logTime: 1714198359106
+    eventTime: 1714205423167
+    logTime: 1714205423167
     groupingId: null
     event: LifecycleEvent
     eventToString: Init
     nodeLogs: 
         - myAuditingNode_0: { MyAuditingNode: init, MyAuditingNode_debug: some debug message}
-    endTime: 1714198359107
+    endTime: 1714205423170
+---
+eventLogRecord: 
+    eventTime: 1714205423170
+    logTime: 1714205423170
+    groupingId: null
+    event: String
+    eventToString: detailed message 1
+    nodeLogs: 
+        - myAuditingNode_0: { event: detailed message 1}
+    endTime: 1714205423172
+---
+Apr 27, 2024 9:10:23 AM com.fluxtion.runtime.audit.EventLogManager calculationLogConfig
+INFO: updating event log config:EventLogConfig{level=DEBUG, logRecordProcessor=null, sourceId=null, groupId=null}
+eventLogRecord: 
+    eventTime: 1714205423186
+    logTime: 1714205423186
+    groupingId: null
+    event: String
+    eventToString: detailed message 2
+    nodeLogs: 
+        - myAuditingNode_0: { event: detailed message 2, charCount: 18}
+    endTime: 1714205423186
 ---
 WARNING -> IGNORING ALL RECORDS!!
 WARNING -> IGNORING ALL RECORDS!!
 {% endhighlight %}
 
 
-## Context parameters
+## Setting context parameters
 
 ### Code sample
 {: .no_toc }
 {% highlight java %}
+
+public class ContextParamInput {
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(new ContextParamReader());
+        processor.init();
+
+        processor.addContextParameter("myContextParam1", "[param1: update 1]");
+        processor.start();
+
+        processor.addContextParameter("myContextParam1", "[param1: update 2]");
+        processor.addContextParameter("myContextParam2", "[param2: update 1]");
+        processor.start();
+    }
+
+    public static class ContextParamReader {
+        @Inject
+        public EventProcessorContext context;
+
+        @Start
+        public void start() {
+            System.out.println("myContextParam1 -> " + context.getContextProperty("myContextParam1"));
+            System.out.println("myContextParam2 -> " + context.getContextProperty("myContextParam2"));
+            System.out.println();
+        }
+    }
+}
+
 {% endhighlight %}
 
 ### Sample log
 {: .no_toc }
 
 {% highlight console %}
+myContextParam1 -> [param1: update 1]
+myContextParam2 -> null
+
+myContextParam1 -> [param1: update 2]
+myContextParam2 -> [param2: update 1]
 {% endhighlight %}
 
 ## Runtime inject
@@ -809,12 +958,58 @@ runtime injected:Mon Jan 12 14:30:00 GMT 1970
 ### Code sample
 {: .no_toc }
 {% highlight java %}
+
+public class GetNodeByIdExample {
+    public static void main(String[] args) throws NoSuchFieldException {
+        var processor = Fluxtion.interpret(c ->{
+            DataFlow.subscribeToNode(new DirtyStateNode())
+                    .console("Monday is triggered");
+        });
+        processor.init();
+
+        processor.onEvent("Monday");
+        processor.onEvent("Tuesday");
+        processor.onEvent("Wednesday");
+
+        DirtyStateNode dirtyStateNode = processor.getNodeById("MondayChecker");
+        System.out.println("Monday count:" + dirtyStateNode.getMondayCount() + "\n");
+
+        processor.onEvent("Monday");
+        System.out.println("Monday count:" + dirtyStateNode.getMondayCount());
+    }
+
+    public static class DirtyStateNode implements NamedNode {
+        private int mondayCounter = 0;
+
+        @OnEventHandler
+        public boolean checkIsMonday(String day){
+            boolean isMonday = day.equalsIgnoreCase("monday");
+            mondayCounter += isMonday ? 1 : 0;
+            return isMonday;
+        }
+
+        public int getMondayCount() {
+            return mondayCounter;
+        }
+
+        @Override
+        public String getName() {
+            return "MondayChecker";
+        }
+    }
+}
+
 {% endhighlight %}
 
 ### Sample log
 {: .no_toc }
 
 {% highlight console %}
+Monday is triggered
+Monday count:1
+
+Monday is triggered
+Monday count:2
 {% endhighlight %}
 
 ## Streaming node lookup by id
@@ -822,12 +1017,45 @@ runtime injected:Mon Jan 12 14:30:00 GMT 1970
 ### Code sample
 {: .no_toc }
 {% highlight java %}
+
+public class GetFlowNodeByIdExample {
+    public static void main(String[] args) throws NoSuchFieldException {
+        var processor = Fluxtion.interpret(c ->{
+            DataFlow.subscribe(String.class)
+                    .filter(s -> s.equalsIgnoreCase("monday"))
+                    //ID START - this makes the wrapped value accessible via the id
+                    .mapToInt(Mappers.count()).id("MondayChecker")
+                    //ID END
+                    .console("Monday is triggered");
+        });
+        processor.init();
+
+        processor.onEvent("Monday");
+        processor.onEvent("Tuesday");
+        processor.onEvent("Wednesday");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        Integer mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount + "\n");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        processor.onEvent("Monday");
+        mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount);
+    }
+}
+
 {% endhighlight %}
 
 ### Sample log
 {: .no_toc }
 
 {% highlight console %}
+Monday is triggered
+Monday count:1
+
+Monday is triggered
+Monday count:2
 {% endhighlight %}
 
 ## Auditor lookup by id
@@ -835,10 +1063,54 @@ runtime injected:Mon Jan 12 14:30:00 GMT 1970
 ### Code sample
 {: .no_toc }
 {% highlight java %}
+
+
+public class AuditLookupExample {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+        var processor = Fluxtion.interpret(c -> {
+            //ADDING A NAMED AUDITOR
+            c.addAuditor(new MyAuditor(), "myAuditor");
+            DataFlow.subscribe(String.class);
+        });
+        processor.init();
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+
+        //LOOKUP AUDITOR BY NAME
+        MyAuditor myAuditor = processor.getAuditorById("myAuditor");
+        System.out.println("\nMyAuditor::invocationCount " + myAuditor.getInvocationCount());
+    }
+
+    public static class MyAuditor implements Auditor {
+        private int invocationCount = 0;
+
+        @Override
+        public void nodeRegistered(Object node, String nodeName) {
+        }
+
+        @Override
+        public void eventReceived(Object event) {
+            System.out.println("MyAuditor::eventReceived " + event);
+            invocationCount++;
+        }
+
+        public int getInvocationCount() {
+            return invocationCount;
+        }
+    }
+}
+
 {% endhighlight %}
 
 ### Sample log
 {: .no_toc }
 
 {% highlight console %}
+MyAuditor::eventReceived Init
+MyAuditor::eventReceived A
+MyAuditor::eventReceived B
+MyAuditor::eventReceived C
+
+MyAuditor::invocationCount 4
 {% endhighlight %}
