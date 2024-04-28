@@ -50,13 +50,106 @@ intValue:256
 
 An application can remove sink using the call `EventProcessor#removeSink`
 
+## Clock time
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public class ClockExample {
+
+    public static class TimeLogger {
+        public Clock wallClock = Clock.DEFAULT_CLOCK;
+
+        @OnEventHandler
+        public boolean publishTime(DateFormat dateFormat) {
+            System.out.println("time " + dateFormat.format(new Date(wallClock.getWallClockTime())));
+            return true;
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(new TimeLogger());
+        processor.init();
+        //PRINT CURRENT TIME
+        processor.onEvent(new SimpleDateFormat("HH:mm:ss.SSS"));
+
+        //SLEEP AND PRINT TIME
+        Thread.sleep(100);
+        processor.onEvent(new SimpleDateFormat("HH:mm:ss.SSS"));
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+time 07:33:45.744
+time 07:33:45.849
+{% endhighlight %}
+
+## TImed alarm trigger
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public class FixedRateTriggerExample {
+    public static class RegularTrigger {
+
+        private final FixedRateTrigger fixedRateTrigger;
+
+        public RegularTrigger(FixedRateTrigger fixedRateTrigger) {
+            this.fixedRateTrigger = fixedRateTrigger;
+        }
+
+        public RegularTrigger(int sleepMilliseconds) {
+            fixedRateTrigger = new FixedRateTrigger(sleepMilliseconds);
+        }
+
+        @OnTrigger
+        public boolean trigger() {
+            System.out.println("RegularTrigger::triggered");
+            return true;
+        }
+    }
+
+    public static void main(String... args) throws InterruptedException {
+        var processor = Fluxtion.interpret(new RegularTrigger(100));
+        processor.init();
+
+        //NO TRIGGER - 10MS NEEDS TO ELAPSE
+        processor.onEvent(new Object());
+        processor.onEvent("xxx");
+
+        //WILL TRIGGER - 10MS HAS ELAPSED
+        Thread.sleep(100);
+        processor.onEvent("xxx");
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+RegularTrigger::triggered
+{% endhighlight %}
+
 ## Buffer and trigger calculation
 An event processor can buffer multiple events without causing any triggers to fire, and at some point in the future 
 cause all potentially dirty trigger to fire. This is known as buffering and triggering it is achieved by call 
 `EventProcessr.bufferEvent` multiple times and then following it with a call `EventProcessor.triggerCalculation`
 
-{% highlight java %}
+### Code sample
+{: .no_toc }
 
+{% highlight java %}
 public static class MyNode {
     @OnEventHandler
     public boolean handleStringEvent(String stringToProcess) {
@@ -119,7 +212,9 @@ public static void main(String[] args) {
 }
 {% endhighlight %}
 
-Output
+### Sample log
+{: .no_toc }
+
 {% highlight console %}
 MyNode2 event received:test
 2 - myNode2 updated
@@ -134,16 +229,231 @@ MyNode2 conditional propagate:false
 Child:triggered
 {% endhighlight %}
 
+## Audit logging
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+public class AuditExample {
+    public static class MyAuditingNode extends EventLogNode {
+
+        @Initialise
+        public void init(){
+            auditLog.info("MyAuditingNode", "init");
+            auditLog.info("MyAuditingNode_debug", "some debug message");
+        }
+
+        @OnEventHandler
+        public boolean stringEvent(String event) {
+            auditLog.info("event", event);
+            auditLog.debug("charCount", event.length());
+            return true;
+        }
+    }
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(c ->{
+           c.addNode(new MyAuditingNode());
+           c.addEventAudit();
+        });
+        processor.init();
+        //AUDIT IS INFO BY DEFAULT
+        processor.onEvent("detailed message 1");
+    }
+}
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+
+{% highlight console %}
+eventLogRecord: 
+    eventTime: 1714287142943
+    logTime: 1714287142943
+    groupingId: null
+    event: LifecycleEvent
+    eventToString: Init
+    nodeLogs: 
+        - myAuditingNode_0: { MyAuditingNode: init, MyAuditingNode_debug: some debug message}
+    endTime: 1714287142946
+---
+eventLogRecord: 
+    eventTime: 1714287142946
+    logTime: 1714287142946
+    groupingId: null
+    event: String
+    eventToString: detailed message 1
+    nodeLogs: 
+        - myAuditingNode_0: { event: detailed message 1}
+    endTime: 1714287142949
+---
+{% endhighlight %}
+
+## EventProcessorContext - context parameters
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public class ContextParamInput {
+    public static class ContextParamReader {
+        @Inject
+        public EventProcessorContext context;
+
+        @Start
+        public void start() {
+            System.out.println("myContextParam1 -> " + context.getContextProperty("myContextParam1"));
+            System.out.println("myContextParam2 -> " + context.getContextProperty("myContextParam2"));
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(new ContextParamReader());
+        processor.init();
+
+        processor.addContextParameter("myContextParam1", "[param1: update 1]");
+        processor.start();
+
+        processor.addContextParameter("myContextParam1", "[param1: update 2]");
+        processor.addContextParameter("myContextParam2", "[param2: update 1]");
+        processor.start();
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+{% highlight console %}
+myContextParam1 -> [param1: update 1]
+myContextParam2 -> null
+
+myContextParam1 -> [param1: update 2]
+myContextParam2 -> [param2: update 1]
+{% endhighlight %}
+
+## EventProcessorContext - Callback and re-entrancy
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+{% highlight console %}
+{% endhighlight %}
+
+## Dirty state monitor and control
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+
+public class DirtyStateMonitorExample {
+
+    public static class TriggeredChild implements NamedNode {
+        @Inject
+        public DirtyStateMonitor dirtyStateMonitor;
+        private final FlowSupplier<Integer> intDataFlow;
+
+        public TriggeredChild(FlowSupplier<Integer> intDataFlow) {
+            this.intDataFlow = intDataFlow;
+        }
+
+        @OnTrigger
+        public boolean triggeredChild() {
+            System.out.println("TriggeredChild -> " + intDataFlow.get());
+            return true;
+        }
+
+        public void printDirtyStat() {
+            System.out.println("\nintDataFlow dirtyState:" + dirtyStateMonitor.isDirty(intDataFlow));
+        }
+
+        public void markDirty() {
+            dirtyStateMonitor.markDirty(intDataFlow);
+            System.out.println("\nmark dirty intDataFlow dirtyState:" + dirtyStateMonitor.isDirty(intDataFlow));
+        }
+
+        @Override
+        public String getName() {
+            return "triggeredChild";
+        }
+    }
+
+    public static void main(String[] args) throws NoSuchFieldException {
+        var processor = Fluxtion.interpret(new TriggeredChild(DataFlow.subscribe(Integer.class).flowSupplier()));
+        processor.init();
+        TriggeredChild triggeredChild = processor.getNodeById("triggeredChild");
+
+        processor.onEvent(2);
+        processor.onEvent(4);
+
+        //NOTHING HAPPENS
+        triggeredChild.printDirtyStat();
+        processor.triggerCalculation();
+
+        //MARK DIRTY
+        triggeredChild.markDirty();
+        processor.triggerCalculation();
+    }
+}
+
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+{% highlight console %}
+TriggeredChild -> 2
+TriggeredChild -> 4
+
+intDataFlow dirtyState:false
+
+mark dirty intDataFlow dirtyState:true
+TriggeredChild -> 4
+{% endhighlight %}
+
+
+## EventProcessorContext - Name lookups
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+{% highlight console %}
+{% endhighlight %}
+
+
+## EventProcessorContext - Callback nodes
+
+### Code sample
+{: .no_toc }
+
+{% highlight java %}
+{% endhighlight %}
+
+### Sample log
+{: .no_toc }
+{% highlight console %}
+{% endhighlight %}
+
 ## To be documented
-- Time/clock
-- Alarms
-- Context parameters
+
+
 - Event processor context
+  - Context parameters 
   - Callback and re-entrancy
   - Dirty state
   - Name lookups
-  - Event subscriptions
+
 - Callback nodes
-- Partitioning
-- Auditing
-- Event audit logging
+
