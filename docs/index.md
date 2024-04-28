@@ -322,7 +322,7 @@ Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
 ## Architects
 
 For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
-[core technology section](sections/core-technology.md).
+[Fluxtion explored section](sections/fluxtion-explored).
 
 ## Reference documentation
 

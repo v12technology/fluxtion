@@ -21,7 +21,7 @@ Fluxtion, start with [tutorial 1](gettingstarted/tutorial-1.md).
 
 ## Architects
 For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
-[core technology section](core-technology.md).
+[Fluxtion explored section](fluxtion-explored).
 
 ## Reference documentation
 * [Mark event handling](runtime.md)
