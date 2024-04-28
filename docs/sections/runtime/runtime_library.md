@@ -237,7 +237,6 @@ Child:triggered
 {% highlight java %}
 public class AuditExample {
     public static class MyAuditingNode extends EventLogNode {
-
         @Initialise
         public void init(){
             auditLog.info("MyAuditingNode", "init");
@@ -251,6 +250,7 @@ public class AuditExample {
             return true;
         }
     }
+
     public static void main(String[] args) {
         var processor = Fluxtion.interpret(c ->{
            c.addNode(new MyAuditingNode());
@@ -334,20 +334,7 @@ myContextParam1 -> [param1: update 2]
 myContextParam2 -> [param2: update 1]
 {% endhighlight %}
 
-## EventProcessorContext - Callback and re-entrancy
-
-### Code sample
-{: .no_toc }
-
-{% highlight java %}
-{% endhighlight %}
-
-### Sample log
-{: .no_toc }
-{% highlight console %}
-{% endhighlight %}
-
-## Dirty state monitor and control
+## DirtyStateMonitor - node dirty flag control
 
 ### Code sample
 {: .no_toc }
@@ -355,7 +342,6 @@ myContextParam2 -> [param2: update 1]
 {% highlight java %}
 
 public class DirtyStateMonitorExample {
-
     public static class TriggeredChild implements NamedNode {
         @Inject
         public DirtyStateMonitor dirtyStateMonitor;
@@ -418,42 +404,45 @@ mark dirty intDataFlow dirtyState:true
 TriggeredChild -> 4
 {% endhighlight %}
 
-
-## EventProcessorContext - Name lookups
-
-### Code sample
-{: .no_toc }
-
-{% highlight java %}
-{% endhighlight %}
-
-### Sample log
-{: .no_toc }
-{% highlight console %}
-{% endhighlight %}
-
-
-## EventProcessorContext - Callback nodes
+## EventDispatcher - event re-dispatch
 
 ### Code sample
 {: .no_toc }
 
 {% highlight java %}
+public class CallBackExample {
+    public static class MyCallbackNode{
+        @Inject
+        public EventDispatcher eventDispatcher;
+
+        @OnEventHandler
+        public boolean processString(String event) {
+            for (String item : event.split(",")) {
+                eventDispatcher.processAsNewEventCycle(Integer.parseInt(item));
+            }
+            return false;
+        }
+
+        @OnEventHandler
+        public boolean processInteger(Integer event) {
+            System.out.println("received event: " + event);
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(new MyCallbackNode());
+        processor.init();
+
+        processor.onEvent("20,45,89");
+    }
+}
 {% endhighlight %}
 
 ### Sample log
 {: .no_toc }
 {% highlight console %}
+received event: 20
+received event: 45
+received event: 89
 {% endhighlight %}
-
-## To be documented
-
-
-- Event processor context
-  - Context parameters 
-  - Callback and re-entrancy
-  - Dirty state
-  - Name lookups
-
-- Callback nodes
-
