@@ -27,6 +27,27 @@ library explicitly added to the runtime scope of the application. This vastly re
 {:toc}
 </details>
 
+## Setting maven build properties
+The maven plugin formats source files using the Google formatter which requires maven to export certain packages. Add a
+jvm.config file in a .mvn directory of your root project, for reference see the [.mvn/jvm.config]({{site.examples_project}}/.mvn/jvm.config)
+used in these examples.
+
+{% highlight properties %}
+
+--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+
+{% endhighlight %}
+
+
 # FluxtionGraphBuilder scan and compile 
 The maven plugin uses the discovery method described in [processor generation scan for fluction graph builders](processor_generation#compile-aot---scan-for-fluxtiongraphbuilder). 
 As the plugin performs the discovery operation as part of the build there is no need to write a main method to invoke the 

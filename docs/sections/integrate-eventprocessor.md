@@ -33,6 +33,8 @@ event sources.
 An application can contain multiple event processor instances, they are lightweight objects designed to be 
 embedded in your application. The application creates instances of event processors and routes events to an instance.
 
+The source project for the examples can be found [here]({{site.reference_examples}}/integration/src/main/java/com/fluxtion/example/reference/integration)
+
 {: .warning }
 **EventProcessors are not thread safe** a single event should be processed at one time. Application code is responsible 
 for synchronizing thread access to an event processor instance. 
@@ -45,6 +47,7 @@ User code interacts with an event processor instance in one of five ways
 3. Control of a processor
 4. Query into a processor
 
+
 ![](../images/integration_overview-running.drawio.png)
 
 {: .no_toc }
@@ -56,6 +59,10 @@ User code interacts with an event processor instance in one of five ways
 - TOC
 {:toc}
 </details>
+
+# Example project
+
+The source project for the examples can be found [here]({{site.reference_examples}}/integration/src/main/java/com/fluxtion/example/reference/integration)
 
 # Creating a new processor
 Fluxtion provides several strategies for creating an event processor instance that you will use in your application:
@@ -118,7 +125,7 @@ received -> hello world - AOT
 
 ## Factory method
 An event processor instance provides a factory method that creates new instances of the same event processor class. This
-can be useful when a multiple instances of the same processor are required but each with different state. Applications 
+can be useful when multiple instances of the same processor are required but each with different state. Applications 
 sometimes partition an event streams, each instance of the event processor can be bound to that partitioned stream.
 
 ### Code sample
@@ -239,13 +246,13 @@ DayEvent[day=Tuesday, amount=14]
 DayEventProcessor::initialise
 DayEvent[day=Friday, amount=33]
 
-DayEvent[day=Monday, amount=4]
+DayEvent[day=Monday, amount=999]
 {% endhighlight %}
 
 # Inputs to a processor
 An event processor responds to input by triggering a calculation cycle, triggering a calculation cycle from an input 
-is covered in this section. Functions are bound to the calculation cycle to meet the business requirements, see 
-[mark event handling section](runtime) for further details. To process inputs the event processor instance it must be 
+is covered in this section. Functions are bound to the calculation cycle to meet the business requirements, see the
+[mark event handling section](runtime) for further details. To process inputs the event processor instance must be 
 initialised before any input is submitted.
 
 {: .info }
@@ -254,6 +261,10 @@ initialised before any input is submitted.
 {: .fs-4 }
 
 ## Events
+A simple example demonstrating how an application triggers an event process cycle by calling
+
+`processor.onEvent("WORLD");`
+
 
 ### Code sample
 {: .no_toc }
@@ -280,6 +291,16 @@ Hello WORLD
 {% endhighlight %}
 
 ## Exported service
+The generated event processor implements any exported service interface, calling a service method will trigger an
+event process cycle. The service reference is discovered in the application with a call to the event processor instance, 
+
+`ServiceController svc = processor.getExportedService(ServiceController.class);`
+
+An event processor provides several service discovery methods:
+* Lookup using type inference -  `ServiceController svc = processor.getExportedService()`
+* Lookup using a specific type - `var svc = processor.getExportedService(ServiceController.class)`
+* Consuming a service if it is exported - `processor.consumeServiceIfExported(ServiceController.class, s -> {})`
+* Checking if a service is exported - `processor.exportsService(MiaServiceController.class))`
 
 ### Code sample
 {: .no_toc }
@@ -350,6 +371,13 @@ MiaServiceController.class exported: false
 {% endhighlight %}
 
 ## Signals
+Fluxtion provides some prebuilt signal classes that are re-usable and reduce the application code to write. The Signal 
+classes can be sent as events triggering an event process cycle using the Api calls built into the event processor:
+
+* publish a signal with a filter and value
+* publish a signal with only a filter
+* publish a signal with only a value
+* publish primitive signals with a filter
 
 ### Code sample
 {: .no_toc }
@@ -507,9 +535,12 @@ Child:triggered
 
 ## Sink
 
-An application can register for output from the EventProcessor by supplying a consumer
-to addSink. Support for publishing to a sink is built into the streaming api, `[builder_type]#sink`.
-A consumer has a string key to partition outputs.
+An application can register for output from the EventProcessor by supplying a consumer to addSink and removed with a 
+call to removeSink. Bound classes can publish to sinks during an event process cycle, any registered sinks will see 
+the update as soon as the data is published, not at the end of the cycle. 
+
+* Adding sink - `processor.addSink("mySink", (Consumer<T> t) ->{})`
+* Removing sink - `processor.removeSink("mySink")`
 
 ### Code sample
 {: .no_toc }
@@ -518,14 +549,19 @@ A consumer has a string key to partition outputs.
 
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(cfg ->
-    DataFlow.subscribeToIntSignal("myIntSignal")
-        .mapToObj(d -> "intValue:" + d)
-        .sink("mySink"));
+            DataFlow.subscribeToIntSignal("myIntSignal")
+                    .mapToObj(d -> "intValue:" + d)
+                    .sink("mySink")//CREATE A SINK IN THE PROCESSOR
+    );
     processor.init();
+
+    //ADDING A SINK
     processor.addSink("mySink", (Consumer<String>) System.out::println);
+
     processor.publishSignal("myIntSignal", 10);
     processor.publishSignal("myIntSignal", 256);
 
+    //REMOVING A SINK
     processor.removeSink("mySink");
     processor.publishSignal("myIntSignal", 512);
 }
@@ -540,9 +576,18 @@ intValue:10
 intValue:256
 {% endhighlight %}
 
-An application can remove sink using the call `EventProcessor#removeSink`
-
 ## Audit logging 
+Fluxtion provides an audit logging facility that captures the output when an event processing cycle is triggered.
+An event processor must be generated with audit logging enabled, nodes can optionally write key/value tuples. Audit
+output includes:
+
+* The triggering event
+* Time of the event
+* The order in which nodes are invoked
+* A map structure that each node can write a key/value pair to
+
+The control of the output is covered in the control section, by default the audit log writes output using the standard
+java util logging framework.
 
 ### Code sample
 {: .no_toc }
@@ -580,6 +625,8 @@ public class AuditExample {
 ### Sample log
 {: .no_toc }
 
+Audit records are encoded as a stream of yaml documents by default.  
+
 {% highlight console %}
 
 eventLogRecord: 
@@ -612,7 +659,15 @@ eventLogRecord:
 ## Lifecycle
 
 User nodes that are added to the processing graph can attach to the lifecycle callbacks by annotating methods with 
-the relevant annotations.
+the relevant annotations. The event processor implements the Lifecycle interface, application code calls a lifecyle method
+to trigger a lifecycle process cycle.
+
+{: .warning }
+**EventProcessor.init()** must always be called before any events are submitted to an event processor instance
+{: .fs-4 }
+
+### Code sample
+{: .no_toc }
 
 {% highlight java %}
 
@@ -625,7 +680,6 @@ public static void main(String[] args) {
 }
 
 public static class MyNode {
-
     @Initialise
     public void myInitMethod() {
         System.out.println("Initialise");
@@ -649,7 +703,9 @@ public static class MyNode {
 
 {% endhighlight %}
 
-Output
+### Sample log
+{: .no_toc }
+
 {% highlight console %}
 Initialise
 Start
@@ -665,7 +721,6 @@ TearDown
 {% highlight java %}
 
 public class ClockExample {
-
     public static void main(String[] args) {
         var processor = Fluxtion.interpret(new TimeLogger());
         processor.init();
@@ -684,7 +739,6 @@ public class ClockExample {
         syntheticTime.add(1_800_000_000_000L);
         processor.onEvent(DateFormat.getDateTimeInstance());
     }
-
 
     public static class TimeLogger {
         public Clock wallClock = Clock.DEFAULT_CLOCK;
@@ -758,8 +812,6 @@ MyNode event received:test
 MyNode::batchPause
 MyNode::batchEnd
 {% endhighlight %}
-
-
 
 ## Audit log control
 

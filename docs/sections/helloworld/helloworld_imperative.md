@@ -214,9 +214,9 @@ has its updated method invoked. Annotate the trigger method with **@OnTrigger** 
 
 {% highlight java %}
 public class DataSumCalculator {
-private final Event_A_Handler event_A_Handler;
-private final Event_B_Handler event_B_Handler;
-private double sum;
+    private final Event_A_Handler event_A_Handler;
+    private final Event_B_Handler event_B_Handler;
+    private double sum;
 
     public DataSumCalculator(Event_A_Handler event_A_Handler, Event_B_Handler event_B_Handler) {
         this.event_A_Handler = event_A_Handler;
@@ -259,7 +259,7 @@ trigger method. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
 public class BreachNotifier {
-private final DataSumCalculator dataAddition;
+    private final DataSumCalculator dataAddition;
 
     public BreachNotifier(DataSumCalculator dataAddition) {
         this.dataAddition = dataAddition;
