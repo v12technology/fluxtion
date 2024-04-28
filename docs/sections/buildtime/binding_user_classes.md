@@ -22,8 +22,6 @@ a number of options are available for adding user classes to an EventProcessorCo
 These examples use `Fluxtion.interpret` which executes the event processor as an in-process interpretation, the 
 available output types of the generated event processor are described in [Processor generation](processor_generation.md).
 
-The source project for the examples can be found [here]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/binding)
-
 {: .no_toc }
 <details open markdown="block">
   <summary>
@@ -33,6 +31,9 @@ The source project for the examples can be found [here]({{site.reference_example
 - TOC
 {:toc}
 </details>
+
+# Example project
+The source project for the examples can be found [here]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/binding)
 
 # Imperative model building
 Call one of the static Fluxtion [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) build methods with a

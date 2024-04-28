@@ -715,6 +715,17 @@ TearDown
 
 
 ## Clocks and time
+User classes bound into an event processor have access to a [Clock]({{site.fluxtion_src_runtime}}/time/Clock.java) to 
+query the current time in the processor. The Clock instance is driven by a strategy the supplies a long to the clock. 
+A [ClockStrategy]({{site.fluxtion_src_runtime}}/time/ClockStrategy.java) can be changed at runtime by the application. 
+This is particularly useful during replay mode, or when writing unit tests that have time dependent variables and the 
+time needs to be data driven.
+
+Set the clock strategy with
+
+`processor.setClockStrategy(ClockStrategy customClockStrategy);`
+
+The clock has no units it is a long the application can use in any way it wants.
 
 ### Code sample
 {: .no_toc }
@@ -814,6 +825,12 @@ MyNode::batchEnd
 {% endhighlight %}
 
 ## Audit log control
+The audit log facility can be controlled at runtime by the application. [LogRecord]({{site.fluxtion_src_runtime}}/audit/LogRecord.java) 
+are the output of the event auditor, the application can customise LogRecord handling in three ways:
+
+* Change the log level - info is the default level
+* Log record encoding - yaml is the default encoding
+* Log record processor - java.util.logging is the default LogRecord processor
 
 ### Code sample
 {: .no_toc }
@@ -836,6 +853,7 @@ public class AuditControlExample {
 
         //REPLACE LOGRECORD ENCODER
         processor.setAuditLogRecordEncoder(new MyLogEncoder(Clock.DEFAULT_CLOCK));
+
         //REPLACE LOGRECORD PROCESSOR
         processor.setAuditLogProcessor(logRecord -> {
             System.err.println("WARNING -> "+ logRecord.toString());
@@ -915,6 +933,14 @@ WARNING -> IGNORING ALL RECORDS!!
 
 
 ## Setting context parameters
+An application can dynamically inject key/value properties into a running event processor. The context parameters are
+available for any bound node to look up using an injected EventProcessorContext. Setting context parameters does not
+trigger an event processing cycle. 
+
+Context parameters api:
+
+* Single parameter - `EventProcessor.addContextParameter(Object key, Object value)`
+* Overwrite all parameters - `EventProcessor.setContextParameterMap(Map<Object, Object> newContextMapping)`
 
 ### Code sample
 {: .no_toc }
@@ -1005,7 +1031,10 @@ runtime injected:Mon Jan 12 14:30:00 GMT 1970
 
 # Query into a processor
 
-## Node lookup by id
+## User node lookup by id
+[NamedNodes]({{site.fluxtion_src_runtime}}/node/NamedNode.java) are available for lookup from an event processor instance 
+using their name. The application can then use the reference to pull data from the node without requiring an event 
+process cycle to push data to an output.
 
 ### Code sample
 {: .no_toc }
@@ -1013,24 +1042,25 @@ runtime injected:Mon Jan 12 14:30:00 GMT 1970
 
 public class GetNodeByIdExample {
     public static void main(String[] args) throws NoSuchFieldException {
-        var processor = Fluxtion.interpret(c ->{
-            DataFlow.subscribeToNode(new DirtyStateNode())
-                    .console("Monday is triggered");
-        });
+        var processor = Fluxtion.interpret(new MondayChecker());
         processor.init();
 
         processor.onEvent("Monday");
         processor.onEvent("Tuesday");
         processor.onEvent("Wednesday");
 
-        DirtyStateNode dirtyStateNode = processor.getNodeById("MondayChecker");
-        System.out.println("Monday count:" + dirtyStateNode.getMondayCount() + "\n");
+        //LOOKUP USER NODE
+        MondayChecker mondayChecker = processor.getNodeById("MondayChecker");
+
+        //PULL DATA
+        System.out.println("PULLING Monday count:" + mondayChecker.getMondayCount());
 
         processor.onEvent("Monday");
-        System.out.println("Monday count:" + dirtyStateNode.getMondayCount());
+        //PULL DATA
+        System.out.println("PULLING Monday count:" + mondayChecker.getMondayCount());
     }
 
-    public static class DirtyStateNode implements NamedNode {
+    public static class MondayChecker implements NamedNode {
         private int mondayCounter = 0;
 
         @OnEventHandler
@@ -1057,14 +1087,16 @@ public class GetNodeByIdExample {
 {: .no_toc }
 
 {% highlight console %}
-Monday is triggered
-Monday count:1
-
-Monday is triggered
-Monday count:2
+PULLING Monday count:1
+PULLING Monday count:2
 {% endhighlight %}
 
-## Streaming node lookup by id
+## DataFlow node lookup by id
+DataFlow nodes are available for lookup from an event processor instance using their name. In this case the lookup 
+returns a reference to the wrapped value and not the wrapping node. The application can then use the reference to 
+pull data from the node without requiring an event process cycle to push data to an output.
+
+When building the graph with DSL a call to `id` makes that element addressable for lookup.
 
 ### Code sample
 {: .no_toc }
@@ -1111,11 +1143,14 @@ Monday count:2
 {% endhighlight %}
 
 ## Auditor lookup by id
+[Auditors]({{site.fluxtion_src_runtime}}/audit/Auditor.java) are available for lookup from an event processor instance
+using their name. The application can then use the reference to pull data from the Auditor without requiring an event
+process cycle to push data to an output.
 
 ### Code sample
 {: .no_toc }
-{% highlight java %}
 
+{% highlight java %}
 
 public class AuditLookupExample {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
@@ -1131,7 +1166,8 @@ public class AuditLookupExample {
 
         //LOOKUP AUDITOR BY NAME
         MyAuditor myAuditor = processor.getAuditorById("myAuditor");
-        System.out.println("\nMyAuditor::invocationCount " + myAuditor.getInvocationCount());
+        //PULL DATA FROM AUDITOR
+        System.out.println("\nPULL MyAuditor::invocationCount " + myAuditor.getInvocationCount());
     }
 
     public static class MyAuditor implements Auditor {
@@ -1164,5 +1200,5 @@ MyAuditor::eventReceived A
 MyAuditor::eventReceived B
 MyAuditor::eventReceived C
 
-MyAuditor::invocationCount 4
+PULL MyAuditor::invocationCount 4
 {% endhighlight %}

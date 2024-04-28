@@ -43,7 +43,6 @@ compiler_libs:
 ---
 
 # Generating an event processor
-
 {: .no_toc }
 
 The Fluxtion compiler library provides several tools for generating an event processor from a model supplied by the
@@ -59,8 +58,8 @@ found [here]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/e
 ![TEST](../../images/integration_overview-generating.png)
 
 ## Generating modes
-
 {: .no_toc }
+
 To complete building an event processor the code model and a generation mode is passed to the compiler. The final event
 processor binds in all user classes combined with pre-calculated event dispatch to meet the dispatch rules.
 
@@ -74,7 +73,6 @@ Regardless of which generation mode is used the generated event processor will b
 dispatch rules.
 
 ## Generation modes comparison
-
 {: .no_toc }
 
 | Mode                      | Runtime libraries<br/>Required | Advantage                                  | Disadvantages                     | Use case |
@@ -93,7 +91,7 @@ dispatch rules.
 {:toc}
 </details>
 
-# Interpreted
+# Interpreted overview
 
 The interpreted mode implements the event processor with a map based dispatch. Generation and execution all happen in
 the
@@ -387,6 +385,7 @@ public class FieldsExample {
 {% endhighlight %}
 
 ## Serialised event processor
+{: .no_toc }
 
 The full event processor
 is [FieldsExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/FieldsExampleProcessor.java)
@@ -502,6 +501,7 @@ public class CustomSerializerExample {
 {% endhighlight %}
 
 ## Serialised event processor
+{: .no_toc }
 
 The generated event processor
 is [CustomSerializerExampleProcessor]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/generation/genoutput/CustomSerializerExampleProcessor.java)
