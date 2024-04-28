@@ -58,7 +58,6 @@ An application can remove sink using the call `EventProcessor#removeSink`
 {% highlight java %}
 
 public class ClockExample {
-
     public static class TimeLogger {
         public Clock wallClock = Clock.DEFAULT_CLOCK;
 
