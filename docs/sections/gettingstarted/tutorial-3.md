@@ -2,7 +2,7 @@
 title: 3rd tutorial - auditor
 parent: Getting started
 has_children: false
-nav_order: 3
+nav_order: 4
 published: true
 auditor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/auditor/SystemStatisticsAuditor.java
 processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java

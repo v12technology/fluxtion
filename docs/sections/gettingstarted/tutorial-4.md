@@ -2,7 +2,7 @@
 title: 4th tutorial - event tracing
 parent: Getting started
 has_children: false
-nav_order: 4
+nav_order: 5
 published: true
 auditor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/auditor/SystemStatisticsAuditor.java
 processor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java

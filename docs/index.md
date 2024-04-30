@@ -316,6 +316,8 @@ Image is generated as part of the code generator
 ## Developers
 For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
 
+A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
+
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
 Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
 

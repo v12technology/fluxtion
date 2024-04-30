@@ -2,7 +2,7 @@
 title: 6th tutorial - AOT no spring
 parent: Getting started
 has_children: false
-nav_order: 6
+nav_order: 7
 published: true
 ---
 
