@@ -1,12 +1,11 @@
 ---
-title: 4th tutorial - event tracing
+title: 4th tutorial - auditor
 parent: Getting started
 has_children: false
 nav_order: 5
 published: true
-auditor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/auditor/SystemStatisticsAuditor.java
-processor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
-slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.properties
+auditor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/auditor/SystemStatisticsAuditor.java
+processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
 ---
 
 <details markdown="block">
@@ -19,155 +18,212 @@ slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.propert
 </details>
 
 # Introduction
-This tutorial is an introduction to tracing event processing at runtime, we call this **event audit**.
-The reader should be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before
-starting this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial4-lottery-auditlog)
+This tutorial is an introduction to monitoring the dependency injection container at runtime, we call this **auditing**. 
+The reader should be proficient in Java, maven, git, Spring and have completed the [second lottery tutorial](tutorial-2.md) before 
+starting this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial3-lottery-auditor)
 
-Our goal is to write a log file that traces the event call graph as events are processed 
+Our goal is to create a custom monitoring class that will observe the event processing without any changes to the 
+application code, and record the following statistics:
+
+- Node stats, method invocation count grouped by bean instance
+- Event stats, method invocation count grouped by exported method
+- Node method stats, method invocation count grouped by bean instance and method
 
 At the end of this tutorial you should understand:
 
-- The role of the EventLogger
-- The format of an event log element
-- How to add event auditing to the container 
-- How to use EventLogger in a bean
-- How to load a custom AuditLogProcessor in the container
+- The role of the Auditor interface in Fluxtion
+- How the auditor is notified by the container
+- How to implement a custom auditor
+- How to load a custom auditor in the container
 
 
-# Event Audit concepts
-Fluxtion manages the build complexity as more beans are added to the container but understanding deployed event processing 
-can be difficult. Tracing the event propagation call tree through the nodes helps the developer understand the runtime 
-behaviour. Fluxtion provides an audit log facility that records the traced call chain as a yaml document.
+# Auditing concepts
+As event driven systems grow more complex tools are needed to monitor critical application metrics giving early
+warning of potential problems. It is preferable to develop monitoring separately to application code so that we do not
+accidentally introduce bugs to business functionality, and we can add or remove monitoring to the application without 
+changing functional behaviour.
 
-Event auditing is implemented as a custom Auditor using the monitoring callbacks to create a LogRecord, see [audit tutorial](tutorial-3.md)
-for an example of Fluxtion auditing.
+In Fluxtion we achieve this through the **[Auditor]({{site.fluxtion_src_runtime}}/audit/Auditor.java)** interface. 
+Client code implements the Auditor interface and register an auditor instance at build time. At runtime the custom
+auditor receives monitoring notifications with event metadata attached. The auditor is free to process the event 
+metadata in any way it wants.
 
-## Log output
-Fluxtion produces a structured log output, known as a **[LogRecord]({{site.fluxtion_src_runtime}}/audit/LogRecord.java)**, 
-for each event processed. LogRecords are marshalled into yaml documents that are machine-readable and remove logging noise.
-A LogRecord includes metadata for the input event, a list of elements that traces the node execution path and optional
-key value pairs written by the user code, 
-
-Sample log record for a single event
-
-{% highlight yaml %}
-28-Sept-23 18:14:02 [main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: 1696144229587
-logTime: 1696144229587
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { ticketPurchased: Ticket[number=126556, id=dcf80fbc-b553-4465-b60c-0e7ee3125084]}
-- lotteryMachine: { ticketsSold: 1}
-endTime: 1696144229592
-{% endhighlight %}
-
-Points to note from this example:
-- The header records the context for the event being processed
-  - eventTime: the time the event was created if the incoming event provides that information
-  - logTime: the time the log record is created i.e. when the event processing began 
-  - endTime: the time the log record is complete i.e. when the event processing completed 
-  - groupingId: a set of nodes can have a groupId and their audit configuration is controlled as a group 
-  - event: The simple class name of the event that created the execution 
-  - optional elements
-    - eventToString: records the toString of the incoming event
-    - thread: the thread the container event processing was called on
-- The nodeLogs element records the progress through the node graph as a list element
-  - Only nodes that are visited are recorded in the list
-  - The order of the list mirrors the order of execution
-  - The key is same name of the node variable in the container
-  - A map of values is written for each node visited.
-
-## LogRecordListener
-The **[LogRecordListener]({{site.fluxtion_src_runtime}}/audit/LogRecord.java)** receives a LogRecord for processing, 
-the default Fluxtion LogRecordListener uses java util logging to output the records. A custom LogRecordListener can be added 
-to the container at runtime allowing the LogRecord to be bound into any logging framework.
+## Auditor notifications
+The [Auditor]({{site.fluxtion_src_runtime}}/audit/Auditor.java) interface is copied below with javadoc comments removed
 
 {% highlight java %}
-lotteryEventProcessor.setAuditLogProcessor(new FluxtionSlf4jAuditor());
-{% endhighlight %}
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
 
-## Custom LogRecord encoding
-The event audit encodes the log records as a yaml document, the container accepts a custom encoder at runtime that 
-encodes the log record before it is pushed to the LogRecordListener.
-
-## Method tracing
-By default, the nodeLogs element only contains elements where user code has written a key/value pair to the LogRecord.
-If method tracing is enabled any node visited is added to nodeLogs regardless of user code. The log level that method 
-that enables tracing is passed as an argument to addEventAudit or as a config element in ths spring file
-
-## Runtime log level
-The runtime event audit LogLevel can be controlled at the container level:
-
-{% highlight javav %}
-lotteryEventProcessor.setAuditLogLevel(EventLogControlEvent.LogLevel.DEBUG);
-{% endhighlight %}
-
-## Add audit logging to user classes
-To add audit logging to our nodes we extend EventLogNode and use the injected EventLogger to write key/value pairs.
-User code can access the audit LogRecord at runtime via an  **[EventLogger]({{site.fluxtion_src_runtime}}/audit/EventLogger.java)**
-instance and write values that will appear in the nodeLogs element for this node. The container injects EventLogger
-instances to any bean that implements **[EventLogSource]({{site.fluxtion_src_runtime}}/audit/EventLogSource.java)**.
-
-
-# Adding custom event auditing to the application
-
-## Add auditing 
-Classes that want to create audit log records extend **[EventLogNode]({{site.fluxtion_src_runtime}}/audit/EventLogNode.java)** and will receive an injected EventLogger
-at runtime. Writing audit key/values is simply:
-
-{% highlight java %}
-public class LotteryMachineNode extends EventLogNode implements @ExportService LotteryMachine {
-
-    //code removed for clarity ....
-    @Start
-    public void start() {
-        Objects.requireNonNull(resultPublisher, "must set a results publisher before starting the lottery game");
-        auditLog.info("resultPublisher", "valid");
-    }
-
-    @OnTrigger
-    public boolean processNewTicketSale() {
-        ticketsBought.add(ticketSupplier.get());
-        auditLog.info("ticketsSold", ticketsBought.size());
-        return false;
-    }
+public interface Auditor extends Lifecycle {
+  default boolean auditInvocations() {
+    return false;
+  }
+  @Override
+  default void init() {}
+  void nodeRegistered(Object node, String nodeName);
+  default void eventReceived(Event event) {}
+  default void eventReceived(Object event) {}
+  default void nodeInvoked(Object node, String nodeName, String methodName, Object event) {}
+  default void processingComplete() {}
+  @Override
+  default void tearDown() {}
 }
 {% endhighlight %}
 
-## Custom Slf4f audit logger
-The default Fluxtion audit implementation uses java.util.logging as and audit logger, we are going to replace this with  
-a custom audit logger that is implemented with Slf4J's logger. Logging events will be sent to this class and can be 
-processed in any way the user wants. 
+Methods in the interface are called by the container at runtime except auditInvocations, which is called at build time.
+The callback nodeInvoked is a high frequency notification called on every method invoked on every bean, 
+auditInvocations controls whether this monitoring method is notified at runtime.
 
-To create a custom logger we implement the LogRecordListener interface to create the 
-custom logger. 
+Javadoc is attached to the class for detail reading, but it is important to understand these concepts:
+
+-  **init** called once before any other lifecycle methods
+-  **nodeRegistered** called after init before any lifecycle methods, allows the auditor to build a map of beans at startup
+-  **eventReceived** called when a service call or event is received by the container. Precedes any bean method calls
+-  **nodeInvoked** called before any bean service or trigger method in an event processing cycle
+-  **processingComplete** called at the end of a processing cycle
+-  **tearDown** called once when the container tearDown lifecycle method is called
+
+## Loading an auditor into the container
+An auditor is bound into the container at build time using the [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java)
+instance that is provided in one of the overloaded Fluxtion build methods. The auditor instance must be registered with
+a name that is unique for the container.
 
 {% highlight java %}
-@Slf4j
-public class FluxtionSlf4jAuditor implements LogRecordListener {
+eventProcessorConfig.addAuditor(new SystemStatisticsAuditor(), "lotteryAuditor");
+{% endhighlight %}
+
+# Implementing the auditor
+The [SystemStatisticsAuditor]({{site.getting_started}}/{{page.auditor_src}}) implements Auditor and calculates the 
+monitoring statistics we want to report. The exported service method publishStats creates the report and publishes it 
+to the console. For our auditor to be useful it needs to interact with the outside world, in this example we provide 
+two ways for publishStats to be called.
+
+1. SystemStatisticsAuditor implements the lifecycle tearDown method that chains a call to publishStats() on shutdown
+2. SystemStatisticsAuditor exports the service SystemMonitor, application code can locate the auditor's exported service and call publishStats on demand
+
+
+{% highlight java %}
+public class SystemStatisticsAuditor implements Auditor, @ExportService SystemMonitor {
+  private transient final Map<Object, Stats> nodeStats = new IdentityHashMap<>();
+  private transient final Map<String, Stats> eventStats = new HashMap<>();
+  private transient final Map<String, Stats> methodStats = new HashMap<>();
+
     @Override
-    public void processLogRecord(LogRecord logRecord) {
-        log.info(logRecord.toString());
+    public void nodeRegistered(Object o, String s) {
+        nodeStats.put(o, new Stats(s));
+    }
+
+    @Override
+    public void eventReceived(Object event) {
+        updateEventStats(event);
+    }
+
+    @Override
+    public void eventReceived(Event event) {
+        updateEventStats(event);
+    }
+
+    @Override
+    public void nodeInvoked(Object node, String nodeName, String methodName, Object event) {
+        nodeStats.computeIfPresent(node, (n, s) -> s.incrementCallCount());
+        String name = nodeName + "#" + methodName;
+        methodStats.compute(name, (n, s) ->{
+            s = s == null ? new Stats(n) : s;
+            s.incrementCallCount();
+            return s;
+        });
+    }
+
+    @Override
+    public void tearDown() {
+        publishStats();
+    }
+
+    @Override
+    public boolean auditInvocations() {
+        return true;
+    }
+
+    @Override
+    public void publishStats() {
+        System.out.println(
+                nodeStats.values().stream()
+                        .sorted(Comparator.comparing(Stats::getCount))
+                        .map(Stats::report)
+                        .collect(Collectors.joining("\n\t", "Node stats:\n\t", ""))
+        );
+        System.out.println(
+                eventStats.values().stream()
+                        .sorted(Comparator.comparing(Stats::getCount))
+                        .map(Stats::eventReport)
+                        .collect(Collectors.joining("\n\t", "Event stats:\n\t", ""))
+        );
+        System.out.println(
+                methodStats.values().stream()
+                        .sorted(Comparator.comparing(Stats::getCount))
+                        .map(Stats::methodReport)
+                        .collect(Collectors.joining("\n\t", "Node method stats:\n\t", ""))
+        );
+    }
+
+    private void updateEventStats(Object event){
+        String name = event.getClass().getSimpleName();
+        if(event instanceof ExportFunctionAuditEvent func){
+            name = func.toString();
+        }
+        eventStats.compute(name, (c, s) ->{
+            s = s == null ? new Stats(c) : s;
+            s.incrementCallCount();
+            return s;
+        });
+    }
+
+    @Data
+    public static final class Stats {
+        private final String name;
+        private int count;
+
+        public Stats incrementCallCount() {
+            count++;
+            return this;
+        }
+
+        public String report() {
+            return "node:" + name + ", invokeCount:" + count;
+        }
+
+        public String eventReport() {
+            return "event:" + name + ", invokeCount:" + count;
+        }
+
+        public String methodReport() {
+            return "method:" + name + ", invokeCount:" + count;
+        }
     }
 }
 {% endhighlight %}
 
-## Building the event processor with audit logging
-As Fluxtion is in aot mode the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) can be inspected
-to locate where the notification callbacks to the auditor are injected.
+We won’t discuss the calculation in detail, but important points to note are how the monitoring callbacks are used to 
+drive the statistics we want to capture.
 
-The [FluxtionSpringConfig]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpringConfig.java) bean in the spring
-config file will automatically add the audit logger to the generated container. The supplied log level determines 
-when method tracing is switched on, when audit LogLevel for the container is set to DEBUG tracing will be enabled.
+- **nodeRegistered** - builds an IdentityHashMap of node instances that will be used to record node stats
+- **eventReceived** - calculates the client to container event call statistics
+- **nodeInvoked** - builds the method invocation statistics for a node
+
+# Building the application
+As Fluxtion is in aot mode the serialised [LotteryProcessor]({{site.getting_started}}/{{page.processor_src}}) can be inspected
+to locate where the notification callbacks to the auditor are injected. 
+
+A [FluxtionSpringConfig]({{site.fluxtion_src_compiler}}/extern/spring/FluxtionSpringConfig.java) bean is added to the spring 
+config file that references the SystemStatisticsAuditor we want to include in the event processor. A specialised handler 
+for FluxtionSpringConfig customises the generated event processor by calling methods on 
+the [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) at build time.
 
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-
     <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
     </bean>
 
@@ -175,10 +231,15 @@ when method tracing is switched on, when audit LogLevel for the container is set
         <constructor-arg ref="ticketStore"/>
     </bean>
 
+    <!--AUDITORS-->
+    <bean id="systemAuditor" class="com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor"/>
     <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
-        <property name="logLevel" value="DEBUG"/>
+        <property name="auditors">
+            <list>
+                <ref bean="systemAuditor"/>
+            </list>
+        </property>
     </bean>
-
 </beans>
 {% endhighlight %}
 
@@ -196,186 +257,146 @@ greg@Gregs-iMac tutorial3-lottery-auditor % mvn compile exec:java
 {% endhighlight %}
 
 # Running the application
-[Configuration for SLf4j]({{site.getting_started}}/{{page.slf4j_config}}) is provided in the resources directory that will publish the audit records
-to a file called myAudit.log. In production, it is likely the audit log will be published to a separate file that has no
-other output.
+The lottery application has a few changes from the second tutorial:
 
-{% highlight properties %}
-org.slf4j.simpleLogger.logFile=myAudit.log
-org.slf4j.simpleLogger.defaultLogLevel=INFO
-org.slf4j.simpleLogger.showDateTime=false
-org.slf4j.simpleLogger.dateTimeFormat=dd-MMM-yy HH:mm:ss
-org.slf4j.simpleLogger.showShortLogName=true
-org.slf4j.simpleLogger.log.org.apache.velocity.deprecation=ERROR
+-  LotteryEventProcessor instance is assigned to a member variable
+-  App code calls LotterySystemMonitor::publishStats on the exported service during execution
+-  Teardown of the container is called, lotteryEventProcessor.tearDown(), that forces a final stats publication from the auditor
+-  Logging has been removed from the beans TicketStoreNode and LotteryMachineNode to reduce output
+
+Our updated LotteryApp looks like this:
+
+{% highlight java %}
+public class LotteryApp {
+    //code removed for clarity ...
+
+    //Now a member variable 
+    private static LotteryProcessor lotteryEventProcessor;
+
+    public static void main(String[] args) {
+        start(LotteryApp::ticketReceipt, LotteryApp::lotteryResult);
+        //try and buy a ticket - store is closed
+        ticketStore.buyTicket(new Ticket(12_65_56));
+
+        //open store and buy ticket
+        ticketStore.openStore();
+        ticketStore.buyTicket(new Ticket(12_65_56));
+
+        //print stats
+        lotteryEventProcessor.consumeServiceIfExported(LotterySystemMonitor.class, LotterySystemMonitor::publishStats);
+
+        //code removed for clarity ...
+
+        //teardown - should print stats
+        lotteryEventProcessor.tearDown();
+    }
+
+    public static void start(Consumer<String> ticketReceiptHandler, Consumer<String> resultsPublisher){
+        lotteryEventProcessor = new LotteryProcessor();
+        //code removed for clarity ...
+    }
+
+}
 {% endhighlight %}
 
-## Audit output
+Executing our application produces different output from the second tutorial. The statistics output from the auditor
+is published twice to the console, one driven by user code and the other by teardown lifecycle.
 
-Below is the capture of the audit output for our application
+{% highlight console %}
+27-Sept-23 21:10:07 [main] INFO LotteryApp - store shut - no tickets can be bought
+27-Sept-23 21:10:07 [main] INFO LotteryApp - good luck with Ticket[number=126556, id=07a90af9-9ea7-4081-b27d-3670e8e98e19]
 
-{% highlight yaml %}
-[main] INFO GenerationContext - classloader:jdk.internal.loader.ClassLoaders$AppClassLoader@251a69d7
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086107
-groupingId: null
-event: EventLogControlEvent
-eventToString: EventLogConfig{level=null, logRecordProcessor=com.fluxtion.example.cookbook.lottery.auditor.FluxtionSlf4jAuditor@62833051, sourceId=null, groupId=null}
-thread: main
-nodeLogs:
-endTime: 1696145086110
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086453
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract void com.fluxtion.example.cookbook.lottery.api.LotteryMachine.setResultPublisher(java.util.function.Consumer<java.lang.String>)
-thread: main
-nodeLogs:
-- lotteryMachine: { thread: main, method: setResultPublisher}
-endTime: 1696145086454
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086454
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract void com.fluxtion.example.cookbook.lottery.api.TicketStore.setTicketSalesPublisher(java.util.function.Consumer<java.lang.String>)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: setTicketSalesPublisher}
-endTime: 1696145086454
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: 1696145086455
-logTime: 1696145086455
-groupingId: null
-event: LifecycleEvent
-eventToString: Start
-nodeLogs:
-- ticketStore: { ticketSalesPublisher: valid, storeOpen: false}
-- lotteryMachine: { resultPublisher: valid}
-endTime: 1696145086455
-[main] INFO LotteryApp - store shut - no tickets can be bought
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086455
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, rejectTicket: true, storeOpen: false}
-endTime: 1696145086455
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086455
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract void com.fluxtion.example.cookbook.lottery.api.TicketStore.openStore()
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: openStore, storeOpen: true}
-endTime: 1696145086455
-[main] INFO LotteryApp - good luck with Ticket[number=126556, id=e0a29b34-a515-4ac5-8312-025883eda477]
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086455
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, ticketPurchased: Ticket[number=126556, id=e0a29b34-a515-4ac5-8312-025883eda477]}
-- lotteryMachine: { thread: main, method: processNewTicketSale, ticketsSold: 1}
-endTime: 1696145086464
-[main] INFO LotteryApp - good luck with Ticket[number=365858, id=17c8a462-8cd5-48cb-b3fa-64a589cf2591]
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086464
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, ticketPurchased: Ticket[number=365858, id=17c8a462-8cd5-48cb-b3fa-64a589cf2591]}
-- lotteryMachine: { thread: main, method: processNewTicketSale, ticketsSold: 2}
-endTime: 1696145086465
-[main] INFO LotteryApp - good luck with Ticket[number=730012, id=cce29536-de90-47f9-ac96-2400d5d1083b]
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086465
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, ticketPurchased: Ticket[number=730012, id=cce29536-de90-47f9-ac96-2400d5d1083b]}
-- lotteryMachine: { thread: main, method: processNewTicketSale, ticketsSold: 3}
-endTime: 1696145086465
-[main] INFO LotteryApp - invalid numbers Ticket[number=25, id=c96836c2-afc0-424b-ac72-ece88aa9a0d6]
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086465
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, rejectTicket: true, badTicket: Ticket[number=25, id=c96836c2-afc0-424b-ac72-ece88aa9a0d6], invalidNumber: 25}
-endTime: 1696145086465
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086465
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract void com.fluxtion.example.cookbook.lottery.api.TicketStore.closeStore()
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: closeStore, storeOpen: false}
-endTime: 1696145086465
-[main] INFO LotteryApp - store shut - no tickets can be bought
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086465
-groupingId: null
-event: Exp[tutorial-3.md](tutorial-3.md)ortFunctionAuditEvent
-eventToString: public abstract boolean com.fluxtion.example.cookbook.lottery.api.TicketStore.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket)
-thread: main
-nodeLogs:
-- ticketStore: { thread: main, method: buyTicket, rejectTicket: true, storeOpen: false}
-endTime: 1696145086465
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: -1
-logTime: 1696145086466
-groupingId: null
-event: ExportFunctionAuditEvent
-eventToString: public abstract void com.fluxtion.example.cookbook.lottery.api.LotteryMachine.selectWinningTicket()
-thread: main
-nodeLogs:
-- lotteryMachine: { thread: main, method: selectWinningTicket, winningTicket: Ticket[number=126556, id=e0a29b34-a515-4ac5-8312-025883eda477]}
-endTime: 1696145086466
-[main] INFO FluxtionSlf4jAuditor - eventLogRecord:
-eventTime: 1696145086466
-logTime: 1696145086466
-groupingId: null
-event: LifecycleEvent
-eventToString: TearDown
-nodeLogs:
-endTime: 1696145086466
+-------------------------------------------------------------------------------------------
+NODE STATS START
+-------------------------------------------------------------------------------------------
+Node stats:
+  node:context, invokeCount:0
+  node:callbackDispatcher, invokeCount:0
+  node:subscriptionManager, invokeCount:0
+  node:lotteryMachine, invokeCount:2
+  node:ticketStore, invokeCount:4
+Event stats:
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode.setResultPublisher(java.util.function.Consumer<java.lang.String>), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor.publishStats(), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.setTicketSalesPublisher(java.util.function.Consumer<java.lang.String>), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.openStore(), invokeCount:1
+  event:LifecycleEvent, invokeCount:2
+  event:public boolean com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket), invokeCount:2
+Node method stats:
+  method:ticketStore#setTicketSalesPublisher, invokeCount:1
+  method:lotteryMachine#processNewTicketSale, invokeCount:1
+  method:ticketStore#openStore, invokeCount:1
+  method:lotteryMachine#setResultPublisher, invokeCount:1
+  method:systemAuditor#publishStats, invokeCount:1
+  method:ticketStore#buyTicket, invokeCount:2
+-------------------------------------------------------------------------------------------
+NODE STATS END
+-------------------------------------------------------------------------------------------
 
+27-Sept-23 21:10:07 [main] INFO LotteryApp - good luck with Ticket[number=365858, id=1cf81163-70b7-40fa-b3df-e7f8891a334e]
+27-Sept-23 21:10:07 [main] INFO LotteryApp - good luck with Ticket[number=730012, id=22f12028-6c95-4a07-9c03-3d7d1fc66e51]
+27-Sept-23 21:10:07 [main] INFO LotteryApp - invalid numbers Ticket[number=25, id=c19846a1-bbf7-4045-9251-ed663025b111]
+27-Sept-23 21:10:07 [main] INFO LotteryApp - store shut - no tickets can be bought
+27-Sept-23 21:10:07 [main] INFO LotteryApp - winning numbers:126556
+
+-------------------------------------------------------------------------------------------
+NODE STATS START
+-------------------------------------------------------------------------------------------
+Node stats:
+  node:context, invokeCount:0
+  node:callbackDispatcher, invokeCount:0
+  node:subscriptionManager, invokeCount:0
+  node:lotteryMachine, invokeCount:5
+  node:ticketStore, invokeCount:9
+Event stats:
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode.setResultPublisher(java.util.function.Consumer<java.lang.String>), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor.publishStats(), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.closeStore(), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.setTicketSalesPublisher(java.util.function.Consumer<java.lang.String>), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.openStore(), invokeCount:1
+  event:public void com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode.selectWinningTicket(), invokeCount:1
+  event:LifecycleEvent, invokeCount:3
+  event:public boolean com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode.buyTicket(com.fluxtion.example.cookbook.lottery.api.Ticket), invokeCount:6
+Node method stats:
+  method:lotteryMachine#selectWinningTicket, invokeCount:1
+  method:ticketStore#closeStore, invokeCount:1
+  method:ticketStore#setTicketSalesPublisher, invokeCount:1
+  method:ticketStore#openStore, invokeCount:1
+  method:lotteryMachine#setResultPublisher, invokeCount:1
+  method:systemAuditor#publishStats, invokeCount:1
+  method:lotteryMachine#processNewTicketSale, invokeCount:3
+  method:ticketStore#buyTicket, invokeCount:6
+-------------------------------------------------------------------------------------------
+NODE STATS END
+-------------------------------------------------------------------------------------------
 {% endhighlight %}
+
+The detailed breakdown of the stats are for the reader to analyse, but you should be able to see that detailed
+calculations can be carried out by the auditor to assess how the user code is being used at runtime by the container.
+For the lotteryMachine instance the teardown stats tell us:
+
+- The lotteryMachine node was invoked 5 times
+  - lotteryMachine#selectWinningTicket, invokeCount:1
+  - lotteryMachine#setResultPublisher, invokeCount:1
+  - lotteryMachine#processNewTicketSale, invokeCount:3
+
+- The external events that called the lotteryMachine
+  - LotteryMachineNode.setResultPublisher(java.util.function.Consumer<java.lang.String>), invokeCount:1
+  - LotteryMachineNode.selectWinningTicket(), invokeCount:1
 
 # Conclusion
-In this tutorial we have seen how event auditing can be added to the container, user code can write key/value pairs and 
-a custom event auditor can be injected into the container. With very little effort the following benefits are
+In this tutorial we have seen how a custom auditor can be injected into the container and used to monitor runtime 
+performance without any changes required to the business code. With very little effort the following benefits are
 realised:
 
-- Tracing through a complex system can be recorded for later analysis
-- Event audit provides a valuable tool for fault-finding in production and development
-- Custom auditors control how and where we separate our tracing records from normal text based logs
-- Event auditing can be used in systems that require proof processing requirements have been met
+- Applications can be monitored at runtime without any changes to app code
+- A range of auditors with specific goals can be developed and re-used across multiple applications
+- Auditors bound to the container can easily be changed independently of application code
+- Alerts can be published from auditors if necessary giving early warning of problems
+- The impact of auditing in aot mode is very low as it is statically compiled into the container
 
-I hope you have enjoyed reading this tutorial, and it has given you a desire to adding event auditing to your applications
+I hope you have enjoyed reading this tutorial, and it has given you a desire to try adding auditing to your applications
 . Please send me any comments or suggestions to improve this tutorial
 
-[next tutorial 5](tutorial-5.md)
+[next tutorial 5](tutorial-5)
 {: .text-right }

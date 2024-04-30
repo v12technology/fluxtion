@@ -1,5 +1,5 @@
 ---
-title: 1st tutorial
+title: 1st tutorial - Spring
 parent: Getting started
 has_children: false
 nav_order: 2
@@ -47,6 +47,40 @@ Our application will be event driven through a service interface api for the out
 think about the design of our services and then the concrete implementations. Once this design is complete we will use
 Fluxtion to wire up the components. Fluxtion is low touch allowing engineers and architects to concentrate on design and 
 components with no distraction.
+
+## Processing logic
+{: .no_toc }
+Our design sketches show what we intend to integrate into our system
+
+```mermaid
+
+flowchart TB
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
+
+    buyTicket><b>ServiceCalls</b>\n buyTicket, openStore, closeStore, setTicketSalesPublisher]:::eventHandler
+    selectWinningTicket><b>ServiceCalls</b>\n selectWinningTicket, setResultPublisher]:::eventHandler
+
+
+    LotteryMachine([<b>ServiceLookup</b>::LotteryMachine]):::exportedService
+    TicketStore([<b>ServiceLookup</b>::TicketStore]):::exportedService
+    
+    TicketStoreNode[TicketStoreNode\n <b>ExportService</b>::TicketStore]:::graphNode
+    LotteryMachineNode[LotteryMachineNode\n <b>ExportService</b>::LotteryMachine]:::graphNode
+
+    selectWinningTicket ---> LotteryMachine
+    buyTicket --> TicketStore
+    
+    LotteryMachine --> LotteryMachineNode
+    TicketStore ---> TicketStoreNode
+ 
+    subgraph EventProcessor
+        TicketStoreNode --> LotteryMachineNode
+    end
+
+```
 
 ## Service api
 

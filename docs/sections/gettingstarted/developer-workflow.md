@@ -51,8 +51,8 @@ flowchart TB
     {{site.mermaid_exportedService}}
     {{site.mermaid_eventProcessor}}
 
-    AuthorizedCall><b>ServiceCall</b> CommandAuthorizer#authorize]:::eventHandler
-    RemoveAuthorizedCall><b>ServiceCall</b> CommandAuthorizer#removeAuthorized]:::eventHandler
+    AuthorizedCall><b>ServiceCall</b> authorize:CommandPermission]:::eventHandler
+    RemoveAuthorizedCall><b>ServiceCall</b> removeAuthorized:CommandPermission]:::eventHandler
     
     AdminCommand><b>InputEvent</b>::AdminCommand]:::eventHandler
     CommandAuthorizer([<b>ServiceLookup</b>::CommandAuthorizer]):::exportedService
