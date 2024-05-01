@@ -81,6 +81,18 @@ flowchart TB
     end
 
 ```
+## Spring config
+Spring config for our lottery application
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="">
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode"/>
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+</beans>
+{% endhighlight %}
 
 ## Service api
 
