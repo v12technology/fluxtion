@@ -21,6 +21,8 @@ There are three steps to use Fluxtion, step 1 is covered here:
 3 - Integrate the event processor in the app and feed it events
 {: .fs-4 }
 
+![](../images/integration_overview-running.drawio.png)
+
 ## Using an event processor
 
 Once the event processor has been generated with user methods bound in it can be used by the application. An instance of
@@ -33,8 +35,6 @@ application logic. An event processor notifies annotated callback methods accord
 - **Call EventProcessor.init() before first use**
 - **EventProcessors are not thread safe** a single event should be processed at one time.
 - **Each new event processed triggers a graph calculation cycle.**
-
-![](../images/integration_overview-running.drawio.png)
 
 Methods and instances are added to the config that feeds the fluxtion generator. The runtime behaviour of the generated
 event processor is controlled by the annotations and config input. 

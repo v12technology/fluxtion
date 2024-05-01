@@ -22,6 +22,8 @@ There are three steps to use Fluxtion, step 3 is covered here:
 3 - **Integrate the event processor in the app and feed it events**
 {: .fs-4 }
 
+![](../images/integration_overview-running.drawio.png)
+
 Once an event processor has been generated then it will need to integrated into the business application. In general there
 are three integration points for an event processor within an application
 
