@@ -335,6 +335,26 @@ is less dynamic and starts up more quickly.
 
 The interpreted version is refactored into [the aot package]({{page.example_src}}/aot/)
 
+### Aot builder
+Refactor the processor building code into [PermissionAotBuilder]({{page.example_src}}/aot/PermissionAotBuilder.java) that
+will be called as part of the build process by the maven plugin. We may have to resolve source code generation issues at this point:
+
+{% highlight java %}
+public class PermissionAotBuilder implements FluxtionGraphBuilder {
+    @Override
+    public void buildGraph(EventProcessorConfig eventProcessorConfig) {
+        eventProcessorConfig.addNode(new CommandExecutor(new CommandAuthorizerNode()));
+    }
+
+    @Override
+    public void configureGeneration(FluxtionCompilerConfig compilerConfig) {
+        compilerConfig.setClassName("PermittedCommandProcessor");
+        compilerConfig.setPackageName("com.fluxtion.example.devworkflow.aot.generated");
+    }
+}
+
+{% endhighlight %}
+
 ### AOT Unit test
 The [sample unit test]({{page.example_test}}/aot/CommandExecutorTest.java) is updated to use the AOT processor with this line changed
 
