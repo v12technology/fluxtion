@@ -6,7 +6,7 @@ nav_order: 7
 published: true
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -19,7 +19,7 @@ published: true
 
 This tutorial covers extending an existing application with new functionality and support for new event types. The reader 
 should be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before starting
-this tutorial. The project source can be found [here]({{site.getting_started}}/tutorial5-lottery-extended).
+this tutorial.
 
 Our goal is to demonstrate how Fluxtion code generation makes it easy and cost-effective to add new functionality to 
 an existing application with confidence.
@@ -28,6 +28,9 @@ At the end of this tutorial you should understand:
 
 - How to add new event types and behaviours to user functions
 - How to re-generate the container with new functionality
+
+# Example project
+The [example project]({{site.getting_started}}/tutorial5-lottery-extended) is referenced in this tutorial.
 
 # Extending the lottery game
 We will extend the lottery game to include a power lottery game and some additional reporting interfaces the application
@@ -80,7 +83,6 @@ The [spring config]({{site.getting_started}}/tutorial5-lottery-extended/src/main
 updated to include the new beans in the event processor
 
 {% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
 <beans>
     <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
     </bean>
@@ -90,7 +92,6 @@ updated to include the new beans in the event processor
     <bean id="powerMachine" class="com.fluxtion.example.cookbook.lottery.nodes.PowerLotteryMachine">
         <constructor-arg ref="ticketStore"/>
     </bean>
-
     <bean id="gameReport" class="com.fluxtion.example.cookbook.lottery.nodes.GameReportNode">
         <constructor-arg index="0" ref="lotteryMachine"/>
         <constructor-arg index="1" ref="powerMachine"/>

@@ -6,7 +6,7 @@ nav_order: 2
 published: true
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -19,8 +19,7 @@ published: true
 # Introduction
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
-proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection. The project source can be
-found [here.]({{site.getting_started}}/tutorial1-lottery)
+proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection.
 
 Our goal is to build the logic for a simple lottery application that will be connected to request and response queues.
 Serialising requests to a queue makes our application event driven and easier to scale in the future, the response queue
@@ -33,6 +32,10 @@ At the end of this tutorial you should understand how Fluxtion:
 - Calls lifecycle methods on managed components
 - Triggers event logic between dependent components
 - Wires components together
+
+
+# Example project
+The [example project]({{site.getting_started}}/tutorial1-lottery) is referenced in this tutorial.
 
 # The Lottery game
 
@@ -85,7 +88,6 @@ flowchart TB
 Spring config for our lottery application
 
 {% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="">
     <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode"/>
     <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">

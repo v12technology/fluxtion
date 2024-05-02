@@ -9,7 +9,7 @@ processor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/coo
 slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.properties
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -21,7 +21,7 @@ slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.propert
 # Introduction
 This tutorial is an introduction to tracing event processing at runtime, we call this **event audit**.
 The reader should be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before
-starting this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial4-lottery-auditlog)
+starting this tutorial.
 
 Our goal is to write a log file that traces the event call graph as events are processed 
 
@@ -33,6 +33,8 @@ At the end of this tutorial you should understand:
 - How to use EventLogger in a bean
 - How to load a custom AuditLogProcessor in the container
 
+# Example project
+The [example project]({{site.getting_started}}/tutorial4-lottery-auditlog) is referenced in this tutorial.
 
 # Event Audit concepts
 Fluxtion manages the build complexity as more beans are added to the container but understanding deployed event processing 
@@ -41,6 +43,56 @@ behaviour. Fluxtion provides an audit log facility that records the traced call 
 
 Event auditing is implemented as a custom Auditor using the monitoring callbacks to create a LogRecord, see [audit tutorial](tutorial-4)
 for an example of Fluxtion auditing.
+
+
+## Processing logic
+
+{: .no_toc }
+Our design sketches show how the event logging integrates into our system. The EventLogManager is an auditor that is 
+automatically registered with the event processor. The event processor exposes an api to control the event log auditor
+at runtime.
+
+```mermaid
+
+flowchart TB
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
+
+
+    LotteryMachine([<b>ServiceLookup</b>::LotteryMachine]):::exportedService
+    TicketStore([<b>ServiceLookup</b>::TicketStore]):::exportedService
+    
+    TicketStoreNode[TicketStoreNode \n<b>Extends</b>::EventLogNode \n<b>ExportService</b>::TicketStore]:::graphNode
+    LotteryMachineNode[LotteryMachineNode \n<b>Extends</b>::EventLogNode \n<b>ExportService</b>::LotteryMachine]:::graphNode
+    Auditor[<b>Auditor::</b>EventLogManager] ----> id1[(<b>Event audit log</b>)]
+ 
+    LotteryMachine & TicketStore ---> Auditor
+
+    subgraph EventProcessor
+        Auditor --> TicketStoreNode --> LotteryMachineNode
+    end
+
+    configureAuditLog[configure audit log:\n setAuditLogLevel] ----> EventProcessor
+
+```
+
+## Spring config
+
+{% highlight xml %}
+<beans>
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
+    </bean>
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+    <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
+        <!-- IMPLICITLY ADDS THE EVENTLOGMANAGER AS AN AUDITOR -->
+        <property name="logLevel" value="DEBUG"/>
+    </bean>
+</beans>
+{% endhighlight %}
 
 ## Log output
 Fluxtion produces a structured log output, known as a **[LogRecord]({{site.fluxtion_src_runtime}}/audit/LogRecord.java)**, 
@@ -167,16 +219,14 @@ when method tracing is switched on, when audit LogLevel for the container is set
 
 
 {% highlight xml %}
-
 <beans>
     <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
     </bean>
-
     <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
         <constructor-arg ref="ticketStore"/>
     </bean>
-
     <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
+        <!-- IMPLICITLY ADDS THE EVENTLOGMANAGER AS AN AUDITOR -->
         <property name="logLevel" value="DEBUG"/>
     </bean>
 </beans>

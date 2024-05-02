@@ -8,7 +8,7 @@ auditor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbo
 processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -20,7 +20,7 @@ processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cook
 # Introduction
 This tutorial is an introduction to monitoring the dependency injection container at runtime, we call this **auditing**. 
 The reader should be proficient in Java, maven, git, Spring and have completed the [second lottery tutorial](tutorial-2.md) before 
-starting this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial3-lottery-auditor)
+starting this tutorial.
 
 Our goal is to create a custom monitoring class that will observe the event processing without any changes to the 
 application code, and record the following statistics:
@@ -36,6 +36,8 @@ At the end of this tutorial you should understand:
 - How to implement a custom auditor
 - How to load a custom auditor in the container
 
+# Example project 
+The [example project]({{site.getting_started}}/tutorial3-lottery-auditor) demonstrates the integration of an Auditor.
 
 # Auditing concepts
 As event driven systems grow more complex tools are needed to monitor critical application metrics giving early
@@ -47,6 +49,64 @@ In Fluxtion we achieve this through the **[Auditor]({{site.fluxtion_src_runtime}
 Client code implements the Auditor interface and register an auditor instance at build time. At runtime the custom
 auditor receives monitoring notifications with event metadata attached. The auditor is free to process the event 
 metadata in any way it wants.
+
+## Processing logic
+
+{: .no_toc }
+Our design sketches show how the SystemStatisticsAuditor integrates into our system. An auditor is injected into all
+event flow calls within the running event processor. SystemStatisticsAuditor implements and exports the LotterySystemMonitor
+service interface.
+
+```mermaid
+
+flowchart TB
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
+
+    systemStats><b>ServiceCalls</b>\n publishStats]:::eventHandler
+
+    LotteryMachine([<b>ServiceLookup</b>::LotteryMachine]):::exportedService
+    TicketStore([<b>ServiceLookup</b>::TicketStore]):::exportedService
+    LotterySystemMonitor([<b>ServiceLookup</b>::LotterySystemMonitor]):::exportedService
+    
+    TicketStoreNode[TicketStoreNode\n <b>ExportService</b>::TicketStore]:::graphNode
+    LotteryMachineNode[LotteryMachineNode\n <b>ExportService</b>::LotteryMachine]:::graphNode
+    Auditor[<b>Auditor::</b>SystemStatisticsAuditor\n<b>ExportService</b>::LotterySystemMonitor] 
+
+    systemStats --> LotterySystemMonitor
+    
+    LotteryMachine --> Auditor
+    TicketStore ---> Auditor
+    LotterySystemMonitor --> Auditor
+ 
+    subgraph EventProcessor
+        Auditor --> TicketStoreNode --> LotteryMachineNode
+    end
+
+```
+
+## Spring config
+
+{% highlight xml %}
+<beans>
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
+    </bean>
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+    <!--AUDITORS-->
+    <bean id="systemAuditor" class="com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor"/>
+    <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">
+        <property name="auditors">
+            <list>
+                <ref bean="systemAuditor"/>
+            </list>
+        </property>
+    </bean>
+</beans>
+{% endhighlight %}
 
 ## Auditor notifications
 The [Auditor]({{site.fluxtion_src_runtime}}/audit/Auditor.java) interface is copied below with javadoc comments removed
@@ -222,15 +282,12 @@ the [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.j
 
 
 {% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
 <beans>
     <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode">
     </bean>
-
     <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
         <constructor-arg ref="ticketStore"/>
     </bean>
-
     <!--AUDITORS-->
     <bean id="systemAuditor" class="com.fluxtion.example.cookbook.lottery.auditor.SystemStatisticsAuditor"/>
     <bean class="com.fluxtion.compiler.extern.spring.FluxtionSpringConfig">

@@ -6,7 +6,7 @@ nav_order: 4
 published: true
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -19,7 +19,7 @@ published: true
 
 This tutorial is an introduction to building Fluxtion dependency injection container ahead of time without Spring. The 
 reader should be proficient in Java, maven, git and have completed the [second lottery tutorial](tutorial-2.md) before 
-starting this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial6-lottery-nospring)
+starting this tutorial.
 
 Our goal is to create the lottery processing logic ahead of time as in tutorial 4, but with no Spring dependencies.
 
@@ -28,6 +28,9 @@ At the end of this tutorial you should understand:
 - How to add user classes to an event processor programmatically using a FluxtionGraphBuilder
 - How to generate a container ahead of time using the Fluxtion maven plugin
 - Understand that spring is a build time configuration provider only
+
+# Example project
+The [example project]({{site.getting_started}}//tutorial6-lottery-nospring) is referenced in this tutorial.
 
 # Building AOT with FluxtionGraphBuilder
 To build an event processor container we need to specify the managed instances to the Fluxtion compiler. In previous 

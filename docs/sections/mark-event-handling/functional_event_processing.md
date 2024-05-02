@@ -1,12 +1,12 @@
 ---
-title: Functional programming
+title: Functional DSL
 parent: Mark event handling
 has_children: false
 nav_order: 2
 published: true
 ---
 
-# Functional event stream processing
+# Functional DSL event stream processing
 {: .no_toc }
 
 This section documents the runtime event processing callback api and behaviour using functional programming.
