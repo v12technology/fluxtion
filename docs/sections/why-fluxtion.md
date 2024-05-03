@@ -18,10 +18,10 @@ If you have an existing system, and you want a cost-effective way to integrate s
 then Fluxtion is a great fit for you.
 {: .fs-4 }
 
-Real-time streaming compute engine <br/>
-Separates your business logic from your messaging infrastructure <br/>
-Removes vendor lock-in <br/>
-Real-time AI/ML automation <br/>
+* Real-time streaming compute engine <br/>
+* Separates your business logic from your messaging infrastructure <br/>
+* Removes vendor lock-in <br/>
+* Real-time AI/ML automation <br/>
 
 
 # Fluxtion sweetspot
@@ -29,7 +29,7 @@ For businesses seeking vendor flexibility, Fluxtion is a powerful streaming even
 isolate your core business logic from the underlying messaging infrastructure. This means you're not locked into a 
 single vendor for both message delivery and processing.
 
-Where Fluxtion will fit your business needs well if any of the following apply
+Fluxtion can be a great fit for your business if any of the following apply
 
 * Cost-effective Integration of stream processing into an existing system 
 * Multiple messaging system inputs must be supported
@@ -64,7 +64,7 @@ Where Fluxtion will fit your business needs well if any of the following apply
 # Use cases
 
 Fluxtion supports all the functionality of a stream processing engine and can be used in many situations. As the world
-has moved to expect real time responses the requirements to deploy stream processing is now a requirement. A busineess 
+has moved to expect real time responses the requirements to deploy stream processing is now a requirement. A business 
 that relies on end of day batch processing is not positioned for today's customer demands.
 
 * Real time pricing
@@ -72,7 +72,7 @@ that relies on end of day batch processing is not positioned for today's custome
 * Realtime monitoring and system control
 * Realtime offers
 * Fraud detection
-* Ai integration for realtime decsison making
+* AI integration for realtime decision-making
 * Data pipelines batch and realtime
 * Realtime data cleansing
 * Risk compliance and trade control
