@@ -27,7 +27,7 @@ then Fluxtion is a great fit for you.
 # Fluxtion sweetspot
 For businesses seeking vendor flexibility, Fluxtion is a powerful streaming event processor engine. It allows you to 
 isolate your core business logic from the underlying messaging infrastructure. This means you're not locked into a 
-single vendor for both message delivery and processing.
+single vendor for both message delivery and stream processing.
 
 Fluxtion can be a great fit for your business if any of the following apply
 
@@ -42,7 +42,7 @@ Fluxtion can be a great fit for your business if any of the following apply
 * You chose not to be locked into a single vendor
 
 
-# Comparison matrix
+# Stream processing comparison matrix
 
 | Feature comparison                                        | Fluxtion | Kafka | Spark | Google cloud flow |
 |-----------------------------------------------------------|:--------:|:-----:|:-----:|:-----------------:|
@@ -64,7 +64,7 @@ Fluxtion can be a great fit for your business if any of the following apply
 # Use cases
 
 Fluxtion supports all the functionality of a stream processing engine and can be used in many situations. As the world
-has moved to expect real time responses the requirements to deploy stream processing is now a requirement. A business 
+has moved to expect real time responses the deployment of stream processing is now a requirement. A business 
 that relies on end of day batch processing is not positioned for today's customer demands.
 
 * Real time pricing
@@ -79,3 +79,8 @@ that relies on end of day batch processing is not positioned for today's custome
 * Realtime stream processing
 * Event driven microservices
 * Edge AI processing
+
+# Integrating Fluxtion
+Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
+
+![](../images/embedding-fluxtion.png)
