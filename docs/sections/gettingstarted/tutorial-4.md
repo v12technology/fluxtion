@@ -1,6 +1,6 @@
 ---
 title: 4th tutorial - auditor
-parent: Getting started
+parent: Developer tutorials
 has_children: false
 nav_order: 5
 published: true

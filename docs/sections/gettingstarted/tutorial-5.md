@@ -1,6 +1,6 @@
 ---
 title: 5th tutorial - event tracing
-parent: Getting started
+parent: Developer tutorials
 has_children: false
 nav_order: 6
 published: true

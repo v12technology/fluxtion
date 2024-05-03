@@ -1,6 +1,6 @@
 ---
 title: 1st tutorial - Spring
-parent: Getting started
+parent: Developer tutorials
 has_children: false
 nav_order: 2
 published: true

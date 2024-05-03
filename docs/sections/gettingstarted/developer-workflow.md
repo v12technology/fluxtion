@@ -1,6 +1,6 @@
 ---
 title: Developer workflow
-parent: Getting started
+parent: Developer tutorials
 has_children: false
 nav_order: 1
 published: true

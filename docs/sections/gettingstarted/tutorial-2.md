@@ -1,6 +1,6 @@
 ---
 title: 2nd tutorial - AOT Spring
-parent: Getting started
+parent: Developer tutorials
 has_children: false
 nav_order: 3
 published: true
